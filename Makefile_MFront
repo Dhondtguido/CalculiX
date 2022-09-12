@@ -1,0 +1,34 @@
+# for debuggin purposes -DCALCULIX_EXTERNAL_BEHAVIOUR_DEBUG
+
+CFLAGS = -Wall -O3  -I ../SPOOLES.2.2 -DARCH="Linux" -DSPOOLES -DARPACK -DMATRIXSTORAGE -DCALCULIX_EXTERNAL_BEHAVIOURS_SUPPORT -fPIC -DPIC -g
+FFLAGS = -Wall -O3 -fopenmp -fPIC -DPIC
+
+CC=cc
+FC=gfortran
+
+.c.o :
+	$(CC) $(CFLAGS) -c $<
+.f.o :
+	$(FC) $(FFLAGS) -c $<
+
+include Makefile.inc
+
+SCCXMAIN = CalculiX.c
+
+OCCXF = $(SCCXF:.f=.o)
+OCCXC = $(SCCXC:.c=.o)
+OCCXMAIN = $(SCCXMAIN:.c=.o)
+
+DIR=../SPOOLES.2.2
+
+LIBS = $(DIR)/spooles.a \
+     ../ARPACK/libarpack_INTEL.a \
+     -lblas    \
+     -lpthread -lm -lc -ldl
+
+CalculiX_helfer: $(OCCXMAIN) libCalculiX_helfer.so
+	./date.pl; $(CC) $(CFLAGS) -c CalculiX.c;
+	$(FC) -fopenmp -Wall -O3 -o $@ $(OCCXMAIN) -L. -lCalculiX_helfer $(LIBS)
+
+libCalculiX_helfer.so: $(OCCXF) $(OCCXC)
+	$(FC) --shared  $(OCCXF) $(OCCXC) -o $@ 
