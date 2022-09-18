@@ -37,7 +37,6 @@
 !
       include "gauss.f"
 !
-c      data iflag /2/
       iflag=2
       null=0
 !     

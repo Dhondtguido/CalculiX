@@ -151,6 +151,7 @@ c               enddo
          write(*,*) '*WARNING reading *CONTACT PAIR'
          write(*,*) '         The option SMALL SLIDING cannot be'
          write(*,*) '         used with SURFACE TO SURFACE contact'
+         write(*,*)
          tietol(1,ntie)=-tietol(1,ntie)
       endif
 !

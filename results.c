@@ -447,11 +447,17 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
     }
     for(i=0; i<num_cpus; i++)
       pthread_join(tid[i], NULL);
-	
-    for(i=0;i<4;i++){
-      //	    energy[i]=energyini[i]+energy1[i];
+
+    /* the contact spring friction energy is calculated incrementally
+       (i.e. set to zero in enerini(2,1,ne0+*) at the start of the
+        increment; since nintpoint changes from increment to
+	increment) */
+    
+    for(i=0;i<3;i++){
       energy[i]=energy1[i];
     }
+    energy[3]=energyini[3]+energy1[3];
+    
     for(i=0;i<4;i++){
       for(j=1;j<num_cpus;j++){
 	energy[i]+=energy1[i+j*4];

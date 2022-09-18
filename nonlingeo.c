@@ -833,9 +833,6 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
   if((*nstate_!=0)&&((*mortar!=1)||(ncont==0))){
     NNEW(xstateini,double,*nstate_*mi[0]*(*ne+*nslavs));
     isiz=*nstate_*mi[0]*(*ne+*nslavs);cpypardou(xstateini,xstate,&isiz,&num_cpus);
-      /*   for(k=0;k<*nstate_*mi[0]*(*ne+*nslavs);++k){
-      xstateini[k]=xstate[k];
-      }*/
   }
   if((*nstate_!=0)&&(*mortar==1)) NNEW(xstateini,double,1);
   
@@ -846,10 +843,12 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
   if(*nener==1){
     if((*mortar!=1)||(ncont==0)){
       NNEW(enerini,double,2*mi[0]*(*ne+*nslavs));
-      isiz=2*mi[0]*(*ne+*nslavs);cpypardou(enerini,ener,&isiz,&num_cpus);
+      //      isiz=2*mi[0]*(*ne+*nslavs);cpypardou(enerini,ener,&isiz,&num_cpus);
+      //    isiz=2*mi[0]**ne;cpypardou(enerini,ener,&isiz,&num_cpus);
     }else{
-      NNEW(enerini,double,2*mi[0]**ne);
+      NNEW(enerini,double,2*mi[0]*(*ne+*nintpoint));
     }
+    isiz=2*mi[0]**ne;cpypardou(enerini,ener,&isiz,&num_cpus);
   }
   
   qa[0]=qaold[0];
@@ -906,12 +905,6 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
   if((*nmethod==4)&&(*ithermal!=2)&&(icfd==0)){
     bet=(1.-alpha[0])*(1.-alpha[0])/4.;
     gam=0.5-alpha[0];
-
-    /* initialization of the energy */
-
-    /*    if((ithermal[0]<=1)&&(*nener==1)){
-      isiz=mi[0]*ne0;cpypardou(enerini,ener,&isiz,&num_cpus);
-      }*/
       
     /* calculating the stiffness and mass matrix */
       
@@ -1554,12 +1547,11 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
          mortar not equal to 1 */
       
       if(*nener==1){
-	if(*mortar!=1){
+	/*	if(*mortar!=1){
 	  isiz=2*mi[0]*(ne0+*nslavs);
-	}else{
+	  }else{*/
 	  isiz=2*mi[0]*ne0;
-	}
-	//	isiz=mi[0]*ne0;
+	  //	}
 	cpypardou(enerini,ener,&isiz,&num_cpus);
       }
 	      
@@ -1836,6 +1828,20 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	  }
 
 	}
+
+	/* set the contact spring energy to zero at the start of
+           an increment. The friction energy is summed in energy[3]
+           based on energyini[3] */
+	
+	if(*nener==1){
+	  if((*mortar!=1)||(ncont==0)){
+	    DOUMEMSET(enerini,2*mi[0]**ne,2*mi[0]*(*ne+*nslavs),0.);
+	  }else{
+	    RENEW(enerini,double,2*mi[0]*(*ne+*nintpoint));
+	    DOUMEMSET(enerini,2*mi[0]**ne,2*mi[0]*(*ne+*nintpoint),0.);
+	  }
+	}
+	
       }
 
       /* massless contact: calculate matrix Wb */
@@ -3571,13 +3577,12 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	cpypardou(eme,emeini,&isiz,&num_cpus);
       }
       if(*nener==1){
-	if(*mortar!=1){
+	/*	if(*mortar!=1){
 	  isiz=2*mi[0]*(ne0+*nslavs);
-	}else{
+	  }else{*/
 	  isiz=2*mi[0]*ne0;
-	}
+	  //	}
 	cpypardou(ener,enerini,&isiz,&num_cpus);
-	//	isiz=2*mi[0]*(ne0+maxprevcontel);cpypardou(ener,enerini,&isiz,&num_cpus);
       }
 
       isiz=*nstate_*mi[0]*(ne0+maxprevcontel);cpypardou(xstate,xstateini,

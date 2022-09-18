@@ -154,7 +154,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Mon Sep 12 21:11:09 CEST 2022\n");
+  printf("You are using an executable made on Sun Sep 18 17:00:07 CEST 2022\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);

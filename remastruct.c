@@ -70,7 +70,7 @@ void remastruct(ITG *ipompc, double **coefmpcp, ITG **nodempcp, ITG *nmpc,
 
   /* determining the matrix structure */
     
-  if(*iexpl<=1) printf(" Determining the structure of the matrix:\n");
+  if(*iexpl<=1) printf(" Determining the structure of the matrix:\n\n");
  
   if(nzs[1]<10) nzs[1]=10;   
   NNEW(mast1,ITG,nzs[1]);
@@ -95,7 +95,7 @@ void remastruct(ITG *ipompc, double **coefmpcp, ITG **nodempcp, ITG *nmpc,
     FORTRAN(totalcontact,(tieset,ntie,&netot,ipkontot,kontot,lakontot,
 			  islavsurf,itiefac,pmastsurf,ne0,nkon0));
 
-    printf("maximal possible contact elements = \n%d\n\n",netot-*ne0);
+    //   printf(" Maximal possible contact elements = %d\n\n",netot-*ne0);
     
     mastruct(nk,kontot,ipkontot,lakontot,&netot,nodeboun,ndirboun,nboun,
 	     ipompc,nodempc,nmpc,nactdof,icol,jq,&mast1,&irow,isolver,neq,

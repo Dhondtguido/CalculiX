@@ -405,7 +405,8 @@ c     write(*,*) 'resultsmech ',i,lakonl,mint3d
                 else
                   nr=ne0+konl(nope+1)
                 endif
-                venergy=enerini(2,1,nr)
+c                venergy=enerini(2,1,nr)
+                venergy=0.d0
               endif
               call springforc_n2f(xl,konl,vl,imat,elcon,nelcon,elas,
      &             fnl,ncmat_,ntmat_,nope,lakonl,t1l,kode,elconloc,
@@ -423,7 +424,8 @@ c     write(*,*) 'resultsmech ',i,lakonl,mint3d
      &             (iout.ne.-1))) then
               jfaces=kon(indexe+nope+2)
               igauss=kon(indexe+nope+1)
-              if(nener.eq.1) venergy=enerini(2,1,ne0+igauss)
+c              if(nener.eq.1) venergy=enerini(2,1,ne0+igauss)
+              if(nener.eq.1) venergy=0.d0
               call springforc_f2f(xl,vl,imat,elcon,nelcon,elas,
      &             fnl,ncmat_,ntmat_,nope,lakonl,t1l,kode,elconloc,
      &             plicon,nplicon,npmat_,senergy,nener,
