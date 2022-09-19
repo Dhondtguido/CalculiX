@@ -293,6 +293,7 @@ void matrixstorage(double *ad, double **aup, double *adb, double *aub,
     kstart=k;
     do{
       k++;
+      if(k==ndim) break;
       if(aj[k]!=jref) break;
     }while(1);
     klen=k-kstart;
@@ -531,6 +532,7 @@ void matrixstorage(double *ad, double **aup, double *adb, double *aub,
       kstart=k;
       do{
 	k++;
+	if(k==ndim) break;
 	if(aj[k]!=jref) break;
       }while(1);
       klen=k-kstart;
