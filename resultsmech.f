@@ -61,7 +61,7 @@
      &     fnl(3,10),skl(3,3),beta(6),q(0:mi(2),26),xl2(3,8),
      &     vkl(0:3,3),t0(*),t1(*),prestr(6,mi(1),*),eme(6,mi(1),*),
      &     ckl(3,3),vold(0:mi(2),*),eloc(6),veold(0:mi(2),*),
-     &     springarea(2,*),elconloc(21),eth(6),xkl(3,3),
+     &     springarea(2,*),elconloc(ncmat_),eth(6),xkl(3,3),
      &     voldl(0:mi(2),26),xikl(3,3),ener(2,mi(1),*),
      &     emec(6),eei(6,mi(1),*),enerini(2,mi(1),*),
      &     emec0(6),vel(1:3,26),veoldl(0:mi(2),26),xsj2(3),shp2(7,8),

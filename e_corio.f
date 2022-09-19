@@ -66,7 +66,7 @@
      &  sti(6,mi(1),*),stx(6,mi(1),*),s11,s22,s33,s12,s13,s23,s11b,
      &  s22b,s33b,s12b,s13b,s23b,t0l,t1l,
      &  senergy,senergyb,rho,elas(21),
-     &  sume,factorm,factore,alp,elconloc(21),eth(6),
+     &  sume,factorm,factore,alp,elconloc(ncmat_),eth(6),
      &  weight,coords(3),dmass,xl1(3,8),term
 !
       real*8 plicon(0:2*npmat_,ntmat_,*),plkcon(0:2*npmat_,ntmat_,*),

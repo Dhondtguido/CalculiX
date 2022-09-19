@@ -5064,3 +5064,5 @@ Dec 2002        - started to work on single crystal plasticity
  8 Sep 2022     - removed FLUID PERIODIC and FLUID CYCLIC from the
                   tie.f and cyclicsymmetrymodels.f routines and the
 		  documentation
+
+ 19 Sep 2022    - changed the dimension of elconloc from 21 to ncmat_

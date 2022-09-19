@@ -53,7 +53,7 @@
      &  rhcon(0:1,ntmat_,*),qfx(3,mi(1),*),orab(7,*),
      &  rho,fn(0:mi(2),*),tnl(19),timeend(2),q(0:mi(2),26),
      &  vkl(0:3,3),t0(*),vold(0:mi(2),*),coefmpc(*),
-     &  springarea(2,*),elconloc(21),cocon(0:6,ntmat_,*),
+     &  springarea(2,*),elconloc(ncmat_),cocon(0:6,ntmat_,*),
      &  shcon(0:3,ntmat_,*),sph,c1,xi,et,ze,xsj,qa(*),t0l,t1l,dtime,
      &  weight,pgauss(3),coconloc(6),qflux(3),time,ttime,
      &  t1lold,plkcon(0:2*npmat_,ntmat_,*),xstiff(27,mi(1),*),

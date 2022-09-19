@@ -39,7 +39,7 @@
       real*8 xl(3,19),al(3),vl(0:mi(2),19),conductance,
      &  pl(3,19),xn(3),alpha,beta,
      &  elcon(0:ncmat_,ntmat_,*),pproj(3),clear,
-     &  xi,et,elconloc(21),plconloc(802),xk,xiso(20),yiso(20),
+     &  xi,et,elconloc(*),plconloc(802),xk,xiso(20),yiso(20),
      &  plicon(0:2*npmat_,ntmat_,*),coords(3),
      &  springarea(2),overlap,clearini(3,9,*),
      &  reltime,weight,xsj2m(3),xs2m(3,7),shp2m(7,9),

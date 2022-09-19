@@ -70,7 +70,7 @@
      &  cocon(0:6,ntmat_,*),shcon(0:3,ntmat_,*),sph,coconloc(6),
      &  field,areaj,sax(60,60),ffax(60),coefmpc(*),tl2(8),
      &  voldl(0:mi(2),26),springarea(2,*),plkcon(0:2*npmat_,ntmat_,*),
-     &  elcon(0:ncmat_,ntmat_,*),elconloc(21),pslavsurf(3,*),
+     &  elcon(0:ncmat_,ntmat_,*),elconloc(ncmat_),pslavsurf(3,*),
      &  pmastsurf(2,*),clearini(3,9,*),plicon(0:2*npmat_,ntmat_,*),
      &  sti(6,mi(1),*),xstate(nstate_,mi(1),*),xbody(7,*),
      &  xstateini(nstate_,mi(1),*),heatnod,heatfac

@@ -39,7 +39,7 @@
      &  al(3),s(60,60),voldl(0:mi(2),10),pl(3,10),xn(3),dm,
      &  c1,c2,c3,c4,alpha,beta,elcon(0:ncmat_,ntmat_,*),xm(3),
      &  xmu(3,3,10),dxmu(3,10),dval(3,10),fpu(3,3,10),xi,et,
-     &  xs2(3,7),t1l,elconloc(21),plconloc(802),xk,fk,
+     &  xs2(3,7),t1l,elconloc(*),plconloc(802),xk,fk,
      &  xiso(200),yiso(200),dd0,plicon(0:2*npmat_,ntmat_,*),
      &  a11,a12,a22,b1(3,10),b2(3,10),dal(3,3,10),qxxy(3),fnl(3),
      &  qxyy(3),dxi(3,10),det(3,10),determinant,c11,c12,c22,
@@ -49,8 +49,6 @@
      &  dftrial,dfnl,dfshear,dg,dte,alnew(3),dfn(3,10),reltime,
      &  overlap,pres,dpresdoverlap,overclosure,orab(7,*),
      &  xn1(3),xn2(3),a(3,3)
-!
-!
 !
       iflag=4
 !

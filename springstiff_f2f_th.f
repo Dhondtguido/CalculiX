@@ -38,15 +38,13 @@
       real*8 xl(3,19),pproj(3),shp2m(7,9),ak(5),
      &  al(3),s(60,60),voldl(0:mi(2),19),pl(3,19),xn(3),
      &  alpha,beta,elcon(0:ncmat_,ntmat_,*),xm(3),
-     &  xi,et,dpresdoverlap,xs2(3,7),elconloc(21),plconloc(802),
+     &  xi,et,dpresdoverlap,xs2(3,7),elconloc(*),plconloc(802),
      &  xk,temp(2),xiso(20),yiso(20),plicon(0:2*npmat_,ntmat_,*),d(2),
      &  springarea(2),overlap,clear,timeend(2),reltime,
      &  xsj2s(3),xs2s(3,7),shp2s(7,9),weight,pslavsurf(3,*),
      &  pmastsurf(6,*),clearini(3,9,*),t1ls,t1lm,tmean,predef(2),
      &  plkcon(0:2*npmat_,ntmat_,*),pressure,dtemp,flowm(2),
      &  constant,coords(3),conductance
-!
-!
 !
       iflag=1
 !     

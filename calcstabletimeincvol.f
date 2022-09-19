@@ -64,9 +64,9 @@
      &     nfaces,ig,ifaceq(8,6),ifacet(6,4),ifacew(8,5),
      &     mscalmethod,icount,mortar
 !     
-      real*8 elas(21),wavespeed(*),rhcon(0:1,ntmat_,*)  ,
+      real*8 elas(21),wavespeed(*),rhcon(0:1,ntmat_,*),
      &     alcon(0:6,ntmat_,*),coords(3),orab(7,*),rho,alzero(*),
-     &     t0l,t1l,elconloc(21),eth(6),plicon(0:2*npmat_,ntmat_,*),
+     &     t0l,t1l,elconloc(ncmat_),eth(6),plicon(0:2*npmat_,ntmat_,*),
      &     plkcon(0:2*npmat_,ntmat_,*),plconloc(802),dtime,
      &     xstiff(27,mi(1),*),elcon(0:ncmat_,ntmat_,*),
      &     t0(*),t1(*),shp(4,26),vold(0:mi(2),*),tt,

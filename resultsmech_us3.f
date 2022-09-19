@@ -226,7 +226,7 @@
      &     alcon(0:6,ntmat_,*),vini(0:mi(2),*),q1,
      &     alzero(*),orab(7,*),elas(21),rho,fn(0:mi(2),*),
      &     q(0:mi(2),26),t0(*),t1(*),prestr(6,mi(1),*),eme(6,mi(1),*),
-     &     vold(0:mi(2),*),eloc(9),elconloc(21),eth(6),coords(3),
+     &     vold(0:mi(2),*),eloc(9),elconloc(ncmat_),eth(6),coords(3),
      &     ener(2,mi(1),*),emec(6),eei(6,mi(1),*),enerini(2,mi(1),*),
      &     veold(0:mi(2),*),e,un,um,tt,dl,qa(*),t0l,t1l,dtime,time,
      &     ttime,

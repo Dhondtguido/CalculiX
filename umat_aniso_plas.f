@@ -38,7 +38,7 @@
 !                        under *USER MATERIAL): can be used for materials
 !                        with varying number of constants
 !
-!     elconloc(21)       user defined constants defined by the keyword
+!     elconloc(*)        user defined constants defined by the keyword
 !                        card *USER MATERIAL (max. 21, actual # =
 !                        -kode-100), interpolated for the
 !                        actual temperature t1l

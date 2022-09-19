@@ -27,7 +27,7 @@
      &  ncmat_,id,seven
 !
       real*8 elcon(0:ncmat_,ntmat_,*),alcon(0:6,ntmat_,*),alpha(6),t1l,
-     &  elconloc(21)
+     &  elconloc(*)
 !
       seven=7
 !     

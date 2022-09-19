@@ -36,7 +36,8 @@
 !     
       real*8 co(3,*),xl(3,20),xi,et,ze,xsj,shp(4,20),weight,xload(2,*),
      &     sti(6,mi(1),*),alpha(6),heat,elcon(0:ncmat_,ntmat_,*),volume,
-     &     elconloc(21),t1l,alcon(0:6,ntmat_,*),vold(0:mi(2),*),t1(*)
+     &     elconloc(ncmat_),t1l,alcon(0:6,ntmat_,*),vold(0:mi(2),*),
+     &     t1(*)
 !     
       include "gauss.f"
 !     

@@ -26,12 +26,10 @@
       integer i,imat,ncmat_,ntmat_,kode,niso,id,nplicon(0:ntmat_,*),
      &    npmat_,nelcon(2,*),nener
 !
-      real*8 t1l,elcon(0:ncmat_,ntmat_,*),elconloc(21),plconloc(802),
+      real*8 t1l,elcon(0:ncmat_,ntmat_,*),elconloc(ncmat_),
      &  xk,fk,val,xiso(200),yiso(200),plicon(0:2*npmat_,ntmat_,*),
-     &  senergy
+     &  senergy,plconloc(802)
 !
-!
-!     
 !     interpolating the material data
 !     
       call materialdata_sp(elcon,nelcon,imat,ntmat_,i,t1l,

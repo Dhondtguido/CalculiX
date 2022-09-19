@@ -84,7 +84,7 @@
      &  sti(6,mi(1),*),stx(6,mi(1),*),s11,s22,s33,s12,s13,s23,s11b,
      &  s22b,s33b,s12b,s13b,s23b,t0l,t1l,coefmpc(*),xlayer(mi(3),4),
      &  senergy,senergyb,rho,elas(21),summass,summ,thicke(mi(3),*),
-     &  sume,factorm,factore,alp,elconloc(21),eth(6),doubleglob(*),
+     &  sume,factorm,factore,alp,elconloc(ncmat_),eth(6),doubleglob(*),
      &  weight,coords(3),dmass,xl1(3,9),term,clearini(3,9,*),
      &  plicon(0:2*npmat_,ntmat_,*),plkcon(0:2*npmat_,ntmat_,*),
      &  xstiff(27,mi(1),*),plconloc(802),dtime,ttime,time,tvar(2),

@@ -16,7 +16,6 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-! -------------------------------------------------------------
       subroutine e_c3d_us45(co,kon,lakonl,p1,p2,omx,bodyfx,nbody,s,sm,
      &  ff,nelem,nmethod,elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,
      &  ielmat,ielorien,norien,orab,ntmat_,
@@ -29,8 +28,6 @@
      &  ne0,ipkon,thicke,
      &  integerglob,doubleglob,tieset,istartset,iendset,ialset,ntie,
      &  nasym,ielprop,prop)
-!
-!
 !
 !     INPUT:
 !
@@ -222,7 +219,7 @@
      &  nplkcon(0:ntmat_,*),npmat_,jjj
 !
       real*8 co(3,*),xl(3,26),veold(0:mi(2),*),rho,s(60,60),bodyfx(3),
-     &  ff(60),elconloc(21),coords(3),p1(3),elcon(0:ncmat_,ntmat_,*),
+     &  ff(60),elconloc(ncmat_),coords(3),p1(3),
      &  p2(3),eth(6),rhcon(0:1,ntmat_,*),reltime,prop(*),tm(3,3),
      &  alcon(0:6,ntmat_,*),alzero(*),orab(7,*),t0(*),t1(*),
      &  xloadold(2,*),vold(0:mi(2),*),xload(2,*),omx,e,un,um,tt,
@@ -236,7 +233,7 @@
      &  bm(3,24), g_p(4,3), Kmem(24,24),ri,si,Kb(24,24), bb(3,24),
      &  bs(2,24), Ks(24,24), Ds(2,2), Db(3,3), Gt,Kshell(24,24),kdmax,
      &  m_3t(6,6), N_u(6,24),Mshell(24,24),gpthick(3,2),dett,dettt,
-     &  Qin(3,3),Qs(2,2)
+     &  Qin(3,3),Qs(2,2),elcon(0:ncmat_,ntmat_,*)
 !
       intent(in) co,kon,lakonl,p1,p2,omx,bodyfx,nbody,
      &  nelem,elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,
