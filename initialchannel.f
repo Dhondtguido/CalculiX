@@ -98,18 +98,25 @@
         g(j)=0.d0
       enddo
       if(nbody.gt.0) then
-        index=nelem
-        do
-          j=ipobody(1,index)
-          if(j.eq.0) exit
-          if(ibody(1,j).eq.2) then
-            g(1)=g(1)+xbodyact(1,j)*xbodyact(2,j)
-            g(2)=g(2)+xbodyact(1,j)*xbodyact(3,j)
-            g(3)=g(3)+xbodyact(1,j)*xbodyact(4,j)
-          endif
-          index=ipobody(2,index)
-          if(index.eq.0) exit
-        enddo
+        loop3: do i=1,nflow
+          nelem=ieg(i)
+          if(lakon(nelem)(2:5).ne.'LICH') cycle
+          if(lakon(nelem)(6:7).eq.'IO') cycle
+!          
+          index=nelem
+          do
+            j=ipobody(1,index)
+            if(j.eq.0) exit
+            if(ibody(1,j).eq.2) then
+              g(1)=g(1)+xbodyact(1,j)*xbodyact(2,j)
+              g(2)=g(2)+xbodyact(1,j)*xbodyact(3,j)
+              g(3)=g(3)+xbodyact(1,j)*xbodyact(4,j)
+              exit loop3
+            endif
+            index=ipobody(2,index)
+            if(index.eq.0) exit
+          enddo
+        enddo loop3
       endif
       dg=dsqrt(g(1)*g(1)+g(2)*g(2)+g(3)*g(3))
 !
@@ -123,7 +130,7 @@
      &     (lakon(nelem)(6:7).ne.'WE')).or.
      &       (itreated(i).eq.1)) cycle
 !
-!       untreated SLUICE GATE element found
+!       untreated SLUICE GATE or WEAR element found
 !
         indexe=ipkon(nelem)
         node1=kon(indexe+1)
@@ -131,7 +138,7 @@
         node2=kon(indexe+3)
         call nident(itg,node2,ntg,id2)
 !
-!       looking for a SLUICE GATE element connected on one side to
+!       the SLUICE GATE or WEAR element should be connected on one side to
 !       a CHANNEL INOUT element (as only element)
 !
         if((ineighe(id1).gt.1).and.(ineighe(id2).gt.1)) cycle
@@ -181,68 +188,85 @@
 !
 !         if F (forward): nelup and nup known
 !
-        if(mode.eq.'F') then
-          if(nelem.eq.0) then
+          if(mode.eq.'F') then
+            if(nelem.eq.0) then
               call nident(itg,nup,ntg,id)
+!
+!             end of branch
+!
               if(ineighe(id).eq.1) then
                 write(*,*) '*INFO: branch finished'
-!
-!               IO-element: determine the mass flow
-!
+!     
+!     IO-element: determine the mass flow
+!     
                 index=iponoel(nup)
                 do
                   if(inoel(1,index).ne.nelup) then
-                    nelem=inoel(1,index)
-                    if(nup.eq.kon(ipkon(nelem)+1)) then
-                      v(1,kon(ipkon(nelem)+2))=xflow
+                    nelemio=inoel(1,index)
+                    if(nup.eq.kon(ipkon(nelemio)+1)) then
+                      v(1,kon(ipkon(nelemio)+2))=xflow
                     else
-                      v(1,kon(ipkon(nelem)+2))=-xflow
+                      v(1,kon(ipkon(nelemio)+2))=-xflow
                     endif
                     cycle loop1
                   endif
                   index=inoel(2,index)
+                  if(index.eq.0) then
+                    write(*,*) '*ERROR in initialchannel: no IO'
+                    write(*,*) '       element at end of branch'
+                    write(*,*) '       most downstream node: ',nup
+                    call exit(201)
+                  endif
+                enddo
+!
+!               branch continues 
+!
+              elseif(ineighe(id).eq.2) then
+!     
+!     one "true" element connected downstream
+!     loop over all elements connected to nup
+!     
+                index=iponoel(nup)
+                do
+                  if(inoel(1,index).ne.nelup) then
+                    if(lakon(inoel(1,index))(6:7).ne.'IO') then
+                      nelem=inoel(1,index)
+                    else
+!     
+!     add flow
+!     
+                      nelemio=inoel(1,index)
+                      if((lakon(nelup)(6:7).eq.'SG').or.
+     &                     (lakon(nelup)(6:7).eq.'WE')) then
+                        write(*,*)
+     &                       '*ERROR in initialchannel: no IO element'
+                        write(*,*)
+     &                       '       allowed immediately downstream'
+                        write(*,*) '       of a SLUICE GATE or WEAR'
+                        write(*,*) '       element; faulty element:',
+     &                       nelemio
+                        write(*,*) 
+                        call exit(201)
+                      endif
+                      if(nup.eq.kon(ipkon(nelemio)+3)) then
+                        xflow=xflow+v(1,kon(ipkon(nelemio)+2))
+                      else
+                        xflow=xflow-v(1,kon(ipkon(nelemio)+2))
+                      endif
+                    endif
+                  endif
+                  index=inoel(2,index)
                   if(index.eq.0) exit
                 enddo
+!
+!               branch splits into two
 !
               elseif(ineighe(id).gt.2) then
                 write(*,*) '*ERROR in initialchannel: branch split'
                 write(*,*)
                 call exit(201)
               endif
-!     
-!     one "true" element connected downstream
-!     loop over all elements connected to nup
-!     
-              index=iponoel(nup)
-              do
-                if(inoel(1,index).ne.nelup) then
-                  if(lakon(inoel(1,index))(6:7).ne.'IO') then
-                    nelem=inoel(1,index)
-                  else
-!     
-!     add flow
-!     
-                    nelemio=inoel(1,index)
-                    if((lakon(nelup)(6:7).eq.'SG').or.
-     &                 (lakon(nelup)(6:7).eq.'WE')) then
-                      write(*,*)
-     &                     '*ERROR in initialchannel: no IO element'
-                      write(*,*) '       allowed immediately downstream'
-                      write(*,*) '       of a SLUICE GATE element.'
-                      write(*,*) '       faulty element:',nelemio
-                      write(*,*) 
-                      call exit(201)
-                    endif
-                    if(nup.eq.kon(ipkon(nelemio)+3)) then
-                      xflow=xflow+v(1,kon(ipkon(nelemio)+2))
-                    else
-                      xflow=xflow-v(1,kon(ipkon(nelemio)+2))
-                    endif
-                  endif
-                endif
-                index=inoel(2,index)
-                if(index.eq.0) exit
-              enddo
+!
             endif
 !     
 !     actual element = nelem
@@ -276,11 +300,11 @@
                 index=iponoel(ndo)
                 do
                   if(inoel(1,index).ne.neldo) then
-                    nelem=inoel(1,index)
-                    if(ndo.eq.kon(ipkon(nelem)+3)) then
-                      v(1,kon(ipkon(nelem)+2))=xflow
+                    nelemio=inoel(1,index)
+                    if(ndo.eq.kon(ipkon(nelemio)+3)) then
+                      v(1,kon(ipkon(nelemio)+2))=xflow
                     else
-                      v(1,kon(ipkon(nelem)+2))=-xflow
+                      v(1,kon(ipkon(nelemio)+2))=-xflow
                     endif
                     exit
                   endif
