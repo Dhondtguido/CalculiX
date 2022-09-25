@@ -261,7 +261,28 @@
 !
 !               branch splits into two
 !
-              elseif(ineighe(id).gt.2) then
+              elseif(ineighe(id).eq.3) then
+!     
+!               taking the temperature of the upstream node for the
+!               material properties
+!     
+                temp=v(0,nup)
+                imat=ielmat(1,nelup)
+!     
+                call materialdata_tg(imat,ntmat_,temp,shcon,nshcon,cp,r,
+     &               dvi,rhcon,nrhcon,rho)
+!
+c                call channeljoint()
+!
+!               if nelem=0 more than one branch has no mass flux
+!
+                if(nelem.eq.0) then
+                  cycle loop1
+                endif
+!
+!               branch splits into more than two
+!
+              elseif(ineighe(id).gt.3) then
                 write(*,*) '*ERROR in initialchannel: branch split'
                 write(*,*)
                 call exit(201)

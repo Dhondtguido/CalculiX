@@ -5067,3 +5067,5 @@ Dec 2002        - started to work on single crystal plasticity
 
  19 Sep 2022    - changed the dimension of elconloc from 21 to ncmat_
                 - corrected some errors in matrixstorage.c
+
+ 25 Sep 2022    - wrote channeljoint.f
