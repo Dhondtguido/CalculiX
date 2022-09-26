@@ -119,12 +119,12 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     *isolidsurf=NULL,*neighsolidsurf=NULL,*iponoel=NULL,*inoel=NULL,
     nface,nfreestream,nsolidsurf,i,icfd=0,id,mortarsav=0,
     node,networknode,iflagact=0,*nodorig=NULL,*ipivr=NULL,iglob=0,
-    *inomat=NULL,*ipnei=NULL,ntrimax,*nx=NULL,*ny=NULL,*nz=NULL,
+    *inomat=NULL,ntrimax,*nx=NULL,*ny=NULL,*nz=NULL,
     idampingwithoutcontact=0,*nactdoh=NULL,*nactdohinv=NULL,*ipkonf=NULL,
     *ielmatf=NULL,*ielorienf=NULL,ialeatoric=0,nloadref,isym,
     *nelemloadref=NULL,*iamloadref=NULL,*idefload=NULL,nload_,
     *nelemload=NULL,*iamload=NULL,ncontacts=0,inccontact=0,nrhs=1,
-    j=0,n,inoelsize=0,isensitivity=0,*konf=NULL,
+    j=0,inoelsize=0,isensitivity=0,*konf=NULL,
     *iwork=NULL,nelt,lrgw,*igwk=NULL,itol,itmax,iter,ierr,iunit,ligw,
     mei[4]={0,0,0,0},*itreated=NULL,mscalmethod=-1,inoelfree,
     isiz=0,num_cpus,sys_cpus,ne1d2d=0,kchdep,nkftot,
@@ -2949,10 +2949,6 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	    NNEW(jqtherm,ITG,n1+1);
 	    for(i=0;i<n1+1;i++){
 	      jqtherm[i]=jq[neq[0]+i]-nzs[0];}
-	    /*	    printf("jq[0]=%d\n",jqtherm[0]);
-	    for(i=0;i<n1;i++){
-	      printf("i=%d,jqdiff=%d\n",i,jqtherm[i+1]-(jqtherm[i]+icol[neq[0]+i]));
-	      }*/
 	    pastix_main(&ad[neq[0]],&au[nzs[0]],&adb[neq[0]],&aub[nzs[0]],
 			&sigma,&b[neq[0]],&icol[neq[0]],iruc,
 			&n1,&n2,&symmetryflag,&inputformat,jqtherm,&nzs[2],&nrhs);
@@ -2966,7 +2962,6 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	  FORTRAN(stop,());
 #endif
 	}
-	//	for(k=0;k<neq[1];++k){printf("sol=%" ITGFORMAT ",%f\n",k,b[k]);}
 	  
 	if(*mortar<=1){
 	  if(isensitivity){
@@ -3105,6 +3100,14 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
       NNEW(stx,double,6*mi[0]**ne);
       MNEW(fn,double,mt**nk);
 
+      /*      if((*iexpl>1)&&(*mortar!=-1)){
+	resultsini(nk,v,ithermal,filab,iperturb,f,fn,
+		   nactdof,&iout,qa,vold,b,nodeboun,ndirboun,
+		   xboun,nboun,ipompc,nodempc,coefmpc,labmpc,nmpc,nmethod,cam,
+		   neq,veold,accold,&bet,&gam,&dtime,mi,vini,nprint,prlab,
+		   &intpointvarm,&calcul_fn,&calcul_f,&calcul_qa,&calcul_cauchy,
+		   &ikin,&intpointvart,typeboun,&num_cpus,mortar,nener);
+		   }else{*/
 	if(ne1d2d==1)NNEW(inum,ITG,*nk);
 	results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,
 		elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
@@ -3130,7 +3133,7 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 		labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
 		&intscheme);
 	if(ne1d2d==1)SFREE(inum);
-	//   }
+	//	   }
 
       /* implicit dynamics (Matteo Pacher) */
 

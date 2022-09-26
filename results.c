@@ -165,7 +165,7 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
   /* 1. nodewise storage of the primary variables
      2. determination which derived variables have to be calculated */
 
-  if((*mortar>1) && (*mortartrafoflag==1)){
+  if((*mortar>1)&&(*mortartrafoflag==1)){
     
     /* fix for trafo U->Uhat for mortar contact */
     

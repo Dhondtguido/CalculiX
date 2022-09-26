@@ -5028,7 +5028,7 @@ Dec 2002        - started to work on single crystal plasticity
  17 July 2022   - worked on the documentation of massless contact
 
  19 July 2022   - changed the logic for energy statistics in dynamic
-                  calculations: no energy statistics are only written if
+                  calculations: energy statistics are only written if
 		  ENER was selected on a *EL PRINT, *EL FILE or *ELEMENT
 		  OUTPUT card.
 
