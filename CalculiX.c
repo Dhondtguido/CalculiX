@@ -154,7 +154,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Mon Sep 26 19:08:15 CEST 2022\n");
+  printf("You are using an executable made on Wed Sep 28 23:14:24 CEST 2022\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -1089,6 +1089,22 @@ int main(int argc,char *argv[])
 	for(i=2*nload1;i<2*nload;i++)iamload[i]=0;
       }
       if(nener==1)RENEW(ener,double,2*mi[0]*ne);
+
+      /* moving the contact state variables forward by (ne-ne0) 
+	 element blocks */
+      
+      if(mortar!=1){
+	RENEW(xstate,double,nstate_*mi[0]*(ne+nslavs));
+	for(i=nstate_*mi[0]*(ne+nslavs)-1;i>=nstate_*mi[0]*ne;i--){
+	  xstate[i]=xstate[i-nstate_*mi[0]*(ne-ne0)];
+	}
+      }else if(mortar==1){
+	RENEW(xstate,double,nstate_*mi[0]*(ne+nintpoint));
+	for(i=nstate_*mi[0]*(ne+nintpoint)-1;i>=nstate_*mi[0]*ne;i--){
+	  xstate[i]=xstate[i-nstate_*mi[0]*(ne-ne0)];
+	}
+      }
+      
       if(norien>0)RENEW(ielorien,ITG,mi[2]*ne);
       RENEW(ielmat,ITG,mi[2]*ne);
       for(i=mi[2]*ne0;i<mi[2]*ne;i++)ielmat[i]=1;
@@ -1766,18 +1782,33 @@ int main(int argc,char *argv[])
     /* removing the advective elements, if any */
 
     if(network>0){
-      ne=ne0;nkon=nkon0;
-      RENEW(ipkon,ITG,ne);
-      RENEW(lakon,char,8*ne);
-      RENEW(kon,ITG,nkon);
-      RENEW(sti,double,6*mi[0]*ne);
-      RENEW(eme,double,6*mi[0]*ne);
-      if(iprestr>0) RENEW(prestr,double,6*mi[0]*ne);
-      if(nprop>0) RENEW(ielprop,ITG,ne);
-      if((ne1d!=0)||(ne2d!=0)) RENEW(offset,double,2*ne);
-      if(nener==1)RENEW(ener,double,2*mi[0]*ne);
-      if(norien>0)RENEW(ielorien,ITG,mi[2]*ne);
-      RENEW(ielmat,ITG,mi[2]*ne);
+      RENEW(ipkon,ITG,ne0);
+      RENEW(lakon,char,8*ne0);
+      RENEW(kon,ITG,nkon0);
+      RENEW(sti,double,6*mi[0]*ne0);
+      RENEW(eme,double,6*mi[0]*ne0);
+      if(iprestr>0) RENEW(prestr,double,6*mi[0]*ne0);
+      if(nprop>0) RENEW(ielprop,ITG,ne0);
+      if((ne1d!=0)||(ne2d!=0)) RENEW(offset,double,2*ne0);
+      if(nener==1)RENEW(ener,double,2*mi[0]*ne0);
+
+      /* moving the contact state variables back by (ne-ne0) 
+	 element blocks */
+      
+      if(mortar!=1){
+	for(i=nstate_*mi[0]*ne0;i<nstate_*mi[0]*(ne0+nslavs);i++){
+	  xstate[i]=xstate[i+nstate_*mi[0]*(ne-ne0)];
+	}
+	RENEW(xstate,double,nstate_*mi[0]*(ne0+nslavs));
+      }else if(mortar==1){
+	for(i=nstate_*mi[0]*ne0;i<nstate_*mi[0]*(ne0+nintpoint);i++){
+	  xstate[i]=xstate[i+nstate_*mi[0]*(ne-ne0)];
+	}
+	RENEW(xstate,double,nstate_*mi[0]*(ne0+nintpoint));
+      }
+
+      if(norien>0)RENEW(ielorien,ITG,mi[2]*ne0);
+      RENEW(ielmat,ITG,mi[2]*ne0);
 
       /* reactivating the original load labels */
 
@@ -1787,6 +1818,7 @@ int main(int argc,char *argv[])
 	  strcpy1(&sideload[20*(iload-1)],"F",1);
 	}
       }
+      ne=ne0;nkon=nkon0;
 
     }
 

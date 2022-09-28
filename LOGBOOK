@@ -5069,3 +5069,7 @@ Dec 2002        - started to work on single crystal plasticity
                 - corrected some errors in matrixstorage.c
 
  25 Sep 2022    - wrote channeljoint.f
+
+ 28 Sep 2022    - made a correction in CalculiX.c for advective elements
+                  in combination with contact (memory shift of the
+		  contact internal variables)
