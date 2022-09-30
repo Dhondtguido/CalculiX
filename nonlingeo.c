@@ -3100,14 +3100,17 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
       NNEW(stx,double,6*mi[0]**ne);
       MNEW(fn,double,mt**nk);
 
-      /*      if((*iexpl>1)&&(*mortar!=-1)){
+      /* for non-massless explicit dynamics without energy
+         calculation only the displacements have to be calculated */
+      
+      if((*iexpl>1)&&(*mortar!=-1)&&(nener==0)){
 	resultsini(nk,v,ithermal,filab,iperturb,f,fn,
 		   nactdof,&iout,qa,vold,b,nodeboun,ndirboun,
 		   xboun,nboun,ipompc,nodempc,coefmpc,labmpc,nmpc,nmethod,cam,
 		   neq,veold,accold,&bet,&gam,&dtime,mi,vini,nprint,prlab,
 		   &intpointvarm,&calcul_fn,&calcul_f,&calcul_qa,&calcul_cauchy,
 		   &ikin,&intpointvart,typeboun,&num_cpus,mortar,nener);
-		   }else{*/
+      }else{
 	if(ne1d2d==1)NNEW(inum,ITG,*nk);
 	results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,
 		elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
@@ -3133,7 +3136,7 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 		labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
 		&intscheme);
 	if(ne1d2d==1)SFREE(inum);
-	//	   }
+      }
 
       /* implicit dynamics (Matteo Pacher) */
 

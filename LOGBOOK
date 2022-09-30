@@ -5073,3 +5073,6 @@ Dec 2002        - started to work on single crystal plasticity
  28 Sep 2022    - made a correction in CalculiX.c for advective elements
                   in combination with contact (memory shift of the
 		  contact internal variables)
+
+ 30 Sep 2022    - accelerated non-massless explicit dynamics without energy
+                  requests
