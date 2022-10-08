@@ -208,17 +208,36 @@ c          tmin=1.d-5
         return
       endif
 !     
-      if(tinc.le.0.d0) then
-        write(*,*)'*ERROR reading *DYNAMIC: initial increment size is ne
-     &gative'
-      endif
       if(tper.le.0.d0) then
         write(*,*) '*ERROR reading *DYNAMIC: step size is negative'
+        ier=1
+        return
       endif
-      if(tinc.gt.tper) then
-        write(*,*)'*ERROR reading *DYNAMIC: initial increment size excee
-     &ds step size'
+!
+      if(idrct.ne.1) then
+        if(tinc.gt.0.d0) then
+          write(*,*) '*WARNING reading *DYNAMIC: the initial time'
+          write(*,*) '         increment defined by the user will not'
+          write(*,*) '         be used since the time increment is'
+          write(*,*) '         determined automatically by the dynamic'
+          write(*,*) '         procedure based on stability'
+          write(*,*) '         considerations'
+        endif
+      else
+        if(tinc.le.0.d0) then
+          write(*,*)'*ERROR reading *DYNAMIC: initial increment size is 
+     &negative'
+          ier=1
+          return
+        endif
+        if(tinc.gt.tper) then
+          write(*,*)'*ERROR reading *DYNAMIC: initial increment size exc
+     &eeds step size'
+          ier=1
+          return
+        endif
       endif
+!      
       if((nef.gt.0).and.(tincf.le.0.d0)) then
         write(*,*) '*WARNING reading *DYNAMIC: initial CFD increment siz
      &e is zero or negative; the default of 0.01 is taken'
@@ -244,6 +263,9 @@ c          tmin=1.d-5
           write(*,*) '         to the maximum value'
           tinc=dabs(tmax)
         endif
+      else
+        tmin=tinc
+        tmax=tinc
       endif
 !     
 !     10 cutbacks allowed for dynamics (because of contact)

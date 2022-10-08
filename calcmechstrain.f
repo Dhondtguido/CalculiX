@@ -28,14 +28,9 @@
       real*8 elineng(6),vkl(0:3,3),vokl(3,3),emec(6),eth(6),
      &     wkl(3,3),wokl(3,3)
 !
-!
-!
-c      write(*,*) 'calcmechstrain',iperturb(1),iperturb(2)
-!
 !     subtracting the thermal stretch from the deformation gradients
 !     at the end of the increment
 !
-c      write(*,*) vkl(1,1),eth(1)
       wkl(1,1)=vkl(1,1)-eth(1)
       wkl(2,2)=vkl(2,2)-eth(2)
       wkl(3,3)=vkl(3,3)-eth(3)

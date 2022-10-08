@@ -57,27 +57,12 @@
       tmax=0.d0
       timereset=.false.
 !
-c      if((iperturb.eq.1).and.(istep.ge.1)) then
-c         write(*,*) '*ERROR reading *STATIC: perturbation analysis is'
-c         write(*,*) '       not provided in a *STATIC step. Perform'
-c         write(*,*) '       a genuine nonlinear geometric calculation'
-c         write(*,*) '       instead (parameter NLGEOM)'
-c         ier=1
-c         return
-c      endif
-!
       if(istep.lt.1) then
          write(*,*) '*ERROR reading *STATIC: *STATIC can only be used'
          write(*,*) '       within a STEP'
          ier=1
          return
       endif
-c!
-c!     no creep allowed in a *STATIC step
-c!
-c      do i=1,nmat
-c         if(nelcon(1,i).eq.-52) nelcon(1,i)=-51
-c      enddo
 !
 !     no heat transfer analysis
 !

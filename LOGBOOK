@@ -5076,3 +5076,5 @@ Dec 2002        - started to work on single crystal plasticity
 
  30 Sep 2022    - accelerated non-massless explicit dynamics without energy
                   requests
+
+ 8 Oct 2022     - made a correction in dynamics.f for DIRECT

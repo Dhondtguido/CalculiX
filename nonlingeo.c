@@ -1052,7 +1052,7 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	*tinc=*tmax*(*tper);}
       else if(dtvol<dtset){
 	*tinc=dtset;}
-      else {
+      else{
 	*tinc=dtvol;
       }
 	  

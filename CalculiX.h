@@ -63,7 +63,7 @@
 /* freeing memory */
 #define SFREE(a) u_free(a,__FILE__,__LINE__,#a)
 
-#ifdef LONGLONG
+#ifdef INTSIZE64
 #define ITG long long
 #define ITGFORMAT "lld"
 #else
