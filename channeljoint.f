@@ -34,7 +34,8 @@
      &     co(3,*),sqrts01,sqrts02,h1,h2,hk,hnsj,rho,xflow,s0,zup,zdo,
      &     g(3),dg
 !
-      nel=0
+c      nel=0
+      nel1=0
 !
 !     loop over all elements to which node nup belongs
 !
@@ -110,7 +111,7 @@
 !
 !       if mass flow in branch is zero: cycle
 !
-        if(v(1,kon(indexe+1)).eq.0.d0) then
+        if(v(1,kon(indexe+2)).eq.0.d0) then
           nelem=nel
           index=inoel(2,index)
           if(index.eq.0) exit

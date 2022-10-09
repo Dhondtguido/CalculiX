@@ -5078,3 +5078,5 @@ Dec 2002        - started to work on single crystal plasticity
                   requests
 
  8 Oct 2022     - made a correction in dynamics.f for DIRECT
+
+ 9 Oct 2022     - worked on channel joints

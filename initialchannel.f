@@ -24,7 +24,7 @@
      &     ielmat,ntmat_,shcon,nshcon,physcon,rhcon,nrhcon,ipobody,
      &     ibody,xbodyact,co,nbody,network,vold,set,istep,iit,mi,
      &     ineighe,ilboun,ttime,time,itreated,iponoel,inoel,istack,
-     &     sfr,hfr,sba,hba,ndata,jumpup,jumpdo)
+     &     sfr,hfr,sba,hba,ndata,jumpup,jumpdo,istackb)
 !
       implicit none
 !
@@ -38,7 +38,8 @@
      &     network,istep,iit,ineighe(*),ilboun(*),i,j,nelem,indexe,
      &     node1,node2,id,itreated(*),id1,id2,nup,index,iponoel(*),
      &     inoel(2,*),nmid,ndo,inv,nelemio,nelup,node,imat,neldo,
-     &     istack(2,*),nstack,nel,ndata,jumpup(*),jumpdo(*)
+     &     istack(2,*),nstack,nel,ndata,jumpup(*),jumpdo(*),
+     &     istackb(2,*),nstackb
 !
       real*8 v(0:mi(2),*),prop(*),xbounact(*),shcon(0:3,ntmat_,*),
      &     physcon(*),rhcon(0:1,ntmat_,*),xbodyact(7,*),co(3,*),
@@ -121,6 +122,7 @@
       dg=dsqrt(g(1)*g(1)+g(2)*g(2)+g(3)*g(3))
 !
       nstack=0
+      nstackb=0
 !
 !     major loop: looking for SLUICE GATE elements
 !
@@ -271,8 +273,10 @@
 !     
                 call materialdata_tg(imat,ntmat_,temp,shcon,nshcon,cp,r,
      &               dvi,rhcon,nrhcon,rho)
-!
-c                call channeljoint()
+!     
+                call channeljoint(nelem,nelup,nup,iponoel,inoel,ielprop,
+     &               prop,ipkon,kon,mi,v,g,dg,nstackb,istackb,rho,xflow,
+     &               co)
 !
 !               if nelem=0 more than one branch has no mass flux
 !

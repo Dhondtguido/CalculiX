@@ -2003,7 +2003,7 @@ void FORTRAN(initialchannel,(ITG *itg,ITG *ieg,ITG *ntg,
 			     double *ttime,double *time,ITG *itreated,
 			     ITG *iponoel,ITG *inoel,ITG *istack,double *sfr,
 			     double *hfr,double *sba,double *hba,ITG *ndata,
-			     ITG *jumpup,ITG *jumpdo));
+			     ITG *jumpup,ITG *jumpdo,ITG *istackb));
 
 void FORTRAN(initialnet,(ITG *itg,ITG *ieg,ITG *ntg,double *ac,double *bc,
                          char *lakon,double *v,ITG * ipkon,ITG *kon,
