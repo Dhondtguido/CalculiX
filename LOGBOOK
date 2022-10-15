@@ -5080,3 +5080,7 @@ Dec 2002        - started to work on single crystal plasticity
  8 Oct 2022     - made a correction in dynamics.f for DIRECT
 
  9 Oct 2022     - worked on channel joints
+
+ 15 Oct 2022    - treated the joint of a frontwater curve channel with
+                  a backwater curve channel
+		  

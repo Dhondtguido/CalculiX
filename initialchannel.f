@@ -124,65 +124,84 @@
       nstack=0
       nstackb=0
 !
-!     major loop: looking for SLUICE GATE elements
+!     major loop: looking for SLUICE GATE and WEAR elements
 !
       loop1: do i=1,nflow
         nelem=ieg(i)
         if(((lakon(nelem)(6:7).ne.'SG').and.
      &     (lakon(nelem)(6:7).ne.'WE')).or.
-     &       (itreated(i).eq.1)) cycle
+     &       (itreated(i).eq.1)) then
+          if(i.lt.nflow) then
+            cycle
+!
+!         if no more branches starting with a SLUICE GATE or WEAR
+!         element: look for non-treated backwater curves starting
+!         upstream of joints
+!
+          elseif(nstackb.gt.0) then
+            neldo=istackb(1,nstackb)
+            ndo=istackb(2,nstackb)
+            nstackb=nstackb-1
+            nelem=0
+            xflow=dabs(v(1,kon(ipkon(neldo)+2)))
+            mode='B'
+          else
+            exit
+          endif
+        else
 !
 !       untreated SLUICE GATE or WEAR element found
 !
-        indexe=ipkon(nelem)
-        node1=kon(indexe+1)
-        call nident(itg,node1,ntg,id1)
-        node2=kon(indexe+3)
-        call nident(itg,node2,ntg,id2)
+          indexe=ipkon(nelem)
+          node1=kon(indexe+1)
+          call nident(itg,node1,ntg,id1)
+          node2=kon(indexe+3)
+          call nident(itg,node2,ntg,id2)
 !
-!       the SLUICE GATE or WEAR element should be connected on one side to
-!       a CHANNEL INOUT element (as only element)
+!         the SLUICE GATE or WEAR element should be connected on one side to
+!         a CHANNEL INOUT element (as only element)
 !
-        if((ineighe(id1).gt.1).and.(ineighe(id2).gt.1)) cycle
+          if((ineighe(id1).gt.1).and.(ineighe(id2).gt.1)) cycle
 !
-!       new branch found
+!         new branch found
 !
-!       determine the upstream node nup of the element
+!         determine the upstream node nup of the element
 !
-        if(ineighe(id1).eq.1) then
-          nup=node1
-          inv=1
-        else
-          nup=node2
-          inv=-1
-        endif
-!
-!       determine the upstream element nelup
-!
-        index=iponoel(nup)
-        do
-          if(index.eq.0) then
-            write(*,*) '*ERROR: node',nup
-            write(*,*) '        is only connected to one element'
-            write(*,*) '        with number',nelem
-            write(*,*)
-            call exit(201)
-          endif
-          if(inoel(1,index).ne.nelem) then
-            nelup=inoel(1,index)
-            exit
+          if(ineighe(id1).eq.1) then
+            nup=node1
+            inv=1
           else
-            index=inoel(2,index)
+            nup=node2
+            inv=-1
           endif
-        enddo
 !
-!       define mode to be "forward"
+!         determine the upstream element nelup
 !
-        mode='F'
+          index=iponoel(nup)
+          do
+            if(index.eq.0) then
+              write(*,*) '*ERROR: node',nup
+              write(*,*) '        is only connected to one element'
+              write(*,*) '        with number',nelem
+              write(*,*)
+              call exit(201)
+            endif
+            if(inoel(1,index).ne.nelem) then
+              nelup=inoel(1,index)
+              exit
+            else
+              index=inoel(2,index)
+            endif
+          enddo
 !
-!       mass flow is taken from the IO element upstream of the sluice gate
+!         define mode to be "forward"
 !
-        xflow=dabs(v(1,kon(ipkon(nelup)+2)))
+          mode='F'
+!
+!         mass flow is taken from the IO element upstream of the sluice gate
+!
+          xflow=dabs(v(1,kon(ipkon(nelup)+2)))
+        endif
 !
 !       loop over all elements in present branch
 !

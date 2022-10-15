@@ -301,7 +301,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
     printf("software, and you are welcome to redistribute it under\n");
     printf("certain conditions, see gpl.htm\n\n");
     printf("************************************************************\n\n");
-    printf("You are using an executable made on Sun Oct  9 18:40:32 CEST 2022\n");
+    printf("You are using an executable made on Sat Oct 15 14:11:15 CEST 2022\n");
     fflush(stdout);
 
     NNEW(ipoinp,ITG,2*nentries);
