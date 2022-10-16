@@ -433,7 +433,7 @@ c         enddo
                   filab(8)(7:87)=noset
                endif
             elseif(textpart(ii)(1:4).eq.'HFL ') then
-               if((ithermal(1).le.1).and.(nmethod.le.7)) then
+               if(ithermal(1).le.1) then
                   write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: HFL only makes '
                   write(*,*) '         sense for heat transfer '
@@ -635,9 +635,16 @@ c         enddo
                filab(32)(6:6)=elemsys
                filab(32)(7:87)=noset
             elseif(textpart(ii)(1:3).eq.'HER') then
-               filab(33)(1:4)='HER '
-               filab(33)(6:6)=elemsys
-               filab(33)(7:87)=noset
+               if(ithermal(1).le.1) then
+                  write(*,*) 
+     &'*WARNING reading *NODE/EL/CONTACT FILE: HER only makes '
+                  write(*,*) '         sense for heat transfer '
+                  write(*,*) '          calculations'
+               else
+                 filab(33)(1:4)='HER '
+                 filab(33)(6:6)=elemsys
+                 filab(33)(7:87)=noset
+               endif
             elseif(textpart(ii)(1:4).eq.'VF  ') then
                if(nef.eq.0) then
                   write(*,*) 

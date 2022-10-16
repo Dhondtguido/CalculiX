@@ -293,9 +293,9 @@
                 call materialdata_tg(imat,ntmat_,temp,shcon,nshcon,cp,r,
      &               dvi,rhcon,nrhcon,rho)
 !     
-                call channeljoint(nelem,nelup,nup,iponoel,inoel,ielprop,
-     &               prop,ipkon,kon,mi,v,g,dg,nstackb,istackb,rho,xflow,
-     &               co)
+                call channeljointfront(nelem,nelup,nup,iponoel,inoel,
+     &               ielprop,prop,ipkon,kon,mi,v,g,dg,nstackb,istackb,
+     &               rho,xflow,co)
 !
 !               if nelem=0 more than one branch has no mass flux
 !

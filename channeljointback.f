@@ -20,7 +20,7 @@
 !     in channels with a non-erosive bottom
 !     
       subroutine channeljointback(neldo,ndo,iponoel,inoel,ipkon,kon,
-     &     mi,v,istackb,nstackb,co,ielprop,prop,g,dg)
+     &     mi,v,istackb,nstackb,co,ielprop,prop,g,dg,xflow,rho)
 !
 !     treats a channel joint for a backwater calculation
 !
@@ -30,18 +30,13 @@
 !
       integer nel1,nel2,nup1,nup2,iponoel(*),inoel(2,*),ipkon(*),kon(*),
      &     index,inv,mi(*),i,istackb(2,*),nstackb,nel1sav,nup1sav,
-     &     ndoo,indexp,ielprop(*)
+     &     ndoo,indexp,ielprop(*),niter,neldo,ndo
 !
-      real*8 v(0:mi(2),*),xflow1,xflow2,xflow1sav,vec(3),vec1(3),
-     &     vec2(3),co(3,*),dd,alpha1,alpha2,pi,prop(*),g(3),dg
-!
-c      integer nelem,iponoel(*),inoel(2,*),nelup,nup,index,ielprop(*),
-c     &     indexp,indexe,ipkon(*),kon(*),nup1,nup2,mi(*),nel1,nel,
-c     &     nstackb,istackb(2,*)
-c!
-c      real*8 xflow1,xflow2,v(0:mi(2),*),prop(*),b1,b2,theta1,theta2,dl,
-c     &     co(3,*),sqrts01,sqrts02,h1,h2,hk,hnsj,rho,xflow,s0,zup,zdo,
-c     &     g(3),dg
+      real*8 v(0:mi(2),*),xflow1,xflow2,xflow1sav,vec(3),vec1(3),dl,dl1,
+     &     vec2(3),co(3,*),alpha1,alpha2,pi,prop(*),g(3),dg,h,u,dl2,
+     &     up2,area,u1,u1p2,area1,u2,u2p2,area2,h1new,h2new,theta,h1,h2,
+     &     theta1,theta2,xflow,zdo,zup,sqrts0,sqrts01,sqrts02,s0,rho,b,
+     &     b1,b2
 !
       nel1=0
       nel2=0
@@ -100,7 +95,7 @@ c     &     g(3),dg
           nup1=nup2
           xflow1=xflow2
 !
-          nel2=ne1sav
+          nel2=nel1sav
           nup2=nup1sav
           xflow2=xflow1sav
 !
@@ -310,7 +305,65 @@ c     &     g(3),dg
 !
       alpha1=1.d0*alpha1/pi
       alpha2=1.d0*alpha2/pi
-
+!
+!     depth in ndo and velocity in neldo
+!
+      h=v(2,ndo)/sqrts0
+      area=h*(b+h*dtan(theta))
+      u=xflow/(rho*area)
+      up2=u*u
+!
+!     initial guess for u1^2 and u2^2
+!
+      u1p2=up2*xflow1/xflow
+      u2p2=up2*xflow2/xflow
+!
+!     calculation of h1 and h2 from the energy equation
+!
+      h1=h+(up2+alpha1*dabs(u1p2-up2)-u1p2)/(2.d0*dg)
+      h2=h+(up2+alpha2*dabs(u2p2-up2)-u2p2)/(2.d0*dg)
+!
+      niter=0
+!
+!     iterative loop to find h1 and h2
+!
+      do
+        area1=h1*(b1+h1*dtan(theta1))
+        u1=xflow1/(rho*area1)
+        u1p2=u1*u1
+!        
+        area2=h2*(b2+h2*dtan(theta2))
+        u2=xflow2/(rho*area2)
+        u2p2=u2*u2
+!
+        h1new=h+(up2+alpha1*dabs(u1p2-up2)-u1p2)/(2.d0*dg)
+        h2new=h+(up2+alpha2*dabs(u2p2-up2)-u2p2)/(2.d0*dg)
+!
+!       convergence check
+!
+        if(((dabs(h1-h1new).lt.1.d-3).or.(dabs(h1-h1new).lt.1.d-3*h1))
+     &       .and.
+     &     ((dabs(h2-h2new).lt.1.d-3).or.(dabs(h2-h2new).lt.1.d-3*h2)))
+     &       exit
+!
+        h1=h1new
+        h2=h2new
+        niter=niter+1
+        if(niter.gt.100) then
+          write(*,*) '*ERROR in channeljointback; more than 100'
+          write(*,*) '       iterations: stop'
+          call exit(201)
+        endif
+      enddo
+!
+      v(2,nup1)=h1*sqrts01
+      v(2,nup2)=h2*sqrts02
+      neldo=nel2
+      ndo=nup2
+!
+      return
+      end
+      
 
         
           

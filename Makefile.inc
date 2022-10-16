@@ -124,7 +124,8 @@ changematerials.f \
 changeplastics.f \
 changesolidsections.f \
 changesurfacebehaviors.f \
-channeljoint.f \
+channeljointback.f \
+channeljointfront.f \
 characteristic.f \
 characteristiclength.f \
 checkconstraint.f \

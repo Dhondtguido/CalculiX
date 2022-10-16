@@ -154,7 +154,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Sat Oct 15 14:11:15 CEST 2022\n");
+  printf("You are using an executable made on Sun Oct 16 22:25:16 CEST 2022\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -1202,13 +1202,13 @@ int main(int argc,char *argv[])
     SFREE(ipointer);SFREE(mast1);
     if((icascade==0)&&(nmethod<8))RENEW(irow,ITG,nzs[2]);
 
-    /* nmethod=1: static analysis   */
-    /* nmethod=2: frequency analysis  */
-    /* nmethod=3: buckling analysis */
-    /* nmethod=4: (linear or nonlinear) dynamic analysis */
-    /* nmethod=5: steady state dynamics analysis */
-    /* nmethod=6: Coriolis frequency calculation */
-    /* nmethod=7: flutter frequency calculation */
+    /* nmethod=1:  static analysis   */
+    /* nmethod=2:  frequency analysis  */
+    /* nmethod=3:  buckling analysis */
+    /* nmethod=4:  (linear or nonlinear) dynamic analysis */
+    /* nmethod=5:  steady state dynamics analysis */
+    /* nmethod=6:  Coriolis frequency calculation */
+    /* nmethod=7:  flutter frequency calculation */
     /* nmethod=8:  magnetostatics */
     /* nmethod=9:  magnetodynamics */
     /* nmethod=10: electromagnetic eigenvalue problems */
