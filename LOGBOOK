@@ -5085,3 +5085,6 @@ Dec 2002        - started to work on single crystal plasticity
                   a backwater curve channel
 		  
  16 Oct 2022    - worked on a joint of two backwater curve channels
+
+ 18 Oct 2022    - implemented the massless method for linear applications
+                  (no update of stiffness matrix)

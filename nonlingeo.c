@@ -94,7 +94,7 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     *sideloadf=NULL; 
  
   ITG *inum=NULL,k,l,iout=0,icntrl,iinc=0,jprint=0,iit=-1,jnz=0,
-    icutb=0,istab=0,uncoupled,n1,n2,itruecontact,
+    icutb=0,istab=0,uncoupled,n1,n2,itruecontact,iclean=0,
     iperturb_sav[2],ilin,*icol=NULL,*irow=NULL,ielas=0,icmd=0,
     memmpc_,mpcfree,icascade,maxlenmpc,*nodempc=NULL,*iaux=NULL,
     *nodempcref=NULL,memmpcref_,mpcfreeref,*itg=NULL,*ineighe=NULL,
@@ -136,7 +136,7 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     *iamloadf=NULL,*inotrf=NULL,*jqtherm=NULL,*jqw=NULL,*iroww=NULL,nzsw,
     *kslav=NULL,*lslav=NULL,*ktot=NULL,*ltot=NULL,nmasts,neqtot,
     intpointvarm,calcul_fn,calcul_f,calcul_qa,calcul_cauchy,ikin,
-    intpointvart;
+    intpointvart,*jqbi=NULL,*irowbi=NULL,*jqib=NULL,*irowib=NULL;
 
   double *stn=NULL,*v=NULL,*een=NULL,cam[5],*epn=NULL,*cg=NULL,
     *cdn=NULL,*pslavsurfold=NULL,
@@ -173,7 +173,7 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     *smscale=NULL,dtset,energym=0.,energymold=0.,*voldf=NULL,
     *coefmpcf=NULL,*xbounf=NULL,*xloadf=NULL,*xbounoldf=NULL,
     *xbounactf=NULL,*xloadoldf=NULL,*xloadactf=NULL,*auw=NULL,*volddof=NULL,
-    *qb=NULL,*aloc=NULL,dtmin,*fric=NULL;
+    *qb=NULL,*aloc=NULL,dtmin,*fric=NULL,*aubi=NULL,*auib=NULL;
 	 
   FILE *f1;
 
@@ -2448,8 +2448,13 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 				 &time,ttime,matname,istep,&iinc));
 	SFREE(idefload);SFREE(stx);
       }
+
+      /* calculate the stiffness matrix for:
+         - implicit calculations
+         - linear massless explicit calculations in the first increment
+         - nonlinear massless explicit calculations */
       
-      if((*iexpl<=1)||(*mortar==-1)){
+      if((*iexpl<=1)||((*mortar==-1)&&((iperturb[0]!=0)||(iinc==1)))){
 
 	/* calculating the local stiffness matrix and external loading */
 
@@ -2600,8 +2605,9 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 		 jq,irow,neq,nzs,auw,jqw,iroww,&nzsw,
 		 islavnode,nslavnode,nslavs,imastnode,nmastnode,ntie,nactdof,
 		 mi,vold,volddof,veold,nk,fext,isolver,iperturb,co,springarea,
-		 &neqtot,qb,b,&dtime,aloc,fric,iexpl,nener,ener,ne);
-        SFREE(ad);SFREE(au); 
+		 &neqtot,qb,b,&dtime,aloc,fric,iexpl,nener,ener,ne,&jqbi,
+		 &aubi,&irowbi,&jqib,&auib,&irowib,&iclean,&iinc);
+        if(iperturb[0]!=0){SFREE(ad);SFREE(au);} 
       }
 	
 
@@ -4171,6 +4177,10 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     if(*mortar==-1){
       SFREE(kslav);SFREE(lslav);SFREE(ktot);SFREE(ltot);SFREE(aloc);
       SFREE(adc);SFREE(auc);SFREE(areaslav);SFREE(fric);
+      if(iperturb[0]==0){
+	SFREE(ad);SFREE(au);SFREE(jqbi);SFREE(aubi);SFREE(irowbi);
+	SFREE(jqib);SFREE(auib);SFREE(irowib);
+      }
     }else if(*mortar==0){
       SFREE(areaslav);
     }else if(*mortar==1){

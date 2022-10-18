@@ -45,7 +45,9 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
 	      double *fext,ITG *isolver,ITG *iperturb,double *co,
 	      double *springarea,ITG *neqtot,double *qb,
 	      double *b,double *dtime,double *aloc,double *fric,ITG *iexpl,
-	      ITG *nener,double *ener,ITG *ne){
+	      ITG *nener,double *ener,ITG *ne,ITG **jqbip,double **aubip,
+	      ITG **irowbip,ITG **jqibp,double **auibp,ITG **irowibp,
+	      ITG *iclean,ITG *iinc){
 
   /* determining the RHS of the global system for massless contact */
 
@@ -60,6 +62,28 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
     *al=NULL,*alnew=NULL,*eps_al=NULL,*rhs=NULL,*aubi=NULL,
     *auib=NULL,omega,*alocold=NULL,*ddisp=NULL;
 
+  jqbi=*jqbip;aubi=*aubip;irowbi=*irowbip;jqib=*jqibp;auib=*auibp;
+  irowib=*irowibp;
+
+  /* clearing memory for the equation solver at the end of the step*/
+
+  if(*iclean==1){
+    if(*isolver==0){
+#ifdef SPOOLES
+      spooles_cleanup_rad();
+#endif
+    }else if(*isolver==7){
+#ifdef PARDISO
+      pardiso_cleanup_cp(neqtot,&symmetryflag,&inputformat);
+#endif
+    }else if(*isolver==8){
+#ifdef PASTIX
+      pastix_solve_cp(qb,neqtot,&symmetryflag,&nrhs);
+#endif
+    }
+    return;
+  }
+  
   /* expanding the matrix Wb according to the number of degrees
      of freedom */
 
@@ -80,32 +104,36 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
 
   SFREE(jqwnew);SFREE(auwnew);SFREE(irowwnew);
 
-  /* extracting Kbb,Kbi,Kib,Kii from the stiffness matrix */
+  /* extracting Kbb,Kbi,Kib,Kii from the stiffness matrix;
+     only for a nonlinear calculation or the first increment
+     of a linear calculation */
 
-  NNEW(jqbb,ITG,*neqtot+1);
-  NNEW(aubb,double,nzs[0]);
-  NNEW(adbb,double,*neqtot);
-  NNEW(irowbb,ITG,nzs[0]);
-  NNEW(icolbb,ITG,*neqtot);
+  if((iperturb[0]!=0)||(*iinc==1)){
+    NNEW(jqbb,ITG,*neqtot+1);
+    NNEW(aubb,double,nzs[0]);
+    NNEW(adbb,double,*neqtot);
+    NNEW(irowbb,ITG,nzs[0]);
+    NNEW(icolbb,ITG,*neqtot);
 
-  NNEW(jqbi,ITG,neq[0]+1);
-  NNEW(aubi,double,nzs[0]);
-  NNEW(irowbi,ITG,nzs[0]);
+    NNEW(jqbi,ITG,neq[0]+1);
+    NNEW(aubi,double,nzs[0]);
+    NNEW(irowbi,ITG,nzs[0]);
 
-  NNEW(jqib,ITG,*neqtot+1);
-  NNEW(auib,double,nzs[0]);
-  NNEW(irowib,ITG,nzs[0]);
+    NNEW(jqib,ITG,*neqtot+1);
+    NNEW(auib,double,nzs[0]);
+    NNEW(irowib,ITG,nzs[0]);
 
-  FORTRAN(extract_matrices,(au,ad,jq,irow,neq,aubb,adbb,jqbb,irowbb,neqtot,
-			    &nzsbb,aubi,jqbi,irowbi,&nzsbi,auib,jqib,irowib,
-			    &nzsib,ktot,icolbb));
+    FORTRAN(extract_matrices,(au,ad,jq,irow,neq,aubb,adbb,jqbb,irowbb,neqtot,
+			      &nzsbb,aubi,jqbi,irowbi,&nzsbi,auib,jqib,irowib,
+			      &nzsib,ktot,icolbb));
 
-  RENEW(aubb,double,nzsbb);
-  RENEW(irowbb,ITG,nzsbb);
-  RENEW(aubi,double,nzsbi);
-  RENEW(irowbi,ITG,nzsbi);
-  RENEW(auib,double,nzsib);
-  RENEW(irowib,ITG,nzsib);
+    RENEW(aubb,double,nzsbb);
+    RENEW(irowbb,ITG,nzsbb);
+    RENEW(aubi,double,nzsbi);
+    RENEW(irowbi,ITG,nzsbi);
+    RENEW(auib,double,nzsib);
+    RENEW(irowib,ITG,nzsib);
+  }
 
   /* calculate the residual force in the contact area and store in gapdisp */
   
@@ -115,42 +143,57 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
   FORTRAN(resforccont,(vold,nk,mi,aubi,irowbi,jqbi,neqtot,ktot,fext,gapdisp,
 		       auib,irowib,jqib,nactdof,volddof,neq,qi_kbi));
 
-  /* factorize Kbb and premultiply gapdisp with Kbb^{-1} */
+  /* factorize Kbb and delete Kbb afterwards;
+     only for a nonlinear calculation or the first increment
+     of a linear calculation */
+
+  if((iperturb[0]!=0)||(*iinc==1)){
+    if(*isolver==0){
+#ifdef SPOOLES
+      spooles_factor_rad(adbb,aubb,adbbb,aubbb,&sigma,icolbb,irowbb,
+			 neqtot,&nzsbb,&symmetryflag,&inputformat,iexpl);
+#else
+      printf(" *ERROR in massless: the SPOOLES library is not linked\n\n");
+      FORTRAN(stop,());
+#endif
+    }else if(*isolver==7){
+#ifdef PARDISO
+      pardiso_factor_cp(adbb,aubb,adbbb,aubbb,&sigma,icolbb,
+			irowbb,neqtot,&nzsbb,&symmetryflag,&inputformat,jqbb,
+			&nzsbb,iexpl);
+#else
+      printf(" *ERROR in massless: the PARDISO library is not linked\n\n");
+      FORTRAN(stop,());
+#endif
+    }else if(*isolver==8){
+#ifdef PASTIX
+      ITG inputformat=1;
+      pastix_factor_main_cp(adbb,aubb,adbbb,aubbb,&sigma,icolbb,
+			    irowbb,neqtot,&nzsbb,&symmetryflag,&inputformat,
+			    jqbb,&nzsbb);
+#else
+      printf(" *ERROR in massless: the PASTIX library is not linked\n\n");
+      FORTRAN(stop,());
+#endif
+    }
+    SFREE(aubb);SFREE(adbb);SFREE(irowbb);SFREE(icolbb);SFREE(jqbb);
+  }
+
+  /* premultiply gapdisp with Kbb^{-1} */
 
   if(*isolver==0){
 #ifdef SPOOLES
-    spooles_factor_rad(adbb,aubb,adbbb,aubbb,&sigma,icolbb,irowbb,
-		       neqtot,&nzsbb,&symmetryflag,&inputformat,iexpl);
-
     spooles_solve_rad(gapdisp,neqtot);
-#else
-    printf(" *ERROR in massless: the SPOOLES library is not linked\n\n");
-    FORTRAN(stop,());
 #endif
   }else if(*isolver==7){
 #ifdef PARDISO
-    pardiso_factor_cp(adbb,aubb,adbbb,aubbb,&sigma,icolbb,
-		      irowbb,neqtot,&nzsbb,&symmetryflag,&inputformat,jqbb,
-		      &nzsbb,iexpl);
     pardiso_solve_cp(gapdisp,neqtot,&symmetryflag,&inputformat,&nrhs);
-#else
-    printf(" *ERROR in massless: the PARDISO library is not linked\n\n");
-    FORTRAN(stop,());
 #endif
   }else if(*isolver==8){
 #ifdef PASTIX
-    ITG inputformat=1;
-    pastix_factor_main_cp(adbb,aubb,adbbb,aubbb,&sigma,icolbb,
-			  irowbb,neqtot,&nzsbb,&symmetryflag,&inputformat,jqbb,
-			  &nzsbb);
     pastix_solve_cp(gapdisp,neqtot,&symmetryflag,&nrhs);
-    
-#else
-    printf(" *ERROR in massless: the PASTIX library is not linked\n\n");
-    FORTRAN(stop,());
 #endif
   }
-  SFREE(aubb);SFREE(adbb);SFREE(irowbb);SFREE(icolbb);SFREE(jqbb);
 
   NNEW(gapnorm,double,*nslavs);
   NNEW(iacti,ITG,*neqtot);
@@ -289,10 +332,11 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
     SFREE(eps_al);
     SFREE(gmatrix);
     SFREE(cvec);
-
+    
   }else{
     NNEW(alglob,double,*neqtot);
   }
+
   SFREE(gapdisp); // TODO CMT move this freeing, we need it still
   SFREE(gapnorm);
   
@@ -369,9 +413,13 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
   FORTRAN(mulmatvec_asym,(auib,jqib,irowib,neqtot,qb,rhs,&itranspose));
   itranspose=1;
   FORTRAN(mulmatvec_asym,(aubi,jqbi,irowbi,&neq[0],qb,rhs,&itranspose));
-  
-  SFREE(jqbi);SFREE(aubi);SFREE(irowbi);SFREE(jqib);SFREE(auib);SFREE(irowib);
 
+  /* deleting the matrices Kbi and Kib only in the nonlinear case */
+  
+  if(iperturb[0]!=0){
+    SFREE(jqbi);SFREE(aubi);SFREE(irowbi);SFREE(jqib);SFREE(auib);SFREE(irowib);
+  }
+    
   /* calculate (Mii/Delta_t-Dii/2)*u_i^{k-1/2} */
 
   /* switch for the velocity from a nodal to a dof representation */
@@ -391,21 +439,27 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
   SFREE(rhs);
   SFREE(veolddof);
 
-  /* clearing memory for the equation solver */
-  
-  if(*isolver==0){
+  /* clearing memory for the equation solver;
+     only in the nonlinear case */
+
+  if(iperturb[0]!=0){
+    if(*isolver==0){
 #ifdef SPOOLES
-    spooles_cleanup_rad();
+      spooles_cleanup_rad();
 #endif
-  }else if(*isolver==7){
+    }else if(*isolver==7){
 #ifdef PARDISO
-    pardiso_cleanup_cp(neqtot,&symmetryflag,&inputformat);
+      pardiso_cleanup_cp(neqtot,&symmetryflag,&inputformat);
 #endif
-  }else if(*isolver==8){
+    }else if(*isolver==8){
 #ifdef PASTIX
-    pastix_solve_cp(qb,neqtot,&symmetryflag,&nrhs);
+      pastix_solve_cp(qb,neqtot,&symmetryflag,&nrhs);
 #endif
+    }
   }
+
+  *jqbip=jqbi;*aubip=aubi;*irowbip=irowbi;*jqibp=jqib;*auibp=auib;
+  *irowibp=irowib;
 
   return;
 }
