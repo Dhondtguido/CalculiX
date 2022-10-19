@@ -5088,3 +5088,5 @@ Dec 2002        - started to work on single crystal plasticity
 
  18 Oct 2022    - implemented the massless method for linear applications
                   (no update of stiffness matrix)
+
+ 19 Oct 2022    - linear massless explicit dynamics seems to work

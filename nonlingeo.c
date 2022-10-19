@@ -100,7 +100,7 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     *nodempcref=NULL,memmpcref_,mpcfreeref,*itg=NULL,*ineighe=NULL,
     *ieg=NULL,ntg=0,ntr,*kontri=NULL,*nloadtr=NULL,idamping=0,
     *ipiv=NULL,ntri,newstep,mode=-1,noddiam=-1,nasym=0,im,
-    ntrit,*inocs=NULL,*nacteq=NULL,*ipface=NULL,
+    ntrit,*inocs=NULL,*nacteq=NULL,*ipface=NULL,masslesslinear=0,
     *nactdog=NULL,nteq,*itietri=NULL,*koncont=NULL,istrainfree=0,
     ncont,ne0,nkon0,*ipkon=NULL,*kon=NULL,*ielorien=NULL,
     *ielmat=NULL,itp=0,symmetryflag=0,inputformat=0,kscale=1,
@@ -1230,6 +1230,10 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
       // Storing contact force vector initial solution
 
       NNEW(aloc,double,3**nslavs);
+
+      /* no nlgeom and no nonlinear material for massless explicit dynamics */
+      
+      if((iperturb[0]<3)&&(iperturb[1]==0)) masslesslinear=1;
       
     } //endif massless
       
@@ -2454,10 +2458,12 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
          - linear massless explicit calculations in the first increment
          - nonlinear massless explicit calculations */
       
-      if((*iexpl<=1)||((*mortar==-1)&&((iperturb[0]!=0)||(iinc==1)))){
+      if((*iexpl<=1)||((*mortar==-1)&&((masslesslinear==0)||(iinc==1)))){
 
 	/* calculating the local stiffness matrix and external loading */
 
+	printf("stiffness matrix\n");
+	
 	NNEW(ad,double,neq[1]);
 	NNEW(au,double,nzs[1]);
 
@@ -2601,13 +2607,13 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
       }else{
 	NNEW(volddof,double,neq[0]);
 	NNEW(qb,double,neqtot);
-        massless(kslav,lslav,ktot,ltot,au,ad,auc,adc,
-		 jq,irow,neq,nzs,auw,jqw,iroww,&nzsw,
-		 islavnode,nslavnode,nslavs,imastnode,nmastnode,ntie,nactdof,
-		 mi,vold,volddof,veold,nk,fext,isolver,iperturb,co,springarea,
-		 &neqtot,qb,b,&dtime,aloc,fric,iexpl,nener,ener,ne,&jqbi,
-		 &aubi,&irowbi,&jqib,&auib,&irowib,&iclean,&iinc);
-        if(iperturb[0]!=0){SFREE(ad);SFREE(au);} 
+        massless(kslav,lslav,ktot,ltot,au,ad,auc,adc,jq,irow,neq,nzs,auw,jqw,
+		 iroww,&nzsw,islavnode,nslavnode,nslavs,imastnode,nmastnode,
+		 ntie,nactdof,mi,vold,volddof,veold,nk,fext,isolver,
+		 &masslesslinear,co,springarea,&neqtot,qb,b,&dtime,aloc,fric,
+		 iexpl,nener,ener,ne,&jqbi,&aubi,&irowbi,&jqib,&auib,&irowib,
+		 &iclean,&iinc);
+        if(masslesslinear==0){SFREE(ad);SFREE(au);} 
       }
 	
 
@@ -4177,9 +4183,44 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     if(*mortar==-1){
       SFREE(kslav);SFREE(lslav);SFREE(ktot);SFREE(ltot);SFREE(aloc);
       SFREE(adc);SFREE(auc);SFREE(areaslav);SFREE(fric);
-      if(iperturb[0]==0){
+      if(masslesslinear==1){
 	SFREE(ad);SFREE(au);SFREE(jqbi);SFREE(aubi);SFREE(irowbi);
 	SFREE(jqib);SFREE(auib);SFREE(irowib);
+	iclean=1;
+        massless(kslav,lslav,ktot,ltot,au,ad,auc,adc,jq,irow,neq,nzs,auw,jqw,
+		 iroww,&nzsw,islavnode,nslavnode,nslavs,imastnode,nmastnode,
+		 ntie,nactdof,mi,vold,volddof,veold,nk,fext,isolver,
+		 &masslesslinear,co,springarea,&neqtot,qb,b,&dtime,aloc,fric,
+		 iexpl,nener,ener,ne,&jqbi,&aubi,&irowbi,&jqib,&auib,&irowib,
+		 &iclean,&iinc);
+      }
+
+      /* deallocate memory for solving the global system for
+         massless explicit dynamics */
+      
+      if(*isolver==0){
+#ifdef SPOOLES
+	spooles_cleanup();
+#endif
+      }
+      else if(*isolver==4){
+#ifdef SGI
+	sgi_cleanup(token);
+#endif
+      }
+      else if(*isolver==5){
+#ifdef TAUCS
+	tau_cleanup();
+#endif
+      }
+      else if(*isolver==7){
+#ifdef PARDISO
+	pardiso_cleanup(&neq[0],&symmetryflag,&inputformat);
+#endif
+      }
+      else if(*isolver==8){
+#ifdef PASTIX
+#endif
       }
     }else if(*mortar==0){
       SFREE(areaslav);

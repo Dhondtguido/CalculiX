@@ -82,9 +82,6 @@
                noset(81:81)=' '
                ipos=index(noset,' ')
                noset(ipos:ipos)='N'
-c               do j=1,nset
-c                  if(set(j).eq.noset) exit
-c               enddo
                call cident81(set,noset,nset,id)
                j=nset+1
                if(id.gt.0) then

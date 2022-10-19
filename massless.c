@@ -42,7 +42,7 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
 	      ITG *jqw,ITG *iroww,ITG *nzsw,ITG *islavnode,ITG *nslavnode,
 	      ITG *nslavs,ITG *imastnode,ITG *nmastnode,ITG *ntie,ITG *nactdof,
 	      ITG *mi,double *vold,double *volddof, double *veold,ITG *nk,
-	      double *fext,ITG *isolver,ITG *iperturb,double *co,
+	      double *fext,ITG *isolver,ITG *masslesslinear,double *co,
 	      double *springarea,ITG *neqtot,double *qb,
 	      double *b,double *dtime,double *aloc,double *fric,ITG *iexpl,
 	      ITG *nener,double *ener,ITG *ne,ITG **jqbip,double **aubip,
@@ -108,7 +108,7 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
      only for a nonlinear calculation or the first increment
      of a linear calculation */
 
-  if((iperturb[0]!=0)||(*iinc==1)){
+  if((*masslesslinear==0)||(*iinc==1)){
     NNEW(jqbb,ITG,*neqtot+1);
     NNEW(aubb,double,nzs[0]);
     NNEW(adbb,double,*neqtot);
@@ -147,7 +147,7 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
      only for a nonlinear calculation or the first increment
      of a linear calculation */
 
-  if((iperturb[0]!=0)||(*iinc==1)){
+  if((*masslesslinear==0)||(*iinc==1)){
     if(*isolver==0){
 #ifdef SPOOLES
       spooles_factor_rad(adbb,aubb,adbbb,aubbb,&sigma,icolbb,irowbb,
@@ -416,7 +416,7 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
 
   /* deleting the matrices Kbi and Kib only in the nonlinear case */
   
-  if(iperturb[0]!=0){
+  if(*masslesslinear==0){
     SFREE(jqbi);SFREE(aubi);SFREE(irowbi);SFREE(jqib);SFREE(auib);SFREE(irowib);
   }
     
@@ -442,7 +442,7 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
   /* clearing memory for the equation solver;
      only in the nonlinear case */
 
-  if(iperturb[0]!=0){
+  if(*masslesslinear==0){
     if(*isolver==0){
 #ifdef SPOOLES
       spooles_cleanup_rad();
