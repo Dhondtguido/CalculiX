@@ -280,7 +280,7 @@
                   if(index.eq.0) exit
                 enddo
 !
-!               branch splits into two
+!               joint of three channels
 !
               elseif(ineighe(id).eq.3) then
 !     
@@ -303,10 +303,11 @@
                   cycle loop1
                 endif
 !
-!               branch splits into more than two
+!               joint of more than three channels
 !
               elseif(ineighe(id).gt.3) then
-                write(*,*) '*ERROR in initialchannel: branch split'
+                write(*,*) '*ERROR in initialchannel: branch joint'
+                write(*,*) '       of more than 3 channels'
                 write(*,*)
                 call exit(201)
               endif
@@ -368,8 +369,29 @@
                   write(*,*) '*INFO: branch finished'
                   cycle loop1
                 endif
-              elseif(ineighe(id).gt.2) then
-                write(*,*) '*ERROR in initialchannel: branch split'
+!
+!               joint of three channels
+!
+              elseif(ineighe(id).eq.3) then
+!     
+!               taking the temperature of the downstream node for the
+!               material properties
+!     
+                temp=v(0,ndo)
+                imat=ielmat(1,neldo)
+!     
+                call materialdata_tg(imat,ntmat_,temp,shcon,nshcon,cp,r,
+     &               dvi,rhcon,nrhcon,rho)
+!     
+                call channeljointback(neldo,ndo,iponoel,inoel,ipkon,kon,
+     &               mi,v,istackb,nstackb,co,ielprop,prop,g,dg,xflow,
+     &               rho)
+!
+!               joint of more than three channels
+!
+              elseif(ineighe(id).gt.3) then
+                write(*,*) '*ERROR in initialchannel: branch joint'
+                write(*,*) '       of more than 3 channels'
                 write(*,*)
                 call exit(201)
               endif

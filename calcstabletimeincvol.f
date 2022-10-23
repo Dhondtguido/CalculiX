@@ -64,11 +64,11 @@
      &     nfaces,ig,ifaceq(8,6),ifacet(6,4),ifacew(8,5),
      &     mscalmethod,icount,mortar
 !     
-      real*8 elas(21),wavespeed(*),rhcon(0:1,ntmat_,*),
+      real*8 elas(21),wavespeed(*),rhcon(0:1,ntmat_,*),volfac,
      &     alcon(0:6,ntmat_,*),coords(3),orab(7,*),rho,alzero(*),
      &     t0l,t1l,elconloc(ncmat_),eth(6),plicon(0:2*npmat_,ntmat_,*),
      &     plkcon(0:2*npmat_,ntmat_,*),plconloc(802),dtime,
-     &     xstiff(27,mi(1),*),elcon(0:ncmat_,ntmat_,*),
+     &     xstiff(27,mi(1),*),elcon(0:ncmat_,ntmat_,*),aa,bb,cc,
      &     t0(*),t1(*),shp(4,26),vold(0:mi(2),*),tt,
      &     e,un,wavspd,xi,et,ze,weight,co(3,*),xl(3,26),xsj,
      &     xl2(3,9),xsj2(3),xs2(3,7),shp2(7,9),hmin,area,
@@ -116,12 +116,21 @@
 !     Calculation of Omega Critical
 !     Om_cr=dt*freq_max
 !     
-      critom=dsqrt(damping*damping*(1.d0+2.d0*alpha*(1.d0-gam))
-     &     *(1.d0+2.d0*alpha*(1.d0-gam))
-     &     +2.d0*(gam+2.d0*alpha*(gam-bet)) )
-      critom=0.98d0*(-damping*(1.d0+2.d0*alpha*(1.d0-gam))+critom)
-     &     /(gam+2.d0*alpha*(gam-bet)) !eq 25 miranda
-
+c      critom=dsqrt(damping*damping*(1.d0+2.d0*alpha*(1.d0-gam))
+c     &     *(1.d0+2.d0*alpha*(1.d0-gam))
+c     &     +2.d0*(gam+2.d0*alpha*(gam-bet)) )
+c      critom=0.98d0*(-damping*(1.d0+2.d0*alpha*(1.d0-gam))+critom)
+c     &     /(gam+2.d0*alpha*(gam-bet)) !eq 25 miranda
+!
+!     formula (2.477) with +sign from Dhondt, Wiley(2004), the Finite      
+!        Element Method for Three-Dimensional Thermomechanical Applications.
+!     factor 0.98 in critom from miranda?
+!      
+      aa=1.d0-alpha*(1.d0+alpha*(2.d0+alpha))
+      bb=2.d0*damping*(1.d0+alpha*(1.d0+2.d0*alpha))
+      cc=-4.d0
+      critom=0.98d0*(-bb+dsqrt(bb*bb-aa*cc))/aa
+!     
       write(*,*)'Calculating Material Wave Speeds...'
       write(*,*)
 !     
@@ -336,22 +345,31 @@
 !     
           wavespeed(imat)=wavspd
 !     
-!     ------------Critical time step calcualtion-----------------------
+!     ------------Critical time step calculation-----------------------
 !     
 !     Divides volume accordingly per geometry of element
 !     Carlo MT proposal
 !     if HEX
-          if((lakon(nelem)(4:5).eq.'20').or.
-     &         (lakon(nelem)(4:4).eq.'8')) then
-            volume=weight*xsj
-!     if TET
-          elseif((lakon(nelem)(4:5).eq.'10').or.
-     &           (lakon(nelem)(4:4).eq.'4')) then
-            volume=weight*xsj/3.d0
-!     if WEDGES
-          elseif ( (lakonl(4:5).eq.'15').or.
-     &           (lakonl(4:4).eq.'6'))then
-            volume=weight*xsj/2.d0
+c          if((lakon(nelem)(4:5).eq.'20').or.
+c     &         (lakon(nelem)(4:4).eq.'8')) then
+c            volume=weight*xsj
+c!     if TET
+c          elseif((lakon(nelem)(4:5).eq.'10').or.
+c     &           (lakon(nelem)(4:4).eq.'4')) then
+c            volume=weight*xsj/3.d0
+c!     if WEDGES
+c          elseif ( (lakonl(4:5).eq.'15').or.
+c     &           (lakonl(4:4).eq.'6'))then
+c            volume=weight*xsj/2.d0
+c     endif
+!
+!         volume=area*h*volfac
+!
+          volume=weight*xsj
+          volfac=1.d0
+          if((lakon(nelem)(4:5).eq.'10').or.
+     &         (lakon(nelem)(4:4).eq.'4')) then
+            volfac=3.d0
           endif
 !     
           hmin=1.d30
@@ -363,12 +381,14 @@
                 nopes=3
               else
                 nopes=4
+                volfac=2.d0
               endif
             elseif(lakon(nelem)(4:5).eq.'15')then
               if(ig.le.2)then
                 nopes=6
               else
                 nopes=8
+                volfac=2.d0
               endif
             endif
 !
@@ -415,7 +435,7 @@
             area=weight*dsqrt(xsj2(1)*xsj2(1)+xsj2(2)*xsj2(2)+
      &           xsj2(3)*xsj2(3))
 
-            hmin=min(hmin,(volume/area))
+            hmin=min(hmin,(volume*volfac/area))
 !     
           enddo
 !     ENDDO over sides

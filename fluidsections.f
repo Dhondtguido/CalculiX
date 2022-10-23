@@ -190,7 +190,7 @@
           ndprop=7
         elseif(typename(8:17).eq.'STRAIGHT') then
           elname='LICH   '
-          ndprop=5
+          ndprop=6
         elseif(typename(8:16).eq.'RESERVOIR') then
           elname='LICHRE '
           ndprop=5
@@ -203,9 +203,9 @@
         elseif(typename(8:11).eq.'STEP') then
           elname='LICHST '
           ndprop=7
-        elseif(typename(8:11).eq.'DROP') then
-          elname='LICHDR '
-          ndprop=7
+c        elseif(typename(8:11).eq.'DROP') then
+c          elname='LICHDR '
+c          ndprop=7
         else
           write(*,*) '*ERROR reading *FLUID SECTION:'
           write(*,*) '       unknown channel section'
