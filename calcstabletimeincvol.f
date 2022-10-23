@@ -440,7 +440,8 @@
 !     mscalmethod=1: selective mass scaling SMS
 !     not active for massless contact      
 !     
-      if((dtvol.lt.dtset/safefac).and.(mortar.ne.-1))then
+c      if((dtvol.lt.dtset/safefac).and.(mortar.ne.-1))then
+      if((dtvol.lt.dtset/safefac))then
         dtset=dtset/safefac
         mscalmethod=1
 !     

@@ -80,7 +80,10 @@ ccc   change on 15.07.2022 from RDATA(1) to RDATA(*) to comply with recent
 ccc   compiler versions
      *     RDATA(*), D(2,4), S(4), T(2,3), VEC(2,3), W(6,NW), X(2),zero,
 c     * RDATA(1), D(2,4), S(4), T(2,3), VEC(2,3), W(6,NW), X(2),zero,
-     & point5,one,rnderr
+ccc   change on 23.10.2022: added f to comply with recent
+ccc   compiler versions
+     & point5,one,rnderr,f
+c     & point5,one,rnderr
 C       ACTUAL DIMENSION OF W IS (6,NW/6)
 C
       REAL*8 TANS, TERR, DZERO

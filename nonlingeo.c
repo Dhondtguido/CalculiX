@@ -288,10 +288,12 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     uncoupled=0;
   }
 
-  /* for massless explicit dynamics a static step in the same
-     calculation is performed with node-to-face contact */
+  /* for massless explicit dynamics any other "nonlingeo" step in the same
+     calculation (e.g. a static step or an implicit dynamics step) 
+     is performed with node-to-face contact */
   
-  if((*nmethod==1)&&(*mortar==-1)){
+  //    if((*nmethod==1)&&(*mortar==-1)){
+  if((*iexpl<=1)&&(*mortar==-1)){
     mortarsav=-1;
     *mortar=0;
   }
@@ -1058,7 +1060,7 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	  
       dtheta=(*tinc)/(*tper);
       dthetaref=dtheta;
-      printf(" SELECTED time increment:%e\n\n",*tinc);
+      printf(" SELECTED time increment (not considering penalty contact):%e\n\n",*tinc);
     }
       
     /* in mafillsm the stiffness and mass matrix are computed;
@@ -1941,6 +1943,7 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	  reltime=theta+dtheta;
 	  time=reltime**tper;
 	  dthetaref=dtheta;
+	  printf(" SELECTED time increment (based on contact):%e\n\n",*tinc);
 
 	  ncontacts=*ne-ne0; 
 	  inccontact=0;
@@ -1949,20 +1952,17 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
           /* no contact elements (either no contact or massless contact) */
 
 	  if(dtvol>(*tmax*(*tper))){
-	    //	    *tinc=*tmax*(*tper);
 	    dtime=*tmax*(*tper);
 	  }else if(dtvol<dtset){
-	    //	    *tinc=dtset;
 	    dtime=dtset;
 	  }else{
-	    //	    *tinc=dtvol;
 	    dtime=dtvol;
 	  }
-	  //	  dtheta=(*tinc)/(*tper);
 	  dtheta=(dtime)/(*tper);
 	  reltime=theta+dtheta;
 	  time=reltime**tper;
 	  dthetaref=dtheta;
+	  printf(" SELECTED time increment (based on contact):%e\n\n",*tinc);
 
 	  dtcont=1.e30;
 	}
@@ -2461,8 +2461,6 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
       if((*iexpl<=1)||((*mortar==-1)&&((masslesslinear==0)||(iinc==1)))){
 
 	/* calculating the local stiffness matrix and external loading */
-
-	printf("stiffness matrix\n");
 	
 	NNEW(ad,double,neq[1]);
 	NNEW(au,double,nzs[1]);
@@ -4291,7 +4289,7 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
   /* restore node-to-face contact to massless contact for massless
      explicit dynamic calculations */
   
-  if((*nmethod==1)&&(mortarsav==-1)){*mortar=-1;}
+  if((*iexpl<=1)&&(mortarsav==-1)){*mortar=-1;}
   
   (*ttime)+=(*tper);
   
