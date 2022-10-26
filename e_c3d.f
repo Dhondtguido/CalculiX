@@ -1936,7 +1936,7 @@ c     mortar end
           sm(i+2,i+2)=sm(i,i)
         enddo
 !     
-        if((mscalmethod.ne.1).and.(mscalmethod.ne.3)) then
+c        if((mscalmethod.ne.1).and.(mscalmethod.ne.3)) then
 !     
 !     setting all off-diagonal terms to zero     
 !     
@@ -1946,7 +1946,7 @@ c     mortar end
               sm(i,j)=0.d0
             enddo
           enddo
-        endif
+c        endif
       endif
 !
 !     mscalmethod = 1 or 3: selective mass scaling SMS
@@ -1959,36 +1959,37 @@ c     mortar end
           smfactor=smscalel*summass/((nope-1)*nope)
 !     
           do i=1,3*nope
-            do j=1,3*nope
-              if(i.ne.j) then
-!     set non diagonals to zero           
-                sm(i,j)=0.d0
-!     diagonal terms of M for SMS
-              else
-                sm(i,j)=sm(i,j)+(nope-1)*smfactor
-              endif
-            enddo
+c            do j=1,3*nope
+c              if(i.ne.j) then
+c!     set non diagonals to zero           
+c                sm(i,j)=0.d0
+c!     diagonal terms of M for SMS
+c              else
+c                sm(i,j)=sm(i,j)+(nope-1)*smfactor
+                sm(i,i)=sm(i,i)+(nope-1)*smfactor
+c              endif
+c            enddo
           enddo
 !     
 !     nondiagonal terms of M for SMS
 !     
 !         no massless method: regular mass matrix was lumped     
 !     
-          if(mortar.ne.-1) then
-            i=0
-            do j=0,nope*3-1,3
-              i=i+1
-              do k=1,(nope-i)
-                do l=1,3
-                  sm(j+l+k*3,j+l)=-smfactor
-                  sm(j+l,j+l+k*3)=-smfactor
-                enddo
-              enddo
-            enddo
-          else
-!     
-!          massless method: regular mass matrix was not lumped     
-!     
+c          if(mortar.ne.-1) then
+c            i=0
+c            do j=0,nope*3-1,3
+c              i=i+1
+c              do k=1,(nope-i)
+c                do l=1,3
+c                  sm(j+l+k*3,j+l)=-smfactor
+c                  sm(j+l,j+l+k*3)=-smfactor
+c                enddo
+c              enddo
+c            enddo
+c          else
+c!     
+c!          massless method: regular mass matrix was not lumped     
+c!     
             i=0
             do j=0,nope*3-1,3
               i=i+1
@@ -1999,7 +2000,7 @@ c     mortar end
                 enddo
               enddo
             enddo
-          endif
+c          endif
 !     to calculate additional energy in resultsmech.f:
           smscalel=smfactor
         endif
