@@ -1,49 +1,48 @@
-<center>
 
-## CalculiX
+CalculiX: A Three-Dimensional Structural Finite Element Program
 
-</center>
+CalculiX
+--------
 
-<center>
-
-## A Free Software Three-Dimensional Structural Finite Element Program
-
-</center>
-
-<center>
+A Free Software Three-Dimensional Structural Finite Element Program
+-------------------------------------------------------------------
 
 #### Authors:
 
 [Guido Dhondt](authors.htm) (Finite Element Solver)  
 Klaus Wittig(Pre- and Postprocessor)
 
-</center>
+  
 
 * * *
 
-<center>
+  
 
 ### **Version 2.20 of CalculiX is available!**
 
-</center>
+* * *
+
+  
+
+![Maximum principal stress in a paraglider](GSStress.gif)
+
+Maximum principal stress in a paraglider (thanks to Thomas Ripplinger)
 
 * * *
 
-<center>![Maximum principal stress in a paraglider](GSStress.gif)</center>
-
-<center>Maximum principal stress in a paraglider (thanks to Thomas Ripplinger)</center>
-
-* * *
-
+  
 **Notice:** The authors acknowledge that naming conventions and input style formats for CalculiX are based on those used by ABAQUS, a proprietary, general purpose finite element code developed and supported by Hibbitt, Karlsson & Sorensen, Inc (HKS) ([http://www.abaqus.com](http://www.abaqus.com)) and are used with kind permission from HKS. Results obtained from CalculiX are in no way connected to ABAQUS.  
+  
 
 * * *
 
+  
 For a **reference** describing the theory behind CalculiX CrunchiX the user is referred to:  
 Dhondt, G. _The Finite Element Method for Three-Dimensional Thermomechanical Applications_, Wiley, 2004.
 
 * * *
 
+  
 Click here to get
 
 *   a quick overview of the [pre- and postprocessor.](ov_prepo.htm)
@@ -62,7 +61,9 @@ Available downloads for the graphical interface (CalculiX GraphiX: cgx):
 *   [the documentation (html)](cgx_2.20.htm.tar.bz2)
 *   [examples](cgx_2.20.exa.tar.bz2)
 *   [a tutorial (ASCII)](tutorial.txt)
-*   for a Windows executable: look at [www.bconverged.com/calculix](http://www.bconverged.com/calculix)<a>,</a> [sourceforge.net/projects/calculixforwin](http://sourceforge.net/projects/calculixforwin) <a>or</a> [github.com](https://github.com/GeneralElectric/CalculiX)<a>. For an update of the bconverged distribution replace the executables in the bconverged download by the following</a> [files](calculix_2.20_4win.zip) (incl. the CAD converters from Pascal Mossier) .
+*   for a Windows executable: look at [www.bconverged.com/calculix](http://www.bconverged.com/calculix), [sourceforge.net/projects/calculixforwin](https://sourceforge.net/projects/calculixforwin) or [github.com](https://github.com/GeneralElectric/CalculiX). For an update of the bconverged distribution replace the executables in the bconverged download by the following [files](calculix_2.20_4win.zip) (incl. the CAD converters from Pascal Mossier) .
+
+  
 
 * * *
 
@@ -79,39 +80,50 @@ Available downloads for the solver (CalculiX CrunchiX: ccx):
 *   [large fluid test examples for the Finite Element Method](ccx_2.20.fluidtest.tar.bz2)
 *   [large structural test examples](ccx_2.20.structest.tar.bz2)
 *   [a correction to SPOOLES.2.2 for large input decks](ccx_2.20.SPOOLEScorrection.tar.bz2)
-*   for a Windows executable: look at [www.bconverged.com/calculix](http://www.bconverged.com/calculix)<a>,</a> [sourceforge.net/projects/calculixforwin](http://sourceforge.net/projects/calculixforwin) <a>or</a> [github.com](https://github.com/GeneralElectric/CalculiX)<a>. For an update of the bconverged distribution replace the executables in the bconverged download by the following</a> [files](calculix_2.20_4win.zip) (incl. the CAD converters from Pascal Mossier) .
+*   for a Windows executable: look at [www.bconverged.com/calculix](http://www.bconverged.com/calculix), [sourceforge.net/projects/calculixforwin](https://sourceforge.net/projects/calculixforwin) or [github.com](https://github.com/GeneralElectric/CalculiX). For an update of the bconverged distribution replace the executables in the bconverged download by the following [files](calculix_2.20_4win.zip) (incl. the CAD converters from Pascal Mossier) .
 
-If you compile the program from scratch using the source code, you will need the source code for the sparse linear equation solver ([SPOOLES.2.2(serial version)](http://www.netlib.org/linalg/spooles/spooles.2.2.html)) and the eigenvalue solver ([ARPACK (serial version)](https://github.com/opencollab/arpack-ng)) too. A new free sparse linear equation solver, [PaStiX](https://gitlab.inria.fr/solverstack/pastix) has been tested and has prove to accelerate execution times up to a factor of 8! To reach this acceleration hwloc, parsec, scotch and PaStiX4CalculiX have to be downloaded and installed. This yields an acceleration up to a factor of 4\. For the factor of 8 the CUDA library from Nvidia has to be installed in order to compute on the GPU (only works for Nvidia cards). For details the user should consult the README.INSTALL file.  
+If you compile the program from scratch using the source code, you will need the source code for the sparse linear equation solver ([SPOOLES.2.2(serial version)](http://www.netlib.org/linalg/spooles/spooles.2.2.html)) and the eigenvalue solver ([ARPACK (serial version)](https://github.com/opencollab/arpack-ng)) too. A new free sparse linear equation solver, [PaStiX](https://gitlab.inria.fr/solverstack/pastix) has been tested and has prove to accelerate execution times up to a factor of 8! To reach this acceleration hwloc, parsec, scotch and PaStiX4CalculiX have to be downloaded and installed. This yields an acceleration up to a factor of 4. For the factor of 8 the CUDA library from Nvidia has to be installed in order to compute on the GPU (only works for Nvidia cards). For details the user should consult the README.INSTALL file.  
 
 * * *
 
+  
 Other documentation (not exhaustive):
 
 *   [an installation guide for cgx on Max OS X Mavericks](INST_CGX_2_8_MAC_02_10_2015.pdf) .
 *   [an installation guide for ccx on Max OS X Mavericks](INST_CCX_2_8_MAC_02_10_2015.pdf) .
 
+  
+
 * * *
 
+  
 Available add-ons:
 
-*   [a STEP-to-fbd, IGES-to-fbd, fbd-to-STEP and fbd-to-IGES converter](cgxCadTools.tar.bz2) (including Linux binaries). If you have questions on this tool please contact [_pascal.mossier@gmail.com_](mailto:pascal.mossier@gmail.com).
-*   [a vda to fbd converter](vda2fbd-1.0.tar.gz). After exporting a CAD model in vda format, you can use this program to convert it in fbd format and read it into cgx. If you have questions on this tool please contact [_johannes.barner@web.de_](mailto:johannes.barner@web.de).
+*   [a STEP-to-fbd, IGES-to-fbd, fbd-to-STEP and fbd-to-IGES converter](cgxCadTools.tar.bz2) (including Linux binaries). If you have questions on this tool please contact [_\[email protected\]_](/cdn-cgi/l/email-protection#c2b2a3b1a1a3aeecafadb1b1aba7b082a5afa3abaeeca1adaf).
+*   [a vda to fbd converter](vda2fbd-1.0.tar.gz). After exporting a CAD model in vda format, you can use this program to convert it in fbd format and read it into cgx. If you have questions on this tool please contact [_\[email protected\]_](/cdn-cgi/l/email-protection#305a5f58515e5e55431e5251425e5542704755521e5455).
 *   [a acis to fbd converter](acis2fbd.tar.gz). After exporting a CAD model in acis format (available in autoCAD), you can use this program to convert it in fbd format and read it into cgx. Splines and nurbs are not covered yet. This feature was coded by Roland Felde. Many thanks!
 *   [a three-dimensional interpolation program](interpol3d.tar.bz2). Interpolates the results from a master frd-file onto the nodes in a slave frd-file.
 
+  
+
 * * *
 
+  
 Other software using CalculiX (not exhaustive):
 
 *   [justinablack.com/pycalculix](http://justinablack.com/pycalculix).
 *   An [adapter](https://github.com/precice/calculix-adapter) allows to couple CalculiX via [preCICE](http://www.precice.org/) to other solvers (e.g. OpenFOAM, SU2, or any in-house solver) for fluid-structure interaction.
 
+  
+
 * * *
 
+  
 A discourse discussion group for CalculiX has been setup. That way you can share problems and experiences with other CalculiX users. To join the group go to [https://calculix.discourse.group](https://calculix.discourse.group).  
 
 * * *
 
+  
 For some essential parts of a finite element program such as mathematical solvers, very good source code has been written by people devoting their whole life to it. Therefore, we are especially grateful to those who agreed to have their code included or referred to, specifically (in alphabetical order of the first author):
 
 *   Daniele Amato for the implementation of the crack propagation procedure.
@@ -161,26 +173,29 @@ Finally, the authors would like to thank MTU Aero Engines for the permission to 
 
 * * *
 
+  
 Here you find the text of the [GNU GENERAL PUBLIC LICENSE Version 2](gpl-2.0.txt)  
+  
 
 * * *
 
-<center>![Von Mises stress in a turbine segment](turbs.gif)</center>
+  
 
-<center>Von Mises stress in a turbine segment</center>
+![Von Mises stress in a turbine segment](turbs.gif)
+
+Von Mises stress in a turbine segment
 
 * * *
 
-<center>
+  
 
 #### **If you have any comments or suggestions, or if you would like to contribute to this project, please contact us!  
-Email: [_guido.dhondt@calculix.de_](mailto:guido.dhondt@calculix.de) (CalculiX CrunchiX) and [_klaus.wittig@calculix.de_](mailto:klaus.wittig@calculix.de) (CalculiX GraphiX).**
-
-</center>
+Email: [_\[email protected\]_](/cdn-cgi/l/email-protection#95f2e0fcf1fabbf1fdfafbf1e1d5f6f4f9f6e0f9fcedbbf1f0) (CalculiX CrunchiX) and [_\[email protected\]_](/cdn-cgi/l/email-protection#02696e6377712c756b76766b654261636e61776e6b7a2c6667) (CalculiX GraphiX).**
 
 * * *
 
+  
 [Legal Disclosure](legaldisclosure.txt)  
 [Privacy Policy](privacypolicy.txt)  
-
+  
 [Back to the CalculiX home page](http://www.calculix.de)
