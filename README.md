@@ -23,8 +23,7 @@ Klaus Wittig(Pre- and Postprocessor)
 * * *
 
   
-
-![Maximum principal stress in a paraglider](GSStress.gif)
+![Image not found: GSStress.gif](pictures/GSStress.gif "Image not found: GSStress.gif")
 
 Maximum principal stress in a paraglider (thanks to Thomas Ripplinger)
 
@@ -181,7 +180,7 @@ Here you find the text of the [GNU GENERAL PUBLIC LICENSE Version 2](gpl-2.0.txt
 
   
 
-![Von Mises stress in a turbine segment](turbs.gif)
+![Von Mises stress in a turbine segment](pictures/turbs.gif)
 
 Von Mises stress in a turbine segment
 
@@ -190,7 +189,6 @@ Von Mises stress in a turbine segment
   
 
 #### **If you have any comments or suggestions, or if you would like to contribute to this project, please contact us!  
-Email: [_\[email protected\]_](/cdn-cgi/l/email-protection#95f2e0fcf1fabbf1fdfafbf1e1d5f6f4f9f6e0f9fcedbbf1f0) (CalculiX CrunchiX) and [_\[email protected\]_](/cdn-cgi/l/email-protection#02696e6377712c756b76766b654261636e61776e6b7a2c6667) (CalculiX GraphiX).**
 
 * * *
 
