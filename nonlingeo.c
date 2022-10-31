@@ -4043,7 +4043,7 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
   if(*iexpl>1){
     SFREE(smscale);
 
-    if((mscalmethod==1)||(mscalmethod==3)){
+    if((mscalmethod==1)||(mscalmethod==3)||(*mortar==-1)){
       if(*isolver==0){
 #ifdef SPOOLES
 	spooles_cleanup();
@@ -4193,33 +4193,6 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 		 &iclean,&iinc);
       }
 
-      /* deallocate memory for solving the global system for
-         massless explicit dynamics */
-      
-      if(*isolver==0){
-#ifdef SPOOLES
-	spooles_cleanup();
-#endif
-      }
-      else if(*isolver==4){
-#ifdef SGI
-	sgi_cleanup(token);
-#endif
-      }
-      else if(*isolver==5){
-#ifdef TAUCS
-	tau_cleanup();
-#endif
-      }
-      else if(*isolver==7){
-#ifdef PARDISO
-	pardiso_cleanup(&neq[0],&symmetryflag,&inputformat);
-#endif
-      }
-      else if(*isolver==8){
-#ifdef PASTIX
-#endif
-      }
     }else if(*mortar==0){
       SFREE(areaslav);
     }else if(*mortar==1){

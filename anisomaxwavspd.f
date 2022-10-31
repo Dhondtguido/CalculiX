@@ -20,7 +20,7 @@
 !
 !     Calculates the propagation wave speed in a material, up to its 21 
 !     constants. Subroutine for calcmatwavsps.f
-
+!
 !     Based on the procedure in:
 !     C. Lane. The Development of a 2D Ultrasonic Array Inspection 
 !     for Single Crystal Turbine Blades.
@@ -50,12 +50,9 @@
 !
       real*8 elas(21),c(3,3,3,3),rho,xi(-1:1,-1:1),et(-1:1,-1:1),
      &       wavspd,d1,distmin,a
-!
-!
 !     
-c      write(*,*)'++cMT: calculating max. speed in ANISOTROPIC...'
-!     
-!--------IF IORTHTROPIC-----------------------------     
+!     if orthotropic
+!      
       if(iorth.eq.1)then
 !     
          elas(10)=elas(9)
@@ -67,7 +64,7 @@ c      write(*,*)'++cMT: calculating max. speed in ANISOTROPIC...'
 !     
       endif
 !     
-!--------FIlling  c voigt Matrix----------------------------- 
+!     filling matrix c
 !       
       call anisotropic(elas,c)
 !

@@ -118,7 +118,7 @@
 !     
 c      critom=dsqrt(damping*damping*(1.d0+2.d0*alpha*(1.d0-gam))
 c     &     *(1.d0+2.d0*alpha*(1.d0-gam))
-c     &     +2.d0*(gam+2.d0*alpha*(gam-bet)) )
+c     &     +2.d0*(gam+2.d0*alpha*(gam-bet)))
 c      critom=0.98d0*(-damping*(1.d0+2.d0*alpha*(1.d0-gam))+critom)
 c     &     /(gam+2.d0*alpha*(gam-bet)) !eq 25 miranda
 !
@@ -323,21 +323,21 @@ c     &     /(gam+2.d0*alpha*(gam-bet)) !eq 25 miranda
 !     
 !     single crystal
 !     
-            if(((elas(1).eq.elas(3)).and.(elas(1).eq.elas(6)).and.
-     &           (elas(3).eq.elas(6))).and.
-     &           ((elas(2).eq.elas(4)).and.(elas(2).eq.elas(5)).and.
-     &           (elas(4).eq.elas(5))).and.
-     &           ((elas(7).eq.elas(8)).and.(elas(7).eq.elas(9)).and.
-     &           (elas(8).eq.elas(9)))) then
-              wavspd=max(wavspd,dsqrt((1/3.d0)*(elas(1)+2.0*elas(2)+
-     &             4.0d0*elas(7))/rho))
-              wavspd=max(wavspd,dsqrt((1/2.d0)*
-     &             (elas(1)+elas(2)+2.0*elas(7))/rho))
-              wavspd=max(wavspd,dsqrt(elas(1)/rho))
-            else
+c            if(((elas(1).eq.elas(3)).and.(elas(1).eq.elas(6)).and.
+c     &           (elas(3).eq.elas(6))).and.
+c     &           ((elas(2).eq.elas(4)).and.(elas(2).eq.elas(5)).and.
+c     &           (elas(4).eq.elas(5))).and.
+c     &           ((elas(7).eq.elas(8)).and.(elas(7).eq.elas(9)).and.
+c     &           (elas(8).eq.elas(9)))) then
+c              wavspd=max(wavspd,dsqrt((1/3.d0)*(elas(1)+2.0*elas(2)+
+c     &             4.0d0*elas(7))/rho))
+c              wavspd=max(wavspd,dsqrt((1/2.d0)*
+c     &             (elas(1)+elas(2)+2.0*elas(7))/rho))
+c              wavspd=max(wavspd,dsqrt(elas(1)/rho))
+c            else
               iorth=1
-              call anisomaxwavspd(elas,rho,iorth,wavspd )
-            endif
+              call anisomaxwavspd(elas,rho,iorth,wavspd)
+c            endif
           elseif(mattyp.eq.3) then
             iorth=0
             call anisomaxwavspd(elas,rho,iorth,wavspd)

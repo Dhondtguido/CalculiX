@@ -41,7 +41,7 @@
 !        
 !       OUTPUT:
 !       
-!       a: inverse of the wave speed 
+!       a: inverse of the group wave speed d(omega)/d(k)
 !
       implicit none
 !     
@@ -51,8 +51,6 @@
      &       cmm(3,3),dd,al(3),alz(3,3),fv1(3),fv2(3),
      &       theta,phi,pi,p3(3),v(3),
      &       speed
-!
-!
 !     
       pi=4.d0*datan(1.d0)
 !
@@ -73,7 +71,7 @@
       xn(2)=dsin(theta)*dsin(phi)
       xn(3)=dcos(phi)
 !     
-!     c ------------ PER EAcH DIREcTION find wave speed-----------------------
+!     find wave speed for this direction
 !     
       do l=1,3
          do k=1,3
@@ -97,7 +95,7 @@
       matz=1
       ier=0
 !
-!     ---------reset vars for EIGvALUES
+!     initialize variables for routine rs
 !
       do j=1,3
          al(j)=0.d0
@@ -110,7 +108,7 @@
 !     
       call rs(ndim,ndim,cmm,al,matz,alz,fv1,fv2,ier)
 !     
-!           ------normalizing eigenvectors to P vectors----------
+!     normalize the eigenvectors
 !     
       dd=dsqrt(alz(1,3)**2+alz(2,3)**2+alz(3,3)**2)
       p3(1)=alz(1,3)/dd
@@ -152,11 +150,17 @@
 !     
       dd=dsqrt(v(1)**2+v(2)**2+v(3)**2) 
       speed=dd/dsqrt(rho*al(3))
-c      speed=dsqrt(dd/rho) 
 !     
 !     inverse wave speed
 !     
       a=1.d0/speed
+!
+c      if(speed.gt.dsqrt(500000.d0/7.8d-9)) then
+c      write(*,*) 'inversewavspd'
+c      write(*,'(6(1x,e11.4))') xn(1),xn(2),xn(3),
+c     &     (dsqrt(al(3)/rho)-speed)/speed,xn
+c     &     (1)*p3(1)+xn(2)*p3(2)+xn(3)*p3(3)
+c      endif
 !     
       return
       end

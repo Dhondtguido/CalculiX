@@ -5090,3 +5090,9 @@ Dec 2002        - started to work on single crystal plasticity
                   (no update of stiffness matrix)
 
  19 Oct 2022    - linear massless explicit dynamics seems to work
+
+ 29 Oct 2022    - made a small correction for massless explicit dynamics
+                  in nonlingeo.c (deallocation)
+
+ 31 Oct 2022    - added an example for explicit dynamics with an orthotropic
+                  material
