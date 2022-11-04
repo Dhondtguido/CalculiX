@@ -56,10 +56,6 @@
       pi=4.d0*datan(1.d0)
       twodpi=2.d0/pi
 !
-c      write(*,*)
-c      write(*,*) 'shape factor'
-c      write(*,*)
-!
       do i=1,nnfront
         if(isubsurffront(i).eq.1) then
           do j=istartfront(i),iendfront(i)
@@ -75,16 +71,14 @@ c      write(*,*)
               shapepi=twodpi*(1.04+s*s*1.1d0)
               shapeangle=shape0*(1.d0-angle(i)/pi)+
      &             shapepi*angle(i)/pi
-c              write(*,*) 'crackshape ',i,shapeangle,posfront(j)
               do k=1,3
                 shape(k,j)=shapeangle
               enddo
             enddo
           else
             do j=istartfront(i),iendfront(i)
-              s=2.d0*dabs(posfront(i)-0.5d0)
+              s=2.d0*dabs(posfront(j)-0.5d0)
               shapepi=twodpi*(1.04+s*s*1.1d0)
-c              write(*,*) 'crackshape ',i,shapepi
               do k=1,3
                 shape(k,j)=shapepi
               enddo

@@ -5096,3 +5096,6 @@ Dec 2002        - started to work on single crystal plasticity
 
  31 Oct 2022    - added an example for explicit dynamics with an orthotropic
                   material
+
+ 4 Nov 2022     - checked in createlocalsys whether the angle is smaller
+                  than pi or exceeds pi
