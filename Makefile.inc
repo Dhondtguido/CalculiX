@@ -79,6 +79,7 @@ calc_residual_wye.f \
 calcspringforc.f \
 calcstabletimeinccont.f \
 calcstabletimeincvol.f \
+calcstress.f \
 calcstressheatfluxfem.f \
 calcsurf.f \
 calctotstrain.f \

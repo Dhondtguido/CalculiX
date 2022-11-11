@@ -30,7 +30,7 @@
       integer i,j,ifront(*),nnfront,istartfront(*),nstep,m,
      &     isubsurffront(*),iendfront(*),istart,iend
 !     
-      real*8 datarget,damax,acrack(*),co(3,*),
+      real*8 datarget,damax,acrack(*),co(3,*),denominator,
      &     xp,yp,zp,xa,ya,za,xn,yn,zn,xlpa,xlan,xlnp,dd,rcur
 !
       datarget=damax
@@ -109,8 +109,16 @@
 !
 !         radius of the circle
 !
-          rcur=xlpa*xlan*xlnp/
-     &         (4.d0*dsqrt(dd*(dd-xlpa)*(dd-xlan)*(dd-xlnp)))
+          denominator=4.d0*dsqrt(dd*dabs(dd-xlpa)*dabs(dd-xlan)*
+     &         dabs(dd-xlnp))
+          if(denominator.lt.1.d-10) then
+            rcur=1.d10
+          else
+            rcur=xlpa*xlan*xlnp/denominator
+          endif
+c            
+c          rcur=xlpa*xlan*xlnp/
+c     &         (4.d0*dsqrt(dd*(dd-xlpa)*(dd-xlan)*(dd-xlnp)))
 !
 c     datarget=min(datarget,rcur/5.d0,acrack(j)/5.d0)
           datarget=min(datarget,rcur/5.d0)

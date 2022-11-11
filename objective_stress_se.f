@@ -28,7 +28,8 @@
 !
       integer nk,idir,iobject,mi(*),j,k,ialnneigh(*),naneigh,nbneigh
 !
-      real*8 stn(6,*),p,rho,xstress,dksper,dstn(6,*),mises,dmises 
+      real*8 stn(6,*),p,rho,xstress,dksper,dstn(6,*),stressval,
+     & stress,dstress
 !
 !     reading rho and the mean stress for the Kreisselmeier-Steinhauser
 !     function
@@ -40,35 +41,21 @@
       do j=naneigh,nbneigh        
          k=ialnneigh(j)
 !
-!        Calculate unperturbed mises stress
+!        Calculate unperturbed stress (Mises,PS1 or PS3)
 !
-         p=-(stn(1,k)+stn(2,k)+stn(3,k))/3.d0
-         mises=dsqrt(1.5d0*((stn(1,k)+p)**2+
-     &                      (stn(2,k)+p)**2+
-     &                      (stn(3,k)+p)**2+
-     &                 2.d0*(stn(4,k)**2+stn(5,k)**2+
-     &                       stn(6,k)**2)))
+         call calcstress(objectset,iobject,stn,k,stressval)
+         stress=stressval
 !
-!        Calculate perturbed mises stress
+!        Calculate perturbed stress (Mises,PS1 or PS3)
 !
-         p=-(dstn(1,k)+dstn(2,k)+dstn(3,k))/3.d0  
-         dmises=dsqrt(1.5d0*((dstn(1,k)+p)**2+
-     &                       (dstn(2,k)+p)**2+
-     &                       (dstn(3,k)+p)**2+
-     &                  2.d0*(dstn(4,k)**2+dstn(5,k)**2+
-     &                        dstn(6,k)**2)))
+         call calcstress(objectset,iobject,dstn,k,stressval)
+         dstress=stressval
 !
-!        Calculate delta mises stress
+!        Calculate delta stress (Mises,PS1 or PS3)
 !
-         dmises=dmises-mises
+         dstress=dstress-stress
 !
-         dksper=dksper+dexp(rho*dsqrt(1.5d0*
-     &   ((dstn(1,k)+p)**2+
-     &   (dstn(2,k)+p)**2+
-     &   (dstn(3,k)+p)**2+
-     &   2.d0*(dstn(4,k)**2+
-     &         dstn(5,k)**2+
-     &         dstn(6,k)**2)))/xstress)*dmises
+         dksper=dksper+dexp(rho*stressval/xstress)*dstress
       enddo
 !
       dksper=dksper/xstress

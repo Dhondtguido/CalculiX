@@ -336,7 +336,7 @@ void frd_sen(double *co,ITG *nk,double *dstn,ITG *inum,ITG *nmethod,
 		    trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3);
 	  }
 	  
-      }else if(strcmp1(&objectset[(*iobject-1)*405],"STRESS")==0){
+      }else if(strcmp1(&objectset[(*iobject-1)*405],"MISESSTRESS")==0){
 	  
 	  frdset(&filab[4002],set,&iset,istartset,iendset,ialset,
 		 inum,&noutloc,&nout,nset,&noutmin,&noutplus,&iselect,
@@ -409,7 +409,11 @@ void frd_sen(double *co,ITG *nk,double *dstn,ITG *inum,ITG *nmethod,
 	  fprintf(f1," -4  SENDISY     2    1\n");
       }else if(strcmp1(&objectset[*iobject*405],"Z-DISP")==0){
 	  fprintf(f1," -4  SENDISZ     2    1\n");
-      }else if(strcmp1(&objectset[*iobject*405],"STRESS")==0){
+      }else if(strcmp1(&objectset[*iobject*405],"MISESSTRESS")==0){
+	  fprintf(f1," -4  SENSTRE     2    1\n");
+      }else if(strcmp1(&objectset[*iobject*405],"PS1STRESS")==0){
+	  fprintf(f1," -4  SENSTRE     2    1\n");
+      }else if(strcmp1(&objectset[*iobject*405],"PS3STRESS")==0){
 	  fprintf(f1," -4  SENSTRE     2    1\n");
       }else if(strcmp1(&objectset[*iobject*405],"EQPLASTICSTRAIN")==0){
 	  fprintf(f1," -4  SENSPEQ     2    1\n");

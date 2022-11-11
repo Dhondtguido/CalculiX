@@ -20,16 +20,17 @@
      &  nk,idesvarc,iobject,mi,g0,nobject,stn,objectset,expks)
 !
 !     calculates the Kreisselmeier-Steinhauser function for the
-!     (von Mises) stress
+!     chosen stress measure
 !
       implicit none
 !
       character*81 objectset(5,*)
 !
       integer nk,istartset(*),iendset(*),ialset(*),nodeset,
-     &  idesvarc,iobject,mi(*),j,k,nobject,idesvar
+     & idesvarc,iobject,mi(*),j,k,nobject,idesvar
 !
-      real*8 g0(nobject),stn(6,*),p,rho,xstress,argument,expks
+      real*8 g0(nobject),stn(6,*),p,rho,xstress,argument,expks,
+     & stressval
 !
       idesvar=idesvarc+1
 !
@@ -45,16 +46,14 @@
 !
       if(nodeset.eq.0) then
          do j=1,nk
-            p=-(stn(1,j)+stn(2,j)+stn(3,j))/3.d0
-            argument=rho*dsqrt(1.5d0*
-     &        ((stn(1,j)+p)**2+(stn(2,j)+p)**2+(stn(3,j)+p)**2+
-     &         2.d0*(stn(4,j)**2+stn(5,j)**2+stn(6,j)**2)))/xstress
+	    call calcstress(objectset,iobject,stn,j,stressval)
+	    argument=rho*stressval/xstress
             if(argument.gt.600.d0) then
                write(*,*) '*ERROR in objective_stress: argument'
                write(*,*) '       ',argument,
-     &               ' of exponential function is too big;'
+     &            ' of exponential function is too big;'
                write(*,*) 
-     &             '       choose other Kreisselmeier-Steinhauser'
+     &          '       choose other Kreisselmeier-Steinhauser'
                write(*,*) '       coefficients'
                call exit(201)
             endif
@@ -66,20 +65,14 @@
          do j=istartset(nodeset),iendset(nodeset)
             if(ialset(j).gt.0) then
                k=ialset(j)
-               p=-(stn(1,k)+stn(2,k)+stn(3,k))/3.d0
-               argument=rho*dsqrt(1.5d0*
-     &        ((stn(1,k)+p)**2+
-     &         (stn(2,k)+p)**2+
-     &         (stn(3,k)+p)**2+
-     &         2.d0*(stn(4,k)**2+
-     &               stn(5,k)**2+
-     &               stn(6,k)**2)))/xstress
+               call calcstress(objectset,iobject,stn,k,stressval)
+	       argument=rho*stressval/xstress
                if(argument.gt.600.d0) then
                   write(*,*) '*ERROR in objective_stress: argument'
                   write(*,*) '       ',argument,
-     &               ' of exponential function is too big;'
+     &            ' of exponential function is too big;'
                   write(*,*) 
-     &             '       choose other Kreisselmeier-Steinhauser'
+     &            '       choose other Kreisselmeier-Steinhauser'
                   write(*,*) '       coefficients'
                   call exit(201)
                endif
@@ -89,20 +82,14 @@
                do
                   k=k-ialset(j)
                   if(k.ge.ialset(j-1)) exit
-                  p=-(stn(1,k)+stn(2,k)+stn(3,k))/3.d0
-                  argument=rho*dsqrt(1.5d0*
-     &                 ((stn(1,k)+p)**2+
-     &                 (stn(2,k)+p)**2+
-     &                 (stn(3,k)+p)**2+
-     &                 2.d0*(stn(4,k)**2+
-     &                 stn(5,k)**2+
-     &                 stn(6,k)**2)))/xstress
+		  call calcstress(objectset,iobject,stn,k,stressval)
+	          argument=rho*stressval/xstress
                   if(argument.gt.600.d0) then
                      write(*,*) '*ERROR in objective_stress: argument'
                      write(*,*) '       ',argument,
      &               ' of exponential function is too big;'
                      write(*,*) 
-     &             '       choose other Kreisselmeier-Steinhauser'
+     &               '       choose other Kreisselmeier-Steinhauser'
                      write(*,*) '       coefficients'
                      call exit(201)
                   endif
@@ -116,4 +103,3 @@
 !     
       return
       end
-      

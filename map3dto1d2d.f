@@ -40,8 +40,6 @@
      &  xsj(3),e1(3),e2(3),e3(3),s(6),dd,xi,et,ze,co(3,*),xs(3,7),
      &  vold(0:mi(2),*),ratioe(3),weight,prop(*),xil,etl
 !
-!
-!
       include "gauss.f"
 !
       data node3 /1,4,8,5,12,20,16,17,9,11,15,13,

@@ -938,7 +938,9 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	    
       SFREE(inum);
 	    
-    }else if(strcmp1(&objectset[m*405],"STRESS")==0){
+    }else if((strcmp1(&objectset[m*405],"MISESSTRESS")==0)||
+             (strcmp1(&objectset[m*405],"PS1STRESS")==0)||
+	     (strcmp1(&objectset[m*405],"PS3STRESS")==0)){
 	    
       /* OBJECTIVE: STRESS */
       

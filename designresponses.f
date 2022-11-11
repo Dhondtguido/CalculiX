@@ -32,7 +32,9 @@
 !     MASS
 !     MODALSTRESS
 !     STRAIN ENERGY
-!     STRESS
+!     MISESSTRESS
+!     PS1STRESS
+!     PS3STRESS
 !     EQUIVALENT PLASTIC STRAIN
 !     
       implicit none
@@ -182,9 +184,15 @@ c        if(objectset(5,nobject)(1:1).eq.' ') then
         elseif(textpart(1)(1:12).eq.'STRAINENERGY') then
           settype='E'
           objectset(1,nobject)(1:12)='STRAINENERGY'
-        elseif(textpart(1)(1:6).eq.'STRESS') then
+        elseif(textpart(1)(1:11).eq.'MISESSTRESS') then
           settype='N'
-          objectset(1,nobject)(1:6)='STRESS'
+          objectset(1,nobject)(1:11)='MISESSTRESS'
+        elseif(textpart(1)(1:9).eq.'PS1STRESS') then
+          settype='N'
+          objectset(1,nobject)(1:9)='PS1STRESS'
+        elseif(textpart(1)(1:9).eq.'PS3STRESS') then
+          settype='N'
+          objectset(1,nobject)(1:9)='PS3STRESS'
         elseif(textpart(1)(1:23).eq.'EQUIVALENTPLASTICSTRAIN') then
           settype='N'
           objectset(1,nobject)(1:15)='EQPLASTICSTRAIN'
@@ -233,7 +241,9 @@ c        if(objectset(5,nobject)(1:1).eq.' ') then
 !     for stresses: parsing for the Kreisselmeier Steinhauser 
 !     parameters rho and the target stress
 !     
-        if((objectset(1,nobject)(1:6).eq.'STRESS').or.
+        if((objectset(1,nobject)(1:11).eq.'MISESSTRESS').or.
+     &       (objectset(1,nobject)(1:9).eq.'PS1STRESS').or.
+     &       (objectset(1,nobject)(1:9).eq.'PS3STRESS').or.
      &       (objectset(1,nobject)(1:15).eq.'EQPLASTICSTRAIN').or.
      &       (objectset(1,nobject)(1:11).eq.'MODALSTRESS'))then
           rho=0.d0
@@ -275,12 +285,24 @@ c        if(objectset(5,nobject)(1:1).eq.' ') then
             objectset(2,nobject)(61:80)=textpart(4)(1:20)
           endif
 !     
-          if(stress.le.0.d0) then
+          if((stress.le.0.d0).and.(objectset(1,nobject)(1:9).ne.
+     &          'PS3STRESS')) then
             if(icoordinate.eq.1) then
               write(*,*) '*ERROR reading *DESIGN RESPONSE'
               write(*,*) '       the target stress in the'
               write(*,*) '       Kreisselmeier-Steinhauser function'
               write(*,*) '       must be strictly positive.'
+              call inputerror(inpc,ipoinpc,iline,
+     &             "*DESIGN RESPONSE%",ier)
+              return
+            endif
+          elseif((stress.gt.0.d0).and.(objectset(1,nobject)(1:9).eq.
+     &          'PS3STRESS')) then
+            if(icoordinate.eq.1) then
+              write(*,*) '*ERROR reading *DESIGN RESPONSE'
+              write(*,*) '       the target stress for PS3STRESS in'
+              write(*,*) '       the Kreisselmeier-Steinhauser'
+              write(*,*) '       function must be strictly negative.'
               call inputerror(inpc,ipoinpc,iline,
      &             "*DESIGN RESPONSE%",ier)
               return

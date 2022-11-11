@@ -26,6 +26,10 @@
 !     of contingent free surfaces
 !     
       implicit none
+!
+      character*4 outlabel
+      character*8 filename
+      character*9 filelabel
 !     
       integer i,j,k,l,m,ncrack,istartcrackbou(*),iendcrackbou(*),loopa,
      &     nnfront,istart,iend,isubsurffront(*),isf,icrack,konl(20),
@@ -167,6 +171,9 @@ c     write(*,*)
 !     2) determining the adjacent free surfaces and the minimum
 !        distance from the crack front
 !
+      open(14,file='set0.fbd',status='unknown')
+      write(14,*) 'seto set0'
+!
       do icrack=1,ncrack
 !
 !       determine the fronts belonging to the crack
@@ -246,7 +253,8 @@ c     write(*,*)
      &             integerglob(nkon+2*ne+8*netet+6),nterms,konl,
      &             nelem,loopa,dist)
               if(dist.gt.1.d-6) exit
-              alambda=2*alambda
+c              alambda=2*alambda
+              alambda=1.2d0*alambda
             enddo
 !
             do k=1,3
@@ -262,6 +270,15 @@ c     write(*,*)
             do k=1,3
               xinter(k)=p(k)+alambda*dirproj(k)
             enddo
+!
+!           printing lambda to standard out
+!           storing intersection points to file            
+!
+            write(*,*) 'set0',j,alambda
+            write(outlabel(1:2),'(i2)') j
+            outlabel(3:4)='p '
+ 100        format('pnt ',a4,3(1x,e15.8))
+            write(14,100) outlabel,xinter(1),xinter(2),xinter(3)
 !
 !           first subsurface node
 !
@@ -318,6 +335,7 @@ c     write(*,*)
                   surfco(k,nummin)=xinterprev(k)
                   surfnor(k,nummin)=snor(k)
                 enddo
+                write(*,*) 'contingentsurf min!:',j-1
               elseif(surfnor(1,nummin)*snor(1)+
      &               surfnor(2,nummin)*snor(2)+
      &               surfnor(3,nummin)*snor(3).lt.0.5d0) then
@@ -330,23 +348,35 @@ c     write(*,*)
                   surfco(k,nummin)=xinterprev(k)
                   surfnor(k,nummin)=snor(k)
                 enddo
+                write(*,*) 'contingentsurf min!:',j-1
               endif
             endif
 !
 !           for surface crack:
 !           last subsurface front node: minimum if decreasing trend and
-!           the free surface normal does not coincide with the one from
-!           the previous minimum !
+!           1) no other minimum was found OR
+!           2) the free surface normal does not coincide with the one from
+!              the previous minimum !
 !
             if((j.eq.iendfront(i)-isf).and.(isf.eq.1)) then
-              if(surfnor(1,nummin)*snor(1)+
-     &           surfnor(2,nummin)*snor(2)+
-     &           surfnor(3,nummin)*snor(3).lt.0.5d0) then
-                nummin=nummin+1
-                do k=1,3
-                  surfco(k,nummin)=xinterprev(k)
-                  surfnor(k,nummin)=snor(k)
-                enddo
+              if(itrend.lt.0) then
+                if(nummin.eq.0) then
+                  nummin=nummin+1
+                  do k=1,3
+                    surfco(k,nummin)=xinterprev(k)
+                    surfnor(k,nummin)=snor(k)
+                  enddo
+                  write(*,*) 'contingentsurf min!:',j-1
+                elseif(surfnor(1,nummin)*snor(1)+
+     &                 surfnor(2,nummin)*snor(2)+
+     &                 surfnor(3,nummin)*snor(3).lt.0.5d0) then
+                  nummin=nummin+1
+                  do k=1,3
+                    surfco(k,nummin)=xinterprev(k)
+                    surfnor(k,nummin)=snor(k)
+                  enddo
+                  write(*,*) 'contingentsurf min!:',j-1
+                endif
               endif
             endif
 !
@@ -354,12 +384,13 @@ c     write(*,*)
             alambdaprev=alambda
             do k=1,3
               xinterprev(k)=xinter(k)
-              snor(k)=q(k)-r(k)
+              snor(k)=dirproj(k)
+c              snor(k)=q(k)-r(k)
             enddo
-            dd=sqrt(snor(1)**2+snor(2)**2+snor(3)**2)
-            do k=1,3
-              snor(k)=snor(k)/dd
-            enddo
+c            dd=sqrt(snor(1)**2+snor(2)**2+snor(3)**2)
+c            do k=1,3
+c              snor(k)=snor(k)/dd
+c            enddo
 !            
           enddo
         enddo
@@ -368,9 +399,19 @@ c     write(*,*)
           xxn(k)=xplanecrack(k,icrack)
         enddo
 !
+        write(14,*) 'setc set0'
+        close(14)
+!
 !     loop over all minima found
 !
         do m=1,nummin
+          filename='set .fbd'
+          write(filename(4:4),'(i1)') m
+          open(14,file=filename,status='unknown')
+          filelabel='seto set '
+          write(filelabel(9:9),'(i1)') m
+          write(14,*) filelabel
+!
           alambdamin=1.d30
 !
 !         free surface normal for minimum m
@@ -409,9 +450,9 @@ c             (surfco(3,m)-costruc(3,jrel))*xxs(3)
 !             through the front node at stake and in the direction              
 !             of the free surface normal corresponding to minimum m
 !
-              alambda=acrack(j)*0.05
+              alambda=acrack(j)*0.1d0
               do k=1,3
-                p(k)=costruc(k,jrel)
+                p(k)=coproj(k,jrel)
               enddo
               do
                 do k=1,3
@@ -434,7 +475,8 @@ c             (surfco(3,m)-costruc(3,jrel))*xxs(3)
      &               integerglob(nkon+2*ne+8*netet+6),nterms,konl,
      &               nelem,loopa,dist)
                 if(dist.gt.1.d-6) exit
-                alambda=2*alambda
+c                alambda=2*alambda
+                alambda=1.2d0*alambda
               enddo
 !     
               do k=1,3
@@ -443,7 +485,7 @@ c             (surfco(3,m)-costruc(3,jrel))*xxs(3)
               cosang=((p(1)-q(1))*(r(1)-q(1))+
      &             (p(2)-q(2))*(r(2)-q(2))+
      &             (p(3)-q(3))*(r(3)-q(3)))
-              alambda=alambda-dist/cosang
+              alambda=max(alambda-dist/cosang,1.d-10)
 !
 !*** end alternative 1              
 !
@@ -499,10 +541,10 @@ c             (surfco(3,m)-costruc(3,jrel))*xxs(3)
 !         ratio of "major axes" of crack
 !     
           aratio=acr/bcr
-!     
-!         area ratio for residual area: if 0: big crack, if 1: small crack
-!
-          arearatio=resarea(icrack)/(resarea(icrack)+crackarea(icrack))
+c!     
+c!         area ratio for residual area: if 0: big crack, if 1: small crack
+c!
+c          arearatio=resarea(icrack)/(resarea(icrack)+crackarea(icrack))
 !
 !         limits for the ratios
 !
@@ -524,9 +566,16 @@ c             (surfco(3,m)-costruc(3,jrel))*xxs(3)
 !          
           do i=istart,iend
 !     
+!           positions at the free surface (for surface cracks)
+!
+            if(isf.eq.1) then
+              alambdapj(istartfront(i))=alambdapj(istartfront(i)+1)
+              alambdapj(iendfront(i))=alambdapj(iendfront(i)-1)
+            endif
+!     
 !           loop over the internal nodes of a front
 !     
-            do j=istartfront(i)+isf,iendfront(i)-isf
+            do j=istartfront(i),iendfront(i)
               jrel=ifrontrel(j)
               alamratio=alambdamin/alambdapj(j)
               alamratio=max(alamratio,0.d0)
@@ -535,20 +584,21 @@ c             (surfco(3,m)-costruc(3,jrel))*xxs(3)
               shape(2,j)=shape(2,j)*((xk2max-1.d0)*alamratio+1.d0)
               shape(3,j)=shape(3,j)*((xk3max-1.d0)*alamratio+1.d0)
             enddo
-!     
-!           positions at the free surface (for surface cracks)
 !
-            if(isf.eq.1) then
-              do k=1,3
-                shape(k,istartfront(i))=shape(k,istartfront(i)+1)
-                shape(k,iendfront(i))=shape(k,iendfront(i)-1)
-              enddo
-            endif
           enddo
+!     
+          filelabel='setc set '
+          write(filelabel(9:9),'(i1)') m
+          write(14,*) filelabel
+          close(14)
+!     
         enddo  ! end loop over the mimima for crack "icrack"
-!
+!     
 !       taking the area effect into account
-!
+!       area ratio for residual area: if 0: big crack, if 1: small crack
+!     
+        arearatio=resarea(icrack)/(resarea(icrack)+crackarea(icrack))
+!     
         do j=istartcrackfro(icrack),iendcrackfro(icrack)
         enddo
 !
