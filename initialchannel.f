@@ -39,12 +39,13 @@
      &     node1,node2,id,itreated(*),id1,id2,nup,index,iponoel(*),
      &     inoel(2,*),nmid,ndo,inv,nelemio,nelup,node,imat,neldo,
      &     istack(2,*),nstack,nel,ndata,jumpup(*),jumpdo(*),
-     &     istackb(2,*),nstackb
+     &     istackb(2,*),nstackb,nel1,nup1
 !
       real*8 v(0:mi(2),*),prop(*),xbounact(*),shcon(0:3,ntmat_,*),
      &     physcon(*),rhcon(0:1,ntmat_,*),xbodyact(7,*),co(3,*),
      &     vold(0:mi(2),*),ttime,time,xflow,g(3),dg,temp,cp,dvi,r,
-     &     rho,sfr(*),hfr(*),sba(*),hba(*),epsilon
+     &     rho,sfr(*),hfr(*),sba(*),hba(*),epsilon,heatflux,temp1,
+     &     xflow1
 !
       if(network.le.2) then
         write(*,*) '*ERROR: a network channel canot be used for'
@@ -82,7 +83,8 @@
 !
       do i=1,ntg
         node=itg(i)
-        do j=0,mi(2)
+        v(0,i)=physcon(1)-1.d0
+        do j=1,mi(2)
           v(j,i)=0.d0
         enddo
       enddo
@@ -123,6 +125,8 @@
 !
       nstack=0
       nstackb=0
+!
+!     mechanical computations
 !
 !     major loop: looking for SLUICE GATE and WEAR elements
 !
@@ -503,6 +507,236 @@
           itreated(nel)=1
         enddo loop2
       enddo loop1
+!
+      i=1
+      if(i.eq.1) return
+!     
+!     thermal computations
+!
+!     major loop: looking for SLUICE GATE and WEAR elements
+!
+      do i=1,nflow
+        itreated(i)=0
+      enddo
+!
+      loop4: do i=1,nflow
+        nelem=ieg(i)
+        if(((lakon(nelem)(6:7).ne.'SG').and.
+     &       (lakon(nelem)(6:7).ne.'WE')).or.
+     &       (itreated(i).eq.1)) cycle
+!
+!       untreated SLUICE GATE or WEAR element found
+!
+        indexe=ipkon(nelem)
+        node1=kon(indexe+1)
+        call nident(itg,node1,ntg,id1)
+        node2=kon(indexe+3)
+        call nident(itg,node2,ntg,id2)
+!     
+!       the SLUICE GATE or WEAR element should be connected on one side to
+!       a CHANNEL INOUT element (as only element)
+!     
+        if((ineighe(id1).gt.1).and.(ineighe(id2).gt.1)) cycle
+!     
+!       new branch found
+!       the temperature of the upstream node of the SLUICE GATE
+!       or WEAR element should be known (boundary condition)
+!     
+!       determine the upstream node nup of the element downstream
+!       of the SLUICE GATE or WEAR element
+!     
+        if(ineighe(id1).eq.1) then
+          nup=node2
+        else
+          nup=node1
+        endif
+!     
+!     determine the upstream element nelup
+!     
+        nelup=nelem
+!
+!       loop over all elements in present branch
+!
+        loop5: do
+!
+!         nelup and nup known
+!     
+!         mass flow in nelup
+!
+          xflow=dabs(v(1,kon(ipkon(nelup)+2)))
+!     
+!         heat flux flow in nelup
+!
+          if(nup.eq.kon(ipkon(nelup)+3)) then
+            temp=v(0,kon(ipkon(nelup)+1))
+          else
+            temp=v(0,kon(ipkon(nelup)+3))
+          endif
+          imat=ielmat(1,nelup)
+          call materialdata_tg(imat,ntmat_,temp,shcon,nshcon,cp,r,
+     &         dvi,rhcon,nrhcon,rho)
+          heatflux=cp*temp*xflow
+!     
+          call nident(itg,nup,ntg,id)
+!
+!         end of branch
+!
+          if(ineighe(id).eq.1) then
+            write(*,*) '*INFO: branch finished'
+!
+!           branch continues 
+!
+          elseif(ineighe(id).eq.2) then
+!     
+!           one "true" element connected downstream
+!           loop over all elements connected to nup
+!     
+            index=iponoel(nup)
+            do
+              if(inoel(1,index).ne.nelup) then
+                if(lakon(inoel(1,index))(6:7).ne.'IO') then
+!     
+!                 actual element
+!     
+                  nelem=inoel(1,index)
+                else
+!     
+!                 IO element
+!     
+                  nelemio=inoel(1,index)
+!
+!                 mass flow
+!
+                  if(nup.eq.kon(ipkon(nelemio)+3)) then
+                    xflow=xflow+v(1,kon(ipkon(nelemio)+2))
+                  else
+                    xflow=xflow-v(1,kon(ipkon(nelemio)+2))
+                  endif
+!
+!                 heat flux
+!
+!                 the temperature is exceptionally stored in
+!                 the middle node of the IO-element, since the
+!                 upstream node has node number zero
+!
+                  temp=v(0,kon(ipkon(nelemio)+2))
+                  imat=ielmat(1,nelemio)
+                  call materialdata_tg(imat,ntmat_,temp,shcon,nshcon,cp,
+     &                 r,dvi,rhcon,nrhcon,rho)
+                  heatflux=heatflux+cp*temp*xflow
+                endif
+              endif
+              index=inoel(2,index)
+              if(index.eq.0) exit
+            enddo
+!     
+!               joint of three channels
+!
+              elseif(ineighe(id).eq.3) then
+!     
+!               taking the temperature of the upstream node for the
+!               material properties
+!     
+                temp=v(0,nup)
+                imat=ielmat(1,nelup)
+!     
+                call materialdata_tg(imat,ntmat_,temp,shcon,nshcon,cp,r,
+     &               dvi,rhcon,nrhcon,rho)
+!     
+                nel1=0
+                index=iponoel(nup)
+                do
+                  if(inoel(1,index).eq.nelup) then
+                    index=inoel(2,index)
+                    if(index.eq.0) exit
+                    cycle
+                  endif
+!
+!                 element not equal to nelup
+!
+                  nel=inoel(1,index)
+                  indexe=ipkon(nel)
+!
+!                 upstream temperature
+!
+                  if(kon(indexe+1).eq.nup) then
+                    temp1=physcon(1)+v(0,kon(indexe+3))
+                  else
+                    temp1=physcon(1)+v(0,kon(indexe+1))
+                  endif
+!
+!                 if absolute temperature is negative: element not
+!                 treated yet
+!
+                  if(temp1.lt.0.d0) then
+                    nelem=nel
+                    index=inoel(2,index)
+                    if(index.eq.0) exit
+                    cycle
+                  endif
+!
+!                 temperature is not negative in new branch: must be
+!                 branch 1
+!
+                  nel1=nel
+                  imat=ielmat(1,nel1)
+                  call materialdata_tg(imat,ntmat_,temp,shcon,nshcon,cp,
+     &                 r,dvi,rhcon,nrhcon,rho)
+                  if(kon(indexe+1).eq.nup) then
+                    nup1=kon(indexe+3)
+                    xflow1=-v(1,kon(indexe+2))
+                  else
+                    nup1=kon(indexe+1)
+                    xflow1=v(1,kon(indexe+2))
+                  endif
+                  heatflux=heatflux+cp*temp1*xflow1
+!
+                  index=inoel(2,index)
+                  if(index.eq.0) exit
+                enddo
+!     
+!               if nel1=0 more than one branch has no mass flux
+!
+                if(nel1.eq.0) then
+                  nelem=0
+                  cycle loop4
+                endif
+!     
+!               joint of more than three channels
+!
+              elseif(ineighe(id).gt.3) then
+                write(*,*) '*ERROR in initialchannel: branch joint'
+                write(*,*) '       of more than 3 channels'
+                write(*,*)
+                call exit(201)
+              endif
+!
+!         taking the temperature of the upstream node for the
+!         material properties
+!
+          temp=v(0,nup)
+          imat=ielmat(1,nelem)
+!     
+          call materialdata_tg(imat,ntmat_,temp,shcon,nshcon,cp,r,
+     &         dvi,rhcon,nrhcon,rho)
+!     
+!         determining the temperature
+!     
+          v(0,nup)=heatflux/cp
+!     
+!         determining new nelup and nup
+!     
+          indexe=ipkon(nelem)
+          if(kon(indexe+1).eq.nup) then
+            nup=kon(indexe+3)
+          else
+            nup=kon(indexe+1)
+          endif
+          nelup=nelem
+!     
+          itreated(nel)=1
+        enddo loop5
+      enddo loop4
 !
       return
       end
