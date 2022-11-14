@@ -351,6 +351,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
     NNEW(coproj,double,3*nbounnod);
     NNEW(crackarea,double,ncrack);
     NNEW(surfnor,double,3*nfront);
+    NNEW(surftan,double,3*nfront);
     NNEW(surfco,double,3*nfront);
     NNEW(resarea,double,ncrack);
     NNEW(alambdapj,double,nfront);
@@ -358,9 +359,10 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 			    costruc,cg,coproj,crackarea,&nnfront,isubsurffront,
 			    istartcrackfro,iendcrackfro,istartfront,iendfront,
 			    acrack,xa,ifrontrel,integerglob,doubleglob,&nstep,
-			    surfnor,surfco,resarea,alambdapj,shape));
+			    surfnor,surfco,resarea,alambdapj,shape,xt,surftan));
     SFREE(xplanecrack);SFREE(cg);SFREE(coproj);SFREE(crackarea);
-    SFREE(surfnor);SFREE(surfco);SFREE(resarea);SFREE(alambdapj);*/
+    SFREE(surfnor);SFREE(surfco);SFREE(resarea);SFREE(alambdapj);
+    SFREE(surftan);*/
     
     /* calculating the stress intensity factors (LCF) */
 

@@ -910,7 +910,7 @@ void FORTRAN(contingentsurf,(ITG *ncrack,double *xplanecrack,
 			     double *xa,ITG *ifrontrel,ITG *integerglob,
 			     double *doubleglob,ITG *nstep,double *surfnor,
 			     double *surfco,double *resarea,double *alambdapj,
-			     double *shape));
+			     double *shape,double *xt,double *surftan));
 
 void convert2rowbyrow(double *ad,double *au, ITG *icol,ITG *irow, 
 		      ITG *jq,ITG *neq,ITG *nzs,double **aupardisop,
