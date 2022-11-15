@@ -39,7 +39,7 @@
      &     node1,node2,id,itreated(*),id1,id2,nup,index,iponoel(*),
      &     inoel(2,*),nmid,ndo,inv,nelemio,nelup,node,imat,neldo,
      &     istack(2,*),nstack,nel,ndata,jumpup(*),jumpdo(*),
-     &     istackb(2,*),nstackb,nel1,nup1
+     &     istackb(2,*),nstackb,nel1,nup1,nentry,newel
 !
       real*8 v(0:mi(2),*),prop(*),xbounact(*),shcon(0:3,ntmat_,*),
      &     physcon(*),rhcon(0:1,ntmat_,*),xbodyact(7,*),co(3,*),
@@ -221,6 +221,7 @@
 !
               if(ineighe(id).eq.1) then
                 write(*,*) '*INFO: branch finished'
+                write(*,*)
 !     
 !     IO-element: determine the mass flow
 !     
@@ -299,7 +300,7 @@
 !     
                 call channeljointfront(nelem,nelup,nup,iponoel,inoel,
      &               ielprop,prop,ipkon,kon,mi,v,g,dg,nstackb,istackb,
-     &               rho,xflow,co)
+     &               rho,xflow,co,lakon)
 !
 !               if nelem=0 more than one branch has no mass flux
 !
@@ -371,6 +372,7 @@
                   cycle loop2
                 else
                   write(*,*) '*INFO: branch finished'
+                  write(*,*)
                   cycle loop1
                 endif
 !
@@ -508,8 +510,8 @@
         enddo loop2
       enddo loop1
 !
-      i=1
-      if(i.eq.1) return
+c      i=1
+c      if(i.eq.1) return
 !     
 !     thermal computations
 !
@@ -568,9 +570,18 @@
 !         heat flux flow in nelup
 !
           if(nup.eq.kon(ipkon(nelup)+3)) then
-            temp=v(0,kon(ipkon(nelup)+1))
+            nentry=kon(ipkon(nelup)+1)
           else
-            temp=v(0,kon(ipkon(nelup)+3))
+            nentry=kon(ipkon(nelup)+3)
+          endif
+          temp=v(0,nentry)
+          if(temp+physcon(1).lt.0.d0) then
+            write(*,*) '*WARNING in initialchannel: no thermal'
+            write(*,*) '         calculation can be performed'
+            write(*,*) '         since the temperature in upstream'
+            write(*,*) '         node ',nentry,' is lacking'
+            write(*,*)
+            exit loop4
           endif
           imat=ielmat(1,nelup)
           call materialdata_tg(imat,ntmat_,temp,shcon,nshcon,cp,r,
@@ -583,6 +594,9 @@
 !
           if(ineighe(id).eq.1) then
             write(*,*) '*INFO: branch finished'
+            write(*,*)
+            v(0,nup)=heatflux/(cp*xflow)
+            exit loop5
 !
 !           branch continues 
 !
@@ -619,7 +633,16 @@
 !                 the middle node of the IO-element, since the
 !                 upstream node has node number zero
 !
-                  temp=v(0,kon(ipkon(nelemio)+2))
+                  nentry=kon(ipkon(nelemio)+2)
+                  temp=v(0,nentry)
+                  if(temp+physcon(1).lt.0.d0) then
+                    write(*,*) '*WARNING in initialchannel: no thermal'
+                    write(*,*) '         calculation can be performed'
+                    write(*,*) '         since the temperature at '
+                    write(*,*) '         entrance node ',nentry,
+     &                   ' is lacking'
+                    exit loop4
+                  endif
                   imat=ielmat(1,nelemio)
                   call materialdata_tg(imat,ntmat_,temp,shcon,nshcon,cp,
      &                 r,dvi,rhcon,nrhcon,rho)
@@ -630,86 +653,87 @@
               if(index.eq.0) exit
             enddo
 !     
-!               joint of three channels
+!           joint of three channels
 !
-              elseif(ineighe(id).eq.3) then
+          elseif(ineighe(id).eq.3) then
 !     
-!               taking the temperature of the upstream node for the
-!               material properties
+!           taking the temperature of the upstream node for the
+!           material properties
 !     
-                temp=v(0,nup)
-                imat=ielmat(1,nelup)
+            temp=v(0,nup)
+            imat=ielmat(1,nelup)
 !     
-                call materialdata_tg(imat,ntmat_,temp,shcon,nshcon,cp,r,
-     &               dvi,rhcon,nrhcon,rho)
+            call materialdata_tg(imat,ntmat_,temp,shcon,nshcon,cp,r,
+     &           dvi,rhcon,nrhcon,rho)
 !     
-                nel1=0
-                index=iponoel(nup)
-                do
-                  if(inoel(1,index).eq.nelup) then
-                    index=inoel(2,index)
-                    if(index.eq.0) exit
-                    cycle
-                  endif
-!
-!                 element not equal to nelup
-!
-                  nel=inoel(1,index)
-                  indexe=ipkon(nel)
-!
-!                 upstream temperature
-!
-                  if(kon(indexe+1).eq.nup) then
-                    temp1=physcon(1)+v(0,kon(indexe+3))
-                  else
-                    temp1=physcon(1)+v(0,kon(indexe+1))
-                  endif
-!
-!                 if absolute temperature is negative: element not
-!                 treated yet
-!
-                  if(temp1.lt.0.d0) then
-                    nelem=nel
-                    index=inoel(2,index)
-                    if(index.eq.0) exit
-                    cycle
-                  endif
-!
-!                 temperature is not negative in new branch: must be
-!                 branch 1
-!
-                  nel1=nel
-                  imat=ielmat(1,nel1)
-                  call materialdata_tg(imat,ntmat_,temp,shcon,nshcon,cp,
-     &                 r,dvi,rhcon,nrhcon,rho)
-                  if(kon(indexe+1).eq.nup) then
-                    nup1=kon(indexe+3)
-                    xflow1=-v(1,kon(indexe+2))
-                  else
-                    nup1=kon(indexe+1)
-                    xflow1=v(1,kon(indexe+2))
-                  endif
-                  heatflux=heatflux+cp*temp1*xflow1
-!
-                  index=inoel(2,index)
-                  if(index.eq.0) exit
-                enddo
-!     
-!               if nel1=0 more than one branch has no mass flux
-!
-                if(nel1.eq.0) then
-                  nelem=0
-                  cycle loop4
-                endif
-!     
-!               joint of more than three channels
-!
-              elseif(ineighe(id).gt.3) then
-                write(*,*) '*ERROR in initialchannel: branch joint'
-                write(*,*) '       of more than 3 channels'
-                write(*,*)
-                call exit(201)
+            nel1=0
+            index=iponoel(nup)
+            do
+              if(inoel(1,index).eq.nelup) then
+                index=inoel(2,index)
+                if(index.eq.0) exit
+                cycle
               endif
+!
+!             element not equal to nelup
+!
+              newel=inoel(1,index)
+              indexe=ipkon(newel)
+!
+!             temperature at the end node of element newel which
+!             is not equal to nup
+!
+              if(kon(indexe+1).eq.nup) then
+                temp1=physcon(1)+v(0,kon(indexe+3))
+              else
+                temp1=physcon(1)+v(0,kon(indexe+1))
+              endif
+!
+!             if absolute temperature is negative: element not
+!             treated yet
+!
+              if(temp1.lt.0.d0) then
+                nelem=newel
+                index=inoel(2,index)
+                if(index.eq.0) exit
+                cycle
+              endif
+!
+!             temperature is not negative in new branch: must be
+!             branch 1
+!
+              nel1=newel
+              imat=ielmat(1,nel1)
+              call materialdata_tg(imat,ntmat_,temp,shcon,nshcon,cp,
+     &             r,dvi,rhcon,nrhcon,rho)
+              if(kon(indexe+1).eq.nup) then
+                nup1=kon(indexe+3)
+                xflow1=-v(1,kon(indexe+2))
+              else
+                nup1=kon(indexe+1)
+                xflow1=v(1,kon(indexe+2))
+              endif
+              heatflux=heatflux+cp*temp1*xflow1
+!     
+              index=inoel(2,index)
+              if(index.eq.0) exit
+            enddo
+!     
+!           if nel1=0 more than one branch has no mass flux
+!
+            if(nel1.eq.0) then
+              nelem=0
+              cycle loop4
+            endif
+!     
+!           joint of more than three channels
+!
+          elseif(ineighe(id).gt.3) then
+            write(*,*) '*ERROR in initialchannel: branch joint'
+            write(*,*) '       of more than 3 channels'
+            write(*,*)
+            call exit(201)
+          endif
 !
 !         taking the temperature of the upstream node for the
 !         material properties
@@ -722,7 +746,7 @@
 !     
 !         determining the temperature
 !     
-          v(0,nup)=heatflux/cp
+          v(0,nup)=heatflux/(cp*xflow)
 !     
 !         determining new nelup and nup
 !     
@@ -734,6 +758,7 @@
           endif
           nelup=nelem
 !     
+          call nident(ieg,nelem,nflow,nel)
           itreated(nel)=1
         enddo loop5
       enddo loop4

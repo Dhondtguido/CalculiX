@@ -186,6 +186,7 @@
                write(*,*) '         but no time increment nor step is sp
      &ecified'
                write(*,*) '         the defaults (1,1) are used'
+               write(*,*)
                tinc=1.d0
                tper=1.d0
                tmin=1.d-5

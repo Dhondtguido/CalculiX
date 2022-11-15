@@ -309,7 +309,7 @@ c          dhdsm=dhds2
               h1=hfr(id)+(s-sfr(id))/(sfr(id+1)-sfr(id))*
      &             (hfr(id+1)-hfr(id))
               call hns(xflow,rho,b,theta,dg,sqrts0,h1,h2)
-              write(*,*) 'B jump ',s,h1,h2,hback
+c              write(*,*) 'B jump ',s,h1,h2,hback
               delta=h2-hback
               if(delta*sg.eq.0.d0) then
                 sg=delta

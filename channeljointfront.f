@@ -21,11 +21,13 @@
 !     
       subroutine channeljointfront(nelem,nelup,nup,iponoel,inoel,
      &     ielprop,prop,ipkon,kon,mi,v,g,dg,nstackb,istackb,rho,xflow,
-     &     co)
+     &     co,lakon)
 !
 !     treats a channel joint for a frontwater calculation
 !
       implicit none
+!
+      character*8 lakon(*)
 !
       integer nelem,iponoel(*),inoel(2,*),nelup,nup,index,ielprop(*),
      &     indexp,indexe,ipkon(*),kon(*),nup1,nup2,mi(*),nel1,nel,
@@ -108,6 +110,14 @@ c      nel=0
 !       element to be treated is not nelup
 !
         nel=inoel(1,index)
+        if(lakon(nel)(6:7).eq.'IO') then
+          write(*,*) '*ERROR in channeljointfront:'
+          write(*,*) '       no IO element allowed'
+          write(*,*) '       in a joint of three'
+          write(*,*) '       non-IO elements'
+          write(*,*)
+          call exit(201)
+        endif
         indexe=ipkon(nel)
 !
 !       if mass flow in branch is zero: cycle
@@ -118,8 +128,8 @@ c      nel=0
           if(index.eq.0) exit
           cycle
         endif
-!     
-!     mass flow is not zero in new branch: must be branch 1
+!      
+!       mass flow is not zero in new branch: must be branch 1
 !
         nel1=nel
         if(kon(indexe+1).eq.nup) then
