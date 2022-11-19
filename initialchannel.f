@@ -45,7 +45,7 @@
      &     physcon(*),rhcon(0:1,ntmat_,*),xbodyact(7,*),co(3,*),
      &     vold(0:mi(2),*),ttime,time,xflow,g(3),dg,temp,cp,dvi,r,
      &     rho,sfr(*),hfr(*),sba(*),hba(*),epsilon,heatflux,temp1,
-     &     xflow1
+     &     xflow1,xflowact
 !
       if(network.le.2) then
         write(*,*) '*ERROR: a network channel canot be used for'
@@ -575,7 +575,7 @@ c      if(i.eq.1) return
             nentry=kon(ipkon(nelup)+3)
           endif
           temp=v(0,nentry)
-          if(temp+physcon(1).lt.0.d0) then
+          if(temp-physcon(1).lt.0.d0) then
             write(*,*) '*WARNING in initialchannel: no thermal'
             write(*,*) '         calculation can be performed'
             write(*,*) '         since the temperature in upstream'
@@ -622,10 +622,11 @@ c      if(i.eq.1) return
 !                 mass flow
 !
                   if(nup.eq.kon(ipkon(nelemio)+3)) then
-                    xflow=xflow+v(1,kon(ipkon(nelemio)+2))
+                    xflowact=v(1,kon(ipkon(nelemio)+2))
                   else
-                    xflow=xflow-v(1,kon(ipkon(nelemio)+2))
+                    xflowact=-v(1,kon(ipkon(nelemio)+2))
                   endif
+                  xflow=xflow+xflowact
 !
 !                 heat flux
 !
@@ -635,7 +636,7 @@ c      if(i.eq.1) return
 !
                   nentry=kon(ipkon(nelemio)+2)
                   temp=v(0,nentry)
-                  if(temp+physcon(1).lt.0.d0) then
+                  if(temp-physcon(1).lt.0.d0) then
                     write(*,*) '*WARNING in initialchannel: no thermal'
                     write(*,*) '         calculation can be performed'
                     write(*,*) '         since the temperature at '
@@ -646,7 +647,7 @@ c      if(i.eq.1) return
                   imat=ielmat(1,nelemio)
                   call materialdata_tg(imat,ntmat_,temp,shcon,nshcon,cp,
      &                 r,dvi,rhcon,nrhcon,rho)
-                  heatflux=heatflux+cp*temp*xflow
+                  heatflux=heatflux+cp*temp*xflowact
                 endif
               endif
               index=inoel(2,index)
@@ -657,14 +658,14 @@ c      if(i.eq.1) return
 !
           elseif(ineighe(id).eq.3) then
 !     
-!           taking the temperature of the upstream node for the
-!           material properties
-!     
-            temp=v(0,nup)
-            imat=ielmat(1,nelup)
-!     
-            call materialdata_tg(imat,ntmat_,temp,shcon,nshcon,cp,r,
-     &           dvi,rhcon,nrhcon,rho)
+c!           taking the temperature of the upstream node for the
+c!           material properties
+c!     
+c            temp=v(0,nup)
+c            imat=ielmat(1,nelup)
+c!     
+c            call materialdata_tg(imat,ntmat_,temp,shcon,nshcon,cp,r,
+c     &           dvi,rhcon,nrhcon,rho)
 !     
             nel1=0
             index=iponoel(nup)
@@ -684,15 +685,15 @@ c      if(i.eq.1) return
 !             is not equal to nup
 !
               if(kon(indexe+1).eq.nup) then
-                temp1=physcon(1)+v(0,kon(indexe+3))
+                temp1=v(0,kon(indexe+3))
               else
-                temp1=physcon(1)+v(0,kon(indexe+1))
+                temp1=v(0,kon(indexe+1))
               endif
 !
 !             if absolute temperature is negative: element not
 !             treated yet
 !
-              if(temp1.lt.0.d0) then
+              if(temp1-physcon(1).lt.0.d0) then
                 nelem=newel
                 index=inoel(2,index)
                 if(index.eq.0) exit
@@ -713,6 +714,7 @@ c      if(i.eq.1) return
                 nup1=kon(indexe+1)
                 xflow1=v(1,kon(indexe+2))
               endif
+              xflow=xflow+xflow1
               heatflux=heatflux+cp*temp1*xflow1
 !     
               index=inoel(2,index)

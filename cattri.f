@@ -30,6 +30,7 @@
 !     
       ntri=0
       do i=1,ne
+        if(ipkon(i).lt.0) cycle
         if(lakon(i).ne.'C3D6  L ') cycle
         ntri=ntri+1
         indexe=ipkon(i)
