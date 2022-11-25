@@ -57,7 +57,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
     *neigh=NULL,ngraph=1,*ielprop=NULL,*ielmat=NULL,icritic=0,
     *ifrontprop=NULL,*ifronteq=NULL,*istartfronteq=NULL,*iendfronteq=NULL,
     nfronteq,ncyc,*idist=NULL,ncrconst,nstep,nproc,ncrtem,law,nstepf2,
-    *iincglob=NULL,nparam,ncyctot=0,ieqspace,*integerglobf=NULL,lcf,
+    *iincglob=NULL,nparam,ncyctot=0,ieqspace=1,*integerglobf=NULL,lcf,
     *iamt1=NULL,mt=mi[1]+1,*iponor=NULL,one=1,nkinc,im;
 
   double *doubleglob=NULL,*stress=NULL,*xt=NULL,*xn=NULL,*xa=NULL,
