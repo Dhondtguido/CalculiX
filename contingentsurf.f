@@ -27,7 +27,7 @@
 !     
       implicit none
 !
-      character*4 outlabel
+      character*5 outlabel
       character*8 filename
       character*9 filelabel
 !     
@@ -172,8 +172,8 @@ c            coproj(k,j)=costruc(k,j)-al*xplanecrack(k,i)
 !     2) determining the adjacent free surfaces and the minimum
 !        distance from the crack front
 !
-      open(14,file='set0.fbd',status='unknown')
-      write(14,*) 'seto set0'
+c      open(14,file='set0.fbd',status='unknown')
+c      write(14,*) 'seto set0'
 !
       do icrack=1,ncrack
 !
@@ -266,11 +266,11 @@ c            coproj(k,j)=costruc(k,j)-al*xplanecrack(k,i)
 !           printing lambda to standard out
 !           storing intersection points to file            
 !
-            write(*,*) 'set0',j,alambda
-            write(outlabel(1:2),'(i2)') j
-            outlabel(3:4)='p '
- 100        format('pnt ',a4,3(1x,e15.8))
-            write(14,100) outlabel,xinter(1),xinter(2),xinter(3)
+c            write(*,*) 'set0',j,alambda
+c            write(outlabel(1:2),'(i2)') j
+c            outlabel(3:4)='p '
+c 100        format('pnt ',a4,3(1x,e15.8))
+c            write(14,100) outlabel,xinter(1),xinter(2),xinter(3)
 !
 !           first subsurface node
 !
@@ -330,7 +330,7 @@ c            coproj(k,j)=costruc(k,j)-al*xplanecrack(k,i)
                   surfco(k,nummin)=xinterprev(k)
                   surfnor(k,nummin)=snor(k)
                 enddo
-                write(*,*) 'contingentsurf min!:',j-1
+c     write(*,*) 'contingentsurf min!:',j-1
               elseif(surfnor(1,nummin)*snor(1)+
      &               surfnor(2,nummin)*snor(2)+
      &               surfnor(3,nummin)*snor(3).lt.0.5d0) then
@@ -343,7 +343,7 @@ c            coproj(k,j)=costruc(k,j)-al*xplanecrack(k,i)
                   surfco(k,nummin)=xinterprev(k)
                   surfnor(k,nummin)=snor(k)
                 enddo
-                write(*,*) 'contingentsurf min!:',j-1
+c                write(*,*) 'contingentsurf min!:',j-1
               endif
             endif
 !
@@ -361,7 +361,7 @@ c            coproj(k,j)=costruc(k,j)-al*xplanecrack(k,i)
                     surfco(k,nummin)=xinter(k)
                     surfnor(k,nummin)=xa(k,j)
                   enddo
-                  write(*,*) 'contingentsurf min!:',j-1
+c                  write(*,*) 'contingentsurf min!:',j-1
                 elseif(surfnor(1,nummin)*xa(1,j)+
      &                 surfnor(2,nummin)*xa(2,j)+
      &                 surfnor(3,nummin)*xa(3,j).lt.0.5d0) then
@@ -370,7 +370,7 @@ c            coproj(k,j)=costruc(k,j)-al*xplanecrack(k,i)
                     surfco(k,nummin)=xinter(k)
                     surfnor(k,nummin)=xa(k,j)
                   enddo
-                  write(*,*) 'contingentsurf min!:',j-1
+c                  write(*,*) 'contingentsurf min!:',j-1
                 endif
               endif
             endif
@@ -391,20 +391,21 @@ c            coproj(k,j)=costruc(k,j)-al*xplanecrack(k,i)
           xxn(k)=xplanecrack(k,icrack)
         enddo
 !
-        write(14,*) 'setc set0'
-        close(14)
+c        write(14,*) 'setc set0'
+c        close(14)
 !
 !       loop over all minima found
 !
         do m=1,nummin
-          filename='set .fbd'
-          write(filename(4:4),'(i1)') m
-          open(14,file=filename,status='unknown')
-          filelabel='seto set '
-          write(filelabel(9:9),'(i1)') m
-          write(14,*) filelabel
+c          filename='set .fbd'
+c          write(filename(4:4),'(i1)') m
+c          open(14,file=filename,status='unknown')
+c          filelabel='seto set '
+c          write(filelabel(9:9),'(i1)') m
+c          write(14,*) filelabel
 !
           alambdamin=1.d30
+          alambdaprev=1.d30
 !
 !         free surface normal for minimum m
 !
@@ -417,6 +418,10 @@ c            coproj(k,j)=costruc(k,j)-al*xplanecrack(k,i)
           xxt(1)=xxn(2)*xxs(3)-xxn(3)*xxs(2)
           xxt(2)=xxn(3)*xxs(1)-xxn(1)*xxs(3)
           xxt(3)=xxn(1)*xxs(2)-xxn(2)*xxs(1)
+          dd=dsqrt(xxt(1)*xxt(1)+xxt(2)*xxt(2)+xxt(3)*xxt(3))
+          do k=1,3
+            xxt(k)=xxt(k)/dd
+          enddo
 !     
 !         loop over the fronts: determine the distance from the free
 !         surface in direction xxs (normal to surface at minimum)
@@ -491,6 +496,7 @@ c             (surfco(3,m)-costruc(3,jrel))*xxs(3)
 !
 !             alambda is the distance from the free surface in direction xxs
 !
+              alambdaprev=alambda
               alambdapj(j)=alambda
 !
               alambdamin=min(alambdamin,alambda)
@@ -583,10 +589,10 @@ c             (surfco(3,m)-costruc(3,jrel))*xxs(3)
 !
           enddo
 !     
-          filelabel='setc set '
-          write(filelabel(9:9),'(i1)') m
-          write(14,*) filelabel
-          close(14)
+c          filelabel='setc set '
+c          write(filelabel(9:9),'(i1)') m
+c          write(14,*) filelabel
+c          close(14)
 !     
         enddo  ! end loop over the mimima for crack "icrack"
 !     

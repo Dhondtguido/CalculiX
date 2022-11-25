@@ -972,8 +972,8 @@ void FORTRAN(crackprop,(ITG *ifrontrel,ITG *ibounnod,
 			ITG *integerglob,ITG *isubsurffront,
 			double *dadn,ITG *ncyc,ITG *ifrontprop,
 			ITG *nstep,double *acrack,double *acrackglob,
-			double *datarget,ITG *ieqspace,ITG *iincglob,
-			ITG *iinc,double *dnglob,ITG *ncyctot));
+			double *datarget,ITG *iincglob,
+			ITG *iinc,double *dnglob,ITG *ncyctot,ITG *ier));
 
 void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 		      char *jobnamec,ITG *nboun,ITG *iamboun,double *xboun,

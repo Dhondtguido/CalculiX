@@ -19,7 +19,7 @@
       subroutine crackprop(ifrontrel,ibounnod,domphi,da,co,costruc,nk,
      &     xa,xn,nnfront,istartfront,iendfront,doubleglob,integerglob,
      &     isubsurffront,dadn,ncyc,ifrontprop,nstep,acrack,acrackglob,
-     &     datarget,ieqspace,iincglob,iinc,dnglob,ncyctot)
+     &     datarget,iincglob,iinc,dnglob,ncyctot,ier)
 !     
 !     calculate the crack propagation increment
 !
@@ -32,13 +32,13 @@
 !      
       implicit none
 !     
-      integer i,j,k,node,ifrontrel(*),nk,nnfront,istartfront(*),
+      integer i,j,k,m,node,ifrontrel(*),nk,nnfront,istartfront(*),
      &     iendfront(*),integerglob(*),nktet,netet,ne,nkon,nfaces,
      &     nfield,nselect,imastset,iselect(6),nterms,nelem,
      &     ialset(1),iendset(1),istartset(1),konl(20),loopa,
      &     noderel,ibounnod(*),isubsurffront(*),ifrontprop(*),
-     &     ncyc,nstep,ieqspace,nodep,nodeq,iincglob(*),iinc,
-     &     ncyctot
+     &     ncyc,nstep,nodep,nodeq,iincglob(*),iinc,
+     &     ncyctot,ier
 !     
       real*8 da(*),domphi(*),co(3,*),costruc(3,*),xa(3,*),xn(3,*),
      &     doubleglob(*),coords(3),ratio(20),dist,pi,theta,ctheta,
@@ -56,14 +56,6 @@
       imastset=0
       loopa=8
 !     
-      ieqspace=1
-!     
-!     calculate the crack propagation
-!     
-c     write(*,*)
-c     write(*,*) 'crackprop'
-c     write(*,*)
-!     
 !     Definition variable theta,ctheta,stheta
 !     
       pi=4.d0*datan(1.d0)
@@ -71,8 +63,6 @@ c     write(*,*)
 !     
       do k=1,nnfront
 !     
-c     write(*,*) 'start end ',istartfront(k),iendfront(k)
-        
         do i=istartfront(k),iendfront(k)
 !     
           noderel=ifrontrel(i)
@@ -90,7 +80,6 @@ c     write(*,*) 'start end ',istartfront(k),iendfront(k)
           if(da(i).lt.datarget*0.01d0) then
             da(i)=datarget*0.01d0
             domphi(i)=0.d0
-            ieqspace=0
           endif
 !     
 !     increase da(i) such that the node extends by 1.2d-6 outside
@@ -120,8 +109,6 @@ c     write(*,*) 'start end ',istartfront(k),iendfront(k)
           if(isubsurffront(k).eq.1) cycle
 !     
           if (i.eq.istartfront(k)) then
-!     
-c     write(*,*)'Initial coordinates',nk,(co(j,nk),j=1,3)
 !
 !     correcting the projection of the node outside the structure
 !     onto the structure: this node can lie way outside the local
@@ -139,6 +126,13 @@ c     write(*,*)'Initial coordinates',nk,(co(j,nk),j=1,3)
             al=dd/((r(1)-q(1))*(p(1)-q(1))+
      &           (r(2)-q(2))*(p(2)-q(2))+
      &           (r(3)-q(3))*(p(3)-q(3)))
+!            
+!           check for the range of al            
+!            
+            if((al.lt.0.d0).or.(al.gt.1.d0)) then
+              al=1.d0
+            endif
+!
             do j=1,3
               costruc(j,noderel)=q(j)+al*(p(j)-q(j))
             enddo
@@ -154,10 +148,12 @@ c     write(*,*)'Initial coordinates',nk,(co(j,nk),j=1,3)
 !     
             ctheta=dcos(theta)
             stheta=-dsin(theta)
+!
+!           rotating vector in steps of 5 degrees
+!
+            ier=1
+            do m=1,72
 !     
-            do
-!     
-c     write(*,*)'DO WHILE'
               do j=1,3
                 coords(j)=co(j,nk)
               enddo
@@ -177,8 +173,10 @@ c     write(*,*)'DO WHILE'
      &             integerglob(nkon+2*ne+8*netet+6),nterms,konl,
      &             nelem,loopa,dist)
 !     
-c     write(*,*)'dist', dist
-              if(dist.ge.1.d-6) exit
+              if(dist.ge.1.d-6) then
+                ier=0
+                exit
+              endif
 !     
               c(1,1)=ctheta+(1-ctheta)*(xn(1,i)**2)
               c(1,2)=-stheta*xn(3,i)+(1-ctheta)*xn(1,i)*xn(2,i)
@@ -189,7 +187,6 @@ c     write(*,*)'dist', dist
               c(3,1)=-stheta*xn(2,i)+(1-ctheta)*xn(3,i)*xn(1,i)
               c(3,2)=stheta*xn(1,i)+(1-ctheta)*xn(3,i)*xn(2,i)
               c(3,3)=ctheta+(1-ctheta)*(xn(3,i)**2)
-              
 !     
               do j=1,3
                 r0(j)=r(j)
@@ -198,15 +195,17 @@ c     write(*,*)'dist', dist
               do j=1,3
                 r(j)=c(j,1)*r0(1)+c(j,2)*r0(2)+c(j,3)*r0(3)
               enddo
-c     write(*,*) 'r(j)',(r(j),j=1,3),(r0(j),j=1,3)
 !     Rotation of node nk 
               do j=1,3
                 co(j,nk)=costruc(j,noderel)+r(j)
               enddo
-c     write(*,*) 'INTERNAL NODE',nk
-c     write(*,*) 'New coordinates',nk,(co(j,nk),j=1,3)
             enddo
 !     
+!           if no position external to the structure was found: error     
+!     
+            if(ier.eq.1) then
+              return
+            endif
 !     
           elseif (i.eq.iendfront(k)) then
 !
@@ -226,6 +225,13 @@ c     write(*,*) 'New coordinates',nk,(co(j,nk),j=1,3)
             al=dd/((r(1)-q(1))*(p(1)-q(1))+
      &           (r(2)-q(2))*(p(2)-q(2))+
      &           (r(3)-q(3))*(p(3)-q(3)))
+!            
+!           check for the range of al            
+!            
+            if((al.lt.0.d0).or.(al.gt.1.d0)) then
+              al=0.d0
+            endif
+!            
             do j=1,3
               costruc(j,noderel)=q(j)+al*(p(j)-q(j))
             enddo
@@ -241,8 +247,12 @@ c     write(*,*) 'New coordinates',nk,(co(j,nk),j=1,3)
 !     
             ctheta=dcos(theta)
             stheta=dsin(theta)
-!     
-            do
+!
+!           rotating vector in steps of 5 degrees
+!
+            ier=1
+            do m=1,72
+!
               do j=1,3
                 coords(j)=co(j,nk)
               enddo
@@ -262,8 +272,10 @@ c     write(*,*) 'New coordinates',nk,(co(j,nk),j=1,3)
      &             integerglob(nkon+2*ne+8*netet+6),nterms,konl,
      &             nelem,loopa,dist)
 !     
-c     write(*,*)'dist', dist
-              if(dist.ge.1.d-6) exit
+              if(dist.ge.1.d-6) then
+                ier=0
+                exit
+              endif
 !     
               c(1,1)=ctheta+(1-ctheta)*(xn(1,i)**2)
               c(1,2)=-stheta*xn(3,i)+(1-ctheta)*xn(1,i)*xn(2,i)
@@ -282,26 +294,21 @@ c     write(*,*)'dist', dist
               do j=1,3
                 r(j)=c(j,1)*r0(1)+c(j,2)*r0(2)+c(j,3)*r0(3)
               enddo
-c     write(*,*) 'r(j)',(r(j),j=1,3),(r0(j),j=1,3)
 !     Rotation of node nk 
               do j=1,3
                 co(j,nk)=costruc(j,noderel)+r(j)
               enddo
-c     write(*,*) 'INTERNAL NODE',nk
-c     write(*,*) 'New coordinates',nk,(co(j,nk),j=1,3)
             enddo
+!     
+!           if no position external to the structure was found: error     
+!     
+            if(ier.eq.1) then
+              return
+            endif
           endif         
-c     write(*,*) 'co',node,nk,(co(j,nk),j=1,3)
 !     
         enddo
       enddo
-!     
-      if(ieqspace.eq.0) then
-        write(*,*) '*INFO in crackprop:'
-        write(*,*) '      equal spacing is deactivated'
-        write(*,*) '      because of too small crack'
-        write(*,*) '      propagation.'
-      endif
 !     
       return
       end

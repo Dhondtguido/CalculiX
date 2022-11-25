@@ -583,7 +583,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 	printf("           Number of iteration= %d\n\n" ,(iinc+1));
 	
 	SFREE(xkeq);SFREE(phi);SFREE(xk1);SFREE(xk2);SFREE(xk3);
-	SFREE(crconloc);
+	SFREE(crconloc);SFREE(xn);SFREE(xa);
 	SFREE(kontri);SFREE(ipoed);SFREE(iedg);SFREE(ieled);SFREE(ibounedg);
 	SFREE(ibounnod);SFREE(iedno);SFREE(stress);SFREE(ifront);
 	SFREE(ifrontrel);SFREE(istartfront);SFREE(iendfront);SFREE(xt);
@@ -613,9 +613,22 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 		       xn,&nnfront,istartfront,iendfront,doubleglob,
 		       integerglob,isubsurffront,dadn,&ncyc,
 		       ifrontprop,&nstep,acrack,acrackglob,&datarget,
-		       &ieqspace,iincglob,&iinc,dnglob,&ncyctot));
+		       iincglob,&iinc,dnglob,&ncyctot,&ier));
 
     SFREE(xn);SFREE(xa);SFREE(da);
+      
+    if(ier==1){
+      SFREE(kontri);SFREE(ipoed);SFREE(iedg);SFREE(ieled);SFREE(ibounedg);
+      SFREE(ibounnod);SFREE(iedno);SFREE(stress);SFREE(ifront);
+      SFREE(ifrontrel);SFREE(istartfront);SFREE(iendfront);SFREE(xt);
+      SFREE(stressf);SFREE(tempf);
+      SFREE(istartcrackfro);SFREE(iendcrackfro);SFREE(temp);
+      SFREE(istartcrackbou);SFREE(iendcrackbou);SFREE(r);
+      SFREE(isubsurffront);SFREE(acrack);SFREE(dkeq);SFREE(costruc);
+      SFREE(dadn);SFREE(wk1);SFREE(wk2);SFREE(wk3);SFREE(xkeqmin);
+      SFREE(xkeqmax);SFREE(domstep);SFREE(domphi);SFREE(ifrontprop);
+      break;
+    }
 
     /* calculate the mesh characteristic length for each front
        and the new equally spread nodes on the propagated front(s) */

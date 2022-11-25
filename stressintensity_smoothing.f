@@ -53,6 +53,7 @@
 !     
         nmax=max(1,int((iendfront(i)-istartfront(i)+1)/1.1d0))
         if(nmax.le.2) cycle
+        nmax=min(nmax,5)
 !     
         istart=istartfront(i)
         iend=iendfront(i)
