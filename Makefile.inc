@@ -130,6 +130,7 @@ channeljointfront.f \
 characteristic.f \
 characteristiclength.f \
 checkconstraint.f \
+checkcrosssections.f \
 checkexiedge.f \
 checkforhomnet.f \
 checkimpacts.f \

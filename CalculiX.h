@@ -692,6 +692,12 @@ void FORTRAN(checkconstraint,(ITG *nobject,char *objectset,double *g0,
 			      ITG *nodedesi,ITG *iconstacti,double *objnorm,
 			      ITG *inameacti));
 
+void FORTRAN(checkcrosssections,(double *co,double *doubleglob,
+				 ITG *integerglob,double *stress,ITG *nnfront,
+				 ITG *ifront,ITG *ifrontrel,double *costruc,
+				 double *temp,ITG *nstep,ITG *istartfront,
+				 ITG *iendfront));
+
 void checkdivergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
           ITG *ne,double *stn,ITG *nmethod,
           ITG *kode,char *filab,double *een,double *t1act,
