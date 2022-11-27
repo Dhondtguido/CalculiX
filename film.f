@@ -159,9 +159,6 @@
      &  xks,xkappa,xlambda,f,cp,A,D,form_fact,xbody(7,*),heatnod,
      &  heatfac
 !
-!
-!
-!
       if((node.eq.0).or.(iponoel(node).eq.0)) then
 !
 !     simple example: constant film coefficient

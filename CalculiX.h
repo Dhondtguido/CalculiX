@@ -2009,7 +2009,11 @@ void FORTRAN(initialchannel,(ITG *itg,ITG *ieg,ITG *ntg,
 			     double *ttime,double *time,ITG *itreated,
 			     ITG *iponoel,ITG *inoel,ITG *istack,double *sfr,
 			     double *hfr,double *sba,double *hba,ITG *ndata,
-			     ITG *jumpup,ITG *jumpdo,ITG *istackb));
+			     ITG *jumpup,ITG *jumpdo,ITG *istackb,
+			     ITG *nelemload,ITG *ixnode,ITG *iyload,
+			     ITG *nload,char *sideload,double *xloadact,
+			     double *cocon,ITG *ncocon,ITG *iinc,ITG *nforc,
+			     ITG *ikforc,ITG *ilforc,double *xforcact));
 
 void FORTRAN(initialnet,(ITG *itg,ITG *ieg,ITG *ntg,double *ac,double *bc,
                          char *lakon,double *v,ITG * ipkon,ITG *kon,

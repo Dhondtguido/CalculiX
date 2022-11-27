@@ -24,12 +24,15 @@
      &     ielmat,ntmat_,shcon,nshcon,physcon,rhcon,nrhcon,ipobody,
      &     ibody,xbodyact,co,nbody,network,vold,set,istep,iit,mi,
      &     ineighe,ilboun,ttime,time,itreated,iponoel,inoel,istack,
-     &     sfr,hfr,sba,hba,ndata,jumpup,jumpdo,istackb)
+     &     sfr,hfr,sba,hba,ndata,jumpup,jumpdo,istackb,nelemload,
+     &     ixnode,iyload,nload,sideload,xloadact,cocon,ncocon,iinc,
+     &     nforc,ikforc,ilforc,xforcact)
 !
       implicit none
 !
       character*1 mode
-      character*8 lakon(*)
+      character*8 lakon(*),lakonl
+      character*20 sideload(*)
       character*81 set(*)
 !      
       integer mi(*),itg(*),ieg(*),ntg,nflow,ipkon(*),kon(*),ikboun(*),
@@ -39,13 +42,39 @@
      &     node1,node2,id,itreated(*),id1,id2,nup,index,iponoel(*),
      &     inoel(2,*),nmid,ndo,inv,nelemio,nelup,node,imat,neldo,
      &     istack(2,*),nstack,nel,ndata,jumpup(*),jumpdo(*),
-     &     istackb(2,*),nstackb,nel1,nup1,nentry,newel
+     &     istackb(2,*),nstackb,nel1,nup1,nentry,newel,nelemload(2,*),
+     &     ixnode(*),iyload(*),nload,kflag,ii,nelemwall,ncocon(2,*),
+     &     nfield,iflag,ig,jltyp,iinc,k,m,mint2d,nope,nopes,konl(20),
+     &     ifaceq(8,6),ifacet(6,4),ifacew(8,5),iloop,idof,nforc,
+     &     ikforc(*),ilforc(*)
 !
       real*8 v(0:mi(2),*),prop(*),xbounact(*),shcon(0:3,ntmat_,*),
      &     physcon(*),rhcon(0:1,ntmat_,*),xbodyact(7,*),co(3,*),
      &     vold(0:mi(2),*),ttime,time,xflow,g(3),dg,temp,cp,dvi,r,
      &     rho,sfr(*),hfr(*),sba(*),hba(*),epsilon,heatflux,temp1,
-     &     xflow1,xflowact
+     &     xflow1,xflowact,xden,xnum,areaj,cocon(0:6,ntmat_,*),
+     &     dxsj2,xi,et,field(1),heatnod,heatfac,h(2),sinktemp,tvar(2),
+     &     weight,xs2(3,7),xsj2(3),tl2(8),xl2(3,8),coords(3),shp2(7,8),
+     &     xloadact(2,*),walltemp,xforcact(*)
+!     
+      include "gauss.f"
+!     
+      data ifaceq /4,3,2,1,11,10,9,12,
+     &     5,6,7,8,13,14,15,16,
+     &     1,2,6,5,9,18,13,17,
+     &     2,3,7,6,10,19,14,18,
+     &     3,4,8,7,11,20,15,19,
+     &     4,1,5,8,12,17,16,20/
+      data ifacet /1,3,2,7,6,5,
+     &     1,2,4,5,9,8,
+     &     2,3,4,6,10,9,
+     &     1,4,3,8,10,7/
+      data ifacew /1,3,2,9,8,7,0,0,
+     &     4,5,6,10,11,12,0,0,
+     &     1,2,5,4,7,14,10,13,
+     &     2,3,6,5,8,15,11,14,
+     &     4,6,3,1,12,15,9,13/
+      data iflag /2/
 !
       if(network.le.2) then
         write(*,*) '*ERROR: a network channel canot be used for'
@@ -515,6 +544,19 @@ c      if(i.eq.1) return
 !     
 !     thermal computations
 !
+!     storing the distributed facial loads and corresponding
+!     reference nodes
+!
+      do i=1,nload
+        ixnode(i)=nelemload(2,i)
+        iyload(i)=i
+      enddo
+!
+!     sorting ixnode and iyload along
+!
+      kflag=2
+      call isortii(ixnode,iyload,nload,kflag)
+!
 !     major loop: looking for SLUICE GATE and WEAR elements
 !
       do i=1,nflow
@@ -587,6 +629,10 @@ c      if(i.eq.1) return
           call materialdata_tg(imat,ntmat_,temp,shcon,nshcon,cp,r,
      &         dvi,rhcon,nrhcon,rho)
           heatflux=cp*temp*xflow
+!
+!         starting value for the temperature in nup
+!
+          v(0,nup)=temp
 !     
           call nident(itg,nup,ntg,id)
 !
@@ -658,15 +704,6 @@ c      if(i.eq.1) return
 !
           elseif(ineighe(id).eq.3) then
 !     
-c!           taking the temperature of the upstream node for the
-c!           material properties
-c!     
-c            temp=v(0,nup)
-c            imat=ielmat(1,nelup)
-c!     
-c            call materialdata_tg(imat,ntmat_,temp,shcon,nshcon,cp,r,
-c     &           dvi,rhcon,nrhcon,rho)
-!     
             nel1=0
             index=iponoel(nup)
             do
@@ -737,18 +774,241 @@ c     &           dvi,rhcon,nrhcon,rho)
             call exit(201)
           endif
 !
-!         taking the temperature of the upstream node for the
-!         material properties
+!         iteration loop for the temperature in nup;
+!         the linearity is very mild (material properties)
 !
-          temp=v(0,nup)
-          imat=ielmat(1,nelem)
+          iloop=0
+          do
+            iloop=iloop+1
 !     
-          call materialdata_tg(imat,ntmat_,temp,shcon,nshcon,cp,r,
-     &         dvi,rhcon,nrhcon,rho)
+!           taking the temperature of the upstream node for the
+!           material properties
+!
+            temp=v(0,nup)
+            imat=ielmat(1,nelem)
 !     
-!         determining the temperature
+            call materialdata_tg(imat,ntmat_,temp,shcon,nshcon,cp,r,
+     &           dvi,rhcon,nrhcon,rho)
 !     
-          v(0,nup)=heatflux/(cp*xflow)
+            xnum=heatflux
+            xden=cp*xflow
+!     
+!           check for convection with walls
+!     
+            call nident(ixnode,nup,nload,id)
+!     
+            if(id.gt.0) then
+              do
+                if(ixnode(id).eq.nup) then
+                  ii=iyload(id)
+                  if(sideload(ii)(3:4).eq.'FC') then
+                    nelemwall=nelemload(1,ii)
+                    index=ipkon(nelemwall)
+                    if(index.lt.0) cycle
+                    lakonl=lakon(nelemwall)
+!     
+!                   calculate the area
+!     
+                    read(sideload(ii)(2:2),'(i1)') ig
+!     
+!                   number of nodes and integration points in the face
+!     
+                    if(lakonl(4:4).eq.'2') then
+                      nope=20
+                      nopes=8
+                    elseif(lakonl(4:4).eq.'8') then
+                      nope=8
+                      nopes=4
+                    elseif(lakonl(4:5).eq.'10') then
+                      nope=10
+                      nopes=6
+                    elseif(lakonl(4:4).eq.'4') then
+                      nope=4
+                      nopes=3
+                    elseif(lakonl(4:5).eq.'15') then
+                      nope=15
+                    else
+                      nope=6
+                    endif
+!     
+                    if(lakonl(4:5).eq.'8R') then
+                      mint2d=1
+                    elseif((lakonl(4:4).eq.'8').or.
+     &                     (lakonl(4:6).eq.'20R')) then
+                      if(lakonl(7:7).eq.'A') then
+                        mint2d=2
+                      else
+                        mint2d=4
+                      endif
+                    elseif(lakonl(4:4).eq.'2') then
+                      mint2d=9
+                    elseif(lakonl(4:5).eq.'10') then
+                      mint2d=3
+                    elseif(lakonl(4:4).eq.'4') then
+                      mint2d=1
+                    endif
+!     
+                    if(lakonl(4:4).eq.'6') then
+                      mint2d=1
+                      if(ig.le.2) then
+                        nopes=3
+                      else
+                        nopes=4
+                      endif
+                    endif
+                    if(lakonl(4:5).eq.'15') then
+                      if(ig.le.2) then
+                        mint2d=3
+                        nopes=6
+                      else
+                        mint2d=4
+                        nopes=8
+                      endif
+                    endif
+!     
+!                   connectivity of the element
+!     
+                    do k=1,nope
+                      konl(k)=kon(index+k)
+                    enddo
+!     
+!                   coordinates of the nodes belonging to the face
+!     
+                    if((nope.eq.20).or.(nope.eq.8)) then
+                      do k=1,nopes
+                        tl2(k)=v(0,konl(ifaceq(k,ig)))
+                        do j=1,3
+                          xl2(j,k)=co(j,konl(ifaceq(k,ig)))+
+     &                         v(j,konl(ifaceq(k,ig)))
+                        enddo
+                      enddo
+                    elseif((nope.eq.10).or.(nope.eq.4)) then
+                      do k=1,nopes
+                        tl2(k)=v(0,konl(ifacet(k,ig)))
+                        do j=1,3
+                          xl2(j,k)=co(j,konl(ifacet(k,ig)))+
+     &                         v(j,konl(ifacet(k,ig)))
+                        enddo
+                      enddo
+                    else
+                      do k=1,nopes
+                        tl2(k)=v(0,konl(ifacew(k,ig)))
+                        do j=1,3
+                          xl2(j,k)=co(j,konl(ifacew(k,ig)))+
+     &                         v(j,konl(ifacew(k,ig)))
+                        enddo
+                      enddo
+                    endif
+!     
+!                   integration to obtain the area and the mean
+!                   temperature
+!     
+                    do m=1,mint2d
+                      if((lakonl(4:5).eq.'8R').or.
+     &                     ((lakonl(4:4).eq.'6').and.(nopes.eq.4))) then
+                        xi=gauss2d1(1,m)
+                        et=gauss2d1(2,m)
+                        weight=weight2d1(m)
+                      elseif((lakonl(4:4).eq.'8').or.
+     &                       (lakonl(4:6).eq.'20R').or.
+     &                    ((lakonl(4:5).eq.'15').and.(nopes.eq.8))) then
+                        xi=gauss2d2(1,m)
+                        et=gauss2d2(2,m)
+                        weight=weight2d2(m)
+                      elseif(lakonl(4:4).eq.'2') then
+                        xi=gauss2d3(1,m)
+                        et=gauss2d3(2,m)
+                        weight=weight2d3(m)
+                      elseif((lakonl(4:5).eq.'10').or.
+     &                    ((lakonl(4:5).eq.'15').and.(nopes.eq.6))) then
+                        xi=gauss2d5(1,m)
+                        et=gauss2d5(2,m)
+                        weight=weight2d5(m)
+                      elseif((lakonl(4:4).eq.'4').or.
+     &                     ((lakonl(4:4).eq.'6').and.(nopes.eq.3))) then
+                        xi=gauss2d4(1,m)
+                        et=gauss2d4(2,m)
+                        weight=weight2d4(m)
+                      endif
+!     
+                      if(nopes.eq.8) then
+                        call shape8q(xi,et,xl2,xsj2,xs2,shp2,iflag)
+                      elseif(nopes.eq.4) then
+                        call shape4q(xi,et,xl2,xsj2,xs2,shp2,iflag)
+                      elseif(nopes.eq.6) then
+                        call shape6tri(xi,et,xl2,xsj2,xs2,shp2,iflag)
+                      else
+                        call shape3tri(xi,et,xl2,xsj2,xs2,shp2,iflag)
+                      endif
+!     
+                      dxsj2=dsqrt(xsj2(1)*xsj2(1)+xsj2(2)*xsj2(2)+
+     &                     xsj2(3)*xsj2(3))
+                      areaj=dxsj2*weight
+!     
+                      walltemp=0.d0
+                      do k=1,3
+                        coords(k)=0.d0
+                      enddo
+                      do j=1,nopes
+                        walltemp=walltemp+tl2(j)*shp2(4,j)
+                        do k=1,3
+                          coords(k)=coords(k)+xl2(k,j)*shp2(4,j)
+                        enddo
+                      enddo
+!     
+                      if(sideload(ii)(5:6).ne.'NU') then
+                        h(1)=xloadact(1,ii)
+                      else
+                        read(sideload(ii)(2:2),'(i1)') jltyp
+                        jltyp=jltyp+10
+                        call film(h,temp,walltemp,istep,
+     &                       iinc,tvar,nelemwall,m,coords,jltyp,field,
+     &                       nfield,sideload(ii),node,areaj,v,mi,ipkon,
+     &                       kon,lakon,iponoel,inoel,ielprop,prop,
+     &                       ielmat,shcon,nshcon,rhcon,nrhcon,ntmat_,
+     &                       cocon,ncocon,ipobody,xbodyact,ibody,
+     &                       heatnod,heatfac)
+                      endif
+                      xnum=xnum+h(1)*walltemp*areaj
+                      xden=xden+h(1)*areaj
+                    enddo
+                  endif
+                else
+                  exit
+                endif
+                id=id-1
+                if(id.eq.0) exit
+              enddo
+            endif
+!     
+!           check for heat sources in node "nup" (energy/time)
+!     
+            idof=8*(nup-1)
+            call nident(ikforc,idof,nforc,id)
+            if(id.gt.0) then
+              if(ikforc(id).eq.idof) then
+                xnum=xnum+xforcact(ilforc(id))
+              endif
+            endif
+!
+!           determining the temperature
+!     
+            if((dabs(xnum/xden-temp).lt.1.d-3).or.
+     &           (dabs(xnum/xden-temp).lt.1.d-3*temp)) then
+              v(0,nup)=xnum/xden
+c              write(*,*) 'initialchannel temp ',v(0,nup),iloop,nup
+              exit
+            endif
+!
+            if(iloop.gt.10) then
+              write(*,*) '*ERROR in initialchannel:'
+              write(*,*) '       temperature does not converge.'
+              call exit(201)
+            endif
+!     
+            v(0,nup)=xnum/xden
+!     
+          enddo
 !     
 !         determining new nelup and nup
 !     

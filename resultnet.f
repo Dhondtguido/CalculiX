@@ -52,7 +52,7 @@
       real*8 bc(nteq),xloadact(2,*),cp,h(2),physcon(*),r,dvi,rho,
      &     xl2(3,8),coords(3),dxsj2,temp,xi,et,weight,xsj2(3),
      &     gastemp,v(0:mi(2),*),shcon(0:3,ntmat_,*),co(3,*),shp2(7,8),
-     &     field,prop(*),tg1,tg2,dtime,ttime,time,g(3),eta,
+     &     field(1),prop(*),tg1,tg2,dtime,ttime,time,g(3),eta,
      &     xforcact(*),areaj,xflow,tvar(2),f,df(8),camt(*),camf(*),
      &     camp(*),tl2(8),cama(*),vamt,vamf,vamp,vama,term,
      &     rhcon(0:1,ntmat_,*),xbodyact(7,*),sinktemp,kappa,A,T,Tt,pt,
@@ -821,7 +821,7 @@ c              v(3,node2)=T2
             cycle
           endif
 !     
-          call nident(itg,node,ntg,id)
+c          call nident(itg,node,ntg,id)
 !     
 !     calculate the area
 !     

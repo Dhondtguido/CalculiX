@@ -91,7 +91,7 @@ void radflowload(ITG *itg,ITG *ieg,ITG *ntg,ITG *ntr,double *adrad,
   ITG nhrs=1,info=0,i,j,iin=0,icntrl,icutb=0,iin_abs=0,mt=mi[1]+1,im,
     symmetryflag=2,inputformat=1,node,ichannel,*ithread=NULL,iplausi,
     *itreated=NULL,*istack=NULL,ndata,*jumpup=NULL,*jumpdo=NULL,
-    *istackb=NULL;
+    *istackb=NULL,*ixnode=NULL,*iyload=NULL;
 
   static ITG ifactorization=0;
 
@@ -174,6 +174,8 @@ void radflowload(ITG *itg,ITG *ieg,ITG *ntg,ITG *ntr,double *adrad,
 	  NNEW(hba,double,ndata**nflow);
 	  NNEW(jumpup,ITG,*nflow);
 	  NNEW(jumpdo,ITG,*nflow);
+	  NNEW(ixnode,ITG,*nload);
+	  NNEW(iyload,ITG,*nload);
 	  FORTRAN(initialchannel,(itg,ieg,ntg,lakon,v,ipkon,kon,nflow,
 				  ikboun,nboun,prop,ielprop,ndirboun,
 				  nodeboun,xbounact,ielmat,ntmat_,shcon,nshcon,
@@ -181,8 +183,12 @@ void radflowload(ITG *itg,ITG *ieg,ITG *ntg,ITG *ntr,double *adrad,
 				  xbodyact,co,nbody,network,vold,set,
 				  istep,iit,mi,ineighe,ilboun,ttime,time,
 				  itreated,iponoel,inoel,istack,sfr,hfr,
-				  sba,hba,&ndata,jumpup,jumpdo,istackb));
+				  sba,hba,&ndata,jumpup,jumpdo,istackb,
+				  nelemload,ixnode,iyload,nload,sideload,
+				  xloadact,cocon,ncocon,iinc,nforc,ikforc,
+				  ilforc,xforcact));
 	  SFREE(itreated);SFREE(istack);SFREE(hfr);SFREE(hba);SFREE(istackb);
+	  SFREE(ixnode);SFREE(iyload);
 	  break;
 	}
 
