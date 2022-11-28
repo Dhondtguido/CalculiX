@@ -2936,9 +2936,13 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	  }else if((*ithermal==2)&&(uncoupled)){
 	    n1=neq[1]-neq[0];
 	    n2=nzs[1]-nzs[0];
+	    NNEW(jqtherm,ITG,n1+1);
+	    for(i=0;i<n1+1;i++){
+	      jqtherm[i]=jq[neq[0]+i]-nzs[0];}
 	    pardiso_main(&ad[neq[0]],&au[nzs[0]],&adb[neq[0]],&aub[nzs[0]],
 			 &sigma,&b[neq[0]],&icol[neq[0]],iruc,
 			 &n1,&n2,&symmetryflag,&inputformat,jq,&nzs[2],&nrhs);
+	    SFREE(jqtherm);
 	  }else{
 	    pardiso_main(ad,au,adb,aub,&sigma,b,icol,irow,&neq[1],&nzs[1],
 			 &symmetryflag,&inputformat,jq,&nzs[2],&nrhs);
