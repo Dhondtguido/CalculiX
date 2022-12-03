@@ -46,16 +46,17 @@
      &     ixnode(*),iyload(*),nload,kflag,ii,nelemwall,ncocon(2,*),
      &     nfield,iflag,ig,jltyp,iinc,k,m,mint2d,nope,nopes,konl(20),
      &     ifaceq(8,6),ifacet(6,4),ifacew(8,5),iloop,idof,nforc,
-     &     ikforc(*),ilforc(*)
+     &     ikforc(*),ilforc(*),iemchange
 !
       real*8 v(0:mi(2),*),prop(*),xbounact(*),shcon(0:3,ntmat_,*),
      &     physcon(*),rhcon(0:1,ntmat_,*),xbodyact(7,*),co(3,*),
      &     vold(0:mi(2),*),ttime,time,xflow,g(3),dg,temp,cp,dvi,r,
      &     rho,sfr(*),hfr(*),sba(*),hba(*),epsilon,heatflux,temp1,
-     &     xflow1,xflowact,xden,xnum,areaj,cocon(0:6,ntmat_,*),
+     &     xflow1,xflowact,xlin,xconst,areaj,cocon(0:6,ntmat_,*),
      &     dxsj2,xi,et,field(1),heatnod,heatfac,h(2),sinktemp,tvar(2),
      &     weight,xs2(3,7),xsj2(3),tl2(8),xl2(3,8),coords(3),shp2(7,8),
-     &     xloadact(2,*),walltemp,xforcact(*)
+     &     xloadact(2,*),walltemp,xforcact(*),xquart,eps,timeend(2),
+     &     dtemp,x,dx
 !     
       include "gauss.f"
 !     
@@ -543,6 +544,9 @@ c      i=1
 c      if(i.eq.1) return
 !     
 !     thermal computations
+!     
+      timeend(1)=time
+      timeend(2)=ttime+time
 !
 !     storing the distributed facial loads and corresponding
 !     reference nodes
@@ -628,7 +632,7 @@ c      if(i.eq.1) return
           imat=ielmat(1,nelup)
           call materialdata_tg(imat,ntmat_,temp,shcon,nshcon,cp,r,
      &         dvi,rhcon,nrhcon,rho)
-          heatflux=cp*temp*xflow
+          heatflux=cp*(temp-physcon(1))*xflow
 !
 !         starting value for the temperature in nup
 !
@@ -641,7 +645,7 @@ c      if(i.eq.1) return
           if(ineighe(id).eq.1) then
             write(*,*) '*INFO: branch finished'
             write(*,*)
-            v(0,nup)=heatflux/(cp*xflow)
+            v(0,nup)=heatflux/(cp*xflow)+physcon(1)
             exit loop5
 !
 !           branch continues 
@@ -693,7 +697,7 @@ c      if(i.eq.1) return
                   imat=ielmat(1,nelemio)
                   call materialdata_tg(imat,ntmat_,temp,shcon,nshcon,cp,
      &                 r,dvi,rhcon,nrhcon,rho)
-                  heatflux=heatflux+cp*temp*xflowact
+                  heatflux=heatflux+cp*(temp-physcon(1))*xflowact
                 endif
               endif
               index=inoel(2,index)
@@ -752,7 +756,7 @@ c      if(i.eq.1) return
                 xflow1=v(1,kon(indexe+2))
               endif
               xflow=xflow+xflow1
-              heatflux=heatflux+cp*temp1*xflow1
+              heatflux=heatflux+cp*(temp1-physcon(1))*xflow1
 !     
               index=inoel(2,index)
               if(index.eq.0) exit
@@ -780,6 +784,7 @@ c      if(i.eq.1) return
           iloop=0
           do
             iloop=iloop+1
+            xquart=0.d0
 !     
 !           taking the temperature of the upstream node for the
 !           material properties
@@ -790,8 +795,8 @@ c      if(i.eq.1) return
             call materialdata_tg(imat,ntmat_,temp,shcon,nshcon,cp,r,
      &           dvi,rhcon,nrhcon,rho)
 !     
-            xnum=heatflux
-            xden=cp*xflow
+            xconst=heatflux
+            xlin=cp*xflow
 !     
 !           check for convection with walls
 !     
@@ -801,7 +806,11 @@ c      if(i.eq.1) return
               do
                 if(ixnode(id).eq.nup) then
                   ii=iyload(id)
-                  if(sideload(ii)(3:4).eq.'FC') then
+!     
+!                 forced convection or radiation  
+!     
+                  if((sideload(ii)(3:4).eq.'FC').or.
+     &               (sideload(ii)(1:1).eq.'R')) then
                     nelemwall=nelemload(1,ii)
                     index=ipkon(nelemwall)
                     if(index.lt.0) cycle
@@ -955,22 +964,39 @@ c      if(i.eq.1) return
                           coords(k)=coords(k)+xl2(k,j)*shp2(4,j)
                         enddo
                       enddo
-!     
-                      if(sideload(ii)(5:6).ne.'NU') then
-                        h(1)=xloadact(1,ii)
+!
+                      if(sideload(ii)(1:1).eq.'F') then
+                        if(sideload(ii)(5:6).ne.'NU') then
+                          h(1)=xloadact(1,ii)
+                        else
+                          read(sideload(ii)(2:2),'(i1)') jltyp
+                          jltyp=jltyp+10
+                          call film(h,temp,walltemp,istep,iinc,tvar,
+     &                         nelemwall,m,coords,jltyp,field,nfield,
+     &                         sideload(ii),node,areaj,v,mi,ipkon,
+     &                         kon,lakon,iponoel,inoel,ielprop,prop,
+     &                         ielmat,shcon,nshcon,rhcon,nrhcon,ntmat_,
+     &                         cocon,ncocon,ipobody,xbodyact,ibody,
+     &                         heatnod,heatfac)
+                        endif
+                        xconst=xconst+h(1)*(walltemp-physcon(1))*areaj
+                        xlin=xlin+h(1)*areaj
                       else
-                        read(sideload(ii)(2:2),'(i1)') jltyp
-                        jltyp=jltyp+10
-                        call film(h,temp,walltemp,istep,
-     &                       iinc,tvar,nelemwall,m,coords,jltyp,field,
-     &                       nfield,sideload(ii),node,areaj,v,mi,ipkon,
-     &                       kon,lakon,iponoel,inoel,ielprop,prop,
-     &                       ielmat,shcon,nshcon,rhcon,nrhcon,ntmat_,
-     &                       cocon,ncocon,ipobody,xbodyact,ibody,
-     &                       heatnod,heatfac)
-                      endif
-                      xnum=xnum+h(1)*walltemp*areaj
-                      xden=xden+h(1)*areaj
+                        if(sideload(ii)(5:6).ne.'NU') then
+                          eps=xloadact(1,ii)
+                        else
+                          read(sideload(ii)(2:2),'(i1)') jltyp
+                          jltyp=jltyp+10
+                          call radiate(eps,temp,walltemp,
+     &                         istep,iinc,timeend,nelem,i,coords,jltyp,
+     &                         field,nfield,sideload(id),node,areaj,
+     &                         vold,mi,iemchange)
+                        endif
+                        xconst=xconst+physcon(2)*eps*
+     &                       (walltemp-physcon(1))**4*areaj
+                        xquart=xquart+physcon(2)*eps*areaj
+c                        write(*,*) 'xquart',xquart,areaj
+                       endif
                     enddo
                   endif
                 else
@@ -987,26 +1013,58 @@ c      if(i.eq.1) return
             call nident(ikforc,idof,nforc,id)
             if(id.gt.0) then
               if(ikforc(id).eq.idof) then
-                xnum=xnum+xforcact(ilforc(id))
+                xconst=xconst+xforcact(ilforc(id))
               endif
             endif
 !
 !           determining the temperature
-!     
-            if((dabs(xnum/xden-temp).lt.1.d-3).or.
-     &           (dabs(xnum/xden-temp).lt.1.d-3*temp)) then
-              v(0,nup)=xnum/xden
-c              write(*,*) 'initialchannel temp ',v(0,nup),iloop,nup
-              exit
+!
+            if(xquart.eq.0.d0) then
+!
+!             no radiation: solving linear equation
+!             xlin*x=xconst
+!             temperatures in the equation are absolute temperatures
+!
+              v(0,nup)=xconst/xlin+physcon(1)
+              if((dabs(xconst/xlin-(temp-physcon(1))).lt.1.d-3).or.
+     &             (dabs(xconst/xlin-(temp-physcon(1))).lt.
+     &             1.d-3*(temp-physcon(1))))
+     &             then
+                exit
+              endif
+            else
+!
+!             radiation: solving quartic equation
+!             xquart*x**4+xlin*x=xconst
+!             temperatures in the equation are absolute temperatures
+!
+              x=temp-physcon(1)
+              do
+                dx=-(xquart*x**4+xlin*x-xconst)/
+     &               (4.d0*xquart*x**3+xlin)
+c                write(*,*) iloop,x,dx
+c                v(0,nup)=x+dx+physcon(1)
+                if((dabs(dx).lt.1.d-3).or.
+     &               (dabs(dx).lt.1.d-3*x)) then
+                  exit
+                endif
+                x=x+dx
+              enddo
+              dtemp=x-(temp-physcon(1))
+              v(0,nup)=x+physcon(1)
+              if((dabs(dtemp).lt.1.d-3).or.
+     &             (dabs(dtemp).lt.1.d-3*(temp-physcon(1))))
+     &             then
+                exit
+              endif
+c              write(*,*) 'temp ',iloop,temp,dtemp,xconst,xlin,xquart
             endif
 !
-            if(iloop.gt.10) then
+            if(iloop.gt.100) then
               write(*,*) '*ERROR in initialchannel:'
               write(*,*) '       temperature does not converge.'
               call exit(201)
             endif
-!     
-            v(0,nup)=xnum/xden
 !     
           enddo
 !     

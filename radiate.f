@@ -75,9 +75,6 @@
       real*8 e(2),sink,time(2),coords(3),temp,field(nfield),area,
      &  vold(0:mi(2),*)
 !
-!
-!
-!
       e(1)=0.72d0
 !
       return
