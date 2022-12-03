@@ -5099,3 +5099,5 @@ Dec 2002        - started to work on single crystal plasticity
 
  4 Nov 2022     - checked in createlocalsys whether the angle is smaller
                   than pi or exceeds pi
+
+ 2 Dec 2022     - modified eqspacednodes.f

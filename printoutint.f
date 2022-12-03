@@ -121,7 +121,6 @@
             dlayer(k)=0.d0
          enddo
 !
-!
       elseif(lakon(nelel)(4:5).eq.'15') then
 !     
 !     composite materials

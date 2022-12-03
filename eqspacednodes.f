@@ -71,12 +71,14 @@
         ifronteq(istartfronteq(i))=nk
 !
         m=0
+        n1=0
         do mm=istartfront(i)+1,iendfront(i)
-          n1=ifrontprop(mm-1)
+c          n1=ifrontprop(mm-1)
+          if(n1.eq.0) n1=ifrontprop(mm-1)
           n2=ifrontprop(mm)
           dist=dsqrt((co(1,n2)-co(1,n1))**2+
      &         (co(2,n2)-co(2,n1))**2+
-     &         (co(3,n2)-co(3,n2))**2)
+     &         (co(3,n2)-co(3,n1))**2)
           nodesnum=nint(dist/charlen(icrack))
           if(nodesnum.eq.0) cycle
           do j=1,nodesnum
@@ -98,6 +100,7 @@
             dnglob(nk)=1.d0*ncyctot
             ifronteq(istartfronteq(i)+m)=nk
           enddo
+          n1=n2
         enddo
 !     
 !       ifronteq contains the equivalent front nodes

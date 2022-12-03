@@ -927,6 +927,16 @@ c     Bernhardi end
 !     
           if(ithermal(1).ne.0) then
             call calcmechstrain(vkl,vokl,emec,eth,iperturb)
+c            if(iout.eq.2) then
+c              if((i.eq.1).and.(jj.eq.1)) then
+c                write(5,*)
+c                write(5,*) ' thermal strains '
+c                write(5,*)
+c               endif
+c               write(5,'(i10,1x,i3,1p,6(1x,e13.6))') i,jj,
+c     &             (eth(k),k=1,6)
+c             endif
+c              
 c     do m1=1,6
 c     emec(m1)=eloc(m1)-eth(m1)
 c     enddo

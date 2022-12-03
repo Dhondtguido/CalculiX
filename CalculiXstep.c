@@ -301,7 +301,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
     printf("software, and you are welcome to redistribute it under\n");
     printf("certain conditions, see gpl.htm\n\n");
     printf("************************************************************\n\n");
-    printf("You are using an executable made on Mon Nov 28 22:03:49 CET 2022\n");
+    printf("You are using an executable made on Sat Dec  3 15:15:34 CET 2022\n");
     fflush(stdout);
 
     NNEW(ipoinp,ITG,2*nentries);
@@ -1527,7 +1527,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 	       set,&nset,istartset,iendset,ialset,&nprint,prlab,
 	       prset,&nener,&isolver,trab,inotr,&ntrans,&ttime,fmpc,ipobody,
 	       ibody,xbody,&nbody,thicke,jobnamec,&nmat,ielprop,prop,
-	       orname,typeboun,t0g,t1g,&mcs);
+	       orname,typeboun,t0g,t1g,&mcs,&istep);
 #else
       printf(" *ERROR in CalculiX: the ARPACK library is not linked\n\n");
       FORTRAN(stop,());

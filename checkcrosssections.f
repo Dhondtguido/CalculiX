@@ -132,7 +132,7 @@
         enddo
 !
 !     store the coordinates of the node; these may not be the same
-!     als in co due to the projection of external nodes onto the
+!     as in co due to the projection of external nodes onto the
 !     structure        
 !
         do j=1,3

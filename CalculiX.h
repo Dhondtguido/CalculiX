@@ -270,7 +270,7 @@ void arpackbu(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	      ITG *ipobody,ITG *ibody,double *xbody,ITG *nbody,
 	      double *thicke,char *jobnamec,ITG *nmat,ITG *ielprop,
 	      double *prop,char *orname,char *typeboun,double *t0g,
-	      double *t1g,ITG *mcs);
+	      double *t1g,ITG *mcs,ITG *istep);
 
 void arpackcs(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
              ITG *ne,
