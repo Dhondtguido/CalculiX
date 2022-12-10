@@ -121,7 +121,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
     *istartnk,*ialnk,*istartnneigh=NULL,*ialnneigh=NULL,*ichecknodes=NULL,
     *icheckelems=NULL,*istarteneigh=NULL,*ialeneigh=NULL,neielemtot,
     *nkinsetinv=NULL,ndesired,*nodedesired=NULL,neqred,lprev,ilength,
-    *nactdofred=NULL,ipos,icomplex,ij,id,ishape=0;
+    *nactdofred=NULL,ipos,icomplex,ij,id,ishape=0,ifeasd=0;
 	
   double sigma=0.,ptime=0.,*temp=NULL,*bfix=NULL,*vnew=NULL,*dstn=NULL,
     freq,*c=NULL,orabsav[7],rotvec[3],a[9],pgauss[3],*b=NULL,dispmin=1.e-8,
@@ -746,7 +746,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		  ne,cs,set,nset,istartset,iendset,ialset,
 		  jobnamec,output,temp,&iobject,objectset,ntrans,
 		  inotr,trab,&idesvar,orname,icoordinate,&inorm,
-		  &irand,&ishape); 
+		  &irand,&ishape,&ifeasd); 
 
 	}  // enddo loop idesvar
 
@@ -878,7 +878,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		  ne,cs,set,nset,istartset,iendset,ialset,
 		  jobnamec,output,temp,&iobject,objectset,ntrans,
 		  inotr,trab,&idesvar,orname,icoordinate,&inorm,
-		  &irand,&ishape); 
+		  &irand,&ishape,&ifeasd); 
 
 	}       
 		
@@ -1217,7 +1217,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		  ne,cs,set,nset,istartset,iendset,ialset,
 		  jobnamec,output,temp,&iobject,objectset,ntrans,
 		  inotr,trab,&idesvar,orname,icoordinate,&inorm,
-		  &irand,&ishape); 
+		  &irand,&ishape,&ifeasd); 
 		
 	  SFREE(dstn);
 		

@@ -700,7 +700,8 @@ c
 !     
       elseif(textpart(1)(1:18).eq.'*FEASIBLEDIRECTION') then
         call feasibledirections(inpc,textpart,istat,n,key,iline,ipol,
-     &     inl,ipoinp,inp,ipoinpc,nmethod,objectset,nobject,istep,ier)
+     &       inl,ipoinp,inp,ipoinpc,nmethod,objectset,nobject,istep,ier,
+     &       tmax)
 !     
       elseif(textpart(1)(1:5).eq.'*FILM') then
         call films(inpc,textpart,set,istartset,iendset,

@@ -18,7 +18,7 @@
 !     
       subroutine feasibledirections(inpc,textpart,istat,n,key,iline,
      &     ipol,inl,ipoinp,inp,ipoinpc,nmethod,objectset,nobject,istep,
-     &     ier)         
+     &     ier,tmax)         
 !     
 !     reading the input deck: *FEASIBLE DIRECTION
 !     
@@ -31,6 +31,10 @@
       integer nmethod,nobject,i,n,key,istat,istep,iline,ipol,inl,
      &     ipoinp(2,*),inp(3,*),ipoinpc(0:*),ier
 !     
+      real*8 tmax
+!     
+      tmax=0.d0
+!
       if(istep.lt.1) then
         write(*,*) '*ERROR reading *FEASIBLE DIRECTION:'
         write(*,*) '       *FEASIBLE DIRECTION can only be used'
@@ -41,10 +45,43 @@
 !     
       nmethod=16 
 !     
+!     read optimization method
+!     tmax=0.5: Gradient Descent Akin Method (GDAM, default)
+!     tmax=1.5: Gradient Projection Method (GPM)
+!     
+!      do i=2,n
+!         if(textpart(i)(1:7).eq.'METHOD=') then
+!            if(textpart(i)(8:11).eq.'GDAM') then
+!               tmax=1.5
+!            elseif(textpart(i)(8:10).eq.'GPM') then
+!               tmax=2.5
+!            else
+!               write(*,*) 
+!               write(*,*) '*WARNING method for computation of '     
+!               write(*,*) '         *FEASIBLE DIRECTION not defined'
+!               write(*,*) '         Gradient Descent Akin Method' 
+!               write(*,*) '         (GDAM) taken as default'
+!               write(*,*) ' '
+!               call inputwarning(inpc,ipoinpc,iline,
+!     &           "*FEASIBLEDIRECTION%")
+!            endif
+!         endif
+!      enddo
+!
+!      if((tmax.lt.1.d0).or.(tmax.ge.3.d0)) then
+!         tmax=1.5
+!         write(*,*)
+!         write(*,*) '*WARNING method for computation of '     
+!         write(*,*) '         *FEASIBLE DIRECTION not specified'
+!         write(*,*) '         Gradient Descent Akin Method (GDAM)' 
+!         write(*,*) '         taken as default'
+!         write(*,*) ' '
+!         call inputwarning(inpc,ipoinpc,iline,"*FEASIBLEDIRECTION%")
+!      endif          
+!
       call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &     ipoinp,inp,ipoinpc)     
-!     
+!      
       return
-      end
-      
+      end      
       

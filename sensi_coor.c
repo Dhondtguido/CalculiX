@@ -83,7 +83,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *nnodes=NULL,iregion=0,*konfa=NULL,*ipkonfa=NULL,nsurfs,
     *iponor=NULL,*iponoelfa=NULL,*inoelfa=NULL,ifreemax,nconstraint,
     *iponexp=NULL,*ipretinfo=NULL,nfield,iforce,*iponod2dto3d=NULL,
-    *iponk2dto3d=NULL,ishape=0,iscaleflag,istart,modalstress=0;
+    *iponk2dto3d=NULL,ishape=0,iscaleflag,istart,modalstress=0,ifeasd=0;
       
   double *stn=NULL,*v=NULL,*een=NULL,cam[5],*xstiff=NULL,*stiini=NULL,*tper,
     *f=NULL,*fn=NULL,qa[4],*epn=NULL,*xstateini=NULL,*xdesi=NULL,
@@ -98,7 +98,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     distmin,*df=NULL,*dgdx=NULL,sigma=0,*xinterpol=NULL,
     *extnor=NULL,*veold=NULL,*accold=NULL,bet,gam,sigmak=1.,sigmal=1.,
     dtime,time,reltime=1.,*weightformgrad=NULL,*fint=NULL,*xnor=NULL,
-    *dgdxdy=NULL,*senvector=NULL;
+    *dgdxdy=NULL;
 
   FILE *f1;
   
@@ -381,7 +381,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	    &iinc,&mode,&noddiam,description,mi,&ngraph,ne,cs,set,nset,
 	    istartset,iendset,ialset,jobnamec,output,
 	    extnor,&iobject,objectset,ntrans,inotr,trab,&idesvar,orname,
-	    &icoordinate,&inorm,&irand,&ishape); 
+	    &icoordinate,&inorm,&irand,&ishape,&ifeasd); 
     inorm=0;
     outputnormals=0;
   }
@@ -994,17 +994,14 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	    
     //++*kode;
 
-    NNEW(senvector,double,3**nk);
-
     /* scaling the sensitivities: highest absolute value is scaled to 1 */
     
     for(iobject=*nobjectstart;iobject<*nobject;iobject++){
 
        iscaleflag=2;
        istart=iobject+1;
-       FORTRAN(scalesen,(dgdxglob,nobject,nk,nodedesi,ndesi,objectset,
-                         &iscaleflag,&istart));
-    	  
+       FORTRAN(scalesen,(dgdxglob,nk,nodedesi,ndesi,objectset,
+                         &iscaleflag,&istart)); 	  
 
       /* storing the sensitivities in the frd-file for visualization 
 	 and for optimization */
@@ -1018,24 +1015,20 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	FORTRAN(map3dto1d2d,(&dgdxglob[2**nk*iobject],ipkon,inum,kon,lakon,
 			     &nfield,nk,ne,cflag,co,vold,&iforce,mi,ielprop,
 			     prop));
-      
       }
           
-      frd_sen(co,nk,stn,inum,nmethod,kode,filab,&ptime,nstate_,
-	      istep,
+      frd_sen(co,nk,stn,inum,nmethod,kode,filab,&ptime,nstate_,istep,
 	      &iinc,&mode,&noddiam,description,mi,&ngraph,ne,cs,set,nset,
-	      istartset,iendset,ialset,jobnamec,output,
-	      dgdxglob,&iobject,objectset,ntrans,inotr,trab,&idesvar,orname,
-	      &icoordinate,&inorm,&irand,&ishape);
+	      istartset,iendset,ialset,jobnamec,output,dgdxglob,&iobject,
+	      objectset,ntrans,inotr,trab,&idesvar,orname,&icoordinate,
+	      &inorm,&irand,&ishape,&ifeasd);
 
       /* writing the objectives in the dat-file for the optimizer */
 	  	      
       FORTRAN(writeobj,(objectset,&iobject,g0));
     }  
 	  
-    SFREE(inum);
-      
-    SFREE(dgdx);SFREE(senvector);
+    SFREE(inum);SFREE(dgdx);
             
   } // end loop over nev
 

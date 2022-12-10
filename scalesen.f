@@ -16,19 +16,21 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-      subroutine scalesen(dgdxglob,nobject,nk,nodedesi,ndesi,
-     &     objectset,iscaleflag,iobject)
+      subroutine scalesen(dgdxglob,nk,nodedesi,ndesi,objectset,
+     &     iscaleflag,iobject)
 !
 !     Scaling the sensitivities      
 !
 !     iscaleflag=1: length of the vector is scaled to 1 
 !     iscaleflag=2: greatest vector value is scaled to 1
+!     iscaleglag=3: sensitivities of the objective function are multiplied
+!                   with -1 in case of a minimization task
 !
       implicit none
 !
       character*81 objectset(5,*)
 !
-      integer nobject,nk,nodedesi(*),i,ndesi,iobject,iscaleflag,node
+      integer nk,nodedesi(*),i,ndesi,iobject,iscaleflag,node
 !
       real*8 dgdxglob(2,nk,*),dd
 !
@@ -57,6 +59,14 @@
                dgdxglob(2,node,iobject)=dgdxglob(2,node,iobject)/dd
             enddo
          endif
+      elseif(iscaleflag.eq.3) then
+         if(objectset(2,1)(17:19).eq.'MIN') then
+            do i=1,ndesi
+               node=nodedesi(i)
+               dgdxglob(1,node,1)=-dgdxglob(1,node,1)
+               dgdxglob(2,node,1)=-dgdxglob(2,node,1)
+           enddo
+         endif      
       endif
 !     
       return        

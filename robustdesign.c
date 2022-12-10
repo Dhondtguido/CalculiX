@@ -88,7 +88,7 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *inoelfa=NULL,*iponor=NULL,*iponexp=NULL,ifreemax,*ipretinfo=NULL,
     nfield,iforce,*iponod2dto3d=NULL,*iponk2dto3d=NULL,ishape=0,ndesibou,
     *nodedesibou=NULL,*nodedesiinvbou=NULL,nmethodnew=0,*neigh=NULL,
-    *ipneigh=NULL;
+    *ipneigh=NULL,ifeasd=0;
       
   double *stn=NULL,*tper,*xdesi=NULL,ptime=0.,*doubleglob=NULL,*xstate=NULL,
     *ener=NULL,sigma=0,*extnor=NULL,dtime,time,*xnor=NULL,*cdni=NULL,
@@ -303,7 +303,7 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     	  &iinc,&mode,&noddiam,description,mi,&ngraph,ne,cs,set,nset,
     	  istartset,iendset,ialset,jobnamec,output,
     	  extnor,&iobject,objectset,ntrans,inotr,trab,&idesvar,orname,
-    	  &icoordinate,&inorm,&irand,&ishape); 
+    	  &icoordinate,&inorm,&irand,&ishape,&ifeasd); 
   inorm=0;
 
   /* storing the normal direction for every design variable */

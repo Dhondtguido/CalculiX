@@ -17,7 +17,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine preprojectgrad(vector,ndesi,nodedesi,dgdxglob,nactive,
-     &   nobject,nnlconst,ipoacti,nk,rhs,iconst,objectset,xtf)         
+     &   nobject,nnlconst,ipoacti,nk,rhs,objectset,xtf)         
 !
 !     calculates the projected gradient
 !
@@ -26,18 +26,11 @@
       character*81 objectset(5,*)
 !
       integer ndesi,nodedesi(*),irow,icol,nactive,nobject,nnlconst,
-     &   ipoacti(*),nk,ipos,node,iconst,i
+     &   ipoacti(*),nk,ipos,node
 !
-      real*8 dgdxglob(2,nk,nobject),vector(ndesi),rhs(*),scalar,dd,
-     &   len,xtf(*),brauch,nutz
+      real*8 dgdxglob(2,nk,nobject),vector(ndesi),rhs(*),scalar,xtf(*)
 !
-!     initialization of enlarged field dgdxglob and 
 !     calculate the second part of xlambd
-!
-      do irow=1,nk
-         dgdxglob(2,irow,nobject)=0.d0
-         dgdxglob(1,irow,nobject)=0.d0
-      enddo
 !     
       do icol=1,nactive
          if(icol.le.nnlconst) then   
@@ -56,7 +49,3 @@
 !
       return        
       end
-
-
-
-

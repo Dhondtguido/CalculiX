@@ -76,6 +76,7 @@
                write(*,*) '*WARNING in checkconstraint'
                write(*,*) '         no absolute constraint boundary'
                write(*,*) '         defined, system value taken' 
+               write(*,*)
                bound=g0(iobject)
             endif
             if(objectset(1,iobject)(41:60).ne.empty) then
@@ -85,6 +86,7 @@
                write(*,*) '*WARNING in checkconstraint'
                write(*,*) '         no relative constraint boundary'
                write(*,*) '         defined, 1.0 taken' 
+               write(*,*)
                scale=1.0d0
             endif
             bounds(iobject)=bound*scale

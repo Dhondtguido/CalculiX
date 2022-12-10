@@ -62,6 +62,7 @@ calcdhds.f \
 calceigenvalues.f \
 calcenergy.f \
 calcexternalwork.f \
+calcfeasibledirection.f \
 calcgeomelemnet.f \
 calch0interface.f \
 calcheatnet.f \
@@ -1006,6 +1007,7 @@ getglobalresults.c \
 getlocalresults.c \
 getSystemCPUs.c \
 getuncrackedresults.c \
+gradientprojection.c \
 ini_cal.c \
 inicont.c \
 inimortar.c \

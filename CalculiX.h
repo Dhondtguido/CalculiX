@@ -1589,7 +1589,7 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
 		       ITG *istep,double *cs,char *set,ITG *nset,
 		       ITG *istartset,ITG *iendset,ITG *ialset,char *jobnamec,
 		       char *output,ITG *ntrans,ITG *inotr,double *trab,
-		       char *orname,double *xdesi);
+		       char *orname,double *xdesi,double *timepar);
 
 void FORTRAN(fill_neiel,(ITG *nef,ITG *ipnei,ITG *neiel,ITG *neielcp));
 
@@ -1704,7 +1704,7 @@ void frd_sen(double *co,ITG *nk,double *dstn,ITG *inum,ITG *nmethod,
          char *jobnamec,char *output,double *v,ITG *iobject,
          char *objectset,ITG *ntrans,ITG *inotr,double *trab,
          ITG *idesvar,char *orname,ITG *icoordinate,ITG *inorm,
-         ITG *irand,ITG *ishape);
+	 ITG *irand,ITG *ishape,ITG *ifeasd);
 
 void frd_sen_se(double *co,ITG *nk,double *stn,ITG *inum,ITG *nmethod,
          ITG *kode,char *filab,double *fn,double *time,ITG *nstate_,
@@ -3408,7 +3408,7 @@ void *preparllmt(ITG *i);
 void FORTRAN(preprojectgrad,(double *vector,ITG *ndesi,ITG *nodedesi,
                              double *dgdxglob,
                              ITG *nactive,ITG *nobject,ITG *nnlconst,
-                             ITG *ipoacti,ITG *nk,double *rhs,ITG *iconst,
+                             ITG *ipoacti,ITG *nk,double *rhs,
                              char *objectset,double *xtf));
 
 void FORTRAN(presgradient,(ITG *iponoel,ITG *inoel,double *sa,
@@ -3476,7 +3476,7 @@ void FORTRAN(projectgrad,(double *vector,ITG *ndesi,ITG *nodedesi,
                           ITG *nactive,ITG *nobject,ITG *nnlconst,
                           ITG *ipoacti,ITG *nk,double *rhs,ITG *iconst,
                           char *objectset,double *lambda,double *xtf,
-                          double *objnorm));
+                          double *objnorm,double *gradproj,double *g0));
 
 void projectgradmain(ITG *nobject,char **objectsetp,double **dgdxglobp,
                      double *g0,ITG *ndesi,ITG *nodedesi,ITG *nk,ITG *isolver,
@@ -4309,9 +4309,9 @@ void FORTRAN(rotationvector,(double *a,double *euler));
 
 void FORTRAN(rotationvectorinv,(double *a,double* euler));
        
-void FORTRAN(scalesen,(double *dgdxglob,ITG *nobject,ITG *nk,ITG *nodedesi,
+void FORTRAN(scalesen,(double *dgdxglob,ITG *nk,ITG *nodedesi,
                        ITG *ndesi,char *objectset,ITG *iscaleflag,
-                       ITG *istart));
+                       ITG *iobject));
 
 void FORTRAN(searchmidneigh,(ITG *inn,ITG *iponn,ITG *nktet_,ITG *iexternedg,
 			     ITG *ipoed,ITG *iedg,ITG *ipoeled,ITG *ieled,

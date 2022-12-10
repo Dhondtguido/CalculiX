@@ -154,7 +154,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Sat Dec  3 23:28:33 CET 2022\n");
+  printf("You are using an executable made on Sat Dec 10 15:59:32 CET 2022\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -1619,7 +1619,7 @@ int main(int argc,char *argv[])
 			nodeboun,&nboun,ndirboun,ithermal,co,vold,mi,&ielmat,
 			ielprop,prop,&kode,&nmethod,filab,&nstate_,&istep,cs,
 			set,&nset,istartset,iendset,ialset,jobnamec,output,
-			&ntrans,inotr,trab,orname,xdesi);         
+			&ntrans,inotr,trab,orname,xdesi,timepar);         
       
     }
 

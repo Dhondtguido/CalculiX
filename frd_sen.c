@@ -32,7 +32,7 @@ void frd_sen(double *co,ITG *nk,double *dstn,ITG *inum,ITG *nmethod,
 	 char *jobnamec,char *output,double *v,ITG *iobject,
 	 char *objectset,ITG *ntrans,ITG *inotr,double *trab,
 	 ITG *idesvar,char *orname,ITG *icoordinate,ITG *inorm,
-         ITG *irand,ITG *ishape){
+         ITG *irand,ITG *ishape,ITG *ifeasd){
 	 
      /* stores the results in frd format
 
@@ -255,6 +255,47 @@ void frd_sen(double *co,ITG *nk,double *dstn,ITG *inum,ITG *nmethod,
                 ialset,ngraph,&ncompscalar,ifieldscalar,icompscalar,
                 nfieldscalar,&iselect,m2,f1,output,m3);
 
+  }else if(*ifeasd==2){
+
+      /* storing the sensitivities of the gradient projection method 
+         w.r.t. to the control field s */
+      
+      frdset(&filab[4002],set,&iset,istartset,iendset,ialset,
+	     inum,&noutloc,&nout,nset,&noutmin,&noutplus,&iselect,
+	     ngraph);
+      
+      frdheader(&icounter,&oner,time,&pi,noddiam,cs,&null,mode,
+		&noutloc,description,kode,nmethod,f1,output,istep,iinc); 
+      
+      fprintf(f1," -4  PROJGRAD    2    1\n");    
+      fprintf(f1," -5  DFDN        1    1    1    0\n");
+      fprintf(f1," -5  DFDNFIL     1    1    2    0\n");
+
+      frdselect(v,v,&iset,&nkcoords,inum,m1,istartset,iendset,
+                ialset,ngraph,&ncompvector,ifieldvector,icompvector,
+                nfieldvector1,&iselect,m2,f1,output,m3);   
+
+  }else if(*ifeasd==3){
+
+      /* storing the steepest descent direction w.r.t. to 
+         the control field */
+      
+      iselect=0;
+    
+      frdset(&filab[87],set,&iset,istartset,iendset,ialset,
+	     inum,&noutloc,&nout,nset,&noutmin,&noutplus,&iselect,
+	     ngraph);
+    
+      frdheader(&icounter,&oner,time,&pi,noddiam,cs,&null,mode,
+	        &noutloc,description,kode,nmethod,f1,output,istep,iinc);
+
+      fprintf(f1," -4  DFDS        1    1\n");
+      fprintf(f1," -5  DFDSFEAS    1    1    0    0\n");
+
+      frdselect(v,v,&iset,&nkcoords,inum,m1,istartset,iendset,
+                ialset,ngraph,&ncompscalar,ifieldscalar,icompscalar,
+                nfieldscalar,&iselect,m2,f1,output,m3);
+      
   }else if(*icoordinate!=1){
 
       /* storing the orientation sensitivities in the nodes */
@@ -429,8 +470,6 @@ void frd_sen(double *co,ITG *nk,double *dstn,ITG *inum,ITG *nmethod,
 	  fprintf(f1," -4  SENGROW     2    1\n");
       }else if(strcmp1(&objectset[*iobject*405],"FIXSHRINKAGE")==0){
 	  fprintf(f1," -4  SENSHRN     2    1\n");
-      }else if(strcmp1(&objectset[*iobject*405],"PROJECTGRAD")==0){
-	  fprintf(f1," -4  PRJGRAD     2    1\n");
       }
       
       fprintf(f1," -5  DFDN        1    1    1    0\n");

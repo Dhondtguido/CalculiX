@@ -5101,3 +5101,5 @@ Dec 2002        - started to work on single crystal plasticity
                   than pi or exceeds pi
 
  2 Dec 2022     - modified eqspacednodes.f
+
+ 10 Dec 2022    - changed the code for feasible directions.

@@ -68,7 +68,7 @@ void randomfieldmain(ITG *kon,ITG *ipkon,char *lakon,ITG *ne,ITG *nmpc,
     *select=NULL,rvec=1,i,k,kflag,idesvar,node,inorm=0,irand=1,
     iinc=1,noddiam=-1,ngraph,iobject,icoordinate,nrhs=1,ithermal=0,
     ishape=0,inode,*irowd=NULL,*icold=NULL,*jqd=NULL,nzsc,*irowc=NULL,
-    *icolc=NULL,*jqc=NULL,nevold=0,imodes=0,niter=0;
+    *icolc=NULL,*jqc=NULL,nevold=0,imodes=0,niter=0,ifeasd=0;
   
   double *xo=NULL,*yo=NULL,*zo=NULL,*x=NULL,*y=NULL,*z=NULL,*au=NULL,*ad=NULL,
     *adb=NULL,*aub=NULL,*resid=NULL,*workd=NULL,*workl=NULL,tol,
@@ -627,13 +627,13 @@ void randomfieldmain(ITG *kon,ITG *ipkon,char *lakon,ITG *ne,ITG *nmpc,
     	  &iinc,&k,&noddiam,description,mi,&ngraph,ne,cs,set,nset,
     	  istartset,iendset,ialset,jobnamec,output,
     	  acscalar,&iobject,objectset,ntrans,inotr,trab,&idesvar,orname,
-    	  &icoordinate,&inorm,&irand,&ishape);
+    	  &icoordinate,&inorm,&irand,&ishape,&ifeasd);
   irand=4;
   frd_sen(co,nk,stn,inum,nmethod,kode,filab,&time,nstate_,istep,
     	  &iinc,&k,&noddiam,description,mi,&ngraph,ne,cs,set,nset,
     	  istartset,iendset,ialset,jobnamec,output,
     	  acvector,&iobject,objectset,ntrans,inotr,trab,&idesvar,orname,
-    	  &icoordinate,&inorm,&irand,&ishape); 
+    	  &icoordinate,&inorm,&irand,&ishape,&ifeasd); 
   irand=1;
       
   /* storing the eigenvectors of the autocovariance matrix in the frd file 
@@ -657,14 +657,14 @@ void randomfieldmain(ITG *kon,ITG *ipkon,char *lakon,ITG *ne,ITG *nmpc,
 	    &iinc,&k,&noddiam,description,mi,&ngraph,ne,cs,set,nset,
 	    istartset,iendset,ialset,jobnamec,output,
 	    acscalar,&iobject,objectset,ntrans,inotr,trab,&idesvar,orname,
-	    &icoordinate,&inorm,&irand,&ishape);
+	    &icoordinate,&inorm,&irand,&ishape,&ifeasd);
     irand=2;
     frd_sen(co,nk,stn,inum,nmethod,kode,filab,&d[k-1],nstate_,
 	    istep,
 	    &iinc,&k,&noddiam,description,mi,&ngraph,ne,cs,set,nset,
 	    istartset,iendset,ialset,jobnamec,output,
 	    acvector,&iobject,objectset,ntrans,inotr,trab,&idesvar,orname,
-	    &icoordinate,&inorm,&irand,&ishape); 
+	    &icoordinate,&inorm,&irand,&ishape,&ifeasd); 
     irand=1;
      
   }
@@ -700,7 +700,7 @@ void randomfieldmain(ITG *kon,ITG *ipkon,char *lakon,ITG *ne,ITG *nmpc,
 	  &iinc,&k,&noddiam,description,mi,&ngraph,ne,cs,set,nset,
 	  istartset,iendset,ialset,jobnamec,output,
 	  acscalar,&iobject,objectset,ntrans,inotr,trab,&idesvar,orname,
-	  &icoordinate,&inorm,&irand,&ishape);
+	  &icoordinate,&inorm,&irand,&ishape,&ifeasd);
   /*
     -----------
     free memory
