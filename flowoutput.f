@@ -158,8 +158,8 @@
           thetado=theta
         elseif((lakon(nelem)(6:7).eq.'CO').or.
      &         (lakon(nelem)(6:7).eq.'EL').or.
-     &         (lakon(nelem)(6:7).eq.'ST').or.
-     &         (lakon(nelem)(6:7).eq.'DR')) then
+     &         (lakon(nelem)(6:7).eq.'ST')) then
+c     &         (lakon(nelem)(6:7).eq.'DR')) then
           b1=prop(index+1)
           theta1=prop(index+2)
           b2=prop(index+3)

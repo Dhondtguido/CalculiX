@@ -351,6 +351,11 @@ void FORTRAN(bodyforce,(char *cbody,ITG *ibody,ITG *ipobody,ITG *nbody,
              char *set,ITG *istartset,ITG *iendset,ITG *ialset,
              ITG *inewton,ITG *nset,ITG *ifreebody,ITG *k));
 
+void FORTRAN(boundarymesh,(ITG *nbounnod,ITG *ibounnod,ITG *ieled,ITG *ibounel,
+			   ITG *nbounel,ITG *iedg,ITG *ibounedg,ITG *ne,
+			   ITG *nebeforeprop,ITG *kontri,ITG *ipoed,ITG *ipkon,
+			   char *lakon,ITG *ncenter,ITG *nkon,ITG *kon));
+
 void FORTRAN(calcdatarget,(ITG *ifront,double *co,ITG *nnfront,
 			   ITG *istartfront,ITG *iendfront,ITG *isubsurffront,
 			   double *tinc,double *datarget,double *acrack,
@@ -909,7 +914,7 @@ void contact(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 
 void FORTRAN(contingentsurf,(ITG *ncrack,double *xplanecrack,
 			     ITG *istartcrackbou,ITG *iendcrackbou,
-			     double *costruc,double *cg,double *coproj,
+			     double *costruc,double *cg,
 			     double *crackarea,ITG *nnfront,ITG *isubsurffront,
 			     ITG *istartcrackfro,ITG *iendcrackfro,
 			     ITG *istartfront,ITG *iendfront,double *acrack,

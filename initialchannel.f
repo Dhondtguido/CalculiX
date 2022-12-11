@@ -524,8 +524,8 @@
      &           nstack)
           elseif((lakon(nelem)(6:7).eq.'CO').or.
      &           (lakon(nelem)(6:7).eq.'EL').or.
-     &           (lakon(nelem)(6:7).eq.'ST').or.
-     &           (lakon(nelem)(6:7).eq.'DR')) then
+     &           (lakon(nelem)(6:7).eq.'ST')) then
+c     &           (lakon(nelem)(6:7).eq.'DR')) then
             call contraction(nelem,ielprop,prop,nup,nmid,ndo,dg,
      &           mode,xflow,rho,nelup,neldo,istack,nstack,
      &           mi,v,inv,epsilon,co)

@@ -303,8 +303,8 @@
 !
 !     determine the loss coefficient from the angle
 !
-      alpha1=1.d0*alpha1/pi
-      alpha2=1.d0*alpha2/pi
+      alpha1=alpha1/pi
+      alpha2=alpha2/pi
 !
 !     depth in ndo and velocity in neldo
 !

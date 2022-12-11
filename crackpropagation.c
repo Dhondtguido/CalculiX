@@ -58,7 +58,8 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
     *ifrontprop=NULL,*ifronteq=NULL,*istartfronteq=NULL,*iendfronteq=NULL,
     nfronteq,ncyc,*idist=NULL,ncrconst,nstep,nproc,ncrtem,law,nstepf2,
     *iincglob=NULL,nparam,ncyctot=0,ieqspace=1,*integerglobf=NULL,lcf,
-    *iamt1=NULL,mt=mi[1]+1,*iponor=NULL,one=1,nkinc,im;
+    *iamt1=NULL,mt=mi[1]+1,*iponor=NULL,one=1,nkinc,im,ncenter,
+    *ibounel=NULL,nbounel,nebeforeprop;
 
   double *doubleglob=NULL,*stress=NULL,*xt=NULL,*xn=NULL,*xa=NULL,
     *acrack=NULL,*xk1=NULL,*xk2=NULL,*xk3=NULL,*doubleglobf=NULL,
@@ -78,7 +79,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
     *domstepglob=NULL,*hcftemp=NULL,*xk1f=NULL,*xk2f=NULL,*xk3f=NULL,
     *xkeqf=NULL,*phif=NULL,*psif=NULL,*rglob=NULL,*r=NULL,*xplanecrack=NULL,
     *t0=NULL,*t1=NULL,*t0g=NULL,*t1g=NULL,*t1old=NULL,*vold=NULL,
-    *prestr=NULL,*offset=NULL,*eme=NULL,*xstate=NULL,*coproj=NULL,
+    *prestr=NULL,*offset=NULL,*eme=NULL,*xstate=NULL,
     *crackarea=NULL,*surfnor=NULL,*surfco=NULL,*resarea=NULL,*alambdapj=NULL;
 
   co=*cop;lakon=*lakonp;ipkon=*ipkonp;kon=*konp;ielmat=*ielmatp;
@@ -90,7 +91,16 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
   nkold=*nk;
   neold=*ne;
   nkonold=*nkon;
+
+  /* adding a fictitious center node */
   
+  RENEW(co,double,3*(*nk+1));
+  co[3**nk]=0.;
+  co[3**nk+1]=0.;
+  co[3**nk+2]=0.;
+  *nk=*nk+1;
+  ncenter=*nk;
+    
   damax=timepar[0];
   phimax=timepar[1]*atan(1.)/45.;
   imat=(ITG)(floor(timepar[2]));
@@ -353,21 +363,24 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 			angle,posfront,shape));
     SFREE(angle);SFREE(posfront);
 
-    /*    NNEW(xplanecrack,double,4*ncrack);
+    /* modifying the shape factors for:
+       - the vicinity of free surfaces
+       - the decreasing remaining cross section */
+    
+    NNEW(xplanecrack,double,4*ncrack);
     NNEW(cg,double,3*ncrack);
-    NNEW(coproj,double,3*nbounnod);
     NNEW(crackarea,double,ncrack);
     NNEW(surfnor,double,3*nfront);
     NNEW(surfco,double,3*nfront);
     NNEW(resarea,double,ncrack);
     NNEW(alambdapj,double,nfront);
     FORTRAN(contingentsurf,(&ncrack,xplanecrack,istartcrackbou,iendcrackbou,
-			    costruc,cg,coproj,crackarea,&nnfront,isubsurffront,
+			    costruc,cg,crackarea,&nnfront,isubsurffront,
 			    istartcrackfro,iendcrackfro,istartfront,iendfront,
 			    acrack,xa,ifrontrel,integerglob,doubleglob,&nstep,
 			    surfnor,surfco,resarea,alambdapj,shape));
-    SFREE(xplanecrack);SFREE(cg);SFREE(coproj);SFREE(crackarea);
-    SFREE(surfnor);SFREE(surfco);SFREE(resarea);SFREE(alambdapj); */
+    SFREE(xplanecrack);SFREE(cg);SFREE(crackarea);
+    SFREE(surfnor);SFREE(surfco);SFREE(resarea);SFREE(alambdapj);
     
     /* calculating the stress intensity factors (LCF) */
 
@@ -706,6 +719,22 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
     RENEW(ielmat,ITG,mi[2]**ne);
     RENEW(kon,ITG,*nkon);
 
+    /* simplifying the crack triangulation */
+    
+    /*    RENEW(lakon,char,8*(*ne+2*nbounedg));
+    RENEW(ipkon,ITG,*ne+2*nbounedg);
+    RENEW(ielmat,ITG,mi[2]*(*ne+2*nbounedg));
+    RENEW(kon,ITG,(*nkon+9*2*nbounedg));
+    NNEW(ibounel,ITG,*ne);
+    FORTRAN(boundarymesh,(&nbounnod,ibounnod,ieled,ibounel,&nbounel,iedg,
+			  ibounedg,ne,&nebeforeprop,kontri,ipoed,ipkon,
+			  lakon,&ncenter,nkon,kon));
+    SFREE(ibounel);
+    RENEW(lakon,char,8**ne);
+    RENEW(ipkon,ITG,*ne);
+    RENEW(ielmat,ITG,mi[2]**ne);
+    RENEW(kon,ITG,*nkon);*/
+    
     /* storing the local crack results into global nodal fields */
     
     RENEW(wk1glob,double,*nk);for(i=nkinc;i<*nk;i++){wk1glob[i]=0.;}

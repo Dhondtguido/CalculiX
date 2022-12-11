@@ -17,7 +17,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
       subroutine contingentsurf(ncrack,xplanecrack,istartcrackbou,
-     &     iendcrackbou,costruc,cg,coproj,crackarea,nnfront,
+     &     iendcrackbou,costruc,cg,crackarea,nnfront,
      &     isubsurffront,istartcrackfro,iendcrackfro,istartfront,
      &     iendfront,acrack,xa,ifrontrel,integerglob,doubleglob,
      &     nstep,surfnor,surfco,resarea,alambdapj,shape)
@@ -40,7 +40,7 @@
      &     itrend,itrendprev
 !     
       real*8 a(3,3),x,y,z,det,dd,xplanecrack(4,*),cg(3,*),costruc(3,*),
-     &     pa,pb,pc,coproj(3,*),crackarea(*),v1(3),v2(3),al,p(3),
+     &     pa,pb,pc,crackarea(*),v1(3),v2(3),al,p(3),
      &     acrack(*),xa(3,*),alambda,doubleglob(*),factor,
      &     q(3),coords(3),value(1),ratio(20),dist,xinter(3),
      &     cosang,alambdaprev,snor(3),xinterprev(3),surfnor(3,*),
@@ -65,6 +65,8 @@
 !     
       do i=1,ncrack
 !     
+!     determining the mean plane     
+!     
 !     setting the LHS (a; only upper triangle is used since the matrix
 !     is symmetric) and the RHS (b) to zero
 !     
@@ -79,7 +81,7 @@
 !     
         do j=istartcrackbou(i),iendcrackbou(i)
 !     
-!     taking into account the front node
+!     taking into account the boundary node
 !     
           x=costruc(1,j)
           y=costruc(2,j)
@@ -137,28 +139,14 @@ c     write(*,*)
 !     
       enddo
 !
-!     projection of all boundary nodes onto the mean plane
-!
-      do i=1,ncrack
-        do j=istartcrackbou(i),iendcrackbou(i)
-          al=(costruc(1,j)-cg(1,i))*xplanecrack(1,i)+
-     &       (costruc(2,j)-cg(2,i))*xplanecrack(2,i)+
-     &       (costruc(3,j)-cg(3,i))*xplanecrack(3,i)
-          do k=1,3
-c            coproj(k,j)=costruc(k,j)-al*xplanecrack(k,i)
-            coproj(k,j)=costruc(k,j)
-          enddo
-        enddo
-      enddo
-!
 !     calculate the area of the cracks
 !
       do i=1,ncrack
         crackarea(i)=0.d0
         do j=istartcrackbou(i),iendcrackbou(i)-1
           do k=1,3
-            v1(k)=coproj(k,j)-cg(k,i)
-            v2(k)=coproj(k,j+1)-cg(k,i)
+            v1(k)=costruc(k,j)-cg(k,i)
+            v2(k)=costruc(k,j+1)-cg(k,i)
           enddo
           crackarea(i)=crackarea(i)+
      &         dsqrt((v1(2)*v2(3)-v1(3)*v2(2))**2+
@@ -209,12 +197,12 @@ c      write(14,*) 'seto set0'
 !     
 !           finding the intersection of a straight line through
 !           the actual node on the crack front and in the direction of
-!           the projected crack propagation with the free surface
+!           the crack propagation with the free surface
 !
             alambda=acrack(j)*0.1d0
             factor=1.2d0
             do k=1,3
-              p(k)=coproj(k,jrel)
+              p(k)=costruc(k,jrel)
             enddo
 !
             do
@@ -407,13 +395,15 @@ c          write(14,*) filelabel
           alambdamin=1.d30
           alambdaprev=1.d30
 !
-!         free surface normal for minimum m
+!         the propagation direction = the approximate free surface normal
+!         for minimum m
 !
           do k=1,3
             xxs(k)=surfnor(k,m)
           enddo
 !
-!         in-plane vector orthogonal to free surface normal
+!         in-plane vector orthogonal to propagation direction and
+!         mean-plane normal
 !
           xxt(1)=xxn(2)*xxs(3)-xxn(3)*xxs(2)
           xxt(2)=xxn(3)*xxs(1)-xxn(1)*xxs(3)
@@ -450,7 +440,7 @@ c             (surfco(3,m)-costruc(3,jrel))*xxs(3)
               alambda=acrack(j)*0.1d0
               factor=1.2d0
               do k=1,3
-                p(k)=coproj(k,jrel)
+                p(k)=costruc(k,jrel)
               enddo
               do
                 do k=1,3
@@ -518,18 +508,18 @@ c             (surfco(3,m)-costruc(3,jrel))*xxs(3)
 !     scalar product of vector connecting the front
 !     node with the center of gravity with xxs
 !     
-            prod=(coproj(1,j)-cg(1,icrack))*xxs(1)+
-     &           (coproj(2,j)-cg(2,icrack))*xxs(2)+
-     &           (coproj(3,j)-cg(3,icrack))*xxs(3)
+            prod=(costruc(1,j)-cg(1,icrack))*xxs(1)+
+     &           (costruc(2,j)-cg(2,icrack))*xxs(2)+
+     &           (costruc(3,j)-cg(3,icrack))*xxs(3)
             amin=min(amin,prod)
             amax=max(amax,prod)
 !     
 !     scalar product of vector connecting the front
 !     node with the center of gravity with xxt
 !     
-            prod=(coproj(1,j)-cg(1,icrack))*xxt(1)+
-     &           (coproj(2,j)-cg(2,icrack))*xxt(2)+
-     &           (coproj(3,j)-cg(3,icrack))*xxt(3)
+            prod=(costruc(1,j)-cg(1,icrack))*xxt(1)+
+     &           (costruc(2,j)-cg(2,icrack))*xxt(2)+
+     &           (costruc(3,j)-cg(3,icrack))*xxt(3)
             bmin=min(bmin,prod)
             bmax=max(bmax,prod)
           enddo
@@ -559,9 +549,9 @@ c             (surfco(3,m)-costruc(3,jrel))*xxs(3)
 !         and xratio (the closeness to the free surface)
 !         for all modes at minimum point (to do)
 !
-          xk1max=xk1max
-          xk2max=xk2max
-          xk3max=xk3max
+          xk1max=1.d0
+          xk2max=1.d0
+          xk3max=1.d0
 !
 !         for all other positions along the crack front the magnification
 !         factor is less
