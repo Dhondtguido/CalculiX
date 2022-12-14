@@ -79,7 +79,6 @@
          nprint=ii
       endif
 !
-c      jout=max(jout,1)
       do ii=1,81
          noset(ii:ii)=' '
       enddo
@@ -90,9 +89,6 @@ c      jout=max(jout,1)
           noset(1:80)=textpart(ii)(6:85)
           ipos=index(noset,' ')
           noset(ipos:ipos)='N'
-c          do i=1,nset
-c            if(set(i).eq.noset) exit
-c          enddo
           call cident81(set,noset,nset,id)
           i=nset+1
           if(id.gt.0) then

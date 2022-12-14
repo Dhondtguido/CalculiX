@@ -59,7 +59,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
     nfronteq,ncyc,*idist=NULL,ncrconst,nstep,nproc,ncrtem,law,nstepf2,
     *iincglob=NULL,nparam,ncyctot=0,ieqspace=1,*integerglobf=NULL,lcf,
     *iamt1=NULL,mt=mi[1]+1,*iponor=NULL,one=1,nkinc,im,ncenter,
-    *ibounel=NULL,nbounel,nebeforeprop;
+    *ibounel=NULL,nbounel,*mastelnr=NULL;
 
   double *doubleglob=NULL,*stress=NULL,*xt=NULL,*xn=NULL,*xa=NULL,
     *acrack=NULL,*xk1=NULL,*xk2=NULL,*xk3=NULL,*doubleglobf=NULL,
@@ -162,10 +162,12 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
        they are supposed to be of type S3 */
 
     NNEW(kontri,ITG,3**ne);
+    NNEW(mastelnr,ITG,*ne);
 
-    FORTRAN(cattri,(ne,lakon,ipkon,kon,kontri,&ntri));
+    FORTRAN(cattri,(ne,lakon,ipkon,kon,kontri,&ntri,mastelnr));
 
     RENEW(kontri,ITG,3*ntri);
+    RENEW(mastelnr,ITG,ntri);
 
     /* catalogue all edges of the crack(s) */
 
@@ -175,7 +177,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 
     FORTRAN(catedges_crackprop,(ipoed,iedg,&ntri,ieled,kontri,&nedg,&ier));
     if(ier==1){
-      SFREE(kontri);SFREE(ipoed);SFREE(iedg);SFREE(ieled);
+      SFREE(kontri);SFREE(ipoed);SFREE(iedg);SFREE(ieled);SFREE(mastelnr);
       break;
     }
 
@@ -192,7 +194,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
     FORTRAN(extern_crackprop,(ieled,&nedg,ibounedg,&nbounedg,ibounnod,
 			      &nbounnod,iedg,iedno,&ier));
     if(ier==1){
-      SFREE(kontri);SFREE(ipoed);SFREE(iedg);SFREE(ieled);
+      SFREE(kontri);SFREE(ipoed);SFREE(iedg);SFREE(ieled);SFREE(mastelnr);
       SFREE(ibounedg);SFREE(ibounnod);SFREE(iedno);
       break;
     }
@@ -266,7 +268,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 			      ieled,kontri,costruc,costruc2,temp,temp2,&nstep,
 			      &ier));
     if(ier==1){
-      SFREE(kontri);SFREE(ipoed);SFREE(iedg);SFREE(ieled);
+      SFREE(kontri);SFREE(ipoed);SFREE(iedg);SFREE(ieled);SFREE(mastelnr);
       SFREE(ibounedg);SFREE(ibounnod);SFREE(iedno);
       SFREE(temp);SFREE(stress);SFREE(ifront);SFREE(ifrontrel);
       SFREE(costruc);SFREE(ifront2);SFREE(ifrontrel2);SFREE(istartfront);
@@ -318,7 +320,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
       SFREE(ifrontrel);SFREE(costruc);SFREE(istartfront);SFREE(iendfront);
       SFREE(istartcrackfro);SFREE(iendcrackfro);SFREE(istartcrackbou);
       SFREE(charlen);SFREE(iendcrackbou);SFREE(isubsurffront);SFREE(xt);
-      SFREE(xn);SFREE(xa);SFREE(angle);
+      SFREE(xn);SFREE(xa);SFREE(angle);SFREE(mastelnr);
       if(mei[0]>0) SFREE(hcfstress);
       break;
     }
@@ -339,6 +341,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
       SFREE(istartcrackfro);SFREE(iendcrackfro);SFREE(istartcrackbou);
       SFREE(charlen);SFREE(iendcrackbou);SFREE(isubsurffront);SFREE(xt);
       SFREE(xn);SFREE(xa);SFREE(angle);SFREE(acrack);SFREE(posfront);
+      SFREE(mastelnr);
       if(mei[0]>0) SFREE(hcfstress);
       break;
     }
@@ -512,7 +515,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 	SFREE(kontri);SFREE(ipoed);SFREE(iedg);SFREE(ieled);SFREE(ibounedg);
 	SFREE(ibounnod);SFREE(iedno);SFREE(stress);SFREE(ifront);
 	SFREE(ifrontrel);SFREE(istartfront);SFREE(iendfront);SFREE(xt);
-	SFREE(stressf);SFREE(tempf);
+	SFREE(stressf);SFREE(tempf);SFREE(mastelnr);
 	SFREE(istartcrackfro);SFREE(iendcrackfro);SFREE(temp);
 	SFREE(istartcrackbou);SFREE(iendcrackbou);SFREE(r);
 	SFREE(isubsurffront);SFREE(acrack);SFREE(dkeq);SFREE(costruc);
@@ -600,7 +603,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 	SFREE(kontri);SFREE(ipoed);SFREE(iedg);SFREE(ieled);SFREE(ibounedg);
 	SFREE(ibounnod);SFREE(iedno);SFREE(stress);SFREE(ifront);
 	SFREE(ifrontrel);SFREE(istartfront);SFREE(iendfront);SFREE(xt);
-	SFREE(stressf);SFREE(tempf);
+	SFREE(stressf);SFREE(tempf);SFREE(mastelnr);
 	SFREE(istartcrackfro);SFREE(iendcrackfro);SFREE(temp);
 	SFREE(istartcrackbou);SFREE(iendcrackbou);SFREE(r);
 	SFREE(isubsurffront);SFREE(acrack);SFREE(dkeq);SFREE(costruc);
@@ -634,7 +637,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
       SFREE(kontri);SFREE(ipoed);SFREE(iedg);SFREE(ieled);SFREE(ibounedg);
       SFREE(ibounnod);SFREE(iedno);SFREE(stress);SFREE(ifront);
       SFREE(ifrontrel);SFREE(istartfront);SFREE(iendfront);SFREE(xt);
-      SFREE(stressf);SFREE(tempf);
+      SFREE(stressf);SFREE(tempf);SFREE(mastelnr);
       SFREE(istartcrackfro);SFREE(iendcrackfro);SFREE(temp);
       SFREE(istartcrackbou);SFREE(iendcrackbou);SFREE(r);
       SFREE(isubsurffront);SFREE(acrack);SFREE(dkeq);SFREE(costruc);
@@ -692,7 +695,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 	SFREE(istartcrackbou);SFREE(iendcrackbou);SFREE(r);
 	SFREE(isubsurffront);SFREE(acrack);SFREE(dkeq);SFREE(costruc);
 	SFREE(dadn);SFREE(wk1);SFREE(wk2);SFREE(wk3);SFREE(xkeqmin);
-	SFREE(xkeqmax);SFREE(domstep);SFREE(domphi);
+	SFREE(xkeqmax);SFREE(domstep);SFREE(domphi);SFREE(mastelnr);
 	break;
       }
 
@@ -726,9 +729,9 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
     RENEW(ielmat,ITG,mi[2]*(*ne+2*nbounedg));
     RENEW(kon,ITG,(*nkon+9*2*nbounedg));
     NNEW(ibounel,ITG,*ne);
-    FORTRAN(boundarymesh,(&nbounnod,ibounnod,ieled,ibounel,&nbounel,iedg,
-			  ibounedg,ne,&nebeforeprop,kontri,ipoed,ipkon,
-			  lakon,&ncenter,nkon,kon));
+    FORTRAN(boundarymesh,(&nbounedg,ibounedg,ieled,ibounel,&nbounel,iedg,
+			  ne,kontri,ipoed,ipkon,
+			  lakon,&ncenter,nkon,kon,mastelnr,ntri));
     SFREE(ibounel);
     RENEW(lakon,char,8**ne);
     RENEW(ipkon,ITG,*ne);
@@ -757,7 +760,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
     SFREE(kontri);SFREE(ipoed);SFREE(iedg);SFREE(ieled);SFREE(ibounedg);
     SFREE(ibounnod);SFREE(iedno);SFREE(stress);SFREE(ifront);SFREE(ifrontrel);
     SFREE(istartfront);SFREE(iendfront);SFREE(xt);SFREE(stressf);SFREE(tempf);
-    SFREE(istartcrackfro);SFREE(iendcrackfro);SFREE(temp);
+    SFREE(istartcrackfro);SFREE(iendcrackfro);SFREE(temp);SFREE(mastelnr);
     SFREE(istartcrackbou);SFREE(iendcrackbou);
     SFREE(isubsurffront);SFREE(acrack);
     SFREE(dkeq);SFREE(costruc);SFREE(r);

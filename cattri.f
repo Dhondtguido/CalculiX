@@ -16,7 +16,7 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
-      subroutine cattri(ne,lakon,ipkon,kon,kontri,ntri)
+      subroutine cattri(ne,lakon,ipkon,kon,kontri,ntri,mastelnr)
 !     
 !     catalogueing the tetrahedral elements of the mesh
 !     
@@ -24,7 +24,7 @@
 !     
       character*8 lakon(*)
 !     
-      integer i,j,ne,ipkon(*),kon(*),indexe,ntri,kontri(3,*)
+      integer i,j,ne,ipkon(*),kon(*),indexe,ntri,kontri(3,*),mastelnr(*)
 !     
 !     catalogue the crack elements
 !     
@@ -37,6 +37,7 @@
         do j=1,3
           kontri(j,ntri)=kon(indexe+j+6)
         enddo
+        mastelnr(ntri)=i
 c        write(*,*) 'cattri ',ntri,(kontri(j,ntri),j=1,3)
       enddo
 !     

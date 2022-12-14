@@ -268,7 +268,6 @@ c        nset=0
         write(*,*)
         return
       endif
-c     write(*,*) textpart(1)
 !     
       if(textpart(1)(1:10).eq.'*AMPLITUDE') then
         call amplitudes(inpc,textpart,amname,amta,namta,nam,
@@ -1723,6 +1722,13 @@ c
         write(*,*) '       input deck: CalculiX stops.'
         write(*,*)
         call exit(201)
+      endif
+!
+      if(nprint.gt.0) then
+        write(5,*)
+        write(5,100) istep
+ 100    format('                        S T E P ',i7)
+        write(5,*)
       endif
 !     
       return

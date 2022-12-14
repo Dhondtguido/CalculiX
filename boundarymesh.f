@@ -16,9 +16,9 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
-      subroutine boundarymesh(nbounnod,ibounnod,ieled,
-     &     ibounel,nbounel,iedg,ibounedg,ne,nebeforeprop,kontri,ipoed,
-     &     ipkon,lakon,ncenter,nkon,kon)
+      subroutine boundarymesh(nbounedg,ibounedg,ieled,
+     &     ibounel,nbounel,iedg,ne,kontri,ipoed,
+     &     ipkon,lakon,ncenter,nkon,kon,mastelnr,ntri)
 !     
 !     simplifying the part of the crack mesh not connected to the
 !     crack boundary
@@ -27,9 +27,9 @@
 !
       character*8 lakon(*)
 !     
-      integer nbounnod,ibounnod(*),iedge,ieled(2,*),
-     &     ibounel(*),ielem,nodeb,nbounel,i,j,k,id,iedg(3,*),
-     &     ibounedg(*),ne,nebeforeprop,iel,node,node1,node2,
+      integer iedge,ieled(2,*),nbounedg,mastelnr(*),ntri,
+     &     ibounel(*),ielem,nbounel,i,j,k,id,iedg(3,*),
+     &     ibounedg(*),ne,iel,node,node1,node2,
      &     kontri(3,*),noperel(2,3),ipoed(*),index,ipkon(*),node1or,
      &     node2or,ncenter,nkon,kon(*),neafterprop
 !     
@@ -49,8 +49,7 @@
 !     internal elements
 !
       nbounel=0
-      do i=1,nbounnod
-        nodeb=ibounnod(i)
+      do i=1,nbounedg
         iedge=ibounedg(i)
         ielem=ieled(1,iedge)
 !
@@ -143,18 +142,14 @@
           enddo
         enddo
       enddo
-c!
-c!     adding the elements belonging to the propagation of the
-c!     present increment
-c!
-c      do i=nebeforeprop+1,neafterprop
-c        nbounel=nbounel+1
-c        ibounel(nbounel)=i
-c      enddo
 !
 !     deactivating the inner trangles of the crack mesh
 !
-      do i=1,nebeforeprop
+      do j=1,ntri
+!
+!       global element number of local S3-element j
+!
+        i=mastelnr(j)
 !
 !       element must be active
 !
@@ -166,14 +161,14 @@ c      enddo
 !
 !       element must not be a boundary element
 !
-        call nident(ibounel,i,nbounel,id)
+        call nident(ibounel,j,nbounel,id)
         if(id.gt.0) then
-          if(ibounel(id).eq.i) cycle
+          if(ibounel(id).eq.j) cycle
         endif
 !
 !       deactivate the element
 !
-        ipkon(i)=-ipkon(i)-2
+        if(ipkon(i).ge.0) ipkon(i)=-ipkon(i)-2
       enddo
 !      
       return

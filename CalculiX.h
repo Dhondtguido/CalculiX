@@ -351,10 +351,11 @@ void FORTRAN(bodyforce,(char *cbody,ITG *ibody,ITG *ipobody,ITG *nbody,
              char *set,ITG *istartset,ITG *iendset,ITG *ialset,
              ITG *inewton,ITG *nset,ITG *ifreebody,ITG *k));
 
-void FORTRAN(boundarymesh,(ITG *nbounnod,ITG *ibounnod,ITG *ieled,ITG *ibounel,
-			   ITG *nbounel,ITG *iedg,ITG *ibounedg,ITG *ne,
-			   ITG *nebeforeprop,ITG *kontri,ITG *ipoed,ITG *ipkon,
-			   char *lakon,ITG *ncenter,ITG *nkon,ITG *kon));
+void FORTRAN(boundarymesh,(ITG *nbounedg,ITG *ibounedg,ITG *ieled,ITG *ibounel,
+			   ITG *nbounel,ITG *iedg,ITG *ne,
+			   ITG *kontri,ITG *ipoed,ITG *ipkon,
+			   char *lakon,ITG *ncenter,ITG *nkon,ITG *kon,
+			   ITG *mastelnr,ITG *ntri));
 
 void FORTRAN(calcdatarget,(ITG *ifront,double *co,ITG *nnfront,
 			   ITG *istartfront,ITG *iendfront,ITG *isubsurffront,
@@ -610,7 +611,7 @@ void FORTRAN(cattet,(ITG *kontet,ITG *netet_,ITG *ifac,ITG *ne,ITG *ipkon,
 		     char *jobnamec));
 
 void FORTRAN(cattri,(ITG *ne,char *lakon,ITG *ipkon,ITG *kon,ITG *kontri,
-		     ITG *ntri));
+		     ITG *ntri,ITG *mastelnr));
 
 void FORTRAN(cavity_mesh,(ITG *kontet,ITG *ifatet,ITG *ifreetet,double *bc,
 			  ITG *ifac,ITG *itetfa,ITG *ifreefa,double *planfa,

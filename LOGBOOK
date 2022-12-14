@@ -5103,3 +5103,7 @@ Dec 2002        - started to work on single crystal plasticity
  2 Dec 2022     - modified eqspacednodes.f
 
  10 Dec 2022    - changed the code for feasible directions.
+
+ 14 Dec 2022    - worked on crack propagation (boundarymesh.f)
+                - included the step number in the .dat-file
+		
