@@ -140,8 +140,8 @@
 !
       rho0r=elconloc(1)
 !
-!     calculation of the Green deformation tensor for the total
-!     strain and the thermal strain
+!     calculation of the Green deformation tensor from the Lagrange
+!     strain
 !     
       do i=1,3
          c(i,i)=emec(i)*2.d0+1.d0
@@ -170,9 +170,10 @@
 !
 !     changing the meaning of v3
 !
-      v3=v3*rho0r
+      v3=v3*rho0r*t1l
 !
-!     stress at mechanical strain
+!     stress from the  mechanical strain: 
+!     sigma=rho_0*r*T*C^{-1}
 !     
       stre(1)=v3*cinv(1,1)
       stre(2)=v3*cinv(2,2)
@@ -180,8 +181,9 @@
       stre(4)=v3*cinv(1,2)
       stre(5)=v3*cinv(1,3)
       stre(6)=v3*cinv(2,3)
+c      write(*,*) 'umat_ideal_gas ',stre(1),stre(2),stre(4)
 !
-!     tangent
+!     tangent = 2*rho_0*r*T*d(C^{-1})/dC
 !
       if(icmd.ne.3) then
 !
@@ -197,8 +199,8 @@
                m=kk(nt+3)
                n=kk(nt+4)
                nt=nt+4
-               stiff(i)=v3*(cinv(m,n)*cinv(k,l)-
-     &            (cinv(k,m)*cinv(n,l)+cinv(k,n)*cinv(m,l))/2.d0)
+               stiff(i)=-v3*
+     &            (cinv(k,m)*cinv(n,l)+cinv(k,n)*cinv(m,l))
             enddo
          endif
       endif

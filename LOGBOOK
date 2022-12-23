@@ -5107,3 +5107,4 @@ Dec 2002        - started to work on single crystal plasticity
  14 Dec 2022    - worked on crack propagation (boundarymesh.f)
                 - included the step number in the .dat-file
 		
+ 23 Dec 2022    - corrected umat_ideal_gas.f
