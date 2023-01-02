@@ -173,37 +173,33 @@
       v3=v3*rho0r*t1l
 !
 !     stress from the  mechanical strain: 
-!     sigma=rho_0*r*T*C^{-1}
+!     sigma=-rho_0*r*T*C^{-1}
 !     
-      stre(1)=v3*cinv(1,1)
-      stre(2)=v3*cinv(2,2)
-      stre(3)=v3*cinv(3,3)
-      stre(4)=v3*cinv(1,2)
-      stre(5)=v3*cinv(1,3)
-      stre(6)=v3*cinv(2,3)
+      stre(1)=-v3*cinv(1,1)
+      stre(2)=-v3*cinv(2,2)
+      stre(3)=-v3*cinv(3,3)
+      stre(4)=-v3*cinv(1,2)
+      stre(5)=-v3*cinv(1,3)
+      stre(6)=-v3*cinv(2,3)
 c      write(*,*) 'umat_ideal_gas ',stre(1),stre(2),stre(4)
-!
-!     tangent = 2*rho_0*r*T*d(C^{-1})/dC
-!
+!     
+!     tangent=-2*rho_0*r*T*d(C^{-1})/dC
+!     
       if(icmd.ne.3) then
-!
-!
-!        second derivative of the c-invariants w.r.t. c(k,l) 
-!        and c(m,n)
-!
-         if(icmd.ne.3) then
-            nt=0
-            do i=1,21
-               k=kk(nt+1)
-               l=kk(nt+2)
-               m=kk(nt+3)
-               n=kk(nt+4)
-               nt=nt+4
-               stiff(i)=-v3*
-     &            (cinv(k,m)*cinv(n,l)+cinv(k,n)*cinv(m,l))
-            enddo
-         endif
+!     
+        nt=0
+        do i=1,21
+          k=kk(nt+1)
+          l=kk(nt+2)
+          m=kk(nt+3)
+          n=kk(nt+4)
+          nt=nt+4
+          stiff(i)=-v3*
+     &         (cinv(k,m)*cinv(n,l)+cinv(k,n)*cinv(m,l))
+c          stiff(i)=-v3*2.d0*
+c     &         (cinv(k,m)*cinv(n,l))
+        enddo
       endif
-!
+!     
       return
       end
