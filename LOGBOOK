@@ -5110,3 +5110,4 @@ Dec 2002        - started to work on single crystal plasticity
  23 Dec 2022    - corrected umat_ideal_gas.f
 
   2 Jan 2023    - worked on umat_ideal_gas.f
+                - transferred physcon into umat_ideal_gas.f

@@ -28,7 +28,7 @@
      &     pmastsurf,mortar,clearini,nea,neb,ielprop,prop,kscale,
      &     list,ilist,smscale,mscalmethod,enerscal,t0g,t1g,
      &     islavelinv,autloc,irowtloc,jqtloc,mortartrafoflag,
-     &     intscheme)
+     &     intscheme,physcon)
 !     
 !     calculates stresses and the material tangent at the integration
 !     points and the internal forces at the nodes
@@ -63,7 +63,7 @@
      &     ckl(3,3),vold(0:mi(2),*),eloc(6),veold(0:mi(2),*),
      &     springarea(2,*),elconloc(ncmat_),eth(6),xkl(3,3),
      &     voldl(0:mi(2),26),xikl(3,3),ener(2,mi(1),*),
-     &     emec(6),eei(6,mi(1),*),enerini(2,mi(1),*),
+     &     emec(6),eei(6,mi(1),*),enerini(2,mi(1),*),physcon(*),
      &     emec0(6),vel(1:3,26),veoldl(0:mi(2),26),xsj2(3),shp2(7,8),
      &     e,un,al,um,am1,xi,et,ze,tt,senergy,venergy,
      &     xsj,qa(*),vj,t0l,t1l,dtime,weight,pgauss(3),vij,time,ttime,
@@ -976,7 +976,7 @@ c     enddo
      &         plconloc,xstate,xstateini,ielas,
      &         amat,t1l,dtime,time,ttime,i,jj,nstate_,mi(1),
      &         iorien,pgauss,orab,eloc,mattyp,qa(3),istep,iinc,
-     &         ipkon,nmethod,iperturb,qa(4),nlgeom_undo)
+     &         ipkon,nmethod,iperturb,qa(4),nlgeom_undo,physcon)
 !     
           if(((nmethod.ne.4).or.(iperturb(1).ne.0)).and.
      &         (nmethod.ne.5).and.(icmd.ne.3)) then

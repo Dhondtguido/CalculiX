@@ -41,7 +41,7 @@ static double *co1,*v1,*stx1,*elcon1,*rhcon1,*alcon1,*alzero1,*orab1,*t01,*t11,
   *vini1,*ener1,*eei1,*enerini1,*springarea1,*reltime1,*coefmpc1,
   *cocon1,*qfx1,*thicke1,*emeini1,*shcon1,*xload1,*prop1,
   *xloadold1,*pslavsurf1,*pmastsurf1,*clearini1,*xbody1,*energy1=NULL,
-  *smscale1,*energysms1=NULL,*t0g1,*t1g1,*autloc1;
+  *smscale1,*energysms1=NULL,*t0g1,*t1g1,*autloc1,*physcon1;
 
 void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 	     double *v,double *stn,ITG *inum,double *stx,double *elcon,
@@ -79,7 +79,7 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 	     ITG *nodeboun2,double *xboun2,ITG *nmpc2,ITG *ipompc2,
 	     ITG *nodempc2,double *coefmpc2,char *labmpc2,ITG *ikboun2,
 	     ITG *ilboun2,ITG *ikmpc2,ITG *ilmpc2,ITG *mortartrafoflag,
-	     ITG *intscheme){
+	     ITG *intscheme,double *physcon){
 
   ITG intpointvarm,calcul_fn,calcul_f,calcul_qa,calcul_cauchy,ikin,
     intpointvart,mt=mi[1]+1,i,j;
@@ -228,6 +228,7 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
     kscale1=kscale;smscale1=smscale;mscalmethod1=mscalmethod;t0g1=t0g;
     t1g1=t1g;islavelinv1=islavelinv;autloc1=autloc;jqtloc1=jqtloc;
     irowtloc1=irowtloc;mortartrafoflag1=mortartrafoflag;intscheme1=intscheme;
+    physcon1=physcon;
 
     /* calculating the stresses */
 	
@@ -520,7 +521,7 @@ void *resultsmechmt(ITG *i){
 		       &nea,&neb,ielprop1,prop1,kscale1,&list1,ilist1,smscale1,
 		       mscalmethod1,&energysms1[indexnal],t0g1,t1g1,
 		       islavelinv1,autloc1,irowtloc1,jqtloc1,mortartrafoflag1,
-		       intscheme1));
+		       intscheme1,physcon1));
 
   return NULL;
 }

@@ -51,15 +51,13 @@ static ITG *kon1,*ipkon1,*ne1,*nelcon1,*nrhcon1,*nalcon1,*ielmat1,*ielorien1,
   *istartnneigh1,*nactdofred1,*nactdofinv1,*mt1,*istartnk1,
   *iponod2dto3d1;
     
-    
 static double *co1,*v1,*stx1,*elcon1,*rhcon1,*alcon1,*alzero1,*orab1,*t01,*t11,
   *prestr1,*vold1,*veold1,*dtime1,*time1,*xdesi1,*depn1,*dxstate1,
   *ttime1,*plicon1,*plkcon1,*xstateini1,*xstiff1,*xstate1,*stiini1,
   *vini1,*ener1,*eei1,*enerini1,*springarea1,*reltime1,*thicke1,*emeini1,
   *prop1,*pslavsurf1,*pmastsurf1,*clearini1,*distmin1,*g01,*dgdx1,
   *sti1,*xmass1=NULL,*xener1=NULL,*epn1,*stn1,*dv1,*dstn1,*dstx1,*expks1,*dgdu1,
-  dispmin1,*conew1;
-    
+  dispmin1,*conew1,*physcon1;
 
 void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		      ITG *ne,double *v,double *stn,ITG *inum,double *stx,
@@ -109,7 +107,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		      ITG *nkon,ITG *iponod2dto3d,
 		      ITG *iponk2dto3d,ITG *ics,ITG *mcs,ITG *mpcend,
 		      ITG *noddiam,ITG *ipobody,ITG *ibody,double *xbody,
-		      ITG *nbody,ITG *nobjectstart,double *dfm){
+		      ITG *nbody,ITG *nobjectstart,double *dfm,double *physcon){
 
   char description[13]="            ",cflag[1]=" ",*filabl=NULL;
 
@@ -367,7 +365,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
       clearini1=clearini;ielprop1=ielprop;prop1=prop;
       distmin1=distmin;ndesi1=ndesi;nodedesi1=nodedesi;
       nobject1=nobject;iobject1=iobject;sti1=sti;istartdesi1=istartdesi;
-      ialdesi1=ialdesi;xdesi1=xdesi;idesvar1=idesvar;
+      ialdesi1=ialdesi;xdesi1=xdesi;idesvar1=idesvar;physcon1=physcon;
 	    
       if(((*nmethod!=4)&&(*nmethod!=5))||(iperturb[0]>1)){
 	printf(" Using up to %" ITGFORMAT " cpu(s) for the strain energy sensitivity.\n\n", num_cpuse);
@@ -414,7 +412,8 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 					pmastsurf,mortar,clearini,&nea,&neb,
 					ielprop,prop,distmin,ndesi,nodedesi,
 					nobject,g0,dgdx,&iobject,sti,xener1,
-					istartdesi,ialdesi,xdesi,&idesvar));
+					istartdesi,ialdesi,xdesi,&idesvar,
+					physcon));
 
       }
 
@@ -1054,7 +1053,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		 mortar,islavact,cdn,islavnode,nslavnode,ntie,clearini,
 		 islavsurf,ielprop,prop,energyini,energy,&kscale,
 		 &nener,orname,&network,neapar,nebpar,ipobody,ibody,xbody,
-		 nbody);
+		 nbody,physcon);
 	    
       *icmd=0;
 	    
@@ -1194,7 +1193,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		     mortar,islavact,cdn,islavnode,nslavnode,ntie,clearini,
 		     islavsurf,ielprop,prop,energyini,energy,&kscale,
 		     &nener,orname,&network,neapar,nebpar,ipobody,ibody,xbody,
-		     nbody);
+		     nbody,physcon);
 		
 	  *icmd=0;
 		
@@ -1297,12 +1296,13 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	prop1=prop;kscale1=kscale;iobject1=iobject;objectset1=objectset;
 	g01=g0;dgdx1=dgdx;nasym1=nasym;distmin1=distmin;idesvar1=idesvar;
 	dv1=dv;dstn1=dstn;dstx1=dstx;ialdesi1=ialdesi;ialnk1=ialnk;
-	dgdu1=dgdu;ialeneigh1=ialeneigh;ialnneigh1=ialnneigh;expks1=&expks;	      
-	stx1=stx;dispmin1=dispmin;ipos1=&ipos;istartnneigh1=istartnneigh;	      
+	dgdu1=dgdu;ialeneigh1=ialeneigh;ialnneigh1=ialnneigh;expks1=&expks;
+	stx1=stx;dispmin1=dispmin;ipos1=&ipos;istartnneigh1=istartnneigh;
 	istarteneigh1=istarteneigh;conew1=conew;nodedesired1=nodedesired;
 	nodedesi1=nodedesi;istartdesi1=istartdesi;xdesi1=xdesi;
 	nactdofred1=nactdofred;nactdofinv1=nactdofinv;mt1=&mt;
 	istartnk1=istartnk;ndesi1=ndesi;iponod2dto3d1=iponod2dto3d;
+	physcon1=physcon;
 
 	/* Variation of the coordinates of the designvariables */
 	      
@@ -1526,7 +1526,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
       *iout=2;
       *icmd=3;
 	    
-         resultsstr(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,
+      resultsstr(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,
 		 elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 		 ielorien,norien,orab,ntmat_,t0,t1,ithermal,
 		 prestr,iprestr,filabl,eme,emn,een,iperturb,
@@ -1544,7 +1544,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		 mortar,islavact,cdn,islavnode,nslavnode,ntie,clearini,
 		 islavsurf,ielprop,prop,energyini,energy,&kscale,
 		 &nener,orname,&network,neapar,nebpar,ipobody,ibody,xbody,
-		 nbody);
+		 nbody,physcon);
 	    
       *icmd=0;
 	    
@@ -1635,13 +1635,13 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
       prop1=prop;kscale1=kscale;iobject1=iobject;objectset1=objectset;
       g01=g0;dgdx1=dgdx;nasym1=nasym;distmin1=distmin;idesvar1=idesvar;
       dv1=dv;depn1=depn;ialdesi1=ialdesi;ialnk1=ialnk;
-      dgdu1=dgdu;ialeneigh1=ialeneigh;ialnneigh1=ialnneigh;expks1=&expks;	      
+      dgdu1=dgdu;ialeneigh1=ialeneigh;ialnneigh1=ialnneigh;expks1=&expks;
       stx1=stx;dispmin1=dispmin;ipos1=&ipos;istartnneigh1=istartnneigh;	      
       istarteneigh1=istarteneigh;conew1=conew;nodedesired1=nodedesired;
       nodedesi1=nodedesi;istartdesi1=istartdesi;xdesi1=xdesi;
       nactdofred1=nactdofred;nactdofinv1=nactdofinv;mt1=&mt;
       istartnk1=istartnk;ndesi1=ndesi;iponod2dto3d1=iponod2dto3d;
-      xstate1=xstate;
+      xstate1=xstate;physcon1=physcon;
 
       /* Variation of the coordinates of the designvariables */
 	      
@@ -1892,7 +1892,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		 mortar,islavact,cdn,islavnode,nslavnode,ntie,clearini,
 		 islavsurf,ielprop,prop,energyini,energy,&kscale,
 		 &nener,orname,&network,neapar,nebpar,ipobody,ibody,xbody,
-		 nbody);
+		 nbody,physcon);
 	    
       *icmd=0;
 	    
@@ -1981,12 +1981,13 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
       prop1=prop;kscale1=kscale;iobject1=iobject;objectset1=objectset;
       g01=g0;dgdx1=dgdx;nasym1=nasym;distmin1=distmin;idesvar1=idesvar;
       dv1=dv;dstn1=dstn;dstx1=dstx;ialdesi1=ialdesi;ialnk1=ialnk;
-      dgdu1=dgdu;ialeneigh1=ialeneigh;ialnneigh1=ialnneigh;expks1=&expks;	      
+      dgdu1=dgdu;ialeneigh1=ialeneigh;ialnneigh1=ialnneigh;expks1=&expks;
       stx1=stx;dispmin1=dispmin;ipos1=&ipos;istartnneigh1=istartnneigh;	      
       istarteneigh1=istarteneigh;conew1=conew;nodedesired1=nodedesired;
       nodedesi1=nodedesi;istartdesi1=istartdesi;xdesi1=xdesi;
       nactdofred1=nactdofred;nactdofinv1=nactdofinv;mt1=&mt;
       istartnk1=istartnk;ndesi1=ndesi;iponod2dto3d1=iponod2dto3d;
+      physcon1=physcon;
 
       /* Variation of the coordinates of the designvariables */
 	      
@@ -2193,7 +2194,7 @@ void *objectivemt_shapeener_dx(ITG *i){
 				  ielprop1,prop1,distmin1,ndesi1,nodedesi1,
 				  nobject1,&g01[indexg0],&dgdx1[indexdgdx],
 				  &iobject1,sti1,xener1,istartdesi1,ialdesi1,
-				  xdesi1,&idesvar1));
+				  xdesi1,&idesvar1,&physcon1));
 
   return NULL;
 }
@@ -2289,7 +2290,7 @@ void *stress_sen_dxmt(ITG *i){
 		&nea,&neb,nasym1,distmin1,&idesvar,&dstx1[6*mi1[0]**ne1**i],
 		ialdesi1,
 		ialeneigh1,&neaneigh,&nebneigh,ialnneigh1,&naneigh,&nbneigh,
-		stn1,expks1,ndesi1);
+		stn1,expks1,ndesi1,physcon1);
   
   return NULL;
 }
@@ -2353,7 +2354,7 @@ void *stress_sen_dvmt(ITG *i){
 		nasym1,distmin1,&dstx1[6*mi1[0]**ne1**i],ialnk1,dgdu1,
 		ialeneigh1,
 		&neaneigh,&nebneigh,ialnneigh1,&naneigh,&nbneigh,stn1,expks1,
-		objectset1,&idof,&node,&idir,vold1,&dispmin1);
+		objectset1,&idof,&node,&idir,vold1,&dispmin1,physcon1);
  
   return NULL;
 }
@@ -2409,20 +2410,20 @@ void *peeq_sen_dxmt(ITG *i){
   } 
 
   peeq_sen_dx(&conew1[3**nk1**i],nk1,kon1,ipkon1,lakon1,ne1,
-		&depn1[*nk1**i],
-		elcon1,nelcon1,rhcon1,nrhcon1,alcon1,nalcon1,alzero1,ielmat1,
-		ielorien1,norien1,orab1,ntmat1_,t01,t11,ithermal1,prestr1,
-		iprestr1,filabl1,iperturb1,vold1,nmethod1,dtime1,time1,
-		ttime1,plicon1,nplicon1,plkcon1,nplkcon1,xstateini1,
-		&dxstate1[*nstate1_*mi1[0]**ne1**i],
-		npmat1_,matname1,mi1,ielas1,ncmat1_,nstate1_,stiini1,vini1,
-		emeini1,enerini1,istep1,iinc1,springarea1,reltime1,ne01,
-		thicke1,pslavsurf1,pmastsurf1,mortar1,clearini1,ielprop1,
-		prop1,&kscale1,&iobject1,objectset1,g01,dgdx1,
-		&nea,&neb,nasym1,distmin1,&idesvar,stx1,
-		ialdesi1,
-		ialeneigh1,&neaneigh,&nebneigh,ialnneigh1,&naneigh,&nbneigh,
-		epn1,expks1,ndesi1);
+	      &depn1[*nk1**i],
+	      elcon1,nelcon1,rhcon1,nrhcon1,alcon1,nalcon1,alzero1,ielmat1,
+	      ielorien1,norien1,orab1,ntmat1_,t01,t11,ithermal1,prestr1,
+	      iprestr1,filabl1,iperturb1,vold1,nmethod1,dtime1,time1,
+	      ttime1,plicon1,nplicon1,plkcon1,nplkcon1,xstateini1,
+	      &dxstate1[*nstate1_*mi1[0]**ne1**i],
+	      npmat1_,matname1,mi1,ielas1,ncmat1_,nstate1_,stiini1,vini1,
+	      emeini1,enerini1,istep1,iinc1,springarea1,reltime1,ne01,
+	      thicke1,pslavsurf1,pmastsurf1,mortar1,clearini1,ielprop1,
+	      prop1,&kscale1,&iobject1,objectset1,g01,dgdx1,
+	      &nea,&neb,nasym1,distmin1,&idesvar,stx1,
+	      ialdesi1,
+	      ialeneigh1,&neaneigh,&nebneigh,ialnneigh1,&naneigh,&nbneigh,
+	      epn1,expks1,ndesi1,physcon1);
   
   return NULL;
 }
@@ -2475,18 +2476,18 @@ void *peeq_sen_dvmt(ITG *i){
   } 
     
   peeq_sen_dv(co1,nk1,kon1,ipkon1,lakon1,ne1,&depn1[*nk1**i],
-		elcon1,nelcon1,rhcon1,nrhcon1,alcon1,nalcon1,alzero1,ielmat1,
-		ielorien1,norien1,orab1,ntmat1_,t01,t11,ithermal1,prestr1,
-		iprestr1,filabl1,iperturb1,&dv1[*mt1**nk1**i],nmethod1,dtime1,
-		time1,ttime1,plicon1,nplicon1,plkcon1,nplkcon1,xstateini1,
-		&dxstate1[*nstate1_*mi1[0]**ne1**i],
-	        npmat1_,matname1,mi1,ielas1,ncmat1_,nstate1_,
-		stiini1,vini1,emeini1,enerini1,istep1,iinc1,springarea1,
-		reltime1,ne01,thicke1,pslavsurf1,pmastsurf1,mortar1,
-		clearini1,ielprop1,prop1,&kscale1,&iobject1,g01,&nea,&neb,
-		nasym1,distmin1,stx1,ialnk1,dgdu1,ialeneigh1,
-		&neaneigh,&nebneigh,ialnneigh1,&naneigh,&nbneigh,epn1,expks1,
-		objectset1,&idof,&node,&idir,vold1,&dispmin1);
+	      elcon1,nelcon1,rhcon1,nrhcon1,alcon1,nalcon1,alzero1,ielmat1,
+	      ielorien1,norien1,orab1,ntmat1_,t01,t11,ithermal1,prestr1,
+	      iprestr1,filabl1,iperturb1,&dv1[*mt1**nk1**i],nmethod1,dtime1,
+	      time1,ttime1,plicon1,nplicon1,plkcon1,nplkcon1,xstateini1,
+	      &dxstate1[*nstate1_*mi1[0]**ne1**i],
+	      npmat1_,matname1,mi1,ielas1,ncmat1_,nstate1_,
+	      stiini1,vini1,emeini1,enerini1,istep1,iinc1,springarea1,
+	      reltime1,ne01,thicke1,pslavsurf1,pmastsurf1,mortar1,
+	      clearini1,ielprop1,prop1,&kscale1,&iobject1,g01,&nea,&neb,
+	      nasym1,distmin1,stx1,ialnk1,dgdu1,ialeneigh1,
+	      &neaneigh,&nebneigh,ialnneigh1,&naneigh,&nbneigh,epn1,expks1,
+	      objectset1,&idof,&node,&idir,vold1,&dispmin1,physcon1);
  
   return NULL;
 }

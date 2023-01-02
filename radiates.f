@@ -67,7 +67,7 @@
      &       '*ERROR reading *RADIATE: *RADIATE card was selected'
         write(*,*) '       but no *PHYSICAL CONSTANTS card encountered'
         write(*,*) '       or incomplete (Stefan Boltzmann constant'
-        write(*,*) '       is lacking'
+        write(*,*) '       is lacking)'
         write(*,*)
         ier=1
         return

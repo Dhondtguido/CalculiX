@@ -1007,7 +1007,7 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	    islavelinv,autloc,irowtloc,jqtloc,&nboun2,
 	    ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,coefmpc2,
 	    labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
-	    &intscheme);
+	    &intscheme,physcon);
       
     SFREE(fn);SFREE(stx);if(ne1d2d==1)SFREE(inum);
       
@@ -1426,7 +1426,7 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	      islavelinv,autloc,irowtloc,jqtloc,&nboun2,
 	      ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,coefmpc2,
 	      labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
-	      &intscheme);
+	      &intscheme,physcon);
       if(ne1d2d==1)SFREE(inum);
       dtime=0.;
 
@@ -2117,7 +2117,7 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	      islavelinv,autloc,irowtloc,jqtloc,&nboun2,
 	      ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,coefmpc2,
 	      labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
-	      &intscheme);
+	      &intscheme,physcon);
       iperturb[0]=0;if(ne1d2d==1)SFREE(inum);
 	  
       /* check whether any displacements or temperatures are changed
@@ -2152,7 +2152,7 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	      islavelinv,autloc,irowtloc,jqtloc,&nboun2,
 	      ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,coefmpc2,
 	      labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
-	      &intscheme);
+	      &intscheme,physcon);
       if(ne1d2d==1)SFREE(inum);
 	  
       isiz=mt**nk;cpypardou(vold,v,&isiz,&num_cpus);
@@ -2412,7 +2412,7 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 		  islavelinv,autloc,irowtloc,jqtloc,&nboun2,
 		  ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,coefmpc2,
 		  labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
-		  &intscheme);
+		  &intscheme,physcon);
 	  
 	  isiz=mt**nk;cpypardou(vold,v,&isiz,&num_cpus);
 	      
@@ -3148,7 +3148,7 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 		islavelinv,autloc,irowtloc,jqtloc,&nboun2,
 		ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,coefmpc2,
 		labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
-		&intscheme);
+		&intscheme,physcon);
 	if(ne1d2d==1)SFREE(inum);
       }
 
@@ -3246,7 +3246,7 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 		islavelinv,autloc,irowtloc,jqtloc,&nboun2,
 		ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,coefmpc2,
 		labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
-		&intscheme);
+		&intscheme,physcon);
 	if(ne1d2d==1)SFREE(inum);
       }
       
@@ -3726,7 +3726,7 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	      islavelinv,autloc,irowtloc,jqtloc,&nboun2,
 	      ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,coefmpc2,
 	      labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
-	      &intscheme);
+	      &intscheme,physcon);
       
       isiz=mt**nk;cpypardou(vold,v,&isiz,&num_cpus);
 
@@ -3849,7 +3849,7 @@ void nonlingeo(double **cop, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	    islavelinv,autloc,irowtloc,jqtloc,&nboun2,
 	    ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,coefmpc2,
 	    labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
-	    &intscheme);
+	    &intscheme,physcon);
     
     isiz=mt**nk;cpypardou(vold,v,&isiz,&num_cpus);
 

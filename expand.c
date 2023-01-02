@@ -91,7 +91,7 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
       *xstateini=NULL,theta,pi,*coefmpcnew=NULL,t[3],ctl,stl,
       *stx=NULL,*enern=NULL,*xstaten=NULL,*eei=NULL,*enerini=NULL,
       *qfx=NULL,*qfn=NULL,xreal,ximag,*vt=NULL,sum,*voldt=NULL,
-      *coefright=NULL,coef,a[9],ratio,reltime,
+      *coefright=NULL,coef,a[9],ratio,reltime,*physcon=NULL,
       *shcon=NULL,*springarea=NULL,*z=*zp, *zdof=NULL, *thicke=NULL,
       *sumi=NULL,
       *vti=NULL,*pslavsurf=NULL,*pmastsurf=NULL,*cdn=NULL,
@@ -472,7 +472,7 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	      islavelinv,autloc,irowtloc,jqtloc,&nboun2,
 	      ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,coefmpc2,
 	      labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
-	      &intscheme);
+	      &intscheme,physcon);
 	    
 	}
 	//	SFREE(eei);

@@ -26,7 +26,8 @@
      &     springarea,reltime,calcul_qa,nener,ikin,ne0,thicke,
      &     emeini,pslavsurf,pmastsurf,mortar,clearini,nea,neb,ielprop,
      &     prop,distmin,ndesi,nodedesi,nobject,g0,dgdx,
-     &     iobject,sti,xener,istartdesi,ialdesi,xdesi,idesvar)
+     &     iobject,sti,xener,istartdesi,ialdesi,xdesi,idesvar,
+     &     physcon)
 !     
 !     calculates the internal energy and its derivative w.r.t. the coordinates
 !     of the mesh
@@ -51,7 +52,7 @@
      &     nlgeom_undo,node1,node2,ifaceqexp(2,20),ifacewexp(2,15),
      &     mscalmethod,kscale
 !     
-      real*8 co(3,*),shp(4,26),stiini(6,mi(1),*),xener(*),
+      real*8 co(3,*),shp(4,26),stiini(6,mi(1),*),xener(*),physcon(*),
      &     stx(6,mi(1),*),xl(3,26),vl(0:mi(2),26),stre(6),prop(*),
      &     elcon(0:ncmat_,ntmat_,*),rhcon(0:1,ntmat_,*),xs2(3,7),
      &     alcon(0:6,ntmat_,*),vini(0:mi(2),*),thickness,
@@ -998,7 +999,7 @@ c     enddo
      &         plconloc,xstate,xstateini,ielas,
      &         amat,t1l,dtime,time,ttime,i,jj,nstate_,mi(1),
      &         iorien,pgauss,orab,eloc,mattyp,qa(3),istep,iinc,
-     &         ipkon,nmethod,iperturb,qa(4),nlgeom_undo)
+     &         ipkon,nmethod,iperturb,qa(4),nlgeom_undo,physcon)
 !     
           if(((nmethod.ne.4).or.(iperturb(1).ne.0)).and.
      &         (nmethod.ne.5)) then

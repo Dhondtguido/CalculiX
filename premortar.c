@@ -550,7 +550,7 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
         islavelinv,autloc,irowtloc,jqtloc,nboun2,
         ndirboun2,nodeboun2,xboun2,nmpc2,ipompc2,nodempc2,coefmpc2,
         labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
-	intscheme);
+	intscheme,physcon);
   
   if(debug==1)printf(" precontactmortar: results_dstil finished\n");
   fflush(stdout);

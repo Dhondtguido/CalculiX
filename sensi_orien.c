@@ -786,7 +786,7 @@ void sensi_orien(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		       &ishapeenergy,fint,nlabel,&igreen,&nasym,iponoel,inoel,
 		       nodedesiinv,dgdxdy,nkon,iponod2dto3d,iponk2dto3d,ics,
 		       mcs,mpcend,&noddiam,ipobody,ibody,xbody,nbody,
-		       &nobjectstart,dfm); 
+		       &nobjectstart,dfm,physcon); 
       iout=1;
 
       SFREE(v);SFREE(f);SFREE(xstiff);SFREE(fn);SFREE(df);SFREE(stx);

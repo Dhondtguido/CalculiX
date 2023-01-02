@@ -20,7 +20,7 @@
      &     icmd,beta,stre,xkl,ckl,vj,xikl,vij,plconloc,xstate,xstateini,
      &     ielas,amat,t1l,dtime,time,ttime,iel,iint,nstate_,mi,
      &     iorien,pgauss,orab,eloc,mattyp,pnewdt,istep,iinc,ipkon,
-     &     nmethod,iperturb,depvisc,nlgeom_undo)
+     &     nmethod,iperturb,depvisc,nlgeom_undo,physcon)
 !
 !     kode=-1: Arruda-Boyce
 !          -2: Mooney-Rivlin
@@ -56,7 +56,7 @@
      &  ckl(*),vj,plconloc(*),t1l,xkl(*),xikl(*),vij,depvisc,
      &  dtime,didc(27),d2idc2(243),dibdc(27),d2ibdc2(243),
      &  dudc(9),d2udc2(81),dldc(27),d2ldc2(243),dlbdc(27),d2lbdc2(243),
-     &  pgauss(3),orab(7,*),time,ttime,eloc(6),pnewdt
+     &  pgauss(3),orab(7,*),time,ttime,eloc(6),pnewdt,physcon(*)
 !
       real*8 xstate(nstate_,mi(1),*),xstateini(nstate_,mi(1),*)
 !
@@ -92,7 +92,7 @@
      &        xikl,vij,xkl,vj,ithermal,t1l,dtime,time,ttime,icmd,ielas,
      &        mi(1),nstate_,xstateini,xstate,stre,elas,iorien,pgauss,
      &        orab,pnewdt,istep,iinc,ipkon,nmethod,iperturb,depvisc,
-     &        eloc,nlgeom_undo)
+     &        eloc,nlgeom_undo,physcon)
       endif
 !
       return

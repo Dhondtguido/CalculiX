@@ -42,7 +42,7 @@ void stress_sen_dv(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 		   double *dgdu,ITG *ialeneigh,ITG *neaneigh,ITG *nebneigh,
 		   ITG *ialnneigh,ITG *naneigh,ITG *nbneigh,double *stn,
 		   double *expks,char *objectset,ITG *idof,ITG *node,ITG *idir,
-		   double *vold,double *dispmin){         
+		   double *vold,double *dispmin,double *physcon){         
             
   ITG symmetryflag=0,mt=mi[1]+1,i,iactpos,calcul_fn,list,
     calcul_qa,calcul_cauchy,ikin=0,nal,iout=2,icmd=3,nener=0,
@@ -86,7 +86,7 @@ void stress_sen_dv(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 		       pslavsurf,pmastsurf,mortar,clearini,nea,neb,ielprop,
 		       prop,kscale,&list,ialnk,smscale,&mscalmethod,&enerscal,
 		       t0g,t1g,islavelinv,autloc,irowtloc,jqtloc,
-		       &mortartrafoflag,&intscheme));
+		       &mortartrafoflag,&intscheme,physcon));
 
   /* extrapolating the stresses */
 

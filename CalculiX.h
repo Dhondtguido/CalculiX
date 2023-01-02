@@ -3181,7 +3181,8 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
              ITG *nodedesiinv,double *dgdxglob,
              ITG *nkon,ITG *iponod2dto3d,ITG *iponk2dto3d,ITG *ics,
              ITG *mcs,ITG *mpcend,ITG *noddiam,ITG *ipobody,ITG *ibody,
-	     double *xbody,ITG *nbody,ITG *nobjectstart,double *dfm);
+	     double *xbody,ITG *nbody,ITG *nobjectstart,double *dfm,
+	     double *physcon);
 
 void *objectivemt_shapeener_dx(ITG *i);
 
@@ -3239,7 +3240,8 @@ void FORTRAN(objective_shapeener_dx,(double *co1,ITG *kon1,ITG *ipkon1,
              ITG *ielprop1,double *prop1,double *distmin1,ITG *ndesi1,
              ITG *nodedesi1,ITG *nobject1,double *g01,
              double *dgdx1,ITG *iobject1,double *sti1,double *xener1,
-             ITG *istartdesi1,ITG *ialdesi1,double *xdesi1,ITG *idesvar));
+	     ITG *istartdesi1,ITG *ialdesi1,double *xdesi1,ITG *idesvar,
+	     double *physcon));
 
 void FORTRAN(objective_shapeener_tot,(ITG *ne,ITG *kon,ITG *ipkon,char *lakon,
              double *fint,double *vold,ITG *iperturb,ITG *mi,ITG *nactdof,
@@ -3307,7 +3309,8 @@ void peeq_sen_dx(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
        ITG *kscale,ITG *iobject,char *objectset,double *g0,double *dgdx,
        ITG *nea,ITG *neb,ITG *nasym,double *distmin,ITG*idesvar,double *stx, 
        ITG *ialdesi,ITG *ialeneigh,ITG *neaneigh,ITG *nebneigh,ITG *ialnneigh,
-       ITG *naneigh,ITG *nbneigh,double *epn,double *expks,ITG *ndesi);
+       ITG *naneigh,ITG *nbneigh,double *epn,double *expks,ITG *ndesi,
+       double *physcon);
 
 void *peeq_sen_dxmt(ITG *i);
 
@@ -3328,7 +3331,7 @@ void peeq_sen_dv(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
        double *distmin,double *stx,ITG *ialnk,double *dgdu,ITG *ialeneigh, 
        ITG *neaneigh,ITG *nebneigh,ITG *ialnneigh,ITG *naneigh,ITG *nbneigh,
        double *epn,double *expks,char *objectset,ITG *idof,ITG *node,
-       ITG *idir,double *vold,double *dispmin);       
+       ITG *idir,double *vold,double *dispmin,double *physcon);       
 
 void *peeq_sen_dvmt(ITG *i);
     
@@ -3938,7 +3941,8 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	     ITG *jqtloc,ITG *nboun2,ITG *ndirboun2,ITG *nodeboun2,
 	     double *xboun2,ITG *nmpc2,ITG *ipompc2,ITG *nodempc2,
 	     double *coefmpc2,char *labmpc2,ITG *ikboun2,ITG *ilboun2,
-	     ITG *ikmpc2,ITG *ilmpc2,ITG *mortartrafoflag,ITG *intscheme);
+	     ITG *ikmpc2,ITG *ilmpc2,ITG *mortartrafoflag,ITG *intscheme,
+	     double *physcon);
 
 void FORTRAN(resultsem,(double *co,ITG *kon,ITG *ipkon,char *lakon,
              double *v,double *elcon,ITG *nelcon,ITG *ielmat,ITG *ntmat_,
@@ -4006,7 +4010,7 @@ void FORTRAN(resultsmech,(double *co,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
           ITG *kscale,ITG *list,ITG *ilist,double *smscale,ITG *mscalmethod,
 	  double *enerscal,double *t0g,double *t1g,ITG *islavelinv,
 	  double *autloc,ITG *irowtloc,ITG *jqtloc,ITG *mortartrafoflag,
-	  ITG *intscheme));
+	  ITG *intscheme,double *physcon));
 
 void *resultsmechmt(ITG *i);
 
@@ -4097,7 +4101,7 @@ void resultsstr(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
              ITG *islavsurf,ITG *ielprop,double *prop,double *energyini,
              double *energy,ITG *kscale,ITG *nener,
              char *orname,ITG *network,ITG *neapar,ITG *nebpar,
-	     ITG *ipobody,ITG *ibody,double *xbody,ITG *nbody);
+	     ITG *ipobody,ITG *ibody,double *xbody,ITG *nbody,double *physcon);
              
 void results_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
              ITG *ne,double *v,double *stn,ITG *inum,
@@ -4661,7 +4665,7 @@ void stress_sen_dv(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
        double *distmin,double *dstx,ITG *ialnk,double *dgdu,ITG *ialeneigh, 
        ITG *neaneigh,ITG *nebneigh,ITG *ialnneigh,ITG *naneigh,ITG *nbneigh,
        double *stn,double *expks,char *objectset,ITG *idof,ITG *node,
-       ITG *idir,double *vold,double *dispmin);       
+       ITG *idir,double *vold,double *dispmin,double *physcon);       
 
 void *stress_sen_dvmt(ITG *i);
 
@@ -4680,7 +4684,8 @@ void stress_sen_dx(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
        ITG *kscale,ITG *iobject,char *objectset,double *g0,double *dgdx,
        ITG *nea,ITG *neb,ITG *nasym,double *distmin,ITG*idesvar,double *dstx, 
        ITG *ialdesi,ITG *ialeneigh,ITG *neaneigh,ITG *nebneigh,ITG *ialnneigh,
-       ITG *naneigh,ITG *nbneigh,double *stn,double *expks,ITG *ndesi);
+       ITG *naneigh,ITG *nbneigh,double *stn,double *expks,ITG *ndesi,
+       double *physcon);
 
 void *stress_sen_dxmt(ITG *i);
 

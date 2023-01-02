@@ -129,7 +129,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     *cdnt=NULL,*cdnr=NULL,*cdni=NULL,*eme=NULL,alea=0.1,sum,
     *pslavsurfold=NULL,*energyini=NULL,*energy=NULL,xn[3],e1[3],e2[3],
     *smscale=NULL,*auw=NULL,*autloc=NULL,*xboun2=NULL,*coefmpc2=NULL,
-    *dstorage=NULL,*distorage=NULL;
+    *dstorage=NULL,*distorage=NULL,*physcon=NULL;
 
   FILE *f1;
 
@@ -419,7 +419,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	    islavelinv,autloc,irowtloc,jqtloc,&nboun2,
 	    ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,coefmpc2,
 	    labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
-	    &intscheme);
+	    &intscheme,physcon);
   }else{
     results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,
 	    elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
@@ -443,7 +443,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	    islavelinv,autloc,irowtloc,jqtloc,&nboun2,
 	    ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,coefmpc2,
 	    labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
-	    &intscheme);
+	    &intscheme,physcon);
   }
   SFREE(eei);SFREE(stiini);SFREE(emeini);SFREE(vini);
   if(*nener==1) SFREE(enerini);
@@ -1477,10 +1477,12 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 		  prestr,iprestr,filab,&eme[kkx],&emn[kk6],&een[kk6],iperturb,
 		  f,&fn[kkv],nactdof,&iout,qa,vold,&z[lint+k],
 		  nodeboun,ndirboun,xboun,nboun,ipompc,
-		  nodempc,coefmpcnew,labmpc,nmpc,nmethod,cam,&neq[1],veold,accold,
+		  nodempc,coefmpcnew,labmpc,nmpc,nmethod,cam,&neq[1],veold,
+		  accold,
 		  &bet,&gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
 		  xstateini,xstiff,xstate,npmat_,epn,matname,mi,&ielas,&icmd,
-		  ncmat_,nstate_,stiini,vini,ikboun,ilboun,ener,&enern[kk],emeini,
+		  ncmat_,nstate_,stiini,vini,ikboun,ilboun,ener,&enern[kk],
+		  emeini,
 		  xstaten,eei,enerini,cocon,ncocon,set,nset,istartset,iendset,
 		  ialset,nprint,prlab,prset,qfx,qfn,trab,inotr,ntrans,fmpc,
 		  nelemload,nload,ikmpc,ilmpc,istep,&iinc,springarea,&reltime,
@@ -1493,7 +1495,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 		  islavelinv,autloc,irowtloc,jqtloc,&nboun2,
 		  ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,coefmpc2,
 		  labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
-		  &intscheme);}
+		  &intscheme,physcon);}
 	else{
 	  results(co,nk,kon,ipkon,lakon,ne,&v[kkv],&stn[kk6],inum,
 		  &stx[kkx],elcon,
@@ -1502,10 +1504,12 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 		  prestr,iprestr,filab,&eme[kkx],&emn[kk6],&een[kk6],iperturb,
 		  f,&fn[kkv],nactdof,&iout,qa,vold,&z[lint+k],
 		  nodeboun,ndirboun,xboun,nboun,ipompc,
-		  nodempc,coefmpcnew,labmpc,nmpc,nmethod,cam,&neq[1],veold,accold,
+		  nodempc,coefmpcnew,labmpc,nmpc,nmethod,cam,&neq[1],veold,
+		  accold,
 		  &bet,&gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
 		  xstateini,xstiff,xstate,npmat_,epn,matname,mi,&ielas,&icmd,
-		  ncmat_,nstate_,stiini,vini,ikboun,ilboun,ener,&enern[kk],emeini,
+		  ncmat_,nstate_,stiini,vini,ikboun,ilboun,ener,&enern[kk],
+		  emeini,
 		  xstaten,eei,enerini,cocon,ncocon,set,nset,istartset,iendset,
 		  ialset,nprint,prlab,prset,qfx,qfn,trab,inotr,ntrans,fmpc,
 		  nelemload,nload,ikmpc,ilmpc,istep,&iinc,springarea,&reltime,
@@ -1518,7 +1522,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 		  islavelinv,autloc,irowtloc,jqtloc,&nboun2,
 		  ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,coefmpc2,
 		  labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
-		  &intscheme);
+		  &intscheme,physcon);
 	}
 	      
       }

@@ -37,7 +37,7 @@ static double *co1,*v1,*stx1,*elcon1,*rhcon1,*alcon1,*alzero1,*orab1,*t01,*t11,
   *ttime1,*plicon1,*plkcon1,*xstateini1,*xstiff1,*xstate1,*stiini1,
   *vini1,*ener1,*eei1,*enerini1,*springarea1,*reltime1,
   *thicke1,*emeini1,*prop1,*pslavsurf1,*pmastsurf1,*clearini1,*smscale1,
-  *energysms1=NULL,*t0g1,*t1g1,*autloc1=NULL;
+  *energysms1=NULL,*t0g1,*t1g1,*autloc1=NULL,*physcon1;
 
 void resultsstr(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 		double *v,double *stn,ITG *inum,double *stx,double *elcon,
@@ -70,7 +70,8 @@ void resultsstr(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 		double *clearini,ITG *islavsurf,ITG *ielprop,double *prop,
 		double *energyini,double *energy,ITG *kscale,ITG *nener,
 		char *orname,ITG *network,ITG *neapar,ITG *nebpar,
-		ITG *ipobody,ITG *ibody,double *xbody,ITG *nbody){
+		ITG *ipobody,ITG *ibody,double *xbody,ITG *nbody,
+		double *physcon){
 
   char *tieset=NULL;
   
@@ -181,6 +182,7 @@ void resultsstr(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
     emeini1=emeini;pslavsurf1=pslavsurf;clearini1=clearini;
     pmastsurf1=pmastsurf;mortar1=mortar;ielprop1=ielprop;prop1=prop;
     kscale1=kscale;neapar1=neapar;nebpar1=nebpar;t0g1=t0g;t1g1=t1g;
+    physcon1=physcon;
 
     /* calculating the stresses */
 	
@@ -250,18 +252,18 @@ void resultsstr(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
      extrapolation of integration point values to the nodes
      interpolation of 3d results for 1d/2d elements */
 
-  FORTRAN(resultsprint,(co,nk,kon,ipkon,lakon,ne,v,stn,inum,
-			stx,ielorien,norien,orab,t1,ithermal,filab,een,iperturb,fn,
-			nactdof,iout,vold,nodeboun,ndirboun,nboun,nmethod,ttime,xstate,
-			epn,mi,
-			nstate_,ener,enern,xstaten,eei,set,nset,istartset,iendset,
-			ialset,nprint,prlab,prset,qfx,qfn,trab,inotr,ntrans,
-			nelemload,nload,&ikin,ielmat,thicke,eme,emn,rhcon,nrhcon,shcon,
-			nshcon,cocon,ncocon,ntmat_,sideload,icfd,inomat,pslavsurf,islavact,
-			cdn,mortar,islavnode,nslavnode,ntie,islavsurf,time,ielprop,prop,
-			veold,ne0,nmpc,ipompc,nodempc,labmpc,energyini,energy,orname,
-			xload,itiefac,pmastsurf,springarea,tieset,ipobody,ibody,xbody,
-			nbody));
+  FORTRAN(resultsprint,(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,ielorien,
+			norien,orab,t1,ithermal,filab,een,iperturb,fn,nactdof,
+			iout,vold,nodeboun,ndirboun,nboun,nmethod,ttime,xstate,
+			epn,mi,nstate_,ener,enern,xstaten,eei,set,nset,
+			istartset,iendset,ialset,nprint,prlab,prset,qfx,qfn,
+			trab,inotr,ntrans,nelemload,nload,&ikin,ielmat,thicke,
+			eme,emn,rhcon,nrhcon,shcon,nshcon,cocon,ncocon,ntmat_,
+			sideload,icfd,inomat,pslavsurf,islavact,cdn,mortar,
+			islavnode,nslavnode,ntie,islavsurf,time,ielprop,prop,
+			veold,ne0,nmpc,ipompc,nodempc,labmpc,energyini,energy,
+			orname,xload,itiefac,pmastsurf,springarea,tieset,
+			ipobody,ibody,xbody,nbody));
   
   return;
 
@@ -307,7 +309,7 @@ void *resultsmechmtstr(ITG *i){
 		       kscale1,&list,ilist,smscale1,&mscalmethod1,
 		       &energysms1[indexnal],
 		       t0g1,t1g1,islavelinv1,autloc1,irowtloc1,jqtloc1,
-		       &mortartrafoflag1,&intscheme1));
+		       &mortartrafoflag1,&intscheme1,physcon1));
 
   return NULL;
 }
