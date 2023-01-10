@@ -34,6 +34,51 @@ double *aupardiso=NULL;
 ITG mthread_mkl=0;
 char envMKL[32];
 
+
+/* Added by Victor Kemp 2022-11-18 to enable Out-Of-Core (OOC) mode. */
+void initialize_iparm(ITG *symmetryflag){
+  
+  ITG i;
+  char *env;
+  
+  // Most values are 0
+  for(i=0;i<=63;i++){
+    iparm[i]=0;
+  }
+  
+  // iparm(1) = 1 means all other values are specified instead of being defaults.
+  iparm[0]=1;
+
+  // Non-zero default values
+  iparm[1]=2;
+  if(*symmetryflag==0){
+    iparm[9]=8;
+    iparm[10]=0;
+    iparm[12]=0;
+  }else{
+    iparm[9]=13;
+    iparm[10]=1;
+    iparm[12]=1;
+  }    
+  iparm[17]=-1;
+  iparm[20]=1;
+
+  // iparm(60)
+  env=getenv("MKL_PARDISO_OOC_MAX_CORE_SIZE");
+  if(env) {
+    // PARDISO chooses IC/OOC (In-Core / Out-Of-Core) mode according to the
+    // environment variables
+    // MKL_PARDISO_OOC_MAX_CORE_SIZE and
+    // MKL_PARDISO_OOC_MAX_SWAP_SIZE.
+    iparm[59]=1;
+  }else{
+    // Default. IC mode only.
+    iparm[59]=0;
+  }
+    
+}
+
+
 void pardiso_factor(double *ad, double *au, double *adb, double *aub, 
 		    double *sigma,ITG *icol, ITG *irow, 
 		    ITG *neq, ITG *nzs, ITG *symmetryflag, ITG *inputformat,
@@ -55,6 +100,10 @@ void pardiso_factor(double *ad, double *au, double *adb, double *aub,
 
   iparm[0]=0;
   iparm[1]=3;
+
+  /* Added by Victor Kemp 2022-11-18 to enable Out-Of-Core (OOC) mode. */
+  initialize_iparm(symmetryflag);
+
   /* set MKL_NUM_THREADS to min(CCX_NPROC_EQUATION_SOLVER,OMP_NUM_THREADS)
      must be done once  */
   if (mthread_mkl == 0) {
