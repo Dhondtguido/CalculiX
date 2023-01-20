@@ -150,19 +150,21 @@
 !
       d=(/1.d0,1.d0,1.d0,0.d0,0.d0,0.d0/)
 !
+      write(*,*) 'umat_undo_nlgeom_lin_el ielas=',ielas
+!     
       nlgeom_undo=1
-!
+!     
 !     a) calculate the Cauchy-Green tensor C from the mechanical Lagrange strain
-!
+!     
       do i=1,6
-         c(i)=2*emec(i)
+        c(i)=2*emec(i)
       enddo
       do i=1,3
-         c(i)=c(i)+1.d0
+        c(i)=c(i)+1.d0
       enddo
-!
+!     
 !     b) storing C as matrix
-!
+!     
       ca(1,1)=c(1)
       ca(2,2)=c(2)
       ca(3,3)=c(3)
@@ -172,56 +174,56 @@
       ca(2,1)=c(4)
       ca(3,1)=c(5)
       ca(3,2)=c(6)
-!
+!     
 !     c) calculating the principal stretches
-!
+!     
       n=3
       matz=1
-!
+!     
       call rs(n,n,ca,w,matz,z,fv1,fv2,ier)
-!
+!     
       if(ier.ne.0) then
-         write(*,*) '
-     & *ERROR calculating the eigenvalues/vectors in '
-         write(*,*) '       umat_undo_nlgeom_lin_el'
-         call exit(201)
+        write(*,*) '
+     &*ERROR calculating the eigenvalues/vectors in '
+        write(*,*) '       umat_undo_nlgeom_lin_el'
+        call exit(201)
       endif
       w(1)=dsqrt(w(1))
       w(2)=dsqrt(w(2))
       w(3)=dsqrt(w(3))
-!
+!     
 !     d) calculating the invariants of U
-!
+!     
       v1=w(1)+w(2)+w(3)
       v2=w(1)*w(2)+w(2)*w(3)+w(3)*w(1)
       v3=w(1)*w(2)*w(3)
-!
+!     
 !     e) calculating C.C
-!
+!     
       c2(1)=c(1)*c(1)+c(4)*c(4)+c(5)*c(5)
       c2(2)=c(4)*c(4)+c(2)*c(2)+c(6)*c(6)
       c2(3)=c(5)*c(5)+c(6)*c(6)+c(3)*c(3)
       c2(4)=c(1)*c(4)+c(4)*c(2)+c(5)*c(6)
       c2(5)=c(1)*c(5)+c(4)*c(6)+c(5)*c(3)
       c2(6)=c(4)*c(5)+c(2)*c(6)+c(6)*c(3)
-!
+!     
 !     f) calculating the right stretch tensor U
-!        (cf. Simo and Hughes, Computational Inelasticity)
-!
+!     (cf. Simo and Hughes, Computational Inelasticity)
+!     
       dd=v1*v2-v3
       do i=1,6
-         u(i)=(-c2(i)+(v1*v1-v2)*c(i)+v1*v3*d(i))/dd
+        u(i)=(-c2(i)+(v1*v1-v2)*c(i)+v1*v3*d(i))/dd
       enddo
-!
+!     
 !     g) calculating the Biot strain = U-I
-!
+!     
       do i=1,3
-         emec(i)=u(i)-1.d0
+        emec(i)=u(i)-1.d0
       enddo
       do i=4,6
-         emec(i)=u(i)
+        emec(i)=u(i)
       enddo
-!
+!     
       nconstants=-kode-100
 !
 !     calculating the stress and the linear elastic material data
@@ -287,54 +289,6 @@ c      enddo
             enddo
          endif
       endif
-!
-!     calculating the stresses
-!
-c      e=elconloc(1)
-c      un=elconloc(2)
-c      al=un*e/(1.d0+un)/(1.d0-2.d0*un)
-c      um=e/2.d0/(1.d0+un)
-c      am1=al+2.d0*um
-c      am2=2.d0*um
-c!      
-c      stre(1)=am1*emec(1)+al*(emec(2)+emec(3))-beta(1)
-c      stre(2)=am1*emec(2)+al*(emec(1)+emec(3))-beta(2)
-c      stre(3)=am1*emec(3)+al*(emec(1)+emec(2))-beta(3)
-c      stre(4)=am2*emec(4)-beta(4)
-c      stre(5)=am2*emec(5)-beta(5)
-c      stre(6)=am2*emec(6)-beta(6)
-cc      write(*,*) 'umat_undo..stre',stre(1)
-c!
-cc      do i=1,6
-cc         write(*,*) 'umat...lin_el',time,iel,iint,eloc(i),stre(i)
-cc      enddo
-c!
-c      if(icmd.ne.3) then
-c!
-c!        calculating the stiffness matrix
-c!
-c         stiff(1)=al+2.d0*um
-c         stiff(2)=al
-c         stiff(3)=al+2.d0*um
-c         stiff(4)=al
-c         stiff(5)=al
-c         stiff(6)=al+2.d0*um
-c         stiff(7)=0.d0
-c         stiff(8)=0.d0
-c         stiff(9)=0.d0
-c         stiff(10)=um
-c         stiff(11)=0.d0
-c         stiff(12)=0.d0
-c         stiff(13)=0.d0
-c         stiff(14)=0.d0
-c         stiff(15)=um
-c         stiff(16)=0.d0
-c         stiff(17)=0.d0
-c         stiff(18)=0.d0
-c         stiff(19)=0.d0
-c         stiff(20)=0.d0
-c         stiff(21)=um
-c      endif
 !
       return
       end
