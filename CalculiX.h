@@ -4062,7 +4062,8 @@ void  FORTRAN(resultsprint,(double *co,ITG *nk,ITG *kon,ITG *ipkon,
        double *veold,ITG *ne0,ITG *nmpc,ITG *ipompc,ITG *nodempc,
        char *labmpc,double *energyini,double *energy,char *orname,
        double *xload,ITG *itiefac,double *pmastsurf,double *springarea,
-       char *tieset,ITG *ipobody,ITG *ibody,double *xbody,ITG *nbody));
+       char *tieset,ITG *ipobody,ITG *ibody,double *xbody,ITG *nbody,
+       ITG *iinc));
 
 void resultsstr(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
              ITG *ne,double *v,double *stn,ITG *inum,

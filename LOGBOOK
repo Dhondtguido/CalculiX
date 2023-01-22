@@ -5111,3 +5111,5 @@ Dec 2002        - started to work on single crystal plasticity
 
   2 Jan 2023    - worked on umat_ideal_gas.f
                 - transferred physcon into umat_ideal_gas.f
+
+ 22 Jan 2023    - inserted the increment number into the .dat-file

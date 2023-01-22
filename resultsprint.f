@@ -28,7 +28,7 @@
      &     islavact,cdn,mortar,islavnode,nslavnode,ntie,islavsurf,time,
      &     ielprop,prop,veold,ne0,nmpc,ipompc,nodempc,labmpc,energyini,
      &     energy,orname,xload,itiefac,pmastsurf,springarea,tieset,
-     &     ipobody,ibody,xbody,nbody)
+     &     ipobody,ibody,xbody,nbody,iinc)
 !     
 !     - stores the results in the .dat file, if requested
 !     - nodal quantities at the nodes
@@ -54,7 +54,7 @@
      &     ipkon(*),nactdof(0:mi(2),*),nodeboun(*),compressible,
      &     nelemload(2,*),ndirboun(*),ielmat(mi(3),*),nrhcon(*),
      &     inotr(2,*),iorienloc,iflag,nload,mt,nk,ne,ithermal(*),i,
-     &     norien,iperturb(*),iout,nboun,nmethod,node,nshcon(*),
+     &     norien,iperturb(*),iout,nboun,nmethod,node,nshcon(*),iinc,
      &     nfield,ndim,nstate_,nset,istartset(*),iendset(*),ialset(*),
      &     nprint,ntrans,ikin,ncocon(2,*),ntmat_,icfd,inomat(*),mortar,
      &     islavact(*),islavnode(*),nslavnode(*),ntie,islavsurf(2,*),
@@ -102,7 +102,12 @@
 !     
 !     output in dat file (with *NODE PRINT or *EL PRINT)
 !     
-      call printout(set,nset,istartset,iendset,ialset,nprint,
+      write(5,*)
+      write(5,100) iinc
+ 100  format(32x,'INCREMENT',1x,i5)
+      write(5,*)
+!
+        call printout(set,nset,istartset,iendset,ialset,nprint,
      &     prlab,prset,v,t1,fn,ipkon,lakon,stx,eei,xstate,ener,
      &     mi(1),nstate_,ithermal,co,kon,qfx,ttime,trab,inotr,ntrans,
      &     orab,ielorien,norien,nk,ne,inum,filab,vold,ikin,ielmat,
