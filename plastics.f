@@ -25,7 +25,7 @@
 !
       implicit none
 !
-      logical iso
+      logical iso,johnsoncook
 !
       character*1 inpc(*)
       character*80 matname(*)
@@ -41,6 +41,7 @@
      & temperature,plconloc(802),t1l,elcon(0:ncmat_,ntmat_,*)
 !
       iso=.true.
+      johnsoncook=.false.
 !
       ntmat=0
       npmat=0
@@ -63,17 +64,13 @@
       if((nelcon(1,nmat).ne.2).and.(nelcon(1,nmat).ne.9)) then
          write(*,*) 
      &        '*ERROR reading *PLASTIC: *PLASTIC should be preceded'
-         write(*,*) '  by an *ELASTIC,TYPE=ISO card or'
-         write(*,*) '  by an *ELASTIC,TYPE=ORTHO card'
+         write(*,*) '       by an *ELASTIC,TYPE=ISO card or'
+         write(*,*) '       by an *ELASTIC,TYPE=ORTHO card'
          ier=1
          return
       endif
 !
       iperturb(1)=3
-c      iperturb(2)=1
-c      write(*,*) '*INFO reading *PLASTIC: nonlinear geometric'
-c      write(*,*) '      effects are turned on'
-c      write(*,*)
 !
       if(nelcon(1,nmat).eq.2) then
          iplas=1
@@ -86,33 +83,112 @@ c      write(*,*)
       endif
 !
       do i=2,n
-         if(textpart(i)(1:10).eq.'HARDENING=') then
-            if(textpart(i)(11:19).eq.'KINEMATIC') then
-               iso=.false.
-            elseif(textpart(i)(11:18).eq.'COMBINED') then
-               iso=.false.
-            elseif(textpart(i)(11:14).eq.'USER') then
-               if(nelcon(1,nmat).eq.-114) then
-                  write(*,*) '*ERROR reading *PLASTIC: user defined '
-                  write(*,*) '       hardening is not allowed for '
-                  write(*,*) '       elastically anisotropic materials'
-                  ier=1
-                  return
-               endif
-               call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
-     &              ipoinp,inp,ipoinpc)
-               return
+        if(textpart(i)(1:10).eq.'HARDENING=') then
+          if(textpart(i)(11:19).eq.'KINEMATIC') then
+            iso=.false.
+          elseif(textpart(i)(11:18).eq.'COMBINED') then
+            iso=.false.
+          elseif(textpart(i)(11:14).eq.'USER') then
+            if(nelcon(1,nmat).eq.-114) then
+              write(*,*) '*ERROR reading *PLASTIC: user defined '
+              write(*,*) '       hardening is not allowed for '
+              write(*,*) '       elastically anisotropic materials'
+              ier=1
+              return
             endif
-            exit
-         else
-            write(*,*) 
-     &        '*WARNING reading *PLASTIC: parameter not recognized:'
-            write(*,*) '         ',
-     &                 textpart(i)(1:index(textpart(i),' ')-1)
-            call inputwarning(inpc,ipoinpc,iline,
-     &"*PLASTIC%")
-         endif
+            call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
+     &           ipoinp,inp,ipoinpc)
+            return
+          endif
+          exit
+        elseif(textpart(i)(1:21).eq.'HARDENING=JOHNSONCOOK') then
+          johnsoncook=.true.
+        else
+          write(*,*) 
+     &         '*WARNING reading *PLASTIC: parameter not recognized:'
+          write(*,*) '         ',
+     &         textpart(i)(1:index(textpart(i),' ')-1)
+          call inputwarning(inpc,ipoinpc,iline,
+     &         "*PLASTIC%")
+        endif
       enddo
+!
+!     special case: Johnson-Cook
+!                   user material; npmat=0; ntmat=1;
+!
+      if(johnsoncook) then
+!     
+        if(matname(nmat)(1:11).ne.'JOHNSONCOOK') then
+          write(*,*) '*ERROR reading *RATE DEPENDENT'
+          write(*,*) '       the name of a Johnson Cook material'
+          write(*,*) '       must start with JOHNSONCOOK'
+          write(*,*) '       (blanks are allowed at any location'
+          write(*,*) '        and the string is not case sensitive)'
+          call inputerror(inpc,ipoinpc,iline,
+     &         "*RATE DEPENDENT%",ier)
+          return
+        endif
+!
+        if(nelcon(1,nmat).ne.2) then
+          write(*,*) 
+     &         '*ERROR reading *PLASTIC: for a Johnson Cook maerial'
+          write(*,*) '       *PLASTIC should be preceded'
+          write(*,*) '       by an *ELASTIC,TYPE=ISO card'
+          ier=1
+          return
+        endif
+!
+        nelcon(1,nmat)=-111
+        nstate_=max(nstate_,15)
+        call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
+     &       ipoinp,inp,ipoinpc)
+        if((istat.lt.0).or.(key.eq.1).or.(n.lt.4)) then
+          write(*,*) '*ERROR reading *PLASTIC'
+          write(*,*) '       for the Johnson-Cook model at least'
+          write(*,*) '       A, B, n and m should be given'
+          call inputerror(inpc,ipoinpc,iline,
+     &         "*PLASTIC%",ier)
+          return
+        endif
+        ntmat=1
+        if(ntmat.gt.ntmat_) then
+          write(*,*) 
+     &         '*ERROR reading *PLASTIC: increase ntmat_'
+          ier=1
+          return
+        endif
+! 
+!       reading A, B and n (elcon(4,5,6))
+! 
+        do i=1,3
+          read(textpart(i)(1:20),'(f20.0)',iostat=istat)
+     &         elcon(3+i,ntmat,nmat)
+        enddo
+! 
+!       reading m (elcon(11))
+! 
+        read(textpart(4)(1:20),'(f20.0)',iostat=istat)
+     &       elcon(11,ntmat,nmat)
+        if(elcon(11,ntmat,nmat).eq.0.d0) then
+          write(*,*) '*ERROR reading *PLASTIC'
+          write(*,*) '       m cannot be 0'
+          call inputerror(inpc,ipoinpc,iline,
+     &         "*PLASTIC%",ier)
+          return
+        endif
+! 
+!       reading, if given, Tmelt and Ttransition (elcon(9,10))
+!
+        if(n.gt.4) then
+          do i=5,min(n,6)
+            read(textpart(i)(1:20),'(f20.0)',iostat=istat)
+     &           elcon(4+i,ntmat,nmat)
+          enddo
+        endif
+        call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
+     &       ipoinp,inp,ipoinpc)
+        return
+      endif
 !
       if(iso) then
 !
@@ -255,7 +331,6 @@ c      write(*,*)
             do i=80,11,-1
                matname(nmat)(i:i)=matname(nmat)(i-10:i-10)
             enddo
-c            matname(nmat)(11:80)=matname(nmat)(1:70)
             matname(nmat)(1:10)='ANISO_PLAS'
          endif
 !
@@ -269,10 +344,6 @@ c            matname(nmat)(11:80)=matname(nmat)(1:70)
             ndatamax=0
             do i=1,nelcon(2,nmat)
                t1l=elcon(0,i,nmat)
-c               plconloc(1)=0.d0
-c               plconloc(2)=0.d0
-c               plconloc(3)=0.d0
-c               plconloc(81)=nplicon(1,nmat)+0.5d0
 !
                if(nplicon(0,nmat).eq.1) then
                   id=-1
@@ -335,10 +406,6 @@ c               plconloc(81)=nplicon(1,nmat)+0.5d0
             ndatamax=0
             do i=1,nelcon(2,nmat)
                t1l=elcon(0,i,nmat)
-c               plconloc(1)=0.d0
-c               plconloc(2)=0.d0
-c               plconloc(3)=0.d0
-c               plconloc(82)=nplkcon(1,nmat)+0.5d0
 !
                if(nplkcon(0,nmat).eq.1) then
                   id=-1
@@ -393,13 +460,6 @@ c               plconloc(82)=nplkcon(1,nmat)+0.5d0
             endif
          endif
       endif
-!
-c      if(nelcon(1,nmat).eq.-114) then
-c         write(*,*) 'anisotropic elasticity+viscoplasticity'
-c         do i=1,nelcon(2,nmat)
-c            write(*,*) (elcon(j,i,nmat),j=0,14)
-c         enddo
-c      endif
 !
       return
       end

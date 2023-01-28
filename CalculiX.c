@@ -71,7 +71,7 @@ int main(int argc,char *argv[])
     iperturb[2],nmat,ntmat_,norien,ithermal[2]={0,0},nmpcold,
     iprestr,kode,isolver,nslavs,nkon_,ne0,nkon0,mortar,
     jout[2],nlabel,nkon,idrct,jmax[2],iexpl,nevtot,ifacecount,
-    iplas,npmat_,mi[3],ntrans,mpcend,namtot_,iumat,iheading,
+    iplas,npmat_,mi[3],ntrans,mpcend,namtot_,iheading,
     icascade,maxlenmpc,mpcinfo[4],ne1d,ne2d,infree[4],
     callfrommain,nflow,jin=0,irstrt[2],nener,jrstrt,nenerold,
     nline,*ipoinp=NULL,*inp=NULL,ntie,ntie_,mcs,nprop_,
@@ -154,7 +154,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Sun Jan 22 13:56:30 CET 2023\n");
+  printf("You are using an executable made on Sat Jan 28 18:41:01 CET 2023\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -178,7 +178,7 @@ int main(int argc,char *argv[])
 	  &nbodyold,&network,&nheading_,&nmpc_,&nload_,&nforc_,&nboun_,
 	  &nintpoint,iperturb,&ntmat_,ithermal,&isolver,&nslavs,&nkon_,&mortar,
 	  jout,&nkon,&nevtot,&ifacecount,&iplas,&npmat_,mi,&mpcend,&namtot_,
-	  &iumat,&icascade,&ne1d,&ne2d,infree,&nflow,irstrt,&nener,&jrstrt,
+	  &icascade,&ne1d,&ne2d,infree,&nflow,irstrt,&nener,&jrstrt,
 	  &ntie_,&mcs,&nprop_,&nprop,&itpamp,&nevdamp_,&npt_,&iaxial,&inext,
 	  &icontact,&nobject,&nobject_,&iit,&mpcfreeref,&isens,&namtot,&nstam,
 	  &ndamp,&nef,&nk_,&ne_,&nalset_,&nmat_,&norien_,&nam_,
@@ -616,7 +616,7 @@ int main(int argc,char *argv[])
 		      timepar,xmodal,filab,jout,&nlabel,&idrct,jmax,&iexpl,
 		      alpha,iamboun,plicon,nplicon,plkcon,nplkcon,&iplas,
 		      &npmat_,mi,&nk_,trab,inotr,&ntrans,ikboun,ilboun,ikmpc,
-		      ilmpc,ics,dcs,&ncs_,&namtot_,cs,&nstate_,&ncmat_,&iumat,
+		      ilmpc,ics,dcs,&ncs_,&namtot_,cs,&nstate_,&ncmat_,
 		      &mcs,labmpc,iponor,xnor,knor,thickn,thicke,ikforc,ilforc,
 		      offset,iponoel,inoel,rig,infree,nshcon,shcon,cocon,
 		      ncocon,physcon,&nflow,ctrl,&maxlenmpc,&ne1d,&ne2d,&nener,
@@ -1277,7 +1277,7 @@ int main(int argc,char *argv[])
 		    xloadold,veold,accold,amname,amta,namta,&nam,iamforc,
 		    &iamload,iamt1,alpha,&iexpl,iamboun,plicon,nplicon,plkcon,
 		    nplkcon,&xstate,&npmat_,&istep,&ttime,matname,qaold,mi,
-		    &isolver,&ncmat_,&nstate_,&iumat,cs,&mcs,&nkon,&ener,
+		    &isolver,&ncmat_,&nstate_,cs,&mcs,&nkon,&ener,
 		    mpcinfo,output,shcon,nshcon,cocon,ncocon,physcon,&nflow,
 		    ctrl,set,&nset,istartset,iendset,ialset,&nprint,prlab,
 		    prset,&nener,ikforc,ilforc,trab,inotr,&ntrans,&fmpc,cbody,
@@ -1512,7 +1512,7 @@ int main(int argc,char *argv[])
 		       &nam,iamforc,&iamload,iamt1,alpha,
 		       &iexpl,iamboun,plicon,nplicon,plkcon,nplkcon,
 		       &xstate,&npmat_,&istep,&ttime,matname,qaold,mi,
-		       &isolver,&ncmat_,&nstate_,&iumat,cs,&mcs,&nkon,&ener,
+		       &isolver,&ncmat_,&nstate_,cs,&mcs,&nkon,&ener,
 		       mpcinfo,output,
 		       shcon,nshcon,cocon,ncocon,physcon,&nflow,ctrl,
 		       &set,&nset,&istartset,&iendset,&ialset,&nprint,prlab,
@@ -1679,7 +1679,7 @@ int main(int argc,char *argv[])
 		&nbodyold,&network,&nheading_,&nmpc_,&nload_,&nforc_,&nboun_,
 		&nintpoint,iperturb,&ntmat_,ithermal,&isolver,&nslavs,&nkon_,
 		&mortar,jout,&nkon,&nevtot,&ifacecount,&iplas,&npmat_,mi,
-		&mpcend,&namtot_,&iumat,&icascade,&ne1d,&ne2d,infree,&nflow,
+		&mpcend,&namtot_,&icascade,&ne1d,&ne2d,infree,&nflow,
 		irstrt,&nener,&jrstrt,&ntie_,&mcs,&nprop_,&nprop,&itpamp,
 		&nevdamp_,&npt_,&iaxial,&inext,&icontact,&nobject,&nobject_,
 		&iit,&mpcfreeref,&isens,&namtot,&nstam,&ndamp,&nef,

@@ -33,7 +33,6 @@
      &     iexpl,alpha,iamboun,plicon,nplicon,plkcon,
      &     nplkcon,iplas,npmat_,mi,nk_,trab,inotr,ntrans,ikboun,
      &     ilboun,ikmpc,ilmpc,ics,dcs,ncs_,namtot_,cs,nstate_,ncmat_,
-     &     iumat,
      &     mcs,labmpc,iponor,xnor,knor,thickn,thicke,ikforc,ilforc,
      &     offset,iponoel,inoel,rig,infree,nshcon,shcon,cocon,ncocon,
      &     physcon,nflow,ctrl,maxlenmpc,ne1d,
@@ -114,7 +113,7 @@
      &     nmethod,nk,ne,nboun,nmpc,nmpc_,mpcfree,i,istat,n,
      &     key,nk_,ne_,nboun_,ncs_,namtot_,nstate_,iviewfile,
      &     isolver,ithermal(*),iperturb(*),iprestr,istep,mei(4),nkon,
-     &     nprint,nload,nload_,nforc,nforc_,nlabel,iumat,imat,
+     &     nprint,nload,nload_,nforc,nforc_,nlabel,imat,
      &     nset,nset_,nprint_,nam,nam_,jout(2),ncmat_,itpamp,
      &     ierror,idrct,jmax(2),iexpl,iplas,npmat_,ntrans,ntrans_,
      &     M_or_SPC,nplicon(0:ntmat_,*),nplkcon(0:ntmat_,*),nflow,
@@ -964,6 +963,11 @@ c
         call randomfields(inpc,textpart,istep,istat,n,iline,
      &       ipol,inl,ipoinp,inp,ipoinpc,nener,physcon,ier)        
 !     
+      elseif(textpart(1)(1:13).eq.'*RATEDEPENDENT') then
+        call ratedependents(inpc,textpart,nelcon,nmat,ntmat_,
+     &     iplas,iperturb,nstate_,ncmat_,elcon,matname,irstrt,istep,
+     &     istat,n,iline,ipol,inl,ipoinp,inp,ipoinpc,ier)
+!     
       elseif(textpart(1)(1:11).eq.'*REFINEMESH') then
         call refinemeshs(inpc,textpart,filab,istep,istat,n,iline,
      &       ipol,inl,ipoinp,inp,ipoinpc,ier,set,nset)
@@ -1179,7 +1183,7 @@ c
 !     
       elseif(textpart(1)(1:13).eq.'*USERMATERIAL') then
         call usermaterials(inpc,textpart,elcon,nelcon,
-     &       imat,ntmat_,ncmat_,iperturb,iumat,irstrt,istep,istat,n,
+     &       imat,ntmat_,ncmat_,iperturb,irstrt,istep,istat,n,
      &       iline,ipol,inl,ipoinp,inp,cocon,ncocon,ipoinpc,ier)
 !     
       elseif(textpart(1)(1:12).eq.'*USERSECTION') then

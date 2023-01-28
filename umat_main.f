@@ -38,7 +38,6 @@
 !
       real*8 xstate(nstate_,mi(1),*),xstateini(nstate_,mi(1),*)
 !
-      
       if(amat(1:8).eq.'ABAQUSNL') then
 
          amatloc(1:72)=amat(9:80)

@@ -28,7 +28,7 @@ void ini_cal(char *jobnamec,char *output,char *fneig,char *kind1,char *kind2,
 	     ITG *nload_,ITG *nforc_,ITG *nboun_,ITG *nintpoint,ITG *iperturb,
 	     ITG *ntmat_,ITG *ithermal,ITG *isolver,ITG *nslavs,ITG *nkon_,
 	     ITG *mortar,ITG *jout,ITG *nkon,ITG *nevtot,ITG *ifacecount,
-	     ITG *iplas,ITG *npmat_,ITG *mi,ITG *mpcend,ITG *namtot_,ITG *iumat,
+	     ITG *iplas,ITG *npmat_,ITG *mi,ITG *mpcend,ITG *namtot_,
 	     ITG *icascade,ITG *ne1d,ITG *ne2d,ITG *infree,ITG *nflow,
 	     ITG *irstrt,ITG *nener,ITG *jrstrt,ITG *ntie_,ITG *mcs,ITG *nprop_,
 	     ITG *nprop,ITG *itpamp,ITG *nevdamp_,ITG *npt_,ITG *iaxial,
@@ -138,7 +138,6 @@ void ini_cal(char *jobnamec,char *output,char *fneig,char *kind1,char *kind2,
   *nstate_=0;
   *ncmat_=0;
   *iplas=0;
-  *iumat=0;
   *ndamp=0;
   for(i=0;i<14;i++){physcon[i]=0.;}
 

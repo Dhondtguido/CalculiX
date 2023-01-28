@@ -17,7 +17,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine usermaterials(inpc,textpart,elcon,nelcon,
-     &  nmat,ntmat_,ncmat_,iperturb,iumat,irstrt,istep,istat,n,
+     &  nmat,ntmat_,ncmat_,iperturb,irstrt,istep,istat,n,
      &  iline,ipol,inl,ipoinp,inp,cocon,ncocon,ipoinpc,ier)
 !
 !     reading the input deck: *USER MATERIAL
@@ -28,7 +28,7 @@
       character*132 textpart(16)
 !
       integer nelcon(2,*),nmat,ntmat,ntmat_,istep,istat,ncocon(2,*),
-     &  n,key,i,ncmat_,nconstants,imax,isum,j,iperturb(*),iumat,ier,
+     &  n,key,i,ncmat_,nconstants,imax,isum,j,iperturb(*),ier,
      &  irstrt(*),iline,ipol,inl,ipoinp(2,*),inp(3,*),imech,ipoinpc(0:*)
 !
       real*8 elcon(0:ncmat_,ntmat_,*),cocon(0:6,ntmat_,*)
@@ -36,7 +36,6 @@
       iperturb(1)=3
       iperturb(2)=0
       ntmat=0
-      iumat=1
 !
       if((istep.gt.0).and.(irstrt(1).ge.0)) then
          write(*,*)

@@ -677,6 +677,7 @@ randomfields.f \
 randomval.f \
 ranstarefine.f \
 ranuwh.f \
+ratedependents.f \
 rcavi2.f \
 rcavi_cp_lt.f \
 rcavi_cp_nt.f \

@@ -40,7 +40,7 @@
       implicit none
 !     
       logical igen,lin,frequency,cyclicsymmetry,composite,
-     &     tabular,massflow,beamgeneralsection
+     &     tabular,massflow,beamgeneralsection,johnsoncook
 !     
       character*1 selabel,sulabel,inpc(*)
       character*5 llab
@@ -1742,33 +1742,48 @@ c     !
           if((istat.lt.0).or.(key.eq.1)) exit
         enddo
       elseif(textpart(1)(1:8).eq.'*PLASTIC') then
-        ntmatl=0
-        do
+!
+        johnsoncook=.false.
+        do i=2,n
+          if(textpart(i)(1:21).eq.'HARDENING=JOHNSONCOOK') then
+            johnsoncook=.true.
+            ntmat_=max(1,ntmat_)
+            ncmat_=max(11,ncmat_)
+          endif
+        enddo
+        if(johnsoncook) then
           call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &         ipoinp,inp,ipoinpc)
-          if((istat.lt.0).or.(key.eq.1)) exit
-          read(textpart(3)(1:20),'(f20.0)',iostat=istat) 
-     &         temperature
-          if(istat.gt.0) then
-            call inputerror(inpc,ipoinpc,iline,
-     &           "*PLASTIC%",ier)
-            exit
-          endif
-          if(ntmatl.eq.0) then
-            npmatl=0
-            ntmatl=ntmatl+1
-            ntmat_=max(ntmatl,ntmat_)
-            tempact=temperature
-          elseif(temperature.ne.tempact) then
-            npmatl=0
-            ntmatl=ntmatl+1
-            ntmat_=max(ntmatl,ntmat_)
-            tempact=temperature
-          endif
-          npmatl=npmatl+1
-          npmat_=max(npmatl,npmat_)
-        enddo
-        if(ncmat_.ge.9) ncmat_=max(19,ncmat_)
+        else
+!     
+          ntmatl=0
+          do
+            call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
+     &           ipoinp,inp,ipoinpc)
+            if((istat.lt.0).or.(key.eq.1)) exit
+            read(textpart(3)(1:20),'(f20.0)',iostat=istat) 
+     &           temperature
+            if(istat.gt.0) then
+              call inputerror(inpc,ipoinpc,iline,
+     &             "*PLASTIC%",ier)
+              exit
+            endif
+            if(ntmatl.eq.0) then
+              npmatl=0
+              ntmatl=ntmatl+1
+              ntmat_=max(ntmatl,ntmat_)
+              tempact=temperature
+            elseif(temperature.ne.tempact) then
+              npmatl=0
+              ntmatl=ntmatl+1
+              ntmat_=max(ntmatl,ntmat_)
+              tempact=temperature
+            endif
+            npmatl=npmatl+1
+            npmat_=max(npmatl,npmat_)
+          enddo
+          if(ncmat_.ge.9) ncmat_=max(19,ncmat_)
+        endif
       elseif(textpart(1)(1:19).eq.'*PRE-TENSIONSECTION') then
         surface(1:1)=' '
         do i=2,n
@@ -1845,6 +1860,12 @@ c     !
             endif
           endif
         enddo
+      elseif(textpart(1)(1:13).eq.'*RATEDEPENDENT') then
+        ntmat_=max(1,ntmat_)
+        ncmat_=max(11,ncmat_)
+        call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
+     &       ipoinp,inp,ipoinpc)
+!     
       elseif(textpart(1)(1:8).eq.'*RESTART') then
         irestartread=0
         irestartstep=0
