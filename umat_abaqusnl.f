@@ -155,7 +155,7 @@
 !
 !     filling field jstep
 !
-      write(*,*) 'umat_abaqusnl ',iel,iint
+c      write(*,*) 'umat_abaqusnl ',iel,iint
 !
       jstep(1)=istep
       jstep(2)=nmethod
@@ -195,7 +195,13 @@
 !     calculating the principal stretches at the start of the increment
 !
       do i=1,3
-         w(i)=dsqrt(2.d0*w(i)+1.d0)
+        if(w(i).lt.-0.5d0) then
+          write(*,*) '*ERROR in umat_abaqusnl: negative eigenvalue'
+          write(*,*) '       of the Cauchy-Green tensor;'
+          call exit(201)
+        else
+          w(i)=dsqrt(2.d0*w(i)+1.d0)
+        endif
       enddo
 !
 !     calculating the invariants at the start of the increment
@@ -309,11 +315,17 @@
      &  *ERROR calculating the eigenvalues/vectors in umat_abaqusnl'
          call exit(201)
       endif
-!
+!     
 !     calculating the principal stretches at the end of the increment
-!
+!     
       do i=1,3
-         w(i)=dsqrt(2.d0*w(i)+1.d0)
+        if(w(i).lt.-0.5d0) then
+          write(*,*) '*ERROR in umat_abaqusnl: negative eigenvalue'
+          write(*,*) '         of the Cauchy-Green tensor;'
+          call exit(201)
+        else
+          w(i)=dsqrt(2.d0*w(i)+1.d0)
+        endif
       enddo
 !
 !     calculating the invariants at the end of the increment

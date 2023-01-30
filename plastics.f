@@ -131,7 +131,7 @@
 !
         if(nelcon(1,nmat).ne.2) then
           write(*,*) 
-     &         '*ERROR reading *PLASTIC: for a Johnson Cook maerial'
+     &         '*ERROR reading *PLASTIC: for a Johnson Cook material'
           write(*,*) '       *PLASTIC should be preceded'
           write(*,*) '       by an *ELASTIC,TYPE=ISO card'
           ier=1
