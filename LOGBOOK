@@ -5116,3 +5116,8 @@ Dec 2002        - started to work on single crystal plasticity
 
  28 Jan 2023    - removed variable iumat
                 - started inserting Johnson Cook model
+
+ 4 Feb 2023     - taking the thermal expansion into account in
+                  umat_abaqusnl: the total right stretch tensor has to
+		  be taken to calculate the corotational stress from the
+		  PK2 stress, no the mechanical right stretch tensor.

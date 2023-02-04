@@ -101,8 +101,8 @@
 !     alpha method is not used for massless contact)
 !     
       if(mortar.ne.-1) then
-        safefac=0.50d0
-c        safefac=0.80d0
+c        safefac=0.50d0
+        safefac=0.80d0
       else
         safefac=0.80d0/1.3d0
       endif

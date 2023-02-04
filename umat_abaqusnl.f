@@ -24,6 +24,9 @@
 !     calculates stiffness and stresses for a nonlinear material
 !     defined by an ABAQUS umat routine
 !
+!     CAVE: the thermal expansion MUST be ISOTROPIC for this
+!           routine to work!!!!
+!
 !     icmd=3: calculates stress at mechanical strain
 !     else: calculates stress at mechanical strain and the stiffness
 !           matrix
@@ -138,7 +141,7 @@
      &  time,ttime,skl(3,3),xa(3,3),ya(3,3,3,3),xstate(nstate_,mi(1),*),
      &  xstateini(nstate_,mi(1),*),w(3),fv1(3),fv2(3),d(6),
      &  v1,v2,v3,c(6),r(3,3),r0(3,3),eln0(6),eln(6),e(3,3),tkl(3,3),
-     &  u(6),c2(6),dd,um1(3,3),z(3,3),u0(3,3)
+     &  u(6),c2(6),dd,um1(3,3),z(3,3),u0(3,3),ctot(3,3),expansion
 !
       real*8 ddsdde(6,6),sse,spd,scd,rpl,ddsddt(6),drplde(6),
      &  drpldt,stran(6),dstran(6),abqtime(2),predef,temp,dtemp,
@@ -233,6 +236,9 @@ c      write(*,*) 'umat_abaqusnl ',iel,iint
 !     calculating the right stretch tensor at the start of the increment
 !     (cf. Simo and Hughes, Computational Inelasticity)
 !
+!     This is the mechanical right stretch tensor, i.e. without
+!     thermal expansion (since it is based on emec0)
+!
       dd=v1*v2-v3
       do i=1,6
          u(i)=(-c2(i)+(v1*v1-v2)*c(i)+v1*v3*d(i))/dd
@@ -278,7 +284,13 @@ c      write(*,*) 'umat_abaqusnl ',iel,iint
       enddo
 !
 !     logarithmic strain in global coordinates at the start of the
-!     increment
+!     increment = ln(lambda) N diadic N;
+!
+!     the true logarithmic strain is ln(lambda) n diadic n;
+!     the rotation tensor R = n diadic N;
+!     therefore, ln(lambda) N diadic N is R^T true logarithmic strain R, 
+!      in other words the corotational true logarithmic strain (required
+!      by the abaqus routine)
 !
       eln0(1)=z(1,1)*z(1,1)*w(1)+z(1,2)*z(1,2)*w(2)+
      &        z(1,3)*z(1,3)*w(3)          
@@ -357,6 +369,9 @@ c      write(*,*) 'umat_abaqusnl ',iel,iint
 !     calculating the right stretch tensor at the end of the increment
 !     (cf. Simo and Hughes, Computational Inelasticity)
 !
+!     This is the mechanical right stretch tensor, i.e. without
+!     thermal expansion (since it is based on emec)
+!
       dd=v1*v2-v3
       do i=1,6
          u(i)=(-c2(i)+(v1*v1-v2)*c(i)+v1*v3*d(i))/dd
@@ -393,7 +408,13 @@ c      write(*,*) 'umat_abaqusnl ',iel,iint
       enddo
 !
 !     logarithmic strain in global coordinates at the end of the
-!     increment
+!     increment = ln(lambda) N diadic N;
+!
+!     the true logarithmic strain is ln(lambda) n diadic n;
+!     the rotation tensor R = n diadic N;
+!     therefore, ln(lambda) N diadic N is R^T true logarithmic strain R, 
+!      in other words the corotational true logarithmic strain (required
+!      by the abaqus routine)
 !
       eln(1)=z(1,1)*z(1,1)*w(1)+z(1,2)*z(1,2)*w(2)+
      &        z(1,3)*z(1,3)*w(3)          
@@ -505,6 +526,40 @@ c      write(*,*) 'r',((r(i,j),j=1,3),i=1,3)
 !     s'=J^(-1).U.S.U^T (no orientation card) or
 !     s'=J^(-1).U.T^T.S.T.U^T (orientation card)
 !
+!     Here, U is the total right stretch tensor, i.e. the
+!     thermal effects have to be included.
+!
+!     Isotropic thermal expansion is assumed. Indeed, only
+!     in that case the rotation tensor with expansion equals
+!     the rotation tensor without thermal expansion, and      
+!     the right stretch tensor with expansion equals the right
+!     stretch tensor without expansion times (1+alpha*Delta T).
+!
+!     calculate the Cauchy-Green tensor at the beginning of 
+!     the increment
+!
+      do i=1,3
+        do j=1,3
+          ctot(i,j)=xokl(1,i)*xokl(1,i)+xokl(2,i)*xokl(2,i)+
+     &         xokl(3,i)*xokl(3,i)
+        enddo
+      enddo
+!
+!     Ctot=C*(1+alpha*Delta T)**2
+!     expansion:=1+alpha*Delta T
+!
+      expansion=dsqrt((ctot(1,1)/c(1)+ctot(2,2)/c(2)+
+     &     ctot(3,3)/c(3))/3.d0)
+!
+!     calculate the total right stretch tensor at the start
+!     of the increment
+!
+      do i=1,3
+        do j=1,3
+          u0(i,j)=u0(i,j)*expansion
+        enddo
+      enddo
+!      
       if(iorien.ne.0) then
          do i=1,3
             do j=1,3
