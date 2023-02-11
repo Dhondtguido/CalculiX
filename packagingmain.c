@@ -24,27 +24,26 @@
 
 static char *objectset1;
 
-static ITG *nodedesiboun1,ndesiboun1,*nx1,*ny1,*nz1,num_cpus,ifree1,
-    *iobject1,*nk1,*nobject1;
+static ITG *nobject1,*nodedesiboun1,ndesiboun1,*nx1,*ny1,*nz1,
+    num_cpus,ifree1,*iobject1,*ndesi1,*nk1,*nodenum1;
 
 /* y1 had to be replaced by yy1, else the following compiler error
    popped up: 
 
-   thicknessmain.c:42: error: ‘y1’ redeclared as different kind of symbol */
+   packagingmain.c:42: error: ‘y1’ redeclared as different kind of symbol */
 
-static double *xo1,*yo1,*zo1,*x1,*yy1,*z1,*co1,*dgdxglob1,*coini1,*g01,
-    *extnor1;
+static double *xo1,*yo1,*zo1,*x1,*yy1,*z1,*co1,*dgdxglob1,*extnor1,*g01;
     
-
-void thicknessmain(double *co,ITG *nobject,ITG *nk,ITG *nodedesi,ITG *ndesi,
+    
+void packagingmain(double *co,ITG *nobject,ITG *nk,ITG *nodedesi,ITG *ndesi,
                 char *objectset,char *set,ITG *nset,ITG *istartset,
 		ITG *iendset,ITG *ialset,ITG *iobject,ITG *nodedesiinv,
-		double *dgdxglob,double *extnor,double *coini,double *g0){
+		double *dgdxglob,double *extnor,double *g0){
 		
     /* calculation of distance between nodes */
 
     ITG *nx=NULL,*ny=NULL,*nz=NULL,ifree,i,j,*ithread=NULL,ndesiboun,
-        *nodedesiboun=NULL;
+        *nodedesiboun=NULL,*nodenum=NULL;
     
     double *xo=NULL,*yo=NULL,*zo=NULL,*x=NULL,*y=NULL,*z=NULL;
 
@@ -59,11 +58,12 @@ void thicknessmain(double *co,ITG *nobject,ITG *nk,ITG *nodedesi,ITG *ndesi,
     NNEW(nx,ITG,*nk);
     NNEW(ny,ITG,*nk);
     NNEW(nz,ITG,*nk);
+    NNEW(nodenum,ITG,*nk);
     NNEW(nodedesiboun,ITG,*ndesi); 
     
-    FORTRAN(prethickness,(co,xo,yo,zo,x,y,z,nx,ny,nz,&ifree,nodedesiinv,
+    FORTRAN(prepackaging,(co,xo,yo,zo,x,y,z,nx,ny,nz,&ifree,nodedesiinv,
      			&ndesiboun,nodedesiboun,set,nset,objectset,
-     			iobject,istartset,iendset,ialset));
+     			iobject,istartset,iendset,ialset,nodenum));
      			 
     RENEW(nodedesiboun,ITG,ndesiboun);
     
@@ -125,18 +125,19 @@ void thicknessmain(double *co,ITG *nobject,ITG *nk,ITG *nodedesi,ITG *ndesi,
 
     NNEW(g01,double,num_cpus**nobject);
     
-    nodedesiboun1=nodedesiboun;coini1=coini;nk1=nk;nobject1=nobject;
+    nobject1=nobject;nodedesiboun1=nodedesiboun;
     ndesiboun1=ndesiboun;objectset1=objectset;xo1=xo;yo1=yo;zo1=zo;
     x1=x;yy1=y;z1=z;nx1=nx;ny1=ny;nz1=nz;ifree1=ifree;co1=co;  
-    iobject1=iobject;dgdxglob1=dgdxglob;extnor1=extnor;
-    
+    iobject1=iobject;ndesi1=ndesi;dgdxglob1=dgdxglob;nk1=nk;
+    extnor1=extnor;nodenum1=nodenum;
+
     /* assessment of actual wallthickness */
     /* create threads and wait */
   
     NNEW(ithread,ITG,num_cpus);
     for(i=0; i<num_cpus; i++)  {
        ithread[i]=i;
-       pthread_create(&tid[i], NULL, (void *)thicknessmt, (void *)&ithread[i]);
+       pthread_create(&tid[i], NULL, (void *)packagingmt, (void *)&ithread[i]);
     }
     for(i=0; i<num_cpus; i++)  pthread_join(tid[i], NULL);
 
@@ -147,7 +148,7 @@ void thicknessmain(double *co,ITG *nobject,ITG *nk,ITG *nodedesi,ITG *ndesi,
      g0[*iobject-1]+=g01[*iobject-1+j*(*nobject-1)];
     }
     
-    SFREE(xo);SFREE(yo);SFREE(zo);SFREE(g01);
+    SFREE(xo);SFREE(yo);SFREE(zo);SFREE(g01);SFREE(nodenum);
     SFREE(x);SFREE(y);SFREE(z);SFREE(nx);SFREE(ny);SFREE(nz);
     SFREE(ithread);SFREE(nodedesiboun);   
                                      
@@ -157,7 +158,7 @@ void thicknessmain(double *co,ITG *nobject,ITG *nk,ITG *nodedesi,ITG *ndesi,
 
 /* subroutine for multithreading of wallthickness assessment */
 
-void *thicknessmt(ITG *i){
+void *packagingmt(ITG *i){
 
     ITG indexr,indexg0,ndesia,ndesib,ndesidelta;
 
@@ -171,9 +172,10 @@ void *thicknessmt(ITG *i){
     
     //printf("indexr=%" ITGFORMAT","ndesia=%" ITGFORMAT",ndesib=%" ITGFORMAT"\n",indexr,ndesia,ndesib);
 
-    FORTRAN(thickness,(nodedesiboun1,&ndesiboun1,objectset1,xo1,yo1,zo1,
+    FORTRAN(packaging,(nodedesiboun1,&ndesiboun1,objectset1,xo1,yo1,zo1,
 		       x1,yy1,z1,nx1,ny1,nz1,co1,&ifree1,&ndesia,&ndesib,
-		       iobject1,dgdxglob1,nk1,extnor1,&g01[indexg0],coini1));
+		       iobject1,ndesi1,dgdxglob1,nk1,extnor1,&g01[indexg0],
+		       nodenum1));       
        
     return NULL;
 }

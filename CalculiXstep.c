@@ -226,7 +226,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
     *cs=NULL,*tietol=NULL,*fmpc=NULL,*prop=NULL,*t0g=NULL,*t1g=NULL,
     *xbody=NULL,*xbodyold=NULL,*coefmpcref=NULL,*dacon=NULL,*vel=NULL,
     *velo=NULL,*veloo=NULL,energy[5],*ratiorfn=NULL,*dgdxglob=NULL,
-    *g0=NULL,*xdesi=NULL,*coeffc=NULL,*edc=NULL;
+    *g0=NULL,*xdesi=NULL,*coeffc=NULL,*edc=NULL,*coini=NULL;
     
   static double ctrl[57];
 
@@ -301,7 +301,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
     printf("software, and you are welcome to redistribute it under\n");
     printf("certain conditions, see gpl.htm\n\n");
     printf("************************************************************\n\n");
-    printf("You are using an executable made on Sat Feb  4 14:58:36 CET 2023\n");
+    printf("You are using an executable made on Sat Feb 11 19:04:24 CET 2023\n");
     fflush(stdout);
 
     NNEW(ipoinp,ITG,2*nentries);
@@ -615,6 +615,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 	NNEW(xdesi,double,3*nk_);
 	NNEW(objectset,char,405*nobject_);
 	for(i=0;i<405*nobject_;i++){objectset[i]=' ';}
+	NNEW(coini,double,3*nk_);
       }
     
       /* temporary fields for cyclic symmetry calculations */
@@ -781,27 +782,32 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 			rhcon,nrhcon,alcon,nalcon,alzero,t0,t1,matname,ielmat,
 			orname,orab,ielorien,amname,amta,namta,&nam,nmethod,
 			iamforc,iamload,iamt1,ithermal,iperturb,&istat,&istep,
-			&nmat,&ntmat_,&norien,prestr,&iprestr,&isolver,fei,veold,
+			&nmat,&ntmat_,&norien,prestr,&iprestr,&isolver,fei,
+			veold,
 			timepar,xmodal,filab,jout,nlabel,&idrct,jmax,&iexpl,
 			alpha,iamboun,plicon,nplicon,plkcon,nplkcon,&iplas,
 			&npmat_,mi,&nk_,trab,inotr,&ntrans,ikboun,ilboun,ikmpc,
 			ilmpc,ics,dcs,&ncs_,&namtot_,cs,&nstate_,&ncmat_,
-			&mcs,labmpc,iponor,xnor,knor,thickn,thicke,ikforc,ilforc,
+			&mcs,labmpc,iponor,xnor,knor,thickn,thicke,ikforc,
+			ilforc,
 			offset,iponoel,inoel,rig,infree,nshcon,shcon,cocon,
-			ncocon,physcon,&nflow,ctrl,&maxlenmpc,&ne1d,&ne2d,&nener,
+			ncocon,physcon,&nflow,ctrl,&maxlenmpc,&ne1d,&ne2d,
+			&nener,
 			vold,nodebounold,ndirbounold,xbounold,xforcold,xloadold,
 			t1old,eme,sti,ener,xstate,jobnamec,irstrt,&ttime,qaold,
-			output,typeboun,inpc,ipoinp,inp,tieset,tietol,&ntie,fmpc,
+			output,typeboun,inpc,ipoinp,inp,tieset,tietol,&ntie,
+			fmpc,
 			cbody,ibody,xbody,&nbody,&nbody_,xbodyold,&nam_,ielprop,
 			&nprop,&nprop_,prop,&itpamp,&iviewfile,ipoinpc,&nslavs,
 			t0g,t1g,&network,&cyclicsymmetry,idefforc,idefload,
 			idefbody,&mortar,&ifacecount,islavsurf,pslavsurf,
 			clearini,heading,&iaxial,&nobject,objectset,&nprint_,
 			iuel,&nuel_,nodempcref,coefmpcref,ikmpcref,&memmpcref_,
-			&mpcfreeref,&maxlenmpcref,&memmpc_,&isens,&namtot,&nstam,
+			&mpcfreeref,&maxlenmpcref,&memmpc_,&isens,&namtot,
+			&nstam,
 			dacon,vel,&nef,velo,veloo,ne2boun,itempuser,
 			irobustdesign,irandomtype,randomval,&nfc,&nfc_,coeffc,
-			ikdc,&ndc,&ndc_,edc));
+			ikdc,&ndc,&ndc_,edc,coini));
 
 
       // start change DLR
@@ -1760,7 +1766,8 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 			nodeboun,nboun,ndirboun,ithermal,co,vold,mi,&ielmat,
 			ielprop,prop,&kode,nmethod,filab,&nstate_,&istep,cs,
 			set,&nset,istartset,iendset,ialset,jobnamec,output,
-			&ntrans,inotr,trab,orname,xdesi,timepar);         
+			&ntrans,inotr,trab,orname,xdesi,timepar,coini,ikboun,
+			nactdof,&ne2d);         
       
     }
 
@@ -1801,7 +1808,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 		    &nobject_,&objectset,nmethod,iperturb,&irefineloop,
 		    &iparentel,&iprfn,&konrfn,&ratiorfn,&heading,
 		    &nodedesi,&dgdxglob,&g0,&nuel_,&xdesi,&nfc,&coeffc,
-		    &ikdc,&edc);
+		    &ikdc,&edc,&coini);
 
 	/* closing and reopening the output files */
 	
@@ -2038,7 +2045,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 	      &nobject_,&objectset,nmethod,iperturb,&irefineloop,
 	      &iparentel,&iprfn,&konrfn,&ratiorfn,&heading,
 	      &nodedesi,&dgdxglob,&g0,&nuel_,&xdesi,&nfc,&coeffc,
-	      &ikdc,&edc);
+	      &ikdc,&edc,&coini);
   
 #ifdef CALCULIX_MPI
   MPI_Finalize();

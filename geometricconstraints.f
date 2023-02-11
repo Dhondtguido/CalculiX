@@ -53,8 +53,8 @@
         if((istat.lt.0).or.(key.eq.1)) exit
         drname=textpart(1)(1:80)
 !     
-!     store the constraint (a geometric constraint is not connected to
-!     an existing design response
+!       store the constraint (a geometric constraint is not 
+!       connected to an existing design response
 !     
         nobject=nobject+1
         do i=1,5
@@ -62,16 +62,16 @@
         enddo
 !        
         objectset(5,nobject)(81:81)='G'
-        if(textpart(1)(1:12).eq.'FIXSHRINKAGE') then
-          objectset(1,nobject)(1:12)='FIXSHRINKAGE'
+        if(textpart(1)(1:12).eq.'MAXSHRINKAGE') then
+          objectset(1,nobject)(1:12)='MAXSHRINKAGE'
 c          do k=13,20
 c            objectset(1,nobject)(k:k)=' '
 c          enddo
           settype='N'
-          objectset(1,nobject)(19:20)='GE'
+          objectset(1,nobject)(19:20)='LE'
           nsets=1
-        elseif(textpart(1)(1:9).eq.'FIXGROWTH') then
-          objectset(1,nobject)(1:9)='FIXGROWTH'
+        elseif(textpart(1)(1:9).eq.'MAXGROWTH') then
+          objectset(1,nobject)(1:9)='MAXGROWTH'
 c          do k=10,20
 c            objectset(1,nobject)(k:k)=' '
 c          enddo
@@ -94,6 +94,14 @@ c          enddo
           settype='N'
           objectset(1,nobject)(19:20)='GE'
           nsets=2
+        elseif (textpart(1)(1:9).eq.'PACKAGING') then
+          objectset(1,nobject)(1:9)='PACKAGING'
+c          do k=9,20
+c            objectset(1,nobject)(k:k)=' '
+c          enddo
+          settype='N'
+          objectset(1,nobject)(19:20)='GE'
+          nsets=2
         else
           write(*,*) '*ERROR reading *GEOMETRIC CONSTRAINT'
           write(*,*) '       given constraint type is not a'
@@ -107,7 +115,7 @@ c          enddo
 !     
         do m=1,nsets
           objectset(2+m,nobject)(1:80)=textpart(1+m)(1:80)
-	  ipos=index(objectset(2+m,nobject),' ')
+          ipos=index(objectset(2+m,nobject),' ')
           if(n.lt.m+1) then
             write(*,*)'*ERROR reading *GEOMETRIC CONSTRAINT'
             write(*,*)'       set ',m,' is lacking'
@@ -137,10 +145,11 @@ c          enddo
           endif
         enddo
 !     
-!     assume that geometric constraints always take ONLY a single
+!     except of the PACKAGING constraint (does not need any value) 
+!     all the other geometric constraints always take ONLY a single 
 !     absolute value and no relative values! 
 !     
-        if(objectset(1,nobject)(4:13).eq.'MEMBERSIZE') then
+        if(objectset(1,nobject)(1:9).ne.'PACKAGING') then
           if(n.ge.(2+nsets)) then
             read(textpart(2+nsets)(1:20),'(f20.0)',iostat=istat) absval
             if(istat.gt.0) then
@@ -153,10 +162,10 @@ c          enddo
             endif
           else
             write(*,*) '*ERROR reading *GEOMETRIC CONSTRAINT'
-            write(*,*) '       no absolute value for MEMBERSIZE'
-            write(*,*) '       specified.'
+            write(*,*) '       no absolute value for geometric'
+            write(*,*) '       constraint specified.'
             call inputerror(inpc,ipoinpc,iline,
-     &           "*GEOMETRIC CONSTRAINT%",ier)
+     &             "*GEOMETRIC CONSTRAINT%",ier)
             return
           endif
         endif

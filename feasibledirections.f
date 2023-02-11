@@ -17,15 +17,13 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
       subroutine feasibledirections(inpc,textpart,istat,n,key,iline,
-     &     ipol,inl,ipoinp,inp,ipoinpc,nmethod,objectset,nobject,istep,
-     &     ier,tmax)         
+     &     ipol,inl,ipoinp,inp,ipoinpc,nmethod,istep,ier,tmax)          
 !     
 !     reading the input deck: *FEASIBLE DIRECTION
 !     
       implicit none
 !     
       character*1 inpc(*)
-      character*81 objectset(5,*)
       character*132 textpart(16)
 !     
       integer nmethod,nobject,i,n,key,istat,istep,iline,ipol,inl,
@@ -46,38 +44,38 @@
       nmethod=16 
 !     
 !     read optimization method
-!     tmax=0.5: Gradient Descent Akin Method (GDAM, default)
-!     tmax=1.5: Gradient Projection Method (GPM)
+!     tmax=1.5: Gradient Descent Akin Method (GDAM, default)
+!     tmax=2.5: Gradient Projection Method (GPM)
 !     
-!      do i=2,n
-!         if(textpart(i)(1:7).eq.'METHOD=') then
-!            if(textpart(i)(8:11).eq.'GDAM') then
-!               tmax=1.5
-!            elseif(textpart(i)(8:10).eq.'GPM') then
-!               tmax=2.5
-!            else
-!               write(*,*) 
-!               write(*,*) '*WARNING method for computation of '     
-!               write(*,*) '         *FEASIBLE DIRECTION not defined'
-!               write(*,*) '         Gradient Descent Akin Method' 
-!               write(*,*) '         (GDAM) taken as default'
-!               write(*,*) ' '
-!               call inputwarning(inpc,ipoinpc,iline,
-!     &           "*FEASIBLEDIRECTION%")
-!            endif
-!         endif
-!      enddo
+      do i=2,n
+         if(textpart(i)(1:7).eq.'METHOD=') then
+            if(textpart(i)(8:22).eq.'GRADIENTDESCENT') then
+               tmax=1.5
+            elseif(textpart(i)(8:25).eq.'GRADIENTPROJECTION') then
+               tmax=2.5
+            else
+               write(*,*) 
+               write(*,*) '*WARNING reading *FEASIBLE DIRECTION; '     
+               write(*,*) '         Method for computation of '     
+               write(*,*) '         *FEASIBLE DIRECTION not valid;'
+               write(*,*) '         Gradient Descent taken as default' 
+               write(*,*) ' '
+               call inputwarning(inpc,ipoinpc,iline,
+     &           "*FEASIBLEDIRECTION%")
+            endif
+         endif
+      enddo
 !
-!      if((tmax.lt.1.d0).or.(tmax.ge.3.d0)) then
-!         tmax=1.5
-!         write(*,*)
-!         write(*,*) '*WARNING method for computation of '     
-!         write(*,*) '         *FEASIBLE DIRECTION not specified'
-!         write(*,*) '         Gradient Descent Akin Method (GDAM)' 
-!         write(*,*) '         taken as default'
-!         write(*,*) ' '
-!         call inputwarning(inpc,ipoinpc,iline,"*FEASIBLEDIRECTION%")
-!      endif          
+      if(tmax.lt.1.d0) then
+         tmax=1.5
+         write(*,*)
+         write(*,*) '*WARNING reading *FEASIBLE DIRECTION; '     
+         write(*,*) '         Method for computation of '     
+         write(*,*) '         *FEASIBLE DIRECTION not specified;'
+         write(*,*) '         Gradient Descent taken as default'
+         write(*,*) ' '
+         call inputwarning(inpc,ipoinpc,iline,"*FEASIBLEDIRECTION%")
+      endif          
 !
       call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &     ipoinp,inp,ipoinpc)     

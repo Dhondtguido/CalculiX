@@ -439,24 +439,14 @@ c                     write(*,*) 'formgradient',nnodes,nopedesi
 !         
       enddo                     ! Loop over all designvariables
 !     
-!     Change sign of sensitivity of objective function in case of
-!     a maximization problem
-!
-      if(physcon(11).le.0.d0) then
-         if(objectset(2,1)(17:19).eq.'MAX') then
-            do idesvar=1,ndesi
-               dgdx(idesvar,1)=-dgdx(idesvar,1)
-            enddo
-         endif
-      endif
-!     
 !     Scaling of sensitivities
 !     
       do idesvar=1,ndesi
          do iobject=1+nobjectstart,nobject
             if(objectset(1,iobject)(4:13).eq.'MEMBERSIZE') cycle
-            if(objectset(1,iobject)(1:9).eq.'FIXGROWTH') cycle
-            if(objectset(1,iobject)(1:12).eq.'FIXSHRINKAGE') cycle
+            if(objectset(1,iobject)(1:9).eq.'MAXGROWTH') cycle
+            if(objectset(1,iobject)(1:12).eq.'MAXSHRINKAGE') cycle
+            if(objectset(1,iobject)(1:9).eq.'PACKAGING') cycle
             if(weightformgrad(idesvar).gt.0.d0) then
                dgdx(idesvar,iobject)=dgdx(idesvar,iobject)
      &             /weightformgrad(idesvar)

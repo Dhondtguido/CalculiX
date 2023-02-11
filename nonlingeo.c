@@ -3269,9 +3269,9 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       }	 
 
       isiz=mt**nk;cpypardou(vold,v,&isiz,&num_cpus);
-      //      if(*ithermal!=2){
-      // next line: change on 19072022
-      if((*ithermal!=2)&&((*iexpl<=1)||(*nener==1))){
+      if(*ithermal!=2){
+	// next line: change on 19072022
+	//if((*ithermal!=2)&&((*iexpl<=1)||(*nener==1))){
 	for(k=0;k<6*mi[0]*ne0;++k){
 	  sti[k]=stx[k];
 	}

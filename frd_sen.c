@@ -255,6 +255,27 @@ void frd_sen(double *co,ITG *nk,double *dstn,ITG *inum,ITG *nmethod,
                 ialset,ngraph,&ncompscalar,ifieldscalar,icompscalar,
                 nfieldscalar,&iselect,m2,f1,output,m3);
 
+  }else if(*ifeasd==1){
+
+      /* storing the sensitivities of the gradient projection method 
+         w.r.t. to the control field s */
+      
+      frdset(&filab[4002],set,&iset,istartset,iendset,ialset,
+	     inum,&noutloc,&nout,nset,&noutmin,&noutplus,&iselect,
+	     ngraph);
+      
+      frdheader(&icounter,&oner,time,&pi,noddiam,cs,&null,mode,
+		&noutloc,description,kode,nmethod,f1,output,istep,iinc); 
+      
+      fprintf(f1," -4  DFDS        3    1\n");
+      fprintf(f1," -5  DFDSCONS    1    1	 1    0\n");
+      fprintf(f1," -5  DFDSOBJE    1    1	 2    0\n");
+      fprintf(f1," -5  DFDSFEAS    1    1	 3    0\n");
+      
+      frdselect(v,v,&iset,&nkcoords,inum,m1,istartset,iendset,
+                ialset,ngraph,&ncompvector,ifieldvector,icompvector,
+                nfieldvector1,&iselect,m2,f1,output,m3);   
+
   }else if(*ifeasd==2){
 
       /* storing the sensitivities of the gradient projection method 
@@ -267,34 +288,33 @@ void frd_sen(double *co,ITG *nk,double *dstn,ITG *inum,ITG *nmethod,
       frdheader(&icounter,&oner,time,&pi,noddiam,cs,&null,mode,
 		&noutloc,description,kode,nmethod,f1,output,istep,iinc); 
       
-      fprintf(f1," -4  PROJGRAD    2    1\n");    
-      fprintf(f1," -5  DFDN        1    1    1    0\n");
-      fprintf(f1," -5  DFDNFIL     1    1    2    0\n");
-
+      fprintf(f1," -4  DFDS        3    1\n");
+      fprintf(f1," -5  DFDSCORR    1    1	 1    0\n");
+      fprintf(f1," -5  DFDSPROJ    1    1	 2    0\n");
+      fprintf(f1," -5  DFDSFEAS    1    1	 3    0\n");
+      
       frdselect(v,v,&iset,&nkcoords,inum,m1,istartset,iendset,
                 ialset,ngraph,&ncompvector,ifieldvector,icompvector,
                 nfieldvector1,&iselect,m2,f1,output,m3);   
 
   }else if(*ifeasd==3){
 
-      /* storing the steepest descent direction w.r.t. to 
-         the control field */
+      /* storing the feasible direction snsitivities of the FE nodes */
       
-      iselect=0;
-    
-      frdset(&filab[87],set,&iset,istartset,iendset,ialset,
+      frdset(&filab[4002],set,&iset,istartset,iendset,ialset,
 	     inum,&noutloc,&nout,nset,&noutmin,&noutplus,&iselect,
 	     ngraph);
-    
+      
       frdheader(&icounter,&oner,time,&pi,noddiam,cs,&null,mode,
-	        &noutloc,description,kode,nmethod,f1,output,istep,iinc);
+		&noutloc,description,kode,nmethod,f1,output,istep,iinc); 
+      
+      fprintf(f1," -4  FEASDIR     2    1\n");
+      fprintf(f1," -5  DFDN        1    1    1    0\n");
+      fprintf(f1," -5  DFDNFIL     1    1    2    0\n");
 
-      fprintf(f1," -4  DFDS        1    1\n");
-      fprintf(f1," -5  DFDSFEAS    1    1    0    0\n");
-
-      frdselect(v,v,&iset,&nkcoords,inum,m1,istartset,iendset,
-                ialset,ngraph,&ncompscalar,ifieldscalar,icompscalar,
-                nfieldscalar,&iselect,m2,f1,output,m3);
+      frdselect(&v[2**nk**iobject],v,&iset,&nkcoords,inum,m1,istartset,
+	    iendset,ialset,ngraph,&ncomptensord,ifieldtensord,icomptensord,
+	    nfieldtensord,&iselect,m2,f1,output,m3);
       
   }else if(*icoordinate!=1){
 
@@ -423,8 +443,7 @@ void frd_sen(double *co,ITG *nk,double *dstn,ITG *inum,ITG *nmethod,
 	  
 	  frdselect(dstn,dstn,&iset,&nkcoords,inum,m1,istartset,iendset,
 		    ialset,ngraph,&ncomptensoro,ifieldtensoro,icomptensoro,
-		    nfieldtensoro,&iselect,m2,f1,output,m3);
-	  
+		    nfieldtensoro,&iselect,m2,f1,output,m3);	  
       } 
       
   }else{
@@ -463,13 +482,15 @@ void frd_sen(double *co,ITG *nk,double *dstn,ITG *inum,ITG *nmethod,
       }else if(strcmp1(&objectset[*iobject*405],"EIGENFREQUENCY")==0){
 	  fprintf(f1," -4  SENFREQ     2    1\n");
       }else if(strcmp1(&objectset[*iobject*405],"MAXMEMBERSIZE")==0){
-	  fprintf(f1," -4  SENTHCK     2    1\n");
+	  fprintf(f1," -4  SENMAXM     2    1\n");
       }else if(strcmp1(&objectset[*iobject*405],"MINMEMBERSIZE")==0){
-	  fprintf(f1," -4  SENTHCK     2    1\n");
-      }else if(strcmp1(&objectset[*iobject*405],"FIXGROWTH")==0){
+	  fprintf(f1," -4  SENMINM     2    1\n");
+      }else if(strcmp1(&objectset[*iobject*405],"MAXGROWTH")==0){
 	  fprintf(f1," -4  SENGROW     2    1\n");
-      }else if(strcmp1(&objectset[*iobject*405],"FIXSHRINKAGE")==0){
+      }else if(strcmp1(&objectset[*iobject*405],"MAXSHRINKAGE")==0){
 	  fprintf(f1," -4  SENSHRN     2    1\n");
+      }else if(strcmp1(&objectset[*iobject*405],"PACKAGING")==0){
+	  fprintf(f1," -4  SENPACK     2    1\n");
       }
       
       fprintf(f1," -5  DFDN        1    1    1    0\n");

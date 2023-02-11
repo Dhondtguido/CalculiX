@@ -98,7 +98,7 @@ int main(int argc,char *argv[])
     *cs=NULL,*tietol=NULL,*fmpc=NULL,*prop=NULL,*t0g=NULL,*t1g=NULL,
     *xbody=NULL,*xbodyold=NULL,*coefmpcref=NULL,*dacon=NULL,*vel=NULL,
     *velo=NULL,*veloo=NULL,energy[5],*ratiorfn=NULL,*dgdxglob=NULL,
-    *g0=NULL,*xdesi=NULL,*coeffc=NULL,*edc=NULL;
+    *g0=NULL,*xdesi=NULL,*coeffc=NULL,*edc=NULL,*coini=NULL;
     
   double ctrl[57];
 
@@ -154,7 +154,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Sat Feb  4 14:58:36 CET 2023\n");
+  printf("You are using an executable made on Sat Feb 11 19:04:24 CET 2023\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -459,6 +459,7 @@ int main(int argc,char *argv[])
 	NNEW(xdesi,double,3*nk_);
 	NNEW(objectset,char,405*nobject_);
 	for(i=0;i<405*nobject_;i++){objectset[i]=' ';}
+	NNEW(coini,double,3*nk_);
       }
 
       /* temporary fields for cyclic symmetry calculations */
@@ -632,7 +633,7 @@ int main(int argc,char *argv[])
 		      &mpcfreeref,&maxlenmpcref,&memmpc_,&isens,&namtot,&nstam,
 		      dacon,vel,&nef,velo,veloo,ne2boun,itempuser,
 		      irobustdesign,irandomtype,randomval,&nfc,&nfc_,coeffc,
-		      ikdc,&ndc,&ndc_,edc));
+		      ikdc,&ndc,&ndc_,edc,coini));
     
     SFREE(idefforc);SFREE(idefload);SFREE(idefbody);
 
@@ -1619,7 +1620,8 @@ int main(int argc,char *argv[])
 			nodeboun,&nboun,ndirboun,ithermal,co,vold,mi,&ielmat,
 			ielprop,prop,&kode,&nmethod,filab,&nstate_,&istep,cs,
 			set,&nset,istartset,iendset,ialset,jobnamec,output,
-			&ntrans,inotr,trab,orname,xdesi,timepar);         
+			&ntrans,inotr,trab,orname,xdesi,timepar,coini,ikboun,
+			nactdof,&ne2d);         
       
     }
 
@@ -1666,7 +1668,7 @@ int main(int argc,char *argv[])
 		    &nobject_,&objectset,&nmethod,iperturb,&irefineloop,
 		    &iparentel,&iprfn,&konrfn,&ratiorfn,&heading,
 		    &nodedesi,&dgdxglob,&g0,&nuel_,&xdesi,&nfc,&coeffc,
-		    &ikdc,&edc);
+		    &ikdc,&edc,&coini);
 
 	/* closing and reopening the output files */
 	
@@ -1900,7 +1902,7 @@ int main(int argc,char *argv[])
 	      &nobject_,&objectset,&nmethod,iperturb,&irefineloop,
 	      &iparentel,&iprfn,&konrfn,&ratiorfn,&heading,
 	      &nodedesi,&dgdxglob,&g0,&nuel_,&xdesi,&nfc,&coeffc,
-	      &ikdc,&edc);
+	      &ikdc,&edc,&coini);
   
 #ifdef CALCULIX_MPI
   MPI_Finalize();

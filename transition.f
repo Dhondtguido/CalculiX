@@ -16,9 +16,9 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-      subroutine transition(dgdxglob,nobject,nk,nodedesi,ndesi,
+      subroutine transition(feasdir,nobject,nk,nodedesi,ndesi,
      &           objectset,xo,yo,zo,x,y,z,nx,ny,nz,co,ifree,
-     &           ndesia,ndesib,nobjectstart)                         
+     &           ndesia,ndesib)                         
 !
 !     scaling of sensitivitites between the designspace
 !     and non-designspace      
@@ -27,14 +27,13 @@
 !
       character*81 objectset(5,*)
 
-      integer nobject,nk,nodedesi(*),
-     &        ndesi,j,m,neighbor(10),nx(*),ny(*),nz(*),
-     &        istat,ndesia,ndesib,ifree,nnodes,irefnode,
-     &        iactnode,nobjectstart
+      integer nobject,nk,nodedesi(*),ndesi,j,m,neighbor(10),nx(*),
+     &   ny(*),nz(*),istat,ndesia,ndesib,ifree,nnodes,irefnode,        
+     &   iactnode
 !
-      real*8 dgdxglob(2,nk,nobject),xo(*),yo(*),zo(*),x(*),
-     &       y(*),z(*),trans,co(3,*),xdesi,ydesi,zdesi,      
-     &       scale,actdist,dd,xrefnode,yrefnode,zrefnode
+      real*8 feasdir(2,*),xo(*),yo(*),zo(*),x(*),y(*),z(*),
+     &   trans,co(3,*),xdesi,ydesi,zdesi,scale,actdist,dd,xrefnode,      
+     &   yrefnode,zrefnode
 !
 !     Read transition distance.
 !   
@@ -61,18 +60,15 @@
          dd=(xrefnode-xdesi)**2+(yrefnode-ydesi)**2
      &      +(zrefnode-zdesi)**2
          actdist=dsqrt(dd)
+!
          if(actdist.ge.trans) cycle
 !
 !        Linear scaling
          scale=actdist/trans
 !        Exponential scaling
 !        scale=1/(1+dexp(-actdist/trans*10+5))
-         do m=1+nobjectstart,nobject
-            if(objectset(1,m)(4:13).eq.'MEMBERSIZE') cycle
-            if(objectset(1,m)(1:9).eq.'FIXGROWTH') cycle
-            if(objectset(1,m)(1:12).eq.'FIXSHRINKAGE') cycle
-            dgdxglob(2,iactnode,m)=dgdxglob(2,iactnode,m)*scale
-         enddo
+!
+         feasdir(2,iactnode)=feasdir(2,iactnode)*scale
       enddo
 !
       return        

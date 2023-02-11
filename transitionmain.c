@@ -25,19 +25,19 @@
 static char *objectset1;
 
 static ITG *nobject1,*nk1,*nodedesi1,*ndesi1,*nx1,*ny1,*nz1,
-    num_cpus,ifree1,*nobjectstart1;
+    num_cpus,ifree1;
 
 /* y1 had to be replaced by yy1, else the following compiler error
    popped up: 
 
-   filtermain.c:42: error: ‘y1’ redeclared as different kind of symbol */
+   transitionmain.c:42: error: ‘y1’ redeclared as different kind of symbol */
 
-static double *dgdxglob1,*xo1,*yo1,*zo1,*x1,*yy1,*z1,*co1;
+static double *feasdir1,*xo1,*yo1,*zo1,*x1,*yy1,*z1,*co1;
 
-void transitionmain(double *co, double *dgdxglob, ITG *nobject, ITG *nk,
+void transitionmain(double *co, double *feasdir, ITG *nobject, ITG *nk,
                 ITG *nodedesi, ITG *ndesi, char *objectset,ITG *ipkon,
 		ITG *kon,char *lakon,ITG *ipoface,ITG *nodface,
-		ITG *nodedesiinv,ITG *nobjectstart){
+		ITG *nodedesiinv){
 
     /* reduction of the sensitivities in the transition from the design
        space to the non-design space */
@@ -130,11 +130,10 @@ void transitionmain(double *co, double *dgdxglob, ITG *nobject, ITG *nk,
     
        pthread_t tid[num_cpus];
 
-       dgdxglob1=dgdxglob;nobject1=nobject;nk1=nk;nodedesi1=nodedesi;
+       feasdir1=feasdir;nobject1=nobject;nk1=nk;nodedesi1=nodedesi;
        ndesi1=ndesi;objectset1=objectset;xo1=xo;yo1=yo;zo1=zo;
-       x1=x;yy1=y;z1=z;nx1=nx;ny1=ny;nz1=nz;
-       ifree1=ifree,co1=co,nobjectstart1=nobjectstart;
-
+       x1=x;yy1=y;z1=z;nx1=nx;ny1=ny;nz1=nz;ifree1=ifree;co1=co;
+       
        /* transition */
     
        printf(" Using up to %" ITGFORMAT " cpu(s) for transition to sensitivities.\n\n", num_cpus);
@@ -168,9 +167,9 @@ void *transitionmt(ITG *i){
     ndesib=(*i+1)*ndesidelta;
     if(ndesib>*ndesi1) ndesib=*ndesi1;
 
-    FORTRAN(transition,(dgdxglob1,nobject1,nk1,nodedesi1,ndesi1,objectset1,
+    FORTRAN(transition,(feasdir1,nobject1,nk1,nodedesi1,ndesi1,objectset1,
                         xo1,yo1,zo1,x1,yy1,z1,nx1,ny1,nz1,co1,&ifree1,
-                        &ndesia,&ndesib,nobjectstart1));
+                        &ndesia,&ndesib));
 
     return NULL;
 }

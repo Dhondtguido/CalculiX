@@ -147,11 +147,11 @@
 !     is already incorporated in the function (e.g. as target stress)
 !     All the other functions constraints can have both
 !     
-        if((objectset(1,iobject)(1:8).eq.'ALL-DISP').or.
-     &       (objectset(1,iobject)(1:6).eq.'X-DISP').or.
-     &       (objectset(1,iobject)(1:6).eq.'Y-DISP').or.
-     &       (objectset(1,iobject)(1:6).eq.'Z-DISP').or.
-     &       (objectset(1,iobject)(1:4).eq.'MASS')) then
+!        if((objectset(1,iobject)(1:8).eq.'ALL-DISP').or.
+!     &       (objectset(1,iobject)(1:6).eq.'X-DISP').or.
+!     &       (objectset(1,iobject)(1:6).eq.'Y-DISP').or.
+!     &       (objectset(1,iobject)(1:6).eq.'Z-DISP').or.
+!     &       (objectset(1,iobject)(1:4).eq.'MASS')) then
 !     
 !     relative constraint value
 !     
@@ -177,25 +177,25 @@
             objectset(1,iobject)(61:80)=textpart(4)(1:20)
           endif
 !
-        elseif((objectset(1,iobject)(1:11).eq.'MODALSTRESS').or.
-     &       (objectset(1,iobject)(1:12).eq.'STRAINENERGY').or.
-     &       (objectset(1,iobject)(1:11).eq.'MISESSTRESS').or.
-     &       (objectset(1,iobject)(1:9).eq.'PS1STRESS').or.
-     &       (objectset(1,iobject)(1:9).eq.'PS3STRESS').or.
-     &       (objectset(1,iobject)(1:17).eq.'EQUIVALENTPLASTICSTRAIN')) 
-     &       then
+!        elseif((objectset(1,iobject)(1:11).eq.'MODALSTRESS').or.
+!     &       (objectset(1,iobject)(1:12).eq.'STRAINENERGY').or.
+!     &       (objectset(1,iobject)(1:11).eq.'MISESSTRESS').or.
+!     &       (objectset(1,iobject)(1:9).eq.'PS1STRESS').or.
+!     &       (objectset(1,iobject)(1:9).eq.'PS3STRESS').or.
+!     &       (objectset(1,iobject)(1:17).eq.'EQUIVALENTPLASTICSTRAIN')) 
+!     &       then
 !     
 !     relative constraint value
 !     
-          if(n.ge.3) then
-            read(textpart(3)(1:20),'(f20.0)',iostat=istat) absval
-            if(istat.gt.0) then
-              call inputerror(inpc,ipoinpc,iline,"*CONSTRAINT%",ier)
-              return
-            endif
-            objectset(1,iobject)(61:80)=textpart(3)(1:20)
-          endif
-        endif  
+!          if(n.ge.3) then
+!            read(textpart(3)(1:20),'(f20.0)',iostat=istat) absval
+!            if(istat.gt.0) then
+!              call inputerror(inpc,ipoinpc,iline,"*CONSTRAINT%",ier)
+!              return
+!            endif
+!            objectset(1,iobject)(41:60)=textpart(3)(1:20)
+!          endif
+!        endif  
       enddo
 !      
       return

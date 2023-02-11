@@ -24,7 +24,7 @@
 !              
       integer nobject,nk,i,j,k,l,objective_id
 !      
-      real*8 g0(*),dgdxglob(2,nk,nobject),buffer        
+      real*8 g0(*),dgdxglob(2,nk,*),buffer        
 !
 !     as design responses are stored first inside objectset,
 !     we start at the end and look for an entry with the same name.
@@ -37,17 +37,19 @@
           if(objectset(5,i)(81:81).eq.'O') then
              objective_id=i
           endif
-          do j=1, i-1
-             if(objectset(5,j)(1:80).eq.rpname(1:80)) then
-        	g0(i)=g0(j)		     
-        	do k=1, nk
-        	   dgdxglob(1,k,i)=dgdxglob(1,k,j)
-        	   dgdxglob(2,k,i)=dgdxglob(2,k,j)
-        	enddo     	     
-        	exit
+          do j=1,i-1
+             if(objectset(5,i)(81:81).ne.'G') then
+                if(objectset(5,j)(1:80).eq.rpname(1:80)) then
+                   g0(i)=g0(j)         
+                   do k=1, nk
+                      dgdxglob(1,k,i)=dgdxglob(1,k,j)
+                      dgdxglob(2,k,i)=dgdxglob(2,k,j)
+                   enddo            
+                   exit
+                endif
              endif
           enddo
-      enddo	  
+      enddo    
 !
 !     its important for the objective to be placed first inside the
 !     objectset. if objective_id is not equal to 1, we swap the entries

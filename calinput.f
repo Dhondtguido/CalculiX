@@ -47,7 +47,8 @@
      &     iuel,nuel_,nodempcref,coefmpcref,ikmpcref,memmpcref_,
      &     mpcfreeref,maxlenmpcref,memmpc_,isens,namtot,nstam,dacon,
      &     vel,nef,velo,veloo,ne2boun,itempuser,irobustdesign,
-     &     irandomtype,randomval,nfc,nfc_,coeffc,ikdc,ndc,ndc_,edc)
+     &     irandomtype,randomval,nfc,nfc_,coeffc,ikdc,ndc,ndc_,edc,
+     &     coini)
 !     
       implicit none
 !     
@@ -140,7 +141,7 @@
      &     xbody(7,*),xbodyold(7,*),t0g(2,*),t1g(2,*),
      &     fei(3),tinc,tper,xmodal(*),tmin,tmax,tincf,
      &     alpha(*),physcon(*),coefmpcref(*),vel(nef,*),velo(*),
-     &     veloo(*),randomval(2,*),coeffc(0:6,*),edc(12,*)
+     &     veloo(*),randomval(2,*),coeffc(0:6,*),edc(12,*),coini(3,*)
 !     
       save solid,ianisoplas,out3d,pretension
 !     
@@ -698,8 +699,7 @@ c
 !     
       elseif(textpart(1)(1:18).eq.'*FEASIBLEDIRECTION') then
         call feasibledirections(inpc,textpart,istat,n,key,iline,ipol,
-     &       inl,ipoinp,inp,ipoinpc,nmethod,objectset,nobject,istep,ier,
-     &       tmax)
+     &       inl,ipoinp,inp,ipoinpc,nmethod,istep,ier,tmax)
 !     
       elseif(textpart(1)(1:5).eq.'*FILM') then
         call films(inpc,textpart,set,istartset,iendset,
@@ -799,6 +799,10 @@ c
      &       nk_,mi(1),istep,istat,n,iline,ipol,inl,ipoinp,inp,lakon,
      &       kon,co,ne,ipkon,vold,ipoinpc,xstate,nstate_,nk,t0g,
      &       t1g,iaxial,ielprop,prop,ier,nuel_)
+!     
+      elseif(textpart(1)(1:12).eq.'*INITIALMESH') then
+         call initialmeshs(inpc,textpart,coini,nk,nk_,set,istat,n,
+     &        iline,ipol,inl,ipoinp,inp,ipoinpc,ier)              
 !     
       elseif(textpart(1)(1:22).eq.'*INITIALSTRAININCREASE') then
         call initialstrainincreases(inpc,textpart,prestr,iprestr,

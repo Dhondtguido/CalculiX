@@ -17,17 +17,19 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine prefilter(co,nodedesi,ndesi,xo,yo,zo,x,y,z,
-     &   nx,ny,nz)               
+     &   nx,ny,nz,objectset,filterrad)               
 !
-!     Filtering of sensitivities      
+!     Filtering of sensitivities and assigning the filterradius      
 !
       implicit none
 !
-      integer nodedesi(*),ndesi,m,nx(ndesi),
-     &        ny(ndesi),nz(ndesi),kflag
+      character*81 objectset(5,*)
 !
-      real*8 xo(ndesi),yo(ndesi),zo(ndesi),
-     &       x(ndesi),y(ndesi),z(ndesi),co(3,*)
+      integer nodedesi(*),ndesi,m,nx(ndesi),istat,ny(ndesi),
+     &   nz(ndesi),kflag
+!
+      real*8 xo(ndesi),yo(ndesi),zo(ndesi),filterrad,x(ndesi),
+     &   y(ndesi),z(ndesi),co(3,*)
 !   
 !     Create set of designnodes and perform the sorting
 !     needed for near3d_se
@@ -47,6 +49,16 @@
       call dsort(x,nx,ndesi,kflag)
       call dsort(y,ny,ndesi,kflag)
       call dsort(z,nz,ndesi,kflag)
+!
+!     assinging the filterradius
+!
+      read(objectset(2,1)(21:40),'(f20.0)',iostat=istat) filterrad     
+!
+!     For the GAUSS filter search in the 3sigma distance
+! 
+      if(objectset(2,1)(1:5).eq.'GAUSS') then
+         filterrad=3*filterrad
+      endif
 !
       return        
       end

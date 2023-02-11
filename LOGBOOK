@@ -5037,7 +5037,8 @@ Dec 2002        - started to work on single crystal plasticity
 
  29 July 2022   - made some changes in nonlingeo.c concerning nactdofinv
 
- 4 Aug 2022     - started changing ener(mi(1),*) into ener(2,mi(1),*) to
+ 4 Aug 2022     - posted version 2.20
+                - started changing ener(mi(1),*) into ener(2,mi(1),*) to
                   take the contact spring energy correctly into account
 
  5 Aug 2022     - made a change in the contact energy calculation in
@@ -5121,3 +5122,5 @@ Dec 2002        - started to work on single crystal plasticity
                   umat_abaqusnl: the total right stretch tensor has to
 		  be taken to calculate the corotational stress from the
 		  PK2 stress, no the mechanical right stretch tensor.
+
+ 11 Feb 2023    - updated the feasible direction procedure

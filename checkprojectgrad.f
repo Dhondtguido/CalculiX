@@ -53,7 +53,7 @@
 !
          if(i.le.nnlconstold) then           
             if(iconstactiold(i).eq.-1) then
-               if(xlambd(i).gt.0.d0) then
+               if(xlambd(i).lt.0.d0) then
                   nactive=nactive+1
                   nnlconst=nnlconst+1
                   ipoacti(nactive)=ipoactiold(i)
@@ -61,7 +61,7 @@
                   inameacti(nactive)=inameactiold(i)
                endif
             elseif(iconstactiold(i).eq.1) then
-               if(xlambd(i).lt.0.d0) then
+               if(xlambd(i).gt.0.d0) then
                   nactive=nactive+1
                   nnlconst=nnlconst+1
                   ipoacti(nactive)=ipoactiold(i)
@@ -74,46 +74,65 @@
 !
          else
 !
-!           MAXMEMBERSIZE and MINMEMBERSIZE
+!           MAXMEMBERSIZE
 !
-            if(objectset(1,inameactiold(i))(4:13).eq.'MEMBERSIZE') then
-               node=nodedesi(ipoactiold(i))
-               val=dgdxglob(2,node,inameactiold(i))
-               if(iconstactiold(i).eq.-1) then      
-                  if(((xlambd(i).gt.0.d0).and.(val.lt.0.d0)).or.
-     &               ((xlambd(i).lt.0.d0).and.(val.gt.0.d0))) then
-                     nactive=nactive+1
-                     ipoacti(nactive)=ipoactiold(i)
-                     iconstacti(nactive)=iconstactiold(i)
-                     inameacti(nactive)=inameactiold(i)
-                  endif
-               elseif(iconstactiold(i).eq.1) then
-                  if(((xlambd(i).lt.0.d0).and.(val.lt.0.d0)).or.
-     &               ((xlambd(i).gt.0.d0).and.(val.gt.0.d0))) then
-                     nactive=nactive+1
-                     ipoacti(nactive)=ipoactiold(i)
-                     iconstacti(nactive)=iconstactiold(i)
-                     inameacti(nactive)=inameactiold(i)
-                  endif      
+            if(objectset(1,inameacti(i))(1:13).eq.'MAXMEMBERSIZE') then
+               node=nodedesi(ipoacti(i))
+               val=dgdxglob(2,node,inameacti(i))     
+               if((xlambd(i).lt.0.d0).and.(val.gt.0.d0)) then
+                  nactive=nactive+1
+                  ipoacti(nactive)=ipoactiold(i)
+                  iconstacti(nactive)=iconstactiold(i)
+                  inameacti(nactive)=inameactiold(i)
                endif
 !
-!           FIXGROWTH and FIXSHRINKAGE
+!           MINMEMBERSIZE
 !
-            else
-               if(iconstactiold(i).eq.-1) then      
-                  if(xlambd(i).gt.0.d0) then
-                     nactive=nactive+1
-                     ipoacti(nactive)=ipoactiold(i)
-                     iconstacti(nactive)=iconstactiold(i)
-                     inameacti(nactive)=inameactiold(i)
-                  endif
-               elseif(iconstactiold(i).eq.1) then
-                  if(xlambd(i).lt.0.d0) then
-                     nactive=nactive+1
-                     ipoacti(nactive)=ipoactiold(i)
-                     iconstacti(nactive)=iconstactiold(i)
-                     inameacti(nactive)=inameactiold(i)
-                  endif      
+            else if(objectset(1,inameacti(i))(1:13).eq.
+     &'MINMEMBERSIZE') then
+               node=nodedesi(ipoacti(i))
+               val=dgdxglob(2,node,inameacti(i))     
+               if((xlambd(i).gt.0.d0).and.(val.gt.0.d0)) then
+                  nactive=nactive+1
+                  ipoacti(nactive)=ipoactiold(i)
+                  iconstacti(nactive)=iconstactiold(i)
+                  inameacti(nactive)=inameactiold(i)
+               endif
+!
+!           MAXSHRINKAGE
+!
+            elseif(objectset(1,inameacti(i))(4:12).eq.'SHRINKAGE') then
+               node=nodedesi(ipoactiold(i))
+               val=dgdxglob(2,node,inameactiold(i))    
+               if((xlambd(i).gt.0.d0).and.(val.ge.0.d0)) then
+                  nactive=nactive+1
+                  ipoacti(nactive)=ipoactiold(i)
+                  iconstacti(nactive)=iconstactiold(i)
+                  inameacti(nactive)=inameactiold(i)
+               endif
+!
+!           MAXGROWTH 
+!
+            elseif(objectset(1,inameacti(i))(4:9).eq.'GROWTH') then
+               node=nodedesi(ipoactiold(i))
+               val=dgdxglob(2,node,inameactiold(i))    
+               if((xlambd(i).lt.0.d0).and.(val.ge.0.d0)) then
+                  nactive=nactive+1
+                  ipoacti(nactive)=ipoactiold(i)
+                  iconstacti(nactive)=iconstactiold(i)
+                  inameacti(nactive)=inameactiold(i)
+               endif
+!
+!           PACKAGING
+!
+            elseif(objectset(1,inameacti(i))(1:9).eq.'PACKAGING') then
+               node=nodedesi(ipoactiold(i))
+               val=dgdxglob(2,node,inameactiold(i))    
+               if((xlambd(i).lt.0.d0).and.(val.ge.0.d0)) then
+                  nactive=nactive+1
+                  ipoacti(nactive)=ipoactiold(i)
+                  iconstacti(nactive)=iconstactiold(i)
+                  inameacti(nactive)=inameactiold(i)
                endif
             endif
          endif
@@ -123,21 +142,15 @@
 !     the sensitivities for the linear constraint
 !
       do i=1,nobject-1
-         if(objectset(5,i)(81:81).eq.'G') then 
-            iact=0
-            do j=1,ndesi
-               node=nodedesi(j)
-               dgdxglob(2,node,i)=0.d0
-            enddo
-            do j=1,nactive
-               if(inameacti(j).eq.i) then
-                  iact=iact+1
-                  node=nodedesi(ipoacti(j))
-                  dgdxglob(2,node,i)=1.d0  
-               endif
-            enddo
-            g0(i)=iact
-         endif
+        if(objectset(5,i)(81:81).eq.'G') then 
+          iact=0
+          do j=1,nactive
+            if(inameacti(j).eq.i) then
+              iact=iact+1 
+            endif
+          enddo
+          g0(i)=iact
+        endif
       enddo
 !
       return        

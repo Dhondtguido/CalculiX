@@ -15,6 +15,8 @@
 /*     along with this program; if not, write to the Free Software       */
 /*     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.         */
 
+#ifdef ARPACK
+
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
@@ -42,13 +44,11 @@
 
 void gradientprojection(ITG *nobject,char *objectset,double *dgdxglob,
 			double *g0,ITG *ndesi,ITG *nodedesi,ITG *nk,
-			ITG *isolver,
-			char *set,ITG *nset,ITG *istartset,ITG *iendset,
-			ITG *ialset,
+			ITG *isolver,char *set,ITG *nset,ITG *istartset,
+			ITG *iendset,ITG *ialset,
 			double *gradproj,char *gradprojname,ITG *nactive,
 			double *objnorm,ITG *ipoacti,ITG *iconstacti,
-			ITG *inameacti,
-			ITG *nnlconst){
+			ITG *inameacti,ITG *nnlconst){
                
   /* finding a feasible direction based on the sensitivity information */
    
@@ -57,20 +57,27 @@ void gradientprojection(ITG *nobject,char *objectset,double *dgdxglob,
     *iconstactiold=NULL,iscaleflag,nrhs=1,*inameactiold=NULL,istart;
              
   double *au=NULL,*ad=NULL,*adb=NULL,*aub=NULL,sigma=0,*rhs=NULL,
-    *vector=NULL,*xlambd=NULL,*xtf=NULL;  
+    *vector=NULL,*xlambd=NULL,*xtf=NULL,*dfdx=NULL;  
   
   /* scale all sensitivity vectors to unit length 1 */
   
   iscaleflag=1;   
   for(i=0;i<*nobject;i++){
     istart=i+1;
-    FORTRAN(scalesen,(dgdxglob,nk,nodedesi,ndesi,objectset,&iscaleflag,
-		      &istart));
+    FORTRAN(scalesen,(dgdxglob,dfdx,nk,nodedesi,ndesi,objectset,&iscaleflag,
+                      &istart));
   }
   
   nactiveold=*nactive+1;
-         
+  	       
   while((*nactive<nactiveold)&&(*nactive>0)){
+  
+    /* Initialization of final gradient vector */
+    if(iter>0){
+      for(i=0;i<3**nk;i++){
+        gradproj[i]=0.;
+      }
+    }
   
     nactiveold=*nactive;
     iter=iter+1;
@@ -99,7 +106,7 @@ void gradientprojection(ITG *nobject,char *objectset,double *dgdxglob,
     NNEW(au,double,nzss);    
   
     FORTRAN(nmatrix,(ad,au,jqs,irows,ndesi,nodedesi,dgdxglob,nactive,
-		     nobject,nnlconst,ipoacti,nk));
+  		     nobject,nnlconst,ipoacti,nk));
 
     /* Calculate inverse of the N-matrix */
 
@@ -267,9 +274,11 @@ void gradientprojection(ITG *nobject,char *objectset,double *dgdxglob,
   
   /* calucaltion of final feasable direction */
        
-  FORTRAN(calcfeasibledirection,(ndesi,nodedesi,dgdxglob,nactive,nobject,nk,
-                                 gradproj,gradprojname));
+  FORTRAN(calcfeasibledirection_gp,(ndesi,nodedesi,dgdxglob,nactive,nobject,nk,
+				    gradproj,gradprojname));
         
   return;
   
 } 
+
+#endif

@@ -68,7 +68,7 @@
 !
          if(i.le.nnlconst) then
             if(iconstacti(i).eq.-1) then
-               if(xlambd(i).gt.0.d0) then            
+               if(xlambd(i).lt.0.d0) then            
                   write(5,101)
      &            ipos-1,objectset(1,ipos),'LE  ',xlambd(i),'ACTIVE  ',
      &            objectset(5,ipos)
@@ -78,7 +78,7 @@
      &            objectset(5,ipos)
                endif
             else
-               if(xlambd(i).gt.0.d0) then
+               if(xlambd(i).lt.0.d0) then
                   write(5,101)
      &            ipos-1,objectset(1,ipos),'GE  ',xlambd(i),'INACTIVE', 
      &            objectset(5,ipos)
@@ -93,59 +93,81 @@
 !
          else
 !
-!           MAXMEMBERSIZE and MINMEMBERSIZE
+!           MAXMEMBERSIZE
 !
-            if(objectset(1,inameacti(i))(4:13).eq.'MEMBERSIZE') then
+            if(objectset(1,inameacti(i))(1:13).eq.'MAXMEMBERSIZE') then
                node=nodedesi(ipoacti(i))
-               val=dgdxglob(2,node,inameacti(i))
-               if(iconstacti(i).eq.-1) then      
-                  if(((xlambd(i).gt.0.d0).and.(val.lt.0.d0)).or.
-     &               ((xlambd(i).lt.0.d0).and.(val.gt.0.d0))) then
-                     write(5,102)
-     &               inameacti(i)-1,objectset(1,inameacti(i)),'LE  ',
-     &               xlambd(i),'ACTIVE  ',nodedesi(ipos)              
-                  else
-                     write(5,102)
-     &               inameacti(i)-1,objectset(1,inameacti(i)),'LE  ',
-     &               xlambd(i),'INACTIVE',nodedesi(ipos)          
-                  endif
+               val=dgdxglob(2,node,inameacti(i))     
+               if((xlambd(i).lt.0.d0).and.(val.gt.0.d0)) then
+                  write(5,102)
+     &            inameacti(i)-1,objectset(1,inameacti(i)),'LE  ',
+     &            xlambd(i),'ACTIVE  ',nodedesi(ipos)              
                else
-                  if(((xlambd(i).lt.0.d0).and.(val.lt.0.d0)).or.
-     &               ((xlambd(i).gt.0.d0).and.(val.gt.0.d0))) then
-                     write(5,102)
-     &               inameacti(i)-1,objectset(1,inameacti(i)),'GE  ',
-     &               xlambd(i),'INACTIVE',nodedesi(ipos)  
-                  else
-                     write(5,102)
-     &               inameacti(i)-1,objectset(1,inameacti(i)),'GE  ',
-     &               xlambd(i),'ACTIVE  ',nodedesi(ipos)            
-                  endif
+                  write(5,102)
+     &            inameacti(i)-1,objectset(1,inameacti(i)),'LE  ',
+     &            xlambd(i),'INACTIVE',nodedesi(ipos)          
                endif
 !
-!           FIXGROWTH and FIXSHRINKAGE
+!           MINMEMBERSIZE
 !
-            else
-               if(iconstacti(i).eq.-1) then      
-                  if(xlambd(i).gt.0.d0) then   
-                     write(5,102)
-     &               inameacti(i)-1,objectset(1,inameacti(i)),'LE  ',
-     &               xlambd(i),'ACTIVE  ',nodedesi(ipos)
-                  else
-                     write(5,102)
-     &               inameacti(i)-1,objectset(1,inameacti(i)),'LE  ',
-     &               xlambd(i),'INACTIVE',nodedesi(ipos) 
-                  endif         
+            else if(objectset(1,inameacti(i))(1:13).eq.
+     &'MINMEMBERSIZE') then
+               node=nodedesi(ipoacti(i))
+               val=dgdxglob(2,node,inameacti(i))     
+               if((xlambd(i).gt.0.d0).and.(val.gt.0.d0)) then
+                  write(5,102)
+     &            inameacti(i)-1,objectset(1,inameacti(i)),'LE  ',
+     &            xlambd(i),'ACTIVE  ',nodedesi(ipos)              
                else
-                  if(xlambd(i).gt.0.d0) then              
-                     write(5,102)
-     &               inameacti(i)-1,objectset(1,inameacti(i)),'GE  ',
-     &               xlambd(i),'INACTIVE',nodedesi(ipos)
-                  else
-                     write(5,102)
-     &               inameacti(i)-1,objectset(1,inameacti(i)),'GE  ',
-     &               xlambd(i),'ACTIVE  ',nodedesi(ipos)            
-                  endif       
-               endif          
+                  write(5,102)
+     &            inameacti(i)-1,objectset(1,inameacti(i)),'LE  ',
+     &            xlambd(i),'INACTIVE',nodedesi(ipos)          
+               endif
+!
+!           MAXSHRINKAGE
+!
+            elseif(objectset(1,inameacti(i))(4:12).eq.'SHRINKAGE') then
+              node=nodedesi(ipoacti(i))
+              val=dgdxglob(2,node,inameacti(i))    
+              if((xlambd(i).gt.0.d0).and.(val.ge.0.d0)) then  
+                 write(5,102)
+     &           inameacti(i)-1,objectset(1,inameacti(i)),'LE  ',
+     &           xlambd(i),'ACTIVE  ',nodedesi(ipos)
+              else
+                 write(5,102)
+     &           inameacti(i)-1,objectset(1,inameacti(i)),'LE  ',
+     &           xlambd(i),'INACTIVE',nodedesi(ipos) 
+              endif                  
+!
+!           MAXGROWTH
+!
+            elseif(objectset(1,inameacti(i))(4:9).eq.'GROWTH') then
+              node=nodedesi(ipoacti(i))
+              val=dgdxglob(2,node,inameacti(i))    
+              if((xlambd(i).lt.0.d0).and.(val.ge.0.d0)) then  
+                 write(5,102)
+     &           inameacti(i)-1,objectset(1,inameacti(i)),'LE  ',
+     &           xlambd(i),'ACTIVE  ',nodedesi(ipos)
+              else
+                 write(5,102)
+     &           inameacti(i)-1,objectset(1,inameacti(i)),'LE  ',
+     &           xlambd(i),'INACTIVE',nodedesi(ipos) 
+              endif                  
+!
+!           PACKAGING
+!
+            elseif(objectset(1,inameacti(i))(1:9).eq.'PACKAGING') then
+              node=nodedesi(ipoacti(i))
+              val=dgdxglob(2,node,inameacti(i))    
+              if((xlambd(i).lt.0.d0).and.(val.ge.0.d0)) then  
+                 write(5,102)
+     &           inameacti(i)-1,objectset(1,inameacti(i)),'GE  ',
+     &           xlambd(i),'ACTIVE  ',nodedesi(ipos)
+              else
+                 write(5,102)
+     &           inameacti(i)-1,objectset(1,inameacti(i)),'GE  ',
+     &           xlambd(i),'INACTIVE',nodedesi(ipos) 
+              endif                  
             endif
          endif
       enddo  

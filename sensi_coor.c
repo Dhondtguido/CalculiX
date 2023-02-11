@@ -396,7 +396,10 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       
   /* calculation of the smallest distance between nodes */
       
-  FORTRAN(smalldist,(co,&distmin,lakon,ipkon,kon,ne));
+  /*FORTRAN(smalldist,(co,&distmin,lakon,ipkon,kon,ne));*/
+  /*distmin is set to 1.0e-08 --> perturbation which reduces the
+    finite difference error the most */
+  distmin=1.0e-08;
 
   /* resizing xdesi to a length of distmin */
 
@@ -964,17 +967,12 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		            
     SFREE(nnodes);SFREE(xinterpol);
 
-    /* Filtering of sensitivities */
+    /* Backward filtering of sensitivities 
+       --> variable transformation from x to s */
   
-    filtermain(co,dgdxglob,nobject,nk,nodedesi,ndesi,objectset,
-	       xdesi,&distmin);
+    filtermain_backward(co,dgdxglob,nobject,nk,nodedesi,ndesi,objectset,
+	       xdesi,&distmin,nobjectstart);
 
-    /* scaling the designnodes being in the transition between 
-       the designspace and the non-designspace */
-	 
-    transitionmain(co,dgdxglob,nobject,nk,nodedesi,ndesi,objectset,
-		   ipkon,kon,lakon,ipoface,nodface,nodedesiinv,nobjectstart);
-	  
     /* createinum is called in order to determine the nodes belonging
        to elements; this information is needed in frd_se */
 
@@ -998,9 +996,14 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     
     for(iobject=*nobjectstart;iobject<*nobject;iobject++){
 
-       iscaleflag=2;
-       istart=iobject+1;
-       FORTRAN(scalesen,(dgdxglob,nk,nodedesi,ndesi,objectset,
+      /* writing the objectives in the dat-file for the optimizer */
+	  	      
+      FORTRAN(writeobj,(objectset,&iobject,g0,dgdxglob,nobject,ndesi,
+                        nodedesi,nk,nobjectstart));
+
+      iscaleflag=1;
+      istart=iobject+1;
+      FORTRAN(scalesen,(dgdxglob,weightformgrad,nk,nodedesi,ndesi,objectset,
                          &iscaleflag,&istart)); 	  
 
       /* storing the sensitivities in the frd-file for visualization 
@@ -1023,9 +1026,6 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	      objectset,ntrans,inotr,trab,&idesvar,orname,&icoordinate,
 	      &inorm,&irand,&ishape,&ifeasd);
 
-      /* writing the objectives in the dat-file for the optimizer */
-	  	      
-      FORTRAN(writeobj,(objectset,&iobject,g0));
     }  
 	  
     SFREE(inum);SFREE(dgdx);
