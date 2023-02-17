@@ -100,12 +100,18 @@
         return
       endif
 !     
+!     printing the increment number in the .dat file; only if
+!     data output was requested AND the procedure is static/visco or
+!     dynamic
+!
+      if((nprint.gt.0).and.((abs(nmethod).eq.1).or.(nmethod.eq.4))) then
+        write(5,*)
+        write(5,100) iinc
+ 100    format(32x,'INCREMENT',1x,i5)
+        write(5,*)
+      endif
+!
 !     output in dat file (with *NODE PRINT or *EL PRINT)
-!     
-      write(5,*)
-      write(5,100) iinc
- 100  format(32x,'INCREMENT',1x,i5)
-      write(5,*)
 !
         call printout(set,nset,istartset,iendset,ialset,nprint,
      &     prlab,prset,v,t1,fn,ipkon,lakon,stx,eei,xstate,ener,

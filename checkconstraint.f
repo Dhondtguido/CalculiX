@@ -40,7 +40,7 @@
       write(5,*)
       write(5,'(a113)') '  ################################################
      &#################################################################'
-      write(5,*) '  A S S E M B L Y   O F   A C T I V E   S E T'
+      write(5,*) '  A S S E M B L Y   O F   C O N S T R A I N T S'
       write(5,*)
       write(5,101)
      &'NUMBER OF    ','CONSTRAINT      ','LE/     ','FUNCTION         ',

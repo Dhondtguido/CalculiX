@@ -5124,3 +5124,9 @@ Dec 2002        - started to work on single crystal plasticity
 		  PK2 stress, no the mechanical right stretch tensor.
 
  11 Feb 2023    - updated the feasible direction procedure
+
+ 17 Feb 2023    - worked on feasible directions
+                - modified the conditions governing the storage of the
+		  STEP number in the .dat file
+                - modified the conditions governing the storage of the
+		  INCREMENT number in the .dat file

@@ -1,6 +1,6 @@
 
-CFLAGS = -Wall -g -fopenmp -I ../SPOOLES.2.2 -DARCH="Linux" -DSPOOLES -DARPACK -DMATRIXSTORAGE -DUSE_MT=1 
-FFLAGS = -Wall -g -fopenmp 
+CFLAGS = -Wall -O2 -fopenmp -I ../SPOOLES.2.2 -DARCH="Linux" -DSPOOLES -DARPACK -DMATRIXSTORAGE -DUSE_MT=1 
+FFLAGS = -Wall -O2 -fopenmp 
 
 CC=cc
 FC=gfortran
@@ -27,7 +27,7 @@ LIBS = \
        -lpthread -lm
 
 CalculiX_MT: $(OCCXMAIN) CalculiX_MT.a  $(LIBS)
-	./date.pl; $(CC) $(CFLAGS) -c CalculiX.c; $(FC) -fopenmp -Wall -g -o $@ $(OCCXMAIN) CalculiX_MT.a $(LIBS)
+	./date.pl; $(CC) $(CFLAGS) -c CalculiX.c; $(FC) -fopenmp -Wall -O2 -o $@ $(OCCXMAIN) CalculiX_MT.a $(LIBS)
 
 CalculiX_MT.a: $(OCCXF) $(OCCXC)
 	ar vr $@ $?

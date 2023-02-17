@@ -34,6 +34,17 @@ void filtermain_backward(double *co, double *dgdxglob, ITG *nobject,
     
   double *xo=NULL,*yo=NULL,*zo=NULL,*x=NULL,*y=NULL,*z=NULL,*au=NULL,
     filterrad,*denominator=NULL,*filterval=NULL;
+
+  /* if no radius is defined no filtering is performed
+     the radius applies to all objective functions */
+    
+  if(*nobject==0){return;}
+  if(strcmp1(&objectset[81],"     ")==0){
+    for(i=2**nk**nobjectstart+1;i<2**nk**nobject;i=i+2){
+      dgdxglob[i]=dgdxglob[i-1];
+    }
+    return;
+  }
     
   /* prepare for near3d_se */
     

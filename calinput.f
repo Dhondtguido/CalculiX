@@ -1732,7 +1732,22 @@ c
         call exit(201)
       endif
 !
-      if(nprint.gt.0) then
+!     the step number is written in the .dat-file if data output
+!     was requested or if the procedure always leads to some
+!     output in the .dat file; this is the case for the following
+!     procedures:
+!     *FREQUENCY
+!     *BUCKLE
+!     *STEADY STATE DYNAMICS
+!     *COMPLEX FREQUENCY,CORIOLIS
+!     *COMPLEX FREQUENCY,FLUTTER
+!     *SENSITIVITY
+!     *ROBUST DESIGN
+!     *FEASIBLE DIRECTION
+!
+      if(((nmethod.eq.2).or.(nmethod.eq.3).or.(nmethod.eq.5).or.
+     &     (nmethod.eq.6).or.(nmethod.eq.7).or.(nmethod.eq.12).or.
+     &     (nmethod.eq.14).or.(nmethod.eq.16)).or.(nprint.gt.0)) then
         write(5,*)
         write(5,100) istep
  100    format('                        S T E P ',i7)

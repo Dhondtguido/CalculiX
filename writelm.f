@@ -35,20 +35,20 @@
       write(5,*) '  #######################################
      &#####################################'
       if(iter.eq.1) then      
-         write(5,*) '  L A G R A N G E   M U L T P L I E R S
+         write(5,*) '  L A G R A N G E   M U L T I P L I E R S
      &   1ST   I T E R A T I O N' 
       elseif(iter.eq.2) then
-         write(5,*) '  L A G R A N G E   M U L T P L I E R S
+         write(5,*) '  L A G R A N G E   M U L T I P L I E R S
      &   2ND   I T E R A T I O N' 
       elseif(iter.eq.3) then
-         write(5,*) '  L A G R A N G E   M U L T P L I E R S
+         write(5,*) '  L A G R A N G E   M U L T I P L I E R S
      &   3RD   I T E R A T I O N' 
       elseif((iter.gt.3).and.(iter.lt.10)) then
          write(5,'(a42,i1,a22)') '  L A G R A N G E
-     &   M U L T P L I E R S   ',iter,'TH   I T E R A T I O N' 
+     &   M U L T I P L I E R S   ',iter,'TH   I T E R A T I O N' 
       else
          write(5,'(a42,i3,a22)') '  L A G R A N G E
-     &   M U L T P L I E R S   ',iter,'TH   I T E R A T I O N' 
+     &   M U L T I P L I E R S   ',iter,'TH   I T E R A T I O N' 
       endif
       write(5,*)
       write(5,103) 'NUMBER OF

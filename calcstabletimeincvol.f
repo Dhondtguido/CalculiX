@@ -183,7 +183,8 @@ c     &     /(gam+2.d0*alpha*(gam-bet)) !eq 25 miranda
             nope=8
             nopes=4
             nfaces=6
-            elemfac=0.5d0
+            elemfac=0.625d0
+c            elemfac=0.5d0
           elseif(lakon(nelem)(4:4).eq.'8') then
             nope=8
             nopes=4

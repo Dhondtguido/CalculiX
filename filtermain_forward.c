@@ -49,6 +49,16 @@ void filtermain_forward(double *co,double *gradproj,ITG *nk,
     
   double *xo=NULL,*yo=NULL,*zo=NULL,*x=NULL,*y=NULL,*z=NULL,dd=.0,
     filterrad=0;
+
+  /* if no radius is defined no filtering is performed
+     the radius applies to all objective functions */
+    
+  if(strcmp1(&objectset[81],"     ")==0){
+    for(i=1;i<2**nk;i=i+2){
+      feasdir[i]=feasdir[i-1];
+    }
+    return;
+  }
     
   /* prepare for near3d_se */
     
