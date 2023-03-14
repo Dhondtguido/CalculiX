@@ -156,8 +156,9 @@ c     &               1,17,17,5,2,18,18,6,3,19,19,7,4,20,20,8/),(/2,24/))
          endif
       enddo
 !
-c     distmin=dsqrt(distmin)*1.0e-04
-      distmin=dsqrt(distmin)*1.0e-06
+      distmin=dsqrt(distmin)*1.d-6
+      distmin=max(distmin,1.d-8)
+!
       write(*,'(1x,a14,e14.7)') 'Perturbation: ',distmin
       write(*,*)
 !     

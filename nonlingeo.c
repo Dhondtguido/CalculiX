@@ -292,7 +292,6 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
      calculation (e.g. a static step or an implicit dynamics step) 
      is performed with node-to-face contact */
   
-  //    if((*nmethod==1)&&(*mortar==-1)){
   if((*iexpl<=1)&&(*mortar==-1)){
     mortarsav=-1;
     *mortar=0;
@@ -845,8 +844,6 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   if(*nener==1){
     if((*mortar!=1)||(ncont==0)){
       NNEW(enerini,double,2*mi[0]*(*ne+*nslavs));
-      //      isiz=2*mi[0]*(*ne+*nslavs);cpypardou(enerini,ener,&isiz,&num_cpus);
-      //    isiz=2*mi[0]**ne;cpypardou(enerini,ener,&isiz,&num_cpus);
     }else{
       NNEW(enerini,double,2*mi[0]*(*ne+*nintpoint));
     }
@@ -982,7 +979,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     MNEW(fn,double,mt**nk);
     NNEW(stx,double,6*mi[0]**ne);
       
-    if(*iexpl<=1){intscheme=1;}
+    if((*iexpl<=1)||(*mortar==-1)){intscheme=1;}
       
     if(ne1d2d==1)NNEW(inum,ITG,*nk);
     results(co,nk,kon,ipkon,lakon,ne,vold,stn,inum,stx,
@@ -1553,11 +1550,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
          mortar not equal to 1 */
       
       if(*nener==1){
-	/*	if(*mortar!=1){
-	  isiz=2*mi[0]*(ne0+*nslavs);
-	  }else{*/
 	  isiz=2*mi[0]*ne0;
-	  //	}
 	cpypardou(enerini,ener,&isiz,&num_cpus);
       }
 	      

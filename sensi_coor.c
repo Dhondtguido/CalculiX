@@ -117,6 +117,11 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
   ne0=*ne;
 
+  if(*nstate_!=0){
+    NNEW(xstateini,double,*nstate_*mi[0]*ne0);
+    memcpy(&xstateini[0],&xstate[0],sizeof(double)**nstate_*mi[0]*ne0);
+  }
+
   /* determining the global values to be used as boundary conditions
      for a submodel */
 
@@ -396,10 +401,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       
   /* calculation of the smallest distance between nodes */
       
-  /*FORTRAN(smalldist,(co,&distmin,lakon,ipkon,kon,ne));*/
-  /*distmin is set to 1.0e-08 --> perturbation which reduces the
-    finite difference error the most */
-  distmin=1.0e-08;
+  FORTRAN(smalldist,(co,&distmin,lakon,ipkon,kon,ne));
 
   /* resizing xdesi to a length of distmin */
 
@@ -458,14 +460,17 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   FORTRAN(tempload,(xforcold,xforc,xforcact,iamforc,nforc,xloadold,xload,
 		    xloadact,iamload,nload,ibody,xbody,nbody,xbodyold,xbodyact,
 		    t1old,t1,t1act,iamt1,nk,amta,
-		    namta,nam,ampli,&time,&reltime,ttime,&dtime,ithermal,nmethod,
+		    namta,nam,ampli,&time,&reltime,ttime,&dtime,ithermal,
+		    nmethod,
 		    xbounold,xboun,xbounact,iamboun,nboun,
 		    nodeboun,ndirboun,nodeforc,ndirforc,istep,&iinc,
 		    co,vold,itg,&ntg,amname,ikboun,ilboun,nelemload,sideload,mi,
-		    ntrans,trab,inotr,veold,integerglob,doubleglob,tieset,istartset,
+		    ntrans,trab,inotr,veold,integerglob,doubleglob,tieset,
+		    istartset,
 		    iendset,ialset,ntie,nmpc,ipompc,ikmpc,ilmpc,nodempc,coefmpc,
 		    ipobody,iponoel,inoel,ipkon,kon,ielprop,prop,ielmat,
-		    shcon,nshcon,rhcon,nrhcon,cocon,ncocon,ntmat_,lakon,set,nset));
+		    shcon,nshcon,rhcon,nrhcon,cocon,ncocon,ntmat_,lakon,set,
+		    nset));
 
   /* determining the structure of the df matrix */
 
@@ -1068,6 +1073,8 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
   (*ttime)+=(*tper);
   *nobjectstart=*nobject;
- 
+
+  if(*nstate_!=0){SFREE(xstateini);}
+  
   return;
 }

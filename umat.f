@@ -52,19 +52,21 @@ c      write(*,*) 'dstran ',(dstran(i),i=1,6)
 c      write(*,*) 'drot ',((drot(i,j),i=1,3),j=1,3)
       e=props(1)
       un=props(2)
-      al=un*e/(1.d0+un)/(1.d0-2.d0*un)
-      um=e/2.d0/(1.d0+un)
+      al=un*e/((1.d0+un)*(1.d0-2.d0*un))
+      um=e/(2.d0*(1.d0+un))
       am1=al+2.d0*um
-      am2=um
 !
 !     stress
 !      
-      stress(1)=stress(1)+am1*dstran(1)+al*(dstran(2)+dstran(3))
-      stress(2)=stress(2)+am1*dstran(2)+al*(dstran(1)+dstran(3))
-      stress(3)=stress(3)+am1*dstran(3)+al*(dstran(1)+dstran(2))
-      stress(4)=stress(4)+am2*dstran(4)
-      stress(5)=stress(5)+am2*dstran(5)
-      stress(6)=stress(6)+am2*dstran(6)
+      stress(1)=am1*(stran(1)+dstran(1))+
+     &     al*(stran(2)+dstran(2)+stran(3)+dstran(3))
+      stress(2)=am1*(stran(2)+dstran(2))+
+     &     al*(stran(3)+dstran(3)+stran(1)+dstran(1))
+      stress(3)=am1*(stran(3)+dstran(3))+
+     &     al*(stran(1)+dstran(1)+stran(2)+dstran(2))
+      stress(4)=um*(stran(4)+dstran(4))
+      stress(5)=um*(stran(5)+dstran(5))
+      stress(6)=um*(stran(6)+dstran(6))
 !
 !     stiffness
 !

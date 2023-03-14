@@ -42,6 +42,14 @@
 !     nmethod=3: static stiffness + buckling stiffness
 !     nmethod=4: stiffness matrix + mass matrix
 !     
+!     intscheme=0: use the integration scheme corresponding to the element     
+!                  type, i.e. reduced integration for reduced integration    
+!                  elements etc.
+!     intscheme=1: use for C3D8R and C3D20R elements the integration point
+!                  schemes for C3D8 and C3D20, respectively, for all other    
+!                  elements the the integration scheme corresponding to the
+!                  element type     
+!     
       implicit none
 !     
       integer mass,stiffness,buckling,rhsi,coriolis
@@ -261,7 +269,6 @@ c     Bernhardi end
 !     
       endif
 !     
-c      if(intscheme.eq.0) then
         if(lakonl(4:5).eq.'8R') then
           mint2d=1
           if(intscheme.eq.0) then
@@ -473,7 +480,6 @@ c     write(*,*) 'e_c3d ',nelem
 !     computation of the matrix: loop over the Gauss points
 !     
       do kk=1,mint3d
-c        if(intscheme.eq.0) then
           if(lakonl(4:5).eq.'8R') then
             if(intscheme.eq.0) then
               xi=gauss3d1(1,kk)
@@ -630,7 +636,7 @@ c        if(intscheme.eq.0) then
 !     in the gauss point
 !     
 c     Bernhardi start
-        if(lakonl(1:5).eq.'C3D8R') then
+        if((lakonl(1:5).eq.'C3D8R').and.(intscheme.eq.0)) then
           call shape8hr(xl,xsj,shp,gs,a)
         elseif(lakonl(1:5).eq.'C3D8I') then
           call shape8hu(xi,et,ze,xl,xsj,shp,iflag)

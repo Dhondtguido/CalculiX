@@ -199,8 +199,10 @@ c      write(14,*) 'seto set0'
 !           the actual node on the crack front and in the direction of
 !           the crack propagation with the free surface
 !
-            alambda=acrack(j)*0.1d0
-            factor=1.2d0
+c            alambda=acrack(j)*0.1d0
+            alambda=acrack(j)*0.5d0
+c            factor=1.2d0
+            factor=1.5d0
             do k=1,3
               p(k)=costruc(k,jrel)
             enddo
@@ -437,8 +439,10 @@ c             (surfco(3,m)-costruc(3,jrel))*xxs(3)
 !             through the front node at stake and in the direction              
 !             of the free surface normal corresponding to minimum m
 !
-              alambda=acrack(j)*0.1d0
-              factor=1.2d0
+c              alambda=acrack(j)*0.1d0
+              alambda=acrack(j)*0.5d0
+c              factor=1.2d0
+              factor=1.5d0
               do k=1,3
                 p(k)=costruc(k,jrel)
               enddo

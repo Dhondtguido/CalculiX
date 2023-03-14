@@ -967,7 +967,7 @@ c
         call randomfields(inpc,textpart,istep,istat,n,iline,
      &       ipol,inl,ipoinp,inp,ipoinpc,nener,physcon,ier)        
 !     
-      elseif(textpart(1)(1:13).eq.'*RATEDEPENDENT') then
+      elseif(textpart(1)(1:14).eq.'*RATEDEPENDENT') then
         call ratedependents(inpc,textpart,nelcon,nmat,ntmat_,
      &     iplas,iperturb,nstate_,ncmat_,elcon,matname,irstrt,istep,
      &     istat,n,iline,ipol,inl,ipoinp,inp,ipoinpc,ier)

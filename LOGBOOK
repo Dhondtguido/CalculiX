@@ -5130,3 +5130,24 @@ Dec 2002        - started to work on single crystal plasticity
 		  STEP number in the .dat file
                 - modified the conditions governing the storage of the
 		  INCREMENT number in the .dat file
+
+ 24 Feb 2023    - change in smalldist.f: distmin should not be smaller
+                  than 1.d-8
+		- made a change in umat_abaqusnl.f: taking expansion
+		  into account after return from umat.f
+                - accelerated Johnson-Cook (wrote umat_abaqusnl_4_jcook.f)
+
+ 3 Mar 2023     - made a change in umat_abaqusnl.f and umat_abaqusnl_4_jcook.f
+                  (multiplied tangent matrix with vj)
+
+ 7 Mar 2023     - updated umat_johnson_cook.f and wrote umat_def_plas.f
+
+ 9 Mar 2023     - changed deformation plasticity from Cauchy stress vs.
+                  Euler strain to Cauchy stress vs. Hencky strain.
+
+ 13 Mar 2023    - worked on the tangent in umat_abaqusnl.f
+
+ 14 Mar 2023    - changed the value of alambda and factor in
+                  contingentsurf.f in order to accelerate the calculation
+                - worked on the consistent tangent in umat_abaqusnl.f and
+		  umat_abaqusnl_total.f

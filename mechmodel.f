@@ -70,8 +70,12 @@
      &     ithermal,icmd,beta,stre)
       elseif(kode.eq.-50) then
          mattyp=3
-         call defplas(elconloc,elas,emec,ithermal,icmd,beta,stre,
-     &     ckl,vj,xstate,nstate_,iel,iint,mi)
+c         call defplas(elconloc,elas,emec,ithermal,icmd,beta,stre,
+c     &     ckl,vj,xstate,nstate_,iel,iint,mi)
+         call umat_abaqusnl_total(amat,iel,iint,kode,elconloc,emec,
+     &        emec0,beta,xikl,vij,xkl,vj,ithermal,t1l,dtime,time,ttime,
+     &        icmd,ielas,mi(1),nstate_,xstateini,xstate,stre,elas,
+     &        iorien,pgauss,orab,istep,iinc,pnewdt,nmethod,iperturb)
       elseif(kode.gt.-100) then
          mattyp=3
          if(iperturb(2).eq.1) then

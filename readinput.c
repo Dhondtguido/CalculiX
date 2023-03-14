@@ -354,6 +354,10 @@ void readinput(char *jobnamec, char **inpcp, ITG *nline, ITG *nset,
         FORTRAN(keystart,(&ifreeinp,ipoinp,inp,"MATERIAL",
                           nline,&ikey));
       }
+      else if(strcmp1(&buff[0],"*RATEDEPENDENT")==0){
+        FORTRAN(keystart,(&ifreeinp,ipoinp,inp,"MATERIAL",
+                          nline,&ikey));
+      }
       else if(strcmp1(&buff[0],"*RESTART")==0){
 	  irestartread=0;
 	  irestartstep=0;

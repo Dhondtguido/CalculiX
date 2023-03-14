@@ -46,7 +46,7 @@
      &        emec0,beta,xikl,vij,xkl,vj,ithermal,t1l,dtime,time,ttime,
      &        icmd,ielas,mi(1),nstate_,xstateini,xstate,stre,stiff,
      &        iorien,pgauss,orab,istep,iinc,pnewdt,nmethod,iperturb)
-         
+!         
       elseif(amat(1:9).eq.'@ABAQUSNL') then
 !
          call umat_abaqusnl(amat,iel,iint,kode,elconloc,emec,
@@ -119,6 +119,13 @@
      &        beta,xikl,vij,xkl,vj,ithermal,t1l,dtime,time,ttime,
      &        icmd,ielas,mi(1),
      &        nstate_,xstateini,xstate,stre,stiff,iorien,pgauss,orab)
+!
+      elseif(amat(1:11).eq.'JOHNSONCOOK') then
+!
+         call umat_abaqusnl_total(amat,iel,iint,kode,elconloc,emec,
+     &        emec0,beta,xikl,vij,xkl,vj,ithermal,t1l,dtime,time,ttime,
+     &        icmd,ielas,mi(1),nstate_,xstateini,xstate,stre,stiff,
+     &        iorien,pgauss,orab,istep,iinc,pnewdt,nmethod,iperturb)
 !
       elseif(amat(1:12).eq.'LIN_EL_COROT') then
 !

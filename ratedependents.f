@@ -58,7 +58,8 @@
         return
       endif
 !     
-      if(nelcon(1,nmat).ne.2) then
+      if((nelcon(1,nmat).ne.2).and.
+     &     (matname(nmat)(1:11).ne.'JOHNSONCOOK')) then
         write(*,*) '*ERROR reading *RATE DEPENDENT:'
         write(*,*) '       *RATE DEPENDENT should be preceded'
         write(*,*) '       by an *ELASTIC,TYPE=ISO card'
@@ -97,13 +98,13 @@
           return
         endif
         nelcon(1,nmat)=-111
-        nstate_=max(nstate_,15)
+        nstate_=max(nstate_,9)
         call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &       ipoinp,inp,ipoinpc)
         if((istat.lt.0).or.(key.eq.1).or.(n.lt.2)) then
           write(*,*) '*ERROR reading *RATE DEPENDENT'
           write(*,*) '       for the Johnson-Cook model at least'
-          write(*,*) '       C and the referance strain rate must'
+          write(*,*) '       C and the reference strain rate must'
           write(*,*) '       be given'
           call inputerror(inpc,ipoinpc,iline,
      &         "*RATE DEPENDENT%",ier)
@@ -117,7 +118,7 @@
           return
         endif
 !     
-!     reading C and the reference strain rate (elcon(8,9))
+!     reading C and the reference strain rate (elcon(7,8))
 !     
         do i=1,2
           read(textpart(i)(1:20),'(f20.0)',iostat=istat)

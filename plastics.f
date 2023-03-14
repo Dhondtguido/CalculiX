@@ -72,16 +72,6 @@
 !
       iperturb(1)=3
 !
-      if(nelcon(1,nmat).eq.2) then
-         iplas=1
-         nelcon(1,nmat)=-51
-         nstate_=max(nstate_,13)
-      else
-         ianisoplas=1
-         nelcon(1,nmat)=-114
-         nstate_=max(nstate_,14)
-      endif
-!
       do i=2,n
         if(textpart(i)(1:10).eq.'HARDENING=') then
           if(textpart(i)(11:19).eq.'KINEMATIC') then
@@ -89,7 +79,7 @@
           elseif(textpart(i)(11:18).eq.'COMBINED') then
             iso=.false.
           elseif(textpart(i)(11:14).eq.'USER') then
-            if(nelcon(1,nmat).eq.-114) then
+            if(nelcon(1,nmat).ne.2) then
               write(*,*) '*ERROR reading *PLASTIC: user defined '
               write(*,*) '       hardening is not allowed for '
               write(*,*) '       elastically anisotropic materials'
@@ -99,6 +89,8 @@
             call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &           ipoinp,inp,ipoinpc)
             return
+          elseif(textpart(i)(11:21).eq.'JOHNSONCOOK') then
+            johnsoncook=.true.
           endif
           exit
         elseif(textpart(i)(1:21).eq.'HARDENING=JOHNSONCOOK') then
@@ -139,7 +131,7 @@
         endif
 !
         nelcon(1,nmat)=-111
-        nstate_=max(nstate_,15)
+        nstate_=max(nstate_,9)
         call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &       ipoinp,inp,ipoinpc)
         if((istat.lt.0).or.(key.eq.1).or.(n.lt.4)) then
@@ -164,14 +156,21 @@
           read(textpart(i)(1:20),'(f20.0)',iostat=istat)
      &         elcon(3+i,ntmat,nmat)
         enddo
+        if(elcon(6,ntmat,nmat).le.0.d0) then
+          write(*,*) '*ERROR reading *PLASTIC'
+          write(*,*) '       n must be strictly positive'
+          call inputerror(inpc,ipoinpc,iline,
+     &         "*PLASTIC%",ier)
+          return
+        endif
 ! 
 !       reading m (elcon(11))
 ! 
         read(textpart(4)(1:20),'(f20.0)',iostat=istat)
      &       elcon(11,ntmat,nmat)
-        if(elcon(11,ntmat,nmat).eq.0.d0) then
+        if(elcon(11,ntmat,nmat).le.0.d0) then
           write(*,*) '*ERROR reading *PLASTIC'
-          write(*,*) '       m cannot be 0'
+          write(*,*) '       m must be strictly positive'
           call inputerror(inpc,ipoinpc,iline,
      &         "*PLASTIC%",ier)
           return
@@ -188,6 +187,16 @@
         call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &       ipoinp,inp,ipoinpc)
         return
+      endif
+!
+      if(nelcon(1,nmat).eq.2) then
+         iplas=1
+         nelcon(1,nmat)=-51
+         nstate_=max(nstate_,13)
+      else
+         ianisoplas=1
+         nelcon(1,nmat)=-114
+         nstate_=max(nstate_,14)
       endif
 !
       if(iso) then
