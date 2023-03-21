@@ -5151,3 +5151,5 @@ Dec 2002        - started to work on single crystal plasticity
                   contingentsurf.f in order to accelerate the calculation
                 - worked on the consistent tangent in umat_abaqusnl.f and
 		  umat_abaqusnl_total.f
+
+ 21 Mar 2023    - cleaned umat_abaqusnl.f and umat_abaqusnl_total.f
