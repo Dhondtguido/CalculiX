@@ -19,7 +19,7 @@
       subroutine getdesiinfo3d(set,istartset,iendset,ialset,nset,
      &     mi,nactdof,ndesi,nodedesi,ntie,tieset,itmp,nmpc,nodempc,
      &     ipompc,nodedesiinv,iponoel,inoel,lakon,ipkon,kon,iregion,
-     &     ipoface,nodface,nk,jobnamef)    
+     &     ipoface,nodface,nk,jobnamef,ipkonfa,lakonfa,konfa,nsurfs)    
 !     
 !     storing the design variables in nodedesi
 !     marking which nodes are design variables in nodedesiinv
@@ -33,8 +33,7 @@
 !     
       implicit none
 !     
-      character*8 lakon(*)
-!     
+      character*8 lakon(*),lakonfa(*)
       character*81 setname
       character*81 set(*)
       character*81 tieset(3,*)
@@ -48,7 +47,7 @@
      &     ipkon(*),nnodes,kon(*),iregion,konl(26),iaux,kflag,
      &     ipoface(*),nodface(5,*),jfacem,nopesurf(9),ifaceq(8,6),
      &     ifacet(6,4),ifacew1(4,5),ifacew2(8,5),nopem,nk,iwrite,
-     &     ilen
+     &     ilen,ipkonfa(*),konfa(*),nsurfs
 !     
       setname(1:1)=' '
       ndesi=0
@@ -85,7 +84,8 @@
      &     2,3,6,5,8,15,11,14,
      &     3,1,4,6,9,13,12,15/
 !     
-!     Search for the set name of the set with the design variables
+!     Search for the name of the set with the design variables (only
+!     one such set is allowed in the input deck)
 !     
       do i=1,ntie
         if(tieset(1,i)(81:81).eq.'D') then
@@ -102,7 +102,8 @@
       endif
 !     
 !     catalogue all nodes (dependent and independent) which
-!     belong to MPC's and sort them in increasing order
+!     belong to MPC's in field itmp (size ntmp) and sort them in
+!     increasing order
 !     
       ntmp=0
       do i=1,nmpc
@@ -138,8 +139,6 @@
 !     Search the name of the node set in "set(i)" and
 !     assign the nodes of the set to the appropriate variables
 !     
-c      do i=1,nset
-c        if(setname.eq.set(i)) then  
       call cident81(set,setname,nset,i)
       if(i.gt.0) then
         if(setname.eq.set(i)) then
@@ -228,8 +227,6 @@ c        if(setname.eq.set(i)) then
           enddo loop1
         endif
       endif
-c        endif
-c      enddo 
 !     
 !     creating field nodedesiinv indicating for each node whether
 !     it is a design variable or not
@@ -245,97 +242,133 @@ c      enddo
 !     A design node is also removed from nodedesi if it does not
 !     belong to a face whose number of design variables exceeds half
 !     of its nodes
-!     
-      do i=1,nk  
-        node=i
-        if(ipoface(node).eq.0) cycle
-        index1=ipoface(node)
-        do
-          nelem=nodface(3,index1)
-          jfacem=nodface(4,index1)
-!     
-          if(lakon(nelem)(4:4).eq.'8') then
-            nope=8
+!
+      do i=1,nsurfs
+        if(iregion.eq.0) then
+          nopedesi=0
+        else
+c          write(*,*) 'getdesiinfo3d',i,lakonfa(i),nsurfs
+          if((lakonfa(i)(2:2).eq.'3').or.(lakonfa(i)(2:2).eq.'4')) then
             nopedesi=3
-            nopem=4
-          elseif(lakon(nelem)(4:5).eq.'20') then
-            nope=20
-            nopedesi=5
-            nopem=8
-          elseif(lakon(nelem)(4:5).eq.'10') then
-            nope=10
+          elseif(lakonfa(i)(2:2).eq.'6') then
             nopedesi=4
-            nopem=6
-          elseif(lakon(nelem)(4:4).eq.'4') then
-            nope=4
-            nopedesi=3
-            nopem=3
-          elseif(lakon(nelem)(4:4).eq.'6') then
-            nope=6
-            if(jfacem.le.2) then
-              nopem=3
-              nopedesi=3
-            else
-              nopem=4
-              nopedesi=3
-            endif
-          elseif(lakon(nelem)(4:5).eq.'15') then
-            nope=15
-            if(jfacem.le.2) then
-              nopem=6
-              nopedesi=4
-            else
-              nopem=8
-              nopedesi=5
-            endif
-          endif
-          if(iregion.eq.0) nopedesi=0
-!     
-!     actual position of the nodes belonging to the
-!     master surface
-!     
-          do k=1,nope
-            konl(k)=kon(ipkon(nelem)+k)
-          enddo
-!     
-          if((nope.eq.20).or.(nope.eq.8)) then
-            do m=1,nopem
-              nopesurf(m)=konl(ifaceq(m,jfacem))
-            enddo
-          elseif((nope.eq.10).or.(nope.eq.4)) then
-            do m=1,nopem
-              nopesurf(m)=konl(ifacet(m,jfacem))
-            enddo
-          elseif(nope.eq.15) then
-            do m=1,nopem
-              nopesurf(m)=konl(ifacew2(m,jfacem))
-            enddo
           else
-            do m=1,nopem
-              nopesurf(m)=konl(ifacew1(m,jfacem))
-            enddo
+            nopedesi=5
           endif
+        endif
+!
+        index1=ipkonfa(i)
+        nopem=ipkonfa(i+1)-ipkonfa(i)
+        do m=1,nopem
+          nopesurf(m)=konfa(index1+m)
+        enddo
+!
+        nnodes=0
+        do m=1,nopem
+          if(nodedesiinv(nopesurf(m)).ne.0) then
+            nnodes=nnodes+1
+          endif
+        enddo
 !     
-!     sum up how many designvariables are on that surface
-!     
-          nnodes=0
+        if(nnodes.ge.nopedesi) then
           do m=1,nopem
-            if(nodedesiinv(nopesurf(m)).ne.0) then
-              nnodes=nnodes+1
+            if(nodedesiinv(nopesurf(m)).eq.-1) then
+              nodedesiinv(nopesurf(m))=1
             endif
           enddo
-!     
-          if(nnodes.ge.nopedesi) then
-            do m=1,nopem
-              if(nodedesiinv(nopesurf(m)).eq.-1) then
-                nodedesiinv(nopesurf(m))=1
-              endif
-            enddo
-          endif
-          index1=nodface(5,index1)
-          if(index1.eq.0) exit      
-        enddo
+        endif
       enddo
+c        
+c      do i=1,nk  
+c        node=i
+c        if(ipoface(node).eq.0) cycle
+c        index1=ipoface(node)
+c        do
+c          nelem=nodface(3,index1)
+c          jfacem=nodface(4,index1)
+c!     
+c          if(lakon(nelem)(4:4).eq.'8') then
+c            nope=8
+c            nopedesi=3
+c            nopem=4
+c          elseif(lakon(nelem)(4:5).eq.'20') then
+c            nope=20
+c            nopedesi=5
+c            nopem=8
+c          elseif(lakon(nelem)(4:5).eq.'10') then
+c            nope=10
+c            nopedesi=4
+c            nopem=6
+c          elseif(lakon(nelem)(4:4).eq.'4') then
+c            nope=4
+c            nopedesi=3
+c            nopem=3
+c          elseif(lakon(nelem)(4:4).eq.'6') then
+c            nope=6
+c            if(jfacem.le.2) then
+c              nopem=3
+c              nopedesi=3
+c            else
+c              nopem=4
+c              nopedesi=3
+c            endif
+c          elseif(lakon(nelem)(4:5).eq.'15') then
+c            nope=15
+c            if(jfacem.le.2) then
+c              nopem=6
+c              nopedesi=4
+c            else
+c              nopem=8
+c              nopedesi=5
+c            endif
+c          endif
+c          if(iregion.eq.0) nopedesi=0
+c!     
+c!     actual position of the nodes belonging to the
+c!     master surface
+c!     
+c          do k=1,nope
+c            konl(k)=kon(ipkon(nelem)+k)
+c          enddo
+c!     
+c          if((nope.eq.20).or.(nope.eq.8)) then
+c            do m=1,nopem
+c              nopesurf(m)=konl(ifaceq(m,jfacem))
+c            enddo
+c          elseif((nope.eq.10).or.(nope.eq.4)) then
+c            do m=1,nopem
+c              nopesurf(m)=konl(ifacet(m,jfacem))
+c            enddo
+c          elseif(nope.eq.15) then
+c            do m=1,nopem
+c              nopesurf(m)=konl(ifacew2(m,jfacem))
+c            enddo
+c          else/home/guido/CalculiX/src/CalculiX
+c            do m=1,nopem
+c              nopesurf(m)=konl(ifacew1(m,jfacem))
+c            enddo
+c          endif
+c!     
+c!     sum up how many designvariables are on that surface
+c!     
+c          nnodes=0
+c          do m=1,nopem
+c            if(nodedesiinv(nopesurf(m)).ne.0) then
+c              nnodes=nnodes+1
+c            endif
+c          enddo
+c!     
+c          if(nnodes.ge.nopedesi) then
+c            do m=1,nopem
+c              if(nodedesiinv(nopesurf(m)).eq.-1) then
+c                nodedesiinv(nopesurf(m))=1
+c              endif
+c            enddo
+c          endif
+c          index1=nodface(5,index1)
+c          if(index1.eq.0) exit      
+c        enddo
+c      enddo
 !     
 !     if node i in nodedesi(i) is -1 --> delete node i from 
 !     set of designvariables

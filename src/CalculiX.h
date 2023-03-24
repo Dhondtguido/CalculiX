@@ -1915,11 +1915,13 @@ void FORTRAN(getdesiinfo2d,(char *set,ITG *istartset,ITG *iendset,ITG *ialset,
 			    ITG *ne,char *jobnamef));  
 
 void FORTRAN(getdesiinfo3d,(char *set,ITG *istartset,ITG *iendset,ITG *ialset,
-            ITG *nset,ITG *mi,ITG *nactdof,ITG *ndesi,
-            ITG *nodedesi,ITG *ntie,char *tieset,ITG *itmp,ITG *nmpc,
-            ITG *nodempc,ITG *ipompc,ITG *nodedesiinv,ITG *iponoel,
-            ITG *inoel,char *lakon,ITG *ipkon,ITG *kon,ITG *noregion,
-	    ITG *ipoface,ITG *nodface,ITG *nk,char *jobnamef));
+			    ITG *nset,ITG *mi,ITG *nactdof,ITG *ndesi,
+			    ITG *nodedesi,ITG *ntie,char *tieset,ITG *itmp,
+			    ITG *nmpc,ITG *nodempc,ITG *ipompc,
+			    ITG *nodedesiinv,ITG *iponoel,ITG *inoel,
+			    char *lakon,ITG *ipkon,ITG *kon,ITG *noregion,
+			    ITG *ipoface,ITG *nodface,ITG *nk,char *jobnamef,
+			    ITG *ipkonfa,char *lakonfa,ITG *konfa,ITG *nsurfs));
 
 void FORTRAN(getdesiinfo3d_robust,(char *set,ITG *istartset,ITG *iendset,
 				   ITG *ialset,ITG *nset,ITG *mi,ITG *nactdof,

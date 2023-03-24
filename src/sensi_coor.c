@@ -295,7 +295,6 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 			   iponod2dto3d,iponor2d,knor2d,iponoel2d,
 			   inoel2d,nobject,objectset,iponk2dto3d,ne,
 			   jobnamef));
-			   			     
       
   }else{
       
@@ -303,7 +302,8 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 			   mi,nactdof,ndesi,nodedesi,ntie,tieset,
 			   itmp,nmpc,nodempc,ipompc,nodedesiinv,
 			   iponoel,inoel,lakon,ipkon,
-			   kon,&iregion,ipoface,nodface,nk,jobnamef));  
+			   kon,&iregion,ipoface,nodface,nk,jobnamef,
+			   ipkonfa,lakonfa,konfa,&nsurfs));  
   }
       
   SFREE(itmp);
