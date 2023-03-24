@@ -325,7 +325,6 @@ feasibledirections.f \
 fillknotmpc.f \
 film.f \
 films.f \
-filter.f \
 filtermatrix.f \
 filters.f \
 filter_backward.f \
