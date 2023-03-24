@@ -80,7 +80,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *istartelem=NULL,*ialelem=NULL,ieigenfrequency=0,cyclicsymmetry=0,
     nherm,nev,iev,inoelsize,*itmp=NULL,nmd,nevd,*nm=NULL,*ielorien=NULL,
     igreen=0,iglob=0,idesvar=0,inorm=0,irand=0,*nodedesiinv=NULL,
-    *nnodes=NULL,iregion=0,*konfa=NULL,*ipkonfa=NULL,nsurfs,
+    *nnodes=NULL,iregion=0,*konfa=NULL,*ipkonfa=NULL,nsurfs,ifree,
     *iponor=NULL,*iponoelfa=NULL,*inoelfa=NULL,ifreemax,nconstraint,
     *iponexp=NULL,*ipretinfo=NULL,nfield,iforce,*iponod2dto3d=NULL,
     *iponk2dto3d=NULL,ishape=0,iscaleflag,istart,modalstress=0,ifeasd=0;
@@ -261,14 +261,14 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   NNEW(ipoface,ITG,*nk);
   NNEW(nodface,ITG,5*6**ne);
   NNEW(konfa,ITG,8*6**ne);
-  NNEW(ipkonfa,ITG,6**ne);
+  NNEW(ipkonfa,ITG,6**ne+1);
   NNEW(lakonfa,char,8*6**ne);
   FORTRAN(findextsurface,(nodface,ipoface,ne,ipkon,lakon,kon,
 			  konfa,ipkonfa,nk,lakonfa,&nsurfs,
-			  &ifreemax));
+			  &ifreemax,&ifree));
   RENEW(nodface,ITG,5*ifreemax);
-  RENEW(konfa,ITG,8*nsurfs);
-  RENEW(ipkonfa,ITG,nsurfs);
+  RENEW(konfa,ITG,ifree);
+  RENEW(ipkonfa,ITG,nsurfs+1);
   RENEW(lakonfa,char,8*nsurfs);
 
   /* find the external faces belonging to a given node */

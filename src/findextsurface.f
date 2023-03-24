@@ -17,7 +17,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine findextsurface(nodface,ipoface,ne,ipkon,lakon,
-     &  kon,konfa,ipkonfa,nk,lakonfa,nsurfs,ifreemax)
+     &  kon,konfa,ipkonfa,nk,lakonfa,nsurfs,ifreemax,ifree)
 !
       implicit none
 !
@@ -36,8 +36,6 @@
      &  ifacet(6,4),ifacew2(8,5),ifree,ifreenew,index,indexold,
      &  i,j,k,nodes(4),indexe,konl(26),nope,nsurfs,
      &  ifacew1(4,5),ifreemax
-!
-!
 !
 !     nodes belonging to the element faces
 !
@@ -84,8 +82,18 @@
          nodface(5,i)=i+1
       enddo
       do i=1,ne
+!
+!        only active elements
+!
          if(ipkon(i).lt.0) cycle
+!
+!        only 3D elements
+!
          if(lakon(i)(1:3).ne.'C3D') cycle
+!
+!        no expanded elements
+!
+         if(lakon(i)(7:7).ne.' ') cycle
          indexe=ipkon(i)
          if((lakon(i)(4:4).eq.'2').or.(lakon(i)(4:4).eq.'8')) then
             do j=1,6
@@ -353,7 +361,9 @@ c                  call isortii(nodes,iaux,ifour,kflag)
             indexe=nodface(5,indexe)
             if(indexe.eq.0) exit
          enddo      
-      enddo
+       enddo
+!
+       ipkonfa(nsurfs+1)=ifree
 !     
       return
       end

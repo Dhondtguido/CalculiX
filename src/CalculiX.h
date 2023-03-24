@@ -1632,7 +1632,8 @@ void *filter_forwardmt(ITG *i);
 
 void FORTRAN(findextsurface,(ITG *nodface,ITG *ipoface,ITG *ne,ITG *ipkon,
                              char *lakon,ITG *kon,ITG *konfa,ITG *ipkonfa,
-                             ITG *nk,char *lakonfa,ITG *nsurfs,ITG *ifreemax));
+                             ITG *nk,char *lakonfa,ITG *nsurfs,ITG *ifreemax,
+			     ITG *ifree));
 
 void FORTRAN(findslavcfd,(ITG *nmpc,char *labmpc,ITG *ipompc,ITG *nodempc,
                           ITG *islav,ITG *nslav,ITG *inoslav,ITG *inomast,

@@ -83,7 +83,7 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     ndesi,iobject,*iponoel=NULL,node,*nodedesi=NULL,*ipoface=NULL,*nodface=NULL,
     *inoel=NULL,icoordinate=0,*istartdesi=NULL,*ialdesi=NULL,
     *istartelem=NULL,*ialelem=NULL,inoelsize,*itmp=NULL,*ielorien=NULL,
-    iglob=0,idesvar=0,inorm=0,irand=0,*nodedesiinv=NULL,
+    iglob=0,idesvar=0,inorm=0,irand=0,*nodedesiinv=NULL,ifree,
     iregion=0,*konfa=NULL,*ipkonfa=NULL,nsurfs,*iponoelfa=NULL,
     *inoelfa=NULL,*iponor=NULL,*iponexp=NULL,ifreemax,*ipretinfo=NULL,
     nfield,iforce,*iponod2dto3d=NULL,*iponk2dto3d=NULL,ishape=0,ndesibou,
@@ -150,14 +150,14 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   NNEW(ipoface,ITG,*nk);
   NNEW(nodface,ITG,5*6**ne);
   NNEW(konfa,ITG,8*6**ne);
-  NNEW(ipkonfa,ITG,6**ne);
+  NNEW(ipkonfa,ITG,6**ne+1);
   NNEW(lakonfa,char,8*6**ne);
   FORTRAN(findextsurface,(nodface,ipoface,ne,ipkon,lakon,kon,
   			  konfa,ipkonfa,nk,lakonfa,&nsurfs,
-  			  &ifreemax));
+  			  &ifreemax,&ifree));
   RENEW(nodface,ITG,5*ifreemax);
-  RENEW(konfa,ITG,8*nsurfs);
-  RENEW(ipkonfa,ITG,nsurfs);
+  RENEW(konfa,ITG,ifree);
+  RENEW(ipkonfa,ITG,nsurfs+1);
   RENEW(lakonfa,char,8*nsurfs);
 
   /* find the external faces belonging to a given node */

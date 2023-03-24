@@ -64,13 +64,12 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
   
   ITG i,*ipoacti=NULL,*iconstacti=NULL,nactive=0,nnlconst,iscaleflag,mode=-1,
     *inameacti=NULL,nconstraint=0,*inum=NULL,iinc=1,noddiam=-1,ngraph=1,
-    idesvar=0,
-    inorm=0,irand=0,ishape=0,icoordinate=1,*ipkon=NULL,iobject,istart,*kon=NULL,
-    *ielmat=NULL,*nodedesiinv=NULL,ifeasd=0,methodfd,igeoconst=0,
-    *nodedesipos=NULL,
-    nkini,*ipoface=NULL,*nodface=NULL,*konfa=NULL,*ipkonfa=NULL,*iponoelfa=NULL,
-    *inoelfa=NULL,nsurfs,ifreemax,inoelsize,iregion=0,*iponod2dto3d=NULL,inode,
-    *nodedesiboun=NULL,addout,ipos;
+    idesvar=0,inorm=0,irand=0,ishape=0,icoordinate=1,*ipkon=NULL,iobject,
+    istart,*kon=NULL,*ielmat=NULL,*nodedesiinv=NULL,ifeasd=0,methodfd,
+    igeoconst=0,*nodedesipos=NULL,nkini,*ipoface=NULL,*nodface=NULL,
+    *konfa=NULL,*ipkonfa=NULL,*iponoelfa=NULL,*inoelfa=NULL,nsurfs,ifreemax,
+    inoelsize,iregion=0,*iponod2dto3d=NULL,inode,*nodedesiboun=NULL,addout,
+    ipos,ifree;
          
   double *objnorm=NULL,*dgdxglob=NULL,*stn=NULL,ptime=0.,*gradproj=NULL,
     *extnorini=NULL,*extnor=NULL,distmin,*feasdir=NULL;
@@ -117,16 +116,16 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
     NNEW(ipoface,ITG,*nk);
     NNEW(nodface,ITG,5*6**ne);
     NNEW(konfa,ITG,8*6**ne);
-    NNEW(ipkonfa,ITG,6**ne);
+    NNEW(ipkonfa,ITG,6**ne+1);
     NNEW(lakonfa,char,8*6**ne);
     
     FORTRAN(findextsurface,(nodface,ipoface,ne,ipkon,lakon,kon,
 			    konfa,ipkonfa,nk,lakonfa,&nsurfs,
-			    &ifreemax));
+			    &ifreemax,&ifree));
     
     RENEW(nodface,ITG,5*ifreemax);
-    RENEW(konfa,ITG,8*nsurfs);
-    RENEW(ipkonfa,ITG,nsurfs);
+    RENEW(konfa,ITG,ifree);
+    RENEW(ipkonfa,ITG,nsurfs+1);
     RENEW(lakonfa,char,8*nsurfs);
 
     NNEW(iponoelfa,ITG,*nk);
