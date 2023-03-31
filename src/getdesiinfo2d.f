@@ -40,23 +40,19 @@
      &     nodedesiinv(*),ipkon(*),kon(*),iaux,kflag,iponod2dto3d(2,*),
      &     iponoelfa(*),inoel2d(3,*),iset,iponoel2d(*),nodeold,ipos1,
      &     ipos2,ielem,iponor2d(2,*),num,knor2d(*),inode,nodenew,nope2d,
-     &     ishift,nobject,iobject,numtest,iponk2dto3d(*),ne,id,iwrite
+     &     ishift,nobject,iobject,numtest,iponk2dto3d(*),ne,id,iwrite,
+     &     index2d
 !     
       setname(1:1)=' '
       ndesi=0
 !     
-!     Search for the set name of the set with the design variables
+!     Search for the name of the set with the design variables
 !     
       do iset=1,ntie
         if(tieset(1,iset)(81:81).eq.'D') then
           setname=tieset(2,iset)
         endif
       enddo 
-c     do iset=1,nset
-c     if(setname.eq.set(iset)) then 
-c     exit
-c     endif
-c     enddo
       call cident81(set,setname,nset,id)
       iset=nset+1
       if(id.gt.0) then
@@ -81,9 +77,8 @@ c     enddo
 !     only node-based objective functions are treated
 !     
         if((objectset(1,iobject)(1:12).ne."STRAINENERGY").and.
-     &       (objectset(1,iobject)(1:4).ne."MASS")) then
-c     do i=1,nset
-c     if(objectset(3,iobject).eq.set(i)) then
+     &       (objectset(1,iobject)(1:4).ne."MASS").and.
+     &       (objectset(1,iobject)(1:4).ne."EIGENFREQUENCY")) then
           call cident81(set,objectset(3,iobject),nset,i)
           if(i.gt.0) then
             if(objectset(3,iobject).eq.set(i)) then
@@ -94,202 +89,31 @@ c     if(objectset(3,iobject).eq.set(i)) then
               if(objectset(3,iobject).ne.setname) then
                 do inode=istartset(i),iendset(i)
                   nodeold=ialset(inode)
-                  if(iponoel2d(nodeold).eq.0) cycle
-                  ielem=inoel2d(1,iponoel2d(nodeold))
+                  index2d=iponoel2d(nodeold)
+                  if(index2d.eq.0) cycle
+                  ielem=inoel2d(1,index2d)
 !     
-!     Determine element formulation
-!     
-                  if((lakon(ielem)(7:7).eq.'A').or.
-     &                 (lakon(ielem)(7:7).eq.'E').or.
-     &                 (lakon(ielem)(7:7).eq.'L').or.
-     &                 (lakon(ielem)(7:7).eq.'S')) then
-                    if(lakon(ielem)(4:5).eq.'20') then
-                      nope2d=8
-                      ishift=20
-                    elseif(lakon(ielem)(4:5).eq.'8R') then
-                      nope2d=4
-                      ishift=8
-                    elseif(lakon(ielem)(4:5).eq.'8 ') then
-                      nope2d=4
-                      ishift=8
-                    elseif(lakon(ielem)(4:5).eq.'8I') then
-                      nope2d=4
-                      ishift=11
-                    elseif(lakon(ielem)(4:5).eq.'15') then
-                      nope2d=6
-                      ishift=15
-                    elseif(lakon(ielem)(4:4).eq.'6') then
-                      nope2d=3
-                      ishift=6
-                    else
-                      cycle
-                    endif
-!     
-                    do k=1,nope2d
-                      ipos1=ipkon(ielem)+ishift+k     
-                      if(nodeold.eq.kon(ipos1)) then
-                        ipos2=iponor2d(2,ipos1-ishift)
-                        nodenew=knor2d(ipos2+1)
-                        ialset(inode)=nodenew
-                        exit
-                      endif
-                    enddo
-                  endif
-                enddo
-              endif
-            endif
-          endif
-c     endif
-c     enddo
-        endif
-        if(objectset(1,iobject)(4:13).eq."MEMBERSIZE") then
-c     do i=1,nset
-c     if(objectset(4,iobject).eq.set(i)) then
-          call cident81(set,objectset(4,iobject),nset,i)
-          if(i.gt.0) then
-            if(objectset(4,iobject).eq.set(i)) then
-!     
-!     check whether design variable set is changed
-!     
-              if(objectset(4,iobject).ne.setname) then
-                do inode=istartset(i),iendset(i)
-                  nodeold=ialset(inode)
-                  if(iponoel2d(nodeold).eq.0) cycle
-                  ielem=inoel2d(1,iponoel2d(nodeold))
-!     
-!     Determine element formulation
+!                 replace 2D-element nodes belonging to the
+!                 design response set by the lowest node number
+!                 of the node's expansion
 !     
                   if((lakon(ielem)(7:7).eq.'A').or.
      &                 (lakon(ielem)(7:7).eq.'E').or.
      &                 (lakon(ielem)(7:7).eq.'L').or.
      &                 (lakon(ielem)(7:7).eq.'S')) then
-                    if(lakon(ielem)(4:5).eq.'20') then
-                      nope2d=8
-                      ishift=20
-                    elseif(lakon(ielem)(4:5).eq.'8R') then
-                      nope2d=4
-                      ishift=8
-                    elseif(lakon(ielem)(4:5).eq.'8 ') then
-                      nope2d=4
-                      ishift=8
-                    elseif(lakon(ielem)(4:5).eq.'8I') then
-                      nope2d=4
-                      ishift=11
-                    elseif(lakon(ielem)(4:5).eq.'15') then
-                      nope2d=6
-                      ishift=15
-                    elseif(lakon(ielem)(4:4).eq.'6') then
-                      nope2d=3
-                      ishift=6
-                    else
-                      cycle
-                    endif
 !     
-                    do k=1,nope2d
-                      ipos1=ipkon(ielem)+ishift+k     
-                      if(nodeold.eq.kon(ipos1)) then
-                        ipos2=iponor2d(2,ipos1-ishift)
-                        nodenew=knor2d(ipos2+1)
-                        ialset(inode)=nodenew
-                        exit
-                      endif
-                    enddo
+                    k=inoel2d(2,index2d)
+                    ipos2=iponor2d(2,ipkon(ielem)+k)
+                    nodenew=knor2d(ipos2+1)
+                    ialset(inode)=nodenew
                   endif
+!     
                 enddo
               endif
             endif
           endif
-        endif 
-      enddo     
-!     
-!     Rename the designvariables and the save the 2 additional expanded
-!     nodes in iponod2dto3d:
-!     for designvariables i --> 1st neighbor=iponod2dto3d(1,i)
-!     2nd neighbor=iponod2dto3d(2,i)                           
-!     
-      loop1: do inode=istartset(iset),iendset(iset)
-      nodeold=ialset(inode)
-      if(iponoel2d(nodeold).eq.0) cycle
-      ielem=inoel2d(1,iponoel2d(nodeold))
-!     
-!     Determine element formulation
-!     
-      if((lakon(ielem)(7:7).eq.'A').or.
-     &     (lakon(ielem)(7:7).eq.'E').or.
-     &     (lakon(ielem)(7:7).eq.'L').or.
-     &     (lakon(ielem)(7:7).eq.'S')) then
-        if(lakon(ielem)(4:5).eq.'20') then
-          nope2d=8
-          ishift=20
-        elseif(lakon(ielem)(4:5).eq.'8R') then
-          nope2d=4
-          ishift=8
-        elseif(lakon(ielem)(4:5).eq.'8 ') then
-          nope2d=4
-          ishift=8
-        elseif(lakon(ielem)(4:5).eq.'8I') then
-          nope2d=4
-          ishift=11
-        elseif(lakon(ielem)(4:5).eq.'15') then
-          nope2d=6
-          ishift=15
-        elseif(lakon(ielem)(4:4).eq.'6') then
-          nope2d=3
-          ishift=6
-        else
-          cycle
         endif
-!     
-        do k=1,nope2d
-          ipos1=ipkon(ielem)+ishift+k    
-          if(nodeold.eq.kon(ipos1)) then
-            ipos2=iponor2d(2,ipos1-ishift)
-            nodenew=knor2d(ipos2+1)
-!     
-!     check for the existence of a MPC in the node
-!     
-            do l=1,3
-              if(nactdof(l,nodeold).ge.0) exit
-!     check if its an MPC(odd) or SPC(even)
-              num=nactdof(l,nodeold)
-              numtest=num/2*2
-              if(num.ne.numtest) then
-                write(*,*) '*WARNING in getdesiinfo2d:'
-                write(*,*) '       node ',node,' is a'
-                write(*,*) '       dependent dof in a MPC and'
-                write(*,*) '       is removed from the set'
-                write(*,*) '       of design variables'
-                write(40,*) node
-                iwrite=1
-                cycle loop1
-              endif
-            enddo
-!     
-!     check whether not all dofs are removed by SPCs
-!     
-            do l=1,3
-              if(nactdof(l,nodeold).ge.0) exit
-              if(l.eq.3) then
-                write(*,*) '*WARNING in getdesiinfo2d:'
-                write(*,*) '       node ',node,' has no'
-                write(*,*) '       active dofs and'
-                write(*,*) '       is removed from the set'
-                write(*,*) '       of design variables'
-                write(40,*) node
-                iwrite=1
-                cycle loop1
-              endif
-            enddo
-            ialset(inode)=nodenew
-            iponod2dto3d(1,nodenew)=knor2d(ipos2+2)
-            iponod2dto3d(2,nodenew)=knor2d(ipos2+3)
-            ndesi=ndesi+1
-            nodedesi(ndesi)=nodenew
-            exit
-          endif
-        enddo
-      endif
-      enddo loop1
+      enddo
 !     
 !     opening a file to store the nodes which are rejected as
 !     design variables
@@ -300,16 +124,86 @@ c     if(objectset(4,iobject).eq.set(i)) then
       open(40,file=fn,status='unknown')
       write(40,*) '*NSET,NSET=WarnNodeDesignReject'
 !     
-!     creating field nodedesiinv indicating for each node whether
+!     Rename the design variables and save the 2 additional expanded
+!     nodes in iponod2dto3d:
+!     for designvariables i --> 1st neighbor=iponod2dto3d(1,i)
+!     2nd neighbor=iponod2dto3d(2,i)                           
+!     
+      loop1: do inode=istartset(iset),iendset(iset)
+      nodeold=ialset(inode)
+      index2d=iponoel2d(nodeold)
+        if(index2d.eq.0) cycle
+        ielem=inoel2d(1,index2d)
+!     
+!     Determine element formulation
+!     
+        if((lakon(ielem)(7:7).eq.'A').or.
+     &       (lakon(ielem)(7:7).eq.'E').or.
+     &       (lakon(ielem)(7:7).eq.'L').or.
+     &       (lakon(ielem)(7:7).eq.'S')) then
+!
+          k=inoel2d(2,index2d)
+          ipos2=iponor2d(2,ipkon(ielem)+k)
+          nodenew=knor2d(ipos2+1)
+          ialset(inode)=nodenew
+!     
+!     check for the existence of a MPC in the node
+!     
+          do l=1,3
+            if(nactdof(l,nodeold).gt.0) exit
+!     
+!     check if its an MPC(odd) or SPC(even)
+!     
+            num=nactdof(l,nodeold)
+            numtest=num/2*2
+            if(num.ne.numtest) then
+              write(*,*) '*WARNING in getdesiinfo2d:'
+              write(*,*) '       node ',node,' is a'
+              write(*,*) '       dependent dof in a MPC and'
+              write(*,*) '       is removed from the set'
+              write(*,*) '       of design variables'
+              write(40,*) node
+              iwrite=1
+              cycle loop1
+            endif
+          enddo
+!     
+!     check whether not all dofs are removed by SPCs
+!     
+          do l=1,3
+            if(nactdof(l,nodeold).gt.0) exit
+            if(l.eq.3) then
+              write(*,*) '*WARNING in getdesiinfo2d:'
+              write(*,*) '       node ',node,' has no'
+              write(*,*) '       active dofs and'
+              write(*,*) '       is removed from the set'
+              write(*,*) '       of design variables'
+              write(40,*) node
+              iwrite=1
+              cycle loop1
+            endif
+          enddo
+          ialset(inode)=nodenew
+          iponod2dto3d(1,nodenew)=knor2d(ipos2+2)
+          iponod2dto3d(2,nodenew)=knor2d(ipos2+3)
+!     
+!         the lowest expanded node number is the design variable     
+!     
+          ndesi=ndesi+1
+          nodedesi(ndesi)=nodenew
+        endif
+      enddo loop1
+!     
+!     creating field nodedesiinv indicating for each expanded node whether
 !     it is a design variable or not
 !     
       do i=1,ndesi
-        index1=nodedesi(i)
-        nodedesiinv(index1)=1
-        index1=iponod2dto3d(1,nodedesi(i))
-        nodedesiinv(index1)=1
-        index1=iponod2dto3d(2,nodedesi(i))
-        nodedesiinv(index1)=1
+        node=nodedesi(i)
+        nodedesiinv(node)=1
+        node=iponod2dto3d(1,nodedesi(i))
+        nodedesiinv(node)=1
+        node=iponod2dto3d(2,nodedesi(i))
+        nodedesiinv(node)=1
       enddo
 !     
       kflag=1
@@ -329,22 +223,16 @@ c     if(objectset(4,iobject).eq.set(i)) then
      &       (lakon(ielem)(7:7).eq.'S')) then
           if(lakon(ielem)(4:5).eq.'20') then
             nope2d=8
-            ishift=20
           elseif(lakon(ielem)(4:5).eq.'8R') then
             nope2d=4
-            ishift=8
           elseif(lakon(ielem)(4:5).eq.'8 ') then
             nope2d=4
-            ishift=8
           elseif(lakon(ielem)(4:5).eq.'8I') then
             nope2d=4
-            ishift=11
-          elseif(lakon(ielem)(4:5).eq.'15') then
+           elseif(lakon(ielem)(4:5).eq.'15') then
             nope2d=6
-            ishift=15
           elseif(lakon(ielem)(4:4).eq.'6') then
             nope2d=3
-            ishift=6
           else
             cycle
           endif
@@ -359,11 +247,12 @@ c     if(objectset(4,iobject).eq.set(i)) then
           do k=1,nope2d
             ipos1=ipkon(ielem)+k    
             ipos2=iponor2d(2,ipos1)
-            iponk2dto3d(knor2d(ipos2+1))=knor2d(ipos2+2)
-!**** 
-            iponk2dto3d(knor2d(ipos2+2))=knor2d(ipos2+2)
-!**** 
-            iponk2dto3d(knor2d(ipos2+3))=knor2d(ipos2+2)
+c            iponk2dto3d(knor2d(ipos2+1))=knor2d(ipos2+2)
+            iponk2dto3d(knor2d(ipos2+1))=knor2d(ipos2+1)
+c            iponk2dto3d(knor2d(ipos2+2))=knor2d(ipos2+2)
+            iponk2dto3d(knor2d(ipos2+2))=knor2d(ipos2+1)
+c            iponk2dto3d(knor2d(ipos2+3))=knor2d(ipos2+2)
+            iponk2dto3d(knor2d(ipos2+3))=knor2d(ipos2+1)
           enddo
         endif
       enddo

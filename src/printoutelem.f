@@ -141,7 +141,7 @@
             do
                j=ipobody(1,index)
                if(j.eq.0) exit
-               if(ibody(1,j).eq.1) then
+               if(abs(ibody(1,j)).eq.1) then
                   om=xbody(1,j)
                   exit
                endif

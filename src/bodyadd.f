@@ -34,7 +34,9 @@
 !
 !     assigning a number to the load type (stored in ibody(1,*))
 !
-      if(label(1:7).eq.'CENTRIF') then
+      if(label(1:8).eq.'CENTRIFP') then
+         ilabel=-1
+      elseif(label(1:7).eq.'CENTRIF') then
          ilabel=1
       elseif(label(1:4).eq.'GRAV') then
          ilabel=2

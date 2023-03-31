@@ -56,9 +56,9 @@
      &     ntmat_,indexe,nope,norien,iexpl,i0,ncmat_,istep,iinc,imat,
      &     nplicon(0:ntmat_,*),nplkcon(0:ntmat_,*),npmat_,mortar,kode,
      &     nea,neb,kscale,ndof,ii,igauss,islavelinv(1),irowtloc(1),
-     &     jqtloc(1),mortartrafoflag
+     &     jqtloc(1),mortartrafoflag,kk
 !     
-      real*8 co(3,*),coefmpc(*),xload(2,*),p1(3),smscale(1),
+      real*8 co(3,*),coefmpc(*),xload(2,*),p1(3),smscale(1),dd,
      &     p2(3),ad(*),au(*),bodyf(3),xloadold(2,*),reltime,
      &     t0(*),t1(*),vold(0:mi(2),*),s(60,60),
      &     ff(60),xl(3,26),voldl(0:mi(2),26),
@@ -249,7 +249,30 @@ c     Bernhardi end
             do
               j=ipobody(1,index)
               if(j.eq.0) exit
-              if(ibody(1,j).eq.1) then
+              if(ibody(1,j).eq.-1) then
+!     
+!               centrifugal axis is defined by two nodes     
+!     
+                om=xbody(1,j)
+                node1=int(xbody(2,j))
+                node2=int(xbody(3,j))
+                if((iperturb(1).ne.1).and.(iperturb(2).ne.1)) then
+                  do kk=1,3
+                    p1(kk)=co(kk,node1)
+                    p2(kk)=co(kk,node2)-co(kk,node1)
+                  enddo
+                else
+                  do kk=1,3
+                    p1(kk)=co(kk,node1)+vold(kk,node1)
+                    p2(kk)=co(kk,node2)+vold(kk,node2)-
+     &                   (co(kk,node1)+vold(kk,node1))
+                  enddo
+                endif
+                dd=dsqrt(p2(1)**2+p2(2)**2+p2(3)**2)
+                do kk=1,3
+                  p2(i)=p2(i)/dd
+                enddo
+              elseif(ibody(1,j).eq.1) then
                 om=xbody(1,j)
                 p1(1)=xbody(2,j)
                 p1(2)=xbody(3,j)

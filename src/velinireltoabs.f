@@ -38,7 +38,7 @@
 !
 !        check for centrifugal loads
 !
-         if(ibody(1,k).eq.1) then
+         if(abs(ibody(1,k)).eq.1) then
             ibody(1,k)=0
          else
             cycle

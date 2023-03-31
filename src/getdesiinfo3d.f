@@ -232,8 +232,8 @@
 !     it is a design variable or not
 !     
       do i=1,ndesi
-        index1=nodedesi(i)
-        nodedesiinv(index1)=-1
+        node=nodedesi(i)
+        nodedesiinv(node)=-1
       enddo
 !     
       kflag=1
@@ -247,7 +247,6 @@
         if(iregion.eq.0) then
           nopedesi=0
         else
-c          write(*,*) 'getdesiinfo3d',i,lakonfa(i),nsurfs
           if((lakonfa(i)(2:2).eq.'3').or.(lakonfa(i)(2:2).eq.'4')) then
             nopedesi=3
           elseif(lakonfa(i)(2:2).eq.'6') then
@@ -278,97 +277,6 @@ c          write(*,*) 'getdesiinfo3d',i,lakonfa(i),nsurfs
           enddo
         endif
       enddo
-c        
-c      do i=1,nk  
-c        node=i
-c        if(ipoface(node).eq.0) cycle
-c        index1=ipoface(node)
-c        do
-c          nelem=nodface(3,index1)
-c          jfacem=nodface(4,index1)
-c!     
-c          if(lakon(nelem)(4:4).eq.'8') then
-c            nope=8
-c            nopedesi=3
-c            nopem=4
-c          elseif(lakon(nelem)(4:5).eq.'20') then
-c            nope=20
-c            nopedesi=5
-c            nopem=8
-c          elseif(lakon(nelem)(4:5).eq.'10') then
-c            nope=10
-c            nopedesi=4
-c            nopem=6
-c          elseif(lakon(nelem)(4:4).eq.'4') then
-c            nope=4
-c            nopedesi=3
-c            nopem=3
-c          elseif(lakon(nelem)(4:4).eq.'6') then
-c            nope=6
-c            if(jfacem.le.2) then
-c              nopem=3
-c              nopedesi=3
-c            else
-c              nopem=4
-c              nopedesi=3
-c            endif
-c          elseif(lakon(nelem)(4:5).eq.'15') then
-c            nope=15
-c            if(jfacem.le.2) then
-c              nopem=6
-c              nopedesi=4
-c            else
-c              nopem=8
-c              nopedesi=5
-c            endif
-c          endif
-c          if(iregion.eq.0) nopedesi=0
-c!     
-c!     actual position of the nodes belonging to the
-c!     master surface
-c!     
-c          do k=1,nope
-c            konl(k)=kon(ipkon(nelem)+k)
-c          enddo
-c!     
-c          if((nope.eq.20).or.(nope.eq.8)) then
-c            do m=1,nopem
-c              nopesurf(m)=konl(ifaceq(m,jfacem))
-c            enddo
-c          elseif((nope.eq.10).or.(nope.eq.4)) then
-c            do m=1,nopem
-c              nopesurf(m)=konl(ifacet(m,jfacem))
-c            enddo
-c          elseif(nope.eq.15) then
-c            do m=1,nopem
-c              nopesurf(m)=konl(ifacew2(m,jfacem))
-c            enddo
-c          else/home/guido/CalculiX/src/CalculiX
-c            do m=1,nopem
-c              nopesurf(m)=konl(ifacew1(m,jfacem))
-c            enddo
-c          endif
-c!     
-c!     sum up how many designvariables are on that surface
-c!     
-c          nnodes=0
-c          do m=1,nopem
-c            if(nodedesiinv(nopesurf(m)).ne.0) then
-c              nnodes=nnodes+1
-c            endif
-c          enddo
-c!     
-c          if(nnodes.ge.nopedesi) then
-c            do m=1,nopem
-c              if(nodedesiinv(nopesurf(m)).eq.-1) then
-c                nodedesiinv(nopesurf(m))=1
-c              endif
-c            enddo
-c          endif
-c          index1=nodface(5,index1)
-c          if(index1.eq.0) exit      
-c        enddo
-c      enddo
 !     
 !     if node i in nodedesi(i) is -1 --> delete node i from 
 !     set of designvariables

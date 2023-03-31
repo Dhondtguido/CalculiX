@@ -57,7 +57,7 @@
 !                        containing a pointer to the next body load
 !                        applied to element i, else 0
 !     ibody(1,i)         code identifying the kind of body load i:
-!                        1=centrifugal, 2=gravity, 3=generalized gravity
+!                        -1,1=centrifugal, 2=gravity, 3=generalized gravity
 !     ibody(2,i)         amplitude number for load i
 !     ibody(3,i)         load case number for load i
 !     xbody(1,i)         size of body load i

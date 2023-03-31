@@ -533,7 +533,11 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     /* converting centrifugal force in Coriolis force */
 
     for(k=0;k<*nbody;k++){
-      if(ibody[3*k]==1) ibody[3*k]=4;
+      if(ibody[3*k]==1){
+	ibody[3*k]=4;
+      }else if(ibody[3*k]==-1){
+	ibody[3*k]=-4;
+      }
     }
 
     /* assigning the body forces to the elements */ 
@@ -1935,7 +1939,11 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     /* reconverting Coriolis force into centrifugal force */
       
     for(k=0;k<*nbody;k++){
-      if(ibody[3*k]==4) ibody[3*k]=1;
+      if(ibody[3*k]==4){
+	ibody[3*k]=1;
+      }else if(ibody[3*k]==-4){
+	ibody[3*k]=-1;
+      }
     }
   }
 

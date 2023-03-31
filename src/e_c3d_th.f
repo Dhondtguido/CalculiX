@@ -194,38 +194,6 @@ c      if(intscheme.eq.0) then
          else
             mint3d=0
          endif
-c      else
-c!
-c!        # of 3D integration points
-c!
-c         if((lakonl(4:4).eq.'8').or.(lakonl(4:4).eq.'2')) then
-c            mint3d=27
-c         elseif((lakonl(4:5).eq.'10').or.(lakonl(4:4).eq.'4')) then
-c            mint3d=15
-c         elseif((lakonl(4:5).eq.'15').or.(lakonl(4:4).eq.'6')) then
-c            mint3d=9
-c         else
-c            mint3d=0
-c         endif
-c!
-c!        # of 2D integration points
-c!
-c         if(lakonl(4:5).eq.'8R') then
-c            mint2d=1
-c         elseif((lakonl(4:4).eq.'8').or.(lakonl(4:6).eq.'20R')) then
-c            if((lakonl(7:7).eq.'A').or.(lakonl(7:7).eq.'E')) then
-c               mint2d=2
-c            else
-c               mint2d=4
-c            endif
-c         elseif(lakonl(4:4).eq.'2') then
-c            mint2d=9
-c         elseif(lakonl(4:5).eq.'10') then
-c            mint2d=3
-c         elseif(lakonl(4:4).eq.'4') then
-c            mint2d=1
-c         endif
-c      endif
 !
 !     computation of the coordinates of the local nodes
 !
@@ -373,24 +341,6 @@ c         if(intscheme.eq.0) then
                ze=gauss3d7(3,kk)
                weight=weight3d7(kk)
             endif
-c         else
-c            if((lakonl(4:4).eq.'8').or.(lakonl(4:4).eq.'2')) then
-c               xi=gauss3d3(1,kk)
-c               et=gauss3d3(2,kk)
-c               ze=gauss3d3(3,kk)
-c               weight=weight3d3(kk)
-c            elseif((lakonl(4:5).eq.'10').or.(lakonl(4:4).eq.'4')) then
-c               xi=gauss3d6(1,kk)
-c               et=gauss3d6(2,kk)
-c               ze=gauss3d6(3,kk)
-c               weight=weight3d6(kk)
-c            else
-c               xi=gauss3d8(1,kk)
-c               et=gauss3d8(2,kk)
-c               ze=gauss3d8(3,kk)
-c               weight=weight3d8(kk)
-c            endif
-c         endif
 !
 !           calculation of the shape functions and their derivatives
 !           in the gauss point
@@ -713,16 +663,12 @@ c            read(sideload(id)(2:2),'(i1)') ig
                 weight=weight2d4(i)
              endif
 !
-c             if(nopes.eq.9) then
-c                call shape9q(xi,et,xl2,xsj2,xs2,shp2,iflag)
              if(nopes.eq.8) then
                 call shape8q(xi,et,xl2,xsj2,xs2,shp2,iflag)
              elseif(nopes.eq.4) then
                 call shape4q(xi,et,xl2,xsj2,xs2,shp2,iflag)
              elseif(nopes.eq.6) then
                 call shape6tri(xi,et,xl2,xsj2,xs2,shp2,iflag)
-c             elseif(nopes.eq.7) then
-c                call shape7tri(xi,et,xl2,xsj2,xs2,shp2,iflag)
              else
                 call shape3tri(xi,et,xl2,xsj2,xs2,shp2,iflag)
              endif

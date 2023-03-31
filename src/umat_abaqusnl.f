@@ -680,15 +680,15 @@ c     write(*,*) 'r',((r(i,j),j=1,3),i=1,3)
       expansion=dsqrt((ctot(1,1)/c(1)+ctot(2,2)/c(2)+
      &     ctot(3,3)/c(3))/3.d0)
 !     
-!     calculate the inverse total right stretch tensor at the end
-!     of the increment (= inverse mechanical right stretch tensor
-!     divided by the expansion at the end of the increment)
-!     
-      do i=1,3
-        do j=1,3
-          um1(i,j)=um1(i,j)/expansion
-        enddo
-      enddo
+c!     calculate the inverse total right stretch tensor at the end
+c!     of the increment (= inverse mechanical right stretch tensor
+c!     divided by the expansion at the end of the increment)
+c!     
+c      do i=1,3
+c        do j=1,3
+c          um1(i,j)=um1(i,j)/expansion
+c        enddo
+c      enddo
 !     
       if(iorien.ne.0) then
         do i=1,3
@@ -725,7 +725,7 @@ c     write(*,*) 'r',((r(i,j),j=1,3),i=1,3)
      &           xa(j3,j4)*tkl(j1,j3)*tkl(j2,j4)
           enddo
         enddo
-        stre(jj)=stre(jj)*vj
+        stre(jj)=stre(jj)*vj/expansion**2
       enddo
 !     
 !     calculate the stiffness matrix (the matrix is symmetrized)
@@ -773,7 +773,7 @@ c     write(*,*) 'r',((r(i,j),j=1,3),i=1,3)
               enddo
             enddo
           enddo
-          stiff(jj)=stiff(jj)*vj
+          stiff(jj)=stiff(jj)*vj/expansion**2
         enddo
       endif
 !     

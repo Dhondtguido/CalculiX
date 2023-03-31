@@ -77,7 +77,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
   char fneig[132]="",description[13]="            ",*lakon=NULL,*labmpc=NULL,
     *labmpcold=NULL,cflag[1]=" ",*labmpc2=NULL;
 
-  ITG nev,i,j,k,*inum=NULL,nsectors,im,intscheme=0,
+  ITG nev,i,j,k,*inum=NULL,nsectors,im,intscheme=0,*ibodysav=NULL,
     iinc=0,l,iout,ielas,icmd=0,iprescribedboundary,ndata,nmd,nevd,
     ndatatot,*iphaseforc=NULL,*iphaseload=NULL,*iphaseboun=NULL,
     *isave=NULL,nfour,ii,ir,ic,mode,noddiam=-1,*nm=NULL,*islavact=NULL,
@@ -775,9 +775,14 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
      into Coriolis forces */
 
   coriolis=0;
+  NNEW(ibodysav,ITG,3**nbody);
+  memcpy(&ibodysav[0],&ibody[0],sizeof(ITG)*3**nbody);
   for(i=0;i<*nbody;i++){
     if(ibody[3*i]==1){
       ibody[3*i]=4;
+      coriolis=1;
+    }else if(ibody[3*i]==-1){
+      ibody[3*i]=-4;
       coriolis=1;
     }
   }
@@ -788,7 +793,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
       printf("          with non-Hermitian systems (in the present version of CalculiX)\n");
       printf("          it is deactivated\n");
       for(i=0;i<*nbody;i++){
-	if(ibody[3*i]==4){
+	if(abs(ibody[3*i])==4){
 	  ibody[3*i]=0;
 	}
 	coriolis=0;
@@ -1078,19 +1083,6 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     NNEW(xbounact,double,*nboun);
       
     if(*ithermal==1) NNEW(t1act,double,*nk);
-      
-    /* assigning the body forces to the elements */ 
-
-    /*   if(*nbody>0){
-      ifreebody=*ne+1;
-      NNEW(ipobody,ITG,2*ifreebody**nbody);
-      for(k=1;k<=*nbody;k++){
-	FORTRAN(bodyforce,(cbody,ibody,ipobody,nbody,set,istartset,
-			   iendset,ialset,&inewton,nset,&ifreebody,&k));
-	RENEW(ipobody,ITG,2*(*ne+ifreebody));
-      }
-      RENEW(ipobody,ITG,2*(ifreebody-1));
-      }*/
       
     NNEW(br,double,neq[1]); /* load rhs vector */
     NNEW(bi,double,neq[1]); /* load rhs vector */
@@ -2695,19 +2687,6 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	NNEW(mubr,double,neq[1]); /* mass times real particular solution */
       }
 	  
-      /* assigning the body forces to the elements */ 
-
-      /*     if(*nbody>0){
-	ifreebody=*ne+1;
-	NNEW(ipobody,ITG,2*ifreebody**nbody);
-	for(k=1;k<=*nbody;k++){
-	  FORTRAN(bodyforce,(cbody,ibody,ipobody,nbody,set,istartset,
-			     iendset,ialset,&inewton,nset,&ifreebody,&k));
-	  RENEW(ipobody,ITG,2*(*ne+ifreebody));
-	}
-	RENEW(ipobody,ITG,2*(ifreebody-1));
-	}*/
-	  
       NNEW(br,double,neq[1]); /* load rhs vector (real part) */
       NNEW(bi,double,neq[1]); /* load rhs vector (imaginary part) */
       NNEW(btot,double,nfour*neq[1]);
@@ -3555,13 +3534,10 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 
   if(dampmat||coriolis){SFREE(cc);}
 
-  /* reactivating centrigual forces */
+  /* reactivating centrifugal forces */
 
-  for(i=0;i<*nbody;i++){
-    if((ibody[3*i]==0)||(ibody[3*i]==4)){
-      ibody[3*i]=1;
-    }
-  }
+  memcpy(&ibody[0],&ibodysav[0],sizeof(ITG)*3**nbody);
+  SFREE(ibodysav);
 
   if(nherm!=1){SFREE(xmr);SFREE(xmi);}
 

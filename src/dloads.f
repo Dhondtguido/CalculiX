@@ -41,8 +41,8 @@
      &     ielmat(mi(3),*),nset,nload,nload_,istep,istat,n,i,j,l,key,
      &     iamload(2,*),nam,iamplitude,ipos,ne,iline,ipol,iperturb(*),
      &     inl,ipoinp(2,*),inp(3,*),ibody(3,*),nbody,nbody_,nam_,namtot,
-     &     namtot_,namta(3,*),idelay,nmethod,lc,isector,node,id,
-     &     ipoinpc(0:*),maxsectors,jsector,iglobstep,idefload(*),
+     &     namtot_,namta(3,*),idelay,nmethod,lc,isector,node,id,node1,
+     &     ipoinpc(0:*),maxsectors,jsector,iglobstep,idefload(*),node2,
      %     idefbody(*),ipkon(*),k,indexe,iamplitudedefault,ier
 !     
       real*8 xload(2,*),xbody(7,*),xmagnitude,dd,p1(3),p2(3),bodyf(3),
@@ -253,7 +253,24 @@ c     call reorderampl(amname,namta,nam)
      &         "*DLOAD%",ier)
           return
         endif
-        if(label(1:7).eq.'CENTRIF') then
+        if(label(1:8).eq.'CENTRIFP') then
+!
+!         centrifugal axis is defined by two nodes (may move during
+!         the calculation)
+!
+          read(textpart(4)(1:10),'(i10)',iostat=istat) node1
+          read(textpart(5)(1:10),'(i10)',iostat=istat) node2
+          p1(1)=node1+0.5d0
+          p1(2)=node2+0.5d0
+          p1(3)=0.d0
+          p2(1)=1.d0
+          p2(2)=0.d0
+          p2(3)=0.d0
+        elseif(label(1:7).eq.'CENTRIF') then
+!
+!         centrifugal axis by the coordinates of a point and a
+!         direction vector (fixed during the calculation)
+!
           do i=1,3
             read(textpart(i+3)(1:20),'(f20.0)',iostat=istat) p1(i)
             if(istat.gt.0) then

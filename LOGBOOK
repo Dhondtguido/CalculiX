@@ -5153,3 +5153,8 @@ Dec 2002        - started to work on single crystal plasticity
 		  umat_abaqusnl_total.f
 
  21 Mar 2023    - cleaned umat_abaqusnl.f and umat_abaqusnl_total.f
+
+ 31 Mar 2023    - worked on the documentation for umat_abaqusnl.f
+                - introduced centrifugal forces about an axis based
+		  on node numbers
+		  

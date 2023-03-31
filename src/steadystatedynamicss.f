@@ -216,7 +216,7 @@ c      endif
       nforc=0
       nload=0
       do i=1,nbody
-         if(ibody(1,i).ne.1) ibody(1,i)=0
+         if(abs(ibody(1,i)).ne.1) ibody(1,i)=0
       enddo
 c      nbody=0
       iprestr=0
