@@ -360,7 +360,6 @@
           elas(21)=ddsdde(6,6)
         endif
 !     
-!     
 !     rotating the stiffness coefficients into the global system
 !     
         call anisotropic(elas,ya)
