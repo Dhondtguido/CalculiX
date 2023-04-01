@@ -5157,4 +5157,6 @@ Dec 2002        - started to work on single crystal plasticity
  31 Mar 2023    - worked on the documentation for umat_abaqusnl.f
                 - introduced centrifugal forces about an axis based
 		  on node numbers
-		  
+
+ 1 April 2023   - removed an error from frd.c (imaginary part of
+                  fields for a steady state dynamics calculation)

@@ -1007,13 +1007,9 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     else if((ITG)xmodal[10]>0){
 
       /* direct damping */
-
-      /*      if(iprescribedboundary){
-	printf(" *ERROR in steadystate: prescribed boundaries are not allowed in combination with direct modal damping\n");
-	FORTRAN(stop,());
-	}*/
 	      
       /*copy the damping coefficients for every eigenfrequencie from xmodal[11....] */
+      
       if(nev<(ITG)xmodal[10]){
 	imax=nev;
 	printf(" *WARNING in steadystate: too many modal damping coefficients applied\n");
@@ -1077,7 +1073,9 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     NNEW(xbodyact,double,7**nbody);
     NNEW(xbodyr,double,7**nbody);
     NNEW(xbodyi,double,7**nbody);
+    
     /* copying the rotation axis and/or acceleration vector */
+    
     for(k=0;k<7**nbody;k++){xbodyact[k]=xbody[k];}
       
     NNEW(xbounact,double,*nboun);
@@ -1693,29 +1691,6 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	}
 	      
 	FORTRAN(op,(&neq[1],ubi,mubi,adb,aub,jq,irow));
-	  
-	/* correction for prescribed boundary conditions */
-	  
-	/*	for(i=0;i<neq[1];i++){
-	  br[i]+=freq[l]*(freq[l]*mubr[i]+alpham*mubi[i]+betam*fi[i]);
-	  bi[i]+=freq[l]*(freq[l]*mubi[i]-alpham*mubr[i]-betam*fr[i]);
-	  }*/
-	  
-	/* real and imaginary modal coefficients */
-
-	/*	for(i=0;i<nev;i++){
-	  aa[i]=0.;
-	  for(j=0;j<neq[1];j++){
-	    aa[i]+=z[(long long)i*neq[1]+j]*br[j];
-	  }
-	}
-	      
-	for(i=0;i<nev;i++){
-	  bb[i]=0.;
-	  for(j=0;j<neq[1];j++){
-	    bb[i]+=z[(long long)i*neq[1]+j]*bi[j];
-	  }
-	  }*/
 
 	/* calculating the eigenmodes x mass x particular solution */
 
@@ -2367,8 +2342,6 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     SFREE(br);SFREE(bi);SFREE(bjr);SFREE(bji),SFREE(freq);
     SFREE(xforcact);SFREE(xloadact);SFREE(xbounact);SFREE(aa);SFREE(bb);
     SFREE(ampli);SFREE(xbodyact);SFREE(vr);SFREE(vi);
-
-    //if(*nbody>0) SFREE(ipobody);
       
     if(*ithermal==1) SFREE(t1act);
       
