@@ -270,7 +270,7 @@ c     Bernhardi end
                 endif
                 dd=dsqrt(p2(1)**2+p2(2)**2+p2(3)**2)
                 do kk=1,3
-                  p2(i)=p2(i)/dd
+                  p2(kk)=p2(kk)/dd
                 enddo
               elseif(ibody(1,j).eq.1) then
                 om=xbody(1,j)

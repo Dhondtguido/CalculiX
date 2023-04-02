@@ -214,8 +214,12 @@ c     mortar end
                 endif
                 dd=dsqrt(p2(1)**2+p2(2)**2+p2(3)**2)
                 do kk=1,3
-                  p2(i)=p2(i)/dd
+                  p2(kk)=p2(kk)/dd
                 enddo
+                if(i.eq.1) then
+                  write(*,*) 'mafillsm',p1(1),p1(2),p1(3)
+                  write(*,*) 'mafillsm2',p2(1),p2(2),p2(3)
+                endif
               elseif(ibody(1,j).eq.1) then
                 om=xbody(1,j)
                 p1(1)=xbody(2,j)
