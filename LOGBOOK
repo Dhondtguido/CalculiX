@@ -5160,3 +5160,5 @@ Dec 2002        - started to work on single crystal plasticity
 
  1 April 2023   - removed an error from frd.c (imaginary part of
                   fields for a steady state dynamics calculation)
+
+ 4 April 2023   - cleaned up normalsforequ_se.f
