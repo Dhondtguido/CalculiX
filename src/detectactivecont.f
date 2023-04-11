@@ -46,7 +46,7 @@
 !     
 !     contact evaluation: active degrees of freedom are those for
 !     which there is overlap (with added initial clearance at time 0)
-!     and for the NON-zero columns (this are nodes which have no master face).
+!     and for the NON-zero columns (these are nodes which have no master face).
 !     
       if((gapnorm(i)+springarea(2,i).le.0.d0).and.
      &     (jqw(j+1).ne.jqw(j+2)) )then
