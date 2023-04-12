@@ -210,7 +210,6 @@ c     iteller=iteller+1
 !     check whether an adjust node set has been defined
 !     only checked at the start of the first step
 !     
-c     if((istep.eq.1).and.(iinc.eq.1).and.(iit.le.0)) then
         if((istep.eq.1).and.(iit.lt.0)) then
           iset=0
           if(tieset(1,i)(1:1).ne.' ') then
@@ -218,9 +217,6 @@ c     if((istep.eq.1).and.(iinc.eq.1).and.(iit.le.0)) then
             noset(81:81)=' '
             ipos=index(noset,' ')
             noset(ipos:ipos)='N'
-c     do iset=1,nset
-c     if(set(iset).eq.noset) exit
-c     enddo
             call cident81(set,noset,nset,id)
             iset=nset+1
             if(id.gt.0) then
@@ -685,6 +681,7 @@ c     write(*,*)'ix@jqw',(jbasis+m2),'jqw(ix)',(nzsw+1)
               enddo
 !     
             enddo
+c       following line is obsolete? 
             if(mortar.ne.-1) cycle ! ommitted to capture clearances???
           endif
 !     
@@ -749,6 +746,7 @@ c     endif
           endif
 !     
 !     Storing clearance into springareas for contact gap evaluations
+!     
           if(mortar.eq.-1) then
             if((istep.eq.1).and.(iit.lt.0)) then
               springarea(2,j)=clear ! working only for MASSLESS

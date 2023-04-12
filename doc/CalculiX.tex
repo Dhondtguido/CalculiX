@@ -16162,7 +16162,110 @@ works for true 3D-elements (no shells, beams, plane stress, etc...).
 
 \subsubsection{Feasible Direction \label{sectionfeasibledirection}}
 
-\subsubsection{Rubust Design \label{sectionrobustdesign}}
+An optimization calculation usually consists of the minimization (or
+maximization) of one objective subject to one or more constraints. To that end
+the sensitivity of the objective is modified to take the constraint
+sensitivities into account leading to one combined sensitivity. This process
+takes place in a \htmlref{*FEASIBLE DIRECTION}{feasibledirection}
+procedure. The ensuing sensitivity determines where the structure has to be
+thickened or thinned in order to reach a minimum of the objective function
+while not violating any constraint. Constraints can be taken into account by
+using the Gradient Projection Method or the Gradient Descent Method.
+
+In the Gradient Projection Method the constraints are taken into account by projecting the unconstrained
+  sensitivities on the complement of the subspace consisting of the normals on
+  the active constraint hyperplanes. Suppose
+  the domain is n-dimensional (n design variables) and the subspace has the
+  dimension m (m constraints). Then the sensitivities of the constraints can
+  be arranged as basis vectors (the normal directions on the hyperplanes) in a $n \times m$ matrix. The projection p of a vector b
+  on the subspace satisfies the orthogonality condition:
+
+\begin{equation}
+N^T (b-p)=0.
+\end{equation}
+
+Since p belongs to the subspace it can be written as a linear combination of
+the basis vectors $p=Nx$, where $x$ is a $m \times 1$ vector of
+coefficients. Consequently:
+
+\begin{equation}
+N^T N x = N^T b,
+\end{equation}
+
+from which $x$ can be solved yielding:
+
+\begin{equation}
+p=N(N^T N)^{-1} N^T b.
+\end{equation}
+
+The complement of the projection vector is $I-N(N^T N)^{-1} N^T$. Denoting
+$A=(N^T N)^{-1}$, the constrained sensitivies $c$ are obtained from the
+unconstrained sensitivities $b$ by:
+
+\begin{equation}
+c=(I-NAN^T) b,
+\end{equation}
+
+or, in component notation:
+
+\begin{equation}
+c_i=b_i-\sum_k w_{ik},
+\end{equation}
+
+where
+
+\begin{equation}
+w_{ik}=\left( \sum_j N_{ij} A_{j \underline{k}} \right) \left( \sum_l (N^T)_{\underline{k}l} b_l
+\right)
+\end{equation}
+
+(no summation over k in the last equation).
+
+Active constraints are constraints which
+\begin{itemize}
+\item are fulfilled AND
+\item for which the Lagrange multiplier points to the non-feasible part of the
+  space
+\end{itemize}
+
+To this end the algorithm starts with all constraints which are fulfilled and
+removes the constraints one-by-one for which the Lagrange multiplier,
+satisfying
+
+\begin{equation}
+  \boldsymbol{\lambda } = -(\boldsymbol{N}^T \boldsymbol{N})^{-1}
+  \boldsymbol{N}^T \nabla g_i.
+\end{equation} 
+
+points
+to the feasible part of the space.
+
+The Gradient Descent Method is an interior point method which
+means that the starting point for an optimization has to lie in the feasible
+domain. The influence of the constraints on the feasible direction is always
+taken into account independent of the distance to the constraint bound. This
+methods aims to stay away from the constraint boundaries as long as possible
+on the way to the local optimum. The feasible direction is calculated with the
+following formulas (the detailed derivation can be found in \cite{Chen}):
+
+\begin{equation}
+  \boldsymbol{s}_{\xi}= - \frac{\nabla f}{|| \nabla f ||} - \xi   \frac{\nabla g}{|| \nabla g ||}.
+\end{equation}
+
+Here, $\nabla f$ is the gradient of the objective function, $\nabla g$ is the
+gradient of the constraint and $\xi$ is a value between 0 and 1 defining
+the weight of the constraint gradient on the descent direction. Choosing a
+value for $\xi$ between 0.9 and 1.0 leads to meaningful results. By subtracting a
+portion of the gradient of the constraint one tends to stay away from
+the constraint boundary (the constraint becomes more negative). In case more
+than one constraint is defined, the assembly of the gradient vector of all
+constraint functions $n$ is done using the logarithmic Barrier function:
+
+\begin{equation}
+  \nabla g = \sum_{i=1}^{n} \frac{1}{-g_i(x)} \nabla g_i.
+\end{equation} 
+
+\subsubsection{Robust Design \label{sectionrobustdesign}}
 
 \subsubsection{Green functions\label{greenfunctions}}
 
@@ -22713,59 +22816,20 @@ avoid the violation of nonlinear constrains
 (\htmlref{*GEOMETRIC CONSTRAINT}{geometricconstraint}. To calculate this
 modified descent direction two methods are available selected by the optional
 parameter METHOD. It can take the value GRADIENT DESCENT or GRADIENT
-PROJECTION.
-Default is the GRADIENT DESCENT METHOD. It is an ingterior point method which
+PROJECTION. For details the user is referred to Section \ref{sectionfeasibledirection}.
+
+Default is the GRADIENT DESCENT method. It is an interior point method which
 means that the starting point for an optimization has to lie in the feasible
 domain. The influence of the constraints on the feasible direction is always
 taken into account independent of the distance to the constraint bound. This
 methods aims to stay away from the constraint boundaries as long as possible
-on the way to the local optimum. The feasible direction is calculated with the
-following formulas (the detailed derivation can be found in \cite{Chen}):
+on the way to the local optimum.
 
-\begin{equation}
-  \boldsymbol{s}_{\xi}= - \frac{\nabla f}{|| \nabla f ||} - \xi   \frac{\nabla g}{|| \nabla g ||}.
-\end{equation}
-
-Here, $\nabla f$ is the gradient of the objective function, $\nabla g$ is the
-gradient of the constraint and $\xi$ is a value between 0 and 1 defining
-the weight of the constraint gradient on the descent direction. Choosing a
-value for $\xi$ between 0.9 and 1.0 leads to meaningful results. In case more
-than one constraint is defined, the assembly of the gradient vector of all
-constraint functions $n$ is done using the logarithmic Barrier function:
-
-\begin{equation}
-  \nabla g = \sum_{i=1}^{n} \frac{1}{-g_i(x)} \nabla g_i.
-\end{equation} 
-
-In constrast to that, the GRADIENT PROJECTION method is based on an active set
+In contrast to that, the GRADIENT PROJECTION method is based on an active set
 strategy which means that the steepest descent direction is chosen as long as
 no constraint boundary is reached. As soon as a constraint boundary is active
 the fasible direction is calculated by projection the objective gradient on
-the subspace tangent of all active constraints. The feasible direction
-$\boldsymbol{s}_P$ can be formulated as:
-
-\begin{equation}
-  \boldsymbol{s}_P = \boldsymbol{P} \nabla f
-\end{equation}
-
-with $\boldsymbol{P}$ being the projection matrix $\boldsymbol{P} =
-\boldsymbol{I}-\boldsymbol{N}(\boldsymbol{N}^T \boldsymbol{N})^{-1}
-\boldsymbol{N}^T$. In this formula $\boldsymbol{N}$ is the matrix containing
-the gradient of all active constraints. As already mentioned, the gradient
-projection method only takes active constraints into account. Generally, one
-can disinguish three different cases defing the constraint status. The design
-can lie in the feasible domain which means that no constraint is active. In
-the second case the design can lie in the infeasible domain and at least one contraint
-is active. These two cases can be checked by evaluating the constraint
-function values $g_i$. In the third case the design lies on the constraint
-boundary where $g_i=0$. Here, an additional check is done whether the steepest
-descent direction points in the feasible or infeasible domain. This is done by
-calculating the Lagrance multipliers for the constraint:
-
-\begin{equation}
-  \boldsymbol{\lambda } = -(\boldsymbol{N}^T \boldsymbol{N})^{-1}
-  \boldsymbol{N}^T \nabla g_i.
-\end{equation} 
+the subspace tangent of all active constraints.
 \bigskip
 
 First line:
@@ -29849,7 +29913,7 @@ different interfaces:
 \item The  native CalculiX interface.
 \item The ABAQUS umat routines for linear materials (small strain
   analyses).
-\item The ABAQUSNL umat routines for non linear materials (finite
+\item The ABAQUSNL umat routines for nonlinear materials (finite
   strain analyses).
 \end{itemize}
 
@@ -29870,37 +29934,36 @@ location.
 
 The second one does not require any modification to CalculiX, is
 generally easier to set up and is very flexible. There is no intrinsic
-limitations on the number of shared libraries and functions that can
+limitation on the number of shared libraries and functions that can
 be dynamically loaded. It is thus quite feasible to create mechanical
-behaviours databases by creating a shared library by specific
+behaviour databases by creating a shared library for each specific
 material. Such libraries will only be loaded if needed. In such an
 approach, the mechanical behaviour is dedicated to a specific material
 and is self-contained: it has no external parameter. Shared libraries
-can be shared between co-workers by moving them on a shared folder.
+can be shared between co-workers by putting them on a shared folder.
 However, experience shows that using shared libraries can be confusing
-for some user as they have to update their environment variables (PATH
-on Windows or LD\_LIBRARY\_PATH on Unixes) for the libraries to be
-usable. Shared libraries can also be more sensible to system
-updates. A drawback of using shared libraries is that the behaviors
-must be written in C or C++ as the name of the functions implementing
-the behaviors must be upper-cased du to CalculiX internal
+for some users as they have to update their environment variables (PATH
+on Windows or LD\_LIBRARY\_PATH on Unix) for the libraries to be
+usable. Shared libraries can also be more sensitive to system
+updates. A further drawback of using shared libraries is that the behavior
+must be written in C or C++ and the name of the functions implementing
+the behavior must be upper-case due to CalculiX internal
 conventions\footnote{Recent versions of the FORTRAN standard allow a
   more precise control of the name mangling of FORTRAN functions which
-  could be used to circumvent this issue. However, we lack experience
-  on that specific point. Another solution is that FORTRAN
+  could be used to circumvent this issue. Another solution is that FORTRAN
   implementations can be used using a C wrapper, which is quite
   feasible but this requires some advanced knowledge of C and FORTRAN
-  interfacing.} The reason of such a restriction is detailed below. On
+  interfacing.}. The reason of such a restriction is detailed below. One
 way of generating such library with the appropriate naming convention
 is to use the MFront code generator:
 \begin{center}
   http://tfel.sourceforge.net
 \end{center}
 
-\subsubsection{The CalculiX interface}
+\subsubsection{The CalculiX interface.}
 
 \paragraph{Introduction of a new mechanical behaviour by modifying the
-  sources}
+  sources.}
 
 This is an extremely important and powerful interface, allowing the
 user to define his/her own mechanical material behavior. The 
@@ -30098,7 +30161,7 @@ taken into account. Forced displacements can lead to huge strains in
 the first iteration. Therefore, convergence in quasistatic
 calculations is often enhanced if the first iteration is completely
 linear, i.e. material and geometric nonlinearities are turned
-off. The parameter ielas is the appropriate flag.
+off. The parameter ielas is the appropriate flag for this.
 
 Two extra routines are at the user's disposal for conversion 
 purposes. ``str2mat.f'' can be used to convert Lagrangian strain into 
@@ -30160,15 +30223,15 @@ The second routine, ``stiff2mat.f'' converts the tangent stiffness matrix from s
 
 \end{verbatim}
 
-\paragraph{Calling mechanical behaviours defined shared libraries}
+\paragraph{Calling mechanical behaviour defining shared libraries.}
 
 Calling shared libraries is triggered by putting the \texttt{@}
-character in front material name. The material name is then decomposed
+character in front of the material name. The material name is then decomposed
 into two parts, separated by the \texttt{\_} character:
 \begin{itemize}
 \item The base name of the library (see below).
 \item The name of the function implementing the behavior. If the
-  function's name is ommitted, the ``umat\_'' function name is used.
+  function's name is omitted, the ``umat\_'' function name is used.
 \end{itemize}
 
 For instance, if we want to call a small strain behavior in a linear
@@ -30181,16 +30244,16 @@ following material name:
 \end{center}
 
 Here, the library name has been stripped from system-specific
-convention (the leading lib and the .so extension). {\em The base name
+conventions (the leading lib and the .so extension). {\em The base name
   of the library and the name of the function must be
-  upper-cased}. This is due to the way CalculiX interprets the input
+  upper-case}. This is due to the way CalculiX interprets the input
 file.
 
 To distinguish two materials using the same external behaviour, one
 may add a unique identifier at the end of the material name. This
 identifier starts with the \texttt{@} character.  For example, one may
 use the material names \texttt{@CALCULIXBEHAVIOURS\_CHABOCHE@1}
-and \texttt{@CALCULIXBEHAVIOURS\_CHABOCHE@2} to create to
+and \texttt{@CALCULIXBEHAVIOURS\_CHABOCHE@2} to create two
 distinct materials (with distinct material properties) which will call
 the same external behaviour.
 
@@ -30202,40 +30265,6 @@ nonlinear materials the logarithmic strain and infinitesimal rotation are
 calculated, which slows down the calculation. Consequently, the nonlinear
 routine should only be used if necessary.
 
-\paragraph{Calling mechanical behaviours defined shared libraries}
-
-Calling shared libraries is triggered by putting the \texttt{@}
-character in front material name. The material name is then decomposed
-into two parts, separated by the \texttt{\_} character:
-\begin{itemize}
-\item The base name of the library (see below).
-\item The name of the function implementing the behavior. If the
-  function's name is ommitted, the ``umat\_'' function name is used.
-\end{itemize}
-
-For instance, if we want to call a small strain behavior in a linear
-analysis, implemented by the ``CHABOCHE'' function in the
-``libCALCULIXBEHAVIOURS.so'' shared library\footnote{Under windows, the
-  library name has the dll extension.}, one would declare the
-following material name:
-\begin{center}
-  @CALCULIXBEHAVIOURS\_CHABOCHE
-\end{center}
-
-Here, the library name has been stripped from system-specific
-convention (the leading lib and the .so extension). {\em The base name
-  of the library and the name of the function must be
-  upper-cased}. This is due to the way CalculiX interprets the input
-file.
-
-To distinguish two materials using the same external behaviour, one
-may add a unique identifier at the end of the material name. This
-identifier starts with the \texttt{@} character.  For example, one may
-use the material names \texttt{@CALCULIXBEHAVIOURS\_CHABOCHE@1}
-and \texttt{@CALCULIXBEHAVIOURS\_CHABOCHE@2} to create to
-distinct materials (with distinct material properties) which will call
-the same external behaviour.
-
 The linear routine is triggered by putting ABAQUS in front of the material
 name. The total length of the material name should not exceed 80 characters,
 consequently, 74 characters are left for the proper material name. For
@@ -30246,70 +30275,9 @@ instance, if the material name in the ABAQUS routine is supposed to be
 The nonlinear routine is triggered by putting ABAQUSNL in front of the
 material name. 
 
-\paragraph{Calling shared libraries}
-
-Calling shared libraries is triggered by putting the @ character in
-front material name. The material name is then decomposed into three
-parts, separated by the \_ character:
-- The name of the interface (ABAQUS or ABAQUSNL).
-- The base name of the library (see below).
-- The name of the function implementing the behavior.
-
-For instance, if we want to call a small strain behavior in a linear
-analysis, implemented by the ``CHABOCHE'' function in the
-``libABAQUSBEHAVIOURS.so'' shared library\footnote{Under windows, the
-  library name has the dll extension.}, one would declare the
-following material name:
-\begin{center}
-  ABAQUS\_ABAQUSBEHAVIOURS\_CHABOCHE
-\end{center}
-
-Here, the library name has been stripped from system-specific
-convention (the leading lib and the .so extension). {\em The base name
-  of the library and the name of the function must be
-  upper-cased}. This is due to the way CalculiX interprets the input
-file.
-
-\paragraph{Limitations}
+\paragraph{Limitations.}
 
 Notice that the following fields are not supported so far:
-
-\paragraph{Calling shared libraries}
-
-Calling shared libraries is triggered by putting the \texttt{@}
-character in front material name. The material name is then decomposed
-into three parts, separated by the \texttt{\_} character:
-\begin{itemize}
-\item The name of the interface (ABAQUS or ABAQUSNL).
-\item The base name of the library (see below).
-\item The name of the function implementing the behavior. If the
-  function's name is ommitted, the ``umat\_'' function name is used.
-\end{itemize}
-
-For instance, if we want to call a small strain behavior in a linear
-analysis, implemented by the ``CHABOCHE'' function in the
-``libABAQUSBEHAVIOURS.so'' shared library\footnote{Under windows, the
-  library name has the dll extension.}, one would declare the
-following material name:
-\begin{center}
-  @ABAQUS\_ABAQUSBEHAVIOURS\_CHABOCHE
-\end{center}
-
-Here, the library name has been stripped from system-specific
-convention (the leading lib and the .so extension). {\em The base name
-  of the library and the name of the function must be
-  upper-cased}. This is due to the way CalculiX interprets the input
-file.
-
-To distinguish two materials using the same external behaviour, one
-may add a unique identifier at the end of the material name. This
-identifier starts with the \texttt{@} character.  For example, one may
-use the material names \texttt{@ABAQUS\_ABAQUSBEHAVIOURS\_CHABOCHE@1}
-and \texttt{@ABAQUS\_ABAQUSBEHAVIOURS\_CHABOCHE@2} to create to
-distinct materials (with distinct material properties) which will call
-the same external behaviour.
-
-\paragraph{Limitations}
 
 sse, spd, scd, rpl, ddsddt, drplde, drpldt, predef, dpred, drot, pnewdt, celent, layer, kspt.
 If you need these fields, contact ``dhondt@t-online.de''. Furthermore, the
@@ -30358,6 +30326,41 @@ Notice that CalculiX uses double precision. Furthermore, it is good practice
 to use ``implicit none'' instead of ``implicit real*8(a-h,o-z)''. Therefore it
 is advised to use ``implicit none'' in your ABAQUS routine and to declare all
 reals with ``real*8''.
+
+\paragraph{Calling shared libraries.}
+
+Calling shared libraries is triggered by putting the \texttt{@}
+character in front material name. The material name is then decomposed
+into three parts, separated by the \texttt{\_} character:
+\begin{itemize}
+\item The name of the interface (ABAQUS or ABAQUSNL).
+\item The base name of the library (see below).
+\item The name of the function implementing the behavior. If the
+  function's name is ommitted, the ``umat\_'' function name is used.
+\end{itemize}
+
+For instance, if we want to call a small strain behavior in a linear
+analysis, implemented by the ``CHABOCHE'' function in the
+``libABAQUSBEHAVIOURS.so'' shared library\footnote{Under windows, the
+  library name has the dll extension.}, one would declare the
+following material name:
+\begin{center}
+  @ABAQUS\_ABAQUSBEHAVIOURS\_CHABOCHE
+\end{center}
+
+Here, the library name has been stripped from system-specific
+convention (the leading lib and the .so extension). {\em The base name
+  of the library and the name of the function must be
+  upper-cased}. This is due to the way CalculiX interprets the input
+file.
+
+To distinguish two materials using the same external behaviour, one
+may add a unique identifier at the end of the material name. This
+identifier starts with the \texttt{@} character.  For example, one may
+use the material names \texttt{@ABAQUS\_ABAQUSBEHAVIOURS\_CHABOCHE@1}
+and \texttt{@ABAQUS\_ABAQUSBEHAVIOURS\_CHABOCHE@2} to create to
+distinct materials (with distinct material properties) which will call
+the same external behaviour.
 
 \subsection{\label{thuser}User-defined thermal material laws.}
 
@@ -35056,64 +35059,6 @@ normal vector at i.
   edge a linear reduction proportional to the actual distance is applied. This
   assures a smooth transition of the sensitivities to zero at the edge of the
   design domain.
-\item Constraints are taken into account by projecting the unconstrained
-  sensitivities on the complement of the subspace consisting of the active constraints. Suppose
-  the domain is n-dimensional (n design variables) and the subspace has the
-  dimension m (m constraints). Then the sensitivities of the constraints can
-  be arranged as basis vectors in a $n \times m$ matrix. The projection p of a vector b
-  on the subspace satisfies the orthogonality condition:
-
-\begin{equation}
-N^T (b-p)=0.
-\end{equation}
-
-Since p belongs to the subspace it can be written as a linear combination of
-the basis vectors $p=Nx$, where $x$ is a $m \times 1$ vector of
-coefficients. Consequently:
-
-\begin{equation}
-N^T N x = N^T b,
-\end{equation}
-
-from which $x$ can be solved yielding:
-
-\begin{equation}
-p=N(N^T N)^{-1} N^T b.
-\end{equation}
-
-The complement of the projection vector is $I-N(N^T N)^{-1} N^T$. Denoting
-$A=(N^T N)^{-1}$, the constrained sensitivies $c$ are obtained from the
-unconstrained sensitivities $b$ by:
-
-\begin{equation}
-c=(I-NAN^T) b,
-\end{equation}
-
-or, in component notation:
-
-\begin{equation}
-c_i=b_i-\sum_k w_{ik},
-\end{equation}
-
-where
-
-\begin{equation}
-w_{ik}=\left( \sum_j N_{ij} A_{j \underline{k}} \right) \left( \sum_l (N^T)_{\underline{k}l} b_l
-\right)
-\end{equation}
-
-(no summation over k in the last equation).
-
-Active constraints are constraints which
-\begin{itemize}
-\item are fulfilled AND
-\item for which the Lagrange multiplier points to the non-feasible part of the
-  space
-\end{itemize}
-
-To this end the algorithm starts with all constraints which are fulfilled and
-removes the constraints one-by-one for which the Lagrange multiplier points
-to the feasible part of the space.
 
 \end{itemize}
 
