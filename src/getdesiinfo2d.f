@@ -20,10 +20,31 @@
      &     mi,nactdof,ndesi,nodedesi,ntie,tieset,nodedesiinv,lakon,
      &     ipkon,kon,iponoelfa,nod2nd3rd,iponor2d,knor2d,
      &     iponoel2d,inoel2d,nobject,objectset,nod1st,ne,
-     &     jobnamef)    
+     &     jobnamef,rig)    
 !     
-!     storing the design variables in nodedesi
-!     marking which nodes are design variables in nodedesiinv
+!     purpose of this routine:     
+!     
+!     1) replace the nodes in nodal design response sets which
+!        belong to 2D-elements by the lowest node number in the     
+!        3D-expansion of these elements
+!     
+!     2) if a node belonging to the design variable set 
+!        - belongs to a 2D-element     
+!        - is not a dependent MPC-node AND
+!        - has not all its dofs restricted by SPC's
+!        then it is declared as a design node. Its number is replaced   
+!        in the field of design nodes "nodedesi" by the lowest node
+!        number in the 3D-expansion of the element
+!     
+!     3) for such a design node i field node2nd3rd is created pointing    
+!        to the second (node2nd3rd(1,*)) and third (node2nd3rd(2,*))
+!        expansion node
+!     
+!     4) field nodedesiinv(1..nk) is created with nodedesinv(i)=1      
+!        is node i is a design variable, else =0.
+!     
+!     5) field nod1st(1..nk) is created pointing to the first node 
+!        in the expansion for every 2D design node
 !     
       implicit none
 !     
@@ -41,7 +62,7 @@
      &     iponoelfa(*),inoel2d(3,*),iset,iponoel2d(*),nodeold,ipos1,
      &     ipos2,ielem,iponor2d(2,*),num,knor2d(*),inode,nodenew,nope2d,
      &     ishift,nobject,iobject,numtest,nod1st(*),ne,id,iwrite,
-     &     index2d
+     &     index2d,rig(*)
 !     
       setname(1:1)=' '
       ndesi=0
@@ -74,7 +95,7 @@
 !     
       do iobject=1,nobject
 !     
-!     only node-based objective functions are treated
+!     only node-based design responses are treated
 !     
         if((objectset(1,iobject)(1:12).ne."STRAINENERGY").and.
      &       (objectset(1,iobject)(1:4).ne."MASS").and.
@@ -126,16 +147,31 @@
 !     
 !     Rename the design variables and save the 2 additional expanded
 !     nodes in nod2nd3rd:
-!     for designvariables i --> 1st neighbor=nod2nd3rd(1,i)
-!     2nd neighbor=nod2nd3rd(2,i)                           
+!     if node i is a design variable --> 1st neighbor=nod2nd3rd(1,i)
+!                                    --> 2nd neighbor=nod2nd3rd(2,i)
 !     
       loop1: do inode=istartset(iset),iendset(iset)
-      nodeold=ialset(inode)
-      index2d=iponoel2d(nodeold)
+        nodeold=ialset(inode)
+!
+!       check that de node is no expandable rigid body was defined
+!       in the node
+!
+        if(rig(nodeold).ne.0) then
+          write(*,*) '*WARNING in getdesiinfo2d:'
+          write(*,*) '       in node ',nodeold,' an expandable'
+          write(*,*) '       rigid body is defined and therefore'
+          write(*,*) '       it is removed from the set'
+          write(*,*) '       of design variables'
+          write(40,*) nodeold
+          iwrite=1
+          cycle loop1
+        endif
+!     
+        index2d=iponoel2d(nodeold)
         if(index2d.eq.0) cycle
         ielem=inoel2d(1,index2d)
 !     
-!     Determine element formulation
+!       Determine element formulation
 !     
         if((lakon(ielem)(7:7).eq.'A').or.
      &       (lakon(ielem)(7:7).eq.'E').or.
@@ -147,7 +183,7 @@
           nodenew=knor2d(ipos2+1)
           ialset(inode)=nodenew
 !     
-!     check for the existence of a MPC in the node
+!         check for the existence of a MPC in the node
 !     
           do l=1,3
 !     
@@ -158,17 +194,17 @@
 !     
             if(nactdof(l,nodeold).ge.0) exit
 !     
-!     check if its an MPC(odd) or SPC(even)
+!           check if its an MPC(odd) or SPC(even)
 !     
             num=nactdof(l,nodeold)
             numtest=num/2*2
             if(num.ne.numtest) then
               write(*,*) '*WARNING in getdesiinfo2d:'
-              write(*,*) '       node ',node,' is a'
+              write(*,*) '       node ',nodeold,' is a'
               write(*,*) '       dependent dof in a MPC and'
               write(*,*) '       is removed from the set'
               write(*,*) '       of design variables'
-              write(40,*) node
+              write(40,*) nodeold
               iwrite=1
               cycle loop1
             endif

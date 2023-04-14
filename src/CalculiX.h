@@ -1912,7 +1912,7 @@ void FORTRAN(getdesiinfo2d,(char *set,ITG *istartset,ITG *iendset,ITG *ialset,
 			    ITG *iponoelfa,ITG *nod2nd3rd,ITG *iponor2d,
 			    ITG *knor2d,ITG *iponoel2d,ITG *inoel2d,
 			    ITG *nobject,char *objectset,ITG *nod1st,
-			    ITG *ne,char *jobnamef));  
+			    ITG *ne,char *jobnamef,ITG *rig));  
 
 void FORTRAN(getdesiinfo3d,(char *set,ITG *istartset,ITG *iendset,ITG *ialset,
 			    ITG *nset,ITG *mi,ITG *nactdof,ITG *ndesi,
@@ -4419,7 +4419,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
              char *jobnamef,ITG *iponor2d,ITG *knor2d,ITG *ne2d,
              ITG *iponoel2d,ITG *inoel2d,ITG *mpcend,
 	     double *dgdxglob,double *g0,ITG **nodedesip,ITG*ndesi,
-	     ITG *nobjectstart,double **xdesip);
+	     ITG *nobjectstart,double **xdesip,ITG *rig);
 
 void sensi_orien(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
              ITG *ne,

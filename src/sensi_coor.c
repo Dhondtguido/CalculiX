@@ -59,7 +59,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		ITG *nzsprevstep,ITG *nlabel,double *physcon,char *jobnamef,
 		ITG *iponor2d,ITG *knor2d,ITG *ne2d,ITG *iponoel2d,ITG *inoel2d,
 		ITG *mpcend,double *dgdxglob,double *g0,ITG **nodedesip,
-		ITG *ndesi,ITG *nobjectstart,double **xdesip){
+		ITG *ndesi,ITG *nobjectstart,double **xdesip,ITG *rig){
 	     
   char description[13]="            ",*lakon=NULL,cflag[1]=" ",fneig[132]="",
     stiffmatrix[132]="",*lakonfa=NULL,*objectset=NULL;
@@ -294,7 +294,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 			   nodedesiinv,lakon,ipkon,kon,iponoelfa,
 			   nod2nd3rd,iponor2d,knor2d,iponoel2d,
 			   inoel2d,nobject,objectset,nod1st,ne,
-			   jobnamef));
+			   jobnamef,rig));
       
   }else{
       

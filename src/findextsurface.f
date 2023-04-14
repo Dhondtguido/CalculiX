@@ -91,16 +91,12 @@
 !
          if(lakon(i)(1:3).ne.'C3D') cycle
 !
-!        no expanded elements
-!
-         if(lakon(i)(7:7).ne.' ') cycle
-         indexe=ipkon(i)
-!
 !        only 3D-elements or plane stress/strain/axi/shells
 !
          if((lakon(i)(7:7).ne.' ').and.(lakon(i)(7:7).ne.'A').and.
      &      (lakon(i)(7:7).ne.'E').and.(lakon(i)(7:7).ne.'S').and.
      &      (lakon(i)(7:7).ne.'L')) cycle
+         indexe=ipkon(i)
 !
          if((lakon(i)(4:4).eq.'2').or.(lakon(i)(4:4).eq.'8')) then
             do j=1,6
