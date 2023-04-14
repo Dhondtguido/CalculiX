@@ -19,7 +19,7 @@
       subroutine normalsforequ_se(nk,co,iponoelfa,inoelfa,konfa,
      &     ipkonfa,lakonfa,ne,iponor,xnor,nodedesiinv,jobnamef,
      &     iponexp,nmpc,labmpc,ipompc,nodempc,ipretinfo,kon,ipkon,lakon,
-     &     iponoel,inoel,iponor2d,knor2d,iponod2dto3d,ipoface,nodface)
+     &     iponoel,inoel,iponor2d,knor2d,nod2nd3rd,ipoface,nodface)
 !     
 !     calculates normals on surface for mesh modification
 !     purposes in an optimization loop
@@ -52,7 +52,7 @@
      &     node1,node2,node3,ipretinfo(*),ieq,pretflag,inoel(2,*),nope,
      &     nodepret,ixfreei,ixfreej,kon(*),ipkon(*),iponoel(*),iface,
      &     inode,ifaceq(8,6),ifacew(8,5),iposn,iponor2d(2,*),flag2d,
-     &     knor2d(*),node2d,iponod2dto3d(2,*),nopesurf(8),ipoface(*),
+     &     knor2d(*),node2d,nod2nd3rd(2,*),nopesurf(8),ipoface(*),
      &     nodface(5,*),konl(20),nopem,ifaceqmid(6),ifacewmid(5),node3d
 !     
       real*8 co(3,*),xnor(*),xno(3,100),xi,et,coloc6(2,6),coloc8(2,8),
@@ -552,8 +552,8 @@
      &         (lakon(ielem)(7:7).eq.'L').or.
      &         (lakon(ielem)(7:7).eq.'E')) then
 !     
-            nodedesiinv(iponod2dto3d(1,i))=-1  
-            nodedesiinv(iponod2dto3d(2,i))=-1 
+            nodedesiinv(nod2nd3rd(1,i))=-1  
+            nodedesiinv(nod2nd3rd(2,i))=-1 
           endif
         endif
 !     

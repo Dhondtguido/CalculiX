@@ -1217,8 +1217,8 @@ c
      &       ipoinp,inp,ipoinpc)
 !     
       else
-        write(*,*) '*WARNING in calinput. Card image cannot be inter
-     &preted:'
+        write(*,*) '*WARNING in calinput. Card image cannot be interpret
+     &ed:'
         call inputwarning(inpc,ipoinpc,iline,
      &       "the input file%")
         call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,

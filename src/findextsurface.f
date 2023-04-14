@@ -95,13 +95,19 @@
 !
          if(lakon(i)(7:7).ne.' ') cycle
          indexe=ipkon(i)
+!
+!        only 3D-elements or plane stress/strain/axi/shells
+!
+         if((lakon(i)(7:7).ne.' ').and.(lakon(i)(7:7).ne.'A').and.
+     &      (lakon(i)(7:7).ne.'E').and.(lakon(i)(7:7).ne.'S').and.
+     &      (lakon(i)(7:7).ne.'L')) cycle
+!
          if((lakon(i)(4:4).eq.'2').or.(lakon(i)(4:4).eq.'8')) then
             do j=1,6
                do k=1,4
                   nodes(k)=kon(indexe+ifaceq(k,j))
                enddo
                call insertsorti(nodes,ifour)
-c               call isortii(nodes,iaux,ifour,kflag)
                indexold=0
                index=ipoface(nodes(1))
                do
@@ -241,8 +247,8 @@ c                  call isortii(nodes,iaux,ifour,kflag)
          endif
       enddo
 !     
-!     Create fields konfa and ipkonfa for calculation of normals of shell
-!     elements
+!     create fields konfa and ipkonfa for calculation of normals on
+!     external faces
 !     
       nsurfs=0
       ifree=0
@@ -298,7 +304,7 @@ c                  call isortii(nodes,iaux,ifour,kflag)
                konl(k)=kon(ipkon(nelemm)+k)
             enddo
 !     
-!     quadratic quad shell element
+!     quadratic quad external face
 !     
             if((nope.eq.20).or.
      &           ((nope.eq.15).and.(jfacem.gt.2))) then    
@@ -313,7 +319,7 @@ c                  call isortii(nodes,iaux,ifour,kflag)
                enddo
                ifree=ifree+nopem
 !     
-!     linear quad shell element
+!     linear quad external face
 !     
             elseif((nope.eq.8).or.
      &              ((nope.eq.6).and.(jfacem.gt.2))) then
@@ -328,7 +334,7 @@ c                  call isortii(nodes,iaux,ifour,kflag)
                enddo
                ifree=ifree+nopem
 !     
-!     quadratic tri shell element
+!     quadratic tri external face
 !     
             elseif((nope.eq.10).or.
      &              ((nope.eq.15).and.(jfacem.le.2))) then    
@@ -343,7 +349,7 @@ c                  call isortii(nodes,iaux,ifour,kflag)
                enddo
                ifree=ifree+nopem
 !     
-!     linear tri shell element
+!     linear tri external face
 !     
             elseif((nope.eq.4).or.
      &              ((nope.eq.6).and.(jfacem.le.2))) then

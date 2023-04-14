@@ -123,10 +123,10 @@ void frd_sen(double *co,ITG *nk,double *dstn,ITG *inum,ITG *nmethod,
 		&noutloc,description,kode,nmethod,f1,output,istep,iinc); 
       
       fprintf(f1," -4  NORM        4    1\n");
-      fprintf(f1," -5  NORMX       1    2	 1    0\n");
-      fprintf(f1," -5  NORMY       1    2	 2    0\n");
-      fprintf(f1," -5  NORMZ       1    2	 3    0\n");
-      fprintf(f1," -5  ALL         1    2	 0    0    1ALL\n");
+      fprintf(f1," -5  NORMX       1    2    1    0\n");
+      fprintf(f1," -5  NORMY       1    2    2    0\n");
+      fprintf(f1," -5  NORMZ       1    2    3    0\n");
+      fprintf(f1," -5  ALL         1    2    0    0    1ALL\n");
       
       frdselect(v,v,&iset,&nkcoords,inum,m1,istartset,iendset,
                 ialset,ngraph,&ncompvector,ifieldvector,icompvector,
@@ -144,10 +144,10 @@ void frd_sen(double *co,ITG *nk,double *dstn,ITG *inum,ITG *nmethod,
 		&noutloc,description,kode,nmethod,f1,output,istep,iinc); 
       
       fprintf(f1," -4  SEVE        4    1\n");
-      fprintf(f1," -5  SEVEX       1    2	 1    0\n");
-      fprintf(f1," -5  SEVEY       1    2	 2    0\n");
-      fprintf(f1," -5  SEVEZ       1    2	 3    0\n");
-      fprintf(f1," -5  ALL         1    2	 0    0    1ALL\n");
+      fprintf(f1," -5  SEVEX       1    2    1    0\n");
+      fprintf(f1," -5  SEVEY       1    2    2    0\n");
+      fprintf(f1," -5  SEVEZ       1    2    3    0\n");
+      fprintf(f1," -5  ALL         1    2    0    0    1ALL\n");
       
       frdselect(v,v,&iset,&nkcoords,inum,m1,istartset,iendset,
                 ialset,ngraph,&ncompvector,ifieldvector,icompvector,
@@ -185,10 +185,10 @@ void frd_sen(double *co,ITG *nk,double *dstn,ITG *inum,ITG *nmethod,
 		&noutloc,description,kode,nmethod,f1,output,istep,iinc); 
       
       fprintf(f1," -4  RANDVEC     4    1\n");
-      fprintf(f1," -5  RANDX       1    2	 1    0\n");
-      fprintf(f1," -5  RANDY       1    2	 2    0\n");
-      fprintf(f1," -5  RANDZ       1    2	 3    0\n");
-      fprintf(f1," -5  ALL         1    2	 0    0    1ALL\n");
+      fprintf(f1," -5  RANDX       1    2    1    0\n");
+      fprintf(f1," -5  RANDY       1    2    2    0\n");
+      fprintf(f1," -5  RANDZ       1    2    3    0\n");
+      fprintf(f1," -5  ALL         1    2    0    0    1ALL\n");
       
       frdselect(v,v,&iset,&nkcoords,inum,m1,istartset,iendset,
                 ialset,ngraph,&ncompvector,ifieldvector,icompvector,
@@ -226,10 +226,10 @@ void frd_sen(double *co,ITG *nk,double *dstn,ITG *inum,ITG *nmethod,
 		&noutloc,description,kode,nmethod,f1,output,istep,iinc); 
       
       fprintf(f1," -4  MEANVEC     4    1\n");
-      fprintf(f1," -5  MEANX       1    2	 1    0\n");
-      fprintf(f1," -5  MEANY       1    2	 2    0\n");
-      fprintf(f1," -5  MEANZ       1    2	 3    0\n");
-      fprintf(f1," -5  ALL         1    2	 0    0    1ALL\n");
+      fprintf(f1," -5  MEANX       1    2    1    0\n");
+      fprintf(f1," -5  MEANY       1    2    2    0\n");
+      fprintf(f1," -5  MEANZ       1    2    3    0\n");
+      fprintf(f1," -5  ALL         1    2    0    0    1ALL\n");
       
       frdselect(v,v,&iset,&nkcoords,inum,m1,istartset,iendset,
                 ialset,ngraph,&ncompvector,ifieldvector,icompvector,
@@ -268,9 +268,9 @@ void frd_sen(double *co,ITG *nk,double *dstn,ITG *inum,ITG *nmethod,
 		&noutloc,description,kode,nmethod,f1,output,istep,iinc); 
       
       fprintf(f1," -4  DFDS        3    1\n");
-      fprintf(f1," -5  DFDSCONS    1    1	 1    0\n");
-      fprintf(f1," -5  DFDSOBJE    1    1	 2    0\n");
-      fprintf(f1," -5  DFDSFEAS    1    1	 3    0\n");
+      fprintf(f1," -5  DFDSCONS    1    1    1    0\n");
+      fprintf(f1," -5  DFDSOBJE    1    1    2    0\n");
+      fprintf(f1," -5  DFDSFEAS    1    1    3    0\n");
       
       frdselect(v,v,&iset,&nkcoords,inum,m1,istartset,iendset,
                 ialset,ngraph,&ncompvector,ifieldvector,icompvector,
@@ -289,9 +289,9 @@ void frd_sen(double *co,ITG *nk,double *dstn,ITG *inum,ITG *nmethod,
 		&noutloc,description,kode,nmethod,f1,output,istep,iinc); 
       
       fprintf(f1," -4  DFDS        3    1\n");
-      fprintf(f1," -5  DFDSCORR    1    1	 1    0\n");
-      fprintf(f1," -5  DFDSPROJ    1    1	 2    0\n");
-      fprintf(f1," -5  DFDSFEAS    1    1	 3    0\n");
+      fprintf(f1," -5  DFDSCORR    1    1    1    0\n");
+      fprintf(f1," -5  DFDSPROJ    1    1    2    0\n");
+      fprintf(f1," -5  DFDSFEAS    1    1    3    0\n");
       
       frdselect(v,v,&iset,&nkcoords,inum,m1,istartset,iendset,
                 ialset,ngraph,&ncompvector,ifieldvector,icompvector,

@@ -18,7 +18,7 @@
 !
       subroutine normalsonsurface_robust(ipkon,kon,lakon,extnor,co,nk,
      &      ipoface,nodface,nactdof,mi,nodedesiinv,iregion,
-     &      iponoelfa,ndesi,nodedesi,iponod2dto3d,ikboun,nboun,
+     &      iponoelfa,ndesi,nodedesi,nod2nd3rd,ikboun,nboun,
      &      ne2d)
 !
 !     calculating the normal direction onto the external surface;
@@ -44,7 +44,7 @@
      &  konl(26),ipoface(*),nodface(5,*),mi(*),nodedesiinv(*),
      &  nactdof(0:mi(2),*),nopesurf(9),nnodes,iregion,nope,
      &  nopedesi,l,m,iflag,k,nk,iponoelfa(*),ndesi,nodedesi(*),
-     &  nodemid,nodeboun1,nodeboun2,iponod2dto3d(2,*),
+     &  nodemid,nodeboun1,nodeboun2,nod2nd3rd(2,*),
      &  ishift,expandhex(20),expandwed(15),konl2d(26),ikboun(*),
      &  idof,nboun,id,node2d
 !
@@ -578,9 +578,9 @@ c                  write(*,*) 'normalsonsurface_se accepted'
          do l=1,ndesi
             nodemid=nodedesi(l)
 c            write(*,*) 'nodemid',nodemid
-            if(iponod2dto3d(1,nodemid).ne.0) then      
-               nodeboun1=iponod2dto3d(1,nodemid)
-               nodeboun2=iponod2dto3d(2,nodemid)
+            if(nod2nd3rd(1,nodemid).ne.0) then      
+               nodeboun1=nod2nd3rd(1,nodemid)
+               nodeboun2=nod2nd3rd(2,nodemid)
                do m=1,3
                   extnor(m,nodeboun1)=extnor(m,nodemid)
                   extnor(m,nodeboun2)=extnor(m,nodemid)
