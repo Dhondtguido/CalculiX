@@ -835,7 +835,6 @@ c     endif
 !     
 !     storing the expanded nodes
 !     
-!     
 !     generate rigid MPC's if necessary
 !     
         if(nexp.gt.1) then

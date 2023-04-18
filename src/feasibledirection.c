@@ -68,7 +68,7 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
     istart,*kon=NULL,*ielmat=NULL,*nodedesiinv=NULL,ifeasd=0,methodfd,
     igeoconst=0,*nodedesipos=NULL,nkini,*ipoface=NULL,*nodface=NULL,
     *konfa=NULL,*ipkonfa=NULL,*iponoelfa=NULL,*inoelfa=NULL,nsurfs,ifreemax,
-    inoelsize,iregion=0,*iponod2dto3d=NULL,inode,*nodedesiboun=NULL,addout,
+    inoelsize,iregion=0,*nod2nd3rd=NULL,inode,*nodedesiboun=NULL,addout,
     ipos,ifree;
          
   double *objnorm=NULL,*dgdxglob=NULL,*stn=NULL,ptime=0.,*gradproj=NULL,
@@ -142,14 +142,14 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
     
     FORTRAN(normalsonsurface_se,(ipkon,kon,lakon,extnorini,coini,nk,ipoface,
 			         nodface,nactdof,mi,nodedesiinv,&iregion,
-			         iponoelfa,ndesi,nodedesi,iponod2dto3d,
+			         iponoelfa,ndesi,nodedesi,nod2nd3rd,
 			         ikboun,nboun,ne2d)); 		          
 
     /* calculating the normals w.r.t. the actual geoemtry */
     
     FORTRAN(normalsonsurface_se,(ipkon,kon,lakon,extnor,co,nk,ipoface,
 			         nodface,nactdof,mi,nodedesiinv,&iregion,
-			         iponoelfa,ndesi,nodedesi,iponod2dto3d,
+			         iponoelfa,ndesi,nodedesi,nod2nd3rd,
 			         ikboun,nboun,ne2d)); 		          
 
     SFREE(konfa);SFREE(ipkonfa);SFREE(lakonfa);SFREE(iponoelfa);SFREE(inoelfa);
