@@ -16,7 +16,7 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-      subroutine extrapol2dto3d(dgdxglob,iponod2dto3d,ndesi,
+      subroutine extrapol2dto3d(dgdxglob,nod2nd3rd,ndesi,
      &   nodedesi,nobject,nk,xinterpol,nnodes,ipkon,lakon,kon,
      &   nodedesimpc,ndesimpc,ne,iponoel,inoel)
 !
@@ -27,7 +27,7 @@
 !
       character*8 lakon(*)
 !
-      integer iponod2dto3d(2,*),ndesi,nodedesi(*),nobject,
+      integer nod2nd3rd(2,*),ndesi,nodedesi(*),nobject,
      &  node,nk,idesvar,ipkon(*),konl(26),ifaceq(2,20),
      &  ifacet(2,10),ifacew(2,15),kon(*),nnodes(nk),nope,ielem,
      &  start,nodedesimpc(*),ndesimpc,ne,indexe,i,j,l,ii,
@@ -81,7 +81,7 @@
       do i=1,ndesi
          idesvar=nodedesi(i)
          do j=1,2
-            node=iponod2dto3d(j,idesvar)
+            node=nod2nd3rd(j,idesvar)
             if(node.eq.0) cycle
 !
 !           Loop over all objectives/constraints

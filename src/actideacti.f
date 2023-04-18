@@ -28,9 +28,6 @@
 !
 !     determining the set
 !
-c      do i=1,nset
-c         if(objectset(3,iobject).eq.set(i)) exit
-c      enddo
       call cident81(set,objectset(3,iobject),nset,id)
       i=nset+1
       if(id.gt.0) then

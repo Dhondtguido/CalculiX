@@ -45,8 +45,6 @@
      &  thicke(mi(3),*),distmin,xmassel,g0(*),xmass(*),xdesi(3,*),
      &  dgdx(ndesi,nobject)
 !
-!
-!
       include "gauss.f"
 !
       iflag=3
@@ -309,7 +307,9 @@ c     Bernhardi end
             elseif(lakonl(1:1).eq.'E') then
                mint3d=0
             endif
-            
+!     
+!           coordinates of the nodes belonging to the element     
+!     
             do j=1,nope
                konl(j)=kon(indexe+j)
                do k=1,3
@@ -317,9 +317,7 @@ c     Bernhardi end
                enddo
             enddo
 !     
-!     computation of the objective function and the derivate 
-!     if the designnode belongs to the considered element
-!     if not, next element in loop will be taken 
+!           applying a "delta" to the coordinates of the design variable     
 !     
             if(idesvar.gt.0) then
                do j=1,3

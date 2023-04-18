@@ -86,7 +86,7 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     iglob=0,idesvar=0,inorm=0,irand=0,*nodedesiinv=NULL,ifree,
     iregion=0,*konfa=NULL,*ipkonfa=NULL,nsurfs,*iponoelfa=NULL,
     *inoelfa=NULL,*iponor=NULL,*iponexp=NULL,ifreemax,*ipretinfo=NULL,
-    nfield,iforce,*iponod2dto3d=NULL,*iponk2dto3d=NULL,ishape=0,ndesibou,
+    nfield,iforce,*nod2nd3rd=NULL,*nod1st=NULL,ishape=0,ndesibou,
     *nodedesibou=NULL,*nodedesiinvbou=NULL,nmethodnew=0,*neigh=NULL,
     *ipneigh=NULL,ifeasd=0;
       
@@ -176,14 +176,14 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   
   if(*ne2d!=0){
 
-    NNEW(iponod2dto3d,ITG,3**nk);
-    NNEW(iponk2dto3d,ITG,*nk);
+    NNEW(nod2nd3rd,ITG,3**nk);
+    NNEW(nod1st,ITG,*nk);
      
     FORTRAN(getdesiinfo2d,(set,istartset,iendset,ialset,nset,
 			   mi,nactdof,&ndesi,nodedesi,ntie,tieset,
 			   nodedesiinv,lakon,ipkon,kon,iponoelfa,
-			   iponod2dto3d,iponor2d,knor2d,iponoel2d,
-			   inoel2d,nobject,objectset,iponk2dto3d,ne,
+			   nod2nd3rd,iponor2d,knor2d,iponoel2d,
+			   inoel2d,nobject,objectset,nod1st,ne,
 			   jobnamef));
     						 
   
@@ -232,7 +232,7 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   
   FORTRAN(normalsonsurface_robust,(ipkon,kon,lakon,extnor,co,nk,ipoface,
     			           nodface,nactdof,mi,nodedesiinv,&iregion,
-    			           iponoelfa,&ndesi,nodedesi,iponod2dto3d,
+    			           iponoelfa,&ndesi,nodedesi,nod2nd3rd,
     			           ikboun,nboun,ne2d)); 
   
   /* if the sensitivity calculation is used in a optimization script
@@ -260,7 +260,7 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 			    &nsurfs,iponor,xnor,nodedesiinv,jobnamef,
 			    iponexp,nmpc,labmpc,ipompc,nodempc,ipretinfo,
 			    kon,ipkon,lakon,iponoel,inoel,iponor2d,knor2d,
-			    iponod2dto3d,ipoface,nodface));
+			    nod2nd3rd,ipoface,nodface));
     	  
   SFREE(konfa);SFREE(ipkonfa);SFREE(lakonfa);SFREE(iponor);SFREE(xnor);
   SFREE(iponoelfa);SFREE(inoelfa);SFREE(iponexp);SFREE(ipretinfo);
@@ -327,7 +327,7 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
             
   SFREE(iponoel);SFREE(inoel);SFREE(nodedesiinv);
   
-  if(*ne2d!=0){SFREE(iponod2dto3d);SFREE(iponk2dto3d);}
+  if(*ne2d!=0){SFREE(nod2nd3rd);SFREE(nod1st);}
      
   // if(*nbody>0) SFREE(ipobody);
 
