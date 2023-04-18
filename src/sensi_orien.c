@@ -80,8 +80,8 @@ void sensi_orien(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *nnodes=NULL,iregion=0,*konfa=NULL,*ipkonfa=NULL,nsurfs,
     *iponor=NULL,*iponoelfa=NULL,*inoelfa=NULL,
     ifreemax,nconstraint,
-    *iponexp=NULL,*ipretinfo=NULL,nfield,iforce,*iponod2dto3d=NULL,
-    *iponk2dto3d=NULL,ishape=0,nobjectstart=0;
+    *iponexp=NULL,*ipretinfo=NULL,nfield,iforce,*nod2nd3rd=NULL,
+    *nod1st=NULL,ishape=0,nobjectstart=0;
       
   double *stn=NULL,*v=NULL,*een=NULL,cam[5],*xstiff=NULL,*stiini=NULL,*tper,
     *f=NULL,*fn=NULL,qa[4],*epn=NULL,*xstateini=NULL,*xdesi=NULL,
@@ -784,7 +784,7 @@ void sensi_orien(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		       cs,output,istartdesi,ialdesi,xdesi,orname,&icoordinate,
 		       &iev,d,z,au,ad,aub,adb,&cyclicsymmetry,&nzss,&nev,
 		       &ishapeenergy,fint,nlabel,&igreen,&nasym,iponoel,inoel,
-		       nodedesiinv,dgdxdy,nkon,iponod2dto3d,iponk2dto3d,ics,
+		       nodedesiinv,dgdxdy,nkon,nod2nd3rd,nod1st,ics,
 		       mcs,mpcend,&noddiam,ipobody,ibody,xbody,nbody,
 		       &nobjectstart,dfm,physcon); 
       iout=1;
@@ -801,7 +801,7 @@ void sensi_orien(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   SFREE(iponoel);SFREE(inoel);SFREE(nodedesiinv);
   
   if(*ne2d!=0){
-    SFREE(iponod2dto3d);SFREE(iponk2dto3d);
+    SFREE(nod2nd3rd);SFREE(nod1st);
   }
   
   if(ieigenfrequency==1){

@@ -310,7 +310,11 @@ c        if(objectset(5,nobject)(1:1).eq.' ') then
           endif
         endif
 !     
-        if(icoordinate.eq.1) exit
+        if(icoordinate.eq.1) then
+          call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
+     &         ipoinp,inp,ipoinpc)
+          exit
+        endif
       enddo
 !     
       return

@@ -18,7 +18,7 @@
 !     
       subroutine normalsonsurface_se(ipkon,kon,lakon,extnor,co,nk,
      &     ipoface,nodface,nactdof,mi,nodedesiinv,iregion,
-     &     iponoelfa,ndesi,nodedesi,iponod2dto3d,ikboun,nboun,
+     &     iponoelfa,ndesi,nodedesi,nod2nd3rd,ikboun,nboun,
      &     ne2d)
 !     
 !     calculating the normal direction onto the external surface;
@@ -41,11 +41,11 @@
 !     
       integer j,nelem,jface,indexe,ipkon(*),kon(*),nopem,node,
      &     ifaceq(8,6),ifacet(6,4),ifacew1(4,5),ifacew2(8,5),ne2d,
-     &     konl(26),ipoface(*),nodface(5,*),mi(*),nodedesiinv(*),
+     &     konl(20),ipoface(*),nodface(5,*),mi(*),nodedesiinv(*),
      &     nactdof(0:mi(2),*),nodesurf(9),nnodes,iregion,nope,
      &     nopedesi,l,m,iflag,k,nk,iponoelfa(*),ndesi,nodedesi(*),
-     &     nodemid,nodeboun1,nodeboun2,iponod2dto3d(2,*),
-     &     ishift,expandhex(20),expandwed(15),konl2d(26),ikboun(*),
+     &     nodemid,nodeboun1,nodeboun2,nod2nd3rd(2,*),
+     &     ishift,expandhex(20),expandwed(15),konl2d(20),ikboun(*),
      &     idof,nboun,id,node2d
 !     
       real*8 extnor(3,*),xsj2(3),shp2(7,9),xs2(3,2),xi,et,dd,
@@ -155,10 +155,10 @@
             endif
           elseif(lakon(nelem)(7:7).eq.'L') then
 !     
-!     for shells only faces 2 and lower
+!     for shells only face 1 is
 !     taken into account for the normal
 !     
-            if(jface.gt.2) then
+            if(jface.gt.1) then
               indexe=nodface(5,indexe)
               if(indexe.eq.0) then
                 exit
@@ -273,12 +273,14 @@
 !     sum up how many designvariables are on that surface
 !     
           nnodes=0
-          do m=1,nopem
-            if(nodedesiinv(nodesurf(m)).eq.1) then
-              nnodes=nnodes+1
-              if(nnodes.ge.nopedesi) exit
-            endif
-          enddo         
+          if(nnodes.lt.nopedesi) then
+            do m=1,nopem
+              if(nodedesiinv(nodesurf(m)).eq.1) then
+                nnodes=nnodes+1
+                if(nnodes.ge.nopedesi) exit
+              endif
+            enddo
+          endif
 !     
 !     calculate the normal vector in the nodes belonging to the surface
 !     
@@ -296,14 +298,6 @@
               xsj2(2)=xsj2(2)/dd
               xsj2(3)=xsj2(3)/dd
 !     
-c     if(nope.eq.20) then
-c     node=konl(ifaceq(m,jface))
-c     elseif(nope.eq.15) then
-c     node=konl(ifacew2(m,jface))
-c     endif
-c     if((nodedesiinv(node).eq.0).or.
-c     &             ((nodedesiinv(node).eq.1).and.
-c     &             (nnodes.ge.nopedesi))) then
               extnor(1,node)=extnor(1,node)
      &             +xsj2(1)
               extnor(2,node)=extnor(2,node)
@@ -344,7 +338,6 @@ c     &             (nnodes.ge.nopedesi))) then
                   endif
                 enddo
               endif
-c     endif
             enddo
           elseif(nopem.eq.4) then
             do m=1,nopem
@@ -360,14 +353,6 @@ c     endif
               xsj2(2)=xsj2(2)/dd
               xsj2(3)=xsj2(3)/dd
 !     
-c     if(nope.eq.8) then
-c     node=konl(ifaceq(m,jface))
-c     elseif(nope.eq.6) then
-c     node=konl(ifacew1(m,jface))
-c     endif
-c     if((nodedesiinv(node).eq.0).or.
-c     &             ((nodedesiinv(node).eq.1).and.
-c     &             (nnodes.ge.nopedesi))) then
               extnor(1,node)=extnor(1,node)
      &             +xsj2(1)
               extnor(2,node)=extnor(2,node)
@@ -408,7 +393,6 @@ c     &             (nnodes.ge.nopedesi))) then
                   endif
                 enddo
               endif
-c     endif
             enddo
           elseif(nopem.eq.6) then
             do m=1,nopem
@@ -424,14 +408,6 @@ c     endif
               xsj2(2)=xsj2(2)/dd
               xsj2(3)=xsj2(3)/dd
 !     
-c     if(nope.eq.10) then
-c     node=konl(ifacet(m,jface))
-c     elseif(nope.eq.15) then
-c     node=konl(ifacew2(m,jface))
-c     endif
-c     if((nodedesiinv(node).eq.0).or.
-c     &             ((nodedesiinv(node).eq.1).and.
-c     &             (nnodes.ge.nopedesi))) then
               extnor(1,node)=extnor(1,node)
      &             +xsj2(1)
               extnor(2,node)=extnor(2,node)
@@ -446,11 +422,7 @@ c     &             (nnodes.ge.nopedesi))) then
               if((lakon(nelem)(7:7).eq.'A').or.
      &             (lakon(nelem)(7:7).eq.'S').or.       
      &             (lakon(nelem)(7:7).eq.'E')) then
-                if(nope.eq.10) then
-                  node2d=konl2d(ifacet(m,jface))
-                elseif(nope.eq.15) then
-                  node2d=konl2d(ifacew2(m,jface))
-                endif
+                node2d=konl2d(ifacew2(m,jface))
                 do l=1,2
                   idof=8*(node2d-1)+l
                   call nident(ikboun,idof,nboun,id)
@@ -472,7 +444,6 @@ c     &             (nnodes.ge.nopedesi))) then
                   endif
                 enddo         
               endif
-c     endif
             enddo
           else                  ! nopem=3
             do m=1,nopem
@@ -488,14 +459,6 @@ c     endif
               xsj2(2)=xsj2(2)/dd
               xsj2(3)=xsj2(3)/dd
 !     
-c     if(nope.eq.6) then
-c     node=konl(ifacew1(m,jface))
-c     elseif(nope.eq.4) then
-c     node=konl(ifacet(m,jface))
-c     endif
-c     if((nodedesiinv(node).eq.0).or.
-c     &             ((nodedesiinv(node).eq.1).and.
-c     &             (nnodes.ge.nopedesi))) then
               extnor(1,node)=extnor(1,node)
      &             +xsj2(1)
               extnor(2,node)=extnor(2,node)
@@ -510,11 +473,7 @@ c     &             (nnodes.ge.nopedesi))) then
               if((lakon(nelem)(7:7).eq.'A').or.
      &             (lakon(nelem)(7:7).eq.'S').or.       
      &             (lakon(nelem)(7:7).eq.'E')) then
-                if(nope.eq.6) then
-                  node2d=konl2d(ifacew1(m,jface))
-                elseif(nope.eq.4) then
-                  node2d=konl2d(ifacet(m,jface))
-                endif
+                node2d=konl2d(ifacew1(m,jface))
                 do l=1,2
                   idof=8*(node2d-1)+l
                   call nident(ikboun,idof,nboun,id)
@@ -536,7 +495,6 @@ c     &             (nnodes.ge.nopedesi))) then
                   endif
                 enddo
               endif
-c     endif
             enddo
           endif
 !     
@@ -561,19 +519,19 @@ c     endif
 !     in case of 2D elements all expanded nodes must have the same 
 !     normal direction to get the correct normal direction for the 2D model
 !     
-      if(ne2d.ne.0) then
-        do l=1,ndesi
-          nodemid=nodedesi(l)
-          if(iponod2dto3d(1,nodemid).ne.0) then      
-            nodeboun1=iponod2dto3d(1,nodemid)
-            nodeboun2=iponod2dto3d(2,nodemid)
-            do m=1,3
-              extnor(m,nodeboun1)=extnor(m,nodemid)
-              extnor(m,nodeboun2)=extnor(m,nodemid)
-            enddo
-          endif
-        enddo
-      endif
+c      if(ne2d.ne.0) then
+c        do l=1,ndesi
+c          nodelow=nodedesi(l)
+c          if(nod2nd3rd(1,nodelow).ne.0) then      
+c            nodemid=nod2nd3rd(1,nodelow)
+c            nodeup=nod2nd3rd(2,nodelow)
+c            do m=1,3
+c              extnor(m,nodemid)=extnor(m,nodelow)
+c              extnor(m,nodeup)=extnor(m,nodelow)
+c            enddo
+c          endif
+c        enddo
+c      endif
 !     
       return
       end

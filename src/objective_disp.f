@@ -31,8 +31,6 @@
 !
       real*8 g0(nobject),vold(0:mi(2),*)
 !
-!
-!
       idesvar=idesvarc+1
 !
       g0(iobject)=0.d0
