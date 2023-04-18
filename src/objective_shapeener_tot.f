@@ -18,7 +18,7 @@
 !
       subroutine objective_shapeener_tot(ne,kon,ipkon,lakon,
      &   fint,vold,iperturb,mi,nactdof,dgdx,df,ndesi,iobject,
-     &   jqs,irows,vec,iponk2dto3d)
+     &   jqs,irows,vec,nod1st)
 !
       implicit none
 !
@@ -26,7 +26,7 @@
 !
       integer ndesi,iobject,idesvar,i,j,l,jqs(*),irows(*),idof,
      &   ne,ipkon(*),ielem,iperturb(*),indexe,konl(26),kon(*),mi(*),
-     &   nope,nactdof(0:mi(2),*),node,iponk2dto3d(*)
+     &   nope,nactdof(0:mi(2),*),node,nod1st(*)
 !      
       real*8 dgdx(ndesi,*),df(*),vec(*),vold(0:mi(2),*),fint(*)
 !
@@ -67,7 +67,7 @@
             konl(l)=kon(indexe+l)
          enddo
 !
-!        field iponk2dto3d points for each expanded 3d-node
+!        field nod1st points for each expanded 3d-node
 !        to the node in the mid surface; this is the only node
 !        with degrees of freedom (for plane stress/strain/axi)         
 !         
@@ -77,7 +77,7 @@
                   if((lakon(ielem)(7:7).eq.'A').or.
      &               (lakon(ielem)(7:7).eq.'S').or.       
      &               (lakon(ielem)(7:7).eq.'E')) then
-                     node=iponk2dto3d(konl(i))     
+                     node=nod1st(konl(i))     
                   else
                      node=konl(i)
                   endif
@@ -93,7 +93,7 @@
                   if((lakon(ielem)(7:7).eq.'A').or.
      &               (lakon(ielem)(7:7).eq.'S').or.       
      &               (lakon(ielem)(7:7).eq.'E')) then
-                     node=iponk2dto3d(konl(i))
+                     node=nod1st(konl(i))
 c                write(*,*) 'objective_shapeener_tot node',ielem,i,node
                   else
                      node=konl(i)

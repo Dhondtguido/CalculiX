@@ -1234,7 +1234,7 @@ void *dgmres1mt(ITG *i);
 void FORTRAN(disp_sen_dv,(ITG *nodeset,ITG *istartset,ITG *iendset,ITG *ialset,
                           ITG *iobject,ITG *mi,ITG *nactdof,double *dgdu,
                           double *vold,char *objectset,ITG *nactdofinv,
-                          ITG *neq,double *g0));
+                          ITG *neq,double *g0,ITG *nod1st,ITG *ne2d));
 
 void FORTRAN(distributesens,(ITG *istartdesi,ITG *ialdesi,ITG *ipkon,
             char *lakon,ITG *ipoface,ITG *ndesi,ITG *nodedesi,ITG *nodface,
@@ -1556,7 +1556,7 @@ void FORTRAN(extract_matrices,(double *au,double *ad,ITG *jq,ITG *irow,
 			       ITG *nzsbi,double *auib,ITG *jqib,ITG *irowib,
 			       ITG *nzsib,ITG *ktot,ITG *icolbb));
 
-void FORTRAN(extrapol2dto3d,(double *dgdxglob,ITG *iponod2dto3d,ITG *ndesi,
+void FORTRAN(extrapol2dto3d,(double *dgdxglob,ITG *nod2nd3rd,ITG *ndesi,
                              ITG *nodedesi,ITG *nobject,ITG *nk,
                              double *xinterpol,ITG *nnodes,ITG *ipkon,
                              char *lakon,ITG *kon,ITG *ne,ITG *iponoel,
@@ -1909,10 +1909,10 @@ void FORTRAN(getdesiinfo2d,(char *set,ITG *istartset,ITG *iendset,ITG *ialset,
 			    ITG *nset,ITG *mi,ITG *nactdof,ITG *ndesi,
 			    ITG *nodedesi,ITG *ntie,char *tieset,
 			    ITG *nodedesiinv,char *lakon,ITG *ipkon,ITG *kon,
-			    ITG *iponoelfa,ITG *iponod2dto3d,ITG *iponor2d,
+			    ITG *iponoelfa,ITG *nod2nd3rd,ITG *iponor2d,
 			    ITG *knor2d,ITG *iponoel2d,ITG *inoel2d,
-			    ITG *nobject,char *objectset,ITG *iponk2dto3d,
-			    ITG *ne,char *jobnamef));  
+			    ITG *nobject,char *objectset,ITG *nod1st,
+			    ITG *ne,char *jobnamef,ITG *rig));  
 
 void FORTRAN(getdesiinfo3d,(char *set,ITG *istartset,ITG *iendset,ITG *ialset,
 			    ITG *nset,ITG *mi,ITG *nactdof,ITG *ndesi,
@@ -3151,7 +3151,7 @@ void FORTRAN(normalsforequ_se,(ITG *nk,double *co,ITG *iponoelfa,
                                ITG *ipompc,ITG *nodempc,ITG *ipretinfo,
                                ITG *kon,ITG *ipkon,char *lakon,ITG *iponoel,
                                ITG *inoel,ITG *iponor2d,ITG *knor2d,
-                               ITG *iponod2dto3d,ITG *ipoface,ITG *nodeface));
+                               ITG *nod2nd3rd,ITG *ipoface,ITG *nodeface));
 
 void FORTRAN(normalsoninterface,(ITG *istartset,ITG *iendset,
              ITG *ialset,ITG *imast,ITG *ipkon,ITG *kon,char *lakon,
@@ -3161,14 +3161,14 @@ void FORTRAN(normalsonsurface_se,(ITG *ipkon,ITG *kon,char*lakon,
              double *extnor,double *co,ITG *nk,ITG *ipoface,
              ITG *nodface,ITG *nactdof,ITG *mi,ITG *nodedesiinv,
              ITG *iregion,ITG *iponoelfa,ITG *ndesi,ITG *nodedesi,
-             ITG *iponod2dto3d,ITG *ikboun,ITG *nboun,ITG *ne2d));
+             ITG *nod2nd3rd,ITG *ikboun,ITG *nboun,ITG *ne2d));
 
 void FORTRAN(normalsonsurface_robust,(ITG *ipkon,ITG *kon,char *lakon,
 				      double *extnor,double *co,ITG *nk,
 				      ITG *ipoface,ITG *nodface,ITG *nactdof,
 				      ITG *mi,ITG *nodedesiinv,ITG *iregion,
 				      ITG *iponoelfa,ITG *ndesi,ITG *nodedesi,
-				      ITG *iponod2dto3d,ITG *ikboun,ITG *nboun,
+				      ITG *nod2nd3rd,ITG *ikboun,ITG *nboun,
 				      ITG *ne2d)); 
 
 void FORTRAN(objective_disp_tot,(double *dgdx,double *df,ITG *ndesi,
@@ -3222,10 +3222,10 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
              ITG *nzss,ITG *nev,ITG *ishapeenergy,double *fint,
              ITG *nlabel,ITG *igreen,ITG *nasym,ITG *iponoel,ITG *inoel,
              ITG *nodedesiinv,double *dgdxglob,
-             ITG *nkon,ITG *iponod2dto3d,ITG *iponk2dto3d,ITG *ics,
+             ITG *nkon,ITG *nod2nd3rd,ITG *nod1st,ITG *ics,
              ITG *mcs,ITG *mpcend,ITG *noddiam,ITG *ipobody,ITG *ibody,
 	     double *xbody,ITG *nbody,ITG *nobjectstart,double *dfm,
-	     double *physcon);
+	     double *physcon,ITG *ne2d);
 
 void *objectivemt_shapeener_dx(ITG *i);
 
@@ -3289,7 +3289,7 @@ void FORTRAN(objective_shapeener_dx,(double *co1,ITG *kon1,ITG *ipkon1,
 void FORTRAN(objective_shapeener_tot,(ITG *ne,ITG *kon,ITG *ipkon,char *lakon,
              double *fint,double *vold,ITG *iperturb,ITG *mi,ITG *nactdof,
              double *dgdx,double *df,ITG *ndesi,ITG *iobject,ITG *jqs,
-             ITG *irows,double *vec,ITG *iponk2dto3d));
+             ITG *irows,double *vec,ITG *nod1st));
 
 void FORTRAN(objective_peeq,(ITG *nodeset,ITG *istartset,ITG *iendset,
              ITG *ialset,ITG *nk,ITG *idesvar,ITG *iobject,ITG *mi,
@@ -4419,7 +4419,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
              char *jobnamef,ITG *iponor2d,ITG *knor2d,ITG *ne2d,
              ITG *iponoel2d,ITG *inoel2d,ITG *mpcend,
 	     double *dgdxglob,double *g0,ITG **nodedesip,ITG*ndesi,
-	     ITG *nobjectstart,double **xdesip);
+	     ITG *nobjectstart,double **xdesip,ITG *rig);
 
 void sensi_orien(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
              ITG *ne,
@@ -4797,8 +4797,8 @@ void stressmain(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
        double *aub,double*adb,ITG *cyclicsymmetry,ITG *nzss,ITG *nev,
        ITG *ishapeenergy,double *fint,ITG *nlabel,ITG *igreen,ITG *nasym,
        ITG *iponoel,ITG *inoel,ITG *nodedesiinv,double *dgdxglob,
-       double *df2,double *dgdxdy,ITG *nkon,ITG *iponod2dto3d,
-       ITG *iponk2dto3d,ITG *ics,ITG *mcs,ITG *mpcend,ITG *noddiam,
+       double *df2,double *dgdxdy,ITG *nkon,ITG *nod2nd3rd,
+       ITG *nod1st,ITG *ics,ITG *mcs,ITG *mpcend,ITG *noddiam,
 		double *duds,
 		ITG *ipobody,ITG *ibody,double *xbody,ITG *nbody);
 

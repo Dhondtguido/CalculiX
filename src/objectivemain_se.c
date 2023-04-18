@@ -49,7 +49,7 @@ static ITG *kon1,*ipkon1,*ne1,*nelcon1,*nrhcon1,*nalcon1,*ielmat1,*ielorien1,
   num_cpuse,*neapar2=NULL,*nebpar2=NULL,*ialdesi1,
   *ialnk1,*ialeneigh1,*ialnneigh1,*ipos1,*nodedesired1,*istarteneigh1,
   *istartnneigh1,*nactdofred1,*nactdofinv1,*mt1,*istartnk1,
-  *iponod2dto3d1;
+  *nod2nd3rd1;
     
 static double *co1,*v1,*stx1,*elcon1,*rhcon1,*alcon1,*alzero1,*orab1,*t01,*t11,
   *prestr1,*vold1,*veold1,*dtime1,*time1,*xdesi1,*depn1,*dxstate1,
@@ -104,10 +104,11 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		      ITG *nzss,ITG *nev,ITG *ishapeenergy,double *fint,
 		      ITG *nlabel,ITG *igreen,ITG *nasym,ITG *iponoel,
 		      ITG *inoel,ITG *nodedesiinv,double *dgdxglob,
-		      ITG *nkon,ITG *iponod2dto3d,
-		      ITG *iponk2dto3d,ITG *ics,ITG *mcs,ITG *mpcend,
+		      ITG *nkon,ITG *nod2nd3rd,
+		      ITG *nod1st,ITG *ics,ITG *mcs,ITG *mpcend,
 		      ITG *noddiam,ITG *ipobody,ITG *ibody,double *xbody,
-		      ITG *nbody,ITG *nobjectstart,double *dfm,double *physcon){
+		      ITG *nbody,ITG *nobjectstart,double *dfm,double *physcon,
+		      ITG *ne2d){
 
   char description[13]="            ",cflag[1]=" ",*filabl=NULL;
 
@@ -242,7 +243,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
       NNEW(xmass1,double,*ne);
 
       /* deactivating the elements which are not part of the 
-	 target function */
+	 design response */
 
       FORTRAN(actideacti,(set,nset,istartset,iendset,ialset,objectset,
 			  ipkon,&iobject,ne));
@@ -465,7 +466,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 
       FORTRAN(objective_shapeener_tot,(ne,kon,ipkon,lakon,fint,vold,iperturb,
 				       mi,nactdof,dgdx,df,ndesi,&iobject,jqs,
-				       irows,vec,iponk2dto3d));
+				       irows,vec,nod1st));
 	    
       SFREE(vec);
 	    
@@ -894,7 +895,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	       
 	FORTRAN(disp_sen_dv,(&nodeset,istartset,iendset,ialset,&iobject,
 			     mi,nactdof,dgdu,vold,objectset,nactdofinv,
-			     &neq[1],g0));
+			     &neq[1],g0,nod1st,ne2d));
                        
 	/* Multiplication of dg/du with K^-1 */	    	      
 	    
@@ -1301,7 +1302,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	istarteneigh1=istarteneigh;conew1=conew;nodedesired1=nodedesired;
 	nodedesi1=nodedesi;istartdesi1=istartdesi;xdesi1=xdesi;
 	nactdofred1=nactdofred;nactdofinv1=nactdofinv;mt1=&mt;
-	istartnk1=istartnk;ndesi1=ndesi;iponod2dto3d1=iponod2dto3d;
+	istartnk1=istartnk;ndesi1=ndesi;nod2nd3rd1=nod2nd3rd;
 	physcon1=physcon;
 
 	/* Variation of the coordinates of the designvariables */
@@ -1640,7 +1641,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
       istarteneigh1=istarteneigh;conew1=conew;nodedesired1=nodedesired;
       nodedesi1=nodedesi;istartdesi1=istartdesi;xdesi1=xdesi;
       nactdofred1=nactdofred;nactdofinv1=nactdofinv;mt1=&mt;
-      istartnk1=istartnk;ndesi1=ndesi;iponod2dto3d1=iponod2dto3d;
+      istartnk1=istartnk;ndesi1=ndesi;nod2nd3rd1=nod2nd3rd;
       xstate1=xstate;physcon1=physcon;
 
       /* Variation of the coordinates of the designvariables */
@@ -1986,7 +1987,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
       istarteneigh1=istarteneigh;conew1=conew;nodedesired1=nodedesired;
       nodedesi1=nodedesi;istartdesi1=istartdesi;xdesi1=xdesi;
       nactdofred1=nactdofred;nactdofinv1=nactdofinv;mt1=&mt;
-      istartnk1=istartnk;ndesi1=ndesi;iponod2dto3d1=iponod2dto3d;
+      istartnk1=istartnk;ndesi1=ndesi;nod2nd3rd1=nod2nd3rd;
       physcon1=physcon;
 
       /* Variation of the coordinates of the designvariables */
@@ -2264,12 +2265,15 @@ void *stress_sen_dxmt(ITG *i){
   
   /* perturbation of the coordinates of the neighboring nodes of the design 
      variables
-     in case of an axisymmetric or plain strain (stress? shell?) model */
+     in case of an axisymmetric or plain stress/strain or shell model */
   
   nelem=ialdesi1[nea-1]-1;
-  if((strcmp1(&lakon1[nelem*8+6],"A")==0)||(strcmp1(&lakon1[nelem*8+6],"E")==0)){ 
-    node1=iponod2dto3d1[2*(node-1)];
-    node2=iponod2dto3d1[2*(node-1)+1];
+  if((strcmp1(&lakon1[nelem*8+6],"A")==0)||(strcmp1(&lakon1[nelem*8+6],"E")==0)||
+     (strcmp1(&lakon1[nelem*8+6],"S")==0)||(strcmp1(&lakon1[nelem*8+6],"L")==0)){ 
+    //    node1=nod2nd3rd1[2*(node-1)];
+    //    node2=nod2nd3rd1[2*(node-1)+1];
+    node1=node+1;
+    node2=node+2;
   
     for(j=0;j<3;j++){ 
       conew1[(node1-1)*3+j+3**nk1**i]=co1[(node1-1)*3+j]+xdesi1[(idesvar-1)*3+j];
@@ -2329,13 +2333,16 @@ void *stress_sen_dvmt(ITG *i){
 
   dv1[(node-1)**mt1+idir+*mt1**nk1**i]+=dispmin1;	       
 
-  /* perturbation of the coordinates of the neighboring nodes of the design variables
-     in case of an axisymmetric or plain strain (plane stress? shell?) model */
+  /* perturbation of the displacements of the neighboring nodes of the design variables
+     in case of an axisymmetric or plain stress/strain or shell model */
   
   nelem=ialnk1[nea-1]-1;
-  if((strcmp1(&lakon1[nelem*8+6],"A")==0)||(strcmp1(&lakon1[nelem*8+6],"E")==0)){ 
-    node1=iponod2dto3d1[2*(node-1)];
-    node2=iponod2dto3d1[2*(node-1)+1];
+  if((strcmp1(&lakon1[nelem*8+6],"A")==0)||(strcmp1(&lakon1[nelem*8+6],"E")==0)||
+     (strcmp1(&lakon1[nelem*8+6],"S")==0)||(strcmp1(&lakon1[nelem*8+6],"L")==0)){ 
+    //    node1=nod2nd3rd1[2*(node-1)];
+    //    node2=nod2nd3rd1[2*(node-1)+1];
+    node1=node+1;
+    node2=node+2;
   
     dv1[(node1-1)**mt1+idir+*mt1**nk1**i]+=dispmin1;
     dv1[(node2-1)**mt1+idir+*mt1**nk1**i]+=dispmin1;
@@ -2396,12 +2403,15 @@ void *peeq_sen_dxmt(ITG *i){
   
   /* perturbation of the coordinates of the neighboring nodes of the design 
      variables
-     in case of an axisymmetric or plain strain (stress? shell?) model */
+     in case of an axisymmetric or plain stress/strain or shell model */
   
   nelem=ialdesi1[nea-1]-1;
-  if((strcmp1(&lakon1[nelem*8+6],"A")==0)||(strcmp1(&lakon1[nelem*8+6],"E")==0)){ 
-    node1=iponod2dto3d1[2*(node-1)];
-    node2=iponod2dto3d1[2*(node-1)+1];
+  if((strcmp1(&lakon1[nelem*8+6],"A")==0)||(strcmp1(&lakon1[nelem*8+6],"E")==0)||
+     (strcmp1(&lakon1[nelem*8+6],"S")==0)||(strcmp1(&lakon1[nelem*8+6],"L")==0)){ 
+    //    node1=nod2nd3rd1[2*(node-1)];
+    //    node2=nod2nd3rd1[2*(node-1)+1];
+    node1=node+1;
+    node2=node+2;
   
     for(j=0;j<3;j++){ 
       conew1[(node1-1)*3+j+3**nk1**i]=co1[(node1-1)*3+j]+xdesi1[(idesvar-1)*3+j];
@@ -2462,13 +2472,16 @@ void *peeq_sen_dvmt(ITG *i){
 
   dv1[(node-1)**mt1+idir+*mt1**nk1**i]+=dispmin1;	       
 
-  /* perturbation of the coordinates of the neighboring nodes of the design variables
-     in case of an axisymmetric or plain strain (plane stress? shell?) model */
+  /* perturbation of the displacements of the neighboring nodes of the design variables
+     in case of an axisymmetric or plain stress/strain or shell model */
   
   nelem=ialnk1[nea-1]-1;
-  if((strcmp1(&lakon1[nelem*8+6],"A")==0)||(strcmp1(&lakon1[nelem*8+6],"E")==0)){ 
-    node1=iponod2dto3d1[2*(node-1)];
-    node2=iponod2dto3d1[2*(node-1)+1];
+  if((strcmp1(&lakon1[nelem*8+6],"A")==0)||(strcmp1(&lakon1[nelem*8+6],"E")==0)||
+     (strcmp1(&lakon1[nelem*8+6],"S")==0)||(strcmp1(&lakon1[nelem*8+6],"L")==0)){ 
+    //    node1=nod2nd3rd1[2*(node-1)];
+    //    node2=nod2nd3rd1[2*(node-1)+1];
+    node1=node+1;
+    node2=node+2;
   
     dv1[(node1-1)**mt1+idir+*mt1**nk1**i]+=dispmin1;
     dv1[(node2-1)**mt1+idir+*mt1**nk1**i]+=dispmin1;

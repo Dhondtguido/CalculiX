@@ -18,12 +18,33 @@
 !     
       subroutine getdesiinfo2d(set,istartset,iendset,ialset,nset,
      &     mi,nactdof,ndesi,nodedesi,ntie,tieset,nodedesiinv,lakon,
-     &     ipkon,kon,iponoelfa,iponod2dto3d,iponor2d,knor2d,
-     &     iponoel2d,inoel2d,nobject,objectset,iponk2dto3d,ne,
-     &     jobnamef)    
+     &     ipkon,kon,iponoelfa,nod2nd3rd,iponor2d,knor2d,
+     &     iponoel2d,inoel2d,nobject,objectset,nod1st,ne,
+     &     jobnamef,rig)    
 !     
-!     storing the design variables in nodedesi
-!     marking which nodes are design variables in nodedesiinv
+!     purpose of this routine:     
+!     
+!     1) replace the nodes in nodal design response sets which
+!        belong to 2D-elements by the lowest node number in the     
+!        3D-expansion of these elements
+!     
+!     2) if a node belonging to the design variable set 
+!        - belongs to a 2D-element     
+!        - is not a dependent MPC-node AND
+!        - has not all its dofs restricted by SPC's
+!        then it is declared as a design node. Its number is replaced   
+!        in the field of design nodes "nodedesi" by the lowest node
+!        number in the 3D-expansion of the element
+!     
+!     3) for such a design node i field node2nd3rd is created pointing    
+!        to the second (node2nd3rd(1,*)) and third (node2nd3rd(2,*))
+!        expansion node
+!     
+!     4) field nodedesiinv(1..nk) is created with nodedesinv(i)=1      
+!        is node i is a design variable, else =0.
+!     
+!     5) field nod1st(1..nk) is created pointing to the first node 
+!        in the expansion for every 2D design node
 !     
       implicit none
 !     
@@ -37,11 +58,11 @@
 !     
       integer mi(*),istartset(*),iendset(*),ialset(*),ndesi,ilen,
      &     node,nodedesi(*),nset,ntie,i,j,k,l,nactdof(0:mi(2),*),index1,
-     &     nodedesiinv(*),ipkon(*),kon(*),iaux,kflag,iponod2dto3d(2,*),
+     &     nodedesiinv(*),ipkon(*),kon(*),iaux,kflag,nod2nd3rd(2,*),
      &     iponoelfa(*),inoel2d(3,*),iset,iponoel2d(*),nodeold,ipos1,
      &     ipos2,ielem,iponor2d(2,*),num,knor2d(*),inode,nodenew,nope2d,
-     &     ishift,nobject,iobject,numtest,iponk2dto3d(*),ne,id,iwrite,
-     &     index2d
+     &     ishift,nobject,iobject,numtest,nod1st(*),ne,id,iwrite,
+     &     index2d,rig(*)
 !     
       setname(1:1)=' '
       ndesi=0
@@ -74,7 +95,7 @@
 !     
       do iobject=1,nobject
 !     
-!     only node-based objective functions are treated
+!     only node-based design responses are treated
 !     
         if((objectset(1,iobject)(1:12).ne."STRAINENERGY").and.
      &       (objectset(1,iobject)(1:4).ne."MASS").and.
@@ -125,17 +146,32 @@
       write(40,*) '*NSET,NSET=WarnNodeDesignReject'
 !     
 !     Rename the design variables and save the 2 additional expanded
-!     nodes in iponod2dto3d:
-!     for designvariables i --> 1st neighbor=iponod2dto3d(1,i)
-!     2nd neighbor=iponod2dto3d(2,i)                           
+!     nodes in nod2nd3rd:
+!     if node i is a design variable --> 1st neighbor=nod2nd3rd(1,i)
+!                                    --> 2nd neighbor=nod2nd3rd(2,i)
 !     
       loop1: do inode=istartset(iset),iendset(iset)
-      nodeold=ialset(inode)
-      index2d=iponoel2d(nodeold)
+        nodeold=ialset(inode)
+!
+!       check that de node is no expandable rigid body was defined
+!       in the node
+!
+        if(rig(nodeold).ne.0) then
+          write(*,*) '*WARNING in getdesiinfo2d:'
+          write(*,*) '       in node ',nodeold,' an expandable'
+          write(*,*) '       rigid body is defined and therefore'
+          write(*,*) '       it is removed from the set'
+          write(*,*) '       of design variables'
+          write(40,*) nodeold
+          iwrite=1
+          cycle loop1
+        endif
+!     
+        index2d=iponoel2d(nodeold)
         if(index2d.eq.0) cycle
         ielem=inoel2d(1,index2d)
 !     
-!     Determine element formulation
+!       Determine element formulation
 !     
         if((lakon(ielem)(7:7).eq.'A').or.
      &       (lakon(ielem)(7:7).eq.'E').or.
@@ -147,22 +183,28 @@
           nodenew=knor2d(ipos2+1)
           ialset(inode)=nodenew
 !     
-!     check for the existence of a MPC in the node
+!         check for the existence of a MPC in the node
 !     
           do l=1,3
-            if(nactdof(l,nodeold).gt.0) exit
 !     
-!     check if its an MPC(odd) or SPC(even)
+!           comment for next line: nactdof can be zero since nodeold
+!           is a 2D-node which is not necessarily used in the equation     
+!           system (only if e.g. a SPC or MPC was defined in the 2D    
+!           node)
+!     
+            if(nactdof(l,nodeold).ge.0) exit
+!     
+!           check if its an MPC(odd) or SPC(even)
 !     
             num=nactdof(l,nodeold)
             numtest=num/2*2
             if(num.ne.numtest) then
               write(*,*) '*WARNING in getdesiinfo2d:'
-              write(*,*) '       node ',node,' is a'
+              write(*,*) '       node ',nodeold,' is a'
               write(*,*) '       dependent dof in a MPC and'
               write(*,*) '       is removed from the set'
               write(*,*) '       of design variables'
-              write(40,*) node
+              write(40,*) nodeold
               iwrite=1
               cycle loop1
             endif
@@ -171,7 +213,13 @@
 !     check whether not all dofs are removed by SPCs
 !     
           do l=1,3
-            if(nactdof(l,nodeold).gt.0) exit
+!     
+!           comment for next line: nactdof can be zero since nodeold
+!           is a 2D-node which is not necessarily used in the equation     
+!           system (only if e.g. a SPC or MPC was defined in the 2D    
+!           node)
+!     
+            if(nactdof(l,nodeold).ge.0) exit
             if(l.eq.3) then
               write(*,*) '*WARNING in getdesiinfo2d:'
               write(*,*) '       node ',node,' has no'
@@ -184,8 +232,8 @@
             endif
           enddo
           ialset(inode)=nodenew
-          iponod2dto3d(1,nodenew)=knor2d(ipos2+2)
-          iponod2dto3d(2,nodenew)=knor2d(ipos2+3)
+          nod2nd3rd(1,nodenew)=knor2d(ipos2+2)
+          nod2nd3rd(2,nodenew)=knor2d(ipos2+3)
 !     
 !         the lowest expanded node number is the design variable     
 !     
@@ -200,17 +248,14 @@
       do i=1,ndesi
         node=nodedesi(i)
         nodedesiinv(node)=1
-        node=iponod2dto3d(1,nodedesi(i))
+        node=nod2nd3rd(1,nodedesi(i))
         nodedesiinv(node)=1
-        node=iponod2dto3d(2,nodedesi(i))
+        node=nod2nd3rd(2,nodedesi(i))
         nodedesiinv(node)=1
       enddo
 !     
       kflag=1
       call isortii(nodedesi,iaux,ndesi,kflag)
-!     
-!     save the corresponding midnode for every node i in nk
-!     --> midnode=iponod2dto3d(i)                          
 !     
       do ielem=1,ne
         if(ipkon(ielem).lt.0) cycle   
@@ -247,12 +292,9 @@
           do k=1,nope2d
             ipos1=ipkon(ielem)+k    
             ipos2=iponor2d(2,ipos1)
-c            iponk2dto3d(knor2d(ipos2+1))=knor2d(ipos2+2)
-            iponk2dto3d(knor2d(ipos2+1))=knor2d(ipos2+1)
-c            iponk2dto3d(knor2d(ipos2+2))=knor2d(ipos2+2)
-            iponk2dto3d(knor2d(ipos2+2))=knor2d(ipos2+1)
-c            iponk2dto3d(knor2d(ipos2+3))=knor2d(ipos2+2)
-            iponk2dto3d(knor2d(ipos2+3))=knor2d(ipos2+1)
+            nod1st(knor2d(ipos2+1))=knor2d(ipos2+1)
+            nod1st(knor2d(ipos2+2))=knor2d(ipos2+1)
+            nod1st(knor2d(ipos2+3))=knor2d(ipos2+1)
           enddo
         endif
       enddo
