@@ -538,6 +538,7 @@ modelchanges.f \
 modf.f \
 modifympc.f \
 moehring.f \
+mohrcoulomb.f \
 mpcadd.f \
 mpcrem.f \
 mpcs.f \
