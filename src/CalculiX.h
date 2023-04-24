@@ -3292,9 +3292,10 @@ void FORTRAN(objective_shapeener_tot,(ITG *ne,ITG *kon,ITG *ipkon,char *lakon,
              ITG *irows,double *vec,ITG *nod1st));
 
 void FORTRAN(objective_peeq,(ITG *nodeset,ITG *istartset,ITG *iendset,
-             ITG *ialset,ITG *nk,ITG *idesvar,ITG *iobject,ITG *mi,
-             double *g0,ITG *nobject,double *epn,char *objectset,
-             double *expks));
+			     ITG *ialset,ITG *nk,ITG *idesvar,ITG *iobject,
+			     ITG *mi,double *g0,ITG *nobject,double *epn,
+			     char *objectset,double *expks,char *set,
+			     ITG *nset));
 
 void FORTRAN(objective_peeq_se,(ITG *nk,ITG *iobject,ITG *mi,double *depn,
              char *objectset,ITG *ialnneigh,ITG *naneigh,ITG *nbneigh,
