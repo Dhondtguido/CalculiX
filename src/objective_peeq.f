@@ -17,19 +17,25 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine objective_peeq(nodeset,istartset,iendset,ialset,
-     &  nk,idesvarc,iobject,mi,g0,nobject,epn,objectset,expks)
+     &     nk,idesvarc,iobject,mi,g0,nobject,epn,objectset,expks,set,
+     &     nset)
 !
 !     calculates the sum of the square of the von Mises stress of a node
 !     set
 !
       implicit none
 !
-      character*81 objectset(5,*)
+      character*81 objectset(5,*),set(*)
 !
-      integer nk,istartset(*),iendset(*),ialset(*),nodeset,
+      integer nk,istartset(*),iendset(*),ialset(*),nodeset,nset,
      &  idesvarc,iobject,mi(*),j,k,nobject,idesvar
 !
       real*8 g0(nobject),epn(*),p,rho,xpeeq,argument,expks
+!
+      call cident(set,objectset(3,iobject),nset,nodeset)
+      if(nodeset.gt.0) then
+        if(objectset(3,iobject).ne.set(nodeset)) nodeset=0
+      endif
 !
       idesvar=idesvarc+1
 !

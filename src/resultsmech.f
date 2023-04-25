@@ -1059,6 +1059,7 @@ c     enddo
      &         (ithermal(1).le.1))) then
 !     
             if(nener.eq.1) then
+!     sigma.d(epsilon)=(sigma_ini+sigma)*(epsilon-epsilon_ini)/2
               ener(1,jj,i)=enerini(1,jj,i)+
      &             ((emec(1)-emeini(1,jj,i))*
      &             (stre(1)+stiini(1,jj,i))+

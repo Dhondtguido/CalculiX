@@ -26,10 +26,10 @@
 !
       integer nk,istartnneigh(*),ialnneigh(*),
      &   istartnk(*),ialnk(*),ifree,index,i,j,k,nea,neb,elem,
-     &   ipkon(*),kon(*),ipos,nope,ichecknodes(*),node,
-     &   inode,nkinsetinv(*),neielemtot,nka,nkb
+     &   ipkon(*),kon(*),indexe,nope,ichecknodes(*),node,
+     &   nkinsetinv(*),neielemtot,nka,nkb
 !
-!     determining all the OBJECTIVE nodes (and only those;
+!     determining all the design response nodes (and only those;
 !     is verified by use of field nkinsetinv) of the 
 !     neighboring elements of node i.
 !     They are stored in ialnneigh(istartnneigh(i))..
@@ -39,15 +39,13 @@
       do i=1,nk
 !        
          istartnneigh(i)=ifree 
-c         index=iponoel(i)
-c         if(index.eq.0) cycle 
          nea=istartnk(i)
          neb=istartnk(i+1)-1
 !   
          do j=nea,neb
 !   
             elem=ialnk(j)
-            ipos=ipkon(elem)
+            indexe=ipkon(elem)
 !
             if(lakon(elem)(4:4).eq.'8') then
                nope=8
@@ -64,12 +62,12 @@ c         if(index.eq.0) cycle
             endif
 !
             do k=1,nope                     
-               if(ichecknodes(kon(ipos+k)).eq.i) cycle
-               if(nkinsetinv(kon(ipos+k)).eq.1) then
-                  inode=kon(ipos+k)
-                  ialnneigh(ifree)=kon(ipos+k)
+               if(ichecknodes(kon(indexe+k)).eq.i) cycle
+               if(nkinsetinv(kon(indexe+k)).eq.1) then
+                  node=kon(indexe+k)
+                  ialnneigh(ifree)=node
                   ifree=ifree+1  
-                  ichecknodes(kon(ipos+k))=i
+                  ichecknodes(node)=i
                endif       
             enddo
          enddo
@@ -77,7 +75,7 @@ c         if(index.eq.0) cycle
       istartnneigh(nk+1)=ifree
 !
 !     determining an upper limit of the number of elements
-!     to which the [objective nodes belonging to the elements
+!     to which the [design response nodes belonging to the elements
 !     adjacent of node nk] belong
 !
 !     needed for allocation purposes
