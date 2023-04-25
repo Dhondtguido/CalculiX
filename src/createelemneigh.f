@@ -25,7 +25,7 @@
      &   ifree,index,i,j,ipos,na,nb,node,istarteneigh(*),ialeneigh(*),
      &   icheckelems(*)
 !
-!     determining all the elements to which the objective
+!     determining all the elements to which the design response
 !     nodes of the neighboring elements of a node i belong
 !     They are stored in ialeneigh(istarteneigh(i))..
 !     ...up to..... ialeneigh(istarteneigh(i+1)-1)

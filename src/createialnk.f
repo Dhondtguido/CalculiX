@@ -23,9 +23,10 @@
       integer nk,iponoel(*),inoel(2,*),ipkon(*),ielem,
      &   istartnk(*),ialnk(*),ifree,index,i
 !
-!     determining the elements belonging to a node i.
-!     They are stored in ialnk(istartnk(i))..
-!     ...up to..... ialnk(istartnk(i+1)-1)
+!     determining the elements containing at least one design response
+!     node and belonging to a node i.
+!     They are stored in ialnk(istartnk(i)).....up to.....
+!     ialnk(istartnk(i+1)-1)
 !
       ifree=1
       do i=1,nk

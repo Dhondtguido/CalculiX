@@ -248,7 +248,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
       FORTRAN(actideacti,(set,nset,istartset,iendset,ialset,objectset,
 			  ipkon,&iobject,ne));
  
-      /* call without perturbation */
+      /* call without perturbation (calculation of g0) */
    
       idesvar=0;
 
@@ -332,7 +332,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
       FORTRAN(actideacti,(set,nset,istartset,iendset,ialset,objectset,
 			  ipkon,&iobject,ne));
  
-      /* call without perturbation */
+      /* call without perturbation (calculation of g0) */
    
       idesvar=0;
 	    
@@ -374,7 +374,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	    
       NNEW(ithread,ITG,num_cpuse);
 	    
-      /* Total difference of the internal strain energy */
+      /* calculate g0 */
       /* create threads and wait */
 	    
       for(i=0;i<num_cpuse;i++)  {
@@ -1465,8 +1465,8 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 
       RENEW(ialnk,ITG,istartnk[*nk]-1);
 		
-      /* storing the nodes of the neighboring elements of node nk 
-	 in field ialnneigh */
+      /* storing the design response nodes of the neighboring elements of 
+	 node nk in field ialnneigh */
 		
       NNEW(istartnneigh,ITG,*nk+1);
       NNEW(ialnneigh,ITG,20*(istartnk[*nk]-1));
@@ -1556,17 +1556,18 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 
       /* calculating the objective function */
 
-      nodeset=0;
+      /*      nodeset=0;
       for(i=0;i<*nset;i++){
 	if(strcmp1(&objectset[m*405+162]," ")==0) continue;
 	if(strcmp2(&objectset[m*405+162],&set[i*81],81)==0){
 	  nodeset=i+1;
 	  break;
 	}
-      }
-        FORTRAN(objective_peeq,(&nodeset,istartset,iendset,
+	}*/
+      FORTRAN(objective_peeq,(&nodeset,istartset,iendset,
 			      ialset,nk,&idesvar,&iobject,mi,g0,
-			      nobject,epn,objectset,&expks));
+			      nobject,epn,objectset,&expks,
+			      set,nset));
 
       /* reduce the size of the loops */
 	      

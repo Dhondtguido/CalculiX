@@ -30,8 +30,6 @@
 !      
       real*8 dgdx(ndesi,*),df(*),vec(*),vold(0:mi(2),*),fint(*)
 !
-!
-!
 !     ----------------------------------------------------------------
 !     Calculation of the total differential:
 !     non-linear:  dgdx = dgdx + fint^(T) * ( df )
@@ -73,14 +71,14 @@
 !         
          if(iperturb(2).eq.1) then
             do i=1,nope
+c              if((lakon(ielem)(7:7).eq.'A').or.
+c     &             (lakon(ielem)(7:7).eq.'S').or.       
+c     &             (lakon(ielem)(7:7).eq.'E')) then
+c                node=nod1st(konl(i))+1     
+c              else
+                node=konl(i)
+c              endif
                do j=1,3
-                  if((lakon(ielem)(7:7).eq.'A').or.
-     &               (lakon(ielem)(7:7).eq.'S').or.       
-     &               (lakon(ielem)(7:7).eq.'E')) then
-                     node=nod1st(konl(i))     
-                  else
-                     node=konl(i)
-                  endif
                   idof=nactdof(j,node)
                   if(idof.gt.0) then
                      vec(idof)=fint(idof)
@@ -89,22 +87,17 @@
             enddo
          else
             do i=1,nope
+c              if((lakon(ielem)(7:7).eq.'A').or.
+c     &             (lakon(ielem)(7:7).eq.'S').or.       
+c     &             (lakon(ielem)(7:7).eq.'E')) then
+c                node=nod1st(konl(i))+1
+c              else
+                node=konl(i)
+c              endif
                do j=1,3
-                  if((lakon(ielem)(7:7).eq.'A').or.
-     &               (lakon(ielem)(7:7).eq.'S').or.       
-     &               (lakon(ielem)(7:7).eq.'E')) then
-                     node=nod1st(konl(i))
-c                write(*,*) 'objective_shapeener_tot node',ielem,i,node
-                  else
-                     node=konl(i)
-                  endif
-c                     write(*,*) 'objective_shapeener_tot',j,node,idof,
-c     &vold(j,node),nactdof(j,node)
                   idof=nactdof(j,node)
                   if(idof.gt.0) then      
                      vec(idof)=vold(j,node)
-c                     write(*,*) 'objective_shapeener_tot',j,node,idof,
-c     &vold(j,node)
                   endif              
                enddo
             enddo
@@ -113,16 +106,11 @@ c     &vold(j,node)
 !
 !     Calculation of the total differential:    
 !
-c      do idesvar=1,ndesi
-c         dgdx(idesvar,iobject)=0.d0
-c      enddo
       do idesvar=1,ndesi
          do j=jqs(idesvar),jqs(idesvar+1)-1
             idof=irows(j)
             dgdx(idesvar,iobject)=dgdx(idesvar,iobject) 
      &            +vec(idof)*df(j) 
-c     &           +vec(idof)
-c            write(*,*) idesvar,j,idof,vec(idof),dgdx(idesvar,iobject)
          enddo
       enddo     
 !      
