@@ -39,7 +39,7 @@
       character*8 lakon(*),lakonl
       character*80 amat,matname(*)
 !     
-      integer kon(*),konl(26),nea,neb,mi(*),mint2d,nopes,nr,
+      integer kon(*),konl(20),nea,neb,mi(*),mint2d,nopes,nr,
      &     nelcon(2,*),nrhcon(*),nalcon(2,*),ielmat(mi(3),*),
      &     ielorien(mi(3),*),ntmat_,ipkon(*),ne0,iflag,null,
      &     istep,iinc,mt,ne,mattyp,ithermal(*),iprestr,i,ii,j,k,m1,m2,
@@ -52,18 +52,18 @@
      &     nlgeom_undo,node1,node2,ifaceqexp(2,20),ifacewexp(2,15),
      &     mscalmethod,kscale
 !     
-      real*8 co(3,*),shp(4,26),stiini(6,mi(1),*),xener(*),physcon(*),
-     &     stx(6,mi(1),*),xl(3,26),vl(0:mi(2),26),stre(6),prop(*),
+      real*8 co(3,*),shp(4,20),stiini(6,mi(1),*),xener(*),physcon(*),
+     &     stx(6,mi(1),*),xl(3,20),vl(0:mi(2),20),stre(6),prop(*),
      &     elcon(0:ncmat_,ntmat_,*),rhcon(0:1,ntmat_,*),xs2(3,7),
      &     alcon(0:6,ntmat_,*),vini(0:mi(2),*),thickness,
-     &     alzero(*),orab(7,*),elas(21),rho,qa(4),
-     &     fnl(3,10),beta(6),q(0:mi(2),26),xl2(3,8),
+     &     alzero(*),orab(7,*),elas(21),rho,qa(4),elineng(6),
+     &     fnl(3,10),beta(6),q(0:mi(2),20),xl2(3,8),
      &     vkl(0:3,3),t0(*),t1(*),prestr(6,mi(1),*),
      &     ckl(3,3),vold(0:mi(2),*),eloc(9),veold(0:mi(2),*),
      &     springarea(2,*),elconloc(ncmat_),eth(6),xkl(3,3),
-     &     voldl(0:mi(2),26),senergy,venergy,
+     &     voldl(0:mi(2),20),senergy,venergy,
      &     xikl(3,3),ener(2,mi(1),*),emec(6),enerini(2,mi(1),*),
-     &     emec0(6),veoldl(0:mi(2),26),xsj2(3),shp2(7,8),
+     &     emec0(6),veoldl(0:mi(2),20),xsj2(3),shp2(7,8),
      &     e,un,al,um,am1,xi,et,ze,tt,exx,eyy,ezz,exy,exz,eyz,
      &     xsj,vj,t0l,t1l,dtime,weight,pgauss(3),vij,time,ttime,
      &     plicon(0:2*npmat_,ntmat_,*),plkcon(0:2*npmat_,ntmat_,*),
@@ -250,14 +250,10 @@ c     Bernhardi start
         elseif(lakonl(4:5).eq.'20') then
 c     Bernhardi end
           nope=20
-        elseif(lakonl(4:4).eq.'2') then
-          nope=26
         elseif(lakonl(4:4).eq.'8') then
           nope=8
         elseif(lakonl(4:5).eq.'10') then
           nope=10
-        elseif(lakonl(4:5).eq.'14') then
-          nope=14
         elseif(lakonl(4:4).eq.'4') then
           nope=4
         elseif(lakonl(4:5).eq.'15') then
@@ -316,8 +312,7 @@ c     Bernhardi end
             call beamintscheme(lakonl,mint3d,ielprop(i),prop,
      &           null,xi,et,ze,weight)
           endif
-        elseif((lakonl(4:4).eq.'8').or.(lakonl(4:6).eq.'26R').or.
-     &         (lakonl(4:6).eq.'20R')) then
+        elseif((lakonl(4:4).eq.'8').or.(lakonl(4:6).eq.'20R')) then
           if(lakonl(7:8).eq.'LC') then
             mint3d=8*nlayer
           else
@@ -325,7 +320,7 @@ c     Bernhardi end
           endif
         elseif(lakonl(4:4).eq.'2') then
           mint3d=27
-        elseif((lakonl(4:5).eq.'10').or.(lakonl(4:5).eq.'14')) then
+        elseif(lakonl(4:5).eq.'10') then
           mint3d=4
         elseif(lakonl(4:4).eq.'4') then
           mint3d=1
@@ -502,8 +497,7 @@ c     Bernhardi end
               call beamintscheme(lakonl,mint3d,ielprop(i),prop,
      &             jj,xi,et,ze,weight)
             endif
-          elseif((lakonl(4:4).eq.'8').or.
-     &           (lakonl(4:6).eq.'20R').or.(lakonl(4:6).eq.'26R'))
+          elseif((lakonl(4:4).eq.'8').or.(lakonl(4:6).eq.'20R'))
      &           then
             if(lakonl(7:8).ne.'LC') then
               xi=gauss3d2(1,jj)
@@ -555,8 +549,7 @@ c     Bernhardi end
             et=gauss3d3(2,jj)
             ze=gauss3d3(3,jj)
             weight=weight3d3(jj)
-          elseif((lakonl(4:5).eq.'10').or.(lakonl(4:5).eq.'14'))
-     &           then
+          elseif(lakonl(4:5).eq.'10') then
             xi=gauss3d5(1,jj)
             et=gauss3d5(2,jj)
             ze=gauss3d5(3,jj)
@@ -634,14 +627,10 @@ c     Bernhardi end
             else
               call shape20h(xi,et,ze,xl,xsj,shp,iflag)
             endif
-c     elseif(nope.eq.26) then
-c     call shape26h(xi,et,ze,xl,xsj,shp,iflag,konl)
           elseif(nope.eq.8) then
             call shape8h(xi,et,ze,xl,xsj,shp,iflag)
           elseif(nope.eq.10) then
             call shape10tet(xi,et,ze,xl,xsj,shp,iflag)
-c     elseif(nope.eq.14) then
-c     call shape14tet(xi,et,ze,xl,xsj,shp,iflag,konl)
           elseif(nope.eq.4) then
             call shape4tet(xi,et,ze,xl,xsj,shp,iflag)
           elseif(nope.eq.15) then
@@ -695,78 +684,81 @@ c     call shape14tet(xi,et,ze,xl,xsj,shp,iflag,konl)
           kode=nelcon(1,imat)
 !     
 !     calculating the strain
-!     
-!     attention! exy,exz and eyz are engineering strains!
-!     
-          exx=vkl(1,1)
-          eyy=vkl(2,2)
-          ezz=vkl(3,3)
-          exy=vkl(1,2)+vkl(2,1)
-          exz=vkl(1,3)+vkl(3,1)
-          eyz=vkl(2,3)+vkl(3,2)
-!     
-          if(iperturb(2).eq.1) then
-!     
-!     Lagrangian strain
-!     
-            exx=exx+(vkl(1,1)**2+vkl(2,1)**2+vkl(3,1)**2)/2.d0
-            eyy=eyy+(vkl(1,2)**2+vkl(2,2)**2+vkl(3,2)**2)/2.d0
-            ezz=ezz+(vkl(1,3)**2+vkl(2,3)**2+vkl(3,3)**2)/2.d0
-            exy=exy+vkl(1,1)*vkl(1,2)+vkl(2,1)*vkl(2,2)+
-     &           vkl(3,1)*vkl(3,2)
-            exz=exz+vkl(1,1)*vkl(1,3)+vkl(2,1)*vkl(2,3)+
-     &           vkl(3,1)*vkl(3,3)
-            eyz=eyz+vkl(1,2)*vkl(1,3)+vkl(2,2)*vkl(2,3)+
-     &           vkl(3,2)*vkl(3,3)
-!     
-!     for frequency analysis or buckling with preload the
-!     strains are calculated with respect to the deformed
-!     configuration
-!     
-          elseif(iperturb(1).eq.1) then
-            exx=exx+vokl(1,1)*vkl(1,1)+vokl(2,1)*vkl(2,1)+
-     &           vokl(3,1)*vkl(3,1)
-            eyy=eyy+vokl(1,2)*vkl(1,2)+vokl(2,2)*vkl(2,2)+
-     &           vokl(3,2)*vkl(3,2)
-            ezz=ezz+vokl(1,3)*vkl(1,3)+vokl(2,3)*vkl(2,3)+
-     &           vokl(3,3)*vkl(3,3)
-            exy=exy+vokl(1,1)*vkl(1,2)+vokl(1,2)*vkl(1,1)+
-     &           vokl(2,1)*vkl(2,2)+vokl(2,2)*vkl(2,1)+
-     &           vokl(3,1)*vkl(3,2)+vokl(3,2)*vkl(3,1)
-            exz=exz+vokl(1,1)*vkl(1,3)+vokl(1,3)*vkl(1,1)+
-     &           vokl(2,1)*vkl(2,3)+vokl(2,3)*vkl(2,1)+
-     &           vokl(3,1)*vkl(3,3)+vokl(3,3)*vkl(3,1)
-            eyz=eyz+vokl(1,2)*vkl(1,3)+vokl(1,3)*vkl(1,2)+
-     &           vokl(2,2)*vkl(2,3)+vokl(2,3)*vkl(2,2)+
-     &           vokl(3,2)*vkl(3,3)+vokl(3,3)*vkl(3,2)
-          endif
-!     
-!     storing the local strains
-!     
-          if(iperturb(1).ne.-1) then
-            eloc(1)=exx
-            eloc(2)=eyy
-            eloc(3)=ezz
-            eloc(4)=exy/2.d0
-            eloc(5)=exz/2.d0
-            eloc(6)=eyz/2.d0
-          else
-!     
-!     linear iteration within a nonlinear increment:
-!     
-            eloc(1)=vokl(1,1)+
-     &           (vokl(1,1)**2+vokl(2,1)**2+vokl(3,1)**2)/2.d0
-            eloc(2)=vokl(2,2)+
-     &           (vokl(1,2)**2+vokl(2,2)**2+vokl(3,2)**2)/2.d0
-            eloc(3)=vokl(3,3)+
-     &           (vokl(1,3)**2+vokl(2,3)**2+vokl(3,3)**2)/2.d0
-            eloc(4)=(vokl(1,2)+vokl(2,1)+vokl(1,1)*vokl(1,2)+
-     &           vokl(2,1)*vokl(2,2)+vokl(3,1)*vokl(3,2))/2.d0
-            eloc(5)=(vokl(1,3)+vokl(3,1)+vokl(1,1)*vokl(1,3)+
-     &           vokl(2,1)*vokl(2,3)+vokl(3,1)*vokl(3,3))/2.d0
-            eloc(6)=(vokl(2,3)+vokl(3,2)+vokl(1,2)*vokl(1,3)+
-     &           vokl(2,2)*vokl(2,3)+vokl(3,2)*vokl(3,3))/2.d0
-          endif
+!
+          call calctotstrain(vkl,vokl,eloc,elineng,iperturb)
+!
+c          
+c!     attention! exy,exz and eyz are engineering strains!
+c!     
+c          exx=vkl(1,1)
+c          eyy=vkl(2,2)
+c          ezz=vkl(3,3)
+c          exy=vkl(1,2)+vkl(2,1)
+c          exz=vkl(1,3)+vkl(3,1)
+c          eyz=vkl(2,3)+vkl(3,2)
+c!     
+c          if(iperturb(2).eq.1) then
+c!     
+c!     Lagrangian strain
+c!     
+c            exx=exx+(vkl(1,1)**2+vkl(2,1)**2+vkl(3,1)**2)/2.d0
+c            eyy=eyy+(vkl(1,2)**2+vkl(2,2)**2+vkl(3,2)**2)/2.d0
+c            ezz=ezz+(vkl(1,3)**2+vkl(2,3)**2+vkl(3,3)**2)/2.d0
+c            exy=exy+vkl(1,1)*vkl(1,2)+vkl(2,1)*vkl(2,2)+
+c     &           vkl(3,1)*vkl(3,2)
+c            exz=exz+vkl(1,1)*vkl(1,3)+vkl(2,1)*vkl(2,3)+
+c     &           vkl(3,1)*vkl(3,3)
+c            eyz=eyz+vkl(1,2)*vkl(1,3)+vkl(2,2)*vkl(2,3)+
+c     &           vkl(3,2)*vkl(3,3)
+c!     
+c!     for frequency analysis or buckling with preload the
+c!     strains are calculated with respect to the deformed
+c!     configuration
+c!     
+c          elseif(iperturb(1).eq.1) then
+c            exx=exx+vokl(1,1)*vkl(1,1)+vokl(2,1)*vkl(2,1)+
+c     &           vokl(3,1)*vkl(3,1)
+c            eyy=eyy+vokl(1,2)*vkl(1,2)+vokl(2,2)*vkl(2,2)+
+c     &           vokl(3,2)*vkl(3,2)
+c            ezz=ezz+vokl(1,3)*vkl(1,3)+vokl(2,3)*vkl(2,3)+
+c     &           vokl(3,3)*vkl(3,3)
+c            exy=exy+vokl(1,1)*vkl(1,2)+vokl(1,2)*vkl(1,1)+
+c     &           vokl(2,1)*vkl(2,2)+vokl(2,2)*vkl(2,1)+
+c     &           vokl(3,1)*vkl(3,2)+vokl(3,2)*vkl(3,1)
+c            exz=exz+vokl(1,1)*vkl(1,3)+vokl(1,3)*vkl(1,1)+
+c     &           vokl(2,1)*vkl(2,3)+vokl(2,3)*vkl(2,1)+
+c     &           vokl(3,1)*vkl(3,3)+vokl(3,3)*vkl(3,1)
+c            eyz=eyz+vokl(1,2)*vkl(1,3)+vokl(1,3)*vkl(1,2)+
+c     &           vokl(2,2)*vkl(2,3)+vokl(2,3)*vkl(2,2)+
+c     &           vokl(3,2)*vkl(3,3)+vokl(3,3)*vkl(3,2)
+c          endif
+c!     
+c!     storing the local strains
+c!     
+c          if(iperturb(1).ne.-1) then
+c            eloc(1)=exx
+c            eloc(2)=eyy
+c            eloc(3)=ezz
+c            eloc(4)=exy/2.d0
+c            eloc(5)=exz/2.d0
+c            eloc(6)=eyz/2.d0
+c          else
+c!     
+c!     linear iteration within a nonlinear increment:
+c!     
+c            eloc(1)=vokl(1,1)+
+c     &           (vokl(1,1)**2+vokl(2,1)**2+vokl(3,1)**2)/2.d0
+c            eloc(2)=vokl(2,2)+
+c     &           (vokl(1,2)**2+vokl(2,2)**2+vokl(3,2)**2)/2.d0
+c            eloc(3)=vokl(3,3)+
+c     &           (vokl(1,3)**2+vokl(2,3)**2+vokl(3,3)**2)/2.d0
+c            eloc(4)=(vokl(1,2)+vokl(2,1)+vokl(1,1)*vokl(1,2)+
+c     &           vokl(2,1)*vokl(2,2)+vokl(3,1)*vokl(3,2))/2.d0
+c            eloc(5)=(vokl(1,3)+vokl(3,1)+vokl(1,1)*vokl(1,3)+
+c     &           vokl(2,1)*vokl(2,3)+vokl(3,1)*vokl(3,3))/2.d0
+c            eloc(6)=(vokl(2,3)+vokl(3,2)+vokl(1,2)*vokl(1,3)+
+c     &           vokl(2,2)*vokl(2,3)+vokl(3,2)*vokl(3,3))/2.d0
+c          endif
 !     
 !     calculating the deformation gradient (needed to
 !     convert the element stiffness matrix from spatial
@@ -794,28 +786,6 @@ c     Bernhardi end
             vj=xkl(1,1)*(xkl(2,2)*xkl(3,3)-xkl(2,3)*xkl(3,2))
      &           -xkl(1,2)*(xkl(2,1)*xkl(3,3)-xkl(2,3)*xkl(3,1))
      &           +xkl(1,3)*(xkl(2,1)*xkl(3,2)-xkl(2,2)*xkl(3,1))
-c!     
-c!     inversion of the deformation gradient (only for
-c!     deformation plasticity)
-c!     
-c            if(kode.eq.-50) then
-c!     
-c              ckl(1,1)=(xkl(2,2)*xkl(3,3)-xkl(2,3)*xkl(3,2))/vj
-c              ckl(2,2)=(xkl(1,1)*xkl(3,3)-xkl(1,3)*xkl(3,1))/vj
-c              ckl(3,3)=(xkl(1,1)*xkl(2,2)-xkl(1,2)*xkl(2,1))/vj
-c              ckl(1,2)=(xkl(1,3)*xkl(3,2)-xkl(1,2)*xkl(3,3))/vj
-c              ckl(1,3)=(xkl(1,2)*xkl(2,3)-xkl(2,2)*xkl(1,3))/vj
-c              ckl(2,3)=(xkl(2,1)*xkl(1,3)-xkl(1,1)*xkl(2,3))/vj
-c              ckl(2,1)=(xkl(3,1)*xkl(2,3)-xkl(2,1)*xkl(3,3))/vj
-c              ckl(3,1)=(xkl(2,1)*xkl(3,2)-xkl(2,2)*xkl(3,1))/vj
-c              ckl(3,2)=(xkl(3,1)*xkl(1,2)-xkl(1,1)*xkl(3,2))/vj
-c!     
-c!     converting the Lagrangian strain into Eulerian
-c!     strain (only for deformation plasticity)
-c!     
-c              cauchy=0
-c              call str2mat(eloc,ckl,vj,cauchy)
-c            endif
 !     
           endif
 !     
@@ -900,8 +870,7 @@ c            endif
                   t0l=t0l+t0(konl(i1))/8.d0
                   t1l=t1l+t1(konl(i1))/8.d0
                 enddo
-              elseif((lakonl(4:6).eq.'20 ').or.
-     &               (lakonl(4:6).eq.'26 ')) then
+              elseif(lakonl(4:6).eq.'20 ') then
                 nopered=20
                 call lintemp(t0,konl,nopered,jj,t0l)
                 call lintemp(t1,konl,nopered,jj,t1l)
@@ -921,8 +890,7 @@ c            endif
                   t0l=t0l+t0(konl(i1))/8.d0
                   t1l=t1l+vold(0,konl(i1))/8.d0
                 enddo
-              elseif((lakonl(4:6).eq.'20 ').or.
-     &               (lakonl(4:6).eq.'26 ')) then
+              elseif(lakonl(4:6).eq.'20 ') then
                 nopered=20
                 call lintemp_th0(t0,konl,nopered,jj,t0l,mi)
                 call lintemp_th1(vold,konl,nopered,jj,t1l,mi)
@@ -1079,6 +1047,8 @@ c     enddo
           else
 !     
 !     only change of energy is stored
+!
+!     sigma.d(epsilon)=(sigma_ini+sigma)*(epsilon-epsilon_ini)/2
 !     
             ener(1,jj,i)=
      &           ((emec(1)-emeini(1,jj,i))*

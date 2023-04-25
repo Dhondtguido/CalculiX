@@ -21,7 +21,7 @@
      &           nepar,nkinsetinv,nk)
 !
 !     deactivates the elements which are not adjacent to the nodes in
-!     the STRESS objective function set
+!     the STRESS/PEEQ design response function set
 !
       implicit none
 !
@@ -31,12 +31,9 @@
      &  iobject,ne,index,nelem,iponoel(*),inoel(2,*),neinset(*),
      &  nepar,nkinsetinv(*),nk,id
 !
-!     determining the nodes set corresponding to the STRESS
+!     determining the node set corresponding to the STRESS
 !     objective function
 !
-c      do i=1,nset
-c         if(objectset(3,iobject).eq.set(i)) exit
-c      enddo
       call cident81(set,objectset(3,iobject),nset,id)
       i=nset+1
       if(id.gt.0) then
@@ -44,8 +41,6 @@ c      enddo
           i=id
         endif
       endif
-!
-      nepar=0
 !
       if(i.le.nset) then
 !
@@ -57,9 +52,9 @@ c      enddo
          enddo
 !
 !        reactivate the elements adjacent to the nodes in the
-!        STRESS objective function set (the stress is extrapolated
+!        STRESS/PEEQ design response function set (the stress is extrapolated
 !        to the nodes, therefore only those elements are needed to
-!        which the nodes in the STRESS objective function belong)
+!        which the nodes in the STRESS/PEEQ design response function belong)
 !
          do j=istartset(i),iendset(i)
             if(ialset(j).gt.0) then
@@ -71,7 +66,6 @@ c      enddo
                   if(neinset(nelem).eq.0) then
                      ipkon(nelem)=-ipkon(nelem)-2
                      neinset(nelem)=1
-                     nepar=nepar+1
                   endif
                   index=inoel(2,index)
                enddo
@@ -88,7 +82,6 @@ c      enddo
                      if(neinset(nelem).eq.0) then
                         ipkon(nelem)=-ipkon(nelem)-2
                         neinset(nelem)=1
-                        nepar=nepar+1
                      endif
                      index=inoel(2,index)
                   enddo
@@ -102,14 +95,13 @@ c      enddo
          do i=1,ne
             if(ipkon(i).lt.0) cycle
             neinset(i)=1
-            nepar=nepar+1
          enddo
          do i=1,nk
             nkinsetinv(i)=1
          enddo
       endif
 !
-!     putting all active elements in ascending order in field
+!     putting all active elements in ascending (?) order in field
 !     neinset
 !
       nepar=0
