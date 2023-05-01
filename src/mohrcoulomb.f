@@ -729,6 +729,83 @@
         do i=4,6
           sc(i)=0.d0
         enddo
+!        
+        if(icmd.ne.3) then
+!
+!          calculate the tangent stiffness matrix
+!
+          a1(1)=xk
+          a1(2)=0.d0
+          a1(3)=-1.d0
+          a2(1)=0.d0
+          a2(2)=xk
+          a2(3)=-1.d0
+          a6(1)=xk
+          a6(2)=-1.d0
+          a6(3)=0.d0
+          tracea=xk-1.d0
+          do i=1,3
+            da1(i)=um2*a1(i)+al*tracea
+            da2(i)=um2*a2(i)+al*tracea
+            da6(i)=um2*a6(i)+al*tracea
+          enddo
+!
+!         setting up lhs matrix a(*,*)
+!
+          a(1,1)=a1(1)*s1(1)+a1(2)*s1(2)+a1(3)*s1(3)+dk*dm*dfiso
+          a(1,2)=a1(1)*s2(1)+a1(2)*s2(2)+a1(3)*s2(3)+dk*dm*dfiso
+          a(1,3)=a1(1)*s6(1)+a1(2)*s6(2)+a1(3)*s6(3)+dk*dm*dfiso
+          a(2,1)=a2(1)*s1(1)+a2(2)*s1(2)+a2(3)*s1(3)+dk*dm*dfiso
+          a(2,2)=a2(1)*s2(1)+a2(2)*s2(2)+a2(3)*s2(3)+dk*dm*dfiso
+          a(2,3)=a2(1)*s6(1)+a2(2)*s6(2)+a2(3)*s6(3)+dk*dm*dfiso
+          a(3,1)=a6(1)*s1(1)+a6(2)*s1(2)+a6(3)*s1(3)+dk*dm*dfiso
+          a(3,2)=a6(1)*s2(1)+a6(2)*s2(2)+a6(3)*s2(3)+dk*dm*dfiso
+          a(3,3)=a6(1)*s6(1)+a6(2)*s6(2)+a6(3)*s6(3)+dk*dm*dfiso
+!
+!         inverting the matrix -> b(*,*)
+!
+          det=a(1,1)*(a(2,2)*a(3,3)-a(2,3)*a(3,2))
+     &       -a(1,2)*(a(2,1)*a(3,3)-a(2,3)*a(3,1))
+     &       +a(1,3)*(a(2,1)*a(3,2)-a(2,2)*a(3,1))
+          b(1,1)=(a(2,2)*a(3,3)-a(3,2)*a(2,3))/det
+          b(1,2)=-(a(1,2)*a(3,3)-a(3,2)*a(1,3))/det
+          b(1,3)=-(a(1,2)*a(2,3)-a(2,2)*a(1,3))/det
+          b(2,1)=-(a(2,1)*a(3,3)-a(3,1)*a(2,3))/det
+          b(2,2)=(a(1,1)*a(3,3)-a(3,1)*a(1,3))/det
+          b(2,3)=-(a(1,1)*a(2,3)-a(2,1)*a(1,3))/det
+          b(3,1)=-(a(2,1)*a(3,2)-a(3,1)*a(2,2))/det
+          b(3,2)=-(a(1,1)*a(3,2)-a(3,1)*a(1,2))/det
+          b(3,3)=(a(1,1)*a(2,2)-a(2,1)*a(1,2))/det
+!          
+          do i=1,3
+            do j=1,3
+              stiff(i,j)=al-b(1,1)*s1(i)*da1(j)
+     &                     -b(1,2)*s1(i)*da2(j)
+     &                     -b(1,3)*s1(i)*da6(j)
+     &                     -b(2,1)*s2(i)*da1(j)
+     &                     -b(2,2)*s2(i)*da2(j)
+     &                     -b(2,3)*s2(i)*da6(j)
+     &                     -b(3,1)*s6(i)*da1(j)
+     &                     -b(3,2)*s6(i)*da2(j)
+     &                     -b(3,3)*s6(i)*da6(j)
+            enddo
+            stiff(i,i)=stiff(i,i)+um2
+          enddo
+          do i=1,3
+            do j=4,6
+              stiff(i,j)=0.d0
+              stiff(j,i)=0.d0
+            enddo
+          enddo
+          do i=4,6
+            do j=4,6
+              stiff(i,j)=0.d0
+            enddo
+          enddo
+          stiff(4,4)=(sc(1)-sc(2))/(sb(1)-sb(2))*um
+          stiff(5,5)=(sc(1)-sc(3))/(sb(1)-sb(3))*um
+          stiff(6,6)=(sc(2)-sc(3))/(sb(2)-sb(3))*um
+        endif
       endif
 !     
       return
