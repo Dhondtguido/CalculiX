@@ -807,6 +807,9 @@
           stiff(6,6)=(sc(2)-sc(3))/(sb(2)-sb(3))*um
         endif
       endif
+!
+!     TO DO: BACKTRANSFORMATION FROM PRINCIPAL AXES INTO GLOBAL AXES
+!
 !     
       return
       end

@@ -154,7 +154,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Mon May  1 14:52:39 CEST 2023\n");
+  printf("You are using an executable made on Fri May  5 18:55:06 CEST 2023\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -1597,7 +1597,7 @@ int main(int argc,char *argv[])
 		   typeboun,&mortar,mpcinfo,tietol,ics,&nobject,
 		   &objectset,&istat,orname,nzsprevstep,&nlabel,physcon,
 		   jobnamef,iponor,knor,&ne2d,iponoel,inoel,&mpcend,
-		   irobustdesign,irandomtype,randomval);
+		   irobustdesign,irandomtype,randomval,rig);
     }
 
     else if(nmethod==15){
