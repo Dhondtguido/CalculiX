@@ -3148,13 +3148,13 @@ void FORTRAN(normmpc,(ITG *nmpc,ITG *ipompc,ITG *nodempc,double *coefmpc,
 
 void FORTRAN(normalsforequ_se,(ITG *nk,double *co,ITG *iponoelfa,
                                ITG *inoelfa,ITG *konfa,ITG *ipkonfa,
-                               char *lakonfa,ITG *ne,ITG *ipnor,
+                               char *lakonfa,ITG *nsurfs,ITG *iponor,
                                double *xnor,ITG *nodedesiinv,char *jobnamef,
                                ITG *iponexp,ITG *nmpc,char *labmpc,
                                ITG *ipompc,ITG *nodempc,ITG *ipretinfo,
                                ITG *kon,ITG *ipkon,char *lakon,ITG *iponoel,
                                ITG *inoel,ITG *iponor2d,ITG *knor2d,
-                               ITG *ipoface,ITG *nodeface));
+                               ITG *ipoface,ITG *nodeface,ITG *ne));
 
 void FORTRAN(normalsoninterface,(ITG *istartset,ITG *iendset,
              ITG *ialset,ITG *imast,ITG *ipkon,ITG *kon,char *lakon,

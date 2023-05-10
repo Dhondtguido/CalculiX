@@ -19,7 +19,7 @@
       subroutine normalsforequ_se(nk,co,iponoelfa,inoelfa,konfa,
      &     ipkonfa,lakonfa,nsurfs,iponor,xnor,nodedesiinv,jobnamef,
      &     iponexp,nmpc,labmpc,ipompc,nodempc,ipretinfo,kon,ipkon,lakon,
-     &     iponoel,inoel,iponor2d,knor2d,ipoface,nodface)
+     &     iponoel,inoel,iponor2d,knor2d,ipoface,nodface,ne)
 !     
 !     calculates normals on surface for mesh modification
 !     purposes in an optimization loop
@@ -39,15 +39,14 @@
 !     
       implicit none
 !     
-      character*132 jobnamef,fnequ
-      character*8 lakonfa(*)
+      character*8 lakonfa(*),lakon(*),label
       character*20 labmpc(*)
-      character*8 lakon(*)
+      character*132 jobnamef,fnequ
 !     
       integer nk,iponoelfa(*),inoelfa(3,*),konfa(*),ipkonfa(*),nsurfs,
      &     i,index,nexp,nfa,ielem,indexe,j,ifa(100),nopeexp,ixfree1,
      &     jl(100),ial(100),k,l,nemin,jact,ixfree,ixfree3,six,
-     &     node,iponor(*),nodedesiinv(*),len,nsort(6),two,
+     &     node,iponor(*),nodedesiinv(*),len,nsort(6),two,ne,
      &     three,iponexp(2,*),nmpc,ipompc(*),nodempc(3,*),indexf,
      &     ipretinfo(*),pretflag,inoel(2,*),nope,idummy,isix,
      &     nodepret,kon(*),ipkon(*),iponoel(*),iface,
@@ -112,8 +111,6 @@
       open(20,file=fnequ(1:len+4),status='unknown',err=100)
       close(20,status='delete',err=101)
       open(20,file=fnequ(1:len+4),status='unknown',err=100)
-      write(20,103)
- 103  format('*EQUATION')
 !     
       ixfree=0
 !     
@@ -317,7 +314,13 @@
           exit
         endif
       enddo
-!     
+!
+!     initializing ipretinfo
+!
+      do i=1,nk
+        ipretinfo(i)=i
+      enddo
+!
       if(pretflag.eq.1) then
         do i=1,nmpc
           if(labmpc(i)(1:11).eq.'THERMALPRET') cycle
@@ -329,16 +332,85 @@
           node2=nodempc(1,index)               
           index=nodempc(3,index)
           node3=nodempc(1,index)
+!     
+!         the value of ipretinfo for newly generated nodes for 
+!         pretension purposes points to the old node (which was duplicated),
+!         for all other nodes the value is the node number itself   
+!     
           if(node3.eq.nodepret) then
             ipretinfo(node1)=node2 
           endif        
         enddo
       endif
 !     
+!     write the coordinates in file "jobname.equ"
+!
+      write(20,102)
+ 102  format('*NODE')
+      do i=1,nk
+        if(ipretinfo(i).ne.i) cycle
+        write(20,103) i,(co(j,i),j=1,3)
+      enddo
+ 103  format(i10,3(',',e15.8))
+!     
+!     write the topology in file "jobname.equ"
+!
+      do i=1,ne
+        if(ipkon(i).lt.0) cycle
+        indexe=ipkon(i)
+        if((lakon(i)(7:7).eq.'A').or.(lakon(i)(7:7).eq.'S').or.
+     &     (lakon(i)(7:7).eq.'E').or.(lakon(i)(7:7).eq.'L')) then
+          if(lakon(i)(4:5).eq.'20') then
+            nopeexp=20
+            nope=8
+            label='CPS8    '
+          elseif(lakon(i)(4:5).eq.'15') then
+            nopeexp=15
+            nope=6
+            label='CPS6    '
+          elseif(lakon(i)(4:4).eq.'8') then
+            nopeexp=8
+            nope=4
+            label='CPS4    '
+          else
+            nopeexp=6
+            nope=3
+            label='CPS3    '
+          endif
+        else
+          nopeexp=0
+          if(lakon(i)(4:5).eq.'20') then
+            nope=20
+            label='C3D20   '
+          elseif(lakon(i)(4:5).eq.'15') then
+            nope=15
+            label='C3D15   '
+          elseif(lakon(i)(4:5).eq.'10') then
+            nope=10
+            label='C3D10   '
+          elseif(lakon(i)(4:4).eq.'8') then
+            nope=8
+            label='C3D8    '
+          elseif(lakon(i)(4:4).eq.'6') then
+            nope=6
+            label='C3D6    '
+          else
+            nope=4
+            label='C3D4    '
+          endif
+        endif
+        write(20,107) label
+ 107    format('*ELEMENT,TYPE=',a8)
+        write(20,108) i,(ipretinfo(kon(indexe+nopeexp+j)),j=1,nope)
+ 108    format(16(i10,','))
+      enddo
+!     
 !     write equations in file "jobname.equ"
 !     
+      write(20,109)
+ 109  format('*EQUATION')
       do i=1,nk
-        if((iponoel(i).eq.0).or.(ipretinfo(i).ne.0)) cycle
+        if((iponoel(i).eq.0).or.(ipretinfo(i).ne.i)) cycle
         iflag2d=0
 !     
 !     check if node is a designvariable     
