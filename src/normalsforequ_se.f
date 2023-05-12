@@ -19,7 +19,8 @@
       subroutine normalsforequ_se(nk,co,iponoelfa,inoelfa,konfa,
      &     ipkonfa,lakonfa,nsurfs,iponor,xnor,nodedesiinv,jobnamef,
      &     iponexp,nmpc,labmpc,ipompc,nodempc,ipretinfo,kon,ipkon,lakon,
-     &     iponoel,inoel,iponor2d,knor2d,ipoface,nodface,ne)
+     &     iponoel,inoel,iponor2d,knor2d,ipoface,nodface,ne,x,y,z,
+     &     xo,yo,zo,nx,ny,nz,nodes,dist)
 !     
 !     calculates normals on surface for mesh modification
 !     purposes in an optimization loop
@@ -45,18 +46,21 @@
 !     
       integer nk,iponoelfa(*),inoelfa(3,*),konfa(*),ipkonfa(*),nsurfs,
      &     i,index,nexp,nfa,ielem,indexe,j,ifa(100),nopeexp,ixfree1,
-     &     jl(100),ial(100),k,l,nemin,jact,ixfree,ixfree3,six,
-     &     node,iponor(*),nodedesiinv(*),len,nsort(6),two,ne,
+     &     jl(100),ial(100),k,l,nemin,jact,ixfree,ixfree3,six,iflag,
+     &     node,iponor(*),nodedesiinv(*),len,nsort(6),two,ne,kneigh,
      &     three,iponexp(2,*),nmpc,ipompc(*),nodempc(3,*),indexf,
-     &     ipretinfo(*),pretflag,inoel(2,*),nope,idummy,isix,
-     &     nodepret,kon(*),ipkon(*),iponoel(*),iface,
+     &     ipretinfo(*),pretflag,inoel(2,*),nope,idummy,isix,nodeext,
+     &     nodepret,kon(*),ipkon(*),iponoel(*),iface,n,nodes(*),
      &     ifaceq(8,6),ifacew(8,5),iposn,iponor2d(2,*),iflag2d,
-     &     knor2d(*),node2d,ipoface(*),node1,node2,node3,
+     &     knor2d(*),node2d,ipoface(*),node1,node2,node3,kflag,
      &     nodface(5,*),nopem,ifaceqmid(6),ifacewmid(5),node3d,
-     &     nnor1,nnor2,inor1(3),inor2(3)
+     &     nnor1,nnor2,inor1(3),inor2(3),nx(*),ny(*),nz(*),id,
+     &     neigh(1)
 !     
-      real*8 co(3,*),xnor(*),xno(3,100),xi,et,coloc6(2,6),coloc8(2,8),
-     &     xl(3,8),dd,xnoref(3),dot,xnorloc(6),sort(6)
+      real*8 co(3,*),xnor(*),xno(3,100),coloc6(2,6),coloc8(2,8),
+     &     xl(3,20),dd,xnoref(3),dot,xnorloc(6),sort(6),x(*),y(*),z(*),
+     &     xo(*),yo(*),zo(*),xi,et,ze,shp(4,20),xsj,p(3),dist(*),
+     &     distmax,e,emax
 !     
 !     In this routine the faces at the free surface play an
 !     important role. They are considered to be like a layer of
@@ -399,11 +403,166 @@
             label='C3D4    '
           endif
         endif
-        write(20,107) label
- 107    format('*ELEMENT,TYPE=',a8)
+        write(20,107) label,i
+ 107    format('*ELEMENT,TYPE=',a8,',ELSET=',i10,'E')
         write(20,108) i,(ipretinfo(kon(indexe+nopeexp+j)),j=1,nope)
  108    format(16(i10,','))
       enddo
+!
+!     catalogueing all external face nodes in field nodes(*)
+!
+      n=0
+      do i=1,nsurfs
+        do j=ipkonfa(i)+1,ipkonfa(i+1)
+          node=konfa(j)
+c          write(*,*) i,j,node
+          call nident(nodes,node,n,id)
+          if(id.gt.0) then
+            if(nodes(id).eq.node) cycle
+          endif
+          n=n+1
+          do k=n,id+2,-1
+            nodes(k)=nodes(k-1)
+          enddo
+          nodes(id+1)=node
+        enddo
+      enddo
+c      do i=1,n
+c        write(*,*) i,nodes(i)
+c      enddo
+!
+!     preparing fields for near3d
+!
+      kneigh=1
+      kflag=2
+      do j=1,n
+        xo(j)=co(1,nodes(j))
+        x(j)=xo(j)
+        nx(j)=j
+        yo(j)=co(2,nodes(j))
+        y(j)=yo(j)
+        ny(j)=j
+        zo(j)=co(3,nodes(j))
+        z(j)=zo(j)
+        nz(j)=j
+      enddo
+      kflag=2
+      call dsort(x,nx,n,kflag)
+      call dsort(y,ny,n,kflag)
+      call dsort(z,nz,n,kflag)
+!
+!     determining the center of each element and determine the
+!     distance from this center to the closest node belonging to
+!     the external faces
+!
+      distmax=0.d0
+      iflag=1
+      do i=1,ne
+        if(ipkon(i).lt.0) cycle
+        indexe=ipkon(i)
+        if(lakon(i)(4:5).eq.'20') then
+          nope=20
+        elseif(lakon(i)(4:5).eq.'15') then
+          nope=15
+        elseif(lakon(i)(4:5).eq.'10') then
+          nope=10
+        elseif(lakon(i)(4:4).eq.'8') then
+          nope=8
+        elseif(lakon(i)(4:4).eq.'6') then
+          nope=6
+        else
+          nope=4
+        endif
+!     
+!     computation of the coordinates of the local nodes
+!     
+        do j=1,nope
+          do k=1,3
+            xl(k,j)=co(k,kon(indexe+j))
+          enddo
+        enddo
+!     
+!       determine the shape functions at the center of the element     
+!     
+        if(lakon(i)(4:5).eq.'20') then
+          nope=20
+          xi=0.d0
+          et=0.d0
+          ze=0.d0
+          call shape20h(xi,et,ze,xl,xsj,shp,iflag)
+        elseif(lakon(i)(4:5).eq.'15') then
+          nope=15
+          xi=1.d0/3.d0
+          et=1.d0/3.d0
+          ze=0.d0
+          call shape15w(xi,et,ze,xl,xsj,shp,iflag)
+        elseif(lakon(i)(4:5).eq.'10') then
+          nope=10
+          xi=0.25d0
+          et=0.25d0
+          ze=0.25d0
+          call shape10tet(xi,et,ze,xl,xsj,shp,iflag)
+        elseif(lakon(i)(4:4).eq.'8') then
+          nope=8
+          xi=0.d0
+          et=0.d0
+          ze=0.d0
+          call shape8h(xi,et,ze,xl,xsj,shp,iflag)
+        elseif(lakon(i)(4:4).eq.'6') then
+          nope=6
+          xi=1.d0/3.d0
+          et=1.d0/3.d0
+          ze=0.d0
+          call shape6w(xi,et,ze,xl,xsj,shp,iflag)
+        else
+          nope=4
+          xi=0.25d0
+          et=0.25d0
+          ze=0.25d0
+          call shape4tet(xi,et,ze,xl,xsj,shp,iflag)
+        endif
+!
+!       determine the global coordinates of the center
+!
+        p(1)=0.d0
+        p(2)=0.d0
+        p(3)=0.d0
+        do j=1,nope
+          do k=1,3
+            p(k)=p(k)+shp(4,j)*xl(k,j)
+          enddo
+        enddo
+c        write(*,*) i,p(1),p(2),p(3)
+!     
+!     determining the neighboring external face node
+!     
+        call near3d(xo,yo,zo,x,y,z,nx,ny,nz,p(1),p(2),p(3),
+     &       n,neigh,kneigh)
+!
+        nodeext=nodes(neigh(1))
+c        write(*,*) i,nodeext
+        dist(i)=dsqrt((p(1)-co(1,nodeext))**2+
+     &                (p(2)-co(2,nodeext))**2+
+     &                (p(3)-co(3,nodeext))**2)
+        distmax=max(distmax,dist(i))
+      enddo
+!
+!     determine the Young's modulus depending on the distance from
+!     the free surface
+!
+      emax=1.d0
+      do i=1,ne
+        if(ipkon(i).lt.0) cycle
+        xi=dist(i)/distmax
+c        write(*,*) i,dist(i),distmax
+        e=(2.d0-xi)*emax/2.d0
+        write(20,110) i
+        write(20,111) e
+        write(20,112) i,i
+      enddo
+ 110  format('*MATERIAL,NAME=',i10,'M')
+ 111  format('*ELASTIC',/,e15.8,',0.3')
+ 112  format('*SOLID SECTION,ELSET=',i10,'E,MATERIAL=',i10,'M')
 !     
 !     write equations in file "jobname.equ"
 !     

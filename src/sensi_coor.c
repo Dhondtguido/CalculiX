@@ -83,7 +83,8 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *nnodes=NULL,iregion=0,*konfa=NULL,*ipkonfa=NULL,nsurfs,ifree,
     *iponor=NULL,*iponoelfa=NULL,*inoelfa=NULL,ifreemax,nconstraint,
     *iponexp=NULL,*ipretinfo=NULL,nfield,iforce,*nod2nd3rd=NULL,
-    *nod1st=NULL,ishape=0,iscaleflag,istart,modalstress=0,ifeasd=0;
+    *nod1st=NULL,ishape=0,iscaleflag,istart,modalstress=0,ifeasd=0,
+    *nx=NULL,*ny=NULL,*nz=NULL,*nodes=NULL;
       
   double *stn=NULL,*v=NULL,*een=NULL,cam[5],*xstiff=NULL,*stiini=NULL,*tper,
     *f=NULL,*fn=NULL,qa[4],*epn=NULL,*xstateini=NULL,*xdesi=NULL,
@@ -98,7 +99,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     distmin,*df=NULL,*dgdx=NULL,sigma=0,*xinterpol=NULL,
     *extnor=NULL,*veold=NULL,*accold=NULL,bet,gam,sigmak=1.,sigmal=1.,
     dtime,time,reltime=1.,*weightformgrad=NULL,*fint=NULL,*xnor=NULL,
-    *dgdxdy=NULL;
+    *dgdxdy=NULL,*x=NULL,*y=NULL,*xo=NULL,*yo=NULL,*zo=NULL,*dist=NULL;
 
   FILE *f1;
   
@@ -348,15 +349,29 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   NNEW(xnor,double,24*nsurfs);
   NNEW(iponexp,ITG,2**nk);
   NNEW(ipretinfo,ITG,*nk);
+  NNEW(x,double,*nk);
+  NNEW(y,double,*nk);
+  NNEW(z,double,*nk);
+  NNEW(xo,double,*nk);
+  NNEW(yo,double,*nk);
+  NNEW(zo,double,*nk);
+  NNEW(nx,ITG,*nk);
+  NNEW(ny,ITG,*nk);
+  NNEW(nz,ITG,*nk);
+  NNEW(nodes,ITG,*nk);
+  NNEW(dist,double,*nk);
       
   FORTRAN(normalsforequ_se,(nk,co,iponoelfa,inoelfa,konfa,ipkonfa,lakonfa,
 			    &nsurfs,iponor,xnor,nodedesiinv,jobnamef,
 			    iponexp,nmpc,labmpc,ipompc,nodempc,ipretinfo,
 			    kon,ipkon,lakon,iponoel,inoel,iponor2d,knor2d,
-			    ipoface,nodface,ne));
+			    ipoface,nodface,ne,x,y,z,xo,yo,zo,nx,ny,nz,nodes,
+			    dist));
                   
   SFREE(konfa);SFREE(ipkonfa);SFREE(lakonfa);SFREE(iponor);SFREE(xnor);
   SFREE(iponoelfa);SFREE(inoelfa);SFREE(iponexp);SFREE(ipretinfo);
+  SFREE(x);SFREE(y);SFREE(z);SFREE(xo);SFREE(yo);SFREE(zo);SFREE(nx);
+  SFREE(ny);SFREE(nz);SFREE(nodes);SFREE(dist);
 	  
   /* createinum is called in order to determine the nodes belonging
      to elements; this information is needed in frd_se */
