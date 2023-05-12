@@ -17,9 +17,9 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
       subroutine normalsforequ_se(nk,co,iponoelfa,inoelfa,konfa,
-     &     ipkonfa,lakonfa,ne,iponor,xnor,nodedesiinv,jobnamef,
+     &     ipkonfa,lakonfa,nsurfs,iponor,xnor,nodedesiinv,jobnamef,
      &     iponexp,nmpc,labmpc,ipompc,nodempc,ipretinfo,kon,ipkon,lakon,
-     &     iponoel,inoel,iponor2d,knor2d,nod2nd3rd,ipoface,nodface)
+     &     iponoel,inoel,iponor2d,knor2d,ipoface,nodface,ne)
 !     
 !     calculates normals on surface for mesh modification
 !     purposes in an optimization loop
@@ -39,25 +39,24 @@
 !     
       implicit none
 !     
-      character*132 jobnamef,fnequ
-      character*8 lakonfa(*)
+      character*8 lakonfa(*),lakon(*),label
       character*20 labmpc(*)
-      character*8 lakon(*)
+      character*132 jobnamef,fnequ
 !     
-      integer nk,iponoelfa(*),inoelfa(3,*),konfa(*),ipkonfa(*),ne,
-     &     i,ndepnodes,index,nexp,nel,ielem,indexe,j,iel(100),
-     &     jl(100),ial(100),k,l,nemin,jact,ixfree,
-     &     node,iponor(*),nodedesiinv(*),len,ndet(3),nsort(3),two,
+      integer nk,iponoelfa(*),inoelfa(3,*),konfa(*),ipkonfa(*),nsurfs,
+     &     i,index,nexp,nfa,ielem,indexe,j,ifa(100),nopeexp,ixfree1,
+     &     jl(100),ial(100),k,l,nemin,jact,ixfree,ixfree3,six,
+     &     node,iponor(*),nodedesiinv(*),len,nsort(6),two,ne,
      &     three,iponexp(2,*),nmpc,ipompc(*),nodempc(3,*),indexf,
-     &     node1,node2,node3,ipretinfo(*),ieq,pretflag,inoel(2,*),nope,
-     &     nodepret,ixfreei,ixfreej,kon(*),ipkon(*),iponoel(*),iface,
-     &     inode,ifaceq(8,6),ifacew(8,5),iposn,iponor2d(2,*),flag2d,
-     &     knor2d(*),node2d,nod2nd3rd(2,*),nopesurf(8),ipoface(*),
-     &     nodface(5,*),konl(20),nopem,ifaceqmid(6),ifacewmid(5),node3d
+     &     ipretinfo(*),pretflag,inoel(2,*),nope,idummy,isix,
+     &     nodepret,kon(*),ipkon(*),iponoel(*),iface,
+     &     ifaceq(8,6),ifacew(8,5),iposn,iponor2d(2,*),iflag2d,
+     &     knor2d(*),node2d,ipoface(*),node1,node2,node3,
+     &     nodface(5,*),nopem,ifaceqmid(6),ifacewmid(5),node3d,
+     &     nnor1,nnor2,inor1(3),inor2(3)
 !     
       real*8 co(3,*),xnor(*),xno(3,100),xi,et,coloc6(2,6),coloc8(2,8),
-     &     xl(3,8),dd,xnoref(3),dot,xnorloc(3,3),det(3),sort(3),xdir,
-     &     ydir,zdir
+     &     xl(3,8),dd,xnoref(3),dot,xnorloc(6),sort(6)
 !     
 !     In this routine the faces at the free surface play an
 !     important role. They are considered to be like a layer of
@@ -101,6 +100,7 @@
 !     
       two=2
       three=3
+      six=6
 !     
       do len=1,132
         if(jobnamef(len:len).eq.' ') exit
@@ -111,15 +111,10 @@
       open(20,file=fnequ(1:len+4),status='unknown',err=100)
       close(20,status='delete',err=101)
       open(20,file=fnequ(1:len+4),status='unknown',err=100)
-      write(20,102)
-!     write(20,103)
- 102  format('**SUMMARY OF EQUATIONS FOR MESH-UPDATE')
- 103  format('*EQUATION')
 !     
       ixfree=0
 !     
       do i=1,nk
-        ndepnodes=0
         index=iponoelfa(i)
         if(index.eq.0) cycle
 !     
@@ -129,34 +124,34 @@
 !     
 !     locating all external faces to which node i belongs
 !     
-        nel=0
+        nfa=0
         do
           if(index.eq.0) exit
-          nel=nel+1
-          if(nel.gt.100) then
+          nfa=nfa+1
+          if(nfa.gt.100) then
             write(*,*) '*ERROR in normalsforequ_se: more '
             write(*,*) '  than 100 shell elements '
             write(*,*) '  share the same node'
             call exit(201)
           endif
-          jl(nel)=inoelfa(2,index)
-          iel(nel)=inoelfa(1,index)
+          jl(nfa)=inoelfa(2,index)
+          ifa(nfa)=inoelfa(1,index)
           index=inoelfa(3,index)
         enddo
 !     
-        if(nel.gt.0) then
-          do j=1,nel
+        if(nfa.gt.0) then
+          do j=1,nfa
             ial(j)=0
           enddo
 !     
 !     estimate the normal
 !     
-          do j=1,nel
-            indexf=ipkonfa(iel(j))
+          do j=1,nfa
+            indexf=ipkonfa(ifa(j))
 !     
 !     local normal on the element (Jacobian)
 !     
-            if(lakonfa(iel(j))(2:2).eq.'3') then
+            if(lakonfa(ifa(j))(2:2).eq.'3') then
               xi=coloc6(1,jl(j))
               et=coloc6(2,jl(j))
               do k=1,3
@@ -166,7 +161,7 @@
                 enddo
               enddo
               call norshell3(xi,et,xl,xno(1,j))
-            elseif(lakonfa(iel(j))(2:2).eq.'4') then
+            elseif(lakonfa(ifa(j))(2:2).eq.'4') then
               xi=coloc8(1,jl(j))
               et=coloc8(2,jl(j))
               do k=1,4
@@ -176,7 +171,7 @@
                 enddo
               enddo
               call norshell4(xi,et,xl,xno(1,j))
-            elseif(lakonfa(iel(j))(2:2).eq.'6') then
+            elseif(lakonfa(ifa(j))(2:2).eq.'6') then
               xi=coloc6(1,jl(j))
               et=coloc6(2,jl(j))
               do k=1,6
@@ -186,7 +181,7 @@
                 enddo
               enddo
               call norshell6(xi,et,xl,xno(1,j))
-            elseif(lakonfa(iel(j))(2:2).eq.'8') then
+            elseif(lakonfa(ifa(j))(2:2).eq.'8') then
               xi=coloc8(1,jl(j))
               et=coloc8(2,jl(j))
               do k=1,8
@@ -202,7 +197,7 @@
             if(dd.lt.1.d-10) then
               write(*,*) '*ERROR in normalsforequ_se: size '
               write(*,*) '       of estimatedshell normal in 
-     &node ',i,' element ',iel(j)
+     &node ',i,' element ',ifa(j)
               write(*,*) '       is smaller than 1.e-10'
               call exit(201)
             endif
@@ -222,16 +217,16 @@
 !     treated yet
 !     if ial(j)=2: normal has been treated
 !     
-            nemin=ne+1
-            do j=1,nel
+            nemin=nsurfs+1
+            do j=1,nfa
               if(ial(j).eq.0) then
-                if(iel(j).lt.nemin) then
-                  nemin=iel(j)
+                if(ifa(j).lt.nemin) then
+                  nemin=ifa(j)
                   jact=j
                 endif
               endif
             enddo
-            if(nemin.eq.ne+1) exit
+            if(nemin.eq.nsurfs+1) exit
 !     
             do j=1,3
               xnoref(j)=xno(j,jact)
@@ -242,7 +237,7 @@
 !     
 !     if ial(j)=1: normal on element is being treated now
 !     
-            do j=1,nel
+            do j=1,nfa
               if(ial(j).eq.2) cycle
               if(j.eq.jact) then
                 ial(jact)=1
@@ -258,7 +253,7 @@
             do j=1,3
               xnoref(j)=0.d0
             enddo
-            do j=1,nel
+            do j=1,nfa
               if(ial(j).eq.1) then
                 do k=1,3
                   xnoref(k)=xnoref(k)+xno(k,j)
@@ -279,10 +274,10 @@
 !     updating the pointers iponor
 !     
             nexp=nexp+1
-            do j=1,nel
+            do j=1,nfa
               if(ial(j).eq.1) then
                 ial(j)=2
-                iponor(ipkonfa(iel(j))+jl(j))=ixfree
+                iponor(ipkonfa(ifa(j))+jl(j))=ixfree
               endif
             enddo
 !     
@@ -300,7 +295,7 @@
 !     normals for node i+1
 !     
         iponexp(1,i)=nexp
-        iponexp(2,i)=ixfree
+        iponexp(2,i)=ixfree-3*nexp
 !     
       enddo     
 !     
@@ -319,12 +314,17 @@
           exit
         endif
       enddo
-!     
+!
+!     initializing ipretinfo
+!
+      do i=1,nk
+        ipretinfo(i)=i
+      enddo
+!
       if(pretflag.eq.1) then
         do i=1,nmpc
           if(labmpc(i)(1:11).eq.'THERMALPRET') cycle
 !     
-          ieq=0
           index=ipompc(i)
           if(index.eq.0) cycle      
           node1=nodempc(1,index)          
@@ -332,61 +332,100 @@
           node2=nodempc(1,index)               
           index=nodempc(3,index)
           node3=nodempc(1,index)
+!     
+!         the value of ipretinfo for newly generated nodes for 
+!         pretension purposes points to the old node (which was duplicated),
+!         for all other nodes the value is the node number itself   
+!     
           if(node3.eq.nodepret) then
-            ipretinfo(node2)=node1 
-            ipretinfo(node1)=-1      
+            ipretinfo(node1)=node2 
           endif        
         enddo
       endif
 !     
-!     correct nodes on free pretension surface
-!     
+!     write the coordinates in file "jobname.equ"
+!
+      write(20,102)
+ 102  format('*NODE')
       do i=1,nk
-        if(ipretinfo(i).le.0) cycle 
+        if(ipretinfo(i).ne.i) cycle
+        write(20,103) i,(co(j,i),j=1,3)
+      enddo
+ 103  format(i10,3(',',e15.8))
 !     
-        nexp=iponexp(1,i)
-        ixfreei=iponexp(2,i)
-        ixfreej=iponexp(2,ipretinfo(i))
-!     
-        do j=1,nexp
-          k=j*3-3
-          zdir=xnor(ixfreei+1-1-k)+xnor(ixfreej+1-1-k)
-          ydir=xnor(ixfreei+1-2-k)+xnor(ixfreej+1-2-k)
-          xdir=xnor(ixfreei+1-3-k)+xnor(ixfreej+1-3-k)      
-          dd=(xdir)**2+(ydir)**2+(zdir)**2
-!     
-          if(dd.gt.1.0e-12) then      
-            ipretinfo(i)=0
+!     write the topology in file "jobname.equ"
+!
+      do i=1,ne
+        if(ipkon(i).lt.0) cycle
+        indexe=ipkon(i)
+        if((lakon(i)(7:7).eq.'A').or.(lakon(i)(7:7).eq.'S').or.
+     &     (lakon(i)(7:7).eq.'E').or.(lakon(i)(7:7).eq.'L')) then
+          if(lakon(i)(4:5).eq.'20') then
+            nopeexp=20
+            nope=8
+            label='CPS8    '
+          elseif(lakon(i)(4:5).eq.'15') then
+            nopeexp=15
+            nope=6
+            label='CPS6    '
+          elseif(lakon(i)(4:4).eq.'8') then
+            nopeexp=8
+            nope=4
+            label='CPS4    '
+          else
+            nopeexp=6
+            nope=3
+            label='CPS3    '
           endif
-!     
-        enddo   
-!     
+        else
+          nopeexp=0
+          if(lakon(i)(4:5).eq.'20') then
+            nope=20
+            label='C3D20   '
+          elseif(lakon(i)(4:5).eq.'15') then
+            nope=15
+            label='C3D15   '
+          elseif(lakon(i)(4:5).eq.'10') then
+            nope=10
+            label='C3D10   '
+          elseif(lakon(i)(4:4).eq.'8') then
+            nope=8
+            label='C3D8    '
+          elseif(lakon(i)(4:4).eq.'6') then
+            nope=6
+            label='C3D6    '
+          else
+            nope=4
+            label='C3D4    '
+          endif
+        endif
+        write(20,107) label
+ 107    format('*ELEMENT,TYPE=',a8)
+        write(20,108) i,(ipretinfo(kon(indexe+nopeexp+j)),j=1,nope)
+ 108    format(16(i10,','))
       enddo
 !     
-!---------------------------------------------------------------------------
-!     
 !     write equations in file "jobname.equ"
-!     in case of a 2D model just write the node numbers in the file
 !     
+      write(20,109)
+ 109  format('*EQUATION')
       do i=1,nk
-        flag2d=0
-!     
-!     check for additional pretension nodes
-!     
-        if(ipretinfo(i).ne.0) cycle
+        if((iponoel(i).eq.0).or.(ipretinfo(i).ne.i)) cycle
+        iflag2d=0
 !     
 !     check if node is a designvariable     
 !     
         if(nodedesiinv(i).eq.0) then   
 !     
 !     consideration of plain stress/strain 2d-elements
-!     and rotational symmetry elements        
+!     and axisymmetric elements        
 !     
-          if(iponoel(i).eq.0) cycle
           ielem=inoel(1,iponoel(i))
           if((lakon(ielem)(7:7).eq.'A').or.
      &         (lakon(ielem)(7:7).eq.'S').or.
      &         (lakon(ielem)(7:7).eq.'E')) then
+!     
+            iflag2d=1
 !     
             if(lakon(ielem)(4:5).eq.'20') then
               nope=20
@@ -394,38 +433,60 @@
               nope=8
             elseif (lakon(ielem)(4:5).eq.'15') then
               nope=15
+            elseif (lakon(ielem)(4:4).eq.'6') then
+              nope=6
             else
               cycle
             endif
 !     
             indexe=ipkon(ielem)
-            do inode=1,nope
-              if(i.eq.kon(indexe+inode)) then
+            do j=1,nope
+              if(i.eq.kon(indexe+j)) then
                 exit
               endif
             enddo
-            if(lakon(ielem)(4:5).eq.'20') then
-              if((inode.ne.17).and.
-     &             (inode.ne.18).and.
-     &             (inode.ne.19).and.
-     &             (inode.ne.20)) cycle
 !     
 !     replace 3D node number by 2D node number     
 !     
-              node=kon(indexe+inode+4)
-              flag2d=1         
+            if(lakon(ielem)(4:5).eq.'20') then
+              nopeexp=20
+              if(j.gt.4) j=j-4
+              node=kon(indexe+nopeexp+j)
             elseif(lakon(ielem)(4:5).eq.'15') then
-              if((inode.ne.13).and.
-     &             (inode.ne.14).and.
-     &             (inode.ne.15)) cycle
-!     
-!     replace 3D node number by 2D node number
-!     
-              node=kon(indexe+inode+3)
-              flag2d=1
-            else
-              cycle
+              nopeexp=15
+              if(j.gt.3) j=j-3
+              node=kon(indexe+nopeexp+j)
+            elseif(lakon(ielem)(4:4).eq.'8') then
+              nopeexp=8
+              node=kon(indexe+nopeexp+j)
+            elseif(lakon(ielem)(4:5).eq.'6') then
+              nopeexp=6
+              node=kon(indexe+nopeexp+j)
             endif
+!     
+!     deactivate the other expansion nodes
+!     
+            nodedesiinv(i+1)=-1  
+            nodedesiinv(i+2)=-1 
+!     
+!     taking the mean of the normals at expanded node 1
+!     and 3
+!     
+            ixfree1=iponexp(2,i)
+            ixfree3=iponexp(2,i+2)
+!     
+            do j=1,nexp
+              do k=1,3
+                xnor(ixfree1+3*(j-1)+k)=(xnor(ixfree1+3*(j-1)+k)+
+     &               xnor(ixfree3+3*(j-1)+k))/2.d0
+              enddo
+              dd=dsqrt(xnor(ixfree1+3*(j-1)+1)**2+
+     &             xnor(ixfree1+3*(j-1)+2)**2+
+     &             xnor(ixfree1+3*(j-1)+3)**2)
+              do k=1,3
+                xnor(ixfree1+3*(j-1)+k)=xnor(ixfree1+3*(j-1)+k)/dd
+              enddo
+            enddo
           elseif(lakon(ielem)(7:7).eq.'L') then
 !     
 !     no output for shell elements necessary
@@ -442,7 +503,7 @@
           nexp=iponexp(1,i)
           ixfree=iponexp(2,i)
 !     
-          if((nexp.ge.3).and.(flag2d.eq.0)) then
+          if(nexp.ge.3) then
             do j=1,3
               write(20,106) 1
               write(20,105) node,j,1
@@ -450,184 +511,83 @@
 !     
 !     write equations in case nexp is 1
 !     
-          elseif((nexp.eq.1).and.(flag2d.eq.0)) then
-            j=1
-            do l=1,3
-              xnorloc(4-l,j)=xnor(ixfree+1-l)
-              sort(4-l)=dabs(xnor(ixfree+1-l))
-              nsort(4-l)=4-l            
+          elseif(nexp.eq.1) then
+            do j=1,3
+              xnorloc(j)=xnor(ixfree+j)
+              sort(j)=dabs(xnorloc(j))
+              nsort(j)=j
             enddo
             call dsort(sort,nsort,three,two)
-            write(20,106) 3  
-            write(20,104) node,nsort(3),xnorloc(nsort(3),1),
-     &           node,nsort(2),xnorloc(nsort(2),1),
-     &           node,nsort(1),xnorloc(nsort(1),1)
+            write(20,106) three
+            write(20,104) node,nsort(3),xnorloc(nsort(3)),
+     &           node,nsort(2),xnorloc(nsort(2)),
+     &           node,nsort(1),xnorloc(nsort(1))
 !     
 !     write equations in case nexp is 2
 !     
-          elseif((nexp.eq.2).and.(flag2d.eq.0)) then
-            do j=1,nexp
-              k=j*3-3
-              do l=1,3
-                xnorloc(4-l,j)=xnor(ixfree+1-l-k)
-              enddo
+          elseif(nexp.eq.2) then
+            do j=1,6
+              xnorloc(j)=xnor(ixfree+j)
+              sort(j)=dabs(xnorloc(j))
+              nsort(j)=j
             enddo
-            ndet(1)=1
-            ndet(2)=2
-            ndet(3)=3
-            det(1)=dabs(xnorloc(1,1)*xnorloc(2,2)-
-     &           xnorloc(1,2)*xnorloc(2,1))
-            det(2)=dabs(xnorloc(1,1)*xnorloc(3,2)-
-     &           xnorloc(1,2)*xnorloc(3,1))
-            det(3)=dabs(xnorloc(2,1)*xnorloc(3,2)-
-     &           xnorloc(2,2)*xnorloc(3,1))
-            call dsort(det,ndet,three,two)
-            
-            if(ndet(3).eq.1) then
-              if((dabs(xnorloc(1,1)).gt.1.d-5).and.
-     &             (dabs(xnorloc(2,2)).gt.1.d-5)) then
-                write(20,106) 3  
-                write(20,104) node,1,xnorloc(1,1),
-     &               node,2,xnorloc(2,1),node,3,xnorloc(3,1)
-                write(20,106) 3  
-                write(20,104) node,2,xnorloc(2,2),
-     &               node,1,xnorloc(1,2),node,3,xnorloc(3,2)
+            call dsort(sort,nsort, six,two)
+            nnor1=0
+            nnor2=0
+!     
+!     sorting the two normals apart
+!     
+            do j=6,1,-1
+              if(nsort(j).le.3) then
+                nnor1=nnor1+1
+                inor1(nnor1)=nsort(j)
+                if(j.eq.6) isix=1
               else
-                write(20,106) 3  
-                write(20,104) node,2,xnorloc(2,1),
-     &               node,1,xnorloc(1,1),node,3,xnorloc(3,1)
-                write(20,106) 3  
-                write(20,104) node,1,xnorloc(1,2),
-     &               node,2,xnorloc(2,2),node,3,xnorloc(3,2)
+                nnor2=nnor2+1
+                inor2(nnor2)=nsort(j)
+                if(j.eq.6) isix=2
               endif
-            elseif(ndet(3).eq.2) then
-              if((dabs(xnorloc(1,1)).gt.1.d-5).and.
-     &             (dabs(xnorloc(3,2)).gt.1.d-5)) then
-                write(20,106) 3  
-                write(20,104) node,1,xnorloc(1,1),
-     &               node,3,xnorloc(3,1),node,2,xnorloc(2,1)
-                write(20,106) 3  
-                write(20,104) node,3,xnorloc(3,2),
-     &               node,1,xnorloc(1,2),node,2,xnorloc(2,2)
-              else
-                write(20,106) 3  
-                write(20,104) node,3,xnorloc(3,1),
-     &               node,1,xnorloc(1,1),node,2,xnorloc(2,1)
-                write(20,106) 3  
-                write(20,104) node,1,xnorloc(1,2),
-     &               node,3,xnorloc(3,2),node,2,xnorloc(2,2)
+            enddo
+!     
+!     check that the dependent dof in both normals is not identical
+!     
+            if(isix.eq.1) then
+              if(inor2(1)-3.eq.inor1(1)) then
+                idummy=inor2(1)
+                inor2(1)=inor2(2)
+                inor2(2)=idummy
               endif
-            elseif(ndet(3).eq.3) then
-              if((dabs(xnorloc(2,1)).gt.1.d-5).and.
-     &             (dabs(xnorloc(3,2)).gt.1.d-5)) then
-                write(20,106) 3  
-                write(20,104) node,2,xnorloc(2,1),
-     &               node,3,xnorloc(3,1),node,1,xnorloc(1,1)
-                write(20,106) 3  
-                write(20,104) node,3,xnorloc(3,2),
-     &               node,2,xnorloc(2,2),node,1,xnorloc(1,2)
-              else
-                write(20,106) 3  
-                write(20,104) node,3,xnorloc(3,1),
-     &               node,2,xnorloc(2,1),node,1,xnorloc(1,1)
-                write(20,106) 3  
-                write(20,104) node,2,xnorloc(2,2),
-     &               node,3,xnorloc(3,2),node,1,xnorloc(1,2)
-              endif     
+            else
+              if(inor1(1)+3.eq.inor2(1)) then
+                idummy=inor1(1)
+                inor1(1)=inor1(2)
+                inor1(2)=idummy
+              endif
             endif
 !     
-!     WORKAROUND: MPC's in combination with expanded 2D models does not work
-!     in case of expanded 2D models create a set with all surface nodes
-!     which are not in the designvariables set. These nodes are fully
-!     constrained
+            write(20,106) three
+            write(20,104) node,inor1(1),xnorloc(inor1(1)),
+     &                    node,inor1(2),xnorloc(inor1(2)),
+     &                    node,inor1(3),xnorloc(inor1(3))
+            write(20,106) three
+            write(20,104) node,inor2(1)-3,xnorloc(inor2(1)),
+     &                    node,inor2(2)-3,xnorloc(inor2(2)),
+     &                    node,inor2(3)-3,xnorloc(inor2(3))
+          endif
 !     
-          elseif(flag2d.eq.1) then
-            write(20,'(i10,a1)') node,','   
-          endif          
         elseif(nodedesiinv(i).eq.1) then
-          if(iponoel(i).eq.0) cycle
           ielem=inoel(1,iponoel(i))
           if((lakon(ielem)(7:7).eq.'A').or.
      &         (lakon(ielem)(7:7).eq.'S').or.
      &         (lakon(ielem)(7:7).eq.'L').or.
      &         (lakon(ielem)(7:7).eq.'E')) then
 !     
-            nodedesiinv(nod2nd3rd(1,i))=-1  
-            nodedesiinv(nod2nd3rd(2,i))=-1 
+            nodedesiinv(i+1)=-1  
+            nodedesiinv(i+2)=-1 
           endif
         endif
 !     
       enddo
-!     
-!-------------------------------------------------------------------------------
-!     
-!     in case of plain strain/stress/axi 2D models write midnodes belonging
-!     to these 2D elements to file. This naturally only applies to
-!     quadratic elements
-!     
-      do i=1,nk
-        
-        if(ipoface(i).eq.0) cycle
-        indexf=ipoface(i)
-!     
-        do
-          ielem=nodface(3,indexf)
-          iface=nodface(4,indexf)
-!     
-          if((lakon(ielem)(7:7).eq.'A').or.
-     &         (lakon(ielem)(7:7).eq.'S').or.
-     &         (lakon(ielem)(7:7).eq.'E')) then
-!     
-!     faces in z-direction (expansion direction) do not play
-!     a role in the optimization of plane stress/strain/axi
-!     elements (corresponds to iface=1 and iface=2)
-!     
-            if(iface.gt.2) then
-!     
-              if(lakon(ielem)(4:5).eq.'20') then
-                nope=20
-                nopem=8
-              elseif(lakon(ielem)(4:5).eq.'15') then
-                nope=15
-                nopem=8
-              else
-                indexf=nodface(5,indexf)
-                if(indexf.eq.0) then
-                  exit
-                else
-                  cycle
-                endif
-              endif
-!     
-!     node number and equation of the 2D node
-!     
-              if(nope.eq.20) then
-                node2d=kon(ipkon(ielem)+nope+ifaceqmid(iface))
-                iposn=iponor2d(2,ipkon(ielem)+ifaceqmid(iface))
-              elseif(nope.eq.15) then
-                node2d=kon(ipkon(ielem)+nope+ifacewmid(iface))
-                iposn=iponor2d(2,ipkon(ielem)+ifacewmid(iface))
-              endif
-!     
-!     3D-equivalent of the 2D-design variable
-!     The user defines 2D nodes of plane stress/strain/axi
-!     elements as design variables. Internally, these are
-!     replaced by the first node in the 3D expansion
-!     
-              node3d=knor2d(iposn+1)
-!     
-!     write the 2D node to file if it is not a design variable
-!     
-              if(nodedesiinv(node3d).eq.0) then
-                write(20,'(i10,a1)') node2d,','   
-              endif         
-            endif
-          endif      
-          indexf=nodface(5,indexf)
-          if(indexf.eq.0) exit
-!     
-        enddo  
-      enddo       
 !     
       do i=1,nk
         if(nodedesiinv(i).eq.-1) then
@@ -638,16 +598,14 @@
       close(20)
       return
 !     
- 104  format(3(i10,",",i1,",",e20.13,","))
- 105  format(1(i10,",",i1,",",i1,","))
- 106  format(i1)
- 107  format(2(i10,",",i1,",",e20.13,",")) 
-!     
  100  write(*,*) '*ERROR in openfile: could not open file ',
      &     fnequ(1:len+4)
       call exit(201)
  101  write(*,*) '*ERROR in openfile: could not delete file ',
      &     fnequ(1:len+4) 
       call exit(201)
+ 104  format(3(i10,",",i1,",",e20.13,","))
+ 105  format(1(i10,",",i1,",",i1,","))
+ 106  format(i1)
 !     
       end

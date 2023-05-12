@@ -48,7 +48,7 @@ void gradientprojection(ITG *nobject,char *objectset,double *dgdxglob,
 			ITG *iendset,ITG *ialset,
 			double *gradproj,char *gradprojname,ITG *nactive,
 			double *objnorm,ITG *ipoacti,ITG *iconstacti,
-			ITG *inameacti,ITG *nnlconst){
+			ITG *inameacti,ITG *nnlconst,ITG *ne2d){
                
   /* finding a feasible direction based on the sensitivity information */
    
@@ -65,7 +65,7 @@ void gradientprojection(ITG *nobject,char *objectset,double *dgdxglob,
   for(i=0;i<*nobject;i++){
     istart=i+1;
     FORTRAN(scalesen,(dgdxglob,dfdx,nk,nodedesi,ndesi,objectset,&iscaleflag,
-                      &istart));
+                      &istart,ne2d));
   }
   
   nactiveold=*nactive+1;

@@ -2337,18 +2337,16 @@ void *stress_sen_dvmt(ITG *i){
   /* perturbation of the displacements of the neighboring nodes of the design variables
      in case of an axisymmetric or plain stress/strain or shell model */
   
-  nelem=ialnk1[nea-1]-1;
-  if((strcmp1(&lakon1[nelem*8+6],"A")==0)||(strcmp1(&lakon1[nelem*8+6],"E")==0)||
+  /*  nelem=ialnk1[nea-1]-1;
+    if((strcmp1(&lakon1[nelem*8+6],"A")==0)||(strcmp1(&lakon1[nelem*8+6],"E")==0)||
      (strcmp1(&lakon1[nelem*8+6],"S")==0)||(strcmp1(&lakon1[nelem*8+6],"L")==0)){ 
-    //    node1=nod2nd3rd1[2*(node-1)];
-    //    node2=nod2nd3rd1[2*(node-1)+1];
     node1=node+1;
     node2=node+2;
   
     dv1[(node1-1)**mt1+idir+*mt1**nk1**i]+=dispmin1;
     dv1[(node2-1)**mt1+idir+*mt1**nk1**i]+=dispmin1;
 	
-  } 
+    } */
     
   stress_sen_dv(co1,nk1,kon1,ipkon1,lakon1,ne1,&dstn1[6**nk1**i],
 		elcon1,nelcon1,rhcon1,nrhcon1,alcon1,nalcon1,alzero1,ielmat1,
@@ -2476,18 +2474,16 @@ void *peeq_sen_dvmt(ITG *i){
   /* perturbation of the displacements of the neighboring nodes of the design variables
      in case of an axisymmetric or plain stress/strain or shell model */
   
-  nelem=ialnk1[nea-1]-1;
-  if((strcmp1(&lakon1[nelem*8+6],"A")==0)||(strcmp1(&lakon1[nelem*8+6],"E")==0)||
+  /*  nelem=ialnk1[nea-1]-1;
+    if((strcmp1(&lakon1[nelem*8+6],"A")==0)||(strcmp1(&lakon1[nelem*8+6],"E")==0)||
      (strcmp1(&lakon1[nelem*8+6],"S")==0)||(strcmp1(&lakon1[nelem*8+6],"L")==0)){ 
-    //    node1=nod2nd3rd1[2*(node-1)];
-    //    node2=nod2nd3rd1[2*(node-1)+1];
     node1=node+1;
     node2=node+2;
   
     dv1[(node1-1)**mt1+idir+*mt1**nk1**i]+=dispmin1;
     dv1[(node2-1)**mt1+idir+*mt1**nk1**i]+=dispmin1;
 	
-  } 
+    } */
     
   peeq_sen_dv(co1,nk1,kon1,ipkon1,lakon1,ne1,&depn1[*nk1**i],
 	      elcon1,nelcon1,rhcon1,nrhcon1,alcon1,nalcon1,alzero1,ielmat1,

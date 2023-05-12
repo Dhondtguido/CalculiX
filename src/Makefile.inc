@@ -388,6 +388,7 @@ genmidnodes.f \
 genmodes.f \
 genmpc.f \
 gennactdofinv.f \
+gennactdofinv3d.f \
 genratio.f \
 gentiedmpc.f \
 geometricconstraints.f \

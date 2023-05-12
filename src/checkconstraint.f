@@ -29,25 +29,25 @@
       character*20 empty
 !     
       integer iobject,nobject,istat,nactive,nnlconst,inameacti(*),
-     &     ipoacti(*),ifree,i,ndesi,nk,node,nodedesi(ndesi),
+     &     ipoacti(*),ifree,i,ndesi,nk,node,nodedesi(*),
      &     iconstacti(*),nconst
 !     
-      real*8 g0(nobject),bounds(nobject),scale,bound,objnorm(nobject),
-     &     dgdxglob(2,nk,nobject)
+      real*8 g0(*),bounds(nobject),scale,bound,objnorm(*),
+     &     dgdxglob(2,nk,*)
       empty='                    '
 !   
       write(5,*)
       write(5,*)
       write(5,'(a113)') '  ################################################
      &#################################################################'
-      write(5,*) '  A S S E M B L Y   O F   C O N S T R A I N T S'
+      write(5,*) '  A S S E M B L Y   O F   A C T I V E   S E T'
       write(5,*)
       write(5,101)
      &'NUMBER OF    ','CONSTRAINT      ','LE/     ','FUNCTION         ',
      &'FUNCTION         ','FUNCTION      ','  ACTIVE/ ','   NAME OF' 
       write(5,101)
      &'CONSTRAINT   ','FUNCTION        ','GE      ','VALUE            ',
-     &'BOUND            ','VALUE NORM.   ','  INACTIVE','   CONSTRAINT' 
+     &'BOUND            ','VIOLATION     ','  INACTIVE','   CONSTRAINT' 
       write(5,'(a113)') '  ################################################
      &#################################################################'
       write(5,*)
