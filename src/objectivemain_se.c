@@ -248,7 +248,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
       FORTRAN(actideacti,(set,nset,istartset,iendset,ialset,objectset,
 			  ipkon,&iobject,ne));
  
-      /* call without perturbation */
+      /* call without perturbation (calculation of g0) */
    
       idesvar=0;
 
@@ -332,7 +332,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
       FORTRAN(actideacti,(set,nset,istartset,iendset,ialset,objectset,
 			  ipkon,&iobject,ne));
  
-      /* call without perturbation */
+      /* call without perturbation (calculation of g0) */
    
       idesvar=0;
 	    
@@ -374,7 +374,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	    
       NNEW(ithread,ITG,num_cpuse);
 	    
-      /* Total difference of the internal strain energy */
+      /* calculate g0 */
       /* create threads and wait */
 	    
       for(i=0;i<num_cpuse;i++)  {
@@ -1465,8 +1465,8 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 
       RENEW(ialnk,ITG,istartnk[*nk]-1);
 		
-      /* storing the nodes of the neighboring elements of node nk 
-	 in field ialnneigh */
+      /* storing the design response nodes of the neighboring elements of 
+	 node nk in field ialnneigh */
 		
       NNEW(istartnneigh,ITG,*nk+1);
       NNEW(ialnneigh,ITG,20*(istartnk[*nk]-1));
@@ -1556,17 +1556,18 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 
       /* calculating the objective function */
 
-      nodeset=0;
+      /*      nodeset=0;
       for(i=0;i<*nset;i++){
 	if(strcmp1(&objectset[m*405+162]," ")==0) continue;
 	if(strcmp2(&objectset[m*405+162],&set[i*81],81)==0){
 	  nodeset=i+1;
 	  break;
 	}
-      }
-        FORTRAN(objective_peeq,(&nodeset,istartset,iendset,
+	}*/
+      FORTRAN(objective_peeq,(&nodeset,istartset,iendset,
 			      ialset,nk,&idesvar,&iobject,mi,g0,
-			      nobject,epn,objectset,&expks));
+			      nobject,epn,objectset,&expks,
+			      set,nset));
 
       /* reduce the size of the loops */
 	      
@@ -2336,18 +2337,16 @@ void *stress_sen_dvmt(ITG *i){
   /* perturbation of the displacements of the neighboring nodes of the design variables
      in case of an axisymmetric or plain stress/strain or shell model */
   
-  nelem=ialnk1[nea-1]-1;
-  if((strcmp1(&lakon1[nelem*8+6],"A")==0)||(strcmp1(&lakon1[nelem*8+6],"E")==0)||
+  /*  nelem=ialnk1[nea-1]-1;
+    if((strcmp1(&lakon1[nelem*8+6],"A")==0)||(strcmp1(&lakon1[nelem*8+6],"E")==0)||
      (strcmp1(&lakon1[nelem*8+6],"S")==0)||(strcmp1(&lakon1[nelem*8+6],"L")==0)){ 
-    //    node1=nod2nd3rd1[2*(node-1)];
-    //    node2=nod2nd3rd1[2*(node-1)+1];
     node1=node+1;
     node2=node+2;
   
     dv1[(node1-1)**mt1+idir+*mt1**nk1**i]+=dispmin1;
     dv1[(node2-1)**mt1+idir+*mt1**nk1**i]+=dispmin1;
 	
-  } 
+    } */
     
   stress_sen_dv(co1,nk1,kon1,ipkon1,lakon1,ne1,&dstn1[6**nk1**i],
 		elcon1,nelcon1,rhcon1,nrhcon1,alcon1,nalcon1,alzero1,ielmat1,
@@ -2475,18 +2474,16 @@ void *peeq_sen_dvmt(ITG *i){
   /* perturbation of the displacements of the neighboring nodes of the design variables
      in case of an axisymmetric or plain stress/strain or shell model */
   
-  nelem=ialnk1[nea-1]-1;
-  if((strcmp1(&lakon1[nelem*8+6],"A")==0)||(strcmp1(&lakon1[nelem*8+6],"E")==0)||
+  /*  nelem=ialnk1[nea-1]-1;
+    if((strcmp1(&lakon1[nelem*8+6],"A")==0)||(strcmp1(&lakon1[nelem*8+6],"E")==0)||
      (strcmp1(&lakon1[nelem*8+6],"S")==0)||(strcmp1(&lakon1[nelem*8+6],"L")==0)){ 
-    //    node1=nod2nd3rd1[2*(node-1)];
-    //    node2=nod2nd3rd1[2*(node-1)+1];
     node1=node+1;
     node2=node+2;
   
     dv1[(node1-1)**mt1+idir+*mt1**nk1**i]+=dispmin1;
     dv1[(node2-1)**mt1+idir+*mt1**nk1**i]+=dispmin1;
 	
-  } 
+    } */
     
   peeq_sen_dv(co1,nk1,kon1,ipkon1,lakon1,ne1,&depn1[*nk1**i],
 	      elcon1,nelcon1,rhcon1,nrhcon1,alcon1,nalcon1,alzero1,ielmat1,

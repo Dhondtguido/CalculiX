@@ -388,6 +388,7 @@ genmidnodes.f \
 genmodes.f \
 genmpc.f \
 gennactdofinv.f \
+gennactdofinv3d.f \
 genratio.f \
 gentiedmpc.f \
 geometricconstraints.f \
@@ -538,6 +539,7 @@ modelchanges.f \
 modf.f \
 modifympc.f \
 moehring.f \
+mohrcoulomb.f \
 mpcadd.f \
 mpcrem.f \
 mpcs.f \

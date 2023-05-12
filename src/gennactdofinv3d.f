@@ -16,33 +16,25 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-      subroutine createialnk(nk,iponoel,inoel,istartnk,ialnk,ipkon)
+      subroutine gennactdofinv3d(nactdof,nactdofinv,nk,mi)
 !
+!     inverting field nactdof, i.e. creating field nactdofinv
+!     listing the node for each independent dof.
+!     
       implicit none
 !
-      integer nk,iponoel(*),inoel(2,*),ipkon(*),ielem,
-     &   istartnk(*),ialnk(*),ifree,index,i
+      integer mi(*),nactdof(0:mi(2),*),nactdofinv(*),nk,i,j,mt
 !
-!     determining the elements containing at least one design response
-!     node and belonging to a node i.
-!     They are stored in ialnk(istartnk(i)).....up to.....
-!     ialnk(istartnk(i+1)-1)
+!     storing the nodes (in C convention, i.e. starting with 0)
+!     in field nactdofinv
 !
-      ifree=1
+      mt=mi(2)+1
       do i=1,nk
-         istartnk(i)=ifree
-         index=iponoel(i)
-         do
-            if(index.eq.0) exit
-            ielem=inoel(1,index)
-            if(ipkon(ielem).ge.0) then
-               ialnk(ifree)=ielem
-               ifree=ifree+1
-            endif
-            index=inoel(2,index)
+         do j=0,mi(2)
+            if(nactdof(j,i).le.0) cycle
+            nactdofinv(nactdof(j,i))=(i-1)*mt+j
          enddo
       enddo
-      istartnk(nk+1)=ifree
 !
       return
       end
