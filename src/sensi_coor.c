@@ -73,7 +73,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     icfd=0,*inomat=NULL,*islavact=NULL,*islavnode=NULL,*nslavnode=NULL,
     *islavsurf=NULL,nmethodl,*kon=NULL,*ipkon=NULL,*ielmat=NULL,nzss,
     *mast1=NULL,*irows=NULL,*jqs=NULL,*ipointer=NULL,i,iread,
-    *nactdofinv=NULL,*nodorig=NULL,iobject,*iponoel=NULL,node,
+    *nactdofinv=NULL,iobject,*iponoel=NULL,node,
     *nodedesi=NULL,*ipoface=NULL,*nodface=NULL,*inoel=NULL,*ipoorel=NULL,
     icoordinate=1,ishapeenergy=0,imass=0,idisplacement=0,
     *istartdesi=NULL,*ialdesi=NULL,*iorel=NULL,*ipoeldi=NULL,*ieldi=NULL,
@@ -341,7 +341,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
      surface but no design variables) are fixed by *equation's
      in a direction normal to the surface. At corners and edges
      there my be more than one normal. The necessary equations are
-     calculated in normalsforeq_se.f and stored in jobname.equ */
+     calculated in normalsforequ_se.f and stored in jobname.equ */
 
   NNEW(iponor,ITG,8*nsurfs);
   for(i=0;i<8*nsurfs;i++) iponor[i]=-1;
@@ -353,7 +353,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 			    &nsurfs,iponor,xnor,nodedesiinv,jobnamef,
 			    iponexp,nmpc,labmpc,ipompc,nodempc,ipretinfo,
 			    kon,ipkon,lakon,iponoel,inoel,iponor2d,knor2d,
-			    nod2nd3rd,ipoface,nodface));
+			    ipoface,nodface,ne));
                   
   SFREE(konfa);SFREE(ipkonfa);SFREE(lakonfa);SFREE(iponor);SFREE(xnor);
   SFREE(iponoelfa);SFREE(inoelfa);SFREE(iponexp);SFREE(ipretinfo);
@@ -490,10 +490,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   /* invert nactdof */
   
   NNEW(nactdofinv,ITG,mt**nk);
-  NNEW(nodorig,ITG,*nk);
-  FORTRAN(gennactdofinv,(nactdof,nactdofinv,nk,mi,nodorig,
-			 ipkon,lakon,kon,ne));
-  SFREE(nodorig);
+  FORTRAN(gennactdofinv3d,(nactdof,nactdofinv,nk,mi));
 
   /* reading the stiffness matrix, mass matrix, eigenfrequencies
      and eigenmodes */
@@ -1009,7 +1006,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       iscaleflag=1;
       istart=iobject+1;
       FORTRAN(scalesen,(dgdxglob,weightformgrad,nk,nodedesi,ndesi,objectset,
-                         &iscaleflag,&istart)); 	  
+			&iscaleflag,&istart,ne2d)); 	  
 
       /* storing the sensitivities in the frd-file for visualization 
 	 and for optimization */

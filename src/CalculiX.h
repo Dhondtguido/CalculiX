@@ -1874,6 +1874,9 @@ void FORTRAN(genmpc,(ITG *inodestet,ITG *nnodestet,double *co,
 void FORTRAN(gennactdofinv,(ITG *nactdof,ITG *nactdofinv,ITG *nk,
        ITG *mi,ITG *nodorig,ITG *ipkon,char *lakon,ITG *kon,ITG *ne));
 
+void FORTRAN(gennactdofinv3d,(ITG *nactdof,ITG *nactdofinv,ITG *nk,
+       ITG *mi));
+
 unsigned long genrand();
 
 void FORTRAN(genratio,(double *co,double *doubleglob,ITG *integerglob,
@@ -1979,7 +1982,7 @@ void gradientprojection(ITG *nobject,char *objectset,double *dgdxglob,
 			ITG *iendset,ITG *ialset,
 			double *gradproj,char *gradprojname,ITG *nactive,
 			double *objnorm,ITG *ipoacti,ITG *iconstacti,
-			ITG *inameacti,ITG *nnlconst);
+			ITG *inameacti,ITG *nnlconst,ITG *ne2d);
 
 void FORTRAN(identamta,(double *amta,double *reftime,ITG *istart,ITG *iend,
                ITG *id));
@@ -3145,13 +3148,13 @@ void FORTRAN(normmpc,(ITG *nmpc,ITG *ipompc,ITG *nodempc,double *coefmpc,
 
 void FORTRAN(normalsforequ_se,(ITG *nk,double *co,ITG *iponoelfa,
                                ITG *inoelfa,ITG *konfa,ITG *ipkonfa,
-                               char *lakonfa,ITG *ne,ITG *ipnor,
+                               char *lakonfa,ITG *nsurfs,ITG *iponor,
                                double *xnor,ITG *nodedesiinv,char *jobnamef,
                                ITG *iponexp,ITG *nmpc,char *labmpc,
                                ITG *ipompc,ITG *nodempc,ITG *ipretinfo,
                                ITG *kon,ITG *ipkon,char *lakon,ITG *iponoel,
                                ITG *inoel,ITG *iponor2d,ITG *knor2d,
-                               ITG *nod2nd3rd,ITG *ipoface,ITG *nodeface));
+                               ITG *ipoface,ITG *nodeface,ITG *ne));
 
 void FORTRAN(normalsoninterface,(ITG *istartset,ITG *iendset,
              ITG *ialset,ITG *imast,ITG *ipkon,ITG *kon,char *lakon,
@@ -4366,7 +4369,7 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		  ITG *iponor2d,ITG *knor2d,ITG *ne2d,ITG *iponoel2d,
 		  ITG *inoel2d,
 		  ITG *mpcend,ITG *irobustdesign,ITG *irandomtype,
-		  double *randomval);
+		  double *randomval,ITG *rig);
 
 void FORTRAN(rotationvector,(double *a,double *euler));
 
@@ -4374,7 +4377,7 @@ void FORTRAN(rotationvectorinv,(double *a,double* euler));
        
 void FORTRAN(scalesen,(double *dgdxglob,double *feasdir,ITG *nk,ITG *nodedesi,
                        ITG *ndesi,char *objectset,ITG *iscaleflag,
-                       ITG *iobject));
+                       ITG *iobject,ITG *ne2d));
 
 void FORTRAN(searchmidneigh,(ITG *inn,ITG *iponn,ITG *nktet_,ITG *iexternedg,
 			     ITG *ipoed,ITG *iedg,ITG *ipoeled,ITG *ieled,
