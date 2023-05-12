@@ -73,7 +73,7 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		  ITG *iponor2d,ITG *knor2d,ITG *ne2d,ITG *iponoel2d,
 		  ITG *inoel2d,
 		  ITG *mpcend,ITG *irobustdesign,ITG *irandomtype,
-		  double *randomval){
+		  double *randomval,ITG *rig){
 	     
   char description[13]="            ",*lakon=NULL,cflag[1]=" ",
     *lakonfa=NULL,*objectset=NULL,filabnew[5]="    ";
@@ -184,7 +184,7 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 			   nodedesiinv,lakon,ipkon,kon,iponoelfa,
 			   nod2nd3rd,iponor2d,knor2d,iponoel2d,
 			   inoel2d,nobject,objectset,nod1st,ne,
-			   jobnamef));
+			   jobnamef,rig));
     						 
   
   }else{
@@ -260,7 +260,7 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 			    &nsurfs,iponor,xnor,nodedesiinv,jobnamef,
 			    iponexp,nmpc,labmpc,ipompc,nodempc,ipretinfo,
 			    kon,ipkon,lakon,iponoel,inoel,iponor2d,knor2d,
-			    nod2nd3rd,ipoface,nodface));
+			    ipoface,nodface,ne));
     	  
   SFREE(konfa);SFREE(ipkonfa);SFREE(lakonfa);SFREE(iponor);SFREE(xnor);
   SFREE(iponoelfa);SFREE(inoelfa);SFREE(iponexp);SFREE(ipretinfo);

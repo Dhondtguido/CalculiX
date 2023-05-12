@@ -37,19 +37,19 @@
 !     
       character*80 amat
 !     
-      integer ithermal(*),icmd,i,k,l,m,n,kode,ivisco,ielastic,kel(4,21),
+      integer ithermal(*),icmd,i,j,k,l,m,n,kode,ivisco,ielastic,
      &     niso,nkin,ielas,iel,iint,nstate_,mi(*),id,leximp,lend,layer,
      &     kspt,kstep,kinc,iloop,nmethod,user_hardening,user_creep,ier,
-     &     iregion,matz
+     &     iregion,matz,kel(4,21)
 !     
-      real*8 elconloc(*),elas(21),emec(6),beta(6),stre(6),
-     &     vj,plconloc(802),stril(6),xitril(6),xk,xm,sa,
+      real*8 elconloc(*),elas(21),emec(6),beta(6),stre(6),sc(6),
+     &     vj,plconloc(802),stril(6),xitril(6),xk,xm,sa,stiff(6,6),
      &     ee,un,um,al,cop,dxitril,xn(3,3),epl(6),c1,c2,c3,c4,c7,
-     &     c8,ftrial,xiso(200),yiso(200),xkin(200),ykin(200),
-     &     fiso,dfiso,fkin,dfkin,fiso0,fkin0,ep,t1l,dtime,
-     &     epini,a1,dsvm,xxa,xxn,dkl(3,3),el(6),tracee,traces,
-     &     dcop,time,ttime,eloc(6),xstate(nstate_,mi(1),*),
-     &     xstateini(nstate_,mi(1),*),decra(5),deswa(5),serd,
+     &     c8,ftrial,xiso(200),yiso(200),xkin(200),ykin(200),da6(3),
+     &     fiso,dfiso,fkin,dfkin,fiso0,fkin0,ep,t1l,dtime,denom,
+     &     epini,dsvm,xxa,xxn,dkl(3,3),el(6),tracee,traces,a2(3),a6(3),
+     &     dcop,time,ttime,eloc(6),xstate(nstate_,mi(1),*),da1(3),
+     &     xstateini(nstate_,mi(1),*),decra(5),deswa(5),serd,tracea,
      &     esw(2),ec(2),p,qtild,predef(1),dpred(1),timeabq(2),pgauss(3),
      &     dtemp,pnewdt,um2,depvisc,c,fv1(3),fv2(3),pf1l1,pf1l6,
      &     pl1ra,pl6f1,pl6ra,traceb,z(3,3),s(3,3),b1(3),b2(3),b6(3),
@@ -57,7 +57,7 @@
      &     s1xs2(3),s6xs1(3),dlambda,ddlambda,dlambda2(2),ddlambda2(2),
      &     h,dh,h2(2),dh2(2,2),dk,dm,det,dlambda6(2),ddlambda6(2),
      &     h6(2),dh6(2,2),dlambdar(3),ddlambdar(3),hr(3),dhr(3,3),
-     &     s3(3)
+     &     a(3,3),b(3,3),a1(3),da2(3)
 !     
       kel=reshape((/1,1,1,1,1,1,2,2,2,2,2,2,1,1,3,3,2,2,3,3,3,3,3,3,
      &     1,1,1,2,2,2,1,2,3,3,1,2,1,2,1,2,1,1,1,3,2,2,1,3,
@@ -325,6 +325,50 @@
             return
           endif
         enddo
+!
+!       calculate the stress at C
+!
+        do i=1,3
+          sc(i)=sb(i)-dlambda*s1(i)
+        enddo
+        do i=4,6
+          sc(i)=0.d0
+        enddo
+!        
+        if(icmd.ne.3) then
+!
+!          calculate the tangent stiffness matrix
+!
+          a1(1)=xk
+          a1(2)=0.d0
+          a1(3)=-1.d0
+          tracea=xk-1.d0
+          do i=1,3
+            da1(i)=um2*a1(i)+al*tracea
+          enddo
+          denom=a1(1)*s1(1)+a1(2)*s1(2)+a1(3)*s1(3)+dk*dm*dfiso
+          do i=1,3
+            do j=1,3
+              stiff(i,j)=al-s1(i)*da1(j)/denom
+            enddo
+            stiff(i,i)=stiff(i,i)+um2
+          enddo
+          do i=1,3
+            do j=4,6
+              stiff(i,j)=0.d0
+              stiff(j,i)=0.d0
+            enddo
+          enddo
+          do i=4,6
+            do j=4,6
+              stiff(i,j)=0.d0
+            enddo
+          enddo
+        endif
+        stiff(4,4)=(sc(1)-sc(2))/(sb(1)-sb(2))*um
+        stiff(5,5)=(sc(1)-sc(3))/(sb(1)-sb(3))*um
+        stiff(6,6)=(sc(2)-sc(3))/(sb(2)-sb(3))*um
+!
       elseif(iregion.eq.2) then
         iloop=0
         dlambda2(1)=0.d0
@@ -389,6 +433,70 @@
             return
           endif
         enddo
+!
+!       calculate the stress at C
+!
+        do i=1,3
+          sc(i)=sb(i)-dlambda2(1)*s1(i)-dlambda2(2)*s2(i)
+        enddo
+        do i=4,6
+          sc(i)=0.d0
+        enddo
+!        
+        if(icmd.ne.3) then
+!
+!          calculate the tangent stiffness matrix
+!
+          a1(1)=xk
+          a1(2)=0.d0
+          a1(3)=-1.d0
+          a2(1)=0.d0
+          a2(2)=xk
+          a2(3)=-1.d0
+          tracea=xk-1.d0
+          do i=1,3
+            da1(i)=um2*a1(i)+al*tracea
+            da2(i)=um2*a2(i)+al*tracea
+          enddo
+!
+!         setting up lhs matrix a(*,*)
+!
+          a(1,1)=a1(1)*s1(1)+a1(2)*s1(2)+a1(3)*s1(3)+dk*dm*dfiso
+          a(1,2)=a1(1)*s2(1)+a1(2)*s2(2)+a1(3)*s2(3)+dk*dm*dfiso
+          a(2,1)=a2(1)*s1(1)+a2(2)*s1(2)+a2(3)*s1(3)+dk*dm*dfiso
+          a(2,2)=a2(1)*s2(1)+a2(2)*s2(2)+a2(3)*s2(3)+dk*dm*dfiso
+!
+!         inverting the matrix -> b(*,*)
+!
+          det=a(1,1)*a(2,2)-a(2,1)*a(1,2)
+          b(1,1)=a(2,2)/det
+          b(1,2)=-a(1,2)/det
+          b(2,1)=-a(2,1)/det
+          b(2,2)=a(1,1)/det
+          do i=1,3
+            do j=1,3
+              stiff(i,j)=al-b(1,1)*s1(i)*da1(j)
+     &                     -b(1,2)*s1(i)*da2(j)
+     &                     -b(2,1)*s2(i)*da1(j)
+     &                     -b(2,2)*s2(i)*da2(j)
+            enddo
+            stiff(i,i)=stiff(i,i)+um2
+          enddo
+          do i=1,3
+            do j=4,6
+              stiff(i,j)=0.d0
+              stiff(j,i)=0.d0
+            enddo
+          enddo
+          do i=4,6
+            do j=4,6
+              stiff(i,j)=0.d0
+            enddo
+          enddo
+          stiff(4,4)=(sc(1)-sc(2))/(sb(1)-sb(2))*um
+          stiff(5,5)=(sc(1)-sc(3))/(sb(1)-sb(3))*um
+          stiff(6,6)=(sc(2)-sc(3))/(sb(2)-sb(3))*um
+        endif
       elseif(iregion.eq.3) then
         iloop=0
         dlambda6(1)=0.d0
@@ -453,6 +561,70 @@
             return
           endif
         enddo
+!
+!       calculate the stress at C
+!
+        do i=1,3
+          sc(i)=sb(i)-dlambda6(1)*s1(i)-dlambda6(2)*s6(i)
+        enddo
+        do i=4,6
+          sc(i)=0.d0
+        enddo
+!        
+        if(icmd.ne.3) then
+!
+!          calculate the tangent stiffness matrix
+!
+          a1(1)=xk
+          a1(2)=0.d0
+          a1(3)=-1.d0
+          a6(1)=xk
+          a6(2)=-1.d0
+          a6(3)=0.d0
+          tracea=xk-1.d0
+          do i=1,3
+            da1(i)=um2*a1(i)+al*tracea
+            da6(i)=um2*a6(i)+al*tracea
+          enddo
+!
+!         setting up lhs matrix a(*,*)
+!
+          a(1,1)=a1(1)*s1(1)+a1(2)*s1(2)+a1(3)*s1(3)+dk*dm*dfiso
+          a(1,2)=a1(1)*s6(1)+a1(2)*s6(2)+a1(3)*s6(3)+dk*dm*dfiso
+          a(2,1)=a6(1)*s1(1)+a6(2)*s1(2)+a6(3)*s1(3)+dk*dm*dfiso
+          a(2,2)=a6(1)*s6(1)+a6(2)*s6(2)+a6(3)*s6(3)+dk*dm*dfiso
+!
+!         inverting the matrix -> b(*,*)
+!
+          det=a(1,1)*a(2,2)-a(2,1)*a(1,2)
+          b(1,1)=a(2,2)/det
+          b(1,2)=-a(1,2)/det
+          b(2,1)=-a(2,1)/det
+          b(2,2)=a(1,1)/det
+          do i=1,3
+            do j=1,3
+              stiff(i,j)=al-b(1,1)*s1(i)*da1(j)
+     &                     -b(1,2)*s1(i)*da6(j)
+     &                     -b(2,1)*s6(i)*da1(j)
+     &                     -b(2,2)*s6(i)*da6(j)
+            enddo
+            stiff(i,i)=stiff(i,i)+um2
+          enddo
+          do i=1,3
+            do j=4,6
+              stiff(i,j)=0.d0
+              stiff(j,i)=0.d0
+            enddo
+          enddo
+          do i=4,6
+            do j=4,6
+              stiff(i,j)=0.d0
+            enddo
+          enddo
+          stiff(4,4)=(sc(1)-sc(2))/(sb(1)-sb(2))*um
+          stiff(5,5)=(sc(1)-sc(3))/(sb(1)-sb(3))*um
+          stiff(6,6)=(sc(2)-sc(3))/(sb(2)-sb(3))*um
+        endif
       else
 !
 !       region IV
@@ -487,65 +659,157 @@
 !         setting up the 3x3 equation system: right hand side
 !
           hr(1)=xk*(sb(1)-dlambdar(1)*s1(1)-dlambdar(2)*s2(1)
-     &             -dlambdar(3)*s3(1))
+     &             -dlambdar(3)*s6(1))
      &            -(sb(3)-dlambdar(1)*s1(3)-dlambdar(2)*s2(3)
-     &             -dlambdar(3)*s3(3))
+     &             -dlambdar(3)*s6(3))
      &            -dk*fiso
-          hr(1)=xk*(sb(2)-dlambdar(1)*s1(2)-dlambdar(2)*s2(2)
-     &             -dlambdar(3)*s3(2))
+          hr(2)=xk*(sb(2)-dlambdar(1)*s1(2)-dlambdar(2)*s2(2)
+     &             -dlambdar(3)*s6(2))
      &            -(sb(3)-dlambdar(1)*s1(3)-dlambdar(2)*s2(3)
-     &             -dlambdar(3)*s3(3))
+     &             -dlambdar(3)*s6(3))
      &            -dk*fiso
-          hr(1)=xk*(sb(1)-dlambdar(1)*s1(1)-dlambdar(2)*s2(1)
-     &             -dlambdar(3)*s3(1))
+          hr(3)=xk*(sb(1)-dlambdar(1)*s1(1)-dlambdar(2)*s2(1)
+     &             -dlambdar(3)*s6(1))
      &            -(sb(2)-dlambdar(1)*s1(2)-dlambdar(2)*s2(2)
-     &             -dlambdar(3)*s3(2))
+     &             -dlambdar(3)*s6(2))
      &            -dk*fiso
 !
-!         setting up the 2x2 equation system: left hand side
+!         setting up the 3x3 equation system: left hand side
 !
           dhr(1,1)=-xk*s1(1)+s1(3)-dk*dm*dfiso
           dhr(1,2)=-xk*s2(1)+s2(3)-dk*dm*dfiso
-          dhr(1,3)=-xk*s3(1)+s3(3)-dk*dm*dfiso
+          dhr(1,3)=-xk*s6(1)+s6(3)-dk*dm*dfiso
           dhr(2,1)=-xk*s1(2)+s1(3)-dk*dm*dfiso
-!          ******
-!          *****
-          dhr(2,2)=-xk*s1(1)+s2(2)-dk*dm*dfiso
-          dhr(1,1)=-xk*s1(1)+s1(3)-dk*dm*dfiso
-          dhr(1,1)=-xk*s1(1)+s1(3)-dk*dm*dfiso
-          dhr(1,1)=-xk*s1(1)+s1(3)-dk*dm*dfiso
-          dhr(1,1)=-xk*s1(1)+s1(3)-dk*dm*dfiso
+          dhr(2,2)=-xk*s2(2)+s2(3)-dk*dm*dfiso
+          dhr(2,3)=-xk*s6(2)+s6(3)-dk*dm*dfiso
+          dhr(3,1)=-xk*s1(1)+s1(2)-dk*dm*dfiso
+          dhr(3,2)=-xk*s2(1)+s2(2)-dk*dm*dfiso
+          dhr(3,3)=-xk*s6(1)+s6(2)-dk*dm*dfiso
 !
-          det=dh2(1,1)*dh2(2,2)-dh2(2,1)*dh2(1,2)
+          det=dhr(1,1)*(dhr(2,2)*dhr(3,3)-dhr(2,3)*dhr(3,2))
+     &       -dhr(1,2)*(dhr(2,1)*dhr(3,3)-dhr(2,3)*dhr(3,1))
+     &       +dhr(1,3)*(dhr(2,1)*dhr(3,2)-dhr(2,2)*dhr(3,1))
 !
 !         solving the system
 !
-          ddlambdar(1)=(h2(1)*dh2(2,2)-h2(2)*dh2(1,2))/det
-          ddlambdar(2)=(dh2(1,1)*h2(2)-dh2(2,1)*h2(1))/det
+          ddlambdar(1)=(hr(1)*(dhr(2,2)*dhr(3,3)-dhr(2,3)*dhr(3,2))
+     &       -dhr(1,2)*(hr(2)*dhr(3,3)-dhr(2,3)*hr(3))
+     &       +dhr(1,3)*(hr(2)*dhr(3,2)-dhr(2,2)*hr(3)))/det
+          ddlambdar(2)=(dhr(1,1)*(hr(2)*dhr(3,3)-dhr(2,3)*hr(3))
+     &       -hr(1)*(dhr(2,1)*dhr(3,3)-dhr(2,3)*dhr(3,1))
+     &       +dhr(1,3)*(dhr(2,1)*hr(3)-hr(2)*dhr(3,1)))/det
+          ddlambdar(3)=(dhr(1,1)*(dhr(2,2)*hr(3)-hr(2)*dhr(3,2))
+     &       -dhr(1,2)*(dhr(2,1)*hr(3)-hr(2)*dhr(3,1))
+     &       +hr(1)*(dhr(2,1)*dhr(3,2)-dhr(2,2)*dhr(3,1)))/det
 !
           if(((ddlambdar(1).lt.1.d-10).or.
      &        (ddlambdar(1).lt.1.d-4*dlambdar(1))).and.
      &       ((ddlambdar(2).lt.1.d-10).or.
-     &        (ddlambdar(2).lt.1.d-4*dlambdar(2)))) exit
+     &        (ddlambdar(2).lt.1.d-4*dlambdar(2))).and.
+     &       ((ddlambdar(3).lt.1.d-10).or.
+     &        (ddlambdar(3).lt.1.d-4*dlambdar(3)))) exit
 !
           dlambdar(1)=dlambdar(1)+ddlambdar(1)
           dlambdar(2)=dlambdar(2)+ddlambdar(2)
+          dlambdar(3)=dlambdar(3)+ddlambdar(3)
 !
           if((iloop.gt.15).or.(dlambdar(1).le.0.d0).or.
-     &       (dlambdar(2).le.0.d0)) then
+     &       (dlambdar(2).le.0.d0).or.(dlambdar(3).le.0.d0)) then
             pnewdt=0.25d0
             return
           endif
         enddo
+!
+!       calculate the stress at C
+!
+        do i=1,3
+          sc(i)=sb(i)
+     &         -dlambdar(1)*s1(i)-dlambdar(2)*s2(i)-dlambdar(3)*s6(i)
+        enddo
+        do i=4,6
+          sc(i)=0.d0
+        enddo
+!        
+        if(icmd.ne.3) then
+!
+!          calculate the tangent stiffness matrix
+!
+          a1(1)=xk
+          a1(2)=0.d0
+          a1(3)=-1.d0
+          a2(1)=0.d0
+          a2(2)=xk
+          a2(3)=-1.d0
+          a6(1)=xk
+          a6(2)=-1.d0
+          a6(3)=0.d0
+          tracea=xk-1.d0
+          do i=1,3
+            da1(i)=um2*a1(i)+al*tracea
+            da2(i)=um2*a2(i)+al*tracea
+            da6(i)=um2*a6(i)+al*tracea
+          enddo
+!
+!         setting up lhs matrix a(*,*)
+!
+          a(1,1)=a1(1)*s1(1)+a1(2)*s1(2)+a1(3)*s1(3)+dk*dm*dfiso
+          a(1,2)=a1(1)*s2(1)+a1(2)*s2(2)+a1(3)*s2(3)+dk*dm*dfiso
+          a(1,3)=a1(1)*s6(1)+a1(2)*s6(2)+a1(3)*s6(3)+dk*dm*dfiso
+          a(2,1)=a2(1)*s1(1)+a2(2)*s1(2)+a2(3)*s1(3)+dk*dm*dfiso
+          a(2,2)=a2(1)*s2(1)+a2(2)*s2(2)+a2(3)*s2(3)+dk*dm*dfiso
+          a(2,3)=a2(1)*s6(1)+a2(2)*s6(2)+a2(3)*s6(3)+dk*dm*dfiso
+          a(3,1)=a6(1)*s1(1)+a6(2)*s1(2)+a6(3)*s1(3)+dk*dm*dfiso
+          a(3,2)=a6(1)*s2(1)+a6(2)*s2(2)+a6(3)*s2(3)+dk*dm*dfiso
+          a(3,3)=a6(1)*s6(1)+a6(2)*s6(2)+a6(3)*s6(3)+dk*dm*dfiso
+!
+!         inverting the matrix -> b(*,*)
+!
+          det=a(1,1)*(a(2,2)*a(3,3)-a(2,3)*a(3,2))
+     &       -a(1,2)*(a(2,1)*a(3,3)-a(2,3)*a(3,1))
+     &       +a(1,3)*(a(2,1)*a(3,2)-a(2,2)*a(3,1))
+          b(1,1)=(a(2,2)*a(3,3)-a(3,2)*a(2,3))/det
+          b(1,2)=-(a(1,2)*a(3,3)-a(3,2)*a(1,3))/det
+          b(1,3)=-(a(1,2)*a(2,3)-a(2,2)*a(1,3))/det
+          b(2,1)=-(a(2,1)*a(3,3)-a(3,1)*a(2,3))/det
+          b(2,2)=(a(1,1)*a(3,3)-a(3,1)*a(1,3))/det
+          b(2,3)=-(a(1,1)*a(2,3)-a(2,1)*a(1,3))/det
+          b(3,1)=-(a(2,1)*a(3,2)-a(3,1)*a(2,2))/det
+          b(3,2)=-(a(1,1)*a(3,2)-a(3,1)*a(1,2))/det
+          b(3,3)=(a(1,1)*a(2,2)-a(2,1)*a(1,2))/det
+!          
+          do i=1,3
+            do j=1,3
+              stiff(i,j)=al-b(1,1)*s1(i)*da1(j)
+     &                     -b(1,2)*s1(i)*da2(j)
+     &                     -b(1,3)*s1(i)*da6(j)
+     &                     -b(2,1)*s2(i)*da1(j)
+     &                     -b(2,2)*s2(i)*da2(j)
+     &                     -b(2,3)*s2(i)*da6(j)
+     &                     -b(3,1)*s6(i)*da1(j)
+     &                     -b(3,2)*s6(i)*da2(j)
+     &                     -b(3,3)*s6(i)*da6(j)
+            enddo
+            stiff(i,i)=stiff(i,i)+um2
+          enddo
+          do i=1,3
+            do j=4,6
+              stiff(i,j)=0.d0
+              stiff(j,i)=0.d0
+            enddo
+          enddo
+          do i=4,6
+            do j=4,6
+              stiff(i,j)=0.d0
+            enddo
+          enddo
+          stiff(4,4)=(sc(1)-sc(2))/(sb(1)-sb(2))*um
+          stiff(5,5)=(sc(1)-sc(3))/(sb(1)-sb(3))*um
+          stiff(6,6)=(sc(2)-sc(3))/(sb(2)-sb(3))*um
+        endif
       endif
-          
-
-
-
-
-
-
-      
+!
+!     TO DO: BACKTRANSFORMATION FROM PRINCIPAL AXES INTO GLOBAL AXES
+!
 !     
       return
       end

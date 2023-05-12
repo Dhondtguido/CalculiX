@@ -230,7 +230,7 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
   
   iscaleflag=3; 
   FORTRAN(scalesen,(dgdxglob,feasdir,nk,nodedesi,ndesi,objectset,&iscaleflag,
-		    &istart));
+		    &istart,ne2d));
 
   /* check number of constraints */
 
@@ -255,8 +255,7 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
     for(i=0;i<*nobject;i++){
       istart=i+1;
       FORTRAN(scalesen,(dgdxglob,feasdir,nk,nodedesi,ndesi,objectset
-			,&iscaleflag,
-                        &istart));
+			,&iscaleflag,&istart,ne2d));
     }
 
     /* determining the assembled gradient vector */
@@ -330,7 +329,7 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
     gradientprojection(nobject,objectset,dgdxglob,g0,ndesi,nodedesi,nk,
         	       isolver,set,&nset,istartset,iendset,ialset,gradproj,
 		       gradprojname,&nactive,objnorm,ipoacti,iconstacti,
-		       inameacti,&nnlconst);	                   
+		       inameacti,&nnlconst,ne2d);	                   
 
     if(addout==1){
       ifeasd=2;            
@@ -369,7 +368,7 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
 
   iscaleflag=4; 
   FORTRAN(scalesen,(dgdxglob,feasdir,nk,nodedesi,ndesi,objectset,&iscaleflag,
-		    &istart));
+		    &istart,ne2d));
 
   ifeasd=3;
   ++*kode;

@@ -68,7 +68,7 @@
 !
          if(i.le.nnlconst) then
             if(iconstacti(i).eq.-1) then
-               if(xlambd(i).lt.0.d0) then            
+               if(xlambd(i).gt.0.d0) then            
                   write(5,101)
      &            ipos-1,objectset(1,ipos),'LE  ',xlambd(i),'ACTIVE  ',
      &            objectset(5,ipos)
@@ -78,7 +78,7 @@
      &            objectset(5,ipos)
                endif
             else
-               if(xlambd(i).lt.0.d0) then
+               if(xlambd(i).gt.0.d0) then
                   write(5,101)
      &            ipos-1,objectset(1,ipos),'GE  ',xlambd(i),'INACTIVE', 
      &            objectset(5,ipos)
