@@ -20,7 +20,7 @@
      &     ipkonfa,lakonfa,nsurfs,iponor,xnor,nodedesiinv,jobnamef,
      &     iponexp,nmpc,labmpc,ipompc,nodempc,ipretinfo,kon,ipkon,lakon,
      &     iponoel,inoel,iponor2d,knor2d,ipoface,nodface,ne,x,y,z,
-     &     xo,yo,zo,nx,ny,nz,nodes,dist)
+     &     xo,yo,zo,nx,ny,nz,nodes,dist,ne2d,nod1st,nod2nd3rd)
 !     
 !     calculates normals on surface for mesh modification
 !     purposes in an optimization loop
@@ -55,7 +55,7 @@
      &     knor2d(*),node2d,ipoface(*),node1,node2,node3,kflag,
      &     nodface(5,*),nopem,ifaceqmid(6),ifacewmid(5),node3d,
      &     nnor1,nnor2,inor1(3),inor2(3),nx(*),ny(*),nz(*),id,
-     &     neigh(1)
+     &     neigh(1),ne2d,nod1st(*),nod2nd3rd(2,*)
 !     
       real*8 co(3,*),xnor(*),xno(3,100),coloc6(2,6),coloc8(2,8),
      &     xl(3,20),dd,xnoref(3),dot,xnorloc(6),sort(6),x(*),y(*),z(*),
@@ -353,6 +353,9 @@
  102  format('*NODE')
       do i=1,nk
         if(ipretinfo(i).ne.i) cycle
+        if(ne2d.ne.0) then
+          if((nod2nd3rd(2,i).ne.0).or.(nod1st(i).ne.0)) cycle
+        endif
         write(20,103) i,(co(j,i),j=1,3)
       enddo
  103  format(i10,3(',',e15.8))

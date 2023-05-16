@@ -220,8 +220,6 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
     
     for (i=0;i<3**nslavs;++i){
       if (iacti[i]!=0){
-	//        index=i;
-	//        for (j=jqw[index]-1;j<jqw[index+1]-1;j++){
         for (j=jqw[i]-1;j<jqw[i+1]-1;j++){
           cvec[iacti[i]-1]+=auw[j]*gapdisp[iroww[j]-1];
         }

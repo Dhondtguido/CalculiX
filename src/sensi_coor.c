@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 #include "CalculiX.h"
 
 void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
@@ -69,19 +70,19 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   ITG *inum=NULL,k,*irow=NULL,ielas=0,icmd=0,iinc=1,nasym=0,
     mass[2]={0,0},stiffness=1,buckling=0,rhsi=1,intscheme=0,*ncocon=NULL,
     *nshcon=NULL,mode=-1,noddiam=-1,coriolis=0,iout,
-    ifreebody,*itg=NULL,ntg=0,ngraph=1,mt=mi[1]+1,ne0,*integerglob=NULL,     
+    *itg=NULL,ntg=0,ngraph=1,mt=mi[1]+1,ne0,*integerglob=NULL,     
     icfd=0,*inomat=NULL,*islavact=NULL,*islavnode=NULL,*nslavnode=NULL,
     *islavsurf=NULL,nmethodl,*kon=NULL,*ipkon=NULL,*ielmat=NULL,nzss,
     *mast1=NULL,*irows=NULL,*jqs=NULL,*ipointer=NULL,i,iread,
     *nactdofinv=NULL,iobject,*iponoel=NULL,node,
-    *nodedesi=NULL,*ipoface=NULL,*nodface=NULL,*inoel=NULL,*ipoorel=NULL,
+    *nodedesi=NULL,*ipoface=NULL,*nodface=NULL,*inoel=NULL,
     icoordinate=1,ishapeenergy=0,imass=0,idisplacement=0,
-    *istartdesi=NULL,*ialdesi=NULL,*iorel=NULL,*ipoeldi=NULL,*ieldi=NULL,
+    *istartdesi=NULL,*ialdesi=NULL,*ipoeldi=NULL,*ieldi=NULL,
     *istartelem=NULL,*ialelem=NULL,ieigenfrequency=0,cyclicsymmetry=0,
     nherm,nev,iev,inoelsize,*itmp=NULL,nmd,nevd,*nm=NULL,*ielorien=NULL,
     igreen=0,iglob=0,idesvar=0,inorm=0,irand=0,*nodedesiinv=NULL,
     *nnodes=NULL,iregion=0,*konfa=NULL,*ipkonfa=NULL,nsurfs,ifree,
-    *iponor=NULL,*iponoelfa=NULL,*inoelfa=NULL,ifreemax,nconstraint,
+    *iponor=NULL,*iponoelfa=NULL,*inoelfa=NULL,ifreemax,
     *iponexp=NULL,*ipretinfo=NULL,nfield,iforce,*nod2nd3rd=NULL,
     *nod1st=NULL,ishape=0,iscaleflag,istart,modalstress=0,ifeasd=0,
     *nx=NULL,*ny=NULL,*nz=NULL,*nodes=NULL;
@@ -366,7 +367,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 			    iponexp,nmpc,labmpc,ipompc,nodempc,ipretinfo,
 			    kon,ipkon,lakon,iponoel,inoel,iponor2d,knor2d,
 			    ipoface,nodface,ne,x,y,z,xo,yo,zo,nx,ny,nz,nodes,
-			    dist));
+			    dist,ne2d,nod1st,nod2nd3rd));
                   
   SFREE(konfa);SFREE(ipkonfa);SFREE(lakonfa);SFREE(iponor);SFREE(xnor);
   SFREE(iponoelfa);SFREE(inoelfa);SFREE(iponexp);SFREE(ipretinfo);
@@ -454,19 +455,6 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     NNEW(t1act,double,*nk);
     for(k=0;k<*nk;++k){t1act[k]=t1old[k];}
   }
-  
-  /* assigning the body forces to the elements */ 
-
-  /* if(*nbody>0){
-     ifreebody=*ne+1;
-     NNEW(ipobody,ITG,2*ifreebody**nbody);
-     for(k=1;k<=*nbody;k++){
-     FORTRAN(bodyforce,(cbody,ibody,ipobody,nbody,set,istartset,
-     iendset,ialset,&inewton,nset,&ifreebody,&k));
-     RENEW(ipobody,ITG,2*(*ne+ifreebody));
-     }
-     RENEW(ipobody,ITG,2*(ifreebody-1));
-     }*/
 
   /* allocating a field for the instantaneous amplitude */
 

@@ -121,6 +121,7 @@ cfdconv.f \
 cfds.f \
 cflux.f \
 cfluxs.f \
+changecontacttypes.f \
 changedepterm.f \
 changefrictions.f \
 changekon.f \
@@ -1001,7 +1002,6 @@ dudsmain.c \
 dyna.c \
 dynboun.c \
 electromagnetics.c \
-elemChecker.c \
 elementcpuload.c \
 expand.c \
 external.c \
@@ -1134,9 +1134,6 @@ u_free.c \
 u_malloc.c \
 u_realloc.c \
 utempread.c \
-v_betrag.c \
-v_prod.c \
-v_result.c \
 worparll.c \
 writeheading.c \
 writenewmesh.c \

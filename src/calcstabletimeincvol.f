@@ -189,6 +189,7 @@ c            elemfac=0.5d0
             nope=8
             nopes=4
             nfaces=6
+            if(mortar.eq.-1) elemfac=0.9d0
           elseif(lakon(nelem)(4:5).eq.'10')then
             nope=10
             nopes=6

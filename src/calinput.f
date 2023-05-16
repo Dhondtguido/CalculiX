@@ -363,6 +363,11 @@ c        nset=0
      &       nmpc,ikmpc,ilmpc,labmpc,iamplitudedefault,namtot,ier)
         cflux_flag=.true.
 !     
+      elseif(textpart(1)(1:18).eq.'*CHANGECONTACTTYPE') then
+        call changecontacttypes(inpc,textpart,istep,istat,n,iline,
+     &       ipol,inl,ipoinp,inp,iperturb,ipoinpc,mortar,ier,iexpl,
+     &       nmethod)
+!     
       elseif(textpart(1)(1:15).eq.'*CHANGEFRICTION') then
         ichangefriction=1
         call changefrictions(inpc,textpart,matname,nmat,nmat_,

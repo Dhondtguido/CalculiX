@@ -3157,7 +3157,8 @@ void FORTRAN(normalsforequ_se,(ITG *nk,double *co,ITG *iponoelfa,
                                ITG *ipoface,ITG *nodeface,ITG *ne,double *x,
 			       double *y,double *z,double *xo,double *yo,
 			       double *zo,ITG *nx,ITG *ny,ITG *nz,ITG *nodes,
-			       double *dist));
+			       double *dist,ITG *ne2d,ITG *nod1st,
+			       ITG *nod2nd3rd));
 
 void FORTRAN(normalsoninterface,(ITG *istartset,ITG *iendset,
              ITG *ialset,ITG *imast,ITG *ipkon,ITG *kon,char *lakon,
