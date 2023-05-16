@@ -1686,9 +1686,9 @@ c
         endif
       endif
 !     
-      write(*,*)
-      write(*,*) 'STEP ',istep
-      write(*,*)
+c      write(*,*)
+c      write(*,*) 'STEP ',istep
+c      write(*,*)
       if(nmethod.eq.-1) then
         write(*,*) 'Visco analysis was selected'
       elseif(nmethod.eq.0) then

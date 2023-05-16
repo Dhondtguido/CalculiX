@@ -42,6 +42,7 @@
 !          -50: deformation plasticity
 !          -51: incremental plasticity (no viscosity)
 !          -52: viscoplasticity
+!          -53: Mohr-Coulomb plasticity
 !       < -100: user material routine with -kode-100 user
 !               defined constants with keyword *USER MATERIAL
 !

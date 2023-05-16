@@ -69,22 +69,24 @@
         endif
       enddo
 !
-      write(*,*) '*INFO: actual contact type:'
+      write(*,*) '*INFO reading *CHANGE CONTACT TYPE:'
+      write(*,*) '      actual contact type:'
       if(mortar.eq.-1) then
-        write(*,*) '       MASSLESS'
+        write(*,*) '      MASSLESS'
       elseif(mortar.eq.0) then
-        write(*,*) '       NODE TO SURFACE'
+        write(*,*) '      NODE TO SURFACE'
       elseif(mortar.eq.1) then
-        write(*,*) '       SURFACE TO SURFACE'
+        write(*,*) '      SURFACE TO SURFACE'
       elseif(mortar.eq.2) then
-        write(*,*) '       MORTAR'
+        write(*,*) '      MORTAR'
       elseif(mortar.eq.3) then
-        write(*,*) '       LINMORTAR'
+        write(*,*) '      LINMORTAR'
       elseif(mortar.eq.4) then
-        write(*,*) '       PGLINMORTAR'
+        write(*,*) '      PGLINMORTAR'
       elseif(mortar.eq.5) then
-        write(*,*) '       PGMORTAR'
+        write(*,*) '      PGMORTAR'
       endif
+      write(*,*)
 !     
       call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &     ipoinp,inp,ipoinpc)

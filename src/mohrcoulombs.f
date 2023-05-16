@@ -16,42 +16,39 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-      subroutine deformationplasticitys(inpc,textpart,elcon,nelcon,
+      subroutine mohrcoulombs(inpc,textpart,elcon,nelcon,
      &  nmat,ntmat_,ncmat_,irstrt,istep,istat,n,iperturb,iline,ipol,
-     &  inl,ipoinp,inp,ipoinpc,ier,iplas)
+     &  inl,ipoinp,inp,ipoinpc,ier,iplas,matname,nstate_)
 !
-!     reading the input deck: *DEFORMATION PLASTICITY
+!     reading the input deck: *MOHR COULOMB
 !
       implicit none
 !
       character*1 inpc(*)
+      character*80 matname(*)
       character*132 textpart(16)
 !
       integer nelcon(2,*),nmat,ntmat,ntmat_,istep,istat,ier,
      &  n,key,i,iperturb(*),iend,ncmat_,irstrt(*),iline,ipol,inl,
-     &  ipoinp(2,*),inp(3,*),ipoinpc(0:*),iplas
+     &  ipoinp(2,*),inp(3,*),ipoinpc(0:*),iplas,nstate_
 !
       real*8 elcon(0:ncmat_,ntmat_,*)
 !
       ntmat=0
       iperturb(1)=3
-      iperturb(2)=1
-      write(*,*) '*INFO reading *DEFORMATION PLASTICITY: nonlinear'
-      write(*,*) '      geometric effects are turned on'
-      write(*,*)
       iplas=1
 !
       if((istep.gt.0).and.(irstrt(1).ge.0)) then
-         write(*,*) '*ERROR reading *DEFORMATION PLASTICITY:'
-         write(*,*) '       *DEFORMATION PLASTICITY should be'
-         write(*,*) '       placed before all step definitions'
+         write(*,*) '*ERROR reading *MOHR COULOMB:'
+         write(*,*) '       *MOHR COULOMB should be placed'
+         write(*,*) '       before all step definitions'
          ier=1
          return
       endif
 !
       if(nmat.eq.0) then
-         write(*,*) '*ERROR reading *DEFORMATION PLASTICITY:'
-         write(*,*) '       *DEFORMATION PLASTICITY should be'
+         write(*,*) '*ERROR reading *MOHR COULOMB:'
+         write(*,*) '       *MOHR COULOMB should be'
          write(*,*) '       preceded by a *MATERIAL card'
          ier=1
          return
@@ -59,17 +56,33 @@
 !
       do i=2,n
          write(*,*) 
-     &        '*WARNING reading *DEFORMATION PLASTICITY:'
+     &        '*WARNING reading *MOHR COULOMB:'
          write(*,*) '         parameter not recognized:'
          write(*,*) '         ',
      &        textpart(i)(1:index(textpart(i),' ')-1)
          call inputwarning(inpc,ipoinpc,iline,
-     &"DEFORMATION PLASTICITY%")
+     &"MOHR COULOMB%")
       enddo
 !
-      nelcon(1,nmat)=-50
+      nelcon(1,nmat)=-53
+      nstate_=max(nstate_,7)
 !
-      iend=5
+!     putting MOHRCOULOMB in front of the material name
+!
+      if(matname(nmat)(70:80).ne.'           ') then
+        write(*,*) '*ERROR reading *MOHR COULOMB: the material name'
+        write(*,*) '       for a Mohr-Coulomb material must'
+        write(*,*) '       not exceed 69 characters'
+        ier=1
+        return
+      else
+        do i=80,12,-1
+          matname(nmat)(i:i)=matname(nmat)(i-11:i-11)
+        enddo
+        matname(nmat)(1:11)='MOHRCOULOMB'
+      endif
+!
+      iend=2
       do
          call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &        ipoinp,inp,ipoinpc)
@@ -77,25 +90,25 @@
          ntmat=ntmat+1
          nelcon(2,nmat)=ntmat
          if(ntmat.gt.ntmat_) then
-            write(*,*) '*ERROR reading *DEFORMATION PLASTICITY:'
+            write(*,*) '*ERROR reading *MOHR COULOMB:'
             write(*,*) '       increase ntmat_'
             ier=1
             return
          endif
          do i=1,iend
             read(textpart(i)(1:20),'(f20.0)',iostat=istat) 
-     &              elcon(i,ntmat,nmat)
+     &              elcon(i+2,ntmat,nmat)
             if(istat.gt.0) then
                call inputerror(inpc,ipoinpc,iline,
-     &              "DEFORMATION PLASTICITY%",ier)
+     &              "MOHR COULOMB%",ier)
                return
             endif
          enddo
-         read(textpart(6)(1:20),'(f20.0)',iostat=istat) 
+         read(textpart(3)(1:20),'(f20.0)',iostat=istat) 
      &              elcon(0,ntmat,nmat)
          if(istat.gt.0) then
             call inputerror(inpc,ipoinpc,iline,
-     &           "DEFORMATION PLASTICITY%",ier)
+     &           "MOHR COULOMB%",ier)
             return
          endif
       enddo

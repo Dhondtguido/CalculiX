@@ -541,6 +541,8 @@ modf.f \
 modifympc.f \
 moehring.f \
 mohrcoulomb.f \
+mohrcoulombhardenings.f \
+mohrcoulombs.f \
 mpcadd.f \
 mpcrem.f \
 mpcs.f \
