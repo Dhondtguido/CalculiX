@@ -17,15 +17,13 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine extrapolatecontact(yi,yn,ipkon,inum,kon,lakon,nfield,
-     &  nk,ne,mi,ndim,co,cflag,vold,force,pslavsurf,islavact,islavnode,
+     &  nk,ne,mi,ndim,co,cflag,vold,iforce,pslavsurf,islavact,islavnode,
      &  nslavnode,ntie,islavsurf,ielprop,prop,ielmat,ne0)
 !
 !     extrapolates contact values at the integration points to the 
 !     nodes (for face-to-face penalty contact)
 !
       implicit none
-!
-      logical force
 !
       character*1 cflag
       character*8 lakon(*),lakonl
@@ -38,7 +36,7 @@
      &  nopespring,ifaces,nopespringj,ifacej,jfaces,n,nelems,
      &  idgn,idgnr,idglda,idgip(4),idgldb,idginfo,igauss,islavact(*),
      &  konl(26),node,nopes,ielprop(*),ielmat(mi(3),*),ne0,
-     &  nodes(8)
+     &  nodes(8),iforce
 !
       real*8 yi(ndim,mi(1),*),yn(nfield,*),field(nfield,20*mi(3)),
      &  co(3,*),xi,et,vold(0:mi(2),*),xs2(3,7),xsj2(3),shp2(7,8),
@@ -555,7 +553,7 @@ c      enddo
 !     
       if((cflag.ne.' ').and.(cflag.ne.'E')) then
          call map3dto1d2d(yn,ipkon,inum,kon,lakon,nfield,nk,ne,cflag,co,
-     &        vold,force,mi,ielprop,prop)
+     &        vold,iforce,mi,ielprop,prop)
       endif
 !     
       return

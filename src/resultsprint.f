@@ -40,7 +40,7 @@
 !     
       implicit none
 !     
-      logical force,rfprint
+      logical rfprint
 !     
       character*1 cflag
       character*6 prlab(*)
@@ -59,7 +59,8 @@
      &     nprint,ntrans,ikin,ncocon(2,*),ntmat_,icfd,inomat(*),mortar,
      &     islavact(*),islavnode(*),nslavnode(*),ntie,islavsurf(2,*),
      &     ielprop(*),ne0,index,nmpc,ipompc(*),nodempc(3,*),nactdoh,
-     &     iextrapolate,itiefac(2,*),ipobody(2,*),ibody(3,*),nbody 
+     &     iextrapolate,itiefac(2,*),ipobody(2,*),ibody(3,*),nbody,
+     &     iforce
 !     
       real*8 co(3,*),v(0:mi(2),*),stx(6,mi(1),*),stn(6,*),cdn(6,*),
      &     qfx(3,mi(1),*),qfn(3,*),orab(7,*),fn(0:mi(2),*),
@@ -135,11 +136,11 @@
             iorienloc=0
           endif
           cflag=filab(3)(5:5)
-          force=.false.
+          iforce=0
 !     
           call extrapolate(stx,stn,ipkon,inum,kon,lakon,nfield,nk,
      &         ne,mi(1),ndim,orab,ielorien,co,iorienloc,cflag,
-     &         vold,force,ielmat,thicke,ielprop,prop)
+     &         vold,iforce,ielmat,thicke,ielprop,prop)
           iextrapolate=1
           exit
         endif
@@ -165,18 +166,18 @@
       if(filab(1)(5:5).ne.' ') then
         nfield=mt
         cflag=filab(1)(5:5)
-        force=.false.
+        iforce=0
         call map3dto1d2d(v,ipkon,inum,kon,lakon,nfield,nk,
-     &       ne,cflag,co,vold,force,mi,ielprop,prop)
+     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
       endif
 !     
       if((filab(2)(1:4).eq.'NT  ').and.(ithermal(1).le.1)) then
         if(filab(2)(5:5).eq.'I') then
           nfield=1
           cflag=filab(2)(5:5)
-          force=.false.
+          iforce=0
           call map3dto1d2d(t1,ipkon,inum,kon,lakon,nfield,nk,
-     &         ne,cflag,co,vold,force,mi,ielprop,prop)
+     &         ne,cflag,co,vold,iforce,mi,ielprop,prop)
         endif
       endif
 !     
@@ -196,9 +197,9 @@
           if(.not.rfprint) then
             nfield=mt
             cflag=' '
-            force=.true.
+            iforce=1
             call map3dto1d2d(fn,ipkon,inum,kon,lakon,nfield,nk,
-     &           ne,cflag,co,vold,force,mi,ielprop,prop)
+     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
           endif
         endif
       endif
@@ -235,9 +236,9 @@
           nfield=6
           ndim=6
           cflag=filab(3)(5:5)
-          force=.false.
+          iforce=0
           call extrapolatecontact(stx,cdn,ipkon,inum,kon,lakon,nfield,
-     &         nk,ne,mi(1),ndim,co,cflag,vold,force,pslavsurf,
+     &         nk,ne,mi(1),ndim,co,cflag,vold,iforce,pslavsurf,
      &         islavact,islavnode,nslavnode,ntie,islavsurf,ielprop,prop,
      &         ielmat,ne0)
         endif
@@ -257,11 +258,11 @@
           iorienloc=0
         endif
         cflag=filab(3)(5:5)
-        force=.false.
+        iforce=0
 !     
         call extrapolate(stx,stn,ipkon,inum,kon,lakon,nfield,nk,
      &       ne,mi(1),ndim,orab,ielorien,co,iorienloc,cflag,
-     &       vold,force,ielmat,thicke,ielprop,prop)
+     &       vold,iforce,ielmat,thicke,ielprop,prop)
         iextrapolate=1
 !     
       endif
@@ -278,10 +279,10 @@
           iorienloc=0
         endif
         cflag=filab(4)(5:5)
-        force=.false.
+        iforce=0
         call extrapolate(eei,een,ipkon,inum,kon,lakon,nfield,nk,
      &       ne,mi(1),ndim,orab,ielorien,co,iorienloc,cflag,
-     &       vold,force,ielmat,thicke,ielprop,prop)
+     &       vold,iforce,ielmat,thicke,ielprop,prop)
         iextrapolate=1
       endif
 !     
@@ -297,10 +298,10 @@
           iorienloc=0
         endif
         cflag=filab(4)(5:5)
-        force=.false.
+        iforce=0
         call extrapolate(eme,emn,ipkon,inum,kon,lakon,nfield,nk,
      &       ne,mi(1),ndim,orab,ielorien,co,iorienloc,cflag,
-     &       vold,force,ielmat,thicke,ielprop,prop)
+     &       vold,iforce,ielmat,thicke,ielprop,prop)
         iextrapolate=1
       endif
 !     
@@ -312,10 +313,10 @@
         ndim=nstate_
         iorienloc=0
         cflag=filab(6)(5:5)
-        force=.false.
+        iforce=0
         call extrapolate(xstate,epn,ipkon,inum,kon,lakon,nfield,nk,
      &       ne,mi(1),ndim,orab,ielorien,co,iorienloc,cflag,
-     &       vold,force,ielmat,thicke,ielprop,prop)
+     &       vold,iforce,ielmat,thicke,ielprop,prop)
         iextrapolate=1
       endif
 !     
@@ -327,10 +328,10 @@
         ndim=2
         iorienloc=0
         cflag=filab(7)(5:5)
-        force=.false.
+        iforce=0
         call extrapolate(ener,enern,ipkon,inum,kon,lakon,nfield,nk,
      &       ne,mi(1),ndim,orab,ielorien,co,iorienloc,cflag,
-     &       vold,force,ielmat,thicke,ielprop,prop)
+     &       vold,iforce,ielmat,thicke,ielprop,prop)
         iextrapolate=1
       endif
 !     
@@ -347,10 +348,10 @@
         endif
         iorienloc=0
         cflag=filab(8)(5:5)
-        force=.false.
+        iforce=0
         call extrapolate(xstate,xstaten,ipkon,inum,kon,lakon,nfield,nk,
      &       ne,mi(1),ndim,orab,ielorien,co,iorienloc,cflag,
-     &       vold,force,ielmat,thicke,ielprop,prop)
+     &       vold,iforce,ielmat,thicke,ielprop,prop)
         iextrapolate=1
       endif
 !     
@@ -366,10 +367,10 @@
           iorienloc=0
         endif
         cflag=filab(9)(5:5)
-        force=.false.
+        iforce=0
         call extrapolate(qfx,qfn,ipkon,inum,kon,lakon,nfield,nk,
      &       ne,mi(1),ndim,orab,ielorien,co,iorienloc,cflag,
-     &       vold,force,ielmat,thicke,ielprop,prop)
+     &       vold,iforce,ielmat,thicke,ielprop,prop)
         iextrapolate=1
       endif
 !     

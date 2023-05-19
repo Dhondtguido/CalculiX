@@ -257,7 +257,7 @@ void frd_sen(double *co,ITG *nk,double *dstn,ITG *inum,ITG *nmethod,
 
   }else if(*ifeasd==1){
 
-      /* storing the sensitivities of the gradient projection method 
+      /* storing the sensitivities of the gradient descent method 
          w.r.t. to the control field s */
       
       frdset(&filab[4002],set,&iset,istartset,iendset,ialset,

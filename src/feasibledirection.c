@@ -69,7 +69,7 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
     igeoconst=0,*nodedesipos=NULL,nkini,*ipoface=NULL,*nodface=NULL,
     *konfa=NULL,*ipkonfa=NULL,*iponoelfa=NULL,*inoelfa=NULL,nsurfs,ifreemax,
     inoelsize,iregion=0,*nod2nd3rd=NULL,inode,*nodedesiboun=NULL,addout,
-    ipos,ifree;
+    ipos,ifree,nfield,iforce;
          
   double *objnorm=NULL,*dgdxglob=NULL,*stn=NULL,ptime=0.,*gradproj=NULL,
     *extnorini=NULL,*extnor=NULL,distmin,*feasdir=NULL;
@@ -79,6 +79,7 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
 
   /* if addout=1 additional output about the feasible direction 
      is written in the frd file */
+  
   addout=0;
   
   methodfd=timepar[3];
@@ -223,10 +224,10 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
   FORTRAN(clonesensitivities,(nobject,nk,objectset,g0,dgdxglob));
   
   /* min or max optimization target 
-     sensitivities always point in this driection that objective function 
+     sensitivities always point in this direction that objective function 
      will be maximized
      --> target = 'MIN' --> sensitivities of the objective function will be 
-     scaled with -1 */
+     scaled with -1 ????????????????????????????????*/
   
   iscaleflag=3; 
   FORTRAN(scalesen,(dgdxglob,feasdir,nk,nodedesi,ndesi,objectset,&iscaleflag,
@@ -248,19 +249,21 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
   if(methodfd==1){
     
     printf("Computation of feasible direction with Gradient Descent Akin method\n\n");
+
+    // NEEDED? ALREADY DONE AT END OF SENSITIVITY.C???
     
     /* Scaling all sensitivities to unit length */
 
-    iscaleflag=1;   
+    /*    iscaleflag=1;   
     for(i=0;i<*nobject;i++){
       istart=i+1;
       FORTRAN(scalesen,(dgdxglob,feasdir,nk,nodedesi,ndesi,objectset
 			,&iscaleflag,&istart,ne2d));
-    }
+			}*/
 
     /* determining the assembled gradient vector */
     
-    printf("Assemlby of combined constraint gradient vector\n\n");
+    printf("Assembly of combined constraint gradient vector\n\n");
     
     NNEW(nodedesiboun,ITG,*ndesi);
     FORTRAN(constassembly,(nobject,objectset,g0,ndesi,dgdxglob,nk,nodedesi,
@@ -275,6 +278,12 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
 				      nk,gradproj,objectset));
 
     if(addout==1){
+      if(*ne2d!=0){
+	nfield=3;
+	iforce=0;
+	FORTRAN(map3dto1d2d,(gradproj,ipkon,inum,kon,lakon,&nfield,nk,ne,
+			     cflag,co,vold,iforce,mi,ielprop,prop));
+      }
       ifeasd=1;            
       ++*kode;
       ipos=0;

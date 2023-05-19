@@ -310,7 +310,11 @@ c     Bernhardi end
           mint3d=4
         elseif(lakonl(4:4).eq.'4') then
           mint2d=1
-          mint3d=1
+          if(intscheme.eq.0) then
+            mint3d=1
+          else
+            mint3d=4
+          endif
         elseif(lakonl(4:5).eq.'15') then
           if(lakonl(7:8).eq.'LC') then
             mint3d=6*nlayer
@@ -575,10 +579,17 @@ c     write(*,*) 'e_c3d ',nelem
             ze=gauss3d5(3,kk)
             weight=weight3d5(kk)
           elseif(lakonl(4:4).eq.'4') then
-            xi=gauss3d4(1,kk)
-            et=gauss3d4(2,kk)
-            ze=gauss3d4(3,kk)
-            weight=weight3d4(kk)
+            if(intscheme.eq.0) then
+              xi=gauss3d4(1,kk)
+              et=gauss3d4(2,kk)
+              ze=gauss3d4(3,kk)
+              weight=weight3d4(kk)
+            else
+              xi=gauss3d5(1,kk)
+              et=gauss3d5(2,kk)
+              ze=gauss3d5(3,kk)
+              weight=weight3d5(kk)
+            endif
           elseif(lakonl(4:5).eq.'15') then
             if(lakonl(7:8).ne.'LC') then
               xi=gauss3d8(1,kk)

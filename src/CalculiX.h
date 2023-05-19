@@ -383,6 +383,16 @@ void FORTRAN(calcexternalwork,(double *co,double *vold,ITG *istartset,
 			       double *xload,char *sideload,
 			       double *delexternalwork,double *voldprev));
 
+void FORTRAN(calcfeasibledirection_gd,(ITG *ndesi,ITG *nodedesi,
+				       double *dgdxglob,ITG *nactive,
+				       ITG *nobject,ITG *nk,double *gradproj,
+				       char *objectset));
+       
+void FORTRAN(calcfeasibledirection_gp,(ITG *ndesi,ITG *nodedesi,
+				       double *dgdxglob,ITG *nactive,
+				       ITG *nobject,ITG *nk,double *gradproj,
+				       double *gradprojname));
+
 void FORTRAN(calch0interface,(ITG *nmpc,ITG *ipompc,ITG *nodempc,
                               double *coefmpc,double *h0));
                       

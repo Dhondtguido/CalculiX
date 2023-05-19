@@ -18,7 +18,7 @@
 !
       subroutine extrapolate_se(yi,yn,ipkon,inum,kon,lakon,nfield,nk,
      &  ne,mi,ndim,orab,ielorien,co,iorienloc,cflag,
-     &  vold,force,ielmat,thicke,ielprop,prop,ialeneigh,
+     &  vold,iforce,ielmat,thicke,ielprop,prop,ialeneigh,
      &  neaneigh,nebneigh,ialnneigh,naneigh,nbneigh)
 !
 !     extrapolates field values at the integration points to the 
@@ -34,8 +34,6 @@
 !
       implicit none
 !
-      logical force
-!
       character*1 cflag
       character*8 lakon(*),lakonl
 !
@@ -45,7 +43,7 @@
      &  mint3d,m,iflag,jj,ll,ielmat(mi(3),*),ielprop(*),
      &  nlayer,nopeexp,ilayer,kk,mint2d,nopes,kl,ki,null,
      &  itet(4),iwedge(2,9),ialeneigh(*),neaneigh,nebneigh,ij,
-     &  ialnneigh(*),naneigh,nbneigh
+     &  ialnneigh(*),naneigh,nbneigh,iforce
 !
       real*8 yi(ndim,mi(1),*),yn(nfield,*),field(999,20*mi(3)),a8(8,8),
      &  a4(4,4),a27(20,27),a9(6,9),a2(6,2),orab(7,*),co(3,*),prop(*),
@@ -419,7 +417,7 @@
          elseif(lakonl(1:1).eq.'U') then
             call extrapolate_u(yi,yn,ipkon,inum,kon,lakon,nfield,nk,
      &           ne,mi,ndim,orab,ielorien,co,iorienloc,cflag,
-     &           vold,force,ielmat,thicke,ielprop,prop,i)
+     &           vold,iforce,ielmat,thicke,ielprop,prop,i)
             return
          else
             cycle
@@ -1073,7 +1071,7 @@ c     Bernhardi end
 !
       if((cflag.ne.' ').and.(cflag.ne.'E')) then
          call map3dto1d2d(yn,ipkon,inum,kon,lakon,nfield,nk,ne,cflag,
-     &         co,vold,force,mi)
+     &         co,vold,iforce,mi)
       endif
 !
       return
