@@ -393,8 +393,8 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   
     if(strcmp1(&filab[4],"I")==0){
       
-    FORTRAN(map3dto1d2d,(extnor,ipkon,inum,kon,lakon,&nfield,nk,
-			 ne,cflag,co,vold,&iforce,mi,ielprop,prop));
+      FORTRAN(map3dto1d2d,(extnor,ipkon,inum,kon,lakon,&nfield,nk,
+			   ne,cflag,co,vold,&iforce,mi,ielprop,prop));
     }
       
     frd_sen(co,nk,stn,inum,nmethod,kode,filab,&ptime,nstate_,

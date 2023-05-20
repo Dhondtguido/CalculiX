@@ -51,10 +51,10 @@
           do i=1,ndesi
             node=nodedesi(i)
             dgdxglob(2,node,iobject)=dgdxglob(2,node,iobject)/dd
-c            if(ne2d.ne.0) then
-c              dgdxglob(2,node+1,iobject)=dgdxglob(2,node+1,iobject)/dd
-c              dgdxglob(2,node+2,iobject)=dgdxglob(2,node+2,iobject)/dd
-c            endif
+            if(ne2d.ne.0) then
+              dgdxglob(2,node+1,iobject)=dgdxglob(2,node,iobject)
+              dgdxglob(2,node+2,iobject)=dgdxglob(2,node,iobject)
+            endif
           enddo
         endif
       elseif(iscaleflag.eq.2) then

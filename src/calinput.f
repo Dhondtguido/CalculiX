@@ -1241,6 +1241,14 @@ c
 !     
       enddo loop
 !     
+      if(ier.ge.1) then
+        write(*,*) '*ERROR in calinput: at least one fatal'
+        write(*,*) '       error message while reading the'
+        write(*,*) '       input deck: CalculiX stops.'
+        write(*,*)
+        call exit(201)
+      endif
+!     
 !     check whether the *END STEP card was preceded by a *STEP card    
 !     
       if(newstep.eq.0) then
@@ -1682,7 +1690,7 @@ c
         elseif(iperturb(1).eq.1) then
           write(*,*) '*ERROR in calinput: PERTURBATION and fluids'
           write(*,*) '       are mutually exclusive; '
-          ier=1
+          call exit(201)
         endif
       endif
 !     
@@ -1728,14 +1736,14 @@ c      write(*,*)
       timepar(5)=tincf
 !     
       if(istep.eq.1) ncs_=lprev
-!     
-      if(ier.ge.1) then
-        write(*,*) '*ERROR in calinput: at least one fatal'
-        write(*,*) '       error message while reading the'
-        write(*,*) '       input deck: CalculiX stops.'
-        write(*,*)
-        call exit(201)
-      endif
+c!     
+c      if(ier.ge.1) then
+c        write(*,*) '*ERROR in calinput: at least one fatal'
+c        write(*,*) '       error message while reading the'
+c        write(*,*) '       input deck: CalculiX stops.'
+c        write(*,*)
+c        call exit(201)
+c      endif
 !
 !     the step number is written in the .dat-file if data output
 !     was requested or if the procedure always leads to some

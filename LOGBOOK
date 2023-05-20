@@ -5171,3 +5171,5 @@ Dec 2002        - started to work on single crystal plasticity
  19 May 2023    - integrated the 4-noded tet with 4 integration points
                   instead of 1 for the mass matrix (intscheme=1; this is
 		  an exact integration if the density is constant)
+
+ 20 May 2023    - worked on 2D-sensitivity and feasible direction
