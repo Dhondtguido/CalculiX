@@ -860,6 +860,17 @@ c
      &       istartset,iendset,set,ialset,ne,mi,ielmat,iprestr,
      &       iperturb,ier,tietol)
 !     
+      elseif(textpart(1)(1:21).eq.'*MOHRCOULOMBHARDENING') then
+        call mohrcoulombhardenings(inpc,textpart,nelcon,nmat,
+     &       plicon,nplicon,plkcon,nplkcon,iplas,iperturb,nstate_,
+     &       ncmat_,elcon,matname,irstrt,istep,istat,n,iline,ipol,
+     &       inl,ipoinp,inp,ipoinpc,ianisoplas,ier,ntmat_,npmat_)
+!     
+      elseif(textpart(1)(1:12).eq.'*MOHRCOULOMB') then
+        call mohrcoulombs(inpc,textpart,elcon,nelcon,nmat,
+     &       ntmat_,ncmat_,irstrt,istep,istat,n,iperturb,iline,ipol,
+     &       inl,ipoinp,inp,ipoinpc,ier,iplas,matname,nstate_)
+!     
       elseif(textpart(1)(1:4).eq.'*MPC') then
         call mpcs(inpc,textpart,set,istartset,iendset,
      &       ialset,nset,nset_,nalset,nalset_,ipompc,nodempc,

@@ -5173,3 +5173,5 @@ Dec 2002        - started to work on single crystal plasticity
 		  an exact integration if the density is constant)
 
  20 May 2023    - worked on 2D-sensitivity and feasible direction
+
+ 21 May 2023    - started debugging Mohr-Coulomb

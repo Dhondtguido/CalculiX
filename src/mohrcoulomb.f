@@ -65,7 +65,6 @@
 !     
       xk=elconloc(3)
       xm=elconloc(4)
-      sa=elconloc(5)
 !     
       ep=epini
 !     
