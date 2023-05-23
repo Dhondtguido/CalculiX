@@ -48,7 +48,7 @@
      &     s1xs2(3),s6xs1(3),dlambda,ddlambda,dlambda2(2),ddlambda2(2),
      &     h,dh,h2(2),dh2(2,2),dk,dm,det,dlambda6(2),ddlambda6(2),
      &     h6(2),dh6(2,2),dlambdar(3),ddlambdar(3),hr(3),dhr(3,3),
-     &     a(3,3),b(3,3),a1(3),da2(3),t(6,6),dum(6,6)
+     &     a(3,3),b(3,3),a1(3),da2(3),t(6,6),dum(6,6),dum1
 !     
 !     localizing the plastic fields
 !     
@@ -123,7 +123,20 @@
      &*ERROR calculating the eigenvalues/vectors in umat_abaqusnl'
         call exit(201)
       endif
-!     
+!
+!     switching eigenvalues and eigenvectors such that sb(1) is the
+!     biggest and sb(3) is the smallest eigenvector
+!
+      dum1=sb(1)
+      sb(1)=sb(3)
+      sb(3)=dum1
+!
+      do i=1,3
+        dum1=z(i,1)
+        z(i,1)=z(i,3)
+        z(i,3)=dum1
+      enddo
+!
       ftrial=xk*sb(1)-sb(3)-2.d0*fiso*dsqrt(xk)
       if((ftrial.le.1.d-10).or.(ielas.eq.1).or.(dtime.lt.1.d-30)) then
 !     
@@ -240,6 +253,7 @@
      &       s1xs2(3)*(sb(3)-sa)
         if((ps1r1.ge.0.d0).and.(ps1s2.le.0.d0)) then
           iregion=2
+        else
 !     
 !     D.b for sector VI
 !     
@@ -249,7 +263,6 @@
           do i=1,3
             s6(i)=um2*b6(i)+al*traceb
           enddo
-        else
 !     
 !     s6 x s1
 !     
@@ -275,10 +288,10 @@
 !     
       dk=2.d0*dsqrt(xk)
       dm=dsqrt(2.d0*(xm*xm+1.d0)/3.d0)
-      iloop=0
-      dlambda=0.d0
 !     
       if(iregion.eq.1) then
+        iloop=0
+        dlambda=0.d0
         do
           iloop=iloop+1
           ep=epini+dm*dlambda
@@ -298,13 +311,15 @@
           dh=-xk*s1(1)+s1(3)-dk*dm*dfiso
           ddlambda=-h/dh
 !     
-          if((ddlambda.lt.1.d-10).or.(ddlambda.lt.1.d-4*dlambda)) exit
+          if((dabs(ddlambda).lt.1.d-10).or.
+     &         (dabs(ddlambda).lt.1.d-4*dlambda)) exit
           dlambda=dlambda+ddlambda
-          if((iloop.gt.15).or.(dlambda.le.0.d0)) then
+          if((iloop.gt.15).or.(dlambda.le.-1.d-10)) then
             pnewdt=0.25d0
             return
           endif
         enddo
+        dlambda=max(dlambda,0.d0)
 !     
 !     calculate the stress at C
 !     
@@ -388,23 +403,25 @@
 !     
 !     solving the system
 !     
-          ddlambda2(1)=(h2(1)*dh2(2,2)-h2(2)*dh2(1,2))/det
-          ddlambda2(2)=(dh2(1,1)*h2(2)-dh2(2,1)*h2(1))/det
+          ddlambda2(1)=-(h2(1)*dh2(2,2)-h2(2)*dh2(1,2))/det
+          ddlambda2(2)=-(dh2(1,1)*h2(2)-dh2(2,1)*h2(1))/det
 !     
-          if(((ddlambda2(1).lt.1.d-10).or.
-     &         (ddlambda2(1).lt.1.d-4*dlambda2(1))).and.
-     &         ((ddlambda2(2).lt.1.d-10).or.
-     &         (ddlambda2(2).lt.1.d-4*dlambda2(2)))) exit
+          if(((dabs(ddlambda2(1)).lt.1.d-10).or.
+     &         (dabs(ddlambda2(1)).lt.1.d-4*dlambda2(1))).and.
+     &         ((dabs(ddlambda2(2)).lt.1.d-10).or.
+     &         (dabs(ddlambda2(2)).lt.1.d-4*dlambda2(2)))) exit
 !     
           dlambda2(1)=dlambda2(1)+ddlambda2(1)
           dlambda2(2)=dlambda2(2)+ddlambda2(2)
 !     
-          if((iloop.gt.15).or.(dlambda2(1).le.0.d0).or.
-     &         (dlambda2(2).le.0.d0)) then
+          if((iloop.gt.15).or.(dlambda2(1).le.-1.d-10).or.
+     &         (dlambda2(2).le.-1.d-10)) then
             pnewdt=0.25d0
             return
           endif
         enddo
+        dlambda2(1)=max(dlambda2(1),0.d0)
+        dlambda2(2)=max(dlambda2(2),0.d0)
 !     
 !     calculate the stress at C
 !     
@@ -493,38 +510,40 @@
           h6(1)=xk*(sb(1)-dlambda6(1)*s1(1)-dlambda6(2)*s6(1))
      &         -(sb(3)-dlambda6(1)*s1(3)-dlambda6(2)*s6(3))
      &         -dk*fiso
-          h6(2)=xk*(sb(2)-dlambda6(1)*s1(2)-dlambda6(2)*s6(2))
-     &         -(sb(3)-dlambda6(1)*s1(3)-dlambda6(2)*s6(3))
+          h6(2)=xk*(sb(1)-dlambda6(1)*s1(1)-dlambda6(2)*s6(1))
+     &         -(sb(2)-dlambda6(1)*s1(2)-dlambda6(2)*s6(2))
      &         -dk*fiso
 !     
 !     setting up the 2x2 equation system: left hand side
 !     
           dh6(1,1)=-xk*s1(1)+s1(3)-dk*dm*dfiso
           dh6(1,2)=-xk*s6(1)+s6(3)-dk*dm*dfiso
-          dh6(2,1)=-xk*s1(2)+s1(3)-dk*dm*dfiso
-          dh6(2,2)=-xk*s6(2)+s6(3)-dk*dm*dfiso
+          dh6(2,1)=-xk*s1(1)+s1(2)-dk*dm*dfiso
+          dh6(2,2)=-xk*s6(1)+s6(2)-dk*dm*dfiso
 !     
           det=dh6(1,1)*dh6(2,2)-dh6(2,1)*dh6(1,2)
 !     
 !     solving the system
 !     
-          ddlambda6(1)=(h6(1)*dh6(2,2)-h6(2)*dh6(1,2))/det
-          ddlambda6(2)=(dh6(1,1)*h6(2)-dh6(2,1)*h6(1))/det
+          ddlambda6(1)=-(h6(1)*dh6(2,2)-h6(2)*dh6(1,2))/det
+          ddlambda6(2)=-(dh6(1,1)*h6(2)-dh6(2,1)*h6(1))/det
 !     
-          if(((ddlambda6(1).lt.1.d-10).or.
-     &         (ddlambda6(1).lt.1.d-4*dlambda6(1))).and.
-     &         ((ddlambda6(2).lt.1.d-10).or.
-     &         (ddlambda6(2).lt.1.d-4*dlambda6(2)))) exit
+          if(((dabs(ddlambda6(1)).lt.1.d-10).or.
+     &         (dabs(ddlambda6(1)).lt.1.d-4*dlambda6(1))).and.
+     &         ((dabs(ddlambda6(2)).lt.1.d-10).or.
+     &         (dabs(ddlambda6(2)).lt.1.d-4*dlambda6(2)))) exit
 !     
           dlambda6(1)=dlambda6(1)+ddlambda6(1)
           dlambda6(2)=dlambda6(2)+ddlambda6(2)
 !     
-          if((iloop.gt.15).or.(dlambda6(1).le.0.d0).or.
-     &         (dlambda6(2).le.0.d0)) then
+          if((iloop.gt.15).or.(dlambda6(1).le.-1.d-10).or.
+     &         (dlambda6(2).le.-1.e-10)) then
             pnewdt=0.25d0
             return
           endif
         enddo
+        dlambda6(1)=max(dlambda6(1),0.d0)
+        dlambda6(2)=max(dlambda6(2),0.d0)
 !     
 !     calculate the stress at C
 !     
@@ -648,33 +667,36 @@
 !     
 !     solving the system
 !     
-          ddlambdar(1)=(hr(1)*(dhr(2,2)*dhr(3,3)-dhr(2,3)*dhr(3,2))
+          ddlambdar(1)=-(hr(1)*(dhr(2,2)*dhr(3,3)-dhr(2,3)*dhr(3,2))
      &         -dhr(1,2)*(hr(2)*dhr(3,3)-dhr(2,3)*hr(3))
      &         +dhr(1,3)*(hr(2)*dhr(3,2)-dhr(2,2)*hr(3)))/det
-          ddlambdar(2)=(dhr(1,1)*(hr(2)*dhr(3,3)-dhr(2,3)*hr(3))
+          ddlambdar(2)=-(dhr(1,1)*(hr(2)*dhr(3,3)-dhr(2,3)*hr(3))
      &         -hr(1)*(dhr(2,1)*dhr(3,3)-dhr(2,3)*dhr(3,1))
      &         +dhr(1,3)*(dhr(2,1)*hr(3)-hr(2)*dhr(3,1)))/det
-          ddlambdar(3)=(dhr(1,1)*(dhr(2,2)*hr(3)-hr(2)*dhr(3,2))
+          ddlambdar(3)=-(dhr(1,1)*(dhr(2,2)*hr(3)-hr(2)*dhr(3,2))
      &         -dhr(1,2)*(dhr(2,1)*hr(3)-hr(2)*dhr(3,1))
      &         +hr(1)*(dhr(2,1)*dhr(3,2)-dhr(2,2)*dhr(3,1)))/det
 !     
-          if(((ddlambdar(1).lt.1.d-10).or.
-     &         (ddlambdar(1).lt.1.d-4*dlambdar(1))).and.
-     &         ((ddlambdar(2).lt.1.d-10).or.
-     &         (ddlambdar(2).lt.1.d-4*dlambdar(2))).and.
-     &         ((ddlambdar(3).lt.1.d-10).or.
-     &         (ddlambdar(3).lt.1.d-4*dlambdar(3)))) exit
+          if(((dabs(ddlambdar(1)).lt.1.d-10).or.
+     &         (dabs(ddlambdar(1)).lt.1.d-4*dlambdar(1))).and.
+     &         ((dabs(ddlambdar(2)).lt.1.d-10).or.
+     &         (dabs(ddlambdar(2)).lt.1.d-4*dlambdar(2))).and.
+     &         ((dabs(ddlambdar(3)).lt.1.d-10).or.
+     &         (dabs(ddlambdar(3)).lt.1.d-4*dlambdar(3)))) exit
 !     
           dlambdar(1)=dlambdar(1)+ddlambdar(1)
           dlambdar(2)=dlambdar(2)+ddlambdar(2)
           dlambdar(3)=dlambdar(3)+ddlambdar(3)
 !     
-          if((iloop.gt.15).or.(dlambdar(1).le.0.d0).or.
-     &         (dlambdar(2).le.0.d0).or.(dlambdar(3).le.0.d0)) then
+          if((iloop.gt.15).or.(dlambdar(1).le.-1.d-10).or.
+     &       (dlambdar(2).le.-1.d-10).or.(dlambdar(3).le.-1.d-10)) then
             pnewdt=0.25d0
             return
           endif
         enddo
+        dlambdar(1)=max(dlambdar(1),0.d0)
+        dlambdar(2)=max(dlambdar(2),0.d0)
+        dlambdar(3)=max(dlambdar(3),0.d0)
 !     
 !     calculate the stress at C
 !     

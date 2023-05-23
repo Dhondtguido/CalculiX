@@ -39,7 +39,7 @@
      &  ibody(3,*)
 !
       real*8 tl2(9),voldl(0:mi(2),20),xl(3,9),sinktemp,xi,et,weight,
-     &  xl2(3,8),xsj2(3),shp2(7,9),coords(3),xs2(3,7),dxsj2,areaj,
+     &  xl2(3,9),xsj2(3),shp2(7,9),coords(3),xs2(3,7),dxsj2,areaj,
      &  temp,xload(2,*),timeend(2),time,ttime,dtime,field,reltime,
      &  vold(0:mi(2),*),xloadold(2,*),tnl(9),tnlref,prop(*),
      &  shcon(0:3,ntmat_,*),rhcon(0:1,ntmat_,*),cocon(0:6,ntmat_,*),

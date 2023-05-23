@@ -775,7 +775,6 @@ shape6tri.f \
 shape6tritilde.f \
 shape6tritilde_lin.f \
 shape6w.f \
-shape7tri.f \
 shape8h.f \
 shape8hr.f \
 shape8hu.f \
@@ -783,7 +782,6 @@ shape8humass.f \
 shape8q.f \
 shape8qtilde.f \
 shape8qtilde_lin.f \
-shape9q.f \
 shellsections.f \
 sigini.f \
 skip.f \

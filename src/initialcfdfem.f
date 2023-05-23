@@ -56,8 +56,8 @@
      &     yy(*),co(3,*),dh(*),r,cp,rho,shcon(0:3,ntmat_,*),
      &     rhcon(0:1,ntmat_,*),vold(0:mi(2),*),vcon(nk,0:mi(2)),
      &     temp,physcon(*),xtu,xkin,dvi,dhel(*),px,py,pz,
-     &     xl2(3,9),xl(3,26),xs2(3,7),xi,et,ze,xsj,weight,volume,
-     &     shp(4,26),shp2(7,9),factor,area,hmin,dgravity,
+     &     xl2(3,9),xl(3,20),xs2(3,7),xi,et,ze,xsj,weight,volume,
+     &     shp(4,20),shp2(7,9),factor,area,hmin,dgravity,
      &     xg(3),xbody(7,*),depth(*),cosangle,cosanglemax,dp(3),dd
 !     
 !     nodes belonging to the element faces

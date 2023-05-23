@@ -5175,3 +5175,7 @@ Dec 2002        - started to work on single crystal plasticity
  20 May 2023    - worked on 2D-sensitivity and feasible direction
 
  21 May 2023    - started debugging Mohr-Coulomb
+
+ 23 May 2023    - replaced ",26)" by ",20)" (no more than 20 nodes per
+                  element)
+		- worked on Mohr-Coulomb

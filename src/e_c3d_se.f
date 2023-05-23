@@ -68,12 +68,12 @@
      &  istartelem(*),ialelem(*),ieigenfrequency,idesloc,
      &  node1,node2,ifaceqexp(2,20),ifacewexp(2,15),nset 
 !
-      real*8 co(3,*),xl(3,26),shp(4,26),xs2(3,7),veold(0:mi(2),*),
+      real*8 co(3,*),xl(3,20),shp(4,20),xs2(3,7),veold(0:mi(2),*),
      &  s(60,60),w(3,3),p1(3),p2(3),bodyf(3),bodyfx(3),sigma,
-     &  ff(60),bf(3),q(3),shpj(4,26),elcon(0:ncmat_,ntmat_,*),t(3),
+     &  ff(60),bf(3),q(3),shpj(4,20),elcon(0:ncmat_,ntmat_,*),t(3),
      &  rhcon(0:1,ntmat_,*),xkl(3,3),eknlsign,reltime,prop(*),
      &  alcon(0:6,ntmat_,*),alzero(*),orab(7,*),t0(*),t1(*),
-     &  anisox(3,3,3,3),voldl(0:mi(2),26),vo(3,3),xloadold(2,*),
+     &  anisox(3,3,3,3),voldl(0:mi(2),20),vo(3,3),xloadold(2,*),
      &  xl2(3,9),xsj2(3),shp2(7,9),vold(0:mi(2),*),xload(2,*),
      &  xstate(nstate_,mi(1),*),xstateini(nstate_,mi(1),*),
      &  vv(3,3,3,3),springarea(2,*),thickness,tlayer(4),dlayer(4),
@@ -88,7 +88,7 @@
      &  sax(60,60),ffax(60),gs(8,4),a,stress(6),stre(3,3),
      &  pslavsurf(3,*),pmastsurf(6,*),distmin,s0(60,60),xdesi(3,*),
      &  ds1(60,60),ff0(60),dfl(20,60),dxstiff(27,mi(1),ne,*),
-     &  vl(0:mi(2),26),v(0:mi(2),*),sigmak
+     &  vl(0:mi(2),20),v(0:mi(2),*),sigmak
 !
       include "gauss.f"
 !

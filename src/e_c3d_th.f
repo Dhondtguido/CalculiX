@@ -60,8 +60,8 @@
      &  iemchange,kon(*),mortar,nplicon(0:ntmat_,*),indexe,igauss,
      &  iponoel(*),inoel(2,*),nstate_,network,ipobody(2,*),ibody(3,*)
 !
-      real*8 co(3,*),xl(3,26),shp(4,26),xstiff(27,mi(1),*),
-     &  s(60,60),w(3,3),ff(60),shpj(4,26),sinktemp,xs2(3,7),
+      real*8 co(3,*),xl(3,20),shp(4,20),xstiff(27,mi(1),*),
+     &  s(60,60),w(3,3),ff(60),shpj(4,20),sinktemp,xs2(3,7),
      &  rhcon(0:1,ntmat_,*),dxsj2,temp,press,xloadold(2,*),
      &  orab(7,*),t0(*),t1(*),coords(3),c1,c2,reltime,prop(*),
      &  xl2(3,9),xsj2(3),shp2(7,9),vold(0:mi(2),*),xload(2,*),
@@ -69,15 +69,13 @@
      &  sume,factorm,factore,alp,weight,pgauss(3),timeend(2),
      &  cocon(0:6,ntmat_,*),shcon(0:3,ntmat_,*),sph,coconloc(6),
      &  field,areaj,sax(60,60),ffax(60),coefmpc(*),tl2(8),
-     &  voldl(0:mi(2),26),springarea(2,*),plkcon(0:2*npmat_,ntmat_,*),
+     &  voldl(0:mi(2),20),springarea(2,*),plkcon(0:2*npmat_,ntmat_,*),
      &  elcon(0:ncmat_,ntmat_,*),elconloc(ncmat_),pslavsurf(3,*),
      &  pmastsurf(2,*),clearini(3,9,*),plicon(0:2*npmat_,ntmat_,*),
      &  sti(6,mi(1),*),xstate(nstate_,mi(1),*),xbody(7,*),
      &  xstateini(nstate_,mi(1),*),heatnod,heatfac
 !
       real*8 dtime,physcon(*)
-!
-!
 !
       include "gauss.f"
 !

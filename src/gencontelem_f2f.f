@@ -302,16 +302,12 @@
               et=pslavsurf(2,indexf+m)
               weight=pslavsurf(3,indexf+m)
 !     
-c     if(nopes.eq.9) then
-c     call shape9q(xi,et,xl2,xsj2,xs2,shp2,iflag)
               if(nopes.eq.8) then
                 call shape8q(xi,et,xl2,xsj2,xs2,shp2,iflag)
               elseif(nopes.eq.4) then
                 call shape4q(xi,et,xl2,xsj2,xs2,shp2,iflag)
               elseif(nopes.eq.6) then
                 call shape6tri(xi,et,xl2,xsj2,xs2,shp2,iflag)
-c     elseif(nopes.eq.7) then
-c     call shape7tri(xi,et,xl2,xsj2,xs2,shp2,iflag)
               else
                 call shape3tri(xi,et,xl2,xsj2,xs2,shp2,iflag)
               endif
@@ -511,16 +507,12 @@ c     write(*,*) '**regular solution'
                   et=pmastsurf(2,indexf+m)
                 endif
 !     
-c     if(nopem.eq.9) then
-c     call shape9q(xi,et,pl,xm,xs2,shp2,iflag)
                 if(nopem.eq.8) then
                   call shape8q(xi,et,pl,xm,xs2,shp2,iflag)
                 elseif(nopem.eq.4) then
                   call shape4q(xi,et,pl,xm,xs2,shp2,iflag)
                 elseif(nopem.eq.6) then
                   call shape6tri(xi,et,pl,xm,xs2,shp2,iflag)
-c     elseif(nopem.eq.7) then
-c     call shape7tri(xi,et,pl,xm,xs2,shp2,iflag)
                 else
                   call shape3tri(xi,et,pl,xm,xs2,shp2,iflag)
                 endif

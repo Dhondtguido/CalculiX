@@ -69,8 +69,8 @@
      &     t0l,t1l,elconloc(ncmat_),eth(6),plicon(0:2*npmat_,ntmat_,*),
      &     plkcon(0:2*npmat_,ntmat_,*),plconloc(802),dtime,
      &     xstiff(27,mi(1),*),elcon(0:ncmat_,ntmat_,*),aa,bb,cc,
-     &     t0(*),t1(*),shp(4,26),vold(0:mi(2),*),tt,
-     &     e,un,wavspd,xi,et,ze,weight,co(3,*),xl(3,26),xsj,
+     &     t0(*),t1(*),shp(4,20),vold(0:mi(2),*),tt,
+     &     e,un,wavspd,xi,et,ze,weight,co(3,*),xl(3,20),xsj,
      &     xl2(3,9),xsj2(3),xs2(3,7),shp2(7,9),hmin,area,
      &     volume,dtvol,safefac,alpha,bet,gam,critom,damping,
      &     elemfac,quadfac,smscale(*),dtset   
