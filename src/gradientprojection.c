@@ -272,7 +272,7 @@ void gradientprojection(ITG *nobject,char *objectset,double *dgdxglob,
         
   }
   
-  /* calucaltion of final feasable direction */
+  /* calculation of final feasable direction */
        
   FORTRAN(calcfeasibledirection_gp,(ndesi,nodedesi,dgdxglob,nactive,nobject,nk,
 				    gradproj,gradprojname));

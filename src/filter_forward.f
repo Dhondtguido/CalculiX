@@ -122,8 +122,9 @@ c          endif
      &         gradproj(3,nodedesi(neighbor(i)))
                denominator=denominator+filterval(i)
             endif
-         enddo 
-         feasdir(1,nodedesi(j))=gradproj(3,nodedesi(j))
+          enddo
+c     ALREADY DONE AT THE START OF FILTER_FORWARDMAIN
+c         feasdir(1,nodedesi(j))=gradproj(3,nodedesi(j))
          feasdir(2,nodedesi(j))=nominator/denominator
       enddo
 !

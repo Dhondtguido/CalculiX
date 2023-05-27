@@ -81,16 +81,12 @@
       et=pslavsurf(2,igauss)
       weight=pslavsurf(3,igauss)
 !
-c      if(nopes.eq.9) then
-c          call shape9q(xi,et,pl(1,nopem+1),xsj2s,xs2s,shp2s,iflag)
       if(nopes.eq.8) then
           call shape8q(xi,et,pl(1,nopem+1),xsj2s,xs2s,shp2s,iflag)
       elseif(nopes.eq.4) then
           call shape4q(xi,et,pl(1,nopem+1),xsj2s,xs2s,shp2s,iflag)
       elseif(nopes.eq.6) then
           call shape6tri(xi,et,pl(1,nopem+1),xsj2s,xs2s,shp2s,iflag)
-c      elseif(nopes.eq.7) then
-c          call shape7tri(xi,et,pl(1,nopem+1),xsj2s,xs2s,shp2s,iflag)
       else
           call shape3tri(xi,et,pl(1,nopem+1),xsj2s,xs2s,shp2s,iflag)
       endif
@@ -113,16 +109,12 @@ c          call shape7tri(xi,et,pl(1,nopem+1),xsj2s,xs2s,shp2s,iflag)
 !
 !     determining the jacobian vector on the surface 
 !
-c      if(nopem.eq.9) then
-c         call shape9q(xi,et,pl,xm,xs2,shp2m,iflag)
       if(nopem.eq.8) then
          call shape8q(xi,et,pl,xm,xs2,shp2m,iflag)
       elseif(nopem.eq.4) then
          call shape4q(xi,et,pl,xm,xs2,shp2m,iflag)
       elseif(nopem.eq.6) then
          call shape6tri(xi,et,pl,xm,xs2,shp2m,iflag)
-c      elseif(nopem.eq.7) then
-c         call shape7tri(xi,et,pl,xm,xs2,shp2m,iflag)
       else
          call shape3tri(xi,et,pl,xm,xs2,shp2m,iflag)
       endif

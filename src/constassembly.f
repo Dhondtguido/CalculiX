@@ -217,14 +217,20 @@
             bound=bound*scale
 !
             if(objectset(1,i)(19:20).eq.'LE') then
-               objnorm=g0(i)/bound-1
+!
+!              if g0(i)=bound, then g0(i)/bound-1.d0 is zero and
+!              dividing by it leads to inf; therefore, the minimum          
+!              function is introduced.
+!
+               objnorm=min(g0(i)/bound-1.d0,-1.d-10)
                do j=1,ndesi
                   inode=nodedesi(j)
-                  gradproj(1,inode)=gradproj(1,inode)+
-     &               dgdxglob(2,inode,i)/(-1*objnorm)
+                  gradproj(1,inode)=gradproj(1,inode)-
+     &               dgdxglob(2,inode,i)/objnorm
                enddo
             elseif(objectset(1,i)(19:20).eq.'GE') then
-               objnorm=g0(i)/bound+1
+               objnorm=max(g0(i)/bound-1.d0,1.d-10)
+c               objnorm=g0(i)/bound+1
                do j=1,ndesi
                   inode=nodedesi(j)
                   gradproj(1,inode)=gradproj(1,inode)+

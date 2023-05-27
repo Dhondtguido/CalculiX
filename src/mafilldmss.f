@@ -61,7 +61,7 @@
       real*8 co(3,*),coefmpc(*),xload(2,*),p1(3),smscale(1),dd,
      &     p2(3),ad(*),au(*),bodyf(3),xloadold(2,*),reltime,
      &     t0(*),t1(*),vold(0:mi(2),*),s(60,60),
-     &     ff(60),xl(3,26),voldl(0:mi(2),26),
+     &     ff(60),xl(3,20),voldl(0:mi(2),20),
      &     sti(6,mi(1),*),sm(60,60),stx(6,mi(1),*),
      &     elcon(0:ncmat_,ntmat_,*),rhcon(0:1,ntmat_,*),springarea(2,*),
      &     alcon(0:6,ntmat_,*),physcon(*),prop(*),

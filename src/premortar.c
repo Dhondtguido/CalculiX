@@ -19,6 +19,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 #include "CalculiX.h"
 #include "mortar.h"
 

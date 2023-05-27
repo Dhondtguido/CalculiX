@@ -16,14 +16,14 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
-      subroutine normalsforequ_se(nk,co,iponoelfa,inoelfa,konfa,
+      subroutine meshmodboun(nk,co,iponoelfa,inoelfa,konfa,
      &     ipkonfa,lakonfa,nsurfs,iponor,xnor,nodedesiinv,jobnamef,
      &     iponexp,nmpc,labmpc,ipompc,nodempc,ipretinfo,kon,ipkon,lakon,
      &     iponoel,inoel,iponor2d,knor2d,ipoface,nodface,ne,x,y,z,
      &     xo,yo,zo,nx,ny,nz,nodes,dist,ne2d,nod1st,nod2nd3rd)
 !     
-!     calculates normals on surface for mesh modification
-!     purposes in an optimization loop
+!     calculates the normal boundary conditions on the surface for
+!     mesh modification purposes in an optimization loop
 !     
 !     during optimization the coordinates of the design variables
 !     are changed leading to a changed geometry. In order to keep

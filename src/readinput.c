@@ -22,8 +22,8 @@
 #include <ctype.h>
 #include "CalculiX.h"
 
-void readinput(char *jobnamec, char **inpcp, ITG *nline, ITG *nset,
-	       ITG *ipoinp, ITG **inpp, ITG **ipoinpcp, ITG *ithermal,
+void readinput(char *jobnamec,char **inpcp,ITG *nline,ITG *nset,
+	       ITG *ipoinp,ITG **inpp,ITG **ipoinpcp,ITG *ithermal,
                ITG *nuel,ITG *inp_size){
 
   /*   reads and stores the input deck in inpcp; determines the
@@ -63,7 +63,7 @@ void readinput(char *jobnamec, char **inpcp, ITG *nline, ITG *nset,
   strcat(fninp,".inp");
   if((f1[in]=fopen(fninp,"r"))==NULL){
       printf(" *ERROR in readinput: cannot open file %s\n",fninp);
-      exit(0);
+      exit(201);
   }
 
   /* starting to read the input file */
@@ -173,10 +173,11 @@ void readinput(char *jobnamec, char **inpcp, ITG *nline, ITG *nset,
 	  in++;
 	  if(in>9){
 	      printf(" *ERROR in readinput: include statements can \n not be cascaded over more than 9 levels\n");
+	      exit(201);
 	  }
 	  if((f1[in]=fopen(includefn,"r"))==NULL){
 	      printf(" *ERROR in readinput: cannot open file %s\n",includefn);
-	      exit(0);
+	      exit(201);
 	  }
           continue;
       }

@@ -60,7 +60,7 @@
       character*80 matname(*),amat
       character*81 tieset(3,*),set(*)
 !     
-      integer konl(26),ifaceq(8,6),nelemload(2,*),nbody,nelem,
+      integer konl(20),ifaceq(8,6),nelemload(2,*),nbody,nelem,
      &     mi(*),jfaces,igauss,mortar,kon(*),ielprop(*),null,
      &     mattyp,ithermal(*),iperturb(*),nload,idist,i,j,k,l,i1,i2,j1,
      &     nmethod,k1,l1,ii,jj,ii1,jj1,id,ipointer,ig,m1,m2,m3,m4,kk,
@@ -76,12 +76,12 @@
      &     mscalmethod,nset,islavelinv(*),jqtloc(*),irowtloc(*),
      &     node1,node2,irowtloc1(16),jqtloc1(9),j2,mortartrafoflag
 !     
-      real*8 co(3,*),xl(3,26),shp(4,26),xs2(3,7),veold(0:mi(2),*),
+      real*8 co(3,*),xl(3,20),shp(4,20),xs2(3,7),veold(0:mi(2),*),
      &     s(60,60),w(3,3),p1(3),p2(3),bodyf(3),bodyfx(3),ff(60),
-     &     bf(3),q(3),shpj(4,26),elcon(0:ncmat_,ntmat_,*),t(3),
+     &     bf(3),q(3),shpj(4,20),elcon(0:ncmat_,ntmat_,*),t(3),
      &     rhcon(0:1,ntmat_,*),xkl(3,3),eknlsign,reltime,prop(*),
      &     alcon(0:6,ntmat_,*),alzero(*),orab(7,*),t0(*),t1(*),
-     &     anisox(3,3,3,3),voldl(0:mi(2),26),vo(3,3),xloadold(2,*),
+     &     anisox(3,3,3,3),voldl(0:mi(2),20),vo(3,3),xloadold(2,*),
      &     xl2(3,9),xsj2(3),shp2(7,9),vold(0:mi(2),*),xload(2,*),
      &     xstate(nstate_,mi(1),*),xstateini(nstate_,mi(1),*),
      &     v(3,3,3,3),springarea(2,*),thickness,tlayer(4),dlayer(4),
@@ -94,8 +94,8 @@
      &     plicon(0:2*npmat_,ntmat_,*),plkcon(0:2*npmat_,ntmat_,*),
      &     xstiff(27,mi(1),*),plconloc(802),dtime,ttime,time,tvar(2),
      &     sax(60,60),ffax(60),gs(8,4),a,stress(6),stre(3,3),
-     &     pslavsurf(3,*),pmastsurf(6,*),xmass,xsjmass,shpmass(4,26),
-     &     shpjmass(4,26),smscalel,smfactor,shptil(4,26),autloc(*),
+     &     pslavsurf(3,*),pmastsurf(6,*),xmass,xsjmass,shpmass(4,20),
+     &     shpjmass(4,20),smscalel,smfactor,shptil(4,20),autloc(*),
      &     shptil2(7,9),autloc1(16),doubleglob(*)
 !     
       include "gauss.f"
@@ -310,7 +310,11 @@ c     Bernhardi end
           mint3d=4
         elseif(lakonl(4:4).eq.'4') then
           mint2d=1
-          mint3d=1
+          if(intscheme.eq.0) then
+            mint3d=1
+          else
+            mint3d=4
+          endif
         elseif(lakonl(4:5).eq.'15') then
           if(lakonl(7:8).eq.'LC') then
             mint3d=6*nlayer
@@ -575,10 +579,17 @@ c     write(*,*) 'e_c3d ',nelem
             ze=gauss3d5(3,kk)
             weight=weight3d5(kk)
           elseif(lakonl(4:4).eq.'4') then
-            xi=gauss3d4(1,kk)
-            et=gauss3d4(2,kk)
-            ze=gauss3d4(3,kk)
-            weight=weight3d4(kk)
+            if(intscheme.eq.0) then
+              xi=gauss3d4(1,kk)
+              et=gauss3d4(2,kk)
+              ze=gauss3d4(3,kk)
+              weight=weight3d4(kk)
+            else
+              xi=gauss3d5(1,kk)
+              et=gauss3d5(2,kk)
+              ze=gauss3d5(3,kk)
+              weight=weight3d5(kk)
+            endif
           elseif(lakonl(4:5).eq.'15') then
             if(lakonl(7:8).ne.'LC') then
               xi=gauss3d8(1,kk)

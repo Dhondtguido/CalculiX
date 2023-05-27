@@ -48,10 +48,10 @@
      &  jfaces,node,nplicon(0:ntmat_,*),null,ielprop(*),
      &  iponoel(*),inoel(2,*),network,ipobody(2,*),ibody(3,*)
 !
-      real*8 co(3,*),v(0:mi(2),*),shp(4,26),reltime,
-     &  xl(3,26),vl(0:mi(2),26),elcon(0:ncmat_,ntmat_,*),
+      real*8 co(3,*),v(0:mi(2),*),shp(4,20),reltime,
+     &  xl(3,20),vl(0:mi(2),20),elcon(0:ncmat_,ntmat_,*),
      &  rhcon(0:1,ntmat_,*),qfx(3,mi(1),*),orab(7,*),
-     &  rho,fn(0:mi(2),*),tnl(19),timeend(2),q(0:mi(2),26),
+     &  rho,fn(0:mi(2),*),tnl(19),timeend(2),q(0:mi(2),20),
      &  vkl(0:3,3),t0(*),vold(0:mi(2),*),coefmpc(*),
      &  springarea(2,*),elconloc(ncmat_),cocon(0:6,ntmat_,*),
      &  shcon(0:3,ntmat_,*),sph,c1,xi,et,ze,xsj,qa(*),t0l,t1l,dtime,
