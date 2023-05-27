@@ -37,6 +37,10 @@
       real*8 dgdxglob(2,nk,*),feasdir(2,*),dd,dd2
 !     
       if(iscaleflag.eq.1) then
+!
+!       normalization over all design nodes of a filtered design
+!       response
+!
         if(objectset(5,iobject)(81:81).ne.'G') then
           dd=0.d0
           do i=1,ndesi
@@ -48,8 +52,8 @@
             node=nodedesi(i)
             dgdxglob(2,node,iobject)=dgdxglob(2,node,iobject)/dd
             if(ne2d.ne.0) then
-              dgdxglob(2,node+1,iobject)=dgdxglob(2,node+1,iobject)/dd
-              dgdxglob(2,node+2,iobject)=dgdxglob(2,node+2,iobject)/dd
+              dgdxglob(2,node+1,iobject)=dgdxglob(2,node,iobject)
+              dgdxglob(2,node+2,iobject)=dgdxglob(2,node,iobject)
             endif
           enddo
         endif
@@ -69,29 +73,49 @@
         if(objectset(2,1)(17:19).eq.'MIN') then
           do i=1,ndesi
             node=nodedesi(i)
-            dgdxglob(1,node,1)=-1*dgdxglob(1,node,1)
-            dgdxglob(2,node,1)=-1*dgdxglob(2,node,1)
+!           NEXT LINE IS NOT NEEDED ???????????????
+c            dgdxglob(1,node,1)=-dgdxglob(1,node,1)
+            dgdxglob(2,node,1)=-dgdxglob(2,node,1)
           enddo
         endif
       elseif(iscaleflag.eq.4) then
+!
+!       scaling such that the maximum over all design variables is one
+!
         dd=0.d0
         dd2=0.d0
         do i=1,ndesi
           node=nodedesi(i)
-          dd=max(dd,abs(feasdir(1,node)))
+c          dd=max(dd,abs(feasdir(1,node)))
           dd2=max(dd2,abs(feasdir(2,node)))
         enddo
-        if(dd.le.0.d0) then
-          dd=1.0
-        endif
+c        if(dd.le.0.d0) then
+c          dd=1.0
+c        endif
         if(dd2.le.0.d0) then
           dd2=1.0
         endif
-        do i=1,ndesi
-          node=nodedesi(i)
-          feasdir(1,node)=feasdir(1,node)/dd
-          feasdir(2,node)=feasdir(2,node)/dd2
-        enddo  
+        if(ne2d.eq.0) then
+          do i=1,ndesi
+            node=nodedesi(i)
+c     feasdir(1,node)=feasdir(1,node)/dd
+            feasdir(2,node)=feasdir(2,node)/dd2
+          enddo
+        else
+!
+!         for 2d-calculations: copy the results to the
+!         other expanded nodes as well
+!
+          do i=1,ndesi
+            node=nodedesi(i)
+c     feasdir(1,node)=feasdir(1,node)/dd
+            feasdir(2,node)=feasdir(2,node)/dd2
+            feasdir(1,node+1)=feasdir(1,node)
+            feasdir(1,node+2)=feasdir(1,node)
+            feasdir(2,node+1)=feasdir(2,node)
+            feasdir(2,node+2)=feasdir(2,node)
+          enddo
+        endif
       endif
 !     
       return        

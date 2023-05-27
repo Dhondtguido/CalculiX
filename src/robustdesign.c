@@ -88,14 +88,15 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *inoelfa=NULL,*iponor=NULL,*iponexp=NULL,ifreemax,*ipretinfo=NULL,
     nfield,iforce,*nod2nd3rd=NULL,*nod1st=NULL,ishape=0,ndesibou,
     *nodedesibou=NULL,*nodedesiinvbou=NULL,nmethodnew=0,*neigh=NULL,
-    *ipneigh=NULL,ifeasd=0;
+    *ipneigh=NULL,ifeasd=0,*nx=NULL,*ny=NULL,*nz=NULL,*nodes=NULL;
       
   double *stn=NULL,*tper,*xdesi=NULL,ptime=0.,*doubleglob=NULL,*xstate=NULL,
     *ener=NULL,sigma=0,*extnor=NULL,dtime,time,*xnor=NULL,*cdni=NULL,
     *cdnr=NULL,*cdn=NULL,*qfx=NULL,*emn=NULL,*fni=NULL,*fnr=NULL,
     *eenmax=NULL,*veold=NULL,*stnmax=NULL,*vmax=NULL,*stni=NULL,
     *stnr=NULL,*vi=NULL,*vr=NULL,*qfn=NULL,*xstaten=NULL,*enern=NULL,
-    *epn=NULL,*fn=NULL,*een=NULL,*v=NULL;
+    *epn=NULL,*fn=NULL,*een=NULL,*v=NULL,*x=NULL,*y=NULL,*z=NULL,*xo=NULL,
+    *yo=NULL,*zo=NULL,*dist=NULL;
   
 #ifdef SGI
   ITG token;
@@ -255,15 +256,29 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   NNEW(xnor,double,24*nsurfs);
   NNEW(iponexp,ITG,2**nk);
   NNEW(ipretinfo,ITG,*nk);
+  NNEW(x,double,*nk);
+  NNEW(y,double,*nk);
+  NNEW(z,double,*nk);
+  NNEW(xo,double,*nk);
+  NNEW(yo,double,*nk);
+  NNEW(zo,double,*nk);
+  NNEW(nx,ITG,*nk);
+  NNEW(ny,ITG,*nk);
+  NNEW(nz,ITG,*nk);
+  NNEW(nodes,ITG,*nk);
+  NNEW(dist,double,*nk);
   
   FORTRAN(normalsforequ_se,(nk,co,iponoelfa,inoelfa,konfa,ipkonfa,lakonfa,
 			    &nsurfs,iponor,xnor,nodedesiinv,jobnamef,
 			    iponexp,nmpc,labmpc,ipompc,nodempc,ipretinfo,
 			    kon,ipkon,lakon,iponoel,inoel,iponor2d,knor2d,
-			    ipoface,nodface,ne));
+			    ipoface,nodface,ne,x,y,z,xo,yo,zo,nx,ny,nz,nodes,
+			    dist,ne2d,nod1st,nod2nd3rd));
     	  
   SFREE(konfa);SFREE(ipkonfa);SFREE(lakonfa);SFREE(iponor);SFREE(xnor);
   SFREE(iponoelfa);SFREE(inoelfa);SFREE(iponexp);SFREE(ipretinfo);
+  SFREE(x);SFREE(y);SFREE(z);SFREE(xo);SFREE(yo);SFREE(zo);SFREE(nx);
+  SFREE(ny);SFREE(nz);SFREE(nodes);SFREE(dist);
        
   /* createinum is called in order to determine the nodes belonging
      to elements; this information is needed in frd_se */

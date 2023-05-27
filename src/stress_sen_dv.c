@@ -47,7 +47,7 @@ void stress_sen_dv(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
   ITG symmetryflag=0,mt=mi[1]+1,i,iactpos,calcul_fn,list,
     calcul_qa,calcul_cauchy,ikin=0,nal,iout=2,icmd=3,nener=0,
     *inum=NULL,nprintl=0,unperturbflag,nfield,ndim,iorienglob,
-    force,mscalmethod=0,*islavelinv=NULL,*irowtloc=NULL,*jqtloc=NULL,
+    iforce,mscalmethod=0,*islavelinv=NULL,*irowtloc=NULL,*jqtloc=NULL,
     mortartrafoflag=0,intscheme=0;
 
   double *fn=NULL,*eei=NULL,qa[4]={0.,0.,-1.,0.},*xstiff=NULL,*ener=NULL,    
@@ -93,13 +93,13 @@ void stress_sen_dv(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
   nfield=6;
   ndim=6;
   iorienglob=0;
-  force=0;
+  iforce=0;
   //  strcpy1(&cflag[0],&filab[2962],1);
   strcpy1(&cflag[0],&filab[178],1);
   
   FORTRAN(extrapolate_se,(dstx,dstn,ipkon,inum,kon,lakon,
 			  &nfield,nk,ne,mi,&ndim,orab,ielorien,co,&iorienglob,
-			  cflag,dv,&force,ielmat,thicke,ielprop,prop,ialeneigh,
+			  cflag,dv,&iforce,ielmat,thicke,ielprop,prop,ialeneigh,
 			  neaneigh,nebneigh,ialnneigh,naneigh,nbneigh));
 
   /* Calculate KS-function and sensitivity */

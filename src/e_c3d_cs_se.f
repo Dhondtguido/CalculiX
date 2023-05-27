@@ -68,12 +68,12 @@
      &  mass,stiffness,buckling,rhsi,coriolis,icoordinate,idir,ne,
      &  istartelem(*),ialelem(*),nk,idesloc,nset
 !
-      real*8 co(3,*),xl(3,26),shp(4,26),xs2(3,7),veold(0:mi(2),*),
+      real*8 co(3,*),xl(3,20),shp(4,20),xs2(3,7),veold(0:mi(2),*),
      &  s(60,60),w(3,3),p1(3),p2(3),bodyf(3),bodyfx(3),sigma,
-     &  ff(60),bf(3),q(3),shpj(4,26),elcon(0:ncmat_,ntmat_,*),t(3),
+     &  ff(60),bf(3),q(3),shpj(4,20),elcon(0:ncmat_,ntmat_,*),t(3),
      &  rhcon(0:1,ntmat_,*),xkl(3,3),eknlsign,reltime,prop(*),
      &  alcon(0:6,ntmat_,*),alzero(*),orab(7,*),t0(*),t1(*),
-     &  anisox(3,3,3,3),voldl(0:mi(2),26),vo(3,3),xloadold(2,*),
+     &  anisox(3,3,3,3),voldl(0:mi(2),20),vo(3,3),xloadold(2,*),
      &  xl2(3,9),xsj2(3),shp2(7,9),vold(0:mi(2),*),xload(2,*),
      &  xstate(nstate_,mi(1),*),xstateini(nstate_,mi(1),*),
      &  vv(3,3,3,3),springarea(2,*),thickness,tlayer(4),dlayer(4),
@@ -89,8 +89,6 @@
      &  pslavsurf(3,*),pmastsurf(6,*),distmin,s0(60,60),xdesi(3,*),
      &  ds1(60,60),ff0(60),dfl(20,120),dxstiff(27,mi(1),ne,*),
      &  vl(0:mi(2),52),v(0:mi(2),*)
-!
-!
 !
       include "gauss.f"
 !
@@ -1428,16 +1426,12 @@ c             if(iperturb(1).eq.0) then
              endif
 !
              if(rhsi.eq.1) then
-c                if(nopes.eq.9) then
-c                   call shape9q(xi,et,xl2,xsj2,xs2,shp2,iflag)
                 if(nopes.eq.8) then
                    call shape8q(xi,et,xl2,xsj2,xs2,shp2,iflag)
                 elseif(nopes.eq.4) then
                    call shape4q(xi,et,xl2,xsj2,xs2,shp2,iflag)
                 elseif(nopes.eq.6) then
                    call shape6tri(xi,et,xl2,xsj2,xs2,shp2,iflag)
-c                elseif(nopes.eq.7) then
-c                   call shape7tri(xi,et,xl2,xsj2,xs2,shp2,iflag)
                 else
                    call shape3tri(xi,et,xl2,xsj2,xs2,shp2,iflag)
                 endif
@@ -1527,19 +1521,14 @@ c    Bernhardi end
 !            three-dimensional thermomechanical Applications,
 !            Wiley, 2004, p 153, eqn. (3.54).
 !
-c             elseif((mass.eq.1).and.(iperturb(1).ne.0)) then
              elseif((mass.eq.1).and.
      &            ((iperturb(1).eq.1).or.(iperturb(2).eq.1))) then
-c                if(nopes.eq.9) then
-c                   call shape9q(xi,et,xl1,xsj2,xs2,shp2,iflag)
                 if(nopes.eq.8) then
                    call shape8q(xi,et,xl1,xsj2,xs2,shp2,iflag)
                 elseif(nopes.eq.4) then
                    call shape4q(xi,et,xl1,xsj2,xs2,shp2,iflag)
                 elseif(nopes.eq.6) then
                    call shape6tri(xi,et,xl1,xsj2,xs2,shp2,iflag)
-c                elseif(nopes.eq.7) then
-c                   call shape7tri(xi,et,xl1,xsj2,xs2,shp2,iflag)
                 else
                    call shape3tri(xi,et,xl1,xsj2,xs2,shp2,iflag)
                 endif

@@ -383,6 +383,16 @@ void FORTRAN(calcexternalwork,(double *co,double *vold,ITG *istartset,
 			       double *xload,char *sideload,
 			       double *delexternalwork,double *voldprev));
 
+void FORTRAN(calcfeasibledirection_gd,(ITG *ndesi,ITG *nodedesi,
+				       double *dgdxglob,ITG *nactive,
+				       ITG *nobject,ITG *nk,double *gradproj,
+				       char *objectset));
+       
+void FORTRAN(calcfeasibledirection_gp,(ITG *ndesi,ITG *nodedesi,
+				       double *dgdxglob,ITG *nactive,
+				       ITG *nobject,ITG *nk,double *gradproj,
+				       double *gradprojname));
+
 void FORTRAN(calch0interface,(ITG *nmpc,ITG *ipompc,ITG *nodempc,
                               double *coefmpc,double *h0));
                       
@@ -3154,7 +3164,11 @@ void FORTRAN(normalsforequ_se,(ITG *nk,double *co,ITG *iponoelfa,
                                ITG *ipompc,ITG *nodempc,ITG *ipretinfo,
                                ITG *kon,ITG *ipkon,char *lakon,ITG *iponoel,
                                ITG *inoel,ITG *iponor2d,ITG *knor2d,
-                               ITG *ipoface,ITG *nodeface,ITG *ne));
+                               ITG *ipoface,ITG *nodeface,ITG *ne,double *x,
+			       double *y,double *z,double *xo,double *yo,
+			       double *zo,ITG *nx,ITG *ny,ITG *nz,ITG *nodes,
+			       double *dist,ITG *ne2d,ITG *nod1st,
+			       ITG *nod2nd3rd));
 
 void FORTRAN(normalsoninterface,(ITG *istartset,ITG *iendset,
              ITG *ialset,ITG *imast,ITG *ipkon,ITG *kon,char *lakon,
