@@ -46,7 +46,7 @@ void peeq_sen_dx(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
   ITG mt=mi[1]+1,calcul_fn,list,
     calcul_qa,calcul_cauchy,ikin=0,nal,iout=2,icmd=3,nener=0,
     *inum=NULL,nfield,ndim,iorienglob,
-    force,mscalmethod=0,*islavelinv=NULL,*irowtloc=NULL,*jqtloc=NULL,
+    iforce,mscalmethod=0,*islavelinv=NULL,*irowtloc=NULL,*jqtloc=NULL,
     mortartrafoflag=0,intscheme=0;
 
   double *fn=NULL,*eei=NULL,qa[4]={0.,0.,-1.,0.},*xstiff=NULL,*ener=NULL,    
@@ -91,7 +91,7 @@ void peeq_sen_dx(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
   nfield=1;
   ndim=*nstate_;
   iorienglob=0;
-  force=0;
+  iforce=0;
 
   /* 2D-flag */
   
@@ -99,7 +99,7 @@ void peeq_sen_dx(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
   
   FORTRAN(extrapolate_se,(dxstate,depn,ipkon,inum,kon,lakon,
 			  &nfield,nk,ne,mi,&ndim,orab,ielorien,co,&iorienglob,
-			  cflag,vold,&force,ielmat,thicke,ielprop,prop,
+			  cflag,vold,&iforce,ielmat,thicke,ielprop,prop,
 			  ialeneigh,
 			  neaneigh,nebneigh,ialnneigh,naneigh,nbneigh));
 

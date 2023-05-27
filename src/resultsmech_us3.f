@@ -221,11 +221,11 @@
      &     calcul_cauchy,calcul_qa,index,node,jjj,j1,j2
      !     
       real*8 co(3,*),v(0:mi(2),*),stiini(6,mi(1),*),
-     &     stx(6,mi(1),*),xl(3,26),vl(0:mi(2),26),stre(6),prop(*),
+     &     stx(6,mi(1),*),xl(3,20),vl(0:mi(2),20),stre(6),prop(*),
      &     elcon(0:ncmat_,ntmat_,*),rhcon(0:1,ntmat_,*),
      &     alcon(0:6,ntmat_,*),vini(0:mi(2),*),q1,
      &     alzero(*),orab(7,*),elas(21),rho,fn(0:mi(2),*),
-     &     q(0:mi(2),26),t0(*),t1(*),prestr(6,mi(1),*),eme(6,mi(1),*),
+     &     q(0:mi(2),20),t0(*),t1(*),prestr(6,mi(1),*),eme(6,mi(1),*),
      &     vold(0:mi(2),*),eloc(9),elconloc(ncmat_),eth(6),coords(3),
      &     ener(2,mi(1),*),emec(6),eei(6,mi(1),*),enerini(2,mi(1),*),
      &     veold(0:mi(2),*),e,un,um,tt,dl,qa(*),t0l,t1l,dtime,time,

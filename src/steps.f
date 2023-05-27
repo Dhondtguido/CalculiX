@@ -50,6 +50,11 @@
       if(iperturb(1).lt.2) iperturb(1)=0
       if(irstrt(1).lt.0) irstrt(1)=0
       istep=istep+1
+!
+      write(*,*)
+      write(*,*) 'STEP ',istep
+      write(*,*)
+!
       jmax(1)=100
       jmax(2)=10000
       physcon(14)=0.d0

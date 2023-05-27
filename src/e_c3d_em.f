@@ -49,7 +49,7 @@
      &     isurf,jj1,istartset(*),iendset(*),ialset(*),three,nfaces,
      &     null
 !     
-      real*8 co(3,*),xl(3,26),shp(4,26),s(100,100),ff(100),xs2(3,7),
+      real*8 co(3,*),xl(3,20),shp(4,20),s(100,100),ff(100),xs2(3,7),
      &     t1(*),h0(3,*),xl2(3,9),xsj2(3),shp2(7,9),vold(0:mi(2),*),
      &     xi,et,ze,xsj,sm(100,100),t1l,weight,elcon(0:ncmat_,ntmat_,*),
      &     elconloc(ncmat_),sigma,h0l(3),h0l2(3,8),alcon(0:6,ntmat_,*),

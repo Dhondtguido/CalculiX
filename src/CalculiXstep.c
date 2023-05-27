@@ -197,7 +197,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
     nforcold,nloadold,nbody,nbody_,nbodyold,network,nheading_,
     k,nzs[3],nmpc_,nload_,nforc_,istep,istat,nboun_,nintpoint,
     nmat,ntmat_,norien,ithermal[2]={0,0},nmpcold,
-    iprestr,kode,isolver,nslavs,nkon_,ne0,nkon0,mortar,
+    iprestr,kode,isolver,nslavs,nkon_,ne1,nkon0,mortar,
     jout[2],nkon,idrct,jmax[2],iexpl,nevtot,ifacecount,
     iplas,npmat_,mi[3],ntrans,mpcend,namtot_,iheading,
     icascade,maxlenmpc,mpcinfo[4],ne1d,ne2d,infree[4],
@@ -301,7 +301,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
     printf("software, and you are welcome to redistribute it under\n");
     printf("certain conditions, see gpl.htm\n\n");
     printf("************************************************************\n\n");
-    printf("You are using an executable made on Wed May 10 22:32:12 CEST 2023\n");
+    printf("You are using an executable made on Tue May 23 23:07:31 CEST 2023\n");
     fflush(stdout);
 
     NNEW(ipoinp,ITG,2*nentries);
@@ -1229,7 +1229,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 
     //  if(network==1){
     if(network>0){
-      ne0=*ne;nkon0=nkon;nload1=*nload;
+      ne1=*ne;nkon0=nkon;nload1=*nload;
       RENEW(ipkon,ITG,*ne+*nload);
       RENEW(lakon,char,8*(*ne+*nload));
       RENEW(kon,ITG,nkon+9**nload);
@@ -1260,7 +1260,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
       if(nener==1)RENEW(ener,double,mi[0]**ne*2);
       if(norien>0)RENEW(ielorien,ITG,mi[2]**ne);
       RENEW(ielmat,ITG,mi[2]**ne);
-      for(i=mi[2]*ne0;i<mi[2]**ne;i++)ielmat[i]=1;
+      for(i=mi[2]*ne1;i<mi[2]**ne;i++)ielmat[i]=1;
     }
 
     if(ntrans > 0){
@@ -1924,7 +1924,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
     /* removing the advective elements, if any */
 
     if(network>0){
-      *ne=ne0;nkon=nkon0;
+      *ne=ne1;nkon=nkon0;
       RENEW(ipkon,ITG,*ne);
       RENEW(lakon,char,8**ne);
       RENEW(kon,ITG,nkon);

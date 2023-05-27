@@ -50,6 +50,12 @@ void filtermain_forward(double *co,double *gradproj,ITG *nk,
   double *xo=NULL,*yo=NULL,*zo=NULL,*x=NULL,*y=NULL,*z=NULL,dd=.0,
     filterrad=0;
 
+  /* copying gradproj(3,*) into feasdir(1,*) */
+
+  for(i=0;i<*nk;i++){
+    feasdir[2*i]=gradproj[3*i+2];
+  }
+
   /* if no radius is defined no filtering is performed
      the radius applies to all objective functions */
     

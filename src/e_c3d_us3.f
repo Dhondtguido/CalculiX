@@ -231,7 +231,7 @@
      &  ialset(*),ntie,integerglob(*),nasym,nplicon(0:ntmat_,*),
      &  nplkcon(0:ntmat_,*),npmat_,jjj,id,ig
 !
-      real*8 co(3,*),xl(3,26),veold(0:mi(2),*),rho,s(60,60),bodyfx(3),
+      real*8 co(3,*),xl(3,20),veold(0:mi(2),*),rho,s(60,60),bodyfx(3),
      &  ff(60),elconloc(ncmat_),coords(3),p1(3),
      &  p2(3),eth(6),rhcon(0:1,ntmat_,*),reltime,prop(*),tm(3,3),
      &  alcon(0:6,ntmat_,*),alzero(*),orab(7,*),t0(*),t1(*),

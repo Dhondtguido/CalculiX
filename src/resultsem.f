@@ -35,12 +35,12 @@
      &  m2,ig,id,iactive(3),konl2(9),ifaceq(8,6),ifacet(6,4),iel,
      &  ifacew(8,5),mint2d,nfaces,one,iout,nmethod
 !
-      real*8 co(3,*),v(0:mi(2),*),shp(4,26),xl(3,26),vl(0:mi(2),26),
+      real*8 co(3,*),v(0:mi(2),*),shp(4,20),xl(3,20),vl(0:mi(2),20),
      &  elcon(0:ncmat_,ntmat_,*),vkl(0:mi(2),3),vini(0:mi(2),*),c1,
      &  elconloc(ncmat_),xi,et,ze,xsj,t1l,dtime,weight,xsj2(3),
      &  vinikl(0:mi(2),3),alpha(6),vl2(0:mi(2),9),xl2(1:3,9),
      &  h0l(3),al(3),ainil(3),sti(6,mi(1),*),xs2(3,7),phi,
-     &  um,alcon(0:6,ntmat_,*),h0(3,*),vinil(0:mi(2),26),
+     &  um,alcon(0:6,ntmat_,*),h0(3,*),vinil(0:mi(2),20),
      &  fn(0:mi(2),*),eei(6,mi(1),*),shp2(7,9)
 !
       include "gauss.f"

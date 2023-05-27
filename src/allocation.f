@@ -1591,6 +1591,44 @@ c     !
         endif
         call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &       ipoinp,inp,ipoinpc)
+      elseif(textpart(1)(1:22).eq.'*MOHRCOULOMBHARDENING') then
+!     
+        ntmatl=0
+        do
+          call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
+     &         ipoinp,inp,ipoinpc)
+          if((istat.lt.0).or.(key.eq.1)) exit
+          read(textpart(3)(1:20),'(f20.0)',iostat=istat) 
+     &         temperature
+          if(istat.gt.0) then
+            call inputerror(inpc,ipoinpc,iline,
+     &           "*MOHR COULOMB HARDENING%",ier)
+            exit
+          endif
+          if(ntmatl.eq.0) then
+            npmatl=0
+            ntmatl=ntmatl+1
+            ntmat_=max(ntmatl,ntmat_)
+            tempact=temperature
+          elseif(temperature.ne.tempact) then
+            npmatl=0
+            ntmatl=ntmatl+1
+            ntmat_=max(ntmatl,ntmat_)
+            tempact=temperature
+          endif
+          npmatl=npmatl+1
+          npmat_=max(npmatl,npmat_)
+        enddo
+      elseif(textpart(1)(1:12).eq.'*MOHRCOULOMB') then
+        ntmatl=0
+        ncmat_=max(4,ncmat_)
+        do
+          call getnewline(inpc,textpart,istat,n,key,iline,ipol,
+     &         inl,ipoinp,inp,ipoinpc)
+          if((istat.lt.0).or.(key.eq.1)) exit
+          ntmatl=ntmatl+1
+        enddo
+        ntmat_=max(ntmatl,ntmat_)
       elseif(textpart(1)(1:4).eq.'*MPC') then
         mpclabel='                    '
         do

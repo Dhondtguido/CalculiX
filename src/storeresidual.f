@@ -29,15 +29,13 @@
 !
       implicit none
 !
-      logical force
-!
       character*1 cflag
       character*8 lakon(*)
       character*87 filab(*)
 !
       integer mi(*),nactdof(0:mi(2),*),ithermal(*),i,j,nk,
      &  nfield,ndim,iorienglob,icfdout,ielmat(mi(3),*),
-     &  ipkon(*),inum(*),kon(*),ielprop(*),
+     &  ipkon(*),inum(*),kon(*),ielprop(*),iforce,
      &  ne,ielorien,itg(*),ntg,mt,nlabel
 !
       real*8 b(*),fn(0:mi(2),*),sti(6,mi(1),*),stn(6,*),orab(7,*),
@@ -96,10 +94,10 @@
       iorienglob=0
       cflag=filab(1)(5:5)
       icfdout=0
-      force=.false.
+      iforce=0
       call extrapolate(sti,stn,ipkon,inum,kon,lakon,nfield,nk,
      &     ne,mi(1),ndim,orab,ielorien,co,iorienglob,cflag,
-     &     vold,force,ielmat,thicke,ielprop,prop)
+     &     vold,iforce,ielmat,thicke,ielprop,prop)
 !
       if(ithermal(1).gt.1) then
          call networkextrapolate(vold,ipkon,inum,kon,lakon,ne,mi)
@@ -110,9 +108,9 @@
       if(filab(1)(5:5).eq.'I') then
          nfield=mt
          cflag=filab(1)(5:5)
-         force=.false.
+         iforce=0
          call map3dto1d2d(vold,ipkon,inum,kon,lakon,nfield,nk,
-     &        ne,cflag,co,vold,force,mi,ielprop,prop)
+     &        ne,cflag,co,vold,iforce,mi,ielprop,prop)
       endif
 !
 !     marking gas nodes by multiplying inum by -1

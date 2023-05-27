@@ -292,13 +292,14 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
      calculation (e.g. a static step or an implicit dynamics step) 
      is performed with node-to-face contact */
   
-  if((*iexpl<=1)&&(*mortar==-1)){
-    mortarsav=-1;
-    *mortar=0;
-  }
-  
   if(*mortar!=1){
-    maxprevcontel=*nslavs;
+    if(nintpoint!=0){
+      maxprevcontel=0;
+      *nintpoint=0;
+      SFREE(pslavsurf);SFREE(clearini);
+    }else{
+      maxprevcontel=*nslavs;
+    }
   }else if(*mortar==1){
     maxprevcontel=*nintpoint;
     if(*nstate_!=0){
@@ -309,8 +310,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	isiz=3**nintpoint;cpypardou(pslavsurfold,pslavsurf,&isiz,&num_cpus);
       }
     }
+    nslavs_prev_step=*nslavs;
   }
-  nslavs_prev_step=*nslavs;
 
   /* turbulence model 
      iturbulent==0: laminar
@@ -1921,22 +1922,18 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	  }
 	  
 	  if(dtmin>(*tmax*(*tper))){
-	    //	    *tinc=*tmax*(*tper);}
 	    dtime=*tmax*(*tper);}
 	  else if(dtmin<dtset){
-	    //	    *tinc=dtset;}
 	    dtime=dtset;}
 	  else {
-	    //	    *tinc=dtmin;
 	    dtime=dtmin;
 	  }
 	  
-	  //	  dtheta=(*tinc)/(*tper);
 	  dtheta=(dtime)/(*tper);
 	  reltime=theta+dtheta;
 	  time=reltime**tper;
 	  dthetaref=dtheta;
-	  printf(" SELECTED time increment (based on contact):%e\n\n",*tinc);
+	  printf(" SELECTED time increment (based on contact):%e\n\n",dtime);
 
 	  ncontacts=*ne-ne0; 
 	  inccontact=0;
@@ -4255,11 +4252,6 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   // MPADD start
   if((*nmethod==4)&&(*ithermal!=2)&&(*iexpl<=1)&&(icfd==0)){ SFREE(adblump);}
   // MPADD end
-
-  /* restore node-to-face contact to massless contact for massless
-     explicit dynamic calculations */
-  
-  if((*iexpl<=1)&&(mortarsav==-1)){*mortar=-1;}
   
   (*ttime)+=(*tper);
   

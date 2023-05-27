@@ -111,7 +111,7 @@
       if(johnsoncook) then
 !     
         if(matname(nmat)(1:11).ne.'JOHNSONCOOK') then
-          write(*,*) '*ERROR reading *RATE DEPENDENT'
+          write(*,*) '*ERROR reading *PLASTIC'
           write(*,*) '       the name of a Johnson Cook material'
           write(*,*) '       must start with JOHNSONCOOK'
           write(*,*) '       (blanks are allowed at any location'

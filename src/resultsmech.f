@@ -53,18 +53,18 @@
      &     irowtloc(*),jqtloc(*),jqtloc1(21),irowtloc1(96),
      &     islavelinv(*),node1,node2,j2,ii,mortartrafoflag
 !     
-      real*8 co(3,*),v(0:mi(2),*),shp(4,26),stiini(6,mi(1),*),
-     &     stx(6,mi(1),*),xl(3,26),vl(0:mi(2),26),stre(6),prop(*),
+      real*8 co(3,*),v(0:mi(2),*),shp(4,20),stiini(6,mi(1),*),
+     &     stx(6,mi(1),*),xl(3,20),vl(0:mi(2),20),stre(6),prop(*),
      &     elcon(0:ncmat_,ntmat_,*),rhcon(0:1,ntmat_,*),xs2(3,7),
      &     alcon(0:6,ntmat_,*),vini(0:mi(2),*),thickness,
      &     alzero(*),orab(7,*),elas(21),rho,fn(0:mi(2),*),
-     &     fnl(3,10),skl(3,3),beta(6),q(0:mi(2),26),xl2(3,8),
+     &     fnl(3,10),skl(3,3),beta(6),q(0:mi(2),20),xl2(3,8),
      &     vkl(0:3,3),t0(*),t1(*),prestr(6,mi(1),*),eme(6,mi(1),*),
      &     ckl(3,3),vold(0:mi(2),*),eloc(6),veold(0:mi(2),*),
      &     springarea(2,*),elconloc(ncmat_),eth(6),xkl(3,3),
-     &     voldl(0:mi(2),26),xikl(3,3),ener(2,mi(1),*),
+     &     voldl(0:mi(2),20),xikl(3,3),ener(2,mi(1),*),
      &     emec(6),eei(6,mi(1),*),enerini(2,mi(1),*),physcon(*),
-     &     emec0(6),vel(1:3,26),veoldl(0:mi(2),26),xsj2(3),shp2(7,8),
+     &     emec0(6),vel(1:3,20),veoldl(0:mi(2),20),xsj2(3),shp2(7,8),
      &     e,un,al,um,am1,xi,et,ze,tt,senergy,venergy,
      &     xsj,qa(*),vj,t0l,t1l,dtime,weight,pgauss(3),vij,time,ttime,
      &     plicon(0:2*npmat_,ntmat_,*),plkcon(0:2*npmat_,ntmat_,*),
@@ -74,7 +74,7 @@
      &     thicke(mi(3),*),emeini(6,mi(1),*),clearini(3,9,*),
      &     pslavsurf(3,*),pmastsurf(6,*),smscale(*),sum1,sum2,
      &     scal,enerscal,elineng(6),t0g(2,*),t1g(2,*),autloc(*),
-     &     autloc1(96),shptil(4,26)
+     &     autloc1(96),shptil(4,20)
 !     
       include "gauss.f"
 !     
