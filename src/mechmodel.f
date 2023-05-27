@@ -42,6 +42,7 @@
 !          -50: deformation plasticity
 !          -51: incremental plasticity (no viscosity)
 !          -52: viscoplasticity
+!          -53: Mohr-Coulomb plasticity
 !       < -100: user material routine with -kode-100 user
 !               defined constants with keyword *USER MATERIAL
 !
@@ -76,7 +77,7 @@ c     &     ckl,vj,xstate,nstate_,iel,iint,mi)
      &        emec0,beta,xikl,vij,xkl,vj,ithermal,t1l,dtime,time,ttime,
      &        icmd,ielas,mi(1),nstate_,xstateini,xstate,stre,elas,
      &        iorien,pgauss,orab,istep,iinc,pnewdt,nmethod,iperturb)
-      elseif(kode.gt.-100) then
+      elseif((kode.eq.-51).or.(kode.eq.-52)) then
          mattyp=3
          if(iperturb(2).eq.1) then
             call incplas(elconloc,plconloc,xstate,xstateini,elas,emec,
@@ -89,9 +90,14 @@ c     &     ckl,vj,xstate,nstate_,iel,iint,mi)
      &           ithermal,icmd,beta,stre,vj,kode,ielas,amat,t1l,dtime,
      &           time,ttime,iel,iint,nstate_,mi(1),eloc,pgauss,nmethod,
      &           pnewdt,depvisc)
-         endif
-      else
-         mattyp=3
+          endif
+        elseif(kode.eq.-53) then
+          mattyp=3
+          call mohrcoulomb(elconloc,plconloc,xstate,xstateini,
+     &         elas,emec,icmd,beta,stre,
+     &         ielas,dtime,time,ttime,iel,iint,nstate_,mi,pnewdt)
+        else
+          mattyp=3
          call umat_main(amat,iel,iint,kode,elconloc,emec,emec0,beta,
      &        xikl,vij,xkl,vj,ithermal,t1l,dtime,time,ttime,icmd,ielas,
      &        mi(1),nstate_,xstateini,xstate,stre,elas,iorien,pgauss,

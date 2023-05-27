@@ -25,19 +25,17 @@
 !
       implicit none
 !
-      logical force
-!
       character*1 cflag
       character*8 lakon(*),lakonl
 !
       integer ipkon(*),inum(*),kon(*),ne,indexe,nope,nfield,mi(*),
      &  nk,i,j,nelemload(2,*),nload,node,nboun,nlayer,nopeexp,
      &  nodeboun(*),ndirboun(*),ithermal(*),ielmat(mi(3),*),
-     &  ielprop(*)
+     &  ielprop(*),iforce
 !
       real*8 yn,co(3,*),vold(0:mi(2),*),prop(*)
 !
-      force=.false.
+      iforce=0
 !
       do i=1,nk
          inum(i)=0
@@ -125,7 +123,7 @@ c     Bernhardi end
       if((cflag.ne.' ').and.(cflag.ne.'E')) then
          nfield=0
          call map3dto1d2d(yn,ipkon,inum,kon,lakon,nfield,nk,ne,cflag,co,
-     &         vold,force,mi,ielprop,prop)
+     &         vold,iforce,mi,ielprop,prop)
       endif
 !
       return

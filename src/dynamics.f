@@ -209,7 +209,7 @@ c          tmin=1.d-5
       endif
 !     
       if(tper.le.0.d0) then
-        write(*,*) '*ERROR reading *DYNAMIC: step size is negative'
+        write(*,*) '*ERROR reading *DYNAMIC: step size is nonpositive'
         ier=1
         return
       endif
@@ -280,7 +280,12 @@ c          tmin=1.d-5
 !     output was requested on a *EL PRINT, *EL FILE OR *ELEMENT OUTPUT
 !     card
 !
-      if(iexpl.le.1) nener=1
+      if(iexpl.le.1) then
+        nener=1
+        write(*,*) '*INFO reading *DYNAMIC: for implicit calculations'
+        write(*,*) '      the calculation of the internal energy'
+        write(*,*) '      is activated.'
+      endif
 !     
       call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &     ipoinp,inp,ipoinpc)

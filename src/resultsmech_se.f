@@ -52,8 +52,8 @@
      &     iactive,icoordinate,ialdesi(*),ii,nr,mscalmethod,
      &     node1,node2,ifaceqexp(2,20),ifacewexp(2,15)
 !     
-      real*8 co(3,*),v(0:mi(2),*),shp(4,26),stiini(6,mi(1),*),
-     &     stx(6,mi(1),*),xl(3,26),vl(0:mi(2),26),stre(6),prop(*),
+      real*8 co(3,*),v(0:mi(2),*),shp(4,20),stiini(6,mi(1),*),
+     &     stx(6,mi(1),*),xl(3,20),vl(0:mi(2),20),stre(6),prop(*),
      &     elcon(0:ncmat_,ntmat_,*),rhcon(0:1,ntmat_,*),xs2(3,7),
      &     alcon(0:6,ntmat_,*),vini(0:mi(2),*),thickness,
      &     alzero(*),orab(7,*),elas(21),rho,fn(0:mi(2),*),
@@ -61,9 +61,9 @@
      &     vkl(0:3,3),t0(*),t1(*),prestr(6,mi(1),*),eme(6,mi(1),*),
      &     ckl(3,3),vold(0:mi(2),*),eloc(9),veold(0:mi(2),*),
      &     springarea(2,*),elconloc(ncmat_),eth(6),xkl(3,3),
-     &     voldl(0:mi(2),26),xikl(3,3),ener(2,mi(1),*),emec(6),
+     &     voldl(0:mi(2),20),xikl(3,3),ener(2,mi(1),*),emec(6),
      &     eei(6,mi(1),*),enerini(2,mi(1),*),senergy,venergy,
-     &     emec0(6),veoldl(0:mi(2),26),xsj2(3),shp2(7,8),
+     &     emec0(6),veoldl(0:mi(2),20),xsj2(3),shp2(7,8),
      &     e,un,al,um,am1,xi,et,ze,tt,exx,eyy,ezz,exy,exz,eyz,
      &     xsj,vj,t0l,t1l,dtime,weight,pgauss(3),vij,time,ttime,
      &     plicon(0:2*npmat_,ntmat_,*),plkcon(0:2*npmat_,ntmat_,*),

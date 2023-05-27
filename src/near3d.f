@@ -29,8 +29,6 @@
       real*8 x(n),y(n),z(n),xo(n),yo(n),zo(n),xp,yp,zp,r(k+6),xr,yr,
      &  zr,c(8),dd,xw,xe,ys,yn,zb,zt,sqrt_rmaxini
 !
-!
-!
       iflag=1
       kflag=2
       eight=8

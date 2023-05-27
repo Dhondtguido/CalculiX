@@ -5165,3 +5165,17 @@ Dec 2002        - started to work on single crystal plasticity
 
  10 May 2023    - worked on 2D sensitivity (output of mesh in
                   normalsforequ_se.f)
+ 15 May 2023    - changed "26" in the declarations to "20" (no more
+                  than 20 nodes per element)
+
+ 19 May 2023    - integrated the 4-noded tet with 4 integration points
+                  instead of 1 for the mass matrix (intscheme=1; this is
+		  an exact integration if the density is constant)
+
+ 20 May 2023    - worked on 2D-sensitivity and feasible direction
+
+ 21 May 2023    - started debugging Mohr-Coulomb
+
+ 23 May 2023    - replaced ",26)" by ",20)" (no more than 20 nodes per
+                  element)
+		- worked on Mohr-Coulomb

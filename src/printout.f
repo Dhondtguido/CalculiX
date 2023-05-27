@@ -28,8 +28,6 @@
 !     
       implicit none
 !     
-      logical force
-!     
       character*1 cflag
       character*6 prlab(*)
       character*8 lakon(*)
@@ -44,7 +42,7 @@
      &     inum(*),nfield,ikin,nodes,ne0,nope,mt,ielmat(mi(3),*),iface,
      &     jfaces,mortar,islavsurf(2,*),ielprop(*),nload,i,ntmat_,id,
      &     nelemload(2,*),nrhcon(*),ipobody(2,*),ibody(3,*),nbody,
-     &     nmethod,ne
+     &     nmethod,ne,iforce
 !     
       real*8 v(0:mi(2),*),t1(*),fn(0:mi(2),*),stx(6,mi(1),*),bhetot,
      &     eei(6,mi(1),*),xstate(nstate_,mi(1),*),ener(2,mi(1),*),
@@ -64,9 +62,9 @@
           if(filab(1)(5:5).ne.' ') then
             nfield=mt
             cflag=' '
-            force=.false.
+            iforce=0
             call map3dto1d2d(v,ipkon,inum,kon,lakon,nfield,nk,
-     &           ne,cflag,co,vold,force,mi,ielprop,prop)
+     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
           endif
           exit
         endif
@@ -76,9 +74,9 @@
           if(filab(2)(5:5).ne.' ') then
             nfield=1
             cflag=' '
-            force=.false.
+            iforce=0
             call map3dto1d2d(t1,ipkon,inum,kon,lakon,nfield,nk,
-     &           ne,cflag,co,vold,force,mi,ielprop,prop)
+     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
           endif
           exit
         endif
@@ -88,9 +86,9 @@
           if(filab(1)(5:5).ne.' ') then
             nfield=mt
             cflag=' '
-            force=.true.
+            iforce=1
             call map3dto1d2d(fn,ipkon,inum,kon,lakon,nfield,nk,
-     &           ne,cflag,co,vold,force,mi,ielprop,prop)
+     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
           endif
           exit
         endif

@@ -363,6 +363,11 @@ c        nset=0
      &       nmpc,ikmpc,ilmpc,labmpc,iamplitudedefault,namtot,ier)
         cflux_flag=.true.
 !     
+      elseif(textpart(1)(1:18).eq.'*CHANGECONTACTTYPE') then
+        call changecontacttypes(inpc,textpart,istep,istat,n,iline,
+     &       ipol,inl,ipoinp,inp,iperturb,ipoinpc,mortar,ier,iexpl,
+     &       nmethod)
+!     
       elseif(textpart(1)(1:15).eq.'*CHANGEFRICTION') then
         ichangefriction=1
         call changefrictions(inpc,textpart,matname,nmat,nmat_,
@@ -855,6 +860,17 @@ c
      &       istartset,iendset,set,ialset,ne,mi,ielmat,iprestr,
      &       iperturb,ier,tietol)
 !     
+      elseif(textpart(1)(1:21).eq.'*MOHRCOULOMBHARDENING') then
+        call mohrcoulombhardenings(inpc,textpart,nelcon,nmat,
+     &       plicon,nplicon,plkcon,nplkcon,iplas,iperturb,nstate_,
+     &       ncmat_,elcon,matname,irstrt,istep,istat,n,iline,ipol,
+     &       inl,ipoinp,inp,ipoinpc,ianisoplas,ier,ntmat_,npmat_)
+!     
+      elseif(textpart(1)(1:12).eq.'*MOHRCOULOMB') then
+        call mohrcoulombs(inpc,textpart,elcon,nelcon,nmat,
+     &       ntmat_,ncmat_,irstrt,istep,istat,n,iperturb,iline,ipol,
+     &       inl,ipoinp,inp,ipoinpc,ier,iplas,matname,nstate_)
+!     
       elseif(textpart(1)(1:4).eq.'*MPC') then
         call mpcs(inpc,textpart,set,istartset,iendset,
      &       ialset,nset,nset_,nalset,nalset_,ipompc,nodempc,
@@ -1235,6 +1251,14 @@ c
       endif
 !     
       enddo loop
+!     
+      if(ier.ge.1) then
+        write(*,*) '*ERROR in calinput: at least one fatal'
+        write(*,*) '       error message while reading the'
+        write(*,*) '       input deck: CalculiX stops.'
+        write(*,*)
+        call exit(201)
+      endif
 !     
 !     check whether the *END STEP card was preceded by a *STEP card    
 !     
@@ -1677,13 +1701,13 @@ c
         elseif(iperturb(1).eq.1) then
           write(*,*) '*ERROR in calinput: PERTURBATION and fluids'
           write(*,*) '       are mutually exclusive; '
-          ier=1
+          call exit(201)
         endif
       endif
 !     
-      write(*,*)
-      write(*,*) 'STEP ',istep
-      write(*,*)
+c      write(*,*)
+c      write(*,*) 'STEP ',istep
+c      write(*,*)
       if(nmethod.eq.-1) then
         write(*,*) 'Visco analysis was selected'
       elseif(nmethod.eq.0) then
@@ -1723,14 +1747,14 @@ c
       timepar(5)=tincf
 !     
       if(istep.eq.1) ncs_=lprev
-!     
-      if(ier.ge.1) then
-        write(*,*) '*ERROR in calinput: at least one fatal'
-        write(*,*) '       error message while reading the'
-        write(*,*) '       input deck: CalculiX stops.'
-        write(*,*)
-        call exit(201)
-      endif
+c!     
+c      if(ier.ge.1) then
+c        write(*,*) '*ERROR in calinput: at least one fatal'
+c        write(*,*) '       error message while reading the'
+c        write(*,*) '       input deck: CalculiX stops.'
+c        write(*,*)
+c        call exit(201)
+c      endif
 !
 !     the step number is written in the .dat-file if data output
 !     was requested or if the procedure always leads to some

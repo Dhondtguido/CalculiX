@@ -51,7 +51,7 @@
      &  kode,mortar,nasym
 !
       real*8 co(3,*),xboun(*),coefmpc(*),xforc(*),xload(2,*),p1(3),
-     &  p2(3),ad(*),au(*),bodyf(3),voldl(0:mi(2),26),clearini(3,9,*),
+     &  p2(3),ad(*),au(*),bodyf(3),voldl(0:mi(2),20),clearini(3,9,*),
      &  t0(*),t1(*),prestr(6,mi(1),*),vold(0:mi(2),*),s(60,60),
      &  ff(60),
      &  sti(6,mi(1),*),sm(60,60),stx(6,mi(1),*),adb(*),aub(*),
@@ -59,7 +59,7 @@
      &  alcon(0:6,ntmat_,*),alzero(*),orab(7,*),xbody(7,*),cgr(4,*),
      &  plicon(0:2*npmat_,ntmat_,*),plkcon(0:2*npmat_,ntmat_,*),
      &  xstiff(27,mi(1),*),om,value,dtime,ttime,time,elconloc(ncmat_),
-     &  xl(3,26),springarea(2,*),pslavsurf(3,*),reltime,pmastsurf(6,*)
+     &  xl(3,20),springarea(2,*),pslavsurf(3,*),reltime,pmastsurf(6,*)
 !
       i0=0
 !

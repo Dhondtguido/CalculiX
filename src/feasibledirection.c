@@ -66,10 +66,10 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
     *inameacti=NULL,nconstraint=0,*inum=NULL,iinc=1,noddiam=-1,ngraph=1,
     idesvar=0,inorm=0,irand=0,ishape=0,icoordinate=1,*ipkon=NULL,iobject,
     istart,*kon=NULL,*ielmat=NULL,*nodedesiinv=NULL,ifeasd=0,methodfd,
-    igeoconst=0,*nodedesipos=NULL,nkini,*ipoface=NULL,*nodface=NULL,
+    igeoconst=0,*nodedesipos=NULL,*ipoface=NULL,*nodface=NULL,
     *konfa=NULL,*ipkonfa=NULL,*iponoelfa=NULL,*inoelfa=NULL,nsurfs,ifreemax,
-    inoelsize,iregion=0,*nod2nd3rd=NULL,inode,*nodedesiboun=NULL,addout,
-    ipos,ifree;
+    inoelsize,iregion=0,*nod2nd3rd=NULL,*nodedesiboun=NULL,addout,
+    ipos,ifree,nfield,iforce;
          
   double *objnorm=NULL,*dgdxglob=NULL,*stn=NULL,ptime=0.,*gradproj=NULL,
     *extnorini=NULL,*extnor=NULL,distmin,*feasdir=NULL;
@@ -79,6 +79,7 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
 
   /* if addout=1 additional output about the feasible direction 
      is written in the frd file */
+  
   addout=0;
   
   methodfd=timepar[3];
@@ -99,7 +100,7 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
                       ielprop,prop));
 
   /***************************************************************************/
-  /* assessment of geometrical constraints                                    /
+  /* assessment of geometrical constraints                                   */
   /***************************************************************************/
   
   for(i=0;i<*nobject;i++){
@@ -157,7 +158,7 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
     for(i=0;i<*nobject;i++){
       if(strcmp1(&objectset[i*405+3],"MEMBERSIZE")==0){
         
-	printf("Computation of geometric constraint MAXMEMEBERSIZE/MINMEMBERSIZE\n\n");
+	printf(" Computation of geometric constraint MAXMEMEBERSIZE/MINMEMBERSIZE\n\n");
 	
         iobject=i+1;
         thicknessmain(co,nobject,nk,nodedesi,ndesi,objectset,set,nset,
@@ -175,7 +176,7 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
 
       }else if(strcmp1(&objectset[i*405],"PACKAGING")==0){
         
-	printf("Computation of geometric constraint PACKAGING\n\n");
+	printf(" Computation of geometric constraint PACKAGING\n\n");
 	
         iobject=i+1;
         packagingmain(co,nobject,nk,nodedesi,ndesi,objectset,set,nset,
@@ -194,7 +195,7 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
       }else if((strcmp1(&objectset[i*405],"MAXGROWTH")==0)||
                (strcmp1(&objectset[i*405],"MAXSHRINKAGE")==0)){
 
-        printf("Computation of geometric constraint MAXGROWTH/MAXSHRINKAGE\n\n");
+        printf(" Computation of geometric constraint MAXGROWTH/MAXSHRINKAGE\n\n");
       
         iobject=i+1;
         FORTRAN(maxdesvardisp,(nobject,nk,set,nset,istartset,iendset,ialset,
@@ -221,12 +222,17 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
      --> sensitivity of the objective function always at first */
   
   FORTRAN(clonesensitivities,(nobject,nk,objectset,g0,dgdxglob));
-  
-  /* min or max optimization target 
-     sensitivities always point in this driection that objective function 
-     will be maximized
-     --> target = 'MIN' --> sensitivities of the objective function will be 
-     scaled with -1 */
+
+  /* if the value of the derivative is positive, the objective function
+     increases if the thickness is increased, therefore, if the objective
+     is to be minimized the thickness has to be decreased: value should be
+     negative.
+     if the value of the derivative is negative, the objective function
+     decreases if the thickness is increased, therefore, if the objective
+     is to be minimized the thickness has to be increased: value should be
+     positive.
+     Consequently the value has to be multiplied by -1 for a MINIMIZATION
+     of the objective function */
   
   iscaleflag=3; 
   FORTRAN(scalesen,(dgdxglob,feasdir,nk,nodedesi,ndesi,objectset,&iscaleflag,
@@ -247,20 +253,22 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
   
   if(methodfd==1){
     
-    printf("Computation of feasible direction with Gradient Descent Akin method\n\n");
+    printf(" Computation of feasible direction with Gradient Descent Akin method\n\n");
+
+    // NEEDED? ALREADY DONE AT END OF SENSITIVITY.C???
     
     /* Scaling all sensitivities to unit length */
 
-    iscaleflag=1;   
+    /*    iscaleflag=1;   
     for(i=0;i<*nobject;i++){
       istart=i+1;
       FORTRAN(scalesen,(dgdxglob,feasdir,nk,nodedesi,ndesi,objectset
 			,&iscaleflag,&istart,ne2d));
-    }
+			}*/
 
     /* determining the assembled gradient vector */
     
-    printf("Assemlby of combined constraint gradient vector\n\n");
+    printf(" Assembly of combined constraint gradient vector\n\n");
     
     NNEW(nodedesiboun,ITG,*ndesi);
     FORTRAN(constassembly,(nobject,objectset,g0,ndesi,dgdxglob,nk,nodedesi,
@@ -269,12 +277,18 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
     
     /* assembly of feasible direction */
 
-    printf("Computation of feasible direction\n\n");
+    printf(" Computation of feasible direction\n\n");
     
-    FORTRAN(calcfeasibledirection_gd,(ndesi,nodedesi,dgdxglob,nactive,nobject,
+    FORTRAN(calcfeasibledirection_gd,(ndesi,nodedesi,dgdxglob,&nactive,nobject,
 				      nk,gradproj,objectset));
 
     if(addout==1){
+      if(strcmp1(&filab[4],"I")==0){
+	nfield=3;
+	iforce=0;
+	FORTRAN(map3dto1d2d,(gradproj,ipkon,inum,kon,lakon,&nfield,nk,ne,
+			     cflag,co,vold,&iforce,mi,ielprop,prop));
+      }
       ifeasd=1;            
       ++*kode;
       ipos=0;
@@ -292,7 +306,7 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
 
   }else if(methodfd==2){                                    
 
-    printf("Computation of feasible direction with Gradient Projection method\n\n");
+    printf(" Computation of feasible direction with Gradient Projection method\n\n");
     
     /* in the field "ipoacti" and the variable "nnlconst" the 
        characteristics of the N-matrix are stored:
@@ -327,11 +341,17 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
     RENEW(iconstacti,ITG,nactive);
         
     gradientprojection(nobject,objectset,dgdxglob,g0,ndesi,nodedesi,nk,
-        	       isolver,set,&nset,istartset,iendset,ialset,gradproj,
+        	       isolver,set,nset,istartset,iendset,ialset,gradproj,
 		       gradprojname,&nactive,objnorm,ipoacti,iconstacti,
 		       inameacti,&nnlconst,ne2d);	                   
 
     if(addout==1){
+      if(strcmp1(&filab[4],"I")==0){
+	nfield=3;
+	iforce=0;
+	FORTRAN(map3dto1d2d,(gradproj,ipkon,inum,kon,lakon,&nfield,nk,ne,
+			     cflag,co,vold,&iforce,mi,ielprop,prop));
+      }
       ifeasd=2;            
       ++*kode;
       ipos=0;
@@ -346,10 +366,10 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
 
 
   /***************************************************************************/
-  /*        FORWARD FILTERING OF SENSITIVITIES                                /
+  /*        FORWARD FILTERING OF SENSITIVITIES                               */
   /***************************************************************************/
 
-  printf("Forward filtering of feasible direction\n\n");
+  printf(" Forward filtering of feasible direction\n\n");
   
   /*distmin is set to 1.0e-08 --> perturabtion which reduces the
     finite difference error the most */
@@ -364,11 +384,20 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
   transitionmain(co,feasdir,nobject,nk,nodedesi,ndesi,objectset,
         	 ipkon,kon,lakon,ipoface,nodface,nodedesiinv);
   
-  printf("Normalization of forward filtered sensitivities feasdir\n\n");
+  printf(" Normalization of forward filtered sensitivities \n\n");
 
   iscaleflag=4; 
   FORTRAN(scalesen,(dgdxglob,feasdir,nk,nodedesi,ndesi,objectset,&iscaleflag,
 		    &istart,ne2d));
+
+  /* interpolation onto the 2D-nodes if appropriately selected */
+  
+  if(strcmp1(&filab[4],"I")==0){
+    nfield=2;
+    iforce=0;
+    FORTRAN(map3dto1d2d,(feasdir,ipkon,inum,kon,lakon,&nfield,nk,ne,
+			 cflag,co,vold,&iforce,mi,ielprop,prop));
+  }
 
   ifeasd=3;
   ++*kode;
@@ -377,6 +406,17 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
   	  &noddiam,description,mi,&ngraph,ne,cs,set,nset,istartset,iendset,
   	  ialset,jobnamec,output,feasdir,&ipos,gradprojname,ntrans,inotr,
   	  trab,&idesvar,orname,&icoordinate,&inorm,&irand,&ishape,&ifeasd);
+
+  /* interpolation onto the 2D-nodes if 2D-output was not requested
+     but the structure is 2D. Needed for the mesh modification input
+     deck */
+  
+  if((strcmp1(&filab[4],"I")!=0)&&(*ne2d!=0)){
+    nfield=2;
+    iforce=0;
+    FORTRAN(map3dto1d2d,(feasdir,ipkon,inum,kon,lakon,&nfield,nk,ne,
+			 cflag,co,vold,&iforce,mi,ielprop,prop));
+  }
 
   SFREE(inum);SFREE(objnorm);SFREE(ipoacti);SFREE(iconstacti);
   SFREE(nodedesiboun);

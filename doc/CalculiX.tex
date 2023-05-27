@@ -18468,6 +18468,45 @@ degree of freedom) of node 10.
 \bigskip
 Example files: oneel20cf.
 
+\subsection{\label{changecontacttype}*CHANGE CONTACT TYPE}
+
+Keyword type: step
+
+With this option one can change the contact type at the start of a
+\htmlref{*DYNAMIC}{dynamic} step from ``SURFACE TO SURFACE'`` to ``NODE TO SURFACE'' or
+``MASSLESS'' (the latter only in a \htmlref{*DYNAMIC,EXPLICIT}{dynamic}
+step). This is usually done when a dynamic calculation is performed starting
+from steady state obtained from a previous \htmlref{*STATIC}{static} step.
+
+Indeed, in a static calculation the ``SURFACE TO SURFACE'' contact type or
+``MORTAR'' contact types usually perform much better (better convergence and
+better results) than ``NODE TO SURFACE'' (``MASSLESS'' is not available in a
+static step). In a dynamic calculation performed by integration in time the
+``SURFACE TO SURFACE'' contact, however, is too slow and too detailed in
+resolution of the contact area. Here, ``NODE TO SURFACE'' and ``MASSLESS''
+perform better. Therefore, the present keyword was introduced in order to
+change the contact formulation at the start of a dynamic step.
+
+Either the parameter TO NODE TO SURFACE or TO MASSLESS is required.
+
+\bigskip
+
+First and only line:
+\begin{itemize}
+\item *CHANGE CONTACT TYPE
+\item Enter TO NODE TO SURFACE or TO MASSLESS (actually, blanks in the input
+  deck are immaterial, one might also write TONODETOSURFACE and TOMASSLESS).
+\end{itemize}
+
+\begin{verbatim}
+Example:
+
+*CHANGE CONTACT TYPE,TO MASSLESS
+\end{verbatim}
+
+\bigskip
+Example files: changecontacttype1, changecontacttype2.
+
 \subsection{\label{changefriction}*CHANGE FRICTION}
 
 Keyword type: step

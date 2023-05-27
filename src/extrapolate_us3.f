@@ -18,7 +18,7 @@
 !
       subroutine extrapolate_us3(yi,yn,ipkon,inum,kon,lakon,nfield,nk,
      &  ne,mi,ndim,orab,ielorien,co,iorienloc,cflag,
-     &  vold,force,ielmat,thicke,ielprop,prop,i)
+     &  vold,iforce,ielmat,thicke,ielprop,prop,i)
 !
 !     extrapolates field values at the integration points to the 
 !     nodes for user element i of type us3
@@ -70,7 +70,7 @@
 !                        blank: any other case
 !     vold(j,i)          value of variable j in node i at the end
 !                        of the previous iteration   
-!     force              logical variable; if true the values to
+!     iforce             binary integer; if 1 the values to
 !                        be extrapolated are force values; important for
 !                        interpolation from 3D expanded structures on the
 !                        original 1D/2D structure: forces across the
@@ -96,13 +96,11 @@
 !
       implicit none
 !
-      logical force
-!
       character*1 cflag
       character*8 lakon(*)
 !
       integer ipkon(*),inum(*),kon(*),mi(*),ne,nfield,nk,i,ndim,
-     &  iorienloc,ielorien(mi(3),*),ielmat(mi(3),*),ielprop(*)
+     &  iorienloc,ielorien(mi(3),*),ielmat(mi(3),*),ielprop(*),iforce
 !
       real*8 yi(ndim,mi(1),*),yn(nfield,*),orab(7,*),co(3,*),prop(*),
      &  vold(0:mi(2),*),thicke(mi(3),*)
