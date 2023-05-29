@@ -75,20 +75,20 @@ c         call defplas(elconloc,elas,emec,ithermal,icmd,beta,stre,
 c     &     ckl,vj,xstate,nstate_,iel,iint,mi)
          call umat_abaqusnl_total(amat,iel,iint,kode,elconloc,emec,
      &        emec0,beta,xikl,vij,xkl,vj,ithermal,t1l,dtime,time,ttime,
-     &        icmd,ielas,mi(1),nstate_,xstateini,xstate,stre,elas,
+     &        icmd,ielas,mi,nstate_,xstateini,xstate,stre,elas,
      &        iorien,pgauss,orab,istep,iinc,pnewdt,nmethod,iperturb)
       elseif((kode.eq.-51).or.(kode.eq.-52)) then
          mattyp=3
          if(iperturb(2).eq.1) then
             call incplas(elconloc,plconloc,xstate,xstateini,elas,emec,
      &           ithermal,icmd,beta,stre,vj,kode,ielas,amat,t1l,dtime,
-     &           time,ttime,iel,iint,nstate_,mi(1),eloc,pgauss,nmethod,
+     &           time,ttime,iel,iint,nstate_,mi,eloc,pgauss,nmethod,
      &           pnewdt,depvisc)
          else
             call incplas_lin(elconloc,plconloc,xstate,xstateini,elas,
      &           emec,
      &           ithermal,icmd,beta,stre,vj,kode,ielas,amat,t1l,dtime,
-     &           time,ttime,iel,iint,nstate_,mi(1),eloc,pgauss,nmethod,
+     &           time,ttime,iel,iint,nstate_,mi,eloc,pgauss,nmethod,
      &           pnewdt,depvisc)
           endif
         elseif(kode.eq.-53) then
@@ -100,7 +100,7 @@ c     &     ckl,vj,xstate,nstate_,iel,iint,mi)
           mattyp=3
          call umat_main(amat,iel,iint,kode,elconloc,emec,emec0,beta,
      &        xikl,vij,xkl,vj,ithermal,t1l,dtime,time,ttime,icmd,ielas,
-     &        mi(1),nstate_,xstateini,xstate,stre,elas,iorien,pgauss,
+     &        mi,nstate_,xstateini,xstate,stre,elas,iorien,pgauss,
      &        orab,pnewdt,istep,iinc,ipkon,nmethod,iperturb,depvisc,
      &        eloc,nlgeom_undo,physcon)
       endif
