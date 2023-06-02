@@ -55,7 +55,7 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
 		       ITG *ialset,char *jobnamec,char *output,ITG *ntrans,
 		       ITG *inotr,double *trab,char *orname,double *xdesi,
 		       double *timepar,double *coini,ITG *ikboun,ITG *nactdof,
-		       ITG *ne2d){
+		       ITG *ne2d,ITG *nkon){
                
   /* finding a feasible direction based on the sensitivity information */
   
@@ -69,13 +69,15 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
     igeoconst=0,*nodedesipos=NULL,*ipoface=NULL,*nodface=NULL,
     *konfa=NULL,*ipkonfa=NULL,*iponoelfa=NULL,*inoelfa=NULL,nsurfs,ifreemax,
     inoelsize,iregion=0,*nod2nd3rd=NULL,*nodedesiboun=NULL,addout,
-    ipos,ifree,nfield,iforce;
+    ipos,ifree,nfield,iforce,*inoel=NULL,*iponoel=NULL;
          
   double *objnorm=NULL,*dgdxglob=NULL,*stn=NULL,ptime=0.,*gradproj=NULL,
-    *extnorini=NULL,*extnor=NULL,distmin,*feasdir=NULL;
+    *extnorini=NULL,*extnor=NULL,distmin,*feasdir=NULL,*tinc;
        
   objectset=*objectsetp;dgdxglob=*dgdxglobp;ipkon=*ipkonp;lakon=*lakonp;
   kon=*konp;ielmat=*ielmatp;
+  
+  tinc=&timepar[0];
 
   /* if addout=1 additional output about the feasible direction 
      is written in the frd file */
@@ -389,6 +391,20 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
   iscaleflag=4; 
   FORTRAN(scalesen,(dgdxglob,feasdir,nk,nodedesi,ndesi,objectset,&iscaleflag,
 		    &istart,ne2d));
+
+  /* determining the elements belonging to a given node */
+  
+  NNEW(iponoel,ITG,*nk);
+  NNEW(inoel,ITG,2**nkon);
+  FORTRAN(elementpernode,(iponoel,inoel,lakon,ipkon,kon,ne));
+
+  /* writing the change in nodal coordinates to the mesh modification
+     input deck */
+  
+  FORTRAN(writeinputdeck2,(feasdir,nodedesi,ndesi,inoel,iponoel,
+			   xdesi,co,lakon,ipkon,kon,tinc,nk));
+
+  SFREE(iponoel);SFREE(inoel);
 
   /* interpolation onto the 2D-nodes if appropriately selected */
   

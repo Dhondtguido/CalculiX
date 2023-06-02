@@ -1613,7 +1613,8 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
 		       ITG *istartset,ITG *iendset,ITG *ialset,char *jobnamec,
 		       char *output,ITG *ntrans,ITG *inotr,double *trab,
 		       char *orname,double *xdesi,double *timepar,
-		       double *coini,ITG *ikboun,ITG *nactdof,ITG *ne2d);
+		       double *coini,ITG *ikboun,ITG *nactdof,ITG *ne2d,
+		       ITG *nkon);
 
 void FORTRAN(fill_neiel,(ITG *nef,ITG *ipnei,ITG *neiel,ITG *neielcp));
 
@@ -3156,19 +3157,24 @@ void FORTRAN(norm,(double *vel,double *velnorm,ITG *nef));
 void FORTRAN(normmpc,(ITG *nmpc,ITG *ipompc,ITG *nodempc,double *coefmpc,
 		      ITG *inomat,double *coefmodmpc,ITG *ikboun,ITG *nboun));
 
-void FORTRAN(normalsforequ_se,(ITG *nk,double *co,ITG *iponoelfa,
-                               ITG *inoelfa,ITG *konfa,ITG *ipkonfa,
-                               char *lakonfa,ITG *nsurfs,ITG *iponor,
-                               double *xnor,ITG *nodedesiinv,char *jobnamef,
-                               ITG *iponexp,ITG *nmpc,char *labmpc,
-                               ITG *ipompc,ITG *nodempc,ITG *ipretinfo,
-                               ITG *kon,ITG *ipkon,char *lakon,ITG *iponoel,
-                               ITG *inoel,ITG *iponor2d,ITG *knor2d,
-                               ITG *ipoface,ITG *nodeface,ITG *ne,double *x,
-			       double *y,double *z,double *xo,double *yo,
-			       double *zo,ITG *nx,ITG *ny,ITG *nz,ITG *nodes,
-			       double *dist,ITG *ne2d,ITG *nod1st,
-			       ITG *nod2nd3rd));
+void FORTRAN(writeinputdeck,(ITG *nk,double *co,ITG *iponoelfa,
+			     ITG *inoelfa,ITG *konfa,ITG *ipkonfa,
+			     char *lakonfa,ITG *nsurfs,ITG *iponor,
+			     double *xnor,ITG *nodedesiinv,char *jobnamef,
+			     ITG *iponexp,ITG *nmpc,char *labmpc,
+			     ITG *ipompc,ITG *nodempc,ITG *ipretinfo,
+			     ITG *kon,ITG *ipkon,char *lakon,ITG *iponoel,
+			     ITG *inoel,ITG *iponor2d,ITG *knor2d,
+			     ITG *ipoface,ITG *nodeface,ITG *ne,double *x,
+			     double *y,double *z,double *xo,double *yo,
+			     double *zo,ITG *nx,ITG *ny,ITG *nz,ITG *nodes,
+			     double *dist,ITG *ne2d,ITG *nod1st,
+			     ITG *nod2nd3rd,double *extnor));
+  
+void FORTRAN(writeinputdeck2,(double *feasdir,ITG *nodedesi,ITG *ndesi,
+			      ITG *inoel,ITG *iponoel,double *xdesi,double *co,
+			      char *lakon,ITG *ipkon,ITG *kon,double *tinc,
+			      ITG *nk));
 
 void FORTRAN(normalsoninterface,(ITG *istartset,ITG *iendset,
              ITG *ialset,ITG *imast,ITG *ipkon,ITG *kon,char *lakon,

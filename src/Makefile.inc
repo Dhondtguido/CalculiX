@@ -582,7 +582,8 @@ noelfiles.f \
 noelsets.f \
 nonlinmpc.f \
 normals.f \
-normalsforequ_se.f \
+writeinputdeck.f \
+writeinputdeck2.f \
 normalsoninterface.f \
 normalsonsurface_robust.f \
 normalsonsurface_se.f \

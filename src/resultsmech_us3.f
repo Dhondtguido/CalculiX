@@ -243,49 +243,49 @@
      &     Ethm(3),Ethf(3),Em(3),Ef(3),alph6(6),t0g(2,*),t1g(2,*),
      &     Dsi(2,2),Dmi(3,3),Dbi(3,3),di,dett,dettt
 !
-      nope = 3 
+      nope=3 
 !
-      Bs(:,:) = 0.d0
-      Bb(:,:) = 0.d0
-      Bm(:,:) = 0.d0
-      beta(:) = 0.d0
+      Bs(:,:)=0.d0
+      Bb(:,:)=0.d0
+      Bm(:,:)=0.d0
+      beta(:)=0.d0
 !
-      gpthick(1,1) = +1.d0
-      gpthick(2,1) =  0.d0
-      gpthick(3,1) = -1.d0
-      gpthick(1,2) = 2.d0/6.d0
-      gpthick(2,2) = 8.d0/6.d0
-      gpthick(3,2) = 2.d0/6.d0   
+      gpthick(1,1)=+1.d0
+      gpthick(2,1)= 0.d0
+      gpthick(3,1)=-1.d0
+      gpthick(1,2)=2.d0/6.d0
+      gpthick(2,2)=8.d0/6.d0
+      gpthick(3,2)=2.d0/6.d0   
 !
-      di = 1.d0/3.d0
+      di=1.d0/3.d0
 !
       indexe=ipkon(i)
 !
 ! properties of the shell section
 !
-      index = ielprop(i)
-      h = prop(index+1)
-      dett  = h/2.d0
-      dettt = h**3/8.d0
+      index=ielprop(i)
+      h=prop(index+1)
+      dett=h/2.d0
+      dettt=h**3/8.d0
 !
 ! material and orientation
 !
-      imat   = ielmat(1,i)
-      amat   = matname(imat)
+      imat=ielmat(1,i)
+      amat=matname(imat)
 !
       if(norien.gt.0) then
-        iorien = max(0,ielorien(1,i))
+        iorien=max(0,ielorien(1,i))
       else
-        iorien = 0
+        iorien=0
       endif
 !      
       if(nelcon(1,imat).lt.0) then
-        ihyper = 1
+        ihyper=1
       else
-        ihyper = 0
+        ihyper=0
       endif
 !
-      kode = nelcon(1,imat)
+      kode=nelcon(1,imat)
 !
       if(kode.eq.2) then
         mattyp=1
@@ -296,19 +296,19 @@
 !     computation of the coordinates and displacements of the local nodes
 !
 ! vl: u,v,w,rx,ry,rz
-      do k = 1,nope
-        konl(k) = kon(indexe+k)
-        do j = 1,3
-          xg(k,j)   = co(j,konl(k)) ! global coordinates element nodes
-          vl(j,k)   = v(j,konl(k)) ! uvw
-          vl(j+3,k) = v(j+3,konl(k)) ! rxyz	    
+      do k=1,nope
+        konl(k)=kon(indexe+k)
+        do j=1,3
+          xg(k,j)=co(j,konl(k)) ! global coordinates element nodes
+          vl(j,k)=v(j,konl(k)) ! uvw
+          vl(j+3,k)=v(j+3,konl(k)) ! rxyz	    
         enddo
       enddo
 !     
 !     gp temp gradient based nodal gradients 
       if(ithermal(1).ne.0) then
-        temp_grad  = (t1g(1,konl(1))+t1g(1,konl(2))+t1g(1,konl(3)))*di
-        temp_grad0 = (t0g(1,konl(1))+t0g(1,konl(2))+t0g(1,konl(3)))*di
+        temp_grad=(t1g(1,konl(1))+t1g(1,konl(2))+t1g(1,konl(3)))*di
+        temp_grad0=(t0g(1,konl(1))+t0g(1,konl(2))+t0g(1,konl(3)))*di
       endif
 !
 ! e0-frame base tm (3x3) -> tmg (18x18)
@@ -320,30 +320,30 @@
       call us3_Bs(x,Bs)         ! constant
       call us3_Bb(x(:,1),x(:,2),Bb) ! constant
 !
-      Dm(:,:) = 0.d0
-      Db(:,:) = 0.d0
-      Ds(:,:) = 0.d0
+      Dm(:,:)=0.d0
+      Db(:,:)=0.d0
+      Ds(:,:)=0.d0
 !
-      do jjj = 1,3              ! ----  start loop gauß points ----
+      do jjj=1,3              ! ----  start loop gauß points ----
 !
 ! natural coordinates z-dirc. -1,0,1
 !
         if(jjj.eq.1) then
-          aa = -0.5d0*h
+          aa=-0.5d0*h
         elseif(jjj.eq.2) then
-          aa = 0.d0
+          aa=0.d0
         else
-          aa = 0.5d0*h
+          aa=0.5d0*h
         endif
 !
         if(ithermal(1).ne.0) then
-          t0l = (t0(konl(1))+t0(konl(2))+t0(konl(3)))/3.d0
+          t0l=(t0(konl(1))+t0(konl(2))+t0(konl(3)))/3.d0
      &         +temp_grad0*aa
-          t1l = (t1(konl(1))+t1(konl(2))+t1(konl(3)))/3.d0
+          t1l=(t1(konl(1))+t1(konl(2))+t1(konl(3)))/3.d0
      &         +temp_grad*aa
         endif
 !
-        istiff = 0
+        istiff=0
         call us3_materialdata_me(elcon,nelcon,rhcon,nrhcon,alcon,
      &       nalcon,imat,amat,iorien,pgauss,orab,ntmat_,
      &       elas,rho,i,ithermal,alzero,mattyp,t0l,t1l,ihyper,
@@ -352,12 +352,12 @@
      &       xstiff,ncmat_)     
 !
         if(mattyp.eq.1) then
-          e   = elconloc(1)
-          un  = elconloc(2)
-          rho = rhcon(1,1,imat)
-          alp(1) = eth(1)       !alcon(1,1,imat)    
-          alp(2) = eth(1)       !alcon(1,1,imat)    
-          alp(3) = 0.d0 
+          e=elconloc(1)
+          un=elconloc(2)
+          rho=rhcon(1,1,imat)
+          alp(1)=eth(1)       !alcon(1,1,imat)    
+          alp(2)=eth(1)       !alcon(1,1,imat)    
+          alp(3)=0.d0 
         elseif(mattyp.eq.2) then
           write(*,*) '*ERROR in e_c3d_US3: no orthotropic material'
           write(*,*) '       calculation for this type of element'
@@ -369,76 +369,76 @@
         endif
 !
         call us3_linel_Qi(e,un,Qin,Qs) 
-        Dm = Dm + Qin*gpthick(jjj,2)*dett
-        Db = Db + Qin*((gpthick(jjj,1))**2)*gpthick(jjj,2)*dettt
-        Ds = Ds + Qs*gpthick(jjj,2)*dett 
+        Dm=Dm+Qin*gpthick(jjj,2)*dett
+        Db=Db+Qin*((gpthick(jjj,1))**2)*gpthick(jjj,2)*dettt
+        Ds=Ds+Qs*gpthick(jjj,2)*dett 
 !
 !  save elastic constants in xstff -> e_c3d_us3
 !
 ! material data; for linear elastic materials
 ! this includes the calculation of the stiffness
 ! matrix 
-        kode = 2
+        kode=2
         call linel(kode,mattyp,beta,eme,stre,elas,elconloc,
      &       iorien,orab,pgauss)
         do m1=1,21
-          xstiff(m1,jjj,i) = elas(m1) ! elas for each gp saved in xstiff    
+          xstiff(m1,jjj,i)=elas(m1) ! elas for each gp saved in xstiff    
         enddo
 !
         call bm_ANDES(x,Bm,Qin,h,di,di)
 !
 ! Total strains
 !
-        Ys  = matmul(Bs,ushell)
-        Em  = matmul(Bm,ushell)
-        Ef  = aa*(matmul(Bb,ushell))
-        Emf = Em + Ef
+        Ys=matmul(Bs,ushell)
+        Em=matmul(Bm,ushell)
+        Ef=aa*(matmul(Bb,ushell))
+        Emf=Em+Ef
 !
 ! -> eei total strains out
 !
         if(iout.gt.0) then 
-          eei(1,jjj,i)  = Emf(1)
-          eei(2,jjj,i) = Emf(2)
-          eei(3,jjj,i) = 0.d0
-          eei(4,jjj,i) = Emf(3)
-          eei(5,jjj,i) = Ys(2)
-          eei(6,jjj,i) = Ys(1) 
+          eei(1,jjj,i)=Emf(1)
+          eei(2,jjj,i)=Emf(2)
+          eei(3,jjj,i)=0.d0
+          eei(4,jjj,i)=Emf(3)
+          eei(5,jjj,i)=Ys(2)
+          eei(6,jjj,i)=Ys(1) 
         endif   
 !
         if(ithermal(1).ne.0) then
-          t0l = (t0(konl(1))+t0(konl(2))+t0(konl(3)))/3.d0+temp_grad0*aa
-          t1l = (t1(konl(1))+t1(konl(2))+t1(konl(3)))/3.d0+temp_grad*aa
+          t0l=(t0(konl(1))+t0(konl(2))+t0(konl(3)))/3.d0+temp_grad0*aa
+          t1l=(t1(konl(1))+t1(konl(2))+t1(konl(3)))/3.d0+temp_grad*aa
 !
-          Ethm = alp*(t1l-t0l)  ! mem
-          Ethf = alp*(temp_grad-temp_grad0)*aa ! bend.
-          Emf = Emf-(Ethf+Ethm) 
+          Ethm=alp*(t1l-t0l)  ! mem
+          Ethf=alp*(temp_grad-temp_grad0)*aa ! bend.
+          Emf=Emf-(Ethf+Ethm) 
         endif
 !
 ! mechanical strains
 !
-        eme(1,jjj,i) = Emf(1)
-        eme(2,jjj,i) = Emf(2)
-        eme(3,jjj,i) = 0.d0
-        eme(4,jjj,i) = Emf(3)
-        eme(5,jjj,i) = Ys(2)
-        eme(6,jjj,i) = Ys(1)        
+        eme(1,jjj,i)=Emf(1)
+        eme(2,jjj,i)=Emf(2)
+        eme(3,jjj,i)=0.d0
+        eme(4,jjj,i)=Emf(3)
+        eme(5,jjj,i)=Ys(2)
+        eme(6,jjj,i)=Ys(1)        
 !
-        Smf = matmul(Qin,Emf) 
-        tau = matmul(Qs,Ys)
+        Smf=matmul(Qin,Emf) 
+        tau=matmul(Qs,Ys)
 !
-        stx(1,jjj,i) = Smf(1)   ! sxx
-        stx(2,jjj,i) = Smf(2)   ! syy
-        stx(3,jjj,i) = 0.d0     ! szz
-        stx(4,jjj,i) = Smf(3)   ! txy
-        stx(5,jjj,i) = tau(1)   ! tyz
-        stx(6,jjj,i) = tau(2)   ! txz
+        stx(1,jjj,i)=Smf(1)   ! sxx
+        stx(2,jjj,i)=Smf(2)   ! syy
+        stx(3,jjj,i)=0.d0     ! szz
+        stx(4,jjj,i)=Smf(3)   ! txy
+        stx(5,jjj,i)=tau(1)   ! tyz
+        stx(6,jjj,i)=tau(2)   ! txz
 !
-        stre(1) = Smf(1)        ! sxx
-        stre(2) = Smf(2)        ! syy
-        stre(3) = 0.d0          ! szz
-        stre(4) = Smf(3)        ! txy
-        stre(5) = tau(1)        ! tyz
-        stre(6) = tau(2)        ! txz
+        stre(1)=Smf(1)        ! sxx
+        stre(2)=Smf(2)        ! syy
+        stre(3)=0.d0          ! szz
+        stre(4)=Smf(3)        ! txy
+        stre(5)=tau(1)        ! tyz
+        stre(6)=tau(2)        ! txz
 !
       enddo                     ! ----  end loop gauß points ----
 !
@@ -447,12 +447,12 @@
       if(ithermal(1).ne.0) then
 !
         call us3_ae(x,Ae)       ! element area
-        ftherm(:) = 0.d0
+        ftherm(:)=0.d0
 !
-        do k = 1,3
+        do k=1,3
 !
-          t0l = ((t0(1)+t0(2)+t0(3))/3.d0) !+temp_grad0*0.5*h*gpthick(k,1)
-          t1l = ((t1(1)+t1(2)+t1(3))/3.d0) !+temp_grad*0.5*h*gpthick(k,1)
+          t0l=((t0(1)+t0(2)+t0(3))/3.d0) !+temp_grad0*0.5*h*gpthick(k,1)
+          t1l=((t1(1)+t1(2)+t1(3))/3.d0) !+temp_grad*0.5*h*gpthick(k,1)
 !
           istiff=1
           call us3_materialdata_me(elcon,nelcon,rhcon,nrhcon,alcon,
@@ -462,12 +462,12 @@
      &         nplicon,plkcon,nplkcon,npmat_,
      &         plconloc,mi(1),dtime,k,
      &         xstiff,ncmat_)
-          e     = elconloc(1)
-          un    = elconloc(2)
-          rho   = rhcon(1,1,imat)        
-          alp(1) = eth(1)       !alcon(1,1,imat)    
-          alp(2) = eth(2)       !alcon(1,1,imat)    
-          alp(3) = 0.d0 
+          e=elconloc(1)
+          un=elconloc(2)
+          rho=rhcon(1,1,imat)        
+          alp(1)=eth(1)       !alcon(1,1,imat)    
+          alp(2)=eth(2)       !alcon(1,1,imat)    
+          alp(3)=0.d0 
 !
           call us3_linel_Qi(e,un,Qin,Qs)
 !
@@ -477,17 +477,11 @@
      &         (temp_grad-temp_grad0)*Ae*(gpthick(k,1)**2)*dettt*
      &         gpthick(k,2)
         enddo
-!     t0l = ((t0(1)-t0(2)-t0(3))/3.d0)!+temp_grad0*0.5*h*g_p(k,1)
-!     t1l = ((t1(1)+t1(2)+t1(3))/3.d0)!+temp_grad*0.5*h*g_p(k,1)
-!     ftherm=ftherm-matmul(matmul(transpose(Bm),Dm),alp)
-!     &     *(t1l-t0l)*Ae
-!     ftherm=ftherm-matmul(matmul(transpose(Bb),Db)
-!     &     ,alp)*(temp_grad-temp_grad0)*Ae*h
-        do k = 1,nope
-          konl(k) = kon(indexe+k)
-          do j = 1,3
-            fn(j,konl(k))   = fn(j,konl(k))  +ftherm(j+(k-1)*6) ! f_th
-            fn(j+3,konl(k)) = fn(j+3,konl(k))+ftherm(j+3+(k-1)*6) ! r_th	    
+        do k=1,nope
+          konl(k)=kon(indexe+k)
+          do j=1,3
+            fn(j,konl(k))=fn(j,konl(k))+ftherm(j+(k-1)*6) ! f_th
+            fn(j+3,konl(k))=fn(j+3,konl(k))+ftherm(j+3+(k-1)*6) ! r_th	    
           enddo         
         enddo
       endif       
@@ -501,13 +495,13 @@
         call us3_Kp(x,Db,Ds,Kp) ! plate part (CS-DSG) - in e0-frame
         call us3_Km(x,Km,Dm/h,h) ! membrane part (ANDES) - in e0-frame
 !
-        Kshell = matmul(matmul(transpose(tmg),(Km+Kp)),tmg)      
-        fintg  = matmul(Kshell,ueg)
-        do k = 1,nope
-          konl(k) = kon(indexe+k)
-          do j = 1,3
-            fn(j,konl(k))   = fn(j,konl(k))  +fintg(j+(k-1)*6) ! fi
-            fn(j+3,konl(k)) = fn(j+3,konl(k))+fintg(j+3+(k-1)*6) ! ri	    
+        Kshell=matmul(matmul(transpose(tmg),(Km+Kp)),tmg)      
+        fintg=matmul(Kshell,ueg)
+        do k=1,nope
+          konl(k)=kon(indexe+k)
+          do j=1,3
+            fn(j,konl(k))=fn(j,konl(k))+fintg(j+(k-1)*6) ! fi
+            fn(j+3,konl(k))=fn(j+3,konl(k))+fintg(j+3+(k-1)*6) ! ri	    
           enddo         
         enddo
       endif
