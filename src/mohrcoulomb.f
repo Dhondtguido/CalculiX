@@ -226,7 +226,7 @@
      &     s1xr6(2)*(sb(2)-sa)+
      &     s1xr6(3)*(sb(3)-sa)
 !     
-      if((ps1r1.le.0.d0).and.(ps1r6.ge.0.d0)) then
+      if((ps1r1.ge.0.d0).and.(ps1r6.le.0.d0)) then
         iregion=1
       else
 !     
@@ -251,7 +251,7 @@
         ps1s2=s1xs2(1)*(sb(1)-sa)+
      &       s1xs2(2)*(sb(2)-sa)+
      &       s1xs2(3)*(sb(3)-sa)
-        if((ps1r1.ge.0.d0).and.(ps1s2.le.0.d0)) then
+        if((ps1r1.le.0.d0).and.(ps1s2.le.0.d0)) then
           iregion=2
         else
 !     
@@ -276,7 +276,7 @@
           ps6s1=s6xs1(1)*(sb(1)-sa)+
      &         s6xs1(2)*(sb(2)-sa)+
      &         s6xs1(3)*(sb(3)-sa)
-          if((ps1r6.le.0.d0).and.(ps6s1.le.0.d0)) then
+          if((ps1r6.ge.0.d0).and.(ps6s1.le.0.d0)) then
             iregion=3
           else
             iregion=4
@@ -804,7 +804,7 @@
       t(3,2)=z(2,3)*z(2,3)
       t(3,3)=z(3,3)*z(3,3)
       t(3,4)=z(1,3)*z(2,3)
-      t(3,5)=z(3,2)*z(1,2)
+      t(3,5)=z(3,3)*z(1,3)
       t(3,6)=z(2,3)*z(3,3)
       t(4,1)=2.d0*z(1,1)*z(1,2)
       t(4,2)=2.d0*z(2,1)*z(2,2)
@@ -834,49 +834,59 @@
         enddo
       enddo
 !     
+      if(icmd.ne.3) then
+!     
 !     transforming the stiffness matrix into the global system
 !     
-      do i=1,6
-        do j=1,6
-          dum(i,j)=0.d0
-          do k=1,6
-            dum(i,j)=dum(i,j)+stiff(i,k)*t(j,k)
+        do i=1,6
+          do j=1,6
+            dum(i,j)=0.d0
+            do k=1,6
+              dum(i,j)=dum(i,j)+stiff(i,k)*t(j,k)
+            enddo
           enddo
         enddo
-      enddo
 !     
-      do i=1,6
-        do j=1,6
-          stiff(i,j)=0.d0
-          do k=1,6
-            stiff(i,j)=stiff(i,j)+t(i,k)*dum(k,j)
+        do i=1,6
+          do j=1,6
+            stiff(i,j)=0.d0
+            do k=1,6
+              stiff(i,j)=stiff(i,j)+t(i,k)*dum(k,j)
+            enddo
           enddo
         enddo
-      enddo
 !     
 !     symmetrizing the matrix
 !     
-      elas(1)=stiff(1,1)
-      elas(2)=(stiff(1,2)+stiff(2,1))/2.d0
-      elas(3)=stiff(2,2)
-      elas(4)=(stiff(1,3)+stiff(3,1))/2.d0
-      elas(5)=(stiff(2,3)+stiff(3,2))/2.d0
-      elas(6)=stiff(3,3)
-      elas(7)=(stiff(1,4)+stiff(4,1))/2.d0
-      elas(8)=(stiff(2,4)+stiff(4,2))/2.d0
-      elas(9)=(stiff(3,4)+stiff(4,3))/2.d0
-      elas(10)=stiff(4,4)
-      elas(11)=(stiff(1,5)+stiff(5,1))/2.d0
-      elas(12)=(stiff(2,5)+stiff(5,2))/2.d0
-      elas(13)=(stiff(3,5)+stiff(5,3))/2.d0
-      elas(14)=(stiff(4,5)+stiff(5,4))/2.d0
-      elas(15)=stiff(5,5)
-      elas(16)=(stiff(1,6)+stiff(6,1))/2.d0
-      elas(17)=(stiff(2,6)+stiff(6,2))/2.d0
-      elas(18)=(stiff(3,6)+stiff(6,3))/2.d0
-      elas(19)=(stiff(4,6)+stiff(6,4))/2.d0
-      elas(20)=(stiff(5,6)+stiff(6,5))/2.d0
-      elas(21)=stiff(6,6)
+        elas(1)=stiff(1,1)
+        elas(2)=(stiff(1,2)+stiff(2,1))/2.d0
+        elas(3)=stiff(2,2)
+        elas(4)=(stiff(1,3)+stiff(3,1))/2.d0
+        elas(5)=(stiff(2,3)+stiff(3,2))/2.d0
+        elas(6)=stiff(3,3)
+        elas(7)=(stiff(1,4)+stiff(4,1))/2.d0
+        elas(8)=(stiff(2,4)+stiff(4,2))/2.d0
+        elas(9)=(stiff(3,4)+stiff(4,3))/2.d0
+        elas(10)=stiff(4,4)
+        elas(11)=(stiff(1,5)+stiff(5,1))/2.d0
+        elas(12)=(stiff(2,5)+stiff(5,2))/2.d0
+        elas(13)=(stiff(3,5)+stiff(5,3))/2.d0
+        elas(14)=(stiff(4,5)+stiff(5,4))/2.d0
+        elas(15)=stiff(5,5)
+        elas(16)=(stiff(1,6)+stiff(6,1))/2.d0
+        elas(17)=(stiff(2,6)+stiff(6,2))/2.d0
+        elas(18)=(stiff(3,6)+stiff(6,3))/2.d0
+        elas(19)=(stiff(4,6)+stiff(6,4))/2.d0
+        elas(20)=(stiff(5,6)+stiff(6,5))/2.d0
+        elas(21)=stiff(6,6)
+      endif
+!     
+!     updating the plastic fields
+!     
+      do i=1,6
+        xstate(1+i,iint,iel)=epl(i)
+      enddo
+      xstate(1,iint,iel)=ep
 !     
       return
       end

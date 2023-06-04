@@ -5180,6 +5180,9 @@ Dec 2002        - started to work on single crystal plasticity
                   element)
 		- worked on Mohr-Coulomb
 
- 2 june 2023    - made a correction in changekon.f (included newly
+ 2 June 2023    - made a correction in changekon.f (included newly
                   defined elements)
                 - worked on 2D feasible direction
+
+ 4 June 2023    - made a correction in the transformation matrix in
+                  mohrcoulomb.f
