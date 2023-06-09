@@ -1,0 +1,155 @@
+!
+!     CalculiX - A 3-dimensional finite element program
+!              Copyright (C) 1998-2015 Guido Dhondt
+!
+!     This program is free software; you can redistribute it and/or
+!     modify it under the terms of the GNU General Public License as
+!     published by the Free Software Foundation(version 2);
+!     
+!
+!     This program is distributed in the hope that it will be useful,
+!     but WITHOUT ANY WARRANTY; without even the implied warranty of 
+!     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+!     GNU General Public License for more details.
+!
+!     You should have received a copy of the GNU General Public License
+!     along with this program; if not, write to the Free Software
+!     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+!
+      subroutine matrixassembles(textpart,n,iuel,nuel_,inpc,ipoinpc,
+     &     iline,ier,ipoinp,inp,inl,ipol,lakon,ipkon,kon,nkon,ne,ne_,
+     &     ielmat,mi,matname,nmat,nmat_)
+!     
+!     reading the input deck: *MATRIX ASSEMBLE: 
+!     creating a user element
+!     1) creating the name
+!     2) storing the topology in kon(*)
+!     
+      implicit none
+!     
+      character*1 inpc(*)
+      character*8 lakon(*),label
+      character*80 matname(*),filestiff,filemass
+      character*132 textpart(16)
+!     
+      integer n,iuel(4,*),nuel_,i,j,k,l,istat,number,ipoinpc(0:*),iline,
+     &     four,nodes,intpoints,id,ier,key,ipoinp(2,*),inp(3,*),
+     &     inl,ipol,node,ipkon(*),kon(*),ne,ne_,nkon,indexe,mi(*),
+     &     ielmat(mi(3),*),ndof,nmat,nmat_,nope
+!     
+      four=4
+!     
+      do i=2,n
+        if(textpart(i)(1:5).eq.'NAME=') then
+          number=ichar(textpart(i)(6:6))*256**3+
+     &         ichar(textpart(i)(7:7))*256**2+
+     &         ichar(textpart(i)(8:8))*256+
+     &         ichar(textpart(i)(9:9))
+          label(1:1)='U'
+          label(2:8)=textpart(i)(7:13)
+        elseif(textpart(i)(1:10).eq.'STIFFNESS=') then
+          filestiff(1:80)=textpart(i)(11:90)
+          loop1: do j=1,80
+            if(filestiff(j:j).eq.'"') then
+              do k=j+1,80
+                if(filestiff(k:k).eq.'"') then
+                  do l=k-1,80
+                    filestiff(l:l)=' '
+                    exit loop1
+                  enddo
+                endif
+                filestiff(k-1:k-1)=filestiff(k:k)
+              enddo
+              filestiff(80:80)=' '
+            endif
+          enddo loop1
+        elseif(textpart(i)(1:5).eq.'MASS=') then
+          filemass(1:80)=textpart(i)(6:85)
+          loop2: do j=1,80
+            if(filemass(j:j).eq.'"') then
+              do k=j+1,80
+                if(filemass(k:k).eq.'"') then
+                  do l=k-1,80
+                    filemass(l:l)=' '
+                    exit loop2
+                  enddo
+                endif
+                filemass(k-1:k-1)=filemass(k:k)
+              enddo
+              filemass(80:80)=' '
+            endif
+          enddo loop2
+        endif
+      enddo
+!     
+!     determine the number of nodes in the stiffness matrix
+!     
+      call nidentk(iuel,number,nuel_,id,four)
+      intpoints=iuel(2,id)
+      ndof=iuel(3,id)
+      nope=iuel(4,id)
+      write(label(6:6),'(a1)') char(intpoints)
+      write(label(7:7),'(a1)') char(ndof)
+      write(label(8:8),'(a1)') char(nope)
+!
+!     new element
+!
+      ne=ne+1
+      if(ne.gt.ne_) then
+        write(*,*) '*ERROR reading *ELEMENT: increase ne_'
+        call exit(201)
+      endif
+      ipkon(i)=nkon
+      lakon(i)=label
+      indexe=nkon
+!
+      nkon=nkon+nope
+!
+      open(20,file=filestiff,status='old')
+      nodes=0
+      do
+        read(20,*,end=1) node
+        call nident(kon(indexe+1),node,nodes,id)
+        if(id.gt.0) then
+          if(kon(indexe+id).eq.node) cycle
+        endif
+        do j=nodes,id+2,-1
+          kon(indexe+j)=kon(indexe+j-1)
+        enddo
+        kon(indexe+id+1)=node
+      enddo
+ 1    close(20)
+!
+!     storing the stiffness file name and mass file name as
+!     material names
+!
+      nmat=nmat+1
+      if(nmat.gt.nmat_) then
+        write(*,*) '*ERROR reading *MATRIX ASSEMBLE: increase nmat_'
+        ier=1
+        return
+      endif
+      matname(nmat)=filestiff
+      ielmat(1,ne)=nmat
+!      
+      nmat=nmat+1
+      if(nmat.gt.nmat_) then
+        write(*,*) '*ERROR reading *MATRIX ASSEMBLE: increase nmat_'
+        ier=1
+        return
+      endif
+      matname(nmat)=filemass
+      ielmat(2,ne)=nmat
+!
+      call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
+     &     ipoinp,inp,ipoinpc)
+!     
+      return
+      end
+
+
+
+
+
+
+

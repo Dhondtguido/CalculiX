@@ -524,6 +524,8 @@ materialdata_sp.f \
 materialdata_tg.f \
 materialdata_th.f \
 materials.f \
+matrix2userelem.f \
+matrixassembles.f \
 matvec.f \
 matvec_struct.f \
 maxdesvardisp.f \
@@ -731,6 +733,7 @@ resultsini_em.f \
 resultsini_mortar.f \
 resultsk.f \
 resultsmech.f \
+resultsmech_matrix.f \
 resultsmech_se.f \
 resultsmech_u1.f \
 resultsmech_us3.f \

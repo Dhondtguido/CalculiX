@@ -334,6 +334,11 @@ void readinput(char *jobnamec,char **inpcp,ITG *nline,ITG *nset,
         FORTRAN(keystart,(&ifreeinp,ipoinp,inp,"MATERIAL",
                           nline,&ikey));
       }
+      else if(strcmp1(&buff[0],"*MATRIXASSEMBLE")==0){
+        FORTRAN(keystart,(&ifreeinp,ipoinp,inp,"REST",
+                          nline,&ikey));
+	(*nuel)++;
+      }
       else if((strcmp1(&buff[0],"*NODE")==0)&&
 	      (strcmp1(&buff[0],"*NODEPRINT")!=0)&&
 	      (strcmp1(&buff[0],"*NODEOUTPUT")!=0)&&
