@@ -354,7 +354,7 @@
 !     write the coordinates in file "jobname.equ"
 !
       write(20,102)
- 102  format('*NODE')
+ 102  format('*NODE,NSET=nall')
       do i=1,nk
         if(ipretinfo(i).ne.i) cycle
         if(ne2d.ne.0) then
@@ -665,8 +665,8 @@ c        write(*,*) i,dist(i),distmax
           if(nexp.ge.3) then
             if(nodedesiinv(i).eq.0) then
               out=.true.
-c            elseif(extnor(j,i).le.1.d-10) then
-c              out=.true.
+            elseif(extnor(j,i).le.1.d-10) then
+              out=.true.
             else
               out=.false.
             endif
@@ -737,11 +737,11 @@ c              out=.true.
 !
             if(nodedesiinv(i).eq.0) then
               out=.true.
-c            elseif(extnor(inor1(1),i)*xnorloc(inor1(1))+
-c     &             extnor(inor1(2),i)*xnorloc(inor1(2))+
-c     &             extnor(inor1(3),i)*xnorloc(inor1(3))
-c     &             .le.1.d-10) then
-c              out=.true.
+            elseif(extnor(inor1(1),i)*xnorloc(inor1(1))+
+     &             extnor(inor1(2),i)*xnorloc(inor1(2))+
+     &             extnor(inor1(3),i)*xnorloc(inor1(3))
+     &             .le.1.d-10) then
+              out=.true.
             else
               out=.false.
             endif
@@ -754,11 +754,11 @@ c              out=.true.
 !     
             if(nodedesiinv(i).eq.0) then
               out=.true.
-c            elseif(extnor(inor2(1)-3,i)*xnorloc(inor2(1))+
-c     &             extnor(inor2(2)-3,i)*xnorloc(inor2(2))+
-c     &             extnor(inor2(3)-3,i)*xnorloc(inor2(3))
-c     &             .le.1.d-10) then
-c              out=.true.
+            elseif(extnor(inor2(1)-3,i)*xnorloc(inor2(1))+
+     &             extnor(inor2(2)-3,i)*xnorloc(inor2(2))+
+     &             extnor(inor2(3)-3,i)*xnorloc(inor2(3))
+     &             .le.1.d-10) then
+              out=.true.
             else
               out=.false.
             endif

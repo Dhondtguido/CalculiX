@@ -291,7 +291,7 @@
           endif
         endif
       endif
-      write(*,*) 'mohrcoulomb ',iel,iint,iregion
+c      write(*,*) 'mohrcoulomb ',iel,iint,iregion
 !     
 !     calculate the change in lambda
 !     

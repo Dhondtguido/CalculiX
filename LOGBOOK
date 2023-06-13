@@ -5186,3 +5186,7 @@ Dec 2002        - started to work on single crystal plasticity
 
  4 June 2023    - made a correction in the transformation matrix in
                   mohrcoulomb.f
+
+ 13 June 2023   - if at least one initial temperature was defined, the initial
+                  temperatures AND the temperature in all nodes used by
+		  elements must be defined.
