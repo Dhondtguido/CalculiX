@@ -43,7 +43,7 @@
 !     
       character*8 lakon(*)
       character*20 sideload(*)
-      character*80 matname(*)
+      character*80 matname(*),filestiff
       character*81 tieset(3,*),set(*)
 !     
       integer kon(*),nodeboun(*),ndirboun(*),ipompc(*),nodempc(3,*),
@@ -62,7 +62,7 @@
      &     nea,neb,kscale,iponoel(*),inoel(2,*),network,ndof,
      &     nset,islavelinv(*),jqtloc(*),irowtloc(*),ii,jqtloc1(21),
      &     irowtloc1(96),i1,j1,j2,konl(26),mortartrafoflag,ikmpc(*),
-     &     mscalmethod,kk
+     &     mscalmethod,kk,imat
 !     
       real*8 co(3,*),xboun(*),coefmpc(*),xforc(*),xload(2,*),p1(3),
      &     p2(3),ad(*),au(*),bodyf(3),fext(*),xloadold(2,*),reltime,
@@ -285,7 +285,25 @@ c     mortar end
      &           ne0,ipkon,thicke,
      &           integerglob,doubleglob,tieset,istartset,
      &           iendset,ialset,ntie,nasym,
-     &           ielprop,prop)
+     &           ielprop,prop,nope)
+          endif
+!
+!         treatment of substructure (superelement)
+!
+          if(nope.eq.-1) then
+            nope=ichar(lakon(i)(8:8))
+            imat=ielmat(1,i)
+            filestiff=matname(imat)
+            open(20,file=filestiff,status='old')
+            do
+              read(20,*,end=1) node1,k,node2,m,value
+              call nident(kon(indexe+1),node1,nope,id1)
+              jj=(id1-1)*3+idof1
+              call nident(kon(indexe+1),node2,nope,id2)
+              ll=(id2-1)*3+idof2
+            enddo
+ 1          close(20)
+            return
           endif
 !     
           do jj=1,ndof*nope

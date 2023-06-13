@@ -27,8 +27,6 @@
 !
       real*8 ad(*),au(*),value
 !
-!
-!
       if(i.eq.j) then
          if(i0.eq.i1) then
             ad(i)=ad(i)+value

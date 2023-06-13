@@ -501,6 +501,7 @@ mafillsmcsse.f \
 mafillsmduds.f \
 mafillsmforc.f \
 mafillsmse.f \
+mafillsmstiff.f \
 mafillv1rhs.f \
 mafillv2rhs.f \
 mafillvlhs.f \

@@ -32,7 +32,8 @@
      &     pmastsurf,mortar,clearini,ielprop,prop,ne0,nea,neb,
      &     freq,ndamp,dacon,set,nset)
 !     
-!     filling the stiffness matrix in spare matrix format (sm)
+!     filling the damping matrix in spare matrix format for
+!     steady state calculations(dmss)
 !     
       implicit none
 !     
@@ -306,7 +307,7 @@ c     Bernhardi end
      &           ne0,ipkon,thicke,
      &           integerglob,doubleglob,tieset,istartset,
      &           iendset,ialset,ntie,nasym,
-     &           ielprop,prop)
+     &           ielprop,prop,nope)
           endif
           do jj=1,ndof*nope
             do ii=1,jj
