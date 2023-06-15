@@ -16,11 +16,12 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
-      subroutine mafillsmstiff(ipompc,nodempc,coefmpc,nmpc,ad,au,
-     &     nactdof,jq,irow,neq,nmethod,mi,rhsi,
+      subroutine mafillsmstiff(ipompc,nodempc,coefmpc,nmpc,
+     &     ad,au,nactdof,jq,irow,neq,nmethod,mi,rhsi,
      &     k,m,node1,node2,jj,ll,val)
 !     
 !     filling the stiffness matrix in spare matrix format (sm)
+!     for a substructure (superelement)
 !     
       implicit none
 !     

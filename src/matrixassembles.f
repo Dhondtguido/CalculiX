@@ -18,7 +18,7 @@
 !
       subroutine matrixassembles(textpart,n,iuel,nuel_,inpc,ipoinpc,
      &     iline,ier,ipoinp,inp,inl,ipol,lakon,ipkon,kon,nkon,ne,ne_,
-     &     ielmat,mi,matname,nmat,nmat_)
+     &     ielmat,mi,matname,nmat,nmat_,irstrt,istep)
 !     
 !     reading the input deck: *MATRIX ASSEMBLE: 
 !     creating a user element
@@ -26,6 +26,8 @@
 !     2) storing the topology in kon(*)
 !     
       implicit none
+!
+      logical stiffness,mass
 !     
       character*1 inpc(*)
       character*8 lakon(*),label
@@ -35,9 +37,19 @@
       integer n,iuel(4,*),nuel_,i,j,k,l,istat,number,ipoinpc(0:*),iline,
      &     four,nodes,intpoints,id,ier,key,ipoinp(2,*),inp(3,*),
      &     inl,ipol,node,ipkon(*),kon(*),ne,ne_,nkon,indexe,mi(*),
-     &     ielmat(mi(3),*),ndof,nmat,nmat_,nope
+     &     ielmat(mi(3),*),ndof,nmat,nmat_,nope,irstrt(*),istep
+!
+      if((istep.gt.0).and.(irstrt(1).ge.0)) then
+         write(*,*) 
+     &       '*ERROR reading *MATRIX ASSEMBLE: *MATRIX ASSEMBLE should'
+         write(*,*) '       be placed before all step definitions'
+         ier=1
+         return
+      endif
 !     
       four=4
+      stiffness=.false.
+      mass=.false.
 !     
       do i=2,n
         if(textpart(i)(1:5).eq.'NAME=') then
@@ -63,6 +75,7 @@
               filestiff(80:80)=' '
             endif
           enddo loop1
+          stiffness=.true.
         elseif(textpart(i)(1:5).eq.'MASS=') then
           filemass(1:80)=textpart(i)(6:85)
           loop2: do j=1,80
@@ -79,8 +92,17 @@
               filemass(80:80)=' '
             endif
           enddo loop2
+          mass=.true.
         endif
       enddo
+!
+      if(.not.stiffness) then
+        write(*,*) '*ERROR reading *MATRIX ASSEMBLE: no stiffness'
+        write(*,*) '       matrix given'
+        call inputerror(inpc,ipoinpc,iline,
+     &       "*MATRIX ASSEMBLE%",ier)
+        return
+      endif
 !     
 !     determine the number of nodes in the stiffness matrix
 !     
@@ -131,15 +153,19 @@
       endif
       matname(nmat)=filestiff
       ielmat(1,ne)=nmat
-!      
-      nmat=nmat+1
-      if(nmat.gt.nmat_) then
-        write(*,*) '*ERROR reading *MATRIX ASSEMBLE: increase nmat_'
-        ier=1
-        return
+!
+      if(mass) then
+        nmat=nmat+1
+        if(nmat.gt.nmat_) then
+          write(*,*) '*ERROR reading *MATRIX ASSEMBLE: increase nmat_'
+          ier=1
+          return
+        endif
+        matname(nmat)=filemass
+        ielmat(2,ne)=nmat
+      else
+        ielmat(2,ne)=0
       endif
-      matname(nmat)=filemass
-      ielmat(2,ne)=nmat
 !
       call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &     ipoinp,inp,ipoinpc)

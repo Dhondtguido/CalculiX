@@ -43,7 +43,7 @@
 !     
       character*8 lakon(*)
       character*20 sideload(*)
-      character*80 matname(*),filestiff
+      character*80 matname(*),filestiff,filemass
       character*81 tieset(3,*),set(*)
 !     
       integer kon(*),nodeboun(*),ndirboun(*),ipompc(*),nodempc(3,*),
@@ -76,7 +76,7 @@
      &     plicon(0:2*npmat_,ntmat_,*),plkcon(0:2*npmat_,ntmat_,*),
      &     xstiff(27,mi(1),*),veold(0:mi(2),*),om,valu2,value,dtime,
      &     time,thicke(mi(3),*),doubleglob(*),clearini(3,9,*),ttime,
-     &     pslavsurf(3,*),pmastsurf(6,*),smscale(*),autloc(*),
+     &     pslavsurf(3,*),pmastsurf(6,*),smscale(*),autloc(*),val,
      &     autloc1(96)
 !     
       kflag=2
@@ -296,13 +296,33 @@ c     mortar end
             filestiff=matname(imat)
             open(20,file=filestiff,status='old')
             do
-              read(20,*,end=1) node1,k,node2,m,value
+              read(20,*,end=1) node1,k,node2,m,val
               call nident(kon(indexe+1),node1,nope,id1)
               jj=(id1-1)*3+idof1
               call nident(kon(indexe+1),node2,nope,id2)
               ll=(id2-1)*3+idof2
+              call mafillsmstiff(ipompc,nodempc,coefmpc,nmpc,
+     &             ad,au,nactdof,jq,irow,neq,nmethod,mi,rhsi,
+     &             k,m,node1,node2,jj,ll,val)
             enddo
  1          close(20)
+!     
+            imat=ielmat(2,i)
+            if(imat.ne.0) then
+              filemass=matname(imat)
+              open(20,file=filemass,status='old')
+              do
+                read(20,*,end=2) node1,k,node2,m,val
+                call nident(kon(indexe+1),node1,nope,id1)
+                jj=(id1-1)*3+idof1
+                call nident(kon(indexe+1),node2,nope,id2)
+                ll=(id2-1)*3+idof2
+                call mafillsmstiff(ipompc,nodempc,coefmpc,nmpc,
+     &               adb,aub,nactdof,jq,irow,neq,nmethod,mi,rhsi,
+     &               k,m,node1,node2,jj,ll,val)
+              enddo
+ 2            close(20)
+            endif
             return
           endif
 !     
