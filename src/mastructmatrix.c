@@ -28,7 +28,7 @@
 void mastructmatrix(ITG *ipompc,ITG *nodempc,ITG *nmpc,ITG *nactdof,
 		    ITG *jq,ITG **mast1p,ITG *neq,ITG *ipointer, ITG *nzs_, 
 		    ITG *nmethod,ITG *iperturb,ITG *mi,ITG **nextp,
-		    ITG *node1,ITG *node2,ITG *k,ITG *m,ITG *ifree){
+		    ITG *node1,ITG *k,ITG *node2,ITG *m,ITG *ifree){
 
   /* determines the structure of the thermo-mechanical matrices;
      (i.e. the location of the nonzeros */

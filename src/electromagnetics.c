@@ -468,7 +468,8 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 	     neq,nzs,&nmethodact,&f,&fext,&b,&aux2,&fini,&fextini,
 	     &adb,&aub,&ithermalact,iperturb,mass,mi,iexpl,&mortar,
              typeboun,&cv,&cvini,&iit,network,itiefac,&ne0,&nkon0,
-	     nintpoint,islavsurf,pmastsurf,tieset,ntie,&num_cpus);
+	     nintpoint,islavsurf,pmastsurf,tieset,ntie,&num_cpus,
+	     ielmat,matname);
   
   /* invert nactdof */
   

@@ -1059,6 +1059,7 @@ mastructmatrix.c \
 mastructnmatrix.c \
 mastructrad.c \
 mastructrand.c \
+mastructread.c \
 mastructse.c \
 matrixsort.c \
 matrixstorage.c \

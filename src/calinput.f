@@ -836,10 +836,10 @@ c
      &       irstrt,istep,istat,n,iline,ipol,inl,ipoinp,inp,
      &       ipoinpc,imat,ier)
 !     
-      elseif(textpart(1)(1:9).eq.'*MATRIXASSEMBLE') then
+      elseif(textpart(1)(1:15).eq.'*MATRIXASSEMBLE') then
         call matrixassembles(textpart,n,iuel,nuel_,inpc,ipoinpc,
      &       iline,ier,ipoinp,inp,inl,ipol,lakon,ipkon,kon,nkon,ne,ne_,
-     &       ielmat,mi,matname,nmat,nmat_)
+     &       ielmat,mi,matname,nmat,nmat_,irstrt,istep)
 !     
       elseif(textpart(1)(1:16).eq.'*MEMBRANESECTION') then
         call membranesections(inpc,textpart,set,istartset,iendset,

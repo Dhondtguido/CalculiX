@@ -49,9 +49,9 @@
      &         ichar(textpart(i)(7:7))*256**2+
      &         ichar(textpart(i)(8:8))*256+
      &         ichar(textpart(i)(9:9))
-        elseif(textpart(i)(1:10).eq.'STIFFNESS=') then
+        elseif(textpart(i)(1:14).eq.'STIFFNESSFILE=') then
           input=.true.
-          filename(1:80)=textpart(i)(11:90)
+          filename(1:80)=textpart(i)(15:94)
           loop1: do j=1,80
             if(filename(j:j).eq.'"') then
               do k=j+1,80
@@ -98,6 +98,7 @@
         if(id.gt.0) then
           if(inode(id).eq.node) cycle
         endif
+        nope=nope+1
         do j=nope,id+2,-1
           inode(j)=inode(j-1)
         enddo

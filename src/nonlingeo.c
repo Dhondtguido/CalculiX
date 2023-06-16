@@ -966,7 +966,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		 neq,nzs,nmethod,&f,&fext,&b,&aux2,&fini,&fextini,
 		 &adb,&aub,ithermal,iperturb,mass,mi,iexpl,mortar,
 		 typeboun,&cv,&cvini,&iit,network,itiefac,&ne0,&nkon0,
-		 nintpoint,islavsurf,pmastsurf,tieset,ntie,&num_cpus);
+		 nintpoint,islavsurf,pmastsurf,tieset,ntie,&num_cpus,
+		 ielmat,matname);
     }
 
     /* invert nactdof */
@@ -1991,7 +1992,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		 neq,nzs,nmethod,&f,&fext,&b,&aux2,&fini,&fextini,
 		 &adb,&aub,ithermal,iperturb,mass,mi,iexpl,mortar,
 		 typeboun,&cv,&cvini,&iit,network,itiefac,&ne0,&nkon0,
-		 nintpoint,islavsurf,pmastsurf,tieset,ntie,&num_cpus);
+		 nintpoint,islavsurf,pmastsurf,tieset,ntie,&num_cpus,
+		 ielmat,matname);
 
     /* invert nactdof (not for dynamic explicit calculations) */
 
@@ -2360,7 +2362,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		       neq,nzs,nmethod,&f,&fext,&b,&aux2,&fini,&fextini,
 		       &adb,&aub,ithermal,iperturb,mass,mi,iexpl,mortar,
 		       typeboun,&cv,&cvini,&iit,network,itiefac,&ne0,&nkon0,
-		       nintpoint,islavsurf,pmastsurf,tieset,ntie,&num_cpus);
+		       nintpoint,islavsurf,pmastsurf,tieset,ntie,&num_cpus,
+		       ielmat,matname);
 	  }
 
 	  /* invert nactdof */

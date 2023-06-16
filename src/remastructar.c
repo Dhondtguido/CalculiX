@@ -22,16 +22,16 @@
 #include "CalculiX.h"
 
 void remastructar(ITG *ipompc, double **coefmpcp, ITG **nodempcp, ITG *nmpc,
-              ITG *mpcfree, ITG *nodeboun, ITG *ndirboun, ITG *nboun,
-              ITG *ikmpc, ITG *ilmpc, ITG *ikboun, ITG *ilboun,
-              char *labmpc, ITG *nk,
-              ITG *memmpc_, ITG *icascade, ITG *maxlenmpc,
-              ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
-              ITG *nactdof, ITG *icol, ITG *jq, ITG **irowp, ITG *isolver,
-              ITG *neq, ITG *nzs,ITG *nmethod, ITG *ithermal,
-	      ITG *iperturb, ITG *mass, ITG *mi, ITG *ics, double *cs,
-	      ITG *mcs,ITG *mortar,char *typeboun,ITG *iit,
-	      ITG *network,ITG *iexpl){
+		  ITG *mpcfree, ITG *nodeboun, ITG *ndirboun, ITG *nboun,
+		  ITG *ikmpc, ITG *ilmpc, ITG *ikboun, ITG *ilboun,
+		  char *labmpc, ITG *nk,
+		  ITG *memmpc_, ITG *icascade, ITG *maxlenmpc,
+		  ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
+		  ITG *nactdof, ITG *icol, ITG *jq, ITG **irowp, ITG *isolver,
+		  ITG *neq, ITG *nzs,ITG *nmethod, ITG *ithermal,
+		  ITG *iperturb, ITG *mass, ITG *mi, ITG *ics, double *cs,
+		  ITG *mcs,ITG *mortar,char *typeboun,ITG *iit,
+		  ITG *network,ITG *iexpl,ITG *ielmat,char *matname){
 
     /* reconstructs the nonzero locations in the stiffness and mass
        matrix after a change in MPC's or the generation of contact
@@ -71,10 +71,10 @@ void remastructar(ITG *ipompc, double **coefmpcp, ITG **nodempcp, ITG *nmpc,
 	NNEW(ipointer,ITG,mt**nk);
     
 	mastruct(nk,kon,ipkon,lakon,ne,nodeboun,ndirboun,nboun,ipompc,
-	     nodempc,nmpc,nactdof,icol,jq,&mast1,&irow,isolver,neq,
-	     ikmpc,ilmpc,ipointer,nzs,nmethod,ithermal,
-	     ikboun,ilboun,iperturb,mi,mortar,typeboun,labmpc,
-	     iit,icascade,network,iexpl);
+		 nodempc,nmpc,nactdof,icol,jq,&mast1,&irow,isolver,neq,
+		 ikmpc,ilmpc,ipointer,nzs,nmethod,ithermal,
+		 ikboun,ilboun,iperturb,mi,mortar,typeboun,labmpc,
+		 iit,icascade,network,iexpl,ielmat,matname);
 
     }else{
       

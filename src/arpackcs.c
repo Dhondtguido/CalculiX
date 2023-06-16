@@ -358,7 +358,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 		   labmpc,nk,&memmpc_,&icascade,&maxlenmpc,
 		   kon,ipkon,lakon,ne,nactdof,icol,jq,&irow,isolver,
 		   neq,nzs,nmethod,ithermal,iperturb,&mass,mi,ics,cs,
-		   mcs,mortar,typeboun,&iit,&network,iexpl);
+		   mcs,mortar,typeboun,&iit,&network,iexpl,ielmat,matname);
     }
   }
   

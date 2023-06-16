@@ -301,7 +301,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
     printf("software, and you are welcome to redistribute it under\n");
     printf("certain conditions, see gpl.htm\n\n");
     printf("************************************************************\n\n");
-    printf("You are using an executable made on Fri Jun 16 12:30:45 CEST 2023\n");
+    printf("You are using an executable made on Fri Jun 16 19:53:12 CEST 2023\n");
     fflush(stdout);
 
     NNEW(ipoinp,ITG,2*nentries);
@@ -1331,7 +1331,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 		 nodempc,&nmpc,nactdof,icol,jq,&mast1,&irow,&isolver,neq,
 		 ikmpc,ilmpc,ipointer,nzs,&nmethodl,ithermal,
 		 ikboun,ilboun,iperturb,mi,&mortar,typeboun,labmpc,
-		 &iit,&icascade,&network,&iexpl);
+		 &iit,&icascade,&network,&iexpl,ielmat,matname);
       }
       else{neq[0]=1;neq[1]=1;neq[2]=1;}
     }

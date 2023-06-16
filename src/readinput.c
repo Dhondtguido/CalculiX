@@ -130,6 +130,10 @@ void readinput(char *jobnamec,char **inpcp,ITG *nline,ITG *nset,
 	      }
 	      if(j>=9){
 		  if(strcmp1(&buff[j-9],"FILENAME=")==0) ifile=1;
+		  if(strcmp1(&buff[j-9],"MASSFILE=")==0) ifile=1;
+	      }
+	      if(j>=14){
+		  if(strcmp1(&buff[j-14],"STIFFNESSFILE=")==0) ifile=1;
 	      }
 	      if(ifile==1){
 		  do{

@@ -341,6 +341,11 @@ c     mortar end
 !     
               node2=kon(indexe+l)
               jdof2=nactdof(m,node2)
+              if(i.eq.32) then
+                write(20,100) node1,k,node2,m,s(jj,ll)
+                write(21,100) node1,k,node2,m,sm(jj,ll)
+              endif
+ 100          format(i10,",",i5,",",i10,",",i5,",",e20.13)
 !     
 !     check whether one of the DOF belongs to a SPC or MPC
 !     

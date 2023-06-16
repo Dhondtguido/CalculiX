@@ -2932,7 +2932,8 @@ void mastruct(ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
               ITG *ikmpc,ITG *ilmpc,ITG *ipointer,ITG *nzs,ITG *nmethod,
               ITG *ithermal,ITG *ikboun,ITG *ilboun,ITG *iperturb,
               ITG *mi,ITG *mortar,char *typeboun,char *labmpc,
-              ITG *iit,ITG *icascade,ITG *network,ITG *iexpl);
+              ITG *iit,ITG *icascade,ITG *network,ITG *iexpl,ITG *ielmat,
+	      char *matname);
 
 void mastructcmatrix(ITG *icolc,ITG *jqc,ITG **mast1p,ITG **irowcp,
 		     ITG *ipointer,ITG *nzsc,ITG *ndesibou,ITG *nodedesibou,
@@ -2970,23 +2971,33 @@ void mastructffem(ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
               ITG *nzs,ITG *compressible,ITG *inomat);
 
 void mastructfilter(ITG *icol,ITG *jq,ITG **mastp,ITG **irowp,
-                  ITG *ipointer,ITG *nzs,ITG *ndesi,ITG *nodedesi,
-		  double *xo,double *yo,double *zo,double *x,
-		  double *y,double *z,ITG *nx,ITG *ny,ITG *nz,
+		    ITG *ipointer,ITG *nzs,ITG *ndesi,ITG *nodedesi,
+		    double *xo,double *yo,double *zo,double *x,
+		    double *y,double *z,ITG *nx,ITG *ny,ITG *nz,
 		    char *objectset,double *filterrad);
+
+void mastructmatrix(ITG *ipompc,ITG *nodempc,ITG *nmpc,ITG *nactdof,
+		    ITG *jq,ITG **mast1p,ITG *neq,ITG *ipointer, ITG *nzs_, 
+		    ITG *nmethod,ITG *iperturb,ITG *mi,ITG **nextp,
+		    ITG *node1,ITG *k,ITG *node2,ITG *m,ITG *ifree);
 
 void mastructnmatrix(ITG *icols,ITG *jqs,ITG **mast1p,ITG **irowsp,
 		     ITG *ipointer,ITG *nzss,ITG *nactive,ITG *nnlconst);
 
 void mastructrad(ITG *ntr,ITG *nloadtr,char *sideload,ITG *ipointerrad,
-              ITG **mast1radp,ITG **irowradp,ITG *nzsrad,
-              ITG *jqrad,ITG *icolrad);
+		 ITG **mast1radp,ITG **irowradp,ITG *nzsrad,
+		 ITG *jqrad,ITG *icolrad);
 
 void mastructrand(ITG *icols,ITG *jqs,ITG **mast1p,ITG **irowsp,
                   ITG *ipointer,ITG *nzss,
                   ITG *ndesi,double *physcon,double *xo,double *yo,
                   double *zo,double *x,double *y,double *z,ITG *nx,
                   ITG *ny,ITG *nz);
+
+void mastructread(ITG *ipompc,ITG *nodempc,ITG *nmpc,ITG *nactdof,
+		  ITG *jq,ITG **mast1p,ITG *neq,ITG *ipointer, ITG *nzs_, 
+		  ITG *nmethod,ITG *iperturb,ITG *mi,ITG **nextp,
+		  ITG *ifree,ITG *i,ITG *ielmat,char *matname);
 
 void mastructse(ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
               ITG *ipompc,ITG *nodempc,ITG *nmpc,
@@ -3800,19 +3811,19 @@ void remastruct(ITG *ipompc,double **coefmpcp,ITG **nodempcp,ITG *nmpc,
 		char *typeboun,double **cvp,double **cvinip,ITG *iit,
 		ITG *network,ITG *itiefac,ITG *ne0,ITG *nkon0,ITG *nintpoint,
 		ITG *islavsurf,double *pmastsurf,char*tieset,ITG *ntie,
-		ITG *num_cpus);
+		ITG *num_cpus,ITG *ielmat,char *matname);
 
 void remastructar(ITG *ipompc,double **coefmpcp,ITG **nodempcp,ITG *nmpc,
-              ITG *mpcfree,ITG *nodeboun,ITG *ndirboun,ITG *nboun,
-              ITG *ikmpc,ITG *ilmpc,ITG *ikboun,ITG *ilboun,
-              char *labmpc,ITG *nk,
-              ITG *memmpc_,ITG *icascade,ITG *maxlenmpc,
-              ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
-              ITG *nactdof,ITG *icol,ITG *jq,ITG **irowp,ITG *isolver,
-              ITG *neq,ITG *nzs,ITG *nmethod,ITG *ithermal,
-              ITG *iperturb,ITG *mass,ITG *mi,ITG *ics,double *cs,
-              ITG *mcs,ITG *mortar,char *typeboun,ITG *iit,ITG *network,
-              ITG *iexpl);
+		  ITG *mpcfree,ITG *nodeboun,ITG *ndirboun,ITG *nboun,
+		  ITG *ikmpc,ITG *ilmpc,ITG *ikboun,ITG *ilboun,
+		  char *labmpc,ITG *nk,
+		  ITG *memmpc_,ITG *icascade,ITG *maxlenmpc,
+		  ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
+		  ITG *nactdof,ITG *icol,ITG *jq,ITG **irowp,ITG *isolver,
+		  ITG *neq,ITG *nzs,ITG *nmethod,ITG *ithermal,
+		  ITG *iperturb,ITG *mass,ITG *mi,ITG *ics,double *cs,
+		  ITG *mcs,ITG *mortar,char *typeboun,ITG *iit,ITG *network,
+		  ITG *iexpl,ITG *ielmat,char *matname);
 
 void remastructem(ITG *ipompc,double **coefmpcp,ITG **nodempcp,ITG *nmpc,
               ITG *mpcfree,ITG *nodeboun,ITG *ndirboun,ITG *nboun,

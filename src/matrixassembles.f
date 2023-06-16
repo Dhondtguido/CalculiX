@@ -58,9 +58,9 @@
      &         ichar(textpart(i)(8:8))*256+
      &         ichar(textpart(i)(9:9))
           label(1:1)='U'
-          label(2:8)=textpart(i)(7:13)
-        elseif(textpart(i)(1:10).eq.'STIFFNESS=') then
-          filestiff(1:80)=textpart(i)(11:90)
+          label(2:5)=textpart(i)(6:9)
+        elseif(textpart(i)(1:14).eq.'STIFFNESSFILE=') then
+          filestiff(1:80)=textpart(i)(15:94)
           loop1: do j=1,80
             if(filestiff(j:j).eq.'"') then
               do k=j+1,80
@@ -76,8 +76,8 @@
             endif
           enddo loop1
           stiffness=.true.
-        elseif(textpart(i)(1:5).eq.'MASS=') then
-          filemass(1:80)=textpart(i)(6:85)
+        elseif(textpart(i)(1:9).eq.'MASSFILE=') then
+          filemass(1:80)=textpart(i)(10:89)
           loop2: do j=1,80
             if(filemass(j:j).eq.'"') then
               do k=j+1,80
@@ -121,8 +121,8 @@
         write(*,*) '*ERROR reading *ELEMENT: increase ne_'
         call exit(201)
       endif
-      ipkon(i)=nkon
-      lakon(i)=label
+      ipkon(ne)=nkon
+      lakon(ne)=label
       indexe=nkon
 !
       nkon=nkon+nope
@@ -135,6 +135,7 @@
         if(id.gt.0) then
           if(kon(indexe+id).eq.node) cycle
         endif
+        nodes=nodes+1
         do j=nodes,id+2,-1
           kon(indexe+j)=kon(indexe+j-1)
         enddo
