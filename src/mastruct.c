@@ -371,14 +371,31 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 	  ndof=3;
 	}
       }else if(strcmp1(&lakon[8*i],"U")==0){
+	if((strcmp1(&lakon[8*i+1],"1")==0)||
+	   (strcmp1(&lakon[8*i+1],"S45")==0)||
+	   (strcmp1(&lakon[8*i+1],"S3")==0)){
 	  
 	/* user element
 	   number of dofs: 7th entry of label
 	   number of nodes: 8th entry of label */
 	  
-	ndof=lakon[8*i+6];
-	nope=lakon[8*i+7];
+	  ndof=lakon[8*i+6];
+	  nope=lakon[8*i+7];
+	}else{
+
+	  /* substructure (superelement) */
+	  
+	  nope=-1;
+	}
       }else continue;
+
+      if(nope==-1){
+
+	  /* substructure (superelement) 
+             only for mechanical isothermal calculations */
+	  
+	continue;
+      }
       
       for(jj=0;jj<ndof*nope;++jj){
 	
@@ -435,11 +452,11 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 	      }
 	    }
 
-            /* regular DOF/SPC */
+	    /* regular DOF/SPC */
 
-            /* boundary stiffness coefficients (for frequency
-               and modal dynamic calculations) : x-elements
-               on the right of the vertical line */
+	    /* boundary stiffness coefficients (for frequency
+	       and modal dynamic calculations) : x-elements
+	       on the right of the vertical line */
 
 	    //               |x x x
 	    //        x      |x x x
@@ -514,11 +531,10 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 		}
 	      }
 	    }
-	  }
-	}
-      }
-    }
-
+	  }     
+	}	// for(ll=jj;ll<ndof*nope;++ll){
+      }     // for(jj=0;jj<ndof*nope;++jj){
+    }    // for(i=0;i<*ne;++i){
   }
 
   /* thermal entries*/

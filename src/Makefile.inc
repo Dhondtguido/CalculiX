@@ -500,8 +500,8 @@ mafillsmcs.f \
 mafillsmcsse.f \
 mafillsmduds.f \
 mafillsmforc.f \
+mafillsmmatrix.f \
 mafillsmse.f \
-mafillsmstiff.f \
 mafillv1rhs.f \
 mafillv2rhs.f \
 mafillvlhs.f \
@@ -1055,6 +1055,7 @@ mastructdmatrix.c \
 mastructem.c \
 mastructffem.c \
 mastructfilter.c \
+mastructmatrix.c \
 mastructnmatrix.c \
 mastructrad.c \
 mastructrand.c \

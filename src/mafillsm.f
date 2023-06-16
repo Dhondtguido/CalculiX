@@ -301,7 +301,7 @@ c     mortar end
               jj=(id1-1)*3+idof1
               call nident(kon(indexe+1),node2,nope,id2)
               ll=(id2-1)*3+idof2
-              call mafillsmstiff(ipompc,nodempc,coefmpc,nmpc,
+              call mafillsmmatrix(ipompc,nodempc,coefmpc,nmpc,
      &             ad,au,nactdof,jq,irow,neq,nmethod,mi,rhsi,
      &             k,m,node1,node2,jj,ll,val)
             enddo
@@ -317,7 +317,7 @@ c     mortar end
                 jj=(id1-1)*3+idof1
                 call nident(kon(indexe+1),node2,nope,id2)
                 ll=(id2-1)*3+idof2
-                call mafillsmstiff(ipompc,nodempc,coefmpc,nmpc,
+                call mafillsmmatrix(ipompc,nodempc,coefmpc,nmpc,
      &               adb,aub,nactdof,jq,irow,neq,nmethod,mi,rhsi,
      &               k,m,node1,node2,jj,ll,val)
               enddo
