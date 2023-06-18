@@ -19,7 +19,7 @@
       subroutine add_sm_st(au,ad,jq,irow,i,j,value,i0,i1)
 !
 !     stores the stiffness coefficient (i,j) with value "value"
-!     in the stiffness matrix stored in spare matrix format
+!     in the stiffness matrix stored in sparse matrix format
 !
       implicit none
 !

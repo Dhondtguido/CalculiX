@@ -37,10 +37,15 @@ void mastructmatrix(ITG *ipompc,ITG *nodempc,ITG *nmpc,ITG *nactdof,
     index1,index2,ist,*mast1=NULL,icolumn,mt=mi[1]+1,*next=NULL;
 
   mast1=*mast1p;next=*nextp;
-	      
-  jdof1=nactdof[mt*(*node1-1)+(*k)+1];
-  jdof2=nactdof[mt*(*node2-1)+(*m)+1];
-	  
+
+  /* caveat: k and m take values 1..3 for dof in x,y,z
+     (FORTRAN convention) */
+  
+  jdof1=nactdof[mt*(*node1-1)+(*k)];
+  jdof2=nactdof[mt*(*node2-1)+(*m)];
+
+  //  printf("%d,%d,%d,%d,%d,%d\n",*node1,*k,*node2,*m,jdof1,jdof2);
+  
   /* check whether one of the DOF belongs to a SPC or MPC */
 	  
   if((jdof1>0)&&(jdof2>0)){

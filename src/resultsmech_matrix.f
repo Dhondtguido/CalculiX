@@ -247,7 +247,6 @@
       enddo
 !    
  1    close(20)
-      deallocate(fnl)
 !    
       if(calcul_qa.eq.1) then
         do m1=1,3*nope
@@ -255,6 +254,7 @@
         enddo
         nal=nal+3*nope
       endif
+      deallocate(fnl)
 !
       return
  2    write(*,*) '*ERROR reading stiffness matrix file ',filestiff

@@ -497,6 +497,7 @@ mafillsm.f \
 mafillsmas.f \
 mafillsmcsas.f \
 mafillsmcs.f \
+mafillsmcsmatrix.f \
 mafillsmcsse.f \
 mafillsmduds.f \
 mafillsmforc.f \

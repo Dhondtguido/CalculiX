@@ -200,7 +200,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
     fprintf(f1,"%5sUHOST                                                              \n",p1);
     fprintf(f1,"%5sUPGM               CalculiX                                        \n",p1);
     fprintf(f1,"%5sUVERSION           Version DEVELOPMENT                             \n",p1);
-    fprintf(f1,"%5sUCOMPILETIME       Fri Jun 16 19:53:12 CEST 2023                    \n",p1);
+    fprintf(f1,"%5sUCOMPILETIME       Sun Jun 18 14:12:35 CEST 2023                    \n",p1);
     fprintf(f1,"%5sUDIR                                                               \n",p1);
     fprintf(f1,"%5sUDBN                                                               \n",p1);
     
@@ -289,8 +289,13 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 
 	  /* user element */
 
-	}else if(strcmp1(&lakon[8*i],"U1")==0){
-	  continue;
+	}else if(strcmp1(&lakon[8*i],"U")==0){
+
+	/* only user elements of type US3 and US45 are stored */
+	
+	  if((strcmp1(&lakon[8*i],"US3")!=0)&&(strcmp1(&lakon[8*i],"US45")!=0)){
+	    continue;
+	  }
 	}
 	nelout++;
       }
@@ -330,8 +335,13 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	continue;
       }else if(strcmp1(&lakon[8*i],"MASS")==0){
 	continue;
-      }else if(strcmp1(&lakon[8*i],"U1")==0){
-	continue;
+      }else if(strcmp1(&lakon[8*i],"U")==0){
+
+	/* only user elements of type US3 and US45 are stored */
+	
+	if((strcmp1(&lakon[8*i],"US3")!=0)&&(strcmp1(&lakon[8*i],"US45")!=0)){
+	  continue;
+	}
       }else{
 	indexe=ipkon[i];
       }

@@ -20,9 +20,9 @@
      &  i0,i1)
 !
 !     stores the stiffness coefficient (i,j) with value "value"
-!     in the stiffness matrix stored in spare matrix format and 
-!     the mass coefficient (i,j) with value "valuem" in the lumped 
-!     mass matrix
+!     in the stiffness matrix stored in sparse matrix format and 
+!     the mass coefficient (i,j) with value "valuem" in the  
+!     mass matrix stored in sparse matrix format
 !
       implicit none
 !

@@ -298,9 +298,10 @@ c     mortar end
             do
               read(20,*,end=1) node1,k,node2,m,val
               call nident(kon(indexe+1),node1,nope,id1)
-              jj=(id1-1)*3+idof1
+              jj=(id1-1)*3+k
               call nident(kon(indexe+1),node2,nope,id2)
-              ll=(id2-1)*3+idof2
+              ll=(id2-1)*3+m
+c              write(*,*) 'mafillsm ',node1,k,node2,m,jj,ll
               call mafillsmmatrix(ipompc,nodempc,coefmpc,nmpc,
      &             ad,au,nactdof,jq,irow,neq,nmethod,mi,rhsi,
      &             k,m,node1,node2,jj,ll,val)
@@ -314,9 +315,9 @@ c     mortar end
               do
                 read(20,*,end=2) node1,k,node2,m,val
                 call nident(kon(indexe+1),node1,nope,id1)
-                jj=(id1-1)*3+idof1
+                jj=(id1-1)*3+k
                 call nident(kon(indexe+1),node2,nope,id2)
-                ll=(id2-1)*3+idof2
+                ll=(id2-1)*3+m
                 call mafillsmmatrix(ipompc,nodempc,coefmpc,nmpc,
      &               adb,aub,nactdof,jq,irow,neq,nmethod,mi,rhsi,
      &               k,m,node1,node2,jj,ll,val)
@@ -341,10 +342,10 @@ c     mortar end
 !     
               node2=kon(indexe+l)
               jdof2=nactdof(m,node2)
-              if(i.eq.32) then
-                write(20,100) node1,k,node2,m,s(jj,ll)
-                write(21,100) node1,k,node2,m,sm(jj,ll)
-              endif
+c              if(i.eq.32) then
+c                write(20,100) node1,k,node2,m,s(jj,ll)
+c                write(21,100) node1,k,node2,m,sm(jj,ll)
+c              endif
  100          format(i10,",",i5,",",i10,",",i5,",",e20.13)
 !     
 !     check whether one of the DOF belongs to a SPC or MPC
