@@ -64,7 +64,7 @@ int main(int argc,char *argv[])
     *irandomtype=NULL,irobustdesign[3],*iparentel=NULL,ifreebody,
     *ipobody=NULL,inewton=0,*iprfn=NULL,*konrfn=NULL;
      
-  ITG nk,ne,nboun,nmpc,nforc,nload,nprint,nset,nalset,nentries=18,
+  ITG nk,ne,nboun,nmpc,nforc,nload,nprint,nset,nalset,nentries=19,
     nmethod,neq[3],i,mpcfree,mei[4]={0,0,0,0},j,nzl,nam,nbounold,
     nforcold,nloadold,nbody,nbody_,nbodyold,network,nheading_,
     k,nzs[3],nmpc_,nload_,nforc_,istep,istat,nboun_,nintpoint,
@@ -154,7 +154,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Sun Jun 18 14:12:35 CEST 2023\n");
+  printf("You are using an executable made on Sun Jun 18 16:17:31 CEST 2023\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);

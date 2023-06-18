@@ -146,7 +146,7 @@
       save solid,ianisoplas,out3d,pretension
 !     
       integer nentries
-      parameter(nentries=18)
+      parameter(nentries=19)
 !
       irestartread=0
       newstep=0

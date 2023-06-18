@@ -5190,3 +5190,6 @@ Dec 2002        - started to work on single crystal plasticity
  13 June 2023   - if at least one initial temperature was defined, the initial
                   temperatures AND the temperature in all nodes used by
 		  elements must be defined.
+
+ 18 June 2023   - worked on *matrix assemble in combination with
+                  cyclic symmetry

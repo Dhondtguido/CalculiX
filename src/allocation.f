@@ -70,7 +70,7 @@
 !     
       real*8 temperature,tempact,xfreq,tpinc,tpmin,tpmax
 !     
-      parameter(nentries=18)
+      parameter(nentries=19)
 !     
 !     icfd=-1: initial value
 !     =0: pure mechanical analysis

@@ -30971,6 +30971,7 @@ nameref in subroutine keystart.f. Right now, it reads:
 \item *NODE
 \item *USER ELEMENT
 \item *ELEMENT
+\item *MATRIX ASSEMBLE
 \item *NSET
 \item *ELSET
 \item *TRANSFORM
@@ -30991,7 +30992,7 @@ This means that *RESTART,READ has to be read before all other cards, then
 comes *NODE etc. The way inpc is to be read is stored in the fields ipoinp,
 inp and ipoinpc. The two-dimensional field ipoinp consists of 2 columns and nentries rows,
 where nentries is the number of keyword cards listed in the list above,
-i.e. right now nentries=18. The first column of row i in field ipoinp contains
+i.e. right now nentries=19. The first column of row i in field ipoinp contains
 a row number of field inp, for instance j1. Then, the first column
 of row j1 in field inp contains the line number where reading for keyword i
 should start, the second column contains the line number where reading should
@@ -31030,13 +31031,14 @@ keystart.f. It contains the number of characters in each keyword.
         FORTRAN(keystart,(&ifreeinp,ipoinp,inp,"ORIENTATION",
                           nline,&ikey));
 			  }
+\end{verbatim}
+
+in file readinput.c, copy the block and replace ORIENTATION by the new keyword.
+
 \item insert the new keyword in the comment list at the beginning of
   subroutine keystart.f
 \item update this section of the documentation, i.e. insert the new
   keyword in the list above and change the value for nentries;
-\end{verbatim}
-
-in file readinput.c, copy the block and replace ORIENTATION by the new keyword.
 \end{itemize}
 
 \subsubsection{allocate}
