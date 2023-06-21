@@ -478,33 +478,19 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     if((is==1)&&(*mcs==1)) continue;
     ielset=cs[17*i+12];
     if(ielset==0) continue;
-    for(i1=istartset[ielset-1]-1;i1<iendset[ielset-1];i1++){
-      if(ialset[i1]>0){
-	iel=ialset[i1]-1;
-	if(ipkon[iel]<0) continue;
-	ielcs[iel]=i;
-	indexe=ipkon[iel];
-	if(strcmp1(&lakon[8*iel+3],"2")==0)nope=20;
-	else if (strcmp1(&lakon[8*iel+3],"8")==0)nope=8;
-	else if (strcmp1(&lakon[8*iel+3],"10")==0)nope=10;
-	else if (strcmp1(&lakon[8*iel+3],"4")==0)nope=4;
-	else if (strcmp1(&lakon[8*iel+3],"15")==0)nope=15;
-	else if (strcmp1(&lakon[8*iel+3],"6")==0)nope=6;
-	else if (strcmp1(&lakon[8*iel],"ES")==0){
-	  lakonl[0]=lakon[8*iel+7];
-	  nope=atoi(lakonl)+1;}
-	else continue;
-	      
-	for(i2=0;i2<nope;++i2){
-	  node=kon[indexe+i2]-1;
-	  inocs[node]=i;
-	}
+    if(ielset<0){
+      iel=-ielset;
+      ielcs[iel]=i;
+      indexe=ipkon[iel];
+      nope=lakon[8*iel+7];
+      for(i2=0;i2<nope;++i2){
+	node=kon[indexe+i2]-1;
+	inocs[node]=i;
       }
-      else{
-	iel=ialset[i1-2]-1;
-	do{
-	  iel=iel-ialset[i1];
-	  if(iel>=ialset[i1-1]-1) break;
+    }else{
+      for(i1=istartset[ielset-1]-1;i1<iendset[ielset-1];i1++){
+	if(ialset[i1]>0){
+	  iel=ialset[i1]-1;
 	  if(ipkon[iel]<0) continue;
 	  ielcs[iel]=i;
 	  indexe=ipkon[iel];
@@ -513,14 +499,39 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	  else if (strcmp1(&lakon[8*iel+3],"10")==0)nope=10;
 	  else if (strcmp1(&lakon[8*iel+3],"4")==0)nope=4;
 	  else if (strcmp1(&lakon[8*iel+3],"15")==0)nope=15;
-	  else {nope=6;}
+	  else if (strcmp1(&lakon[8*iel+3],"6")==0)nope=6;
+	  else if (strcmp1(&lakon[8*iel],"ES")==0){
+	    lakonl[0]=lakon[8*iel+7];
+	    nope=atoi(lakonl)+1;}
+	  else continue;
+	      
 	  for(i2=0;i2<nope;++i2){
 	    node=kon[indexe+i2]-1;
 	    inocs[node]=i;
 	  }
-	}while(1);
+	}
+	else{
+	  iel=ialset[i1-2]-1;
+	  do{
+	    iel=iel-ialset[i1];
+	    if(iel>=ialset[i1-1]-1) break;
+	    if(ipkon[iel]<0) continue;
+	    ielcs[iel]=i;
+	    indexe=ipkon[iel];
+	    if(strcmp1(&lakon[8*iel+3],"2")==0)nope=20;
+	    else if (strcmp1(&lakon[8*iel+3],"8")==0)nope=8;
+	    else if (strcmp1(&lakon[8*iel+3],"10")==0)nope=10;
+	    else if (strcmp1(&lakon[8*iel+3],"4")==0)nope=4;
+	    else if (strcmp1(&lakon[8*iel+3],"15")==0)nope=15;
+	    else {nope=6;}
+	    for(i2=0;i2<nope;++i2){
+	      node=kon[indexe+i2]-1;
+	      inocs[node]=i;
+	    }
+	  }while(1);
+	}
       }
-    } 
+    }
   }
   
   /* loop over the nodal diameters */
