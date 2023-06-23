@@ -589,7 +589,6 @@ minor axis of inertia and deformation of the first torsion mode.
 \subsection{Frequency calculation of a rotating disk on a slender shaft}
 
 \begin{verbatim}
-\end{verbatim}
 **
 **   Structure: slender disk mounted on a long axis
 **   Test objective: *COMPLEX FREQUENCY,
@@ -625,6 +624,7 @@ Eall,centrif,3.0853e8,0.,0.,0.,0.,0.,1.
 *node file
 pu
 *end step
+\end{verbatim}
           
 \begin{figure}
 \epsfig{file=rotor4.eps,width=12cm}
@@ -4383,6 +4383,37 @@ Following loadings are implemented:
 \item Nodal temperatures with temperature gradients through shell thickness.
 \item Element face pressure loads.
 \end{itemize}
+ 
+\subsubsection{\label{substructurelem}Substructure (Superelement)}
+
+A substructure (also called superelement in some coded) is an element
+characterized by a number of nodes and a stiffness (and optionally a mass matrix) describing the relationship between forces and displacements in these
+nodes. The matrices may have been obtained by another code. The element
+definition is triggered by a \htmlref{*MATRIX ASSEMBLE}{matrixassemble} card
+(instead of an *ELEMENT card), the name of the file containing the
+stiffness matrix and, optionally, the name of the file containing the mass
+matrix. Right now, both have to be symmetric and only the upper triangle
+(including the diagonal) or the lower triangle (including the diagonal) should
+be given in the form
+
+\begin{verbatim}
+row node, row dof, column node, column dof, value
+\end{verbatim}
+
+for each entry of the matrix, one per line (the order is irrelevant). A substructure can right now
+contain at most 256 nodes and only translational degrees of freedom (=dof) are
+allowed (dof 1 for the global x-axis, dof 2 for the global y-axis and dof 3
+for the global z-axis). In addition, the matrix should
+ receive a name containing at most 4 characters. Names of existing user
+ elements exluding the ``U'' in front should not be used, such as ``S3''. The nodes belonging to the element may be subject to Single Point Constraints, Multiple Point
+ Constraints or point loads, but not to distributed loading (neither facial
+ nor volumetric). Since the location of any integration points is not known,
+ no element values such as stresses or strains are calculated. Only nodal
+ information can be stored to file using \htmlref{*NODE PRINT}{nodeprint} and
+ similar keyword cards.
+
+A substructure is basically a linear construct. Right now, it can be used in
+a *STATIC, *DYNAMIC or *FREQUENCY procedure.
 
 \subsection{\label{beamsectiontypes}Beam Section Types}
 
@@ -12570,7 +12601,12 @@ obtained by using the shape functions at the spring location.
 
 To accelerate explicit dynamic calculations mass scaling can be used
 \cite{Olovsson}. It was introduced in CalculiX in the course of a Master
-Thesis \cite{Czech}. Mass scaling is triggered by specifying the minimum time
+Thesis \cite{Czech}. Applying mass scaling the time increment can be
+increased, which reduces the overall computational time. In the mass scaling
+procedure the lumped mass matrix of each element is augmented by a fully
+populated matrix. The resulting computational increase is, however,
+neglegible, since the LU-decomposition has only to be performed once at the
+start of the calculation. Mass scaling is triggered by specifying the minimum time
 increment which the user wants to allow underneath the \htmlref{*DYNAMIC }{dynamic} keyword (third
 parameter). If for any volumetric element the increment size calculated by CalculiX
 (based on the wave speed) is less than the
@@ -24992,6 +25028,54 @@ starts a material block with name EL.
 
 \bigskip
 Example files: fullseg, beamnldype, beamog.
+
+\subsection{\label{matrixassemble}*MATRIX ASSEMBLE}
+
+Keyword type: model definition
+
+This keyword card is used to define a substructure (sometimes called a
+superelement in other codes), cf. Section \ref{substructurelem}. There are two required parameters NAME and
+STIFFNESS FILE and one optional parameter MASS FILE.
+
+The name of a substructure consists of at most 4 characters. Internally, a
+``U'' is appended in front of them and the substructure is considered as a
+special kind of user element. Therefore, the name of a substructure should not
+coincide with the characters following ``U'' of any coded user elements (such
+as S3 for the US3 element).
+
+The STIFFNESS FILE refers to the file containing the entries in the stiffness
+matrix. It is assumed to be symmetric and only the upper triangular values or
+the lower triangular values should be contained (including the diagonal) in the form
+
+\begin{verbatim}
+  row node,row dof,column node,column dof,value
+\end{verbatim}
+
+one entry per line. The order is irrelevant. The same applies to the mass
+matrix. The latter is only needed in frequency
+(\htmlref{*FREQUENCY}{frequency}) or dynamic (\htmlref{*DYNAMIC}{dynamic})
+calculations. The name of the stiffness and the mass matrix can be at most 80
+characters long.
+
+ \bigskip
+
+First line:
+\begin{itemize}
+\item *MATRIX ASSEMBLE
+\item Enter any parameters and their value
+\end{itemize}
+
+\begin{verbatim}
+Example:
+
+*MATRIX ASSEMBLE,NAME=TEST,STIFFNESSFILE=beampsuper.stiff
+\end{verbatim}
+
+defines a substructure with name TEST. The stiffness matrix is stored in file
+``beampsuper.stiff''. 
+
+\bigskip
+Example files: beamfsuper,beampsuper.
 
 \subsection{\label{membranesection}*MEMBRANE SECTION}
 

@@ -346,7 +346,7 @@ c              if(i.eq.32) then
 c                write(20,100) node1,k,node2,m,s(jj,ll)
 c                write(21,100) node1,k,node2,m,sm(jj,ll)
 c              endif
- 100          format(i10,",",i5,",",i10,",",i5,",",e20.13)
+c 100          format(i10,",",i5,",",i10,",",i5,",",e20.13)
 !     
 !     check whether one of the DOF belongs to a SPC or MPC
 !     
