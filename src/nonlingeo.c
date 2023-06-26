@@ -3481,7 +3481,11 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     if((icutb==0)&&(*nmethod==4)&&(*ithermal<2)&&(jout[0]==jprint)&&
        (*nener==1)){
 
-      if(*iexpl>1){
+      printenergy(iexpl,ttime,&theta,tper,energy,ne,nslavs,ener,&energyref,
+		  &allwk,&dampwk,&ea,&energym,&energymold,&jnz,&mscalmethod,
+		  mortar,mi);
+      
+      /*      if(*iexpl>1){
 	printf(" actual total time=%e\n\n",*ttime+theta**tper);
 	if(*mortar==-1){
 	  energy[3]=0.;
@@ -3509,11 +3513,11 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	     +energy[3]-energyref);
 
       printf(" energy balance (absolute) = %e \n",energy[0]+energy[1]
-	     +energy[2]+energy[3]-energyref-allwk-dampwk);
+      +energy[2]+energy[3]-energyref-allwk-dampwk);*/
 
       /* Belytschko criterion */
 
-      denergymax=energy[0];
+      /*    denergymax=energy[0];
       if(denergymax<energy[1]){
 	denergymax=energy[1];}
       if(denergymax<fabs(allwk)) denergymax=fabs(allwk);
@@ -3530,11 +3534,11 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		     -dampwk)/energym*100.));
       }else{
 	printf(" energy balance (relative) =0 %% \n\n");
-      }
+	}*/
 	
       /*Energy balance to evaluate mass scaling*/
       
-      if((mscalmethod==1)||(mscalmethod==3)){
+      /*     if((mscalmethod==1)||(mscalmethod==3)){
 	printf(" artificial energy due to selective mass scaling = %e\n",
 	       energy[4]);
 	    
@@ -3542,15 +3546,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	       fabs((energy[0]+energy[1]+energy[2]+energy[3]+energy[4]
 		     -energyref-allwk-dampwk)/energym*100.));
 	    
-      }
-	
-      // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-      //    MPADD start
-      //	printf(" work done by the damping forces = %e\n", dampwk);
-      //	neini=*ne; 
-      //	printf(" contact elements end of increment = %"ITGFORMAT"\n\n", *ne - ne0);
-      //    MPADD end
-      // # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+		     }*/
 
     }
 

@@ -1088,6 +1088,7 @@ prediction.c \
 prediction_em.c \
 preiter.c \
 preparll.c \
+printenergy.c \
 radcyc.c \
 radflowload.c \
 randomfieldmain.c \

@@ -3536,6 +3536,12 @@ void FORTRAN(pretransition,(ITG *ipkon,ITG *kon,char *lakon,double *co,
              ITG *nk,ITG *ipoface,ITG *nodface,ITG *nodedesiinv,double *xo,
              double *yo,double *zo,double *x,double *y,double *z,ITG *nx,
              ITG *ny,ITG *nz,ITG *ifree));
+
+void printenergy(ITG *iexpl,double *ttime,double *theta,double *tper,
+		 double *energy,ITG *ne,ITG *nslavs,double *ener,
+		 double *energyref,double *allwk,double *dampwk,
+		 double *ea,double *energym,double *energymold,ITG *jnz,
+		 ITG *mscalmethod,ITG *mortar,ITG *mi);
       
 void FORTRAN(printoutebhe,(char *set,ITG *nset,ITG *istartset,ITG *iendset,
 			   ITG *ialset,ITG *nprint,char *prlab,char *prset,

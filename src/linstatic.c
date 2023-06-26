@@ -409,8 +409,8 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       }
     }
  
-    /* nretain!=0: submatrix application
-       nretain==0: Green function application */
+    /* nretain!=0: substructure application */
+    /*   nretain==0: Green function application */
       
     if(nretain>0){
       RENEW(iretain,ITG,nretain);
@@ -424,8 +424,9 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
     NNEW(au,double,nzs[2]);
     rhsi=0;
-    //      nmethodl=2;
-    nmethodl=*nmethod;
+    nmethodl=2;
+    //nmethodl=*nmethod;
+    printf("touche\n");
 
     /* providing for the mass matrix in case of Green functions */
 
