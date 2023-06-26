@@ -43,7 +43,9 @@
 !     while looking from the first point to the second point one
 !     arrives at the master surface without leaving the body
 !     cs(12,mcs): -1 (denotes a cylindrical coordinate system)
-!     cs(13,mcs): number of the element set
+!     cs(13,mcs): if >0: number of the element set
+!                 if <0: -cs(13,mcs) is the number of a substructure
+!                        element (also called superelement)
 !     cs(14,mcs): sum of previous independent nodes
 !     cs(15,mcs): cos(angle); angle = 2*pi/cs(1,mcs)
 !     cs(16,mcs): sin(angle)

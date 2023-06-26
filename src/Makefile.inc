@@ -1057,10 +1057,12 @@ mastructem.c \
 mastructffem.c \
 mastructfilter.c \
 mastructmatrix.c \
+mastructmatrixcs.c \
 mastructnmatrix.c \
 mastructrad.c \
 mastructrand.c \
 mastructread.c \
+mastructreadcs.c \
 mastructse.c \
 matrixsort.c \
 matrixstorage.c \

@@ -20266,7 +20266,8 @@ in a cyclic symmetric structure for use in a cyclic symmetry calculation
 must be preceded by two *SURFACE cards defining the nodes belonging to the
 left and right boundary of the sector and a *TIE card linking those surfaces. The axis of symmetry is defined by two points a and b, defined in global Cartesian coordinates.
 
-For structural calculations there are five parameters, N, NGRAPH, TIE, ELSET and CHECK. The parameter N,
+For structural calculations there are six parameters, N, NGRAPH, TIE, ELSET,
+MATRIX and CHECK. The parameter N,
 specifying the number of sectors, is required, TIE is required if more than
 one cyclic symmetry tie is defined.
 
@@ -20285,6 +20286,12 @@ The element set specified by ELSET specifies the elements to which the
 parameter NGRAPH should be applied. Default if only one cyclic symmetry *TIE
 card is used in the input deck is
 the complete model. 
+
+The MATRIX parameter is needed if a substructure, the matrices for which were
+read from file, is present in the model. The value of MATRIX is the name of
+the matrix, which contains at most 4 characters, e.g. MATRIX=TEST for a
+substructure with the name TEST. The parameters ELSET and
+MATRIX are mutually exclusive.
 
 The last parameter, CHECK, specifies whether CalculiX should compare the
 sector angle based on its geometry with its value based on N. If the deviation
@@ -37715,7 +37722,9 @@ nuel & number of different user element types \\
       cs(4,i)  & number of nodes on the independent side \\
       cs(5,i)  & number of sections to be plotted \\
       cs(6..12,i) & coordinates of two points on the cyclic symmetry axis \\
-      cs(13,i) & number of the element set (for plotting purposes) \\
+      cs(13,i) & if > 0: number of the element set (e.g. for plotting purposes) \\
+       & if < 0: -cs(13,i) is the number of a substructure element (also
+      called superelement) \\
       cs(14,i) & total number of independent nodes in all previously 
                  defined cyclic symmetry parts \\
       cs(15,i) & cos(angle) where angle = 2*$\pi$/cs(1,mcs) \\

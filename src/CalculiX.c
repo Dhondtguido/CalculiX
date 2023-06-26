@@ -154,7 +154,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Fri Jun 23 18:05:51 CEST 2023\n");
+  printf("You are using an executable made on Mon Jun 26 12:34:25 CEST 2023\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -1188,7 +1188,7 @@ int main(int argc,char *argv[])
       mastructcs(&nk,kon,ipkon,lakon,&ne,nodeboun,ndirboun,&nboun,
 		 ipompc,nodempc,&nmpc,nactdof,icol,jq,&mast1,&irow,&isolver,
 		 neq,ikmpc,ilmpc,ipointer,nzs,&nmethodl,
-		 ics,cs,labmpc,&mcs,mi,&mortar);
+		 ics,cs,labmpc,&mcs,mi,&mortar,ielmat,matname);
     }
   
     SFREE(ipointer);SFREE(mast1);

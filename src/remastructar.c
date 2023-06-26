@@ -83,7 +83,7 @@ void remastructar(ITG *ipompc, double **coefmpcp, ITG **nodempcp, ITG *nmpc,
       mastructcs(nk,kon,ipkon,lakon,ne,nodeboun,ndirboun,nboun,
 		 ipompc,nodempc,nmpc,nactdof,icol,jq,&mast1,&irow,isolver,
 		 neq,ikmpc,ilmpc,ipointer,nzs,nmethod,
-		 ics,cs,labmpc,mcs,mi,mortar);
+		 ics,cs,labmpc,mcs,mi,mortar,ielmat,matname);
     }
 
     SFREE(ipointer);SFREE(mast1);
