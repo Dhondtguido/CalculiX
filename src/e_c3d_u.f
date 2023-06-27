@@ -52,7 +52,7 @@
       character*80 matname(*),amat
       character*81 tieset(3,*)
 !     
-      integer konl(26),nelemload(2,*),nbody,nelem,mi(*),kon(*),
+      integer konl(20),nelemload(2,*),nbody,nelem,mi(*),kon(*),
      &     ielprop(*),null,index,mattyp,ithermal(*),iperturb(*),nload,
      &     idist,
      &     i,j,i1,nmethod,kk,nelcon(2,*),nrhcon(*),nalcon(2,*),

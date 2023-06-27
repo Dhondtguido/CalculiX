@@ -5193,3 +5193,6 @@ Dec 2002        - started to work on single crystal plasticity
 
  18 June 2023   - worked on *matrix assemble in combination with
                   cyclic symmetry
+
+ 27 June 2023   - finished *matrix assemble in combination with cyclic
+                  symmetry

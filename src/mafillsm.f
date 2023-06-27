@@ -344,7 +344,7 @@ c              write(*,*) 'mafillsm ',node1,k,node2,m,jj,ll
 !     
               node2=kon(indexe+l)
               jdof2=nactdof(m,node2)
-c              if(i.eq.32) then
+c              if(i.eq.96) then
 c                write(20,100) node1,k,node2,m,s(jj,ll)
 c                write(21,100) node1,k,node2,m,sm(jj,ll)
 c              endif

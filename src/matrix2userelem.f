@@ -90,7 +90,7 @@
 !     determine the number of nodes in the stiffness matrix
 !     
       allocate(inode(nk_))
-      open(20,file=filename,status='old')
+      open(20,file=filename,status='old',err=3)
       nope=0
       do
         read(20,*,end=1,err=2) node
@@ -164,6 +164,8 @@
       return
  2    write(*,*) '*ERROR in stiffness matrix file ',filename
       write(*,*) '       uncorrect format'
+ 3    write(*,*) '*ERROR reading stiffness matrix file ',filename
+      write(*,*) '       does not exist'
       end
 
 
