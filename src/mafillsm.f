@@ -62,7 +62,7 @@
      &     nea,neb,kscale,iponoel(*),inoel(2,*),network,ndof,
      &     nset,islavelinv(*),jqtloc(*),irowtloc(*),ii,jqtloc1(21),
      &     irowtloc1(96),i1,j1,j2,konl(26),mortartrafoflag,ikmpc(*),
-     &     mscalmethod,kk,imat
+     &     mscalmethod,kk,imat,istiff
 !     
       real*8 co(3,*),xboun(*),coefmpc(*),xforc(*),xload(2,*),p1(3),
      &     p2(3),ad(*),au(*),bodyf(3),fext(*),xloadold(2,*),reltime,
@@ -295,6 +295,7 @@ c     mortar end
             imat=ielmat(1,i)
             filestiff=matname(imat)
             open(20,file=filestiff,status='old')
+            istiff=1
             do
               read(20,*,end=1) node1,k,node2,m,val
               call nident(kon(indexe+1),node1,nope,id1)
@@ -304,7 +305,7 @@ c     mortar end
 c              write(*,*) 'mafillsm ',node1,k,node2,m,jj,ll
               call mafillsmmatrix(ipompc,nodempc,coefmpc,nmpc,
      &             ad,au,nactdof,jq,irow,neq,nmethod,mi,rhsi,
-     &             k,m,node1,node2,jj,ll,val)
+     &             k,m,node1,node2,jj,ll,val,istiff)
             enddo
  1          close(20)
 !     
@@ -312,6 +313,7 @@ c              write(*,*) 'mafillsm ',node1,k,node2,m,jj,ll
             if(imat.ne.0) then
               filemass=matname(imat)
               open(20,file=filemass,status='old')
+              istiff=0
               do
                 read(20,*,end=2) node1,k,node2,m,val
                 call nident(kon(indexe+1),node1,nope,id1)
@@ -320,7 +322,7 @@ c              write(*,*) 'mafillsm ',node1,k,node2,m,jj,ll
                 ll=(id2-1)*3+m
                 call mafillsmmatrix(ipompc,nodempc,coefmpc,nmpc,
      &               adb,aub,nactdof,jq,irow,neq,nmethod,mi,rhsi,
-     &               k,m,node1,node2,jj,ll,val)
+     &               k,m,node1,node2,jj,ll,val,istiff)
               enddo
  2            close(20)
             endif

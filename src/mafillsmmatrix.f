@@ -18,7 +18,7 @@
 !     
       subroutine mafillsmmatrix(ipompc,nodempc,coefmpc,nmpc,
      &     ad,au,nactdof,jq,irow,neq,nmethod,mi,rhsi,
-     &     k,m,node1,node2,jj,ll,val)
+     &     k,m,node1,node2,jj,ll,val,istiff)
 !     
 !     filling the stiffness matrix in spare matrix format (sm)
 !     for a substructure (superelement)
@@ -28,7 +28,7 @@
       integer rhsi
 !     
       integer ipompc(*),nodempc(3,*),jq(*),mi(*),nactdof(0:mi(2),*),
-     &     irow(*),icolumn,nmpc,neq(2),nmethod,k,m,jj,
+     &     irow(*),icolumn,nmpc,neq(2),nmethod,k,m,jj,istiff,
      &     ll,id,id1,id2,ist,ist1,ist2,index,jdof1,jdof2,idof1,idof2,
      &     mpc1,mpc2,index1,index2,node1,node2,i0
 !     
@@ -79,12 +79,14 @@
         endif
 !     
 !     regular DOF / SPC
-!     
-        if(rhsi.eq.1) then
-        elseif(nmethod.eq.2) then
-          value=val
-          icolumn=neq(2)-idof2/2
-          call add_bo_st(au,jq,irow,idof1,icolumn,value)
+!
+        if(istiff.eq.1) then
+          if(rhsi.eq.1) then
+          elseif(nmethod.eq.2) then
+            value=val
+            icolumn=neq(2)-idof2/2
+            call add_bo_st(au,jq,irow,idof1,icolumn,value)
+          endif
         endif
       else
         idof1=jdof1
