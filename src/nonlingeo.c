@@ -3268,22 +3268,17 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	for(k=0;k<6*mi[0]*ne0;++k){
 	  sti[k]=stx[k];
 	}
-      }
       
-      /* calculating the ratio of the smallest to largest pressure
-         for face-to-face contact
-         only done at the end of a step */
+	/* calculating the ratio of the smallest to largest pressure
+	   for face-to-face contact
+	   only done at the end of a step */
 
-      if((*mortar==1)&&(1.-theta-dtheta<=1.e-6)){
-	FORTRAN(negativepressure,(&ne0,ne,mi,stx,&pressureratio));
-      }else{pressureratio=0.;}
+	if((*mortar==1)&&(1.-theta-dtheta<=1.e-6)){
+	  FORTRAN(negativepressure,(&ne0,ne,mi,stx,&pressureratio));
+	}else{pressureratio=0.;}
+      }
 
       SFREE(v);SFREE(stx);SFREE(fn);
-
-
-
-
-
       
       if((idamping==1)&&(*iexpl<=1)){SFREE(adc);SFREE(auc);}
 
@@ -3638,8 +3633,6 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       MNEW(nz,ITG,ntrimax);
       
       /*  Determination of active nodes (islavact) */
-
-      //            printf("nonlingeo iinc=%d\n",iinc);
       
       FORTRAN(islavactive,(tieset,ntie,itietri,cg,straight,
 			   co,vold,xo,yo,zo,x,y,z,nx,ny,nz,mi,
@@ -3648,15 +3641,17 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       SFREE(xo);SFREE(yo);SFREE(zo);SFREE(x);SFREE(y);SFREE(z);SFREE(nx);
       SFREE(ny);SFREE(nz);
 
-      if(negpres==0){
-	if((*mortar==1)&&(1.-theta-dtheta<=1.e-6)&&(itruecontact==1)){
-	  printf(" pressure ratio (smallest/largest pressure over all contact areas) =%e\n\n",pressureratio);
-	  if(pressureratio<-0.05){
-	    printf(" zero-size increment is appended\n\n");
-	    negpres=1;theta=1.-1.e-6;dtheta=1.e-6;
+      if(*ithermal!=2){
+	if(negpres==0){
+	  if((*mortar==1)&&(1.-theta-dtheta<=1.e-6)&&(itruecontact==1)){
+	    printf(" pressure ratio (smallest/largest pressure over all contact areas) =%e\n\n",pressureratio);
+	    if(pressureratio<-0.05){
+	      printf(" zero-size increment is appended\n\n");
+	      negpres=1;theta=1.-1.e-6;dtheta=1.e-6;
+	    }
 	  }
-	}
-      }else{negpres=0;}
+	}else{negpres=0;}
+      }
 
     }
 

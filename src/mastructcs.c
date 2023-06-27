@@ -197,7 +197,7 @@ void mastructcs(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 	
       mastructreadcs(ipompc,nodempc,nmpc,nactdof,jq,&mast1,neq,ipointer,
 		     &nzs_,nmethod,mi,&next,&ifree,&i,ielmat,
-		     matname,labmpc);
+		     matname,labmpc,mcs,cs,ics);
 	  
       continue;
     }
