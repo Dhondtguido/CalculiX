@@ -3470,7 +3470,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       }
       SFREE(bhat);	  
       SFREE(islavactdof);
-    }   
+    }
+    
     /* printing the energies (only for dynamic calculations) */
 
     if((icutb==0)&&(*nmethod==4)&&(*ithermal<2)&&(jout[0]==jprint)&&
@@ -3786,6 +3787,15 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   /*********************************************************/
 
   if(jprint!=0){
+    
+    /* printing the energies (only for dynamic calculations) */
+
+    if((*nmethod==4)&&(*ithermal<2)&&(*nener==1)){
+
+      printenergy(iexpl,ttime,&theta,tper,energy,ne,nslavs,ener,&energyref,
+		  &allwk,&dampwk,&ea,&energym,&energymold,&jnz,&mscalmethod,
+		  mortar,mi);
+    }
 
     /* calculating the displacements and the stresses and storing  
        the results in frd format */
