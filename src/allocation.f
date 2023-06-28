@@ -2077,8 +2077,8 @@ c     !
               mi(1)=max(mi(1),8*nlayer)
               mi(3)=max(mi(3),nlayer)
               if(js.le.nset_) then
-                nk_=nk_+20*nlayer*meminset(js)
-                nkon_=nkon_+20*nlayer*meminset(js)
+                nk_=nk_+300*nlayer*meminset(js)
+                nkon_=nkon_+300*nlayer*meminset(js)
               endif
               exit
             endif
