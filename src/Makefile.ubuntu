@@ -1,0 +1,31 @@
+
+CFLAGS = -Wall -g -I /usr/include/spooles/ -DARCH="Linux" -DSPOOLES -DARPACK -DMATRIXSTORAGE -DNETWORKOUT
+FFLAGS = -Wall -g -std=legacy
+
+CC=cc
+FC=gfortran
+
+.c.o :
+	$(CC) $(CFLAGS) -c $<
+.f.o :
+	$(FC) $(FFLAGS) -c $<
+
+include Makefile.inc
+
+SCCXMAIN = CalculiX.c
+
+OCCXF = $(SCCXF:.f=.o)
+OCCXC = $(SCCXC:.c=.o)
+OCCXMAIN = $(SCCXMAIN:.c=.o)
+
+LIBS = -larpack -lspooles -lpthread -lm -lc -lblas -llapack
+
+
+CalculiX: $(OCCXMAIN) CalculiX.a  $(LIBS)
+	./date.pl; $(CC) $(CFLAGS) -c CalculiX.c; $(FC)  -Wall -g -o $@ $(OCCXMAIN) CalculiX.a $(LIBS) -fopenmp
+
+CalculiX.a: $(OCCXF) $(OCCXC)
+	ar vr $@ $?
+
+prereq:
+	sudo apt install libarpack2-dev libspooles-dev
