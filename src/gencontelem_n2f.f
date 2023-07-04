@@ -651,8 +651,8 @@ c     write(*,*) '**regular solution'
               write(88,*) nopes ! tot master nodes associated to slave node
               write(88,*) node  ! slave node
               write(88,'(I12)')  nodef(1:nopes) ! list master nodes
-              write(88,'(E12.6)')  -ratio(iorder) ! list slave nodes
-!     write(*,'(E12.6)')  -ratio(iorder)! list slave nodes
+              write(88,'(E13.6)')  -ratio(iorder) ! list slave nodes
+!     write(*,'(E13.6)')  -ratio(iorder)! list slave nodes
             endif
 !     
             jbasis=3*(j-1)

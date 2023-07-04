@@ -15207,7 +15207,14 @@ only the selected degrees of freedom are addressable, e.g. to apply loads or
 boundary conditions. The other degrees of freedom have been removed, thereby
 substantially reducing the size of the stiffness matrix. The retained degrees
 of freedom kind of constitute a new element (which explains the term
-superelement). 
+superelement).
+
+The stiffness matrix is obtained by successively applying a unit displacement
+to one of the retained nodes in one global direction while setting all other
+displacement values in the retained nodes to zero. This yields one column in
+the stiffness matrix of the superelement. Notice that in order to obtain the correct stiffness matrix only the elements belonging to
+the superelement should be retained in the input deck. Any other elements will
+influence the stiffness matrix and lead to a wrong matrix.
 
 The substructure generation is triggered by the procedure card
 \htmlref{*SUBSTRUCTURE GENERATE}{substructuregenerate}. The degrees of freedom
@@ -15216,9 +15223,11 @@ which should be retained can be defined by using the \htmlref{*RETAINED NODAL
 the degrees of freedom apply to the global Carthesian system. Finally, the
 storage of the stiffness matrix is governed by the \htmlref{*SUBSTRUCTURE
   MATRIX OUTPUT}{substructurematrixoutput} card, specifying the name of the
-file without extension. The extension .mtx is default. 
+file without extension. The extension .mtx is default. The stiffness matrix
+can be stored in a USER DEFINED format or in a MATRIX format.
 
-The output in the .mtx file constitutes the input one needs to use the
+If the storage is in USER DEFINED format (OUTPUT FILE=USER DEFINED on the
+*SUBSTRUCTURE MATRIX OUTPUT card) the output in the .mtx file constitutes the input one needs to use the
 superelement in ABAQUS. It consists of:
 
 \begin{itemize}
@@ -15235,8 +15244,9 @@ superelement in ABAQUS. It consists of:
   separated.
 \end{itemize}
 
-Since substructures cannot be used in CalculiX, the generation of the
-substructure stiffness matrix is meant to be used by other programs.
+If the storage is in MATRIX format (OUTPUT FILE=MATRIX on the *SUBSTRUCTURE
+MATRIX OUTPUT card) the resulting file can be used in a \htmlref{*MATRIX
+  ASSEMBLE}{matrixassemble} card for further usage in CalculiX. 
 
 \subsubsection{Electromagnetism \label{electromagnetism}}
 
