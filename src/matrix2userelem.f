@@ -162,10 +162,14 @@
       ne_=ne_+1
 !     
       return
- 2    write(*,*) '*ERROR in stiffness matrix file ',filename
+ 2    write(*,*)
+      write(*,*) '*ERROR in stiffness matrix file ',filename
       write(*,*) '       uncorrect format'
- 3    write(*,*) '*ERROR reading stiffness matrix file ',filename
+      call exit(201)
+ 3    write(*,*)
+      write(*,*) '*ERROR reading stiffness matrix file: ',filename
       write(*,*) '       does not exist'
+      call exit(201)
       end
 
 

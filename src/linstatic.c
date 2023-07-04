@@ -70,7 +70,8 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	       double *thicke,char *jobnamec,char *tieset,ITG *ntie,
 	       ITG *istep,ITG *nmat,ITG *ielprop,double *prop,char *typeboun,
 	       ITG *mortar,ITG *mpcinfo,double *tietol,ITG *ics,
-	       char *orname,ITG *itempuser,double *t0g,double *t1g){
+	       char *orname,ITG *itempuser,double *t0g,double *t1g,
+	       ITG *jmax){
   
   char description[13]="            ",*lakon=NULL,stiffmatrix[132]="",
     fneig[132]="",jobnamef[396]="",*labmpc2=NULL;
@@ -657,7 +658,8 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       
     SFREE(iretain);
 	  
-    FORTRAN(writesubmatrix,(submatrix,noderetain,ndirretain,&nretain,jobnamec));
+    FORTRAN(writesubmatrix,(submatrix,noderetain,ndirretain,&nretain,jobnamec,
+			    jmax));
 	  
     SFREE(submatrix);SFREE(noderetain);SFREE(ndirretain);
 	  

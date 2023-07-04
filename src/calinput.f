@@ -116,7 +116,7 @@
      &     isolver,ithermal(*),iperturb(*),iprestr,istep,mei(4),nkon,
      &     nprint,nload,nload_,nforc,nforc_,nlabel,imat,
      &     nset,nset_,nprint_,nam,nam_,jout(2),ncmat_,itpamp,
-     &     ierror,idrct,jmax(2),iexpl,iplas,npmat_,ntrans,ntrans_,
+     &     ierror,idrct,jmax(*),iexpl,iplas,npmat_,ntrans,ntrans_,
      &     M_or_SPC,nplicon(0:ntmat_,*),nplkcon(0:ntmat_,*),nflow,
      &     ne1d,ne2d,nener,irstrt(*),ii,maxlenmpc,inl,ipol,network,
      &     iline,mcs,ntie,ntie_,lprev,newstep,nbody,nbody_,ibody(3,*),
@@ -1130,7 +1130,7 @@ c
       elseif(textpart(1)(1:25).eq.'*SUBSTRUCTUREMATRIXOUTPUT') then
         call substructurematrixoutputs(textpart,istep,inpc,
      &       istat,n,key,iline,ipol,inl,ipoinp,inp,jobnamec,ipoinpc,
-     &       ier)
+     &       ier,jmax)
 !     
       elseif(textpart(1)(1:9).eq.'*SURFACE ') then
         call surfaces(inpc,textpart,set,istartset,iendset,ialset,

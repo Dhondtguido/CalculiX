@@ -28145,15 +28145,21 @@ Example files: substructure.
 Keyword type: step
 
 This option is used to define the name of the file in which the stiffness
-matrix of the substructure is to be stored which was generated within a
+matrix of the substructure is to be stored which is generated within a
 \htmlref{*SUBSTRUCTURE GENERATE}{substructuregenerate} step. This is the only
 procedure in which this keyword card makes sense.
 
-There are two optional parameters STIFFNESS and OUTPUT FILE, and one required
-parameter FILE NAME.
+There is one optional parameter STIFFNESS, and two required
+parameters FILE NAME and OUTPUT FILE.
 
-The optional parameters can only take a fixed value: STIFFNESS=YES and OUTPUT
-FILE= USER DEFINED. No other value is allowed.
+The optional parameter STIFFNESS can only take a fixed value:
+STIFFNESS=YES. The parameter OUTPUT
+FILE can take the value USER DEFINED or MATRIX. If the value is USER DEFINED
+the output format resembles a user element definition. For the value MATRIX the resulting
+stiffness file can be used in a \htmlref{*MATRIX ASSEMBLE}{matrixassemble}
+keyword. In this way it is defined as superelement and the output format
+consists of lines listing the row node number, row degree of freedom, column
+node number, column degree of freedom and matrix entry value.
 
 The required parameter FILE NAME is used to define the name of the file
  in
@@ -28165,20 +28171,21 @@ be changed. It is automatically appended to the name given by the user.
 First line:
 \begin{itemize}
 \item *SUBSTRUCTURE MATRIX OUTPUT
-\item Enter the parameter FILE NAME and its name, and optionally, the
-  parameters STIFFNESS and OUTPUT FILE with their fixed values.
+\item Enter the parameter FILE NAME and OUTPUT FILE and their values, and optionally, the
+  parameter STIFFNESS with its fixed value.
 \end{itemize}
 
 \begin{verbatim}
 Example:
 
-*SUBSTRUCTURE MATRIX OUTPUT,FILE NAME=substruc
+*SUBSTRUCTURE MATRIX OUTPUT,FILE NAME=substruc,OUTPUT FILE=MATRIX
 \end{verbatim}
 
-defines file substruc.mtx for the storage of the substructure stiffness matrix.
+defines file substruc.mtx for the storage of the substructure stiffness matrix
+in MATRIX format.
 
 \bigskip
-Example files: substructure.
+Example files: substructure, substructure2.
 
 
 \subsection{\label{surface}*SURFACE}
@@ -37651,6 +37658,13 @@ nuel & number of different user element types \\
 \hline
 \multicolumn{2}{|p{12cm}|}{INCREMENT PARAMETERS}  \\
 \hline
+
+jmax(1) &              in a *SUBSTRUCTURE GENERATE procedure: \\
+& if 1: FILE=USER DEFINED  \\
+& if 2: FILE=MATRIX \\
+& in all other procedures: maximum number of thermomechanical increments  \\
+
+jmax(2) &              maximum number of CFD increments \\
 
       tinc &           user given increment size (can be modified by the 
                       program if the parameter DIRECT is not activated) \\

@@ -3116,7 +3116,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		   xboun,nboun,ipompc,nodempc,coefmpc,labmpc,nmpc,nmethod,cam,
 		   neq,veold,accold,&bet,&gam,&dtime,mi,vini,nprint,prlab,
 		   &intpointvarm,&calcul_fn,&calcul_f,&calcul_qa,&calcul_cauchy,
-		   &ikin,&intpointvart,typeboun,&num_cpus,mortar,nener);
+		   &ikin,&intpointvart,typeboun,&num_cpus,mortar,nener,iponoel,
+		   network);
       }else{
 	if(ne1d2d==1)NNEW(inum,ITG,*nk);
 	results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,

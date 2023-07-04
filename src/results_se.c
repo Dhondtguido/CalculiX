@@ -79,7 +79,7 @@ void results_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 
     ITG intpointvarm,calcul_fn,calcul_f,calcul_qa,calcul_cauchy,nener=0,ikin,
         intpointvart,mt=mi[1]+1,i,j,idesvar,iorien,idir,im,
-        nea,neb;
+        nea,neb,*iponoel=NULL,network=0;
     
     double *dfn=NULL,*fn0=NULL,a[9],pgauss[3],rotvec[3],orabsav[7];
 
@@ -148,7 +148,8 @@ void results_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 	       xboun,nboun,ipompc,nodempc,coefmpc,labmpc,nmpc,nmethod,cam,neq,
 	       veold,accold,bet,gam,dtime,mi,vini,nprint,prlab,
 	       &intpointvarm,&calcul_fn,&calcul_f,&calcul_qa,&calcul_cauchy,
-	       &ikin,&intpointvart,typeboun,&num_cpus,mortar,&nener);
+	       &ikin,&intpointvart,typeboun,&num_cpus,mortar,&nener,iponoel,
+	       &network);
 
     NNEW(fn0,double,mt**nkon);
     NNEW(dfn,double,mt**nk);

@@ -5196,3 +5196,7 @@ Dec 2002        - started to work on single crystal plasticity
 
  27 June 2023   - finished *matrix assemble in combination with cyclic
                   symmetry
+
+ 4 July 2023    - worked on *SUBSTRUCTURE MATRIX OUTPUT,OUTPUT FILE=MATRIX
+                - removed the network nodes from the change-in-temperature-
+		  check w.r.t. deltmx (resultsini, cam[2])
