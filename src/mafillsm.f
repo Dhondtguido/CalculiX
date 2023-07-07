@@ -309,22 +309,27 @@ c              write(*,*) 'mafillsm ',node1,k,node2,m,jj,ll
             enddo
  1          close(20)
 !     
-            imat=ielmat(2,i)
-            if(imat.ne.0) then
-              filemass=matname(imat)
-              open(20,file=filemass,status='old')
-              istiff=0
-              do
-                read(20,*,end=2) node1,k,node2,m,val
-                call nident(kon(indexe+1),node1,nope,id1)
-                jj=(id1-1)*3+k
-                call nident(kon(indexe+1),node2,nope,id2)
-                ll=(id2-1)*3+m
-                call mafillsmmatrix(ipompc,nodempc,coefmpc,nmpc,
-     &               adb,aub,nactdof,jq,irow,neq,nmethod,mi,rhsi,
-     &               k,m,node1,node2,jj,ll,val,istiff)
-              enddo
- 2            close(20)
+            if(mass(1).ne.0) then
+!
+!             only if mass matrix is needed (not for static calculation)
+!
+              imat=ielmat(2,i)
+              if(imat.ne.0) then
+                filemass=matname(imat)
+                open(20,file=filemass,status='old')
+                istiff=0
+                do
+                  read(20,*,end=2) node1,k,node2,m,val
+                  call nident(kon(indexe+1),node1,nope,id1)
+                  jj=(id1-1)*3+k
+                  call nident(kon(indexe+1),node2,nope,id2)
+                  ll=(id2-1)*3+m
+                  call mafillsmmatrix(ipompc,nodempc,coefmpc,nmpc,
+     &                 adb,aub,nactdof,jq,irow,neq,nmethod,mi,rhsi,
+     &                 k,m,node1,node2,jj,ll,val,istiff)
+                enddo
+ 2              close(20)
+              endif
             endif
             return
           endif

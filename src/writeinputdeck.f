@@ -354,7 +354,7 @@
 !     write the coordinates in file "jobname.equ"
 !
       write(20,102)
- 102  format('*NODE,NSET=nall')
+ 102  format('*NODE,NSET=Nall')
       do i=1,nk
         if(ipretinfo(i).ne.i) cycle
         if(ne2d.ne.0) then

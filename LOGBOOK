@@ -5200,3 +5200,6 @@ Dec 2002        - started to work on single crystal plasticity
  4 July 2023    - worked on *SUBSTRUCTURE MATRIX OUTPUT,OUTPUT FILE=MATRIX
                 - removed the network nodes from the change-in-temperature-
 		  check w.r.t. deltmx (resultsini, cam[2])
+
+ 7 July 2023    - fixed an error in resultsmech: energy was not calculated
+                  in an increment for which no printing output was requested.

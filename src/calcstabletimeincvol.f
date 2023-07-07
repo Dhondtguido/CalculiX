@@ -146,6 +146,7 @@ c     &     /(gam+2.d0*alpha*(gam-bet)) !eq 25 miranda
 !     ** DO per element
       do nelem=1,ne0
         if(ipkon(nelem).lt.0) cycle
+        write(*,*) 'calcstabletimeincvol ',nelem
 !     
         lakonl=lakon(nelem)
         imat=ielmat(1,nelem)

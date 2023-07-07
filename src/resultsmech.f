@@ -1053,7 +1053,16 @@ c     enddo
 !     be updated at the end of each increment (also if no output
 !     is requested), since it is input to the umat routine
 !     
+c          if((iout.ge.0).or.(iout.eq.-2).or.(kode.le.-100).or.
           if((iout.gt.0).or.(iout.eq.-2).or.(kode.le.-100).or.
+!
+!              next line was inserted since the extra call
+!              of results at the end of an increment is not 
+!              executed if no printing information is needed
+!              for that increment (due to the FREQUENCY parameter)          
+!              07.07.2023
+!
+     &         ((iout.eq.0).and.(nener.eq.1)).or.
      &         ((nmethod.eq.4).and.
      &         ((iperturb(1).gt.1).and.(nlgeom_undo.eq.0)).and.
      &         (ithermal(1).le.1))) then
@@ -1079,7 +1088,6 @@ c     enddo
             eme(6,jj,i)=emec(6)
           endif
 !     
-c          if((iout.gt.0).or.(iout.eq.-2).or.(kode.le.-100)) then
           if(iout.gt.0) then
 !     
             eei(1,jj,i)=eloc(1)
