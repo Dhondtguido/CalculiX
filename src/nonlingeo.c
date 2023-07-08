@@ -836,7 +836,14 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     NNEW(xstateini,double,*nstate_*mi[0]*(*ne+*nslavs));
     isiz=*nstate_*mi[0]*(*ne+*nslavs);cpypardou(xstateini,xstate,&isiz,&num_cpus);
   }
-  if((*nstate_!=0)&&(*mortar==1)) NNEW(xstateini,double,1);
+
+  /* next lines: change on 8th of July 2023: initial state values
+     for dynamic plastic calculations */
+  
+  if((*nstate_!=0)&&(*mortar==1)){
+    NNEW(xstateini,double,*nstate_*mi[0]**ne);
+    isiz=*nstate_*mi[0]**ne;cpypardou(xstateini,xstate,&isiz,&num_cpus);
+  }
   
   NNEW(eei,double,6*mi[0]**ne);
   NNEW(stiini,double,6*mi[0]**ne);

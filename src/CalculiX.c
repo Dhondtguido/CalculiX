@@ -149,12 +149,16 @@ int main(int argc,char *argv[])
   FORTRAN(openfile,(jobnamef));
 
   printf("\n************************************************************\n\n");
+#ifdef INTSIZE64
+  printf("CalculiX Version DEVELOPMENT i8, Copyright(C) 1998-2015 Guido Dhondt\n");
+#else
   printf("CalculiX Version DEVELOPMENT, Copyright(C) 1998-2015 Guido Dhondt\n");
+#endif
   printf("CalculiX comes with ABSOLUTELY NO WARRANTY. This is free\n");
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Fri Jul  7 16:58:08 CEST 2023\n");
+  printf("You are using an executable made on Sat Jul  8 23:36:05 CEST 2023\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
