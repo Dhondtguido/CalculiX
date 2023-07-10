@@ -293,7 +293,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
      is performed with node-to-face contact */
   
   if(*mortar!=1){
-    if(nintpoint!=0){
+    if(*nintpoint!=0){
       maxprevcontel=0;
       *nintpoint=0;
       SFREE(pslavsurf);SFREE(clearini);

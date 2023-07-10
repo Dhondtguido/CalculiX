@@ -18540,6 +18540,10 @@ resolution of the contact area. Here, ``NODE TO SURFACE'' and ``MASSLESS''
 perform better. Therefore, the present keyword was introduced in order to
 change the contact formulation at the start of a dynamic step.
 
+The option *CHANGE CONTACT TYPE can also be used if a previous static step was
+calculated with ``NODE TO SURFACE'' contact (for whatever reason) and the subsequent
+dynamic step is to be performed with ``MASSLESS'' contact.
+
 Either the parameter TO NODE TO SURFACE or TO MASSLESS is required.
 
 \bigskip
