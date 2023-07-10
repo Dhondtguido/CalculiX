@@ -10635,6 +10635,13 @@ dependence has to be defined using a \htmlref{*RATE DEPENDENT}{ratedependent}
 card with the parameter TYPE=JOHNSON COOK, listing underneath the parameters
 $C$ and $\dot{\epsilon}_0$.
 
+\subsubsection{\label{mohrcoulombplasticity}Mohr-Coulomb plasticity.}
+
+The theorie and algorithms used to code the classical Mohr-Coulomb plasticity
+model are primarily taken from \cite{Sorensen} and \cite{Clausen} and the
+references therein.
+
+
 \subsubsection{Tension-only and compression-only materials.}
 
 These are material models which can be used to simulate textile behavior
@@ -25376,6 +25383,98 @@ deactivates contact between the surfaces dep and ind.
 \bigskip
 Example files: modelchel,modelchel2
 
+\subsection{\label{mohrcoulomb}*MOHR COULOMB}
+
+Keyword type: model definition, material
+
+This keyword is used to define the friction angle and dilation angle for the
+yield surface and the flow rule, respectively, of a Mohr-Coulomb material. The
+theory for this plasticity model is described in Section
+\ref{mohrcoulombplasticity}. There are no parameters for this keyword.
+
+The temperature dependence is taken into account in a piecewise linear way
+based on the data at discrete temperature points.
+
+The use of a *MOHR COULOMB card requires a *MOHR COULOMB HARDENING card
+within the same material definition in order to define the cohesion stress
+$c$.
+
+Notice that for $\phi=\psi$ one obtains associative plasticity and for
+$\phi=\psi=0$ the model reduces to Tresca plasticity.
+\bigskip
+
+First line:
+\begin{itemize}
+\item *MOHR COULOMB
+\end{itemize}
+
+Following line:
+\begin{itemize}
+\item Friction angle $\phi$ in degrees.
+\item Dilation angle $\psi$ in degrees.
+\item Temperature.
+\end{itemize}
+Repeat this line if needed to define complete temperature dependence.
+
+\begin{verbatim}
+Example:
+
+*MOHR COULOMB
+20.,10.,294.
+\end{verbatim}
+
+defines a Mohr-Coulomb material for temperature T=294. Since the definition includes values for only one temperature, they are valid for all temperatures.
+
+\bigskip
+Example files: mohr1, mohr2.
+
+\subsection{\label{mohrcoulombhardening}*MOHR COULOMB HARDENING}
+
+Keyword type: model definition, material
+
+This keyword is used to define the (isotropic) hardening behavior of a Mohr-Coulomb
+material. The
+theory for this plasticity model is described in Section
+\ref{mohrcoulombplasticity}. There are no parameters for this keyword.
+
+The temperature dependence is taken into account in a piecewise linear way
+based on the data at discrete temperature points. These temperature points
+should be identical to those used underneath the \htmlref{*MOHR COULOMB}{mohrcoulomb}
+card. The use of a *MOHR COULOMB HARDENING card requires a *MOHR COULOMB card
+within the same material definition.
+\bigskip
+
+First line:
+\begin{itemize}
+\item *MOHR COULOMB HARDENING
+\end{itemize}
+
+Following sets of lines define the isotropic hardening curve:
+First line in the first set:
+\begin{itemize}
+\item Cohesion yield stress $c$.
+\item Equivalent plastic strain.
+\item Temperature.
+\end{itemize}
+Use as many lines in the first set as needed to define the complete hardening curve for this temperature.
+
+Use as many sets as needed to define complete temperature dependence.
+
+\begin{verbatim}
+Example:
+
+*MOHR COULOMB HARDENING
+10.,0.,294.
+100.,1.,294.
+\end{verbatim}
+
+defines the hardening curve for a  Mohr-Coulomb material for temperature
+T=294. The cohesion stress $c$ is 10. for zero equivalent plastic strain and
+100. for an equivalent plastic strain of 1 (= 100 \%). In between linear interpolation is
+applied. Since the definition includes values for only one temperature, they are valid for all temperatures.
+
+\bigskip
+Example files: mohr1, mohr2.
 
 \subsection{\label{mpc}*MPC}
 
@@ -38189,6 +38288,11 @@ flow over a two-dimensional compression corner. \textit{NASA TR R-385 Report}
   gradients. \textit{Structural and Multidisciplinary Optimization}. https://doi.org/10.1007/s00158-019-02320-9.
  
 \bibitem{Ciarlet} Ciarlet, P.G., \textit{ Mathematical Elasticity, Volume I: Three-dimensional Elasticty}. North Holland, New York (1988). 
+ 
+\bibitem{Clausen} Clausen, J., \textit{Efficient Non-Linear Finite Element
+  Implementation of Elasto-Plasticity for Geotechnical
+  Problems}. Ph.D. Thesis, Esbjerg
+  Institute of Technology, Aalborg University (2007). 
 
 \bibitem{Crossley} Crossley, A.J., \textit{Accurate and efficient numerical
   solutions for the Saint Venant equations of open channel
@@ -38453,6 +38557,10 @@ Crystal Modeling for Structural Calculations: Part 2 - Finite Element Implementa
 
 \bibitem{Smith} Smith, A.J. Ward, 
   \textit{Internal fluid flow}.  Oxford University Press (1980).
+
+\bibitem{Sorensen} S\o rensen, Emil Smed  \textit{Elasto-Plastic Strain
+    Hardening Mohr-Coulomb Model}.  Master Thesis, Aalborg University (2012),
+  https://vbm.aau.dk, last accessed July 10, 2023.
 
 \bibitem{Spalart} Spalart, P.R., and Rumsey, C.L., Effective Inflow Conditions
   for Turbulence Models in Aerodynamic Calculations. \textit{AIAA Journal}. \textbf{45}(10) , 2544-2553 (2007).
