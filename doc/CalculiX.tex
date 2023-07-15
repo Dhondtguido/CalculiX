@@ -10637,9 +10637,334 @@ $C$ and $\dot{\epsilon}_0$.
 
 \subsubsection{\label{mohrcoulombplasticity}Mohr-Coulomb plasticity.}
 
-The theorie and algorithms used to code the classical Mohr-Coulomb plasticity
+The theory and algorithms used to code the classical Mohr-Coulomb plasticity
 model are primarily taken from \cite{Sorensen} and \cite{Clausen} and the
 references therein.
+
+The Mohr-Coulomb plasticity is non-associative with a piecewise linear yield
+surface $f$ an a piecewise linear plastic potential $g$. The basic idea is
+that the shear stress at which plastic flow occurs increases with increasing
+pressure, similar to contact sliding. This is illustrated in Figure
+\ref{mcoulomb} showing the shear stress $\tau$ versus normal stress
+$\sigma_n$. $\sigma_1 \ge \sigma_2 \ge \sigma_3$ are the principal
+stresses. 
+
+\begin{figure}
+\begin{center}
+\epsfig{file=lidprefem.eps,width=9cm}
+\caption{\label{mcoulomb}Pressure distribution in the lid-driven cavity}
+\end{center}
+\end{figure}
+
+The yield surface satisfies:
+
+\begin{equation}
+  \tau=c-\sigma_n \tan \varphi,
+\end{equation}
+
+where $c$ is the cohesion. This is equivalent to (cf. Figure \ref{mcoulomb})
+
+\begin{equation}
+  \sigma_1 \left( \frac{1+\sin \varphi }{1 - \sin \varphi } \right) -\sigma_3
+  -2 c \frac{\cos \varphi }{1 - \sin \varphi }=0,
+\end{equation}
+
+or
+
+\begin{equation}
+  \label{yieldmc}
+  k \sigma_1 - \sigma_3 - 2 c \sqrt{k} =0,
+\end{equation}
+
+where
+
+\begin{equation}
+  k=\frac{1+\sin \varphi }{1 - \sin \varphi }.
+\end{equation}
+
+$\varphi$ is called the friction angle. Similarly, the plastic potential is
+defined by:
+
+\begin{equation}
+  g = m \sigma_1 - \sigma_3,
+\end{equation}
+
+where
+
+\begin{equation}
+  m=\frac{1+\sin \psi }{1 - \sin \psi }.
+\end{equation}
+
+$\psi$ is called the dilation angle. It describes to what extent the volume of
+the material changes due to shear motion. For a positive value of $\psi$ the
+volume increases, as for dense sand. For a negative value the volume
+decreases, as for loose sand. In the latter case the grains fit better due to
+the motion. You can easily illustrate this by pouring suger in a bowl. Shaking
+the bowl the volume will decrease and more sugar will fit.
+
+As mentioned, the yield surface is piecewise linear, so the gradient of the
+surface is not continuous. This complicates matters. Now, looking at the yield
+surface and plastic potential it can be observed that it contains only
+principal stresses. Assuming the material to be elastically isotropic, this
+allows us to perform all operations in principal stress space, thereby
+reducing the tensors to vectors. This was first proposed in \cite{Clausen2}.
+
+Replacing $\sigma_1, \sigma_2, \sigma_3$ by $x,y,z$ for simplicity, the yield
+surface as defined in Equation (\ref{yieldmc}) defines in three-dimensional
+space one of six faces of a irregular pyramid with central axis in $(1,1,1)$
+direction. The other faces correspond to sectors in which the order of $\sigma_1,
+\sigma_2, \sigma_3$ is different.
+
+\begin{figure}
+\begin{center}
+\epsfig{file=lidprefem.eps,width=9cm}
+\caption{\label{sectionplane111}Pressure distribution in the lid-driven cavity}
+\end{center}
+\end{figure}
+
+Figure \ref{sectionplane111} shown a view
+on a plane orthogonal to the $(1,1,1)$ axis and through the origin. The six
+sectors are bordered by planes going through the x-, y- and z- axes and
+containing the $(1,1,1)$-axis. The cross section of this plane with the yield
+surface is an irregular hexagon (dashed line). Since the principal stresses
+can always be rearranged such that $x \ge y \ge z$ it is sufficient to look at
+that sector (labeled 1) and the neighboring ones (labeled 6 and 2).
+
+\begin{figure}
+\begin{center}
+\epsfig{file=lidprefem.eps,width=9cm}
+\caption{\label{yieldalong111}Pressure distribution in the lid-driven cavity}
+\end{center}
+\end{figure}
+
+Figure \ref{yieldalong111} shows the yield surface viewed from the apex and
+looking in the direction of $(-1,-1,-1)$. In the sectors of interest the
+normal to the surface $\boldsymbol{a}$ is shown. For sector 1 this is
+immediately clear from Equation (\ref{yieldmc}) which can be written as
+$(k,0,-1) \cdot (\sigma_1,\sigma_2,\sigma_3) -2c \sqrt{k} =0$. A vector along
+the interection lines of the pyramid faces is obtained by taking the cross
+product of the normal of the neighboring faces,e.g. $\boldsymbol{r_6} =
+\boldsymbol{a_6} \times \boldsymbol{a_1}$. The apex of the pyramid is obtained
+by substituting $\sigma_1=\sigma_3$ in  Equation (\ref{yieldmc}): it yields
+
+\begin{equation}
+  s_a := \sigma_1=\sigma_2=\sigma_3=\frac{2c \sqrt{k} }{k-1} = \frac{c}{\tan
+    \varphi }.
+\end{equation}
+
+Therefore, the equation of the intersection line between section 6 and 1
+satisfied $(s_a,s_a,s_a)+\lambda (1,k,k)$. Its intersection with the plane
+$x+y+z=0$ leads to
+
+\begin{equation}
+  \lambda=\frac{3 s_a}{1+2k},
+\end{equation}
+
+yielding the location of point A in Figure  \ref{sectionplane111}. For point B
+one gets
+
+\begin{equation}
+  \lambda=\frac{3 s_a}{2+k},
+\end{equation}
+
+which is farther away from the origin since $k \ge 1$. The normal to the
+plastic potential surface is labeled $\boldsymbol{b}$ and amounts for sector 1
+to $(m,0,-1)$. Similar expressions apply to the other sectors. 
+
+The governing equations of an elastic material with Mohr-Coulomb plasticity
+read:
+
+\begin{enumerate}
+
+\item[(i)]
+
+Elastic stress-strain relations
+
+\begin{equation}
+\boldsymbol{ \sigma} = \boldsymbol{D} \cdot  \boldsymbol{\epsilon}^e 
+\end{equation}
+
+\item[(ii)]
+
+Internal variable relationship
+
+\begin{equation}
+c(\epsilon^{\text{peq}})
+\end{equation}
+
+\item[(iii)]
+
+Yield surface
+
+\begin{equation}
+f(\boldsymbol{ \sigma},c)=0 \Leftrightarrow \boldsymbol{a} \cdot
+\boldsymbol{\sigma }- 2 c \sqrt{k}=0   
+\end{equation}
+
+\item[(iv)]
+
+Evolution equations
+
+\begin{equation}
+\dot{ \boldsymbol{ \epsilon}}^p= \dot{ \gamma} \frac{ \partial g
+(\boldsymbol{ \sigma},c)}{\partial \boldsymbol{ \sigma}} = \dot{ \gamma}
+\boldsymbol{b} 
+\end{equation}
+
+\item[(v)]
+
+Kuhn-Tucker equations
+
+\begin{equation}
+\dot{ \gamma} \ge 0, \quad f(\boldsymbol{ \sigma},c) \le
+0, \quad \dot{ \gamma} f(\boldsymbol{ \sigma},c) =0
+\end{equation}
+
+\item[(vi)]
+
+Consistency condition
+
+\begin{equation}
+\dot{ \gamma} \dot{ f}(\boldsymbol{ \sigma},c)=0.
+\end{equation}
+
+\end{enumerate}
+
+Notice that in the above equatons $\boldsymbol{\sigma } $ and
+$\boldsymbol{\epsilon } $ are vectors in principal space.
+
+In order to explain the numerical procedure it is assumed that all variables
+are known at the end of increment $n$ (corresponding to time $t$) and that
+their values are sought at the end of increment $n+1$ (corresponding to time
+$t + \Delta t$). The input to the algorithm is a change on total strain
+$\boldsymbol{\Delta \epsilon }$.
+
+At first it is assumed that now plasticity occurs in the new increment, i.e.:
+
+\begin{equation}
+\boldsymbol{ \epsilon} _{n+1} ^p = \boldsymbol{ \epsilon}_n^p
+\end{equation}
+
+\begin{equation}
+c_{n+1} = c_{n}
+\end{equation}
+
+\begin{equation}
+\gamma _{n+1} = \gamma_n
+\end{equation}
+
+\begin{equation}
+\boldsymbol{ \sigma}_{n+1} = \boldsymbol{D} \cdot  (\boldsymbol{\epsilon}^e_n +
+\boldsymbol{\Delta \epsilon })  
+\end{equation}
+
+If
+
+\begin{equation}
+  \boldsymbol{a} \cdot \boldsymbol{\sigma }_{n+1} - 2 c_{n+1} \sqrt{k} \le
+  0,
+\end{equation} 
+
+the solution is found. If not, $\Delta \gamma_{n+1} := \gamma_{n+1}-\gamma_n >
+0$ and due to the Kuhn-Tucker equations $f(\boldsymbol{\sigma },c)=0$ is
+required. The stress at $n+1$ can be written as:
+
+\begin{eqnarray}
+ \boldsymbol{\sigma }_{n+1} &=& \boldsymbol{D} \cdot \boldsymbol{\epsilon
+ }^e_{n+1} \\
+ &=& \boldsymbol{D} \cdot (\boldsymbol{\epsilon }_{n+1} - \boldsymbol{\epsilon
+ }_{n+1}^p) \\
+ &=& \boldsymbol{D} \cdot (\boldsymbol{\epsilon }_{n+1}   - \boldsymbol{\epsilon
+ }_{n}^p+ \boldsymbol{\epsilon
+ }_{n}^p- \boldsymbol{\epsilon
+ }_{n+1}^p) \\
+ &=& \boldsymbol{\sigma }_{n+1}^  {\text{trial}} - \boldsymbol{D} \cdot
+ \boldsymbol{\Delta \epsilon }_{n+1}^p \\
+ &=& \boldsymbol{\sigma }_{n+1}^  {\text{trial}} - \Delta \gamma
+ \boldsymbol{D} \cdot \boldsymbol{b}. 
+\end{eqnarray}
+
+In the last equation the evolution equation was used (flow rule). Defining
+$\boldsymbol{s}:= \boldsymbol{D} \cdot \boldsymbol{b}$, satisfying
+the yield surface now requires:
+
+\begin{equation} 
+\boldsymbol{a} \cdot (  \boldsymbol{\sigma }_{n+1}^  {\text{trial}}- \Delta \gamma_{n+1}
+ \; \boldsymbol{s}) -2 c(\epsilon _{n+1}^{\text{peq}}) \sqrt{k} =0.
+\end{equation}
+
+Notice that $\boldsymbol{s}$ points in the direction of the stress correction
+w.r.t. the trial stress. In order to solve this equation a relationship between $\epsilon
+_{n+1}^{\text{peq}}$ and $\Delta \gamma$ is needed. Now, $\dot{\epsilon}
+_{n+1}^{\text{peq}}$ is defined as:
+
+\begin{equation}
+  \dot{\epsilon}_{n+1}^{\text{peq}} = \sqrt{\frac{2}{3} } \| \dot
+      {\boldsymbol{\epsilon } }_{n+1}^p \|,
+\end{equation}
+
+from which:
+
+\begin{eqnarray}
+  \epsilon_{n+1}^{\text{peq}} &=& \int_{0}^{t+\Delta t} \sqrt{\frac{2}{3} } \| \dot
+          {\boldsymbol{\epsilon } }^p \| dt \\
+          &=& \int_{0}^{t} \sqrt{\frac{2}{3} } \| \dot
+          {\boldsymbol{\epsilon } }^p \| dt + \int_{t}^{t+\Delta t} \sqrt{\frac{2}{3} } \| \dot
+          {\boldsymbol{\epsilon } }^p \| dt \\
+          &=& \epsilon_n^{\text{peq}} + \sqrt{\frac{2}{3} } \| 
+      {\boldsymbol{\Delta \epsilon } }_{n+1}^p \| \\
+          &=& \epsilon_n^{\text{peq}} + \sqrt{\frac{2}{3} } \Delta
+      \gamma_{n+1} \; \| \boldsymbol{b}  \| \\
+      &=& \epsilon_n^{\text{peq}} + \sqrt{\frac{2}{3} } \Delta
+      \gamma_{n+1} \; \sqrt{1+m^2} 
+\end{eqnarray}
+
+Defining $k^*:=2 \sqrt{k}$ and $m^*:= \sqrt{2(1+m^2)/3}$ the yield equation
+now amounts to:
+
+\begin{equation} 
+f=\boldsymbol{a} \cdot (  \boldsymbol{\sigma }_{n+1}^  {\text{trial}}- \Delta \gamma_{n+1}
+ \; \boldsymbol{s}) - k^* c(\epsilon_n^{\text{peq}}+ \Delta \gamma_{n+1} m^* )=0.
+\end{equation}
+
+This is a nonlinear equation in $\Delta \gamma_{n+1}$. Using the
+Newton-Raphson procedure the first derivative is needed, which yields:
+
+\begin{equation}
+  \frac{\partial f}{ \partial  \Delta \gamma_{n+1}} = -\boldsymbol{a} \cdot \boldsymbol{s}
+  - k^*m^* \frac{\partial c}{\partial  \epsilon_{n+1}^{\text{peq}}} .
+\end{equation} 
+
+Starting with an initial guess $\Delta \gamma_{n+1}^0=0$, one arrives at
+$\Delta \gamma_{n+1}^{(k+1)} = \Delta \gamma_{n+1}^{(k)} + \Delta\Delta
+\gamma_{n+1}^{(k)} $ by solving the equation:
+
+\begin{equation}
+  f(\Delta \gamma_{n+1}^{(k)} + \Delta\Delta
+\gamma_{n+1}^{(k)}) \approx f(\Delta \gamma_{n+1}^{(k)}) + f'(\Delta
+  \gamma_{n+1}^{(k)}) \Delta\Delta
+  \gamma_{n+1}^{(k)}=0,
+\end{equation}
+
+or
+
+\begin{equation}
+  \left [  - \boldsymbol{a} \cdot \boldsymbol{s} - k^*m^* \left . \frac{\partial
+      c}{\partial \epsilon^{\text{peq}} }  \right
+    | _{\epsilon_{n+1}^{\text{peq},(k)}}  \right ] \Delta\Delta
+  \gamma_{n+1}^{(k)} = \boldsymbol{a} \cdot \left [ \boldsymbol{\sigma
+    }_{n+1}^ {\text{trial}} - \Delta \gamma_{n+1}^{(k)} \boldsymbol{s} \right
+  ] - k^* c(\epsilon_{n+1}^{\text{peq},(k)}),   
+\end{equation}
+
+where
+
+\begin{equation}
+  \epsilon_{n+1}^{\text{peq},(k)}=\epsilon_{n}^{\text{peq}}+m^* \Delta \gamma
+  _{n+1}^{(k)}.
+\end{equation}
+
+
 
 
 \subsubsection{Tension-only and compression-only materials.}
@@ -25103,7 +25428,7 @@ defines a substructure with name TEST. The stiffness matrix is stored in file
 ``beampsuper.stiff''. 
 
 \bigskip
-Example files: beamfsuper,beampsuper.
+Example files: beamfsuper,beampsuper, segmentsuper.
 
 \subsection{\label{membranesection}*MEMBRANE SECTION}
 
@@ -38292,6 +38617,10 @@ flow over a two-dimensional compression corner. \textit{NASA TR R-385 Report}
   gradients. \textit{Structural and Multidisciplinary Optimization}. https://doi.org/10.1007/s00158-019-02320-9.
  
 \bibitem{Ciarlet} Ciarlet, P.G., \textit{ Mathematical Elasticity, Volume I: Three-dimensional Elasticty}. North Holland, New York (1988). 
+
+\bibitem{Clausen2} Clausen, J., Damkilde, L., Anderson, L., Efficient return
+  algorithms for associated plasticity with multiple yield planes. \textit{
+    Int. J. Num. Meth. Engng. } \textbf{66} , 1036-1059 (2006).
  
 \bibitem{Clausen} Clausen, J., \textit{Efficient Non-Linear Finite Element
   Implementation of Elasto-Plasticity for Geotechnical
@@ -38387,7 +38716,6 @@ Comparative Study of Material Models. \textit{J. Elasticity}
 
 \bibitem{Lapidus} Lapidus, L. and Pinder, G.F., \textit{ Numerical solution of partial differential equations in science and engineering}. John Wiley \& Sons, New York (1982). 
 
-
 \bibitem{Laursen} Laursen, T.A., \textit{Computational Contact and Impact
     Mechanics}. Springer-Verlag, Berlin Heidelberg New York (2003).
 
@@ -38401,9 +38729,7 @@ Comparative Study of Material Models. \textit{J. Elasticity}
   Discharge coefficient for incompressible non cavitating flow through long
   orifices. \textit{ Journal of Mechanical Engineering Sciences } \textbf{7}(2) , 210-219 (1965).
 
-
 \bibitem{Liew} Liew, K.M. and Lim, C.W., A higher-order theory for vibration of doubly curved shallow shells. \textit{ Journal of Applied Mechanics } \textbf{63} , 587-593 (1996).
-
 
 \bibitem{Luenberger} Luenberger, D.G., \textit{ Linear and nonlinear
 programming}. Addison-Wesley Publishing Company, Reading, Massachusetts 
