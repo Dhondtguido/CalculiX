@@ -10964,6 +10964,174 @@ where
   _{n+1}^{(k)}.
 \end{equation}
 
+\begin{figure}
+\begin{center}
+\epsfig{file=lidprefem.eps,width=9cm}
+\caption{\label{regionsmc}Limits of the return regions for Mohr-Coulomb}
+\end{center}
+\end{figure}
+
+This works as long a the return is to a face of the yield surface. Since the
+return vector for sector 1 is $\boldsymbol{s_1}=\boldsymbol{D} \cdot \boldsymbol{b_1}  $ one
+can graphically plot the region in three-dimensional principal stress space
+which is returned to the yield face in sector 1 (Figure \ref{regionsmc}). It
+is the space for which
+
+\begin{equation}
+(\boldsymbol{\sigma }_{n+1}^  {\text{trial}}-\boldsymbol{s_a} ) \cdot
+  (\boldsymbol{s_1} \times \boldsymbol{r_1}) \ge 0 \;\;\; \text{AND} \;\;\; (\boldsymbol{\sigma }_{n+1}^  {\text{trial}}-\boldsymbol{s_a} ) \cdot
+  (\boldsymbol{s_1} \times \boldsymbol{r_6}) \le 0.
+\end{equation}
+
+This is called region I. The space within sector 1 in between region I and
+sector 2 and underneath the apex is mapped onto the intersection line of face 1 and face 2 of the
+yield surface (characterized by the equation $\boldsymbol{s_a} +\lambda
+\boldsymbol{r_1}, \lambda \in \mathbb{R} $). It is characterized by the equations
+
+\begin{equation}
+(\boldsymbol{\sigma }_{n+1}^  {\text{trial}}-\boldsymbol{s_a} ) \cdot
+  (\boldsymbol{s_1} \times \boldsymbol{r_1}) \le 0 \;\;\; \text{AND} \;\;\; (\boldsymbol{\sigma }_{n+1}^  {\text{trial}}-\boldsymbol{s_a} ) \cdot
+  (\boldsymbol{s_1} \times \boldsymbol{s_2}) \le 0.
+\end{equation}
+
+and is called region II of sector 1. Similary for the space in between region
+I and sector 6 and underneath the apex satisfying
+
+\begin{equation}
+(\boldsymbol{\sigma }_{n+1}^  {\text{trial}}-\boldsymbol{s_a} ) \cdot
+  (\boldsymbol{s_1} \times \boldsymbol{r_6}) \ge 0 \;\;\; \text{AND} \;\;\; (\boldsymbol{\sigma }_{n+1}^  {\text{trial}}-\boldsymbol{s_a} ) \cdot
+  (\boldsymbol{s_6} \times \boldsymbol{s_1}) \le 0.
+\end{equation}
+
+This is region III. Finally, the region above the apex corresponding to
+
+\begin{equation}
+(\boldsymbol{\sigma }_{n+1}^  {\text{trial}}-\boldsymbol{s_a} ) \cdot
+  (\boldsymbol{s_1} \times \boldsymbol{s_2}) \ge 0 \;\;\; \text{AND} \;\;\; (\boldsymbol{\sigma }_{n+1}^  {\text{trial}}-\boldsymbol{s_a} ) \cdot
+  (\boldsymbol{s_6} \times \boldsymbol{s_1}) \ge 0
+\end{equation}
+
+is returned to the apex and is called region IV.
+
+Returning the trial stress to the intersection line of two yield faces implies
+that the final state has to satisfy both face equations. The equivalent
+plastic strain now satisfies:
+
+\begin{equation}
+  \epsilon_{n+1}^{\text{peq}} = \epsilon_n^{\text{peq}} + m^*( \Delta
+      \gamma_{1,{n+1}} + \Delta
+      \gamma_{2,{n+1}})
+\end{equation}
+
+and the yield surface equations amount to:
+  
+\begin{eqnarray} 
+\boldsymbol{a_1} \cdot (  \boldsymbol{\sigma }_{n+1}^  {\text{trial}}- \Delta \gamma_{1,n+1}
+ \; \boldsymbol{s_1}- \Delta \gamma_{2,n+1}
+ \; \boldsymbol{s_2}) -  k^* c(\epsilon_{n+1}^{\text{peq}}) &=&0 \\
+\boldsymbol{a_2} \cdot (  \boldsymbol{\sigma }_{n+1}^  {\text{trial}}- \Delta \gamma_{1,n+1}
+ \; \boldsymbol{s_1}- \Delta \gamma_{2,n+1}
+ \; \boldsymbol{s_2}) -  k^* c(\epsilon_{n+1}^{\text{peq}}) &=&0 .
+\end{eqnarray}
+
+Applying Newton-Raphson now leads to:
+
+\begin{equation}
+  [A] \cdot \begin{Bmatrix} \Delta \Delta \gamma_1 \\ \Delta \Delta
+    \gamma_2 \end{Bmatrix} _{n+1}^{(k)} = \{B\},
+\end{equation}
+
+where
+
+\begin{equation}
+  [A]= \begin{bmatrix} - \boldsymbol{a_1} \cdot \boldsymbol{s_1} - k^*m^* \left . \frac{\partial
+      c}{\partial \epsilon^{\text{peq}} }  \right
+    | _{\epsilon_{n+1}^{\text{peq},(k)}} & - \boldsymbol{a_1} \cdot \boldsymbol{s_2} - k^*m^* \left . \frac{\partial
+      c}{\partial \epsilon^{\text{peq}} }  \right
+    | _{\epsilon_{n+1}^{\text{peq},(k)}} \\ - \boldsymbol{a_2} \cdot \boldsymbol{s_1} - k^*m^* \left . \frac{\partial
+      c}{\partial \epsilon^{\text{peq}} }  \right
+    | _{\epsilon_{n+1}^{\text{peq},(k)}} & - \boldsymbol{a_2} \cdot \boldsymbol{s_2} - k^*m^* \left . \frac{\partial
+      c}{\partial \epsilon^{\text{peq}} }  \right
+    | _{\epsilon_{n+1}^{\text{peq},(k)}} \end{bmatrix}
+\end{equation}
+
+and
+
+\begin{equation}
+\{B\}= \begin{Bmatrix} \boldsymbol{a_1} \cdot \left [ \boldsymbol{\sigma
+    }_{n+1}^ {\text{trial}} - \Delta \gamma_{1,n+1}^{(k)} \boldsymbol{s_1}- \Delta \gamma_{2,n+1}^{(k)} \boldsymbol{s_2} \right
+  ] - k^* c(\epsilon_{n+1}^{\text{peq},(k)}) \\ \boldsymbol{a_2} \cdot \left [ \boldsymbol{\sigma
+    }_{n+1}^ {\text{trial}} - \Delta \gamma_{1,n+1}^{(k)} \boldsymbol{s_1}- \Delta \gamma_{2,n+1}^{(k)} \boldsymbol{s_2} \right
+  ] - k^* c(\epsilon_{n+1}^{\text{peq},(k)}) \end{Bmatrix}.
+\end{equation}
+
+For a return to the apex the yield equations of sector 1, 2 and 6 have to be
+satisfied yielding 3 equations in 3 unknowns.
+
+To calculate the consistent tangent the change of stress due to a change in
+total strain is needed. The change of stress in the present increment amounts
+to:
+
+\begin{eqnarray}
+  d(\boldsymbol{\Delta \sigma }) &=& d(\boldsymbol{D} \cdot \boldsymbol{\Delta
+    \epsilon}^e) \\
+  &=& d(\boldsymbol{\boldsymbol{D} \cdot \Delta \epsilon}-\boldsymbol{D} \cdot \boldsymbol{\Delta \epsilon}^p) \\
+  &=& d(\boldsymbol{D} \cdot \boldsymbol{\Delta \epsilon}-\boldsymbol{D} \cdot
+  \frac{\partial g}{\partial \boldsymbol{\sigma } }  \Delta \gamma ) \\
+  &=& \boldsymbol{D} \cdot d \boldsymbol{\Delta \epsilon }  - \boldsymbol{D}
+  \cdot \frac{\partial ^2 g}{\partial \boldsymbol{\sigma }^2 } \cdot d
+  \boldsymbol{\Delta \sigma } \Delta \gamma - \boldsymbol{D} \cdot
+  \frac{\partial g}{\partial \boldsymbol{\sigma } }  d \Delta \gamma \\
+  &=& \boldsymbol{D} \cdot d \boldsymbol{\Delta \epsilon }  - \boldsymbol{s} d \Delta \gamma 
+\end{eqnarray}
+
+Now, a relationship between $d \Delta \gamma$ and $d \boldsymbol{\Delta
+  \epsilon }$ is needed. This is obtained from the yield equation:
+
+\begin{equation}
+  f(\boldsymbol{\sigma }_n + \boldsymbol{\Delta \sigma } ,c(\gamma + \Delta
+  \gamma))=0,
+\end{equation}
+
+from which
+
+\begin{equation}
+  \left . \frac{\partial f}{\partial \boldsymbol{\sigma } } \right |
+  _{\boldsymbol{\sigma }_n + \boldsymbol{\Delta \sigma }} \cdot d
+  \boldsymbol{\Delta \sigma } + \left . \frac{\partial f}{\partial c} \frac{\partial
+    c}{\partial \gamma} \right | _ {\gamma + \Delta \gamma} d \Delta \gamma =0.
+\end{equation}
+
+Substituting the previously obtained expression for $d(\boldsymbol{\Delta
+  \sigma })$ yields (dropping the bound of the derivatives to simplify the
+notation; the derivatives are to be taken at the end of the present increment):
+
+\begin{equation}
+  \frac{\partial f}{\partial \boldsymbol{\sigma } } \cdot \boldsymbol{D} \cdot
+  d \boldsymbol{\Delta \epsilon } - \frac{\partial f}{\partial
+    \boldsymbol{\sigma } } \cdot \boldsymbol{s} d \Delta \gamma + \frac{\partial f}{\partial c} \frac{\partial
+    c}{\partial \gamma} d \Delta \gamma =0
+\end{equation}
+
+from which
+
+\begin{equation}
+  d \Delta \gamma = \frac{\boldsymbol{a} \cdot \boldsymbol{D} \cdot d
+    \boldsymbol{\Delta \epsilon }   }{\boldsymbol{a} \cdot \boldsymbol{s} +
+    k^*m^* \frac{\partial c}{\partial \epsilon ^{\text{peq}}}    } .
+\end{equation}
+
+Finally one obtains for the elastoplastic consistent tangent
+
+\begin{equation}
+  \boldsymbol{D}^{ep} = \boldsymbol{D}  - \frac{\boldsymbol{s} \otimes
+    \boldsymbol{a} \cdot \boldsymbol{D}  }{\boldsymbol{a} \cdot \boldsymbol{s}
+    + k^*m^* \frac{\partial c}{\partial \epsilon ^{\text{peq}}}}   .
+  \end{equation} 
+
+  
+
+
 
 
 
