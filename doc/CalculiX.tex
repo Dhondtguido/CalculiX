@@ -11129,11 +11129,76 @@ Finally one obtains for the elastoplastic consistent tangent
     + k^*m^* \frac{\partial c}{\partial \epsilon ^{\text{peq}}}}   .
   \end{equation} 
 
-  
+The derivation of the elastoplastic consistent tangent for a return to the
+intersection between face 1 and face 2 is similar. Now, a change in stress
+increment amounts to:
 
+\begin{equation}
+  d \boldsymbol{\Delta \sigma } = \boldsymbol{D} \cdot d \boldsymbol{\Delta
+    \epsilon } - \boldsymbol{D} \cdot \boldsymbol{b_1} d \Delta \gamma_1 -
+  \boldsymbol{D} \cdot \boldsymbol{b_2} d \Delta \gamma_2.
+\end{equation}
 
+A relationship between the change in $\Delta \gamma$ and the change in
+$\boldsymbol{\Delta \epsilon }$ can again be obtained by considering the
+adjacent yield
+faces (i=1,2):
 
+\begin{equation}
+  f_i(\boldsymbol{\sigma}_n + \boldsymbol{\Delta \sigma }, c(\gamma + \Delta
+  \gamma_1 + \Delta \gamma_2))=0,
+\end{equation}
 
+from which
+
+\begin{equation}
+  \left . \frac{\partial f_i}{\partial \boldsymbol{\sigma } } \right |
+  _{\boldsymbol{\sigma }_n + \boldsymbol{\Delta \sigma }} \cdot d
+  \boldsymbol{\Delta \sigma } + \left . \frac{\partial f_i}{\partial c} \frac{\partial
+    c}{\partial \gamma} \right | _ {\gamma + \Delta \gamma_1+\Delta \gamma_2}
+  d \Delta \gamma_1 + \left . \frac{\partial f_i}{\partial c} \frac{\partial
+    c}{\partial \gamma} \right | _ {\gamma + \Delta \gamma_1+\Delta \gamma_2}
+  d \Delta \gamma_1  =0
+\end{equation}
+
+or
+
+\begin{equation}
+  \begin{bmatrix} \boldsymbol{a_1} \cdot \boldsymbol{s_1}
+    + k^*m^* \frac{\partial c}{\partial \epsilon ^{\text{peq}}} & \boldsymbol{a_1} \cdot \boldsymbol{s_2}
+    + k^*m^* \frac{\partial c}{\partial \epsilon ^{\text{peq}}} \\ \boldsymbol{a_2} \cdot \boldsymbol{s_1}
+    + k^*m^* \frac{\partial c}{\partial \epsilon ^{\text{peq}}} & \boldsymbol{a_2} \cdot \boldsymbol{s_2}
+    + k^*m^* \frac{\partial c}{\partial \epsilon
+      ^{\text{peq}}} \end{bmatrix} \cdot \begin{Bmatrix} d \Delta \gamma_1 \\ d
+    \Delta \gamma_2 \end{Bmatrix} = \begin{Bmatrix} \boldsymbol{a_1} \cdot
+    \boldsymbol{D} \cdot d\boldsymbol{\Delta \epsilon } \\ \boldsymbol{a_2} \cdot
+    \boldsymbol{D} \cdot d\boldsymbol{\Delta \epsilon }  \end{Bmatrix} .
+\end{equation}
+
+Denoting the inverse of the left hand matrix by $[B]$ the solution of the
+above system can be written as:
+
+\begin{eqnarray}
+  d \Delta \gamma_1 &=& B_{11} \boldsymbol{a_1} \cdot
+    \boldsymbol{D} \cdot d\boldsymbol{\Delta \epsilon } + B_{12} \boldsymbol{a_2} \cdot
+    \boldsymbol{D} \cdot d\boldsymbol{\Delta \epsilon } \\    d \Delta
+    \gamma_2 &=& B_{12} \boldsymbol{a_1} \cdot
+    \boldsymbol{D} \cdot d\boldsymbol{\Delta \epsilon } + B_{22} \boldsymbol{a_2} \cdot
+    \boldsymbol{D} \cdot d\boldsymbol{\Delta \epsilon },
+\end{eqnarray}
+
+leading to:
+
+\begin{equation} 
+\boldsymbol{D}^{ep} = \boldsymbol{D} - B_{11} 
+\boldsymbol{s_1} \otimes \boldsymbol{a_1} \cdot \boldsymbol{D}- B_{11} 
+\boldsymbol{s_1} \otimes \boldsymbol{a_2} \cdot \boldsymbol{D}- B_{11} 
+\boldsymbol{s_2} \otimes \boldsymbol{a_1} \cdot \boldsymbol{D} - B_{11} 
+\boldsymbol{s_2} \otimes \boldsymbol{a_2} \cdot \boldsymbol{D}.
+\end{equation} 
+
+The derivation for the return to the apex is similar (now three equations have
+to be satisfied).
 
 \subsubsection{Tension-only and compression-only materials.}
 
