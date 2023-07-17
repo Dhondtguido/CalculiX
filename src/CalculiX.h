@@ -4143,7 +4143,7 @@ void FORTRAN(resultsmech_se,(double *co,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
           double *clearini,ITG *nea,ITG *neb,ITG *ielprop,double *prop,
           double *dfn,ITG *idesvar,ITG *nodedesi,
           double *fn0,double *sti,ITG *icoordinate,
-          double *dxstiff,ITG *ialdesi,double *xdesi));
+	  double *dxstiff,ITG *ialdesi,double *xdesi,double *physcon));
 
 void FORTRAN(resultsnoddir,(ITG *nk,double *v,ITG *nactdof,double *b,
        ITG *ipompc,ITG *nodempc,double *coefmpc,ITG *nmpc,ITG *mi));
@@ -4251,7 +4251,7 @@ void results_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
              ITG *nkon,ITG *jqs,ITG *irows,ITG *nactdofinv,
              ITG *icoordinate,double *dxstiff,ITG *istartdesi,
              ITG *ialdesi,double *xdesi,ITG *ieigenfrequency,
-             double *fint,ITG *ishapeenergy,char *typeboun);
+	     double *fint,ITG *ishapeenergy,char *typeboun,double *physcon);
 
 void FORTRAN(resultst,(ITG *nk,ITG *nactdoh,double *v,double *sol,ITG *ipompc,
 		       ITG *nodempc,double *coefmpc,ITG *nmpc,ITG *mi));

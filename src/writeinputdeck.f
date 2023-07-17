@@ -663,19 +663,22 @@ c        write(*,*) i,dist(i),distmax
           ixfree=iponexp(2,i)
 !     
           if(nexp.ge.3) then
-            if(nodedesiinv(i).eq.0) then
-              out=.true.
-            elseif(extnor(j,i).le.1.d-10) then
-              out=.true.
-            else
-              out=.false.
-            endif
-            if(out) then
-              do j=1,3
+c     write(*,*) nodedesiinv(i),j,i,extnor(j,i)
+            do j=1,3
+              if(nodedesiinv(i).eq.0) then
+                out=.true.
+              elseif(extnor(j,i).le.1.d-10) then
+                out=.true.
+              else
+                out=.false.
+              endif
+              if(out) then
+c     do j=1,3
                 write(20,106) one
                 write(20,105) node,j,1
-              enddo
-            endif
+c     enddo
+              endif
+            enddo
 !     
 !     write equations in case nexp is 1
 !     

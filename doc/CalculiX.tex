@@ -10651,8 +10651,8 @@ stresses.
 
 \begin{figure}
 \begin{center}
-\epsfig{file=lidprefem.eps,width=9cm}
-\caption{\label{mcoulomb}Pressure distribution in the lid-driven cavity}
+\epsfig{file=mcoulomb.eps,width=9cm}
+\caption{\label{mcoulomb}Mohr-Coulomb yield surface}
 \end{center}
 \end{figure}
 
@@ -10717,8 +10717,8 @@ direction. The other faces correspond to sectors in which the order of $\sigma_1
 
 \begin{figure}
 \begin{center}
-\epsfig{file=lidprefem.eps,width=9cm}
-\caption{\label{sectionplane111}Pressure distribution in the lid-driven cavity}
+\epsfig{file=sectionplane111.eps,width=9cm}
+\caption{\label{sectionplane111}Section plane $\perp$ (1,1,1) through (0,0,0)}
 \end{center}
 \end{figure}
 
@@ -23491,6 +23491,16 @@ strategy which means that the steepest descent direction is chosen as long as
 no constraint boundary is reached. As soon as a constraint boundary is active
 the fasible direction is calculated by projection the objective gradient on
 the subspace tangent of all active constraints.
+
+The feasible direction procedure yields values for the motion of the design
+variables normal to the surface which is needed to reach the objective subject
+to the constraints. These values are normed to 1 (i.e. the maximum absolute
+value is 1) and they can be used for a subsequent mesh modification by applying them
+as boundary conditions to the mesh in a linear elastic calculation. The input
+deck for this calculation is automatically generated in the feasible direction
+step and gets the name jobname.equ. Before creating this input deck, the
+values are scaled by the mesh modification factor, which the user specifies on
+the line underneath *FEASIBLE DIRECTION. 
 \bigskip
 
 First line:
@@ -23499,14 +23509,20 @@ First line:
 \item Enter the parameter METHOD if needed and its value
 \end{itemize}
 
+Second line:
+\begin{itemize}
+\item Mesh modification size.
+\end{itemize}
+
 \begin{verbatim}
 Example:
 
 *FEASIBLE DIRECTION,METHOD=GRADIENT PROJECTION
+.1
 \end{verbatim}
 
 defines a feasible direction step with the gradient method for the treatment
-of the constraints.
+of the constraints. The maximum modification of the mesh is 0.1.
 
 \bigskip
 Example files: opt1, opt3.
@@ -35389,8 +35405,8 @@ nodes belonging to that face}
   defining multiple point constraints based on the local normal(s). Indeed, now more than one normal may be needed, e.g. at sharp
   corners which need be preserved. Therefore, the way the normals are
   determined here (normalsforequ\_se.f) is different from the way this is done
-  in normalsonsurface\_se.f. The equations are stored in file jobname.equ for
-  further use in a CalculiX input deck.
+  in normalsonsurface\_se.f. The equations are stored in the input deck jobname.equ for
+  further use.
 
 \item Determination of the active nodes, i.e. the nodes belonging to elements
   (createinum.f) and storage of the normals determined in
