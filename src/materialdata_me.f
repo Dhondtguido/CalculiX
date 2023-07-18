@@ -86,7 +86,7 @@
 !     
         do j=1,21
           elas(j)=xstiff(j,iint,iel)
-c          write(*,*) 'materialdata_me ',j,elas(j)
+c          write(*,*) 'materialdata_me ',j,iint,iel,elas(j)
         enddo
 !     
 !     check whether the fully anisotropic case can be

@@ -445,7 +445,11 @@ c     endif
 !     ENDDO over sides
 !     
 !     scaling of element: time increment required by element
-!     
+!
+c          write(*,*) 'calcstabletimeincvol ',critom
+c          write(*,*) 'calcstabletimeincvol ',hmin
+c          write(*,*) 'calcstabletimeincvol ',elemfac
+c          write(*,*) 'calcstabletimeincvol ',wavspd
           smscale(nelem)=critom*hmin*elemfac/(2.d0*wavspd)
 !     
 !     smallest dtvol
@@ -463,8 +467,10 @@ c     endif
 !     ------------Mass Scaling ----------------------------------------
 !     mscalmethod=1: selective mass scaling SMS
 !     not active for massless contact      
-!     
-c      if((dtvol.lt.dtset/safefac).and.(mortar.ne.-1))then
+!
+c       write(*,*) 'calcstabletimeincvol ',dtvol
+c      write(*,*) 'calcstabletimeincvol ',dtset
+c      write(*,*) 'calcstabletimeincvol ',safefac
       if((dtvol.lt.dtset/safefac))then
         dtset=dtset/safefac
         mscalmethod=1

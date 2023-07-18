@@ -200,7 +200,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
     fprintf(f1,"%5sUHOST                                                              \n",p1);
     fprintf(f1,"%5sUPGM               CalculiX                                        \n",p1);
     fprintf(f1,"%5sUVERSION           Version DEVELOPMENT                             \n",p1);
-    fprintf(f1,"%5sUCOMPILETIME       Mon Jul 17 22:55:49 CEST 2023                    \n",p1);
+    fprintf(f1,"%5sUCOMPILETIME       Tue Jul 18 19:48:59 CEST 2023                    \n",p1);
     fprintf(f1,"%5sUDIR                                                               \n",p1);
     fprintf(f1,"%5sUDBN                                                               \n",p1);
     
@@ -342,6 +342,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	if((strcmp1(&lakon[8*i],"US3")!=0)&&(strcmp1(&lakon[8*i],"US45")!=0)){
 	  continue;
 	}
+	indexe=ipkon[i];
       }else{
 	indexe=ipkon[i];
       }
