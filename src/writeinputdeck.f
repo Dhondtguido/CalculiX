@@ -667,7 +667,7 @@ c     write(*,*) nodedesiinv(i),j,i,extnor(j,i)
             do j=1,3
               if(nodedesiinv(i).eq.0) then
                 out=.true.
-              elseif(extnor(j,i).le.1.d-10) then
+              elseif(dabs(extnor(j,i)).le.1.d-10) then
                 out=.true.
               else
                 out=.false.

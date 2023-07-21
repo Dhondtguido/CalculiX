@@ -441,7 +441,7 @@ c              enddo
       enddo
 !     
  100  format(/,'*ERROR reading *EQUATION: the DOF corresponding to',
-     &     /,'node ',i10,' in direction',i1,' is detected on',
+     &     /,'node ',i10,' in direction ',i1,' is detected on',
      &     /,'the dependent side of two different MPC''s') 
       return
       end

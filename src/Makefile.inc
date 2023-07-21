@@ -298,7 +298,6 @@ envtemp.f \
 eplane.f \
 eqspacednodes.f \
 equationcheck.f \
-equationfs.f \
 equations.f \
 errorestimator.f \
 evalshapefunc.f \

@@ -2427,7 +2427,7 @@ shows how an optimization might be performed, the procedure itself is manually
 and by no way optimized. For industrial applications one would typically write
 generally applicable scripts taking care of the manual steps explained here.
 
-This example uses the files opt1.inp, opt1.f, opt2.inp, opt2.f and op3.inp,
+This example uses the files opt1.inp, opt1.sh, opt2.fbl and op3.inp,
 all available in the CalculiX test suite. File opt1.inp contains the geometry
 and the loading of the problem at stake: the structure is a beam simply
 supported at its ends (hinge on one side, rolls on the other) and a point
@@ -2444,7 +2444,7 @@ highest stresses occur in the middle of the beam and at the supports
 due to a geometrical change of the beam (the peak stresses at the supports are
 cause by the point-like nature of the support) the set of design variables
 (i.e. the nodes in which the geometry of the beam is allowed to change during
-the optimization) is defined as all nodes in the beam except for a set of nodes in the vicinity
+the optimization) is chosen as all nodes in the beam except for a set of nodes in the vicinity
 of the supports. These latter nodes are shown in Figure \ref{opt2}.
 
 \begin{figure}
@@ -2459,7 +2459,7 @@ objective and the constraints are generally design responses. First, the
 sensitity of each design response is determined in a
 \htmlref{*SENSITIVITY}{sensitivity} step. Then, one design response is
 selected as objective and one or more as constraints in a \htmlref{*FEASIBLE
-  DIRECTION}{feasibledirection} step. Here, the sensitivity of the
+  DIRECTION}{feasibledirection} step. In the latter step the sensitivity of the
 unconstrained objective is combined with the sensitity of the constraints in order to obtain
 the sensitivity of the constrained objective.
 
@@ -2490,7 +2490,7 @@ is taken care of by the lines:
 MISESSTRESS,DESIGNNODES,10.,100.
 \end{verbatim}
 
-and in the sensitivity step and 
+in the sensitivity step and 
 
 \begin{verbatim}
 *OBJECTIVE,TARGET=MIN
@@ -2569,7 +2569,7 @@ in which the sensitivity is integrated and subsequently smeared), sharp
 corners should be kept (EDGE PRESERVATION=YES, cf. \htmlref{*FILTER}{filter})
 and surfaces with a clearly different orientation (e.g. orthogonal) are not
 taken into account while filtering (or taken into account to a lesser degree,
-DIRECTION WEIGHTING=YES). The filtering is applied each design response separately. Figure \ref{opt3} shows the stress
+DIRECTION WEIGHTING=YES). The filtering is applied to each design response separately. Figure \ref{opt3} shows the stress
 sensitivity before filtering, Figure \ref{opt4} the stress sensitivity after
 filtering and Figure \ref{opt5} the mass sensitivity after filtering. All of
 this information is obtained by requesting SEN underneath the *NODE FILE
@@ -2583,46 +2583,37 @@ card. Notice that the sensitivity is normalized after filtering.
 After calculating the filtered sensitivities of the objective function and the
 constraints separately (this is done in the sensitivity step) they are joined by projecting the sensitivity of the active constraints
 on the sensitivity of the objective function (this is done in the feasible
-direction step). This results in Figure
+direction step). For a mesh modification size of 1 (parameter underneath the
+*FEASIBLE DIRECTION card) this results in Figure
 \ref{opt6}.
 
 The sensitivities calculated in this way allow us to perform an
-optimization. The simplest concept is the steepest gradient algorithm. This
-entails to change the geometry in the direction of the steepest gradient. In
+optimization. The simplest concept is the steepest gradient algorithm in which
+the geometry is changed in the direction of the steepest gradient. In
 the present calculations only one gradient is calculated (the one in the
 direction of the local normal) since a geometry change parallel to the surface
 of the structure generally does not change the geometry at all. So the
 geometry is changed in the direction of the local normal by an amount to be
-defined by the user. It is usually a percentage of the local sensitivity. This
-is taken care of by the FORTRAN program opt1.f. It reads the normal
-information and the sensitivities from file opt1.frd and defines a geometry
-change of 10 \% of the normalized sensitivity in the form of *BOUNDARY
-cards. These cards are stored in file opt1.bou. 
+defined by the user. It is usually a percentage of the local sensitivity, the
+so-called mesh modification size, to be defined underneath the *FEASIBLE
+DIRECTION card. Here, a mesh modification size of 10 \% was selected
+(i.e. 0.1). 
 
-In order to run opt1.f it has to be compiled (e.g. by gfortran -oopt1.exe
-opt1.f) and subsequently executed (e.g. by ./opt1.exe). The sensitivities,
-however, only take care of the change of the boundary nodes which are also
-design variables. In order to maintain a good quality mesh the other boundary
+In order to maintain a good quality mesh the other boundary
 nodes and the internal nodes should be appropriately moved as well. This is
 taken care of by a subsequent linear elastic calculation with the
-sensitivity-based surface geometry change as boundary conditions. This is
-taken care of by input deck opt2.inp.
+sensitivity-based surface geometry change as boundary conditions. The
+corresponding input deck with the name opt1.equ is automatically generated
+within the *FEASIBLE DIRECTION step.
 
-This input deck contains the original geometry of the beam. In addition, the
-sensitivity-based surface geometry change stored in opt1.bou is included by
-the statement:
-
-\begin{verbatim}
-*INCLUDE,INPUT=opt1.bou
-\end{verbatim}
+This input deck contains the original geometry of the beam. The
+sensitivity-based surface geometry change is imposed by *BOUNDARY statements.
 
 Furthermore, preservation of sharp edges and corners in the original structure
-is taken care of by linear equations stored in file opt1.equ. They were
-generated by CalculiX during the opt1.inp run. They are included by the statement:
-
-\begin{verbatim}
-*INCLUDE,INPUT=opt1.equ
-\end{verbatim}
+is taken care of by linear equations. In order to obtain a good quality mesh
+at the free surface the fictitious elastic modulus is decreased with
+increasing distance from the free surface. Before running opt1.equ it is
+copied by script opt1.sh into opt2.inp.
 
 \begin{figure}
 \epsfig{file=opt7.eps,width=6cm}
@@ -2634,18 +2625,13 @@ generated by CalculiX during the opt1.inp run. They are included by the statemen
 \caption{\label{opt8}Mises stress after one iteration}
 \end{figure}
 
-The resulting deformed mesh is shown in Figure \ref{opt7} (a refinement of the
-procedure could involve to use high E-moduli in opt2.inp at the free surface and decrease
-their value as a function of the distance from the free surface; this guarantees
-good quality elements at the free surface). The beam was
+The resulting deformed mesh is shown in Figure \ref{opt7}. The beam was
 thickened in the middle, where the von Mises stresses were highest. This
-should lead to a decrease of the highest stress value. In order to check this
-a new sensitivity calculation was done on the deformed structure. To this end
-the coordinates and the displacements are read from opt2.frd by the FORTRAN
-program opt2.f (to be compiled and executed in a similar way as opt1.f), and
-the sum is stored in file opt3.inc. This file is included in input deck
-opt3.inp, which is a copy of opt1.inp with the coordinates replaced by the
-ones in opt3.inc. The resulting von Mises stresses are shown in Figure
+should lead to a decrease of the highest stress value. In order to check this,
+a new sensitivity calculation was done on the deformed structure. To that end
+the deformation calculated based on opt2.inp is superimposed on the
+coordinates (by a call to opt2.fbl in script opt1.sh) and stored as opt3.inc. This file is included in input deck
+opt3.inp, which apart from the coordinates is a copy of opt1.inp. The resulting von Mises stresses are shown in Figure
 \ref{opt8}. The von Mises stress in the middle of the lower surface of the
 beam has indeed decreased from 114 to about 80 (MPa if the selected units were
 mm, N, s and K). Further improvements can be obtained by running several iterations.
@@ -10732,7 +10718,7 @@ that sector (labeled 1) and the neighboring ones (labeled 6 and 2).
 
 \begin{figure}
 \begin{center}
-\epsfig{file=lidprefem.eps,width=9cm}
+\epsfig{file=yieldalong111.eps,width=9cm}
 \caption{\label{yieldalong111}Pressure distribution in the lid-driven cavity}
 \end{center}
 \end{figure}

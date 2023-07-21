@@ -34,13 +34,14 @@
 !     
       integer n,iuel(4,*),nuel,i,j,k,l,istat,number,ipoinpc(0:*),iline,
      &     four,nope,intpoints,maxdof,id,ier,key,ipoinp(2,*),inp(3,*),
-     &     inl,ipol,node,nk_,mi(*),icfd,ne_,nkon_,nmat_
+     &     inl,ipol,node,nk_,mi(*),icfd,ne_,nkon_,nmat_,idof,ndof
 !     
       integer,dimension(:),allocatable::inode
 !     
       four=4
       name=.false.
       input=.false.
+      ndof=0
 !     
       do i=2,n
         if(textpart(i)(1:5).eq.'NAME=') then
@@ -75,7 +76,7 @@
         write(*,*) 
      &   '*ERROR reading *MATRIX ASSEMBLE: no name specified:'
         call inputerror(inpc,ipoinpc,iline,
-     &       "*CRACK PROPAGATION%",ier)
+     &       "*MATRIX ASSEMBLE%",ier)
       endif
 !     
 !     check for the INPUT parameter
@@ -84,7 +85,7 @@
         write(*,*) 
      &   '*ERROR reading *MATRIX ASSEMBLE: no stiffness file specified:'
         call inputerror(inpc,ipoinpc,iline,
-     &       "*CRACK PROPAGATION%",ier)
+     &       "*MATRIX ASSEMBLE%",ier)
       endif
 !     
 !     determine the number of nodes in the stiffness matrix
@@ -93,7 +94,8 @@
       open(20,file=filename,status='old',err=3)
       nope=0
       do
-        read(20,*,end=1,err=2) node
+        read(20,*,end=1,err=2) node,idof
+        ndof=max(ndof,idof)
         call nident(inode,node,nope,id)
         if(id.gt.0) then
           if(inode(id).eq.node) cycle
@@ -110,7 +112,7 @@
 !     check range
 !     
       if(nope.gt.255) then
-        write(*,*) '*ERROR reading *USER ELEMENT'
+        write(*,*) '*ERROR reading *MATRIX ASSEMBLE'
         write(*,*) '       number of nodes ',nope,' exceeds 255'
         ier=1
         return
@@ -130,6 +132,15 @@
           return
         endif
       endif
+!
+      if((ndof.ne.3).and.(ndof.ne.6)) then
+        write(*,*) '*ERROR in matrix2userelem'
+        write(*,*) '       a substructure (=user element) should'
+        write(*,*) '       either have 3 or 6 dofs;'
+        write(*,*) '       actual number of dofs: ',ndof
+        ier=1
+        return
+      endif
 !     
       nuel=nuel+1
       do i=nuel,id+2,-1
@@ -139,12 +150,14 @@
       enddo
       iuel(1,id+1)=number
       iuel(2,id+1)=0
-      iuel(3,id+1)=3
+c      iuel(3,id+1)=3
+      iuel(3,id+1)=ndof
       iuel(4,id+1)=nope
 !
 !     3 dofs per node assumed
 !
-      mi(2)=max(mi(2),3)
+c      mi(2)=max(mi(2),3)
+      mi(2)=max(mi(2),ndof)
 !
 !     2 materials (matname is used to store the stiffness file and
 !     the mass file)
