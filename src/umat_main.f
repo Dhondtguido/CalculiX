@@ -30,7 +30,7 @@
       character*80 amat,amatloc
 !
       integer ithermal(*),icmd,kode,ielas,iel,iint,nstate_,mi(*),iorien,
-     &  istep,iinc,ipkon(*),nmethod,iperturb(*),nlgeom_undo,ncmat_
+     &  istep,iinc,ipkon(*),nmethod,iperturb(*),nlgeom_undo,ncmat_,j
 !
       real*8 elconloc(*),stiff(21),emec(6),emec0(6),beta(6),stre(6),
      &  vj,t1l,dtime,xkl(3,3),xikl(3,3),vij,pgauss(3),orab(7,*),

@@ -40,7 +40,7 @@
       character*8 lakon(*),lakonl
       character*80 amat,matname(*)
 !     
-      integer kon(*),konl(26),nea,neb,mi(*),mint2d,nopes,intscheme,
+      integer kon(*),konl(20),nea,neb,mi(*),mint2d,nopes,intscheme,
      &     nelcon(2,*),nrhcon(*),nalcon(2,*),ielmat(mi(3),*),nr,
      &     ielorien(mi(3),*),ntmat_,ipkon(*),ne0,iflag,null,kscale,
      &     istep,iinc,mt,ne,mattyp,ithermal(*),iprestr,i,j,k,m1,m2,jj,
@@ -77,7 +77,7 @@
      &     autloc1(96),shptil(4,20)
 !     
       include "gauss.f"
-!     
+!
       iflag=3
       null=0
 !     
@@ -368,7 +368,6 @@ c     Bernhardi end
 !     
 !     calculating the forces for the contact elements
 !     
-c     write(*,*) 'resultsmech ',i,lakonl,mint3d
         if(mint3d.eq.0) then
 !     
 !     "normal" spring and dashpot elements
@@ -927,19 +926,6 @@ c            endif
 !     
           if(ithermal(1).ne.0) then
             call calcmechstrain(vkl,vokl,emec,eth,iperturb)
-c            if(iout.eq.2) then
-c              if((i.eq.1).and.(jj.eq.1)) then
-c                write(5,*)
-c                write(5,*) ' thermal strains '
-c                write(5,*)
-c               endif
-c               write(5,'(i10,1x,i3,1p,6(1x,e13.6))') i,jj,
-c     &             (eth(k),k=1,6)
-c             endif
-c              
-c     do m1=1,6
-c     emec(m1)=eloc(m1)-eth(m1)
-c     enddo
           else
             do m1=1,6
               emec(m1)=eloc(m1)
@@ -1292,5 +1278,6 @@ c     Bernhardi end
 !     
       enddo
 !     
+c          if(j.ne.-1) stop
       return
       end

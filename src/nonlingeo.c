@@ -1468,6 +1468,10 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       SFREE(tmp);
     }
   }
+
+  /* warning: for C3D8R-elements the stiffness is needed in subroutine
+              hgforce, therefore, in explicit dynamic steps
+              with C3D8R-elements icmd should not be set to 3 */
   
   if(*iexpl>1) icmd=3;
   
@@ -2152,6 +2156,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	      ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,coefmpc2,
 	      labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
 	      &intscheme,physcon);
+      //		               for(k=0;k<neq[1];++k){printf("b=%" ITGFORMAT ",%f\n",k,f[k]);}
+      //           FORTRAN(stop,());
       if(ne1d2d==1)SFREE(inum);
 	  
       isiz=mt**nk;cpypardou(vold,v,&isiz,&num_cpus);
@@ -2597,11 +2603,13 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       /* calculating the residual (RHS of equation system) */
 
       if(*mortar!=-1){
+	//	               for(k=0;k<neq[1];++k){printf("b=%" ITGFORMAT ",%f\n",k,f[k]);}
 	calcresidual(nmethod,neq,b,fext,f,iexpl,nactdof,aux2,vold,
 		     vini,&dtime,accold,nk,adb,aub,jq,irow,nzl,alpha,fextini,
 		     fini,islavnode,nslavnode,mortar,ntie,f_cm,f_cs,mi,
 		     nzs,&nasym,&idamping,veold,adc,auc,cvini,cv,&alpham,
 		     &num_cpus);
+	//                for(k=0;k<neq[1];++k){printf("b=%" ITGFORMAT ",%f\n",k,b[k]);}
       }else{
 	NNEW(volddof,double,neq[0]);
 	NNEW(qb,double,neqtot);
@@ -3054,7 +3062,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	  }
 	}
       }
-      //     for(k=0;k<neq[1];++k){printf("b=%" ITGFORMAT ",%f\n",k,b[k]);}
+      //           for(k=0;k<neq[1];++k){printf("b=%" ITGFORMAT ",%f\n",k,b[k]);}
       
       /* mortar */
 
@@ -3116,8 +3124,10 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
       /* for non-massless explicit dynamics without energy
          calculation only the displacements have to be calculated */
+
+      /* TO CHECK! Deviation in beamnldye2, changecontacttype1 and scheibejc */
       
-      if((*iexpl>1)&&(*mortar!=-1)&&(nener==0)){
+      /*     if((*iexpl>1)&&(*mortar!=-1)&&(*nener==0)){
 	resultsini(nk,v,ithermal,filab,iperturb,f,fn,
 		   nactdof,&iout,qa,vold,b,nodeboun,ndirboun,
 		   xboun,nboun,ipompc,nodempc,coefmpc,labmpc,nmpc,nmethod,cam,
@@ -3125,7 +3135,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		   &intpointvarm,&calcul_fn,&calcul_f,&calcul_qa,&calcul_cauchy,
 		   &ikin,&intpointvart,typeboun,&num_cpus,mortar,nener,iponoel,
 		   network);
-      }else{
+		   }else{*/
 	if(ne1d2d==1)NNEW(inum,ITG,*nk);
 	results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,
 		elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
@@ -3151,7 +3161,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
 		&intscheme,physcon);
 	if(ne1d2d==1)SFREE(inum);
-      }
+	//     }
 
       /* implicit dynamics (Matteo Pacher) */
 

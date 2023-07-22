@@ -52,7 +52,7 @@
 !
       integer kode,ithermal(*),icmd,ielas,iel,iint,nstate_,mi(*),iorien,
      &     mattyp,istep,iinc,ipkon(*),nmethod,iperturb(*),nlgeom_undo,
-     &     ncmat_
+     &     ncmat_,j
 !
       real*8 elconloc(*),elas(21),emec(*),emec0(*),beta(*),stre(*),
      &  ckl(*),vj,plconloc(*),t1l,xkl(*),xikl(*),vij,depvisc,

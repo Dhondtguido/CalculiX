@@ -86,8 +86,12 @@
 !     
         do j=1,21
           elas(j)=xstiff(j,iint,iel)
-c          write(*,*) 'materialdata_me ',j,iint,iel,elas(j)
+c          write(*,*) 'materialdata_me ',j
+c          write(*,*) 'materialdata_me ',iint
+c          write(*,*) 'materialdata_me ',iel
+c          write(*,*) 'materialdata_me ',xstiff(j,iint,iel)
         enddo
+c        if(j.gt.0) stop
 !     
 !     check whether the fully anisotropic case can be
 !     considered as orthotropic         

@@ -36,8 +36,6 @@
 !
       real*8 xi,et,ze,xsj,omg,omh,omr,opg,oph,opr
 !
-!
-!
 !     shape functions and their glocal derivatives
 !
       omg=1.d0-xi
