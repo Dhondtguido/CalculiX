@@ -20,7 +20,7 @@
      &     icmd,beta,stre,xkl,ckl,vj,xikl,vij,plconloc,xstate,xstateini,
      &     ielas,amat,t1l,dtime,time,ttime,iel,iint,nstate_,mi,
      &     iorien,pgauss,orab,eloc,mattyp,pnewdt,istep,iinc,ipkon,
-     &     nmethod,iperturb,depvisc,nlgeom_undo,physcon)
+     &     nmethod,iperturb,depvisc,nlgeom_undo,physcon,ncmat_)
 !
 !     kode=-1: Arruda-Boyce
 !          -2: Mooney-Rivlin
@@ -51,7 +51,8 @@
       character*80 amat
 !
       integer kode,ithermal(*),icmd,ielas,iel,iint,nstate_,mi(*),iorien,
-     &  mattyp,istep,iinc,ipkon(*),nmethod,iperturb(*),nlgeom_undo
+     &     mattyp,istep,iinc,ipkon(*),nmethod,iperturb(*),nlgeom_undo,
+     &     ncmat_,j
 !
       real*8 elconloc(*),elas(21),emec(*),emec0(*),beta(*),stre(*),
      &  ckl(*),vj,plconloc(*),t1l,xkl(*),xikl(*),vij,depvisc,
@@ -63,32 +64,32 @@
 !
       if(kode.gt.0) then
          call linel(kode,mattyp,beta,emec,stre,elas,elconloc,
-     &  iorien,orab,pgauss)
+     &  iorien,orab,pgauss,ncmat_)
       elseif(kode.gt.-50) then
          mattyp=3
          call rubber(elconloc,elas,emec,kode,didc,d2idc2,
      &     dibdc,d2ibdc2,dudc,d2udc2,dldc,d2ldc2,dlbdc,d2lbdc2,
-     &     ithermal,icmd,beta,stre)
+     &     ithermal,icmd,beta,stre,ncmat_)
       elseif(kode.eq.-50) then
          mattyp=3
 c         call defplas(elconloc,elas,emec,ithermal,icmd,beta,stre,
 c     &     ckl,vj,xstate,nstate_,iel,iint,mi)
          call umat_abaqusnl_total(amat,iel,iint,kode,elconloc,emec,
      &        emec0,beta,xikl,vij,xkl,vj,ithermal,t1l,dtime,time,ttime,
-     &        icmd,ielas,mi(1),nstate_,xstateini,xstate,stre,elas,
+     &        icmd,ielas,mi,nstate_,xstateini,xstate,stre,elas,
      &        iorien,pgauss,orab,istep,iinc,pnewdt,nmethod,iperturb)
       elseif((kode.eq.-51).or.(kode.eq.-52)) then
          mattyp=3
          if(iperturb(2).eq.1) then
             call incplas(elconloc,plconloc,xstate,xstateini,elas,emec,
      &           ithermal,icmd,beta,stre,vj,kode,ielas,amat,t1l,dtime,
-     &           time,ttime,iel,iint,nstate_,mi(1),eloc,pgauss,nmethod,
+     &           time,ttime,iel,iint,nstate_,mi,eloc,pgauss,nmethod,
      &           pnewdt,depvisc)
          else
             call incplas_lin(elconloc,plconloc,xstate,xstateini,elas,
      &           emec,
      &           ithermal,icmd,beta,stre,vj,kode,ielas,amat,t1l,dtime,
-     &           time,ttime,iel,iint,nstate_,mi(1),eloc,pgauss,nmethod,
+     &           time,ttime,iel,iint,nstate_,mi,eloc,pgauss,nmethod,
      &           pnewdt,depvisc)
           endif
         elseif(kode.eq.-53) then
@@ -100,9 +101,9 @@ c     &     ckl,vj,xstate,nstate_,iel,iint,mi)
           mattyp=3
          call umat_main(amat,iel,iint,kode,elconloc,emec,emec0,beta,
      &        xikl,vij,xkl,vj,ithermal,t1l,dtime,time,ttime,icmd,ielas,
-     &        mi(1),nstate_,xstateini,xstate,stre,elas,iorien,pgauss,
+     &        mi,nstate_,xstateini,xstate,stre,elas,iorien,pgauss,
      &        orab,pnewdt,istep,iinc,ipkon,nmethod,iperturb,depvisc,
-     &        eloc,nlgeom_undo,physcon)
+     &        eloc,nlgeom_undo,physcon,ncmat_)
       endif
 !
       return

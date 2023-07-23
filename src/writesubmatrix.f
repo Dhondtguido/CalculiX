@@ -17,7 +17,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine writesubmatrix(submatrix,noderetain,ndirretain,
-     &    nretain,jobnamec)
+     &    nretain,jobnamec,jmax)
 !
 !     writing the matrix of a substructure to a .mtx-file
 !
@@ -25,7 +25,7 @@
 !
       character*132 jobnamec(*),fn
 !
-      integer i,j,nretain,ilen,noderetain(*),ndirretain(*)
+      integer i,j,nretain,ilen,noderetain(*),ndirretain(*),jmax(*)
 !
       real*8 submatrix(nretain,nretain)
 !
@@ -43,31 +43,48 @@
             fn(i:i)=' '
          enddo
       endif
-!
-      open(12,file=fn,status='unknown')
-      write(12,100)
- 100  format('**')
-      write(12,101)
- 101  format('** GENERATION OF SUBSTRUCTURE')
-      write(12,102) nretain
- 102  format('*USER ELEMENT,NODES= ',i10,',LINEAR')
-      write(12,103)
- 103  format('** ELEMENT NODES')
-      write(12,104) (noderetain(i),i=1,nretain)
- 104  format('**',i10,',',i10,',',i10,',',i10,',',i10,',',i10,',',
-     &i10,',',i10,',',i10,',',i10,',')
-      write(12,105) ndirretain(1)
- 105  format(i10)
-      write(12,106) (i,ndirretain(i),i=2,nretain)
- 106  format(i10,',',i10)
-      write(12,107)
- 107  format('*MATRIX,TYPE=STIFFNESS')
-!
-      do j=1,nretain
-         write(12,108) (submatrix(i,j),i=1,j)
-      enddo
- 108  format(e20.13,',',e20.13,',',e20.13,',',e20.13,',')
-      close(12)
+!     
+      if(jmax(1).eq.1) then
+!     
+!       *USER ELEMENT format    
+!     
+        open(12,file=fn,status='unknown')
+        write(12,100)
+ 100    format('**')
+        write(12,101)
+ 101    format('** GENERATION OF SUBSTRUCTURE')
+        write(12,102) nretain
+ 102    format('*USER ELEMENT,NODES= ',i10,',LINEAR')
+        write(12,103)
+ 103    format('** ELEMENT NODES')
+        write(12,104) (noderetain(i),i=1,nretain)
+ 104    format('**',i10,',',i10,',',i10,',',i10,',',i10,',',i10,',',
+     &       i10,',',i10,',',i10,',',i10,',')
+        write(12,105) ndirretain(1)
+ 105    format(i10)
+        write(12,106) (i,ndirretain(i),i=2,nretain)
+ 106    format(i10,',',i10)
+        write(12,107)
+ 107    format('*MATRIX,TYPE=STIFFNESS')
+        do j=1,nretain
+          write(12,108) (submatrix(i,j),i=1,j)
+        enddo
+ 108    format(e20.13,',',e20.13,',',e20.13,',',e20.13,',')
+        close(12)
+      elseif(jmax(1).eq.2) then
+!     
+!       *MATRIX ASSEMBLE format     
+!     
+        open(12,file=fn,status='unknown')
+        do i=1,nretain
+          do j=1,i
+            write(12,109) noderetain(i),ndirretain(i),noderetain(j),
+     &           ndirretain(j),submatrix(i,j)
+          enddo
+        enddo
+ 109    format(i10,",",i5,",",i10,",",i5,",",e20.13)
+        close(12)
+      endif
 !
       return
       end

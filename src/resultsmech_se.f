@@ -27,7 +27,7 @@
      &     ikin,ne0,thicke,emeini,pslavsurf,
      &     pmastsurf,mortar,clearini,nea,neb,ielprop,prop,dfn,
      &     idesvar,nodedesi,fn0,sti,icoordinate,dxstiff,
-     &     ialdesi,xdesi)
+     &     ialdesi,xdesi,physcon)
 !     
 !     calculates stresses and the material tangent at the integration
 !     points and the internal forces at the nodes
@@ -71,7 +71,7 @@
      &     vokl(3,3),xstateini(nstate_,mi(1),*),vikl(3,3),
      &     gs(8,4),a,reltime,tlayer(4),dlayer(4),xlayer(mi(3),4),
      &     thicke(mi(3),*),emeini(6,mi(1),*),clearini(3,9,*),
-     &     pslavsurf(3,*),pmastsurf(6,*),sti(6,mi(1),*),
+     &     pslavsurf(3,*),pmastsurf(6,*),sti(6,mi(1),*),physcon(*),
      &     fn0(0:mi(2),*),dfn(0:mi(2),*),hglf(3,4),ahr,
      &     dxstiff(27,mi(1),ne,*),xdesi(3,*),smscale(1)
 !     
@@ -1030,7 +1030,8 @@ c     emec0(m1)=emeini(m1,jj,i)
      &         plconloc,xstate,xstateini,ielas,
      &         amat,t1l,dtime,time,ttime,i,jj,nstate_,mi(1),
      &         iorien,pgauss,orab,eloc,mattyp,qa(3),istep,iinc,
-     &         ipkon,nmethod,iperturb,qa(4),nlgeom_undo)
+     &         ipkon,nmethod,iperturb,qa(4),nlgeom_undo,physcon,
+     &         ncmat_)
 !     
           if(((nmethod.ne.4).or.(iperturb(1).ne.0)).and.
      &         (nmethod.ne.5)) then

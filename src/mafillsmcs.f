@@ -42,7 +42,7 @@
 !     
       character*8 lakon(*)
       character*20 labmpc(*),sideload(*)
-      character*80 matname(*)
+      character*80 matname(*),filestiff,filemass
       character*81 tieset(3,*),set(*)
 !     
       integer kon(*),nodeboun(*),ndirboun(*),ipompc(*),nodempc(3,*),
@@ -60,7 +60,7 @@
      &     inode1,icomplex1,inode2,icomplex2,ner,ncmat_,intscheme,istep,
      &     iinc,mcs,ielcs(*),nplicon(0:ntmat_,*),nplkcon(0:ntmat_,*),
      &     npmat_,islavelinv(1),irowtloc(1),jqtloc(1),mortartrafoflag,
-     &     mscalmethod,kk
+     &     mscalmethod,kk,imat
 !     
       real*8 co(3,*),xboun(*),coefmpc(*),xforc(*),xload(2,*),p1(3),
      &     p2(3),ad(*),au(*),bodyf(3),bb(*),xbody(7,*),cgr(4,*),prop(*),
@@ -72,7 +72,7 @@
      &     springarea(2,*),plicon(0:2*npmat_,ntmat_,*),smscale(1),
      &     plkcon(0:2*npmat_,ntmat_,*),thicke(mi(3),*),doubleglob(*),
      &     xstiff(27,mi(1),*),pi,theta,ti,tr,veold(0:mi(2),*),om,valu2,
-     &     value,dtime,walue,walu2,time,ttime,clearini(3,9,*),
+     &     value,dtime,walue,walu2,time,ttime,clearini(3,9,*),val,
      &     pslavsurf(3,*),pmastsurf(6,*),autloc(1),dd
 !
       mortartrafoflag=0
@@ -168,6 +168,20 @@ c     end 16.07.2020
 c     write(*,*) 'nope after= ',nope
         elseif(lakon(i)(1:4).eq.'MASS') then
           nope=1
+        elseif((lakon(i)(1:5).eq.'U1   ').or.
+     &         (lakon(i)(1:5).eq.'US3  ').or.
+     &         (lakon(i)(1:5).eq.'US45 '))then
+!
+!         no user elements allowed for cyclic symmetry
+!         (rotational dofs are not considered yet in the
+!          cyclic symmetry equations)
+!
+          cycle
+        elseif(lakon(i)(1:1).eq.'U') then
+!
+!         substructure (superelement)
+!
+          nope=ichar(lakon(i)(8:8))
         else
           cycle
         endif
@@ -182,30 +196,7 @@ c     write(*,*) 'nope after= ',nope
           do
             j=ipobody(1,index)
             if(j.eq.0) exit
-            if(ibody(1,j).eq.-1) then
-!     
-!     centrifugal axis is defined by two nodes     
-!     
-              om=xbody(1,j)
-              node1=int(xbody(2,j))
-              node2=int(xbody(3,j))
-              if((iperturb(1).ne.1).and.(iperturb(2).ne.1)) then
-                do kk=1,3
-                  p1(kk)=co(kk,node1)
-                  p2(kk)=co(kk,node2)-co(kk,node1)
-                enddo
-              else
-                do kk=1,3
-                  p1(kk)=co(kk,node1)+vold(kk,node1)
-                  p2(kk)=co(kk,node2)+vold(kk,node2)-
-     &                 (co(kk,node1)+vold(kk,node1))
-                enddo
-              endif
-              dd=dsqrt(p2(1)**2+p2(2)**2+p2(3)**2)
-              do kk=1,3
-                p2(kk)=p2(kk)/dd
-              enddo
-            elseif(ibody(1,j).eq.1) then
+            if(ibody(1,j).eq.1) then
               om=xbody(1,j)
               p1(1)=xbody(2,j)
               p1(2)=xbody(3,j)
@@ -219,21 +210,64 @@ c     write(*,*) 'nope after= ',nope
           enddo
         endif
 !     
-        call e_c3d(co,kon,lakon(i),p1,p2,om,bodyf,nbody,s,sm,ff,i,
-     &       nmethod,elcon,nelcon,rhcon,nrhcon,alcon,nalcon,
-     &       alzero,ielmat,ielorien,norien,orab,ntmat_,
-     &       t0,t1,ithermal,vold,iperturb,nelemload,sideload,xload,
-     &       nload,idist,sti,stx,iexpl,plicon,
-     &       nplicon,plkcon,nplkcon,xstiff,npmat_,
-     &       dtime,matname,mi(1),ncmat_,mass,stiffness,buckling,rhsi,
-     &       intscheme,ttime,time,istep,iinc,coriolis,xloadold,
-     &       reltime,ipompc,nodempc,coefmpc,nmpc,ikmpc,ilmpc,veold,
-     &       springarea,nstate_,xstateini,xstate,ne0,ipkon,thicke,
-     &       integerglob,doubleglob,tieset,istartset,
-     &       iendset,ialset,ntie,nasym,pslavsurf,pmastsurf,mortar,
-     &       clearini,ielprop,prop,kscale,smscale(1),mscalmethod,
-     &       set,nset,islavelinv,autloc,
-     &       irowtloc,jqtloc,mortartrafoflag)
+        if(lakon(i)(1:1).ne.'U') then
+          call e_c3d(co,kon,lakon(i),p1,p2,om,bodyf,nbody,s,sm,ff,i,
+     &         nmethod,elcon,nelcon,rhcon,nrhcon,alcon,nalcon,
+     &         alzero,ielmat,ielorien,norien,orab,ntmat_,
+     &         t0,t1,ithermal,vold,iperturb,nelemload,sideload,xload,
+     &         nload,idist,sti,stx,iexpl,plicon,
+     &         nplicon,plkcon,nplkcon,xstiff,npmat_,
+     &         dtime,matname,mi(1),ncmat_,mass,stiffness,buckling,rhsi,
+     &         intscheme,ttime,time,istep,iinc,coriolis,xloadold,
+     &         reltime,ipompc,nodempc,coefmpc,nmpc,ikmpc,ilmpc,veold,
+     &         springarea,nstate_,xstateini,xstate,ne0,ipkon,thicke,
+     &         integerglob,doubleglob,tieset,istartset,
+     &         iendset,ialset,ntie,nasym,pslavsurf,pmastsurf,mortar,
+     &         clearini,ielprop,prop,kscale,smscale(1),mscalmethod,
+     &         set,nset,islavelinv,autloc,
+     &         irowtloc,jqtloc,mortartrafoflag)
+        else
+          nope=-1
+        endif
+!     
+!     treatment of substructure (superelement)
+!     
+        if(nope.eq.-1) then
+          nope=ichar(lakon(i)(8:8))
+          imat=ielmat(1,i)
+          filestiff=matname(imat)
+          open(20,file=filestiff,status='old')
+          do
+            read(20,*,end=1) node1,k,node2,m,val
+            call nident(kon(indexe+1),node1,nope,id1)
+            jj=(id1-1)*3+k
+            call nident(kon(indexe+1),node2,nope,id2)
+            ll=(id2-1)*3+m
+c     write(*,*) 'mafillsm ',node1,k,node2,m,jj,ll
+            call mafillsmcsmatrix(ipompc,nodempc,coefmpc,nmpc,
+     &           labmpc,ad,au,nactdof,jq,irow,mi,ner,
+     &           k,m,node1,node2,jj,ll,val,i,mcs,ielcs,ics,cs)
+          enddo
+ 1        close(20)
+!     
+          imat=ielmat(2,i)
+          if(imat.ne.0) then
+            filemass=matname(imat)
+            open(20,file=filemass,status='old')
+            do
+              read(20,*,end=2) node1,k,node2,m,val
+              call nident(kon(indexe+1),node1,nope,id1)
+              jj=(id1-1)*3+k
+              call nident(kon(indexe+1),node2,nope,id2)
+              ll=(id2-1)*3+m
+              call mafillsmcsmatrix(ipompc,nodempc,coefmpc,nmpc,
+     &             labmpc,adb,aub,nactdof,jq,irow,mi,ner,
+     &             k,m,node1,node2,jj,ll,val,i,mcs,ielcs,ics,cs)
+            enddo
+ 2          close(20)
+          endif
+          return
+        endif
 !     
         do jj=1,3*nope
 !     
@@ -256,6 +290,11 @@ c     write(*,*) 'nope after= ',nope
 !     
             node2=kon(indexe+l)
             jdof2=nactdof(m,node2)
+              if(i.eq.50) then
+                write(20,100) node1,k,node2,m,s(jj,ll)
+                write(21,100) node1,k,node2,m,sm(jj,ll)
+              endif
+ 100          format(i10,",",i5,",",i10,",",i5,",",e20.13)
 !     
 !     check whether one of the DOF belongs to a SPC or MPC
 !     

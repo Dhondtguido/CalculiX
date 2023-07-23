@@ -40,7 +40,7 @@
       character*8 lakon(*),lakonl
       character*80 amat,matname(*)
 !     
-      integer kon(*),konl(26),nea,neb,mi(*),mint2d,nopes,intscheme,
+      integer kon(*),konl(20),nea,neb,mi(*),mint2d,nopes,intscheme,
      &     nelcon(2,*),nrhcon(*),nalcon(2,*),ielmat(mi(3),*),nr,
      &     ielorien(mi(3),*),ntmat_,ipkon(*),ne0,iflag,null,kscale,
      &     istep,iinc,mt,ne,mattyp,ithermal(*),iprestr,i,j,k,m1,m2,jj,
@@ -77,7 +77,7 @@
      &     autloc1(96),shptil(4,20)
 !     
       include "gauss.f"
-!     
+!
       iflag=3
       null=0
 !     
@@ -368,7 +368,6 @@ c     Bernhardi end
 !     
 !     calculating the forces for the contact elements
 !     
-c     write(*,*) 'resultsmech ',i,lakonl,mint3d
         if(mint3d.eq.0) then
 !     
 !     "normal" spring and dashpot elements
@@ -927,19 +926,6 @@ c            endif
 !     
           if(ithermal(1).ne.0) then
             call calcmechstrain(vkl,vokl,emec,eth,iperturb)
-c            if(iout.eq.2) then
-c              if((i.eq.1).and.(jj.eq.1)) then
-c                write(5,*)
-c                write(5,*) ' thermal strains '
-c                write(5,*)
-c               endif
-c               write(5,'(i10,1x,i3,1p,6(1x,e13.6))') i,jj,
-c     &             (eth(k),k=1,6)
-c             endif
-c              
-c     do m1=1,6
-c     emec(m1)=eloc(m1)-eth(m1)
-c     enddo
           else
             do m1=1,6
               emec(m1)=eloc(m1)
@@ -976,7 +962,8 @@ c     enddo
      &         plconloc,xstate,xstateini,ielas,
      &         amat,t1l,dtime,time,ttime,i,jj,nstate_,mi(1),
      &         iorien,pgauss,orab,eloc,mattyp,qa(3),istep,iinc,
-     &         ipkon,nmethod,iperturb,qa(4),nlgeom_undo,physcon)
+     &         ipkon,nmethod,iperturb,qa(4),nlgeom_undo,physcon,
+     &         ncmat_)
 !     
           if(((nmethod.ne.4).or.(iperturb(1).ne.0)).and.
      &         (nmethod.ne.5).and.(icmd.ne.3)) then
@@ -1053,7 +1040,16 @@ c     enddo
 !     be updated at the end of each increment (also if no output
 !     is requested), since it is input to the umat routine
 !     
+c          if((iout.ge.0).or.(iout.eq.-2).or.(kode.le.-100).or.
           if((iout.gt.0).or.(iout.eq.-2).or.(kode.le.-100).or.
+!
+!              next line was inserted since the extra call
+!              of results at the end of an increment is not 
+!              executed if no printing information is needed
+!              for that increment (due to the FREQUENCY parameter)          
+!              07.07.2023
+!
+     &         ((iout.eq.0).and.(nener.eq.1)).or.
      &         ((nmethod.eq.4).and.
      &         ((iperturb(1).gt.1).and.(nlgeom_undo.eq.0)).and.
      &         (ithermal(1).le.1))) then
@@ -1079,7 +1075,6 @@ c     enddo
             eme(6,jj,i)=emec(6)
           endif
 !     
-c          if((iout.gt.0).or.(iout.eq.-2).or.(kode.le.-100)) then
           if(iout.gt.0) then
 !     
             eei(1,jj,i)=eloc(1)
@@ -1283,5 +1278,6 @@ c     Bernhardi end
 !     
       enddo
 !     
+c          if(j.ne.-1) stop
       return
       end

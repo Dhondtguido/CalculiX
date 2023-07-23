@@ -17,14 +17,14 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine linel(kode,mattyp,beta,emec,stre,elas,elconloc,
-     &  iorien,orab,pgauss)
+     &  iorien,orab,pgauss,ncmat_)
 !
 !     calculates stresses for linear elastic materials
 !
       implicit none
 !
       integer mattyp,j1,j2,j3,j4,j5,j6,j7,j8,j,jj,kel(4,21),
-     &  iorien,i,kode
+     &  iorien,i,kode,ncmat_
 !
       real*8 beta(6),elas(21),stre(6),fxx,fyy,fzz,fxy,fxz,fyz,
      &  elconloc(*),emax,ya(3,3,3,3),orab(7,*),skl(3,3),e,un,
@@ -95,7 +95,7 @@
 !
          else
 !
-            do i=1,21
+            do i=1,ncmat_
                elas(i)=elconloc(i)
             enddo
 !

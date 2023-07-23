@@ -967,7 +967,8 @@ c     enddo
      &         plconloc,xstate,xstateini,ielas,
      &         amat,t1l,dtime,time,ttime,i,jj,nstate_,mi(1),
      &         iorien,pgauss,orab,eloc,mattyp,qa(3),istep,iinc,
-     &         ipkon,nmethod,iperturb,qa(4),nlgeom_undo,physcon)
+     &         ipkon,nmethod,iperturb,qa(4),nlgeom_undo,physcon,
+     &         ncmat_)
 !     
           if(((nmethod.ne.4).or.(iperturb(1).ne.0)).and.
      &         (nmethod.ne.5)) then

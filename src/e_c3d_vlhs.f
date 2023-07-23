@@ -37,53 +37,70 @@
          nope=6
       endif
 !
-      if(lakonl(4:5).eq.'8R') then
-         mint3d=1
-      elseif(lakonl(4:4).eq.'8') then
-        mint3d=8
-      elseif(lakonl(4:4).eq.'4') then
-         mint3d=1
-      elseif(lakonl(4:5).eq.'6 ') then
-         mint3d=2
-      endif
-!
-!     initialisation of sm
-!
-      do i=1,nope
-         do j=1,nope
-            sm(i,j)=0.d0
-         enddo
-      enddo
-!
-!     computation of the matrix: loop over the Gauss points
-!
-      index=ipvar(nelem)
-      do k=1,mint3d
-!
-!        copying the shape functions, their derivatives and the
-!        Jacobian determinant from field var
-!
-         do j=1,nope
-            do i=1,4
-               index=index+1
-               shp(i,j)=var(index)
-            enddo
-         enddo
-         index=index+1
-         weight=var(index)
-!         
-         index=index+1
+      if(lakonl(4:4).ne.'4') then
+        if(lakonl(4:5).eq.'8R') then
+          mint3d=1
+        elseif(lakonl(4:4).eq.'8') then
+          mint3d=8
+        elseif(lakonl(4:4).eq.'4') then
+          mint3d=1
+        elseif(lakonl(4:5).eq.'6 ') then
+          mint3d=2
+        endif
 !     
-         do j=1,nope
+!     initialisation of sm
+!     
+        do i=1,nope
+          do j=1,nope
+            sm(i,j)=0.d0
+          enddo
+        enddo
+!     
+!     computation of the matrix: loop over the Gauss points
+!     
+        index=ipvar(nelem)
+        do k=1,mint3d
+!     
+!     copying the shape functions, their derivatives and the
+!     Jacobian determinant from field var
+!     
+          do j=1,nope
+c            do i=1,4
+c              index=index+1
+              index=index+4
+c              shp(i,j)=var(index)
+              shp(4,j)=var(index)
+c            enddo
+          enddo
+          index=index+1
+          weight=var(index)
+!     
+          index=index+1
+!     
+          do j=1,nope
             do i=1,j
 !     
-!              lhs velocity matrix
+!     lhs velocity matrix
 !     
-               sm(i,j)=sm(i,j)
-     &              +shp(4,i)*shp(4,j)*weight
+              sm(i,j)=sm(i,j)
+     &             +shp(4,i)*shp(4,j)*weight
             enddo
-         enddo
-      enddo
+          enddo
+        enddo
+      else
+!
+!        C3D4: analytical solution (agrees with a 4 point integration
+!              scheme
+!
+        index=ipvar(nelem)+17
+        weight=var(index)
+        do j=1,4
+          do i=1,j-1
+            sm(i,j)=0.05d0*weight
+          enddo
+          sm(j,j)=0.1d0*weight
+        enddo
+      endif
 !
       return
       end

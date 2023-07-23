@@ -35,20 +35,28 @@
       implicit none
 !     
       integer icmd,i,j,k,n,niso,ielas,iel,iint,nstate_,mi(*),id,
-     &     kstep,kinc,iloop,ier,iregion,matz
+     &     kstep,kinc,iloop,ier,iregion,matz,j1,j2,j3,j4,jj,kal(2,6),
+     &     kel(4,21),j5,j6,j7,j8
 !     
       real*8 elconloc(*),elas(21),emec(6),beta(6),stre(6),sc(6),
      &     plconloc(802),xk,xm,sa,stiff(6,6),ttime,ee,un,um,al,epl(6),
      &     ftrial,xiso(200),yiso(200),da6(3),fiso,dfiso,ep,dtime,denom,
      &     epini,el(6),tracee,a2(3),a6(3),time,xstate(nstate_,mi(1),*),
-     &     xstateini(nstate_,mi(1),*),tracea,da1(3),
+     &     xstateini(nstate_,mi(1),*),tracea,da1(3),delas(21),
      &     pnewdt,um2,fv1(3),fv2(3),ps1r1,ps1r6,
      &     ps1s2,ps6s1,traceb,z(3,3),s(3,3),b1(3),b2(3),b6(3),
      &     r6(3),s1xr1(3),sb(3),s1xr6(3),r1(3),s1(3),s2(3),s6(3),
      &     s1xs2(3),s6xs1(3),dlambda,ddlambda,dlambda2(2),ddlambda2(2),
      &     h,dh,h2(2),dh2(2,2),dk,dm,det,dlambda6(2),ddlambda6(2),
      &     h6(2),dh6(2,2),dlambdar(3),ddlambdar(3),hr(3),dhr(3,3),
-     &     a(3,3),b(3,3),a1(3),da2(3),t(6,6),dum(6,6),dum1
+     &     a(3,3),b(3,3),a1(3),da2(3),t(6,6),dum(6,6),dum1,ya(3,3,3,3)
+!     
+      kal=reshape((/1,1,2,2,3,3,1,2,1,3,2,3/),(/2,6/))
+!     
+      kel=reshape((/1,1,1,1,1,1,2,2,2,2,2,2,1,1,3,3,2,2,3,3,3,3,3,3,
+     &     1,1,1,2,2,2,1,2,3,3,1,2,1,2,1,2,1,1,1,3,2,2,1,3,
+     &     3,3,1,3,1,2,1,3,1,3,1,3,1,1,2,3,2,2,2,3,3,3,2,3,
+     &     1,2,2,3,1,3,2,3,2,3,2,3/),(/4,21/))
 !     
 !     localizing the plastic fields
 !     
@@ -226,7 +234,7 @@
      &     s1xr6(2)*(sb(2)-sa)+
      &     s1xr6(3)*(sb(3)-sa)
 !     
-      if((ps1r1.le.0.d0).and.(ps1r6.ge.0.d0)) then
+      if((ps1r1.ge.0.d0).and.(ps1r6.le.0.d0)) then
         iregion=1
       else
 !     
@@ -251,7 +259,7 @@
         ps1s2=s1xs2(1)*(sb(1)-sa)+
      &       s1xs2(2)*(sb(2)-sa)+
      &       s1xs2(3)*(sb(3)-sa)
-        if((ps1r1.ge.0.d0).and.(ps1s2.le.0.d0)) then
+        if((ps1r1.le.0.d0).and.(ps1s2.le.0.d0)) then
           iregion=2
         else
 !     
@@ -276,13 +284,14 @@
           ps6s1=s6xs1(1)*(sb(1)-sa)+
      &         s6xs1(2)*(sb(2)-sa)+
      &         s6xs1(3)*(sb(3)-sa)
-          if((ps1r6.le.0.d0).and.(ps6s1.le.0.d0)) then
+          if((ps1r6.ge.0.d0).and.(ps6s1.le.0.d0)) then
             iregion=3
           else
             iregion=4
           endif
         endif
       endif
+c      write(*,*) 'mohrcoulomb ',iel,iint,iregion
 !     
 !     calculate the change in lambda
 !     
@@ -786,7 +795,7 @@
         endif
       endif
 !     
-!     TO DO: BACKTRANSFORMATION FROM PRINCIPAL AXES INTO GLOBAL AXES
+!     BACKTRANSFORMATION FROM PRINCIPAL AXES INTO GLOBAL AXES
 !     
       t(1,1)=z(1,1)*z(1,1)
       t(1,2)=z(2,1)*z(2,1)
@@ -804,7 +813,7 @@
       t(3,2)=z(2,3)*z(2,3)
       t(3,3)=z(3,3)*z(3,3)
       t(3,4)=z(1,3)*z(2,3)
-      t(3,5)=z(3,2)*z(1,2)
+      t(3,5)=z(3,3)*z(1,3)
       t(3,6)=z(2,3)*z(3,3)
       t(4,1)=2.d0*z(1,1)*z(1,2)
       t(4,2)=2.d0*z(2,1)*z(2,2)
@@ -833,50 +842,144 @@
           stre(i)=stre(i)+t(j,i)*sc(j)
         enddo
       enddo
+c      write(*,*) 'mohrcoulomb s'
+c      write(*,*) (stre(i),i=1,6)
+!
+!     
+cccc
+c      s(1,1)=sc(1)
+c      s(2,2)=sc(2)
+c      s(3,3)=sc(3)
+c      s(1,2)=sc(4)
+c      s(1,3)=sc(5)
+c      s(2,3)=sc(6)
+c      s(2,1)=s(1,2)
+c      s(3,1)=s(1,3)
+c      s(3,2)=s(2,3)
+c      do jj=1,6
+c        stre(jj)=0.d0
+c        j1=kal(1,jj)
+c        j2=kal(2,jj)
+c        do j3=1,3
+c          do j4=1,3
+c            stre(jj)=stre(jj)+
+c     &           s(j3,j4)*z(j1,j3)*z(j2,j4)
+c          enddo
+c        enddo
+c      enddo
+cccc
+c      write(*,*) 'mohrcoulomb s'
+c      write(*,*) (stre(i),i=1,6)
+!     
+      if(icmd.ne.3) then
 !     
 !     transforming the stiffness matrix into the global system
-!     
-      do i=1,6
-        do j=1,6
-          dum(i,j)=0.d0
-          do k=1,6
-            dum(i,j)=dum(i,j)+stiff(i,k)*t(j,k)
+!
+c        stiff(2,1)=(stiff(1,2)+stiff(2,1))/2.d0
+c        stiff(3,1)=(stiff(1,3)+stiff(3,1))/2.d0
+c        stiff(3,2)=(stiff(2,3)+stiff(3,2))/2.d0
+c        stiff(4,1)=(stiff(1,4)+stiff(4,1))/2.d0
+c        stiff(4,2)=(stiff(2,4)+stiff(4,2))/2.d0
+c        stiff(4,3)=(stiff(3,4)+stiff(4,3))/2.d0
+c        stiff(5,1)=(stiff(1,5)+stiff(5,1))/2.d0
+c        stiff(5,2)=(stiff(2,5)+stiff(5,2))/2.d0
+c        stiff(5,3)=(stiff(3,5)+stiff(5,3))/2.d0
+c        stiff(5,4)=(stiff(4,5)+stiff(5,4))/2.d0
+c        stiff(6,1)=(stiff(1,6)+stiff(6,1))/2.d0
+c        stiff(6,2)=(stiff(2,6)+stiff(6,2))/2.d0
+c        stiff(6,3)=(stiff(3,6)+stiff(6,3))/2.d0
+c        stiff(6,4)=(stiff(4,6)+stiff(6,4))/2.d0
+c        stiff(6,5)=(stiff(5,6)+stiff(6,5))/2.d0
+c        do j=2,6
+c          do i=1,j-1
+c            stiff(i,j)=stiff(j,i)
+c          enddo
+c        enddo
+!        
+        do i=1,6
+          do j=1,6
+            dum(i,j)=0.d0
+            do k=1,6
+c     ERROR in Appendix A of Ph.D by Johan Clausen, p 1058
+c      it should be C'=A^T.C.A               
+c              dum(i,j)=dum(i,j)+stiff(i,k)*t(j,k)
+              dum(i,j)=dum(i,j)+stiff(i,k)*t(k,j)
+            enddo
           enddo
         enddo
-      enddo
 !     
-      do i=1,6
-        do j=1,6
-          stiff(i,j)=0.d0
-          do k=1,6
-            stiff(i,j)=stiff(i,j)+t(i,k)*dum(k,j)
+        do i=1,6
+          do j=1,6
+            stiff(i,j)=0.d0
+            do k=1,6
+              stiff(i,j)=stiff(i,j)+t(k,i)*dum(k,j)
+c              stiff(i,j)=stiff(i,j)+t(i,k)*dum(k,j)
+            enddo
           enddo
         enddo
-      enddo
 !     
 !     symmetrizing the matrix
 !     
-      elas(1)=stiff(1,1)
-      elas(2)=(stiff(1,2)+stiff(2,1))/2.d0
-      elas(3)=stiff(2,2)
-      elas(4)=(stiff(1,3)+stiff(3,1))/2.d0
-      elas(5)=(stiff(2,3)+stiff(3,2))/2.d0
-      elas(6)=stiff(3,3)
-      elas(7)=(stiff(1,4)+stiff(4,1))/2.d0
-      elas(8)=(stiff(2,4)+stiff(4,2))/2.d0
-      elas(9)=(stiff(3,4)+stiff(4,3))/2.d0
-      elas(10)=stiff(4,4)
-      elas(11)=(stiff(1,5)+stiff(5,1))/2.d0
-      elas(12)=(stiff(2,5)+stiff(5,2))/2.d0
-      elas(13)=(stiff(3,5)+stiff(5,3))/2.d0
-      elas(14)=(stiff(4,5)+stiff(5,4))/2.d0
-      elas(15)=stiff(5,5)
-      elas(16)=(stiff(1,6)+stiff(6,1))/2.d0
-      elas(17)=(stiff(2,6)+stiff(6,2))/2.d0
-      elas(18)=(stiff(3,6)+stiff(6,3))/2.d0
-      elas(19)=(stiff(4,6)+stiff(6,4))/2.d0
-      elas(20)=(stiff(5,6)+stiff(6,5))/2.d0
-      elas(21)=stiff(6,6)
+        elas(1)=stiff(1,1)
+        elas(2)=(stiff(1,2)+stiff(2,1))/2.d0
+        elas(3)=stiff(2,2)
+        elas(4)=(stiff(1,3)+stiff(3,1))/2.d0
+        elas(5)=(stiff(2,3)+stiff(3,2))/2.d0
+        elas(6)=stiff(3,3)
+        elas(7)=(stiff(1,4)+stiff(4,1))/2.d0
+        elas(8)=(stiff(2,4)+stiff(4,2))/2.d0
+        elas(9)=(stiff(3,4)+stiff(4,3))/2.d0
+        elas(10)=stiff(4,4)
+        elas(11)=(stiff(1,5)+stiff(5,1))/2.d0
+        elas(12)=(stiff(2,5)+stiff(5,2))/2.d0
+        elas(13)=(stiff(3,5)+stiff(5,3))/2.d0
+        elas(14)=(stiff(4,5)+stiff(5,4))/2.d0
+        elas(15)=stiff(5,5)
+        elas(16)=(stiff(1,6)+stiff(6,1))/2.d0
+        elas(17)=(stiff(2,6)+stiff(6,2))/2.d0
+        elas(18)=(stiff(3,6)+stiff(6,3))/2.d0
+        elas(19)=(stiff(4,6)+stiff(6,4))/2.d0
+        elas(20)=(stiff(5,6)+stiff(6,5))/2.d0
+        elas(21)=stiff(6,6)
+ccccc
+c        call anisotropic(elas,ya)
+c!     
+c        do jj=1,21
+c          j1=kel(1,jj)
+c          j2=kel(2,jj)
+c          j3=kel(3,jj)
+c          j4=kel(4,jj)
+c          delas(jj)=0.d0
+c          do j5=1,3
+c            do j6=1,3
+c              do j7=1,3
+c                do j8=1,3
+c                  delas(jj)=delas(jj)+ya(j5,j6,j7,j8)*
+c     &                 z(j1,j5)*z(j2,j6)*z(j3,j7)*z(j4,j8)
+c                enddo
+c              enddo
+c            enddo
+c          enddo
+c        enddo
+c        do jj=1,21
+c          elas(jj)=delas(jj)
+c        enddo
+ccccc
+c        write(*,*) 'mohrcoulomb stiff'
+c          write(*,*) (elas(i),i=1,1)
+c          write(*,*) (elas(i),i=2,3)
+c          write(*,*) (elas(i),i=4,6)
+c          write(*,*) (elas(i),i=7,10)
+c          write(*,*) (elas(i),i=11,15)
+c          write(*,*) (elas(i),i=16,21)
+      endif
+!     
+!     updating the plastic fields
+!     
+      do i=1,6
+        xstate(1+i,iint,iel)=epl(i)
+      enddo
+      xstate(1,iint,iel)=ep
 !     
       return
       end

@@ -32,7 +32,8 @@
      &     pmastsurf,mortar,clearini,ielprop,prop,ne0,nea,neb,
      &     freq,ndamp,dacon,set,nset)
 !     
-!     filling the stiffness matrix in spare matrix format (sm)
+!     filling the damping matrix in spare matrix format for
+!     steady state calculations(dmss)
 !     
       implicit none
 !     
@@ -249,30 +250,7 @@ c     Bernhardi end
             do
               j=ipobody(1,index)
               if(j.eq.0) exit
-              if(ibody(1,j).eq.-1) then
-!     
-!               centrifugal axis is defined by two nodes     
-!     
-                om=xbody(1,j)
-                node1=int(xbody(2,j))
-                node2=int(xbody(3,j))
-                if((iperturb(1).ne.1).and.(iperturb(2).ne.1)) then
-                  do kk=1,3
-                    p1(kk)=co(kk,node1)
-                    p2(kk)=co(kk,node2)-co(kk,node1)
-                  enddo
-                else
-                  do kk=1,3
-                    p1(kk)=co(kk,node1)+vold(kk,node1)
-                    p2(kk)=co(kk,node2)+vold(kk,node2)-
-     &                   (co(kk,node1)+vold(kk,node1))
-                  enddo
-                endif
-                dd=dsqrt(p2(1)**2+p2(2)**2+p2(3)**2)
-                do kk=1,3
-                  p2(kk)=p2(kk)/dd
-                enddo
-              elseif(ibody(1,j).eq.1) then
+              if(ibody(1,j).eq.1) then
                 om=xbody(1,j)
                 p1(1)=xbody(2,j)
                 p1(2)=xbody(3,j)
@@ -329,7 +307,7 @@ c     Bernhardi end
      &           ne0,ipkon,thicke,
      &           integerglob,doubleglob,tieset,istartset,
      &           iendset,ialset,ntie,nasym,
-     &           ielprop,prop)
+     &           ielprop,prop,nope)
           endif
           do jj=1,ndof*nope
             do ii=1,jj
