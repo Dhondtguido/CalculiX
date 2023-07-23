@@ -64,7 +64,7 @@
          return
       endif
 !
-      Qred=abs(xflow)*dsqrt(Tt)/(A*pt)
+      Qred=dabs(xflow)*dsqrt(Tt)/(A*pt)
 !
 !     optimised estimate of T static
 !

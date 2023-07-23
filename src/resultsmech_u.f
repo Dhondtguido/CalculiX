@@ -96,9 +96,21 @@
      &        reltime,calcul_fn,calcul_qa,calcul_cauchy,nener,
      &        ikin,nal,ne0,thicke,emeini,nelem,ielprop,prop,t0g,t1g)
       else
-         write(*,*) '*ERROR in resultsmech_u.f: user element'
-         write(*,*) '       ',lakon(nelem)(1:5),' is not defined'
-         call exit(201)
+!
+!       substructure (also called superelement)
+!
+        call resultsmech_matrix(co,kon,ipkon,lakon,ne,v,
+     &       stx,elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,
+     &       ielmat,ielorien,norien,orab,ntmat_,t0,t1,ithermal,prestr,
+     &       iprestr,eme,iperturb,fn,iout,qa,vold,nmethod,
+     &       veold,dtime,time,ttime,plicon,nplicon,plkcon,nplkcon,
+     &       xstateini,xstiff,xstate,npmat_,matname,mi,ielas,icmd,
+     &       ncmat_,nstate_,stiini,vini,ener,eei,enerini,istep,iinc,
+     &       reltime,calcul_fn,calcul_qa,calcul_cauchy,nener,
+     &       ikin,nal,ne0,thicke,emeini,nelem,ielprop,prop,t0g,t1g)
+c         write(*,*) '*ERROR in resultsmech_u.f: user element'
+c         write(*,*) '       ',lakon(nelem)(1:5),' is not defined'
+c         call exit(201)
       endif
 !
       return

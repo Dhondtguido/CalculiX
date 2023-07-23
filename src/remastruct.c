@@ -35,7 +35,7 @@ void remastruct(ITG *ipompc, double **coefmpcp, ITG **nodempcp, ITG *nmpc,
 		char *typeboun,double **cvp,double **cvinip,ITG *iit,
 		ITG *network,ITG *itiefac,ITG *ne0,ITG *nkon0,ITG *nintpoint,
 		ITG *islavsurf,double *pmastsurf,char*tieset,ITG *ntie,
-		ITG *num_cpus){
+		ITG *num_cpus,ITG *ielmat,char *matname){
 
   /* reconstructs the nonzero locations in the stiffness and mass
      matrix after a change in MPC's */
@@ -101,7 +101,7 @@ void remastruct(ITG *ipompc, double **coefmpcp, ITG **nodempcp, ITG *nmpc,
 	     ipompc,nodempc,nmpc,nactdof,icol,jq,&mast1,&irow,isolver,neq,
 	     ikmpc,ilmpc,ipointer,nzs,nmethod,ithermal,
 	     ikboun,ilboun,iperturb,mi,mortar,typeboun,labmpc,
-	     iit,icascade,network,iexpl);
+	     iit,icascade,network,iexpl,ielmat,matname);
     
     SFREE(ipkontot);SFREE(kontot);SFREE(lakontot);
     
@@ -113,7 +113,7 @@ void remastruct(ITG *ipompc, double **coefmpcp, ITG **nodempcp, ITG *nmpc,
 	     nodempc,nmpc,nactdof,icol,jq,&mast1,&irow,isolver,neq,
 	     ikmpc,ilmpc,ipointer,nzs,nmethod,ithermal,
 	     ikboun,ilboun,iperturb,mi,mortar,typeboun,labmpc,
-	     iit,icascade,network,iexpl);
+	     iit,icascade,network,iexpl,ielmat,matname);
   }
 
   SFREE(ipointer);SFREE(mast1);

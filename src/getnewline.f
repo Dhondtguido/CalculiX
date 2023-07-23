@@ -30,7 +30,7 @@
       integer istat,n,key,iline,ipol,inl,ipoinp(2,*),inp(3,*),
      &  ipoinpc(0:*),i,j,nentries
 !
-      parameter(nentries=18)
+      parameter(nentries=19)
 !
 !     reading a new line
 !

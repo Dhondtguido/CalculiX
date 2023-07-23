@@ -116,7 +116,7 @@
      &     isolver,ithermal(*),iperturb(*),iprestr,istep,mei(4),nkon,
      &     nprint,nload,nload_,nforc,nforc_,nlabel,imat,
      &     nset,nset_,nprint_,nam,nam_,jout(2),ncmat_,itpamp,
-     &     ierror,idrct,jmax(2),iexpl,iplas,npmat_,ntrans,ntrans_,
+     &     ierror,idrct,jmax(*),iexpl,iplas,npmat_,ntrans,ntrans_,
      &     M_or_SPC,nplicon(0:ntmat_,*),nplkcon(0:ntmat_,*),nflow,
      &     ne1d,ne2d,nener,irstrt(*),ii,maxlenmpc,inl,ipol,network,
      &     iline,mcs,ntie,ntie_,lprev,newstep,nbody,nbody_,ibody(3,*),
@@ -146,7 +146,7 @@
       save solid,ianisoplas,out3d,pretension
 !     
       integer nentries
-      parameter(nentries=18)
+      parameter(nentries=19)
 !
       irestartread=0
       newstep=0
@@ -673,12 +673,12 @@ c
       elseif(textpart(1)(1:8).eq.'*ENDSTEP') then
         exit
 !     
-      elseif(textpart(1)(1:10).eq.'*EQUATIONF') then
-        M_or_SPC=1
-        call equationfs(inpc,textpart,ipompc,nodempc,coefmpc,
-     &       nmpc,nmpc_,mpcfree,co,trab,ntrans,ikmpc,ilmpc,
-     &       labmpc,istep,istat,n,iline,ipol,inl,ipoinp,inp,ipoinpc,
-     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
+c      elseif(textpart(1)(1:10).eq.'*EQUATIONF') then
+c        M_or_SPC=1
+c        call equationfs(inpc,textpart,ipompc,nodempc,coefmpc,
+c     &       nmpc,nmpc_,mpcfree,co,trab,ntrans,ikmpc,ilmpc,
+c     &       labmpc,istep,istat,n,iline,ipol,inl,ipoinp,inp,ipoinpc,
+c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
 !     
       elseif(textpart(1)(1:9).eq.'*EQUATION') then
         M_or_SPC=1
@@ -704,7 +704,7 @@ c
 !     
       elseif(textpart(1)(1:18).eq.'*FEASIBLEDIRECTION') then
         call feasibledirections(inpc,textpart,istat,n,key,iline,ipol,
-     &       inl,ipoinp,inp,ipoinpc,nmethod,istep,ier,tmax)
+     &       inl,ipoinp,inp,ipoinpc,nmethod,istep,ier,tmax,tinc)
 !     
       elseif(textpart(1)(1:5).eq.'*FILM') then
         call films(inpc,textpart,set,istartset,iendset,
@@ -835,6 +835,11 @@ c
         call materials(inpc,textpart,matname,nmat,nmat_,
      &       irstrt,istep,istat,n,iline,ipol,inl,ipoinp,inp,
      &       ipoinpc,imat,ier)
+!     
+      elseif(textpart(1)(1:15).eq.'*MATRIXASSEMBLE') then
+        call matrixassembles(textpart,n,iuel,nuel_,inpc,ipoinpc,
+     &       iline,ier,ipoinp,inp,inl,ipol,lakon,ipkon,kon,nkon,ne,ne_,
+     &       ielmat,mi,matname,nmat,nmat_,irstrt,istep)
 !     
       elseif(textpart(1)(1:16).eq.'*MEMBRANESECTION') then
         call membranesections(inpc,textpart,set,istartset,iendset,
@@ -1125,7 +1130,7 @@ c
       elseif(textpart(1)(1:25).eq.'*SUBSTRUCTUREMATRIXOUTPUT') then
         call substructurematrixoutputs(textpart,istep,inpc,
      &       istat,n,key,iline,ipol,inl,ipoinp,inp,jobnamec,ipoinpc,
-     &       ier)
+     &       ier,jmax)
 !     
       elseif(textpart(1)(1:9).eq.'*SURFACE ') then
         call surfaces(inpc,textpart,set,istartset,iendset,ialset,

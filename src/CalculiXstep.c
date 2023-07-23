@@ -301,7 +301,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
     printf("software, and you are welcome to redistribute it under\n");
     printf("certain conditions, see gpl.htm\n\n");
     printf("************************************************************\n\n");
-    printf("You are using an executable made on Tue May 23 23:07:31 CEST 2023\n");
+    printf("You are using an executable made on Sat Jul 22 18:12:52 CEST 2023\n");
     fflush(stdout);
 
     NNEW(ipoinp,ITG,2*nentries);
@@ -1331,7 +1331,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 		 nodempc,&nmpc,nactdof,icol,jq,&mast1,&irow,&isolver,neq,
 		 ikmpc,ilmpc,ipointer,nzs,&nmethodl,ithermal,
 		 ikboun,ilboun,iperturb,mi,&mortar,typeboun,labmpc,
-		 &iit,&icascade,&network,&iexpl);
+		 &iit,&icascade,&network,&iexpl,ielmat,matname);
       }
       else{neq[0]=1;neq[1]=1;neq[2]=1;}
     }
@@ -1345,7 +1345,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
       mastructcs(nk,kon,ipkon,lakon,ne,nodeboun,ndirboun,nboun,
 		 ipompc,nodempc,&nmpc,nactdof,icol,jq,&mast1,&irow,&isolver,
 		 neq,ikmpc,ilmpc,ipointer,nzs,&nmethodl,
-		 ics,cs,labmpc,&mcs,mi,&mortar);
+		 ics,cs,labmpc,&mcs,mi,&mortar,ielmat,matname);
     }
   
     SFREE(ipointer);SFREE(mast1);
@@ -1399,7 +1399,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 		    &nbody,
 		    xbodyold,timepar,thicke,jobnamec,tieset,&ntie,&istep,&nmat,
 		    ielprop,prop,typeboun,&mortar,mpcinfo,tietol,ics,
-		    orname,itempuser,t0g,t1g);
+		    orname,itempuser,t0g,t1g,jmax);
 
 	  for(i=0;i<3;i++){nzsprevstep[i]=nzs[i];}
 
@@ -1767,7 +1767,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 			ielprop,prop,&kode,nmethod,filab,&nstate_,&istep,cs,
 			set,&nset,istartset,iendset,ialset,jobnamec,output,
 			&ntrans,inotr,trab,orname,xdesi,timepar,coini,ikboun,
-			nactdof,&ne2d);         
+			nactdof,&ne2d,&nkon);         
       
     }
 

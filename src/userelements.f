@@ -38,12 +38,6 @@
      &             ichar(textpart(i)(8:8))*256**2+
      &             ichar(textpart(i)(9:9))*256+
      &             ichar(textpart(i)(10:10))
-c            read(textpart(i)(7:16),'(i10)',iostat=istat) number
-c            if(istat.gt.0) then
-c               call inputerror(inpc,ipoinpc,iline,
-c     &                          "*USER ELEMENT%",ier)
-c                return
-c             endif
          elseif(textpart(i)(1:6).eq.'NODES=') then
             read(textpart(i)(7:16),'(i10)',iostat=istat) nodes
             if(istat.gt.0) then
@@ -69,13 +63,6 @@ c             endif
       enddo
 !
 !     check range
-!
-c      if(number.gt.9999) then
-c         write(*,*) '*ERROR reading *USER ELEMENT'
-c         write(*,*) '       element number ',number,' exceeds 9999'
-c         ier=1
-c         return
-c      endif
 !
       if(intpoints.gt.255) then
          write(*,*) '*ERROR reading *USER ELEMENT'

@@ -38,7 +38,7 @@ void readinput(char *jobnamec,char **inpcp,ITG *nline,ITG *nset,
     icntrl,nload,nforc,nboun,nk,ne,nmpc,nalset,nmat,ntmat,npmat,
     norien,nam,nprint,mi[3],ntrans,ncs,namtot,ncmat,memmpc,ne1d,
     ne2d,nflow,*meminset=NULL,*rmeminset=NULL, *inp=NULL,ntie,
-    nener,nstate,nentries=18,ifreeinp,ikey,lincludefn,nslavs,
+    nener,nstate,nentries=19,ifreeinp,ikey,lincludefn,nslavs,
     nbody,ncharmax=1000000,*ipoinpc=NULL,ichangefriction=0,nkon,
     ifile,mcs,initialtemperature=0,nprop,mortar,ifacecount,
     nintpoint,infree[4],iheading=0,ichangesurfacebehavior=0,
@@ -130,6 +130,10 @@ void readinput(char *jobnamec,char **inpcp,ITG *nline,ITG *nset,
 	      }
 	      if(j>=9){
 		  if(strcmp1(&buff[j-9],"FILENAME=")==0) ifile=1;
+		  if(strcmp1(&buff[j-9],"MASSFILE=")==0) ifile=1;
+	      }
+	      if(j>=14){
+		  if(strcmp1(&buff[j-14],"STIFFNESSFILE=")==0) ifile=1;
 	      }
 	      if(ifile==1){
 		  do{
@@ -333,6 +337,11 @@ void readinput(char *jobnamec,char **inpcp,ITG *nline,ITG *nset,
       else if(strcmp1(&buff[0],"*MATERIAL")==0){
         FORTRAN(keystart,(&ifreeinp,ipoinp,inp,"MATERIAL",
                           nline,&ikey));
+      }
+      else if(strcmp1(&buff[0],"*MATRIXASSEMBLE")==0){
+        FORTRAN(keystart,(&ifreeinp,ipoinp,inp,"MATRIXASSEMBLE",
+                          nline,&ikey));
+	(*nuel)++;
       }
       else if((strcmp1(&buff[0],"*NODE")==0)&&
 	      (strcmp1(&buff[0],"*NODEPRINT")!=0)&&

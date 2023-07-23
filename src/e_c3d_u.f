@@ -27,7 +27,7 @@
      &     ipompc,nodempc,coefmpc,nmpc,ikmpc,ilmpc,veold,
      &     ne0,ipkon,thicke,
      &     integerglob,doubleglob,tieset,istartset,iendset,ialset,ntie,
-     &     nasym,ielprop,prop)
+     &     nasym,ielprop,prop,nope)
 !     
 !     computation of the element matrix and rhs for the user element
 !     of type u1
@@ -52,7 +52,7 @@
       character*80 matname(*),amat
       character*81 tieset(3,*)
 !     
-      integer konl(26),nelemload(2,*),nbody,nelem,mi(*),kon(*),
+      integer konl(20),nelemload(2,*),nbody,nelem,mi(*),kon(*),
      &     ielprop(*),null,index,mattyp,ithermal(*),iperturb(*),nload,
      &     idist,
      &     i,j,i1,nmethod,kk,nelcon(2,*),nrhcon(*),nalcon(2,*),
@@ -114,9 +114,13 @@
      &       ne0,ipkon,thicke,integerglob,doubleglob,tieset,istartset,
      &       iendset,ialset,ntie,nasym,ielprop,prop)     
       else
-        write(*,*) '*ERROR in e_c3d_u.f: user element'
-        write(*,*) '       ',lakonl(1:5),' is not defined'
-        call exit(201)
+!
+!       substructure (superelement)
+!
+        nope=-1
+c        write(*,*) '*ERROR in e_c3d_u.f: user element'
+c        write(*,*) '       ',lakonl(1:5),' is not defined'
+c        call exit(201)
       endif
 !     
       return

@@ -35,7 +35,7 @@
      &  nmdnode,ikmpc(*),
      &  ilmpc(*),ipompc(*),nodempc(3,*),nmpc,imddof(*),nmddof,
      &  mi(*),nactdof(0:mi(2),*),imdmpc(*),nmdmpc,imdboun(*),nmdboun,
-     &  ikboun(*),nboun,ilboun(*),ithermal,k
+     &  ikboun(*),nboun,ilboun(*),ithermal(*),k
 !
       data ifaceq /4,3,2,1,11,10,9,12,
      &            5,6,7,8,13,14,15,16,
@@ -101,7 +101,7 @@
 !
 !        add the degrees of freedom corresponding to the node
 !
-               if(ithermal.ne.2) then
+               if(ithermal(1).ne.2) then
                   do k=1,3
                      call addimdnodedof(node,k,ikmpc,ilmpc,ipompc,
      &                    nodempc,nmpc,imdnode,nmdnode,imddof,nmddof,
@@ -147,7 +147,7 @@ c            if(sideload(iload)(3:4).eq.'NU') then
 !     
 !     add the degrees of freedom corresponding to the node
 !     
-               if(ithermal.ne.2) then
+               if(ithermal(1).ne.2) then
                   do k=1,3
                      call addimdnodedof(node,k,ikmpc,ilmpc,ipompc,
      &                    nodempc,nmpc,imdnode,nmdnode,imddof,nmddof,

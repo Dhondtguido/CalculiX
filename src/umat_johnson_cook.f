@@ -202,7 +202,8 @@
           end do 
           do i=1,3 
             do j=1,i-1 
-              ddsdde(j,i)=eff_al 
+c              ddsdde(j,i)=eff_al 
+              ddsdde(i,j)=eff_al 
             end do 
             ddsdde(i,i)=eff_um2+eff_al
           end do 
@@ -214,11 +215,15 @@
               ddsdde(j,i)=ddsdde(j,i)+flow(j)*flow(i)*(eff_hard-eff_um3)
             end do 
           end do
+        do i=1,6
+          write(*,*) 'umat_johnson_cook pl ',(ddsdde(i,j),j=1,i)
+        enddo
+        if(i.ne.-1) stop
         endif
       else
         dep=0.d0
 !     
-!     elastic jocobian 
+!     elastic jacobian 
 !
         if(icmd.ne.3) then
           do i=4,6 
@@ -229,7 +234,8 @@
 !     
           do i=1,3 
             do j=1,i-1 
-              ddsdde(j,i)=al 
+c              ddsdde(j,i)=al 
+              ddsdde(i,j)=al 
             end do 
             ddsdde(i,i)=al+um2
           end do 

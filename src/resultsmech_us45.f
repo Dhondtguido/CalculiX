@@ -385,7 +385,7 @@
 !
         kode = 2
         call linel(kode,mattyp,beta,eme,stre,elas,elconloc,
-     &       iorien,orab,pgauss)
+     &       iorien,orab,pgauss,ncmat_)
 !
         do m1=1,21
           xstiff(m1,ii,i) = elas(m1) ! elas for each gp saved in xstiff    

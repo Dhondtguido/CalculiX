@@ -20,7 +20,7 @@
       implicit none
 !
       integer nentries
-      parameter(nentries=18)
+      parameter(nentries=19)
 !
       character*1 inpc(*)
       character*20 nameref(nentries)
@@ -29,7 +29,7 @@
      &  ipoinpc(0:*)
 !
       data nameref /'RESTART,READ','NODE','USERELEMENT','ELEMENT',
-     &              'NSET',
+     &              'MATRIXASSEMBLE','NSET',
      &              'ELSET','SURFACE','TRANSFORM','MATERIAL',
      &              'DISTRIBUTION',
      &              'ORIENTATION','TIE','INTERACTION',

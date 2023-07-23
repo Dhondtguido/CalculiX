@@ -25,8 +25,6 @@
       integer iponoel(*),inoel(2,*),ipkon(*),kon(*),i,j,ne,
      &  inoelfree,nope,indexe,node
 !
-!
-!
 !     determining the elements belonging to the nodes of
 !     the elements
 !
