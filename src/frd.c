@@ -200,7 +200,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
     fprintf(f1,"%5sUHOST                                                              \n",p1);
     fprintf(f1,"%5sUPGM               CalculiX                                        \n",p1);
     fprintf(f1,"%5sUVERSION           Version DEVELOPMENT                             \n",p1);
-    fprintf(f1,"%5sUCOMPILETIME       Tue May 23 23:07:31 CEST 2023                    \n",p1);
+    fprintf(f1,"%5sUCOMPILETIME       Sat Jul 22 18:12:52 CEST 2023                    \n",p1);
     fprintf(f1,"%5sUDIR                                                               \n",p1);
     fprintf(f1,"%5sUDBN                                                               \n",p1);
     
@@ -289,8 +289,13 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 
 	  /* user element */
 
-	}else if(strcmp1(&lakon[8*i],"U1")==0){
-	  continue;
+	}else if(strcmp1(&lakon[8*i],"U")==0){
+
+	/* only user elements of type US3 and US45 are stored */
+	
+	  if((strcmp1(&lakon[8*i],"US3")!=0)&&(strcmp1(&lakon[8*i],"US45")!=0)){
+	    continue;
+	  }
 	}
 	nelout++;
       }
@@ -330,8 +335,14 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	continue;
       }else if(strcmp1(&lakon[8*i],"MASS")==0){
 	continue;
-      }else if(strcmp1(&lakon[8*i],"U1")==0){
-	continue;
+      }else if(strcmp1(&lakon[8*i],"U")==0){
+
+	/* only user elements of type US3 and US45 are stored */
+	
+	if((strcmp1(&lakon[8*i],"US3")!=0)&&(strcmp1(&lakon[8*i],"US45")!=0)){
+	  continue;
+	}
+	indexe=ipkon[i];
       }else{
 	indexe=ipkon[i];
       }
@@ -1596,12 +1607,12 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	      &noutloc,description,kode,nmethod,f1,output,istep,iinc);
     
     fprintf(f1," -4  CONTACT     6    1\n");
-    fprintf(f1," -5  COPEN       1    4    1    1\n");
-    fprintf(f1," -5  CSLIP1      1    4    2    2\n");
-    fprintf(f1," -5  CSLIP2      1    4    3    3\n");
-    fprintf(f1," -5  CPRESS      1    4    1    2\n");
-    fprintf(f1," -5  CSHEAR1     1    4    2    3\n");
-    fprintf(f1," -5  CSHEAR2     1    4    3    1\n");
+    fprintf(f1," -5  COPEN       1    1    0    0\n");
+    fprintf(f1," -5  CSLIP1      1    1    0    0\n");
+    fprintf(f1," -5  CSLIP2      1    1    0    0\n");
+    fprintf(f1," -5  CPRESS      1    1    0    0\n");
+    fprintf(f1," -5  CSHEAR1     1    1    0    0\n");
+    fprintf(f1," -5  CSHEAR2     1    1    0    0\n");
     
     for(i=*ne-1;i>=0;i--){
       if((strcmp1(&lakon[8*i+1],"S")!=0)||(strcmp1(&lakon[8*i+6],"C")!=0))
@@ -1644,12 +1655,12 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
       frdheader(&icounter,&oner,time,&pi,noddiam,cs,&null,mode,
 		&noutloc,description,kode,nmethod,f1,output,istep,iinc);
       fprintf(f1," -4  CONTACT     6    1\n");
-      fprintf(f1," -5  COPEN       1    4    1    1\n");
-      fprintf(f1," -5  CSLIP1      1    4    2    2\n");
-      fprintf(f1," -5  CSLIP2      1    4    3    3\n");
-      fprintf(f1," -5  CPRESS      1    4    1    2\n");
-      fprintf(f1," -5  CSHEAR1     1    4    2    3\n");
-      fprintf(f1," -5  CSHEAR2     1    4    3    1\n");
+      fprintf(f1," -5  COPEN       1    1    0    0\n");
+      fprintf(f1," -5  CSLIP1      1    1    0    0\n");
+      fprintf(f1," -5  CSLIP2      1    1    0    0\n");
+      fprintf(f1," -5  CPRESS      1    1    0    0\n");
+      fprintf(f1," -5  CSHEAR1     1    1    0    0\n");
+      fprintf(f1," -5  CSHEAR2     1    1    0    0\n");
   
       frdselect(cdn,cdn,&iset,&nkcoords,inum,m1,istartset,iendset,
 		ialset,ngraph,&ncomptensor,ifieldtensor,icomptensor,
@@ -1670,12 +1681,12 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
       frdheader(&icounter,&oner,time,&pi,noddiam,cs,&null,mode,
 		&noutloc,description,kode,nmethod,f1,output,istep,iinc);
       fprintf(f1," -4  CONTACTI    6    1\n");
-      fprintf(f1," -5  COPEN       1    4    1    1\n");
-      fprintf(f1," -5  CSLIP1      1    4    2    2\n");
-      fprintf(f1," -5  CSLIP2      1    4    3    3\n");
-      fprintf(f1," -5  CPRESS      1    4    1    2\n");
-      fprintf(f1," -5  CSHEAR1     1    4    2    3\n");
-      fprintf(f1," -5  CSHEAR2     1    4    3    1\n");
+      fprintf(f1," -5  COPEN       1    1    0    0\n");
+      fprintf(f1," -5  CSLIP1      1    1    0    0\n");
+      fprintf(f1," -5  CSLIP2      1    1    0    0\n");
+      fprintf(f1," -5  CPRESS      1    1    0    0\n");
+      fprintf(f1," -5  CSHEAR1     1    1    0    0\n");
+      fprintf(f1," -5  CSHEAR2     1    1    0    0\n");
   
       frdselect(&cdn[6**nk],cdn,&iset,&nkcoords,inum,m1,istartset,iendset,
 		ialset,ngraph,&ncomptensor,ifieldtensor,icomptensor,

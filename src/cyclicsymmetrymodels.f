@@ -43,7 +43,9 @@
 !     while looking from the first point to the second point one
 !     arrives at the master surface without leaving the body
 !     cs(12,mcs): -1 (denotes a cylindrical coordinate system)
-!     cs(13,mcs): number of the element set
+!     cs(13,mcs): if >0: number of the element set
+!                 if <0: -cs(13,mcs) is the number of a substructure
+!                        element (also called superelement)
 !     cs(14,mcs): sum of previous independent nodes
 !     cs(15,mcs): cos(angle); angle = 2*pi/cs(1,mcs)
 !     cs(16,mcs): sin(angle)
@@ -58,6 +60,7 @@
       logical triangulation,calcangle,nodesonaxis,check,exist
 !     
       character*1 inpc(*),depkind,indepkind
+      character*5 matrixname
       character*8 lakon(*)
       character*20 labmpc(*)
       character*80 tie
@@ -75,7 +78,7 @@
      &     ifacetet(*),inodface(*),ipoinpc(0:*),maxsectors,id,jfaces,
      &     noden(2),ntrans,ntrans_,nef,mi(*),ifaceq(8,6),ifacet(6,4),
      &     ifacew1(4,5),ifacew2(8,5),idof,ier,icount,nodeaxd,nodeaxi,
-     &     ilen
+     &     ilen,ielem
 !     
       real*8 tolloc,co(3,*),coefmpc(*),rcs(*),zcs(*),rcs0(*),zcs0(*),
      &     csab(7),xn,yn,zn,dd,xap,yap,zap,tietol(4,*),cs(17,*),
@@ -131,6 +134,8 @@
      &'
       tie='
      &'
+      matrixname='U    '
+!
       do i=2,n
         if(textpart(i)(1:2).eq.'N=') then
           read(textpart(i)(3:22),'(f20.0)',iostat=istat) xsectors
@@ -165,7 +170,14 @@
           elset(81:81)=' '
           ipos=index(elset,' ')
           elset(ipos:ipos)='E'
-        else
+        elseif(textpart(i)(1:7).eq.'MATRIX=') then
+          read(textpart(i)(8:11),'(a4)',iostat=istat) matrixname(2:5)
+          if(istat.gt.0) then
+            call inputerror(inpc,ipoinpc,iline,
+     &           "*CYCLIC SYMMETRY MODEL%",ier)
+            return
+          endif
+       else
           write(*,*) 
      &         '*WARNING reading *CYCLIC SYMMETRY MODEL:'
           write(*,*) '         parameter not recognized:'
@@ -276,6 +288,26 @@
         endif
       endif
       cs(13,mcs)=iset+0.5d0
+!     
+!     determining the matrix elementnumber
+!
+      if(matrixname(2:5).ne.'    ') then
+        ielem=0
+        do i=ne,1,-1
+          if(lakon(i)(1:5).eq.matrixname) then
+            ielem=i
+            exit
+          endif
+        enddo
+        if(ielem.eq.0) then
+          write(*,*) '*ERROR reading *CYCLIC SYMMETRY MODEL:'
+          write(*,*) '       matrix does not exist; '
+          call inputerror(inpc,ipoinpc,iline,
+     &         "*CYCLIC SYMMETRY MODEL%",ier)
+          return
+        endif
+        cs(13,mcs)=-ielem+0.5d0
+      endif
 !     
       call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &     ipoinp,inp,ipoinpc)

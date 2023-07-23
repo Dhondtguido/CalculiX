@@ -125,26 +125,7 @@
                   call exit(201)
                 endif
                 om(nom)=xbody(1,j)
-                if(abs(ibody(1,j)).eq.-1) then
-                  node1=int(xbody(2,j))
-                  node2=int(xbody(3,j))
-                  if((iperturb(1).ne.1).and.(iperturb(2).ne.1)) then
-                    do kk=1,3
-                      p1(kk,nom)=co(kk,node1)
-                      p2(kk,nom)=co(kk,node2)-co(kk,node1)
-                    enddo
-                  else
-                    do kk=1,3
-                      p1(kk,nom)=co(kk,node1)+vold(kk,node1)
-                      p2(kk,nom)=co(kk,node2)+vold(kk,node2)-
-     &                     (co(kk,node1)+vold(kk,node1))
-                    enddo
-                  endif
-                  dd=dsqrt(p2(1,nom)**2+p2(2,nom)**2+p2(3,nom)**2)
-                  do kk=1,3
-                    p2(i,nom)=p2(i,nom)/dd
-                  enddo
-                elseif(ibody(1,j).eq.1) then
+                if(ibody(1,j).eq.1) then
                   p1(1,nom)=xbody(2,j)
                   p1(2,nom)=xbody(3,j)
                   p1(3,nom)=xbody(4,j)

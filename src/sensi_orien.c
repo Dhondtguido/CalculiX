@@ -706,7 +706,7 @@ void sensi_orien(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		 islavsurf,ielprop,prop,energyini,energy,df,&distmin,
 		 &ndesi,nodedesi,sti,nkon,jqs,irows,nactdofinv,
 		 &icoordinate,dxstiff,istartdesi,ialdesi,xdesi,
-		 &ieigenfrequency,fint,&ishapeenergy,typeboun);
+		 &ieigenfrequency,fint,&ishapeenergy,typeboun,physcon);
 	  
       iout=1;SFREE(v);
       

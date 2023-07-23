@@ -222,7 +222,7 @@ c          enddo
                write(*,*)
      &            '         is converted into PEEQ; no distinction'
                write(*,*) 
-     &          '        is made between PEEQ, CEEQ, CE and PE'
+     &          '         is made between PEEQ, CEEQ, CE and PE'
                write(*,*)
             elseif(textpart(ii)(1:3).eq.'SDV') then
                if((nmethod.eq.2).or.(nmethod.eq.3)) then

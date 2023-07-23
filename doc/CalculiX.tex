@@ -589,7 +589,6 @@ minor axis of inertia and deformation of the first torsion mode.
 \subsection{Frequency calculation of a rotating disk on a slender shaft}
 
 \begin{verbatim}
-\end{verbatim}
 **
 **   Structure: slender disk mounted on a long axis
 **   Test objective: *COMPLEX FREQUENCY,
@@ -625,6 +624,7 @@ Eall,centrif,3.0853e8,0.,0.,0.,0.,0.,1.
 *node file
 pu
 *end step
+\end{verbatim}
           
 \begin{figure}
 \epsfig{file=rotor4.eps,width=12cm}
@@ -2427,7 +2427,7 @@ shows how an optimization might be performed, the procedure itself is manually
 and by no way optimized. For industrial applications one would typically write
 generally applicable scripts taking care of the manual steps explained here.
 
-This example uses the files opt1.inp, opt1.f, opt2.inp, opt2.f and op3.inp,
+This example uses the files opt1.inp, opt1.sh, opt2.fbl and op3.inp,
 all available in the CalculiX test suite. File opt1.inp contains the geometry
 and the loading of the problem at stake: the structure is a beam simply
 supported at its ends (hinge on one side, rolls on the other) and a point
@@ -2444,7 +2444,7 @@ highest stresses occur in the middle of the beam and at the supports
 due to a geometrical change of the beam (the peak stresses at the supports are
 cause by the point-like nature of the support) the set of design variables
 (i.e. the nodes in which the geometry of the beam is allowed to change during
-the optimization) is defined as all nodes in the beam except for a set of nodes in the vicinity
+the optimization) is chosen as all nodes in the beam except for a set of nodes in the vicinity
 of the supports. These latter nodes are shown in Figure \ref{opt2}.
 
 \begin{figure}
@@ -2459,7 +2459,7 @@ objective and the constraints are generally design responses. First, the
 sensitity of each design response is determined in a
 \htmlref{*SENSITIVITY}{sensitivity} step. Then, one design response is
 selected as objective and one or more as constraints in a \htmlref{*FEASIBLE
-  DIRECTION}{feasibledirection} step. Here, the sensitivity of the
+  DIRECTION}{feasibledirection} step. In the latter step the sensitivity of the
 unconstrained objective is combined with the sensitity of the constraints in order to obtain
 the sensitivity of the constrained objective.
 
@@ -2490,7 +2490,7 @@ is taken care of by the lines:
 MISESSTRESS,DESIGNNODES,10.,100.
 \end{verbatim}
 
-and in the sensitivity step and 
+in the sensitivity step and 
 
 \begin{verbatim}
 *OBJECTIVE,TARGET=MIN
@@ -2569,7 +2569,7 @@ in which the sensitivity is integrated and subsequently smeared), sharp
 corners should be kept (EDGE PRESERVATION=YES, cf. \htmlref{*FILTER}{filter})
 and surfaces with a clearly different orientation (e.g. orthogonal) are not
 taken into account while filtering (or taken into account to a lesser degree,
-DIRECTION WEIGHTING=YES). The filtering is applied each design response separately. Figure \ref{opt3} shows the stress
+DIRECTION WEIGHTING=YES). The filtering is applied to each design response separately. Figure \ref{opt3} shows the stress
 sensitivity before filtering, Figure \ref{opt4} the stress sensitivity after
 filtering and Figure \ref{opt5} the mass sensitivity after filtering. All of
 this information is obtained by requesting SEN underneath the *NODE FILE
@@ -2583,46 +2583,37 @@ card. Notice that the sensitivity is normalized after filtering.
 After calculating the filtered sensitivities of the objective function and the
 constraints separately (this is done in the sensitivity step) they are joined by projecting the sensitivity of the active constraints
 on the sensitivity of the objective function (this is done in the feasible
-direction step). This results in Figure
+direction step). For a mesh modification size of 1 (parameter underneath the
+*FEASIBLE DIRECTION card) this results in Figure
 \ref{opt6}.
 
 The sensitivities calculated in this way allow us to perform an
-optimization. The simplest concept is the steepest gradient algorithm. This
-entails to change the geometry in the direction of the steepest gradient. In
+optimization. The simplest concept is the steepest gradient algorithm in which
+the geometry is changed in the direction of the steepest gradient. In
 the present calculations only one gradient is calculated (the one in the
 direction of the local normal) since a geometry change parallel to the surface
 of the structure generally does not change the geometry at all. So the
 geometry is changed in the direction of the local normal by an amount to be
-defined by the user. It is usually a percentage of the local sensitivity. This
-is taken care of by the FORTRAN program opt1.f. It reads the normal
-information and the sensitivities from file opt1.frd and defines a geometry
-change of 10 \% of the normalized sensitivity in the form of *BOUNDARY
-cards. These cards are stored in file opt1.bou. 
+defined by the user. It is usually a percentage of the local sensitivity, the
+so-called mesh modification size, to be defined underneath the *FEASIBLE
+DIRECTION card. Here, a mesh modification size of 10 \% was selected
+(i.e. 0.1). 
 
-In order to run opt1.f it has to be compiled (e.g. by gfortran -oopt1.exe
-opt1.f) and subsequently executed (e.g. by ./opt1.exe). The sensitivities,
-however, only take care of the change of the boundary nodes which are also
-design variables. In order to maintain a good quality mesh the other boundary
+In order to maintain a good quality mesh the other boundary
 nodes and the internal nodes should be appropriately moved as well. This is
 taken care of by a subsequent linear elastic calculation with the
-sensitivity-based surface geometry change as boundary conditions. This is
-taken care of by input deck opt2.inp.
+sensitivity-based surface geometry change as boundary conditions. The
+corresponding input deck with the name opt1.equ is automatically generated
+within the *FEASIBLE DIRECTION step.
 
-This input deck contains the original geometry of the beam. In addition, the
-sensitivity-based surface geometry change stored in opt1.bou is included by
-the statement:
-
-\begin{verbatim}
-*INCLUDE,INPUT=opt1.bou
-\end{verbatim}
+This input deck contains the original geometry of the beam. The
+sensitivity-based surface geometry change is imposed by *BOUNDARY statements.
 
 Furthermore, preservation of sharp edges and corners in the original structure
-is taken care of by linear equations stored in file opt1.equ. They were
-generated by CalculiX during the opt1.inp run. They are included by the statement:
-
-\begin{verbatim}
-*INCLUDE,INPUT=opt1.equ
-\end{verbatim}
+is taken care of by linear equations. In order to obtain a good quality mesh
+at the free surface the fictitious elastic modulus is decreased with
+increasing distance from the free surface. Before running opt1.equ it is
+copied by script opt1.sh into opt2.inp.
 
 \begin{figure}
 \epsfig{file=opt7.eps,width=6cm}
@@ -2634,18 +2625,13 @@ generated by CalculiX during the opt1.inp run. They are included by the statemen
 \caption{\label{opt8}Mises stress after one iteration}
 \end{figure}
 
-The resulting deformed mesh is shown in Figure \ref{opt7} (a refinement of the
-procedure could involve to use high E-moduli in opt2.inp at the free surface and decrease
-their value as a function of the distance from the free surface; this guarantees
-good quality elements at the free surface). The beam was
+The resulting deformed mesh is shown in Figure \ref{opt7}. The beam was
 thickened in the middle, where the von Mises stresses were highest. This
-should lead to a decrease of the highest stress value. In order to check this
-a new sensitivity calculation was done on the deformed structure. To this end
-the coordinates and the displacements are read from opt2.frd by the FORTRAN
-program opt2.f (to be compiled and executed in a similar way as opt1.f), and
-the sum is stored in file opt3.inc. This file is included in input deck
-opt3.inp, which is a copy of opt1.inp with the coordinates replaced by the
-ones in opt3.inc. The resulting von Mises stresses are shown in Figure
+should lead to a decrease of the highest stress value. In order to check this,
+a new sensitivity calculation was done on the deformed structure. To that end
+the deformation calculated based on opt2.inp is superimposed on the
+coordinates (by a call to opt2.fbl in script opt1.sh) and stored as opt3.inc. This file is included in input deck
+opt3.inp, which apart from the coordinates is a copy of opt1.inp. The resulting von Mises stresses are shown in Figure
 \ref{opt8}. The von Mises stress in the middle of the lower surface of the
 beam has indeed decreased from 114 to about 80 (MPa if the selected units were
 mm, N, s and K). Further improvements can be obtained by running several iterations.
@@ -4383,6 +4369,37 @@ Following loadings are implemented:
 \item Nodal temperatures with temperature gradients through shell thickness.
 \item Element face pressure loads.
 \end{itemize}
+ 
+\subsubsection{\label{substructurelem}Substructure (Superelement)}
+
+A substructure (also called superelement in some coded) is an element
+characterized by a number of nodes and a stiffness (and optionally a mass matrix) describing the relationship between forces and displacements in these
+nodes. The matrices may have been obtained by another code. The element
+definition is triggered by a \htmlref{*MATRIX ASSEMBLE}{matrixassemble} card
+(instead of an *ELEMENT card), the name of the file containing the
+stiffness matrix and, optionally, the name of the file containing the mass
+matrix. Right now, both have to be symmetric and only the upper triangle
+(including the diagonal) or the lower triangle (including the diagonal) should
+be given in the form
+
+\begin{verbatim}
+row node, row dof, column node, column dof, value
+\end{verbatim}
+
+for each entry of the matrix, one per line (the order is irrelevant). A substructure can right now
+contain at most 256 nodes and only translational degrees of freedom (=dof) are
+allowed (dof 1 for the global x-axis, dof 2 for the global y-axis and dof 3
+for the global z-axis). In addition, the matrix should
+ receive a name containing at most 4 characters. Names of existing user
+ elements exluding the ``U'' in front should not be used, such as ``S3''. The nodes belonging to the element may be subject to Single Point Constraints, Multiple Point
+ Constraints or point loads, but not to distributed loading (neither facial
+ nor volumetric). Since the location of any integration points is not known,
+ no element values such as stresses or strains are calculated. Only nodal
+ information can be stored to file using \htmlref{*NODE PRINT}{nodeprint} and
+ similar keyword cards.
+
+A substructure is basically a linear construct. Right now, it can be used in
+a *STATIC, *DYNAMIC or *FREQUENCY procedure.
 
 \subsection{\label{beamsectiontypes}Beam Section Types}
 
@@ -10604,6 +10621,571 @@ dependence has to be defined using a \htmlref{*RATE DEPENDENT}{ratedependent}
 card with the parameter TYPE=JOHNSON COOK, listing underneath the parameters
 $C$ and $\dot{\epsilon}_0$.
 
+\subsubsection{\label{mohrcoulombplasticity}Mohr-Coulomb plasticity.}
+
+The theory and algorithms used to code the classical Mohr-Coulomb plasticity
+model are primarily taken from \cite{Sorensen} and \cite{Clausen} and the
+references therein.
+
+The Mohr-Coulomb plasticity is non-associative with a piecewise linear yield
+surface $f$ an a piecewise linear plastic potential $g$. The basic idea is
+that the shear stress at which plastic flow occurs increases with increasing
+pressure, similar to contact sliding. This is illustrated in Figure
+\ref{mcoulomb} showing the shear stress $\tau$ versus normal stress
+$\sigma_n$. $\sigma_1 \ge \sigma_2 \ge \sigma_3$ are the principal
+stresses. 
+
+\begin{figure}
+\begin{center}
+\epsfig{file=mcoulomb.eps,width=9cm}
+\caption{\label{mcoulomb}Mohr-Coulomb yield surface}
+\end{center}
+\end{figure}
+
+The yield surface satisfies:
+
+\begin{equation}
+  \tau=c-\sigma_n \tan \varphi,
+\end{equation}
+
+where $c$ is the cohesion. This is equivalent to (cf. Figure \ref{mcoulomb})
+
+\begin{equation}
+  \sigma_1 \left( \frac{1+\sin \varphi }{1 - \sin \varphi } \right) -\sigma_3
+  -2 c \frac{\cos \varphi }{1 - \sin \varphi }=0,
+\end{equation}
+
+or
+
+\begin{equation}
+  \label{yieldmc}
+  k \sigma_1 - \sigma_3 - 2 c \sqrt{k} =0,
+\end{equation}
+
+where
+
+\begin{equation}
+  k=\frac{1+\sin \varphi }{1 - \sin \varphi }.
+\end{equation}
+
+$\varphi$ is called the friction angle. Similarly, the plastic potential is
+defined by:
+
+\begin{equation}
+  g = m \sigma_1 - \sigma_3,
+\end{equation}
+
+where
+
+\begin{equation}
+  m=\frac{1+\sin \psi }{1 - \sin \psi }.
+\end{equation}
+
+$\psi$ is called the dilation angle. It describes to what extent the volume of
+the material changes due to shear motion. For a positive value of $\psi$ the
+volume increases, as for dense sand. For a negative value the volume
+decreases, as for loose sand. In the latter case the grains fit better due to
+the motion. You can easily illustrate this by pouring suger in a bowl. Shaking
+the bowl the volume will decrease and more sugar will fit.
+
+As mentioned, the yield surface is piecewise linear, so the gradient of the
+surface is not continuous. This complicates matters. Now, looking at the yield
+surface and plastic potential it can be observed that it contains only
+principal stresses. Assuming the material to be elastically isotropic, this
+allows us to perform all operations in principal stress space, thereby
+reducing the tensors to vectors. This was first proposed in \cite{Clausen2}.
+
+Replacing $\sigma_1, \sigma_2, \sigma_3$ by $x,y,z$ for simplicity, the yield
+surface as defined in Equation (\ref{yieldmc}) defines in three-dimensional
+space one of six faces of a irregular pyramid with central axis in $(1,1,1)$
+direction. The other faces correspond to sectors in which the order of $\sigma_1,
+\sigma_2, \sigma_3$ is different.
+
+\begin{figure}
+\begin{center}
+\epsfig{file=sectionplane111.eps,width=9cm}
+\caption{\label{sectionplane111}Section plane $\perp$ (1,1,1) through (0,0,0)}
+\end{center}
+\end{figure}
+
+Figure \ref{sectionplane111} shown a view
+on a plane orthogonal to the $(1,1,1)$ axis and through the origin. The six
+sectors are bordered by planes going through the x-, y- and z- axes and
+containing the $(1,1,1)$-axis. The cross section of this plane with the yield
+surface is an irregular hexagon (dashed line). Since the principal stresses
+can always be rearranged such that $x \ge y \ge z$ it is sufficient to look at
+that sector (labeled 1) and the neighboring ones (labeled 6 and 2).
+
+\begin{figure}
+\begin{center}
+\epsfig{file=yieldalong111.eps,width=9cm}
+\caption{\label{yieldalong111}Pressure distribution in the lid-driven cavity}
+\end{center}
+\end{figure}
+
+Figure \ref{yieldalong111} shows the yield surface viewed from the apex and
+looking in the direction of $(-1,-1,-1)$. In the sectors of interest the
+normal to the surface $\boldsymbol{a}$ is shown. For sector 1 this is
+immediately clear from Equation (\ref{yieldmc}) which can be written as
+$(k,0,-1) \cdot (\sigma_1,\sigma_2,\sigma_3) -2c \sqrt{k} =0$. A vector along
+the interection lines of the pyramid faces is obtained by taking the cross
+product of the normal of the neighboring faces,e.g. $\boldsymbol{r_6} =
+\boldsymbol{a_6} \times \boldsymbol{a_1}$. The apex of the pyramid is obtained
+by substituting $\sigma_1=\sigma_3$ in  Equation (\ref{yieldmc}): it yields
+
+\begin{equation}
+  s_a := \sigma_1=\sigma_2=\sigma_3=\frac{2c \sqrt{k} }{k-1} = \frac{c}{\tan
+    \varphi }.
+\end{equation}
+
+Therefore, the equation of the intersection line between section 6 and 1
+satisfied $(s_a,s_a,s_a)+\lambda (1,k,k)$. Its intersection with the plane
+$x+y+z=0$ leads to
+
+\begin{equation}
+  \lambda=\frac{3 s_a}{1+2k},
+\end{equation}
+
+yielding the location of point A in Figure  \ref{sectionplane111}. For point B
+one gets
+
+\begin{equation}
+  \lambda=\frac{3 s_a}{2+k},
+\end{equation}
+
+which is farther away from the origin since $k \ge 1$. The normal to the
+plastic potential surface is labeled $\boldsymbol{b}$ and amounts for sector 1
+to $(m,0,-1)$. Similar expressions apply to the other sectors. 
+
+The governing equations of an elastic material with Mohr-Coulomb plasticity
+read:
+
+\begin{enumerate}
+
+\item[(i)]
+
+Elastic stress-strain relations
+
+\begin{equation}
+\boldsymbol{ \sigma} = \boldsymbol{D} \cdot  \boldsymbol{\epsilon}^e 
+\end{equation}
+
+\item[(ii)]
+
+Internal variable relationship
+
+\begin{equation}
+c(\epsilon^{\text{peq}})
+\end{equation}
+
+\item[(iii)]
+
+Yield surface
+
+\begin{equation}
+f(\boldsymbol{ \sigma},c)=0 \Leftrightarrow \boldsymbol{a} \cdot
+\boldsymbol{\sigma }- 2 c \sqrt{k}=0   
+\end{equation}
+
+\item[(iv)]
+
+Evolution equations
+
+\begin{equation}
+\dot{ \boldsymbol{ \epsilon}}^p= \dot{ \gamma} \frac{ \partial g
+(\boldsymbol{ \sigma},c)}{\partial \boldsymbol{ \sigma}} = \dot{ \gamma}
+\boldsymbol{b} 
+\end{equation}
+
+\item[(v)]
+
+Kuhn-Tucker equations
+
+\begin{equation}
+\dot{ \gamma} \ge 0, \quad f(\boldsymbol{ \sigma},c) \le
+0, \quad \dot{ \gamma} f(\boldsymbol{ \sigma},c) =0
+\end{equation}
+
+\item[(vi)]
+
+Consistency condition
+
+\begin{equation}
+\dot{ \gamma} \dot{ f}(\boldsymbol{ \sigma},c)=0.
+\end{equation}
+
+\end{enumerate}
+
+Notice that in the above equatons $\boldsymbol{\sigma } $ and
+$\boldsymbol{\epsilon } $ are vectors in principal space.
+
+In order to explain the numerical procedure it is assumed that all variables
+are known at the end of increment $n$ (corresponding to time $t$) and that
+their values are sought at the end of increment $n+1$ (corresponding to time
+$t + \Delta t$). The input to the algorithm is a change on total strain
+$\boldsymbol{\Delta \epsilon }$.
+
+At first it is assumed that now plasticity occurs in the new increment, i.e.:
+
+\begin{equation}
+\boldsymbol{ \epsilon} _{n+1} ^p = \boldsymbol{ \epsilon}_n^p
+\end{equation}
+
+\begin{equation}
+c_{n+1} = c_{n}
+\end{equation}
+
+\begin{equation}
+\gamma _{n+1} = \gamma_n
+\end{equation}
+
+\begin{equation}
+\boldsymbol{ \sigma}_{n+1} = \boldsymbol{D} \cdot  (\boldsymbol{\epsilon}^e_n +
+\boldsymbol{\Delta \epsilon })  
+\end{equation}
+
+If
+
+\begin{equation}
+  \boldsymbol{a} \cdot \boldsymbol{\sigma }_{n+1} - 2 c_{n+1} \sqrt{k} \le
+  0,
+\end{equation} 
+
+the solution is found. If not, $\Delta \gamma_{n+1} := \gamma_{n+1}-\gamma_n >
+0$ and due to the Kuhn-Tucker equations $f(\boldsymbol{\sigma },c)=0$ is
+required. The stress at $n+1$ can be written as:
+
+\begin{eqnarray}
+ \boldsymbol{\sigma }_{n+1} &=& \boldsymbol{D} \cdot \boldsymbol{\epsilon
+ }^e_{n+1} \\
+ &=& \boldsymbol{D} \cdot (\boldsymbol{\epsilon }_{n+1} - \boldsymbol{\epsilon
+ }_{n+1}^p) \\
+ &=& \boldsymbol{D} \cdot (\boldsymbol{\epsilon }_{n+1}   - \boldsymbol{\epsilon
+ }_{n}^p+ \boldsymbol{\epsilon
+ }_{n}^p- \boldsymbol{\epsilon
+ }_{n+1}^p) \\
+ &=& \boldsymbol{\sigma }_{n+1}^  {\text{trial}} - \boldsymbol{D} \cdot
+ \boldsymbol{\Delta \epsilon }_{n+1}^p \\
+ &=& \boldsymbol{\sigma }_{n+1}^  {\text{trial}} - \Delta \gamma
+ \boldsymbol{D} \cdot \boldsymbol{b}. 
+\end{eqnarray}
+
+In the last equation the evolution equation was used (flow rule). Defining
+$\boldsymbol{s}:= \boldsymbol{D} \cdot \boldsymbol{b}$, satisfying
+the yield surface now requires:
+
+\begin{equation} 
+\boldsymbol{a} \cdot (  \boldsymbol{\sigma }_{n+1}^  {\text{trial}}- \Delta \gamma_{n+1}
+ \; \boldsymbol{s}) -2 c(\epsilon _{n+1}^{\text{peq}}) \sqrt{k} =0.
+\end{equation}
+
+Notice that $\boldsymbol{s}$ points in the direction of the stress correction
+w.r.t. the trial stress. In order to solve this equation a relationship between $\epsilon
+_{n+1}^{\text{peq}}$ and $\Delta \gamma$ is needed. Now, $\dot{\epsilon}
+_{n+1}^{\text{peq}}$ is defined as:
+
+\begin{equation}
+  \dot{\epsilon}_{n+1}^{\text{peq}} = \sqrt{\frac{2}{3} } \| \dot
+      {\boldsymbol{\epsilon } }_{n+1}^p \|,
+\end{equation}
+
+from which:
+
+\begin{eqnarray}
+  \epsilon_{n+1}^{\text{peq}} &=& \int_{0}^{t+\Delta t} \sqrt{\frac{2}{3} } \| \dot
+          {\boldsymbol{\epsilon } }^p \| dt \\
+          &=& \int_{0}^{t} \sqrt{\frac{2}{3} } \| \dot
+          {\boldsymbol{\epsilon } }^p \| dt + \int_{t}^{t+\Delta t} \sqrt{\frac{2}{3} } \| \dot
+          {\boldsymbol{\epsilon } }^p \| dt \\
+          &=& \epsilon_n^{\text{peq}} + \sqrt{\frac{2}{3} } \| 
+      {\boldsymbol{\Delta \epsilon } }_{n+1}^p \| \\
+          &=& \epsilon_n^{\text{peq}} + \sqrt{\frac{2}{3} } \Delta
+      \gamma_{n+1} \; \| \boldsymbol{b}  \| \\
+      &=& \epsilon_n^{\text{peq}} + \sqrt{\frac{2}{3} } \Delta
+      \gamma_{n+1} \; \sqrt{1+m^2} 
+\end{eqnarray}
+
+Defining $k^*:=2 \sqrt{k}$ and $m^*:= \sqrt{2(1+m^2)/3}$ the yield equation
+now amounts to:
+
+\begin{equation} 
+f=\boldsymbol{a} \cdot (  \boldsymbol{\sigma }_{n+1}^  {\text{trial}}- \Delta \gamma_{n+1}
+ \; \boldsymbol{s}) - k^* c(\epsilon_n^{\text{peq}}+ \Delta \gamma_{n+1} m^* )=0.
+\end{equation}
+
+This is a nonlinear equation in $\Delta \gamma_{n+1}$. Using the
+Newton-Raphson procedure the first derivative is needed, which yields:
+
+\begin{equation}
+  \frac{\partial f}{ \partial  \Delta \gamma_{n+1}} = -\boldsymbol{a} \cdot \boldsymbol{s}
+  - k^*m^* \frac{\partial c}{\partial  \epsilon_{n+1}^{\text{peq}}} .
+\end{equation} 
+
+Starting with an initial guess $\Delta \gamma_{n+1}^0=0$, one arrives at
+$\Delta \gamma_{n+1}^{(k+1)} = \Delta \gamma_{n+1}^{(k)} + \Delta\Delta
+\gamma_{n+1}^{(k)} $ by solving the equation:
+
+\begin{equation}
+  f(\Delta \gamma_{n+1}^{(k)} + \Delta\Delta
+\gamma_{n+1}^{(k)}) \approx f(\Delta \gamma_{n+1}^{(k)}) + f'(\Delta
+  \gamma_{n+1}^{(k)}) \Delta\Delta
+  \gamma_{n+1}^{(k)}=0,
+\end{equation}
+
+or
+
+\begin{equation}
+  \left [  - \boldsymbol{a} \cdot \boldsymbol{s} - k^*m^* \left . \frac{\partial
+      c}{\partial \epsilon^{\text{peq}} }  \right
+    | _{\epsilon_{n+1}^{\text{peq},(k)}}  \right ] \Delta\Delta
+  \gamma_{n+1}^{(k)} = \boldsymbol{a} \cdot \left [ \boldsymbol{\sigma
+    }_{n+1}^ {\text{trial}} - \Delta \gamma_{n+1}^{(k)} \boldsymbol{s} \right
+  ] - k^* c(\epsilon_{n+1}^{\text{peq},(k)}),   
+\end{equation}
+
+where
+
+\begin{equation}
+  \epsilon_{n+1}^{\text{peq},(k)}=\epsilon_{n}^{\text{peq}}+m^* \Delta \gamma
+  _{n+1}^{(k)}.
+\end{equation}
+
+\begin{figure}
+\begin{center}
+\epsfig{file=lidprefem.eps,width=9cm}
+\caption{\label{regionsmc}Limits of the return regions for Mohr-Coulomb}
+\end{center}
+\end{figure}
+
+This works as long a the return is to a face of the yield surface. Since the
+return vector for sector 1 is $\boldsymbol{s_1}=\boldsymbol{D} \cdot \boldsymbol{b_1}  $ one
+can graphically plot the region in three-dimensional principal stress space
+which is returned to the yield face in sector 1 (Figure \ref{regionsmc}). It
+is the space for which
+
+\begin{equation}
+(\boldsymbol{\sigma }_{n+1}^  {\text{trial}}-\boldsymbol{s_a} ) \cdot
+  (\boldsymbol{s_1} \times \boldsymbol{r_1}) \ge 0 \;\;\; \text{AND} \;\;\; (\boldsymbol{\sigma }_{n+1}^  {\text{trial}}-\boldsymbol{s_a} ) \cdot
+  (\boldsymbol{s_1} \times \boldsymbol{r_6}) \le 0.
+\end{equation}
+
+This is called region I. The space within sector 1 in between region I and
+sector 2 and underneath the apex is mapped onto the intersection line of face 1 and face 2 of the
+yield surface (characterized by the equation $\boldsymbol{s_a} +\lambda
+\boldsymbol{r_1}, \lambda \in \mathbb{R} $). It is characterized by the equations
+
+\begin{equation}
+(\boldsymbol{\sigma }_{n+1}^  {\text{trial}}-\boldsymbol{s_a} ) \cdot
+  (\boldsymbol{s_1} \times \boldsymbol{r_1}) \le 0 \;\;\; \text{AND} \;\;\; (\boldsymbol{\sigma }_{n+1}^  {\text{trial}}-\boldsymbol{s_a} ) \cdot
+  (\boldsymbol{s_1} \times \boldsymbol{s_2}) \le 0.
+\end{equation}
+
+and is called region II of sector 1. Similary for the space in between region
+I and sector 6 and underneath the apex satisfying
+
+\begin{equation}
+(\boldsymbol{\sigma }_{n+1}^  {\text{trial}}-\boldsymbol{s_a} ) \cdot
+  (\boldsymbol{s_1} \times \boldsymbol{r_6}) \ge 0 \;\;\; \text{AND} \;\;\; (\boldsymbol{\sigma }_{n+1}^  {\text{trial}}-\boldsymbol{s_a} ) \cdot
+  (\boldsymbol{s_6} \times \boldsymbol{s_1}) \le 0.
+\end{equation}
+
+This is region III. Finally, the region above the apex corresponding to
+
+\begin{equation}
+(\boldsymbol{\sigma }_{n+1}^  {\text{trial}}-\boldsymbol{s_a} ) \cdot
+  (\boldsymbol{s_1} \times \boldsymbol{s_2}) \ge 0 \;\;\; \text{AND} \;\;\; (\boldsymbol{\sigma }_{n+1}^  {\text{trial}}-\boldsymbol{s_a} ) \cdot
+  (\boldsymbol{s_6} \times \boldsymbol{s_1}) \ge 0
+\end{equation}
+
+is returned to the apex and is called region IV.
+
+Returning the trial stress to the intersection line of two yield faces implies
+that the final state has to satisfy both face equations. The equivalent
+plastic strain now satisfies:
+
+\begin{equation}
+  \epsilon_{n+1}^{\text{peq}} = \epsilon_n^{\text{peq}} + m^*( \Delta
+      \gamma_{1,{n+1}} + \Delta
+      \gamma_{2,{n+1}})
+\end{equation}
+
+and the yield surface equations amount to:
+  
+\begin{eqnarray} 
+\boldsymbol{a_1} \cdot (  \boldsymbol{\sigma }_{n+1}^  {\text{trial}}- \Delta \gamma_{1,n+1}
+ \; \boldsymbol{s_1}- \Delta \gamma_{2,n+1}
+ \; \boldsymbol{s_2}) -  k^* c(\epsilon_{n+1}^{\text{peq}}) &=&0 \\
+\boldsymbol{a_2} \cdot (  \boldsymbol{\sigma }_{n+1}^  {\text{trial}}- \Delta \gamma_{1,n+1}
+ \; \boldsymbol{s_1}- \Delta \gamma_{2,n+1}
+ \; \boldsymbol{s_2}) -  k^* c(\epsilon_{n+1}^{\text{peq}}) &=&0 .
+\end{eqnarray}
+
+Applying Newton-Raphson now leads to:
+
+\begin{equation}
+  [A] \cdot \begin{Bmatrix} \Delta \Delta \gamma_1 \\ \Delta \Delta
+    \gamma_2 \end{Bmatrix} _{n+1}^{(k)} = \{B\},
+\end{equation}
+
+where
+
+\begin{equation}
+  [A]= \begin{bmatrix} - \boldsymbol{a_1} \cdot \boldsymbol{s_1} - k^*m^* \left . \frac{\partial
+      c}{\partial \epsilon^{\text{peq}} }  \right
+    | _{\epsilon_{n+1}^{\text{peq},(k)}} & - \boldsymbol{a_1} \cdot \boldsymbol{s_2} - k^*m^* \left . \frac{\partial
+      c}{\partial \epsilon^{\text{peq}} }  \right
+    | _{\epsilon_{n+1}^{\text{peq},(k)}} \\ - \boldsymbol{a_2} \cdot \boldsymbol{s_1} - k^*m^* \left . \frac{\partial
+      c}{\partial \epsilon^{\text{peq}} }  \right
+    | _{\epsilon_{n+1}^{\text{peq},(k)}} & - \boldsymbol{a_2} \cdot \boldsymbol{s_2} - k^*m^* \left . \frac{\partial
+      c}{\partial \epsilon^{\text{peq}} }  \right
+    | _{\epsilon_{n+1}^{\text{peq},(k)}} \end{bmatrix}
+\end{equation}
+
+and
+
+\begin{equation}
+\{B\}= \begin{Bmatrix} \boldsymbol{a_1} \cdot \left [ \boldsymbol{\sigma
+    }_{n+1}^ {\text{trial}} - \Delta \gamma_{1,n+1}^{(k)} \boldsymbol{s_1}- \Delta \gamma_{2,n+1}^{(k)} \boldsymbol{s_2} \right
+  ] - k^* c(\epsilon_{n+1}^{\text{peq},(k)}) \\ \boldsymbol{a_2} \cdot \left [ \boldsymbol{\sigma
+    }_{n+1}^ {\text{trial}} - \Delta \gamma_{1,n+1}^{(k)} \boldsymbol{s_1}- \Delta \gamma_{2,n+1}^{(k)} \boldsymbol{s_2} \right
+  ] - k^* c(\epsilon_{n+1}^{\text{peq},(k)}) \end{Bmatrix}.
+\end{equation}
+
+For a return to the apex the yield equations of sector 1, 2 and 6 have to be
+satisfied yielding 3 equations in 3 unknowns.
+
+To calculate the consistent tangent the change of stress due to a change in
+total strain is needed. The change of stress in the present increment amounts
+to:
+
+\begin{eqnarray}
+  d(\boldsymbol{\Delta \sigma }) &=& d(\boldsymbol{D} \cdot \boldsymbol{\Delta
+    \epsilon}^e) \\
+  &=& d(\boldsymbol{\boldsymbol{D} \cdot \Delta \epsilon}-\boldsymbol{D} \cdot \boldsymbol{\Delta \epsilon}^p) \\
+  &=& d(\boldsymbol{D} \cdot \boldsymbol{\Delta \epsilon}-\boldsymbol{D} \cdot
+  \frac{\partial g}{\partial \boldsymbol{\sigma } }  \Delta \gamma ) \\
+  &=& \boldsymbol{D} \cdot d \boldsymbol{\Delta \epsilon }  - \boldsymbol{D}
+  \cdot \frac{\partial ^2 g}{\partial \boldsymbol{\sigma }^2 } \cdot d
+  \boldsymbol{\Delta \sigma } \Delta \gamma - \boldsymbol{D} \cdot
+  \frac{\partial g}{\partial \boldsymbol{\sigma } }  d \Delta \gamma \\
+  &=& \boldsymbol{D} \cdot d \boldsymbol{\Delta \epsilon }  - \boldsymbol{s} d \Delta \gamma 
+\end{eqnarray}
+
+Now, a relationship between $d \Delta \gamma$ and $d \boldsymbol{\Delta
+  \epsilon }$ is needed. This is obtained from the yield equation:
+
+\begin{equation}
+  f(\boldsymbol{\sigma }_n + \boldsymbol{\Delta \sigma } ,c(\gamma + \Delta
+  \gamma))=0,
+\end{equation}
+
+from which
+
+\begin{equation}
+  \left . \frac{\partial f}{\partial \boldsymbol{\sigma } } \right |
+  _{\boldsymbol{\sigma }_n + \boldsymbol{\Delta \sigma }} \cdot d
+  \boldsymbol{\Delta \sigma } + \left . \frac{\partial f}{\partial c} \frac{\partial
+    c}{\partial \gamma} \right | _ {\gamma + \Delta \gamma} d \Delta \gamma =0.
+\end{equation}
+
+Substituting the previously obtained expression for $d(\boldsymbol{\Delta
+  \sigma })$ yields (dropping the bound of the derivatives to simplify the
+notation; the derivatives are to be taken at the end of the present increment):
+
+\begin{equation}
+  \frac{\partial f}{\partial \boldsymbol{\sigma } } \cdot \boldsymbol{D} \cdot
+  d \boldsymbol{\Delta \epsilon } - \frac{\partial f}{\partial
+    \boldsymbol{\sigma } } \cdot \boldsymbol{s} d \Delta \gamma + \frac{\partial f}{\partial c} \frac{\partial
+    c}{\partial \gamma} d \Delta \gamma =0
+\end{equation}
+
+from which
+
+\begin{equation}
+  d \Delta \gamma = \frac{\boldsymbol{a} \cdot \boldsymbol{D} \cdot d
+    \boldsymbol{\Delta \epsilon }   }{\boldsymbol{a} \cdot \boldsymbol{s} +
+    k^*m^* \frac{\partial c}{\partial \epsilon ^{\text{peq}}}    } .
+\end{equation}
+
+Finally one obtains for the elastoplastic consistent tangent
+
+\begin{equation}
+  \boldsymbol{D}^{ep} = \boldsymbol{D}  - \frac{\boldsymbol{s} \otimes
+    \boldsymbol{a} \cdot \boldsymbol{D}  }{\boldsymbol{a} \cdot \boldsymbol{s}
+    + k^*m^* \frac{\partial c}{\partial \epsilon ^{\text{peq}}}}   .
+  \end{equation} 
+
+The derivation of the elastoplastic consistent tangent for a return to the
+intersection between face 1 and face 2 is similar. Now, a change in stress
+increment amounts to:
+
+\begin{equation}
+  d \boldsymbol{\Delta \sigma } = \boldsymbol{D} \cdot d \boldsymbol{\Delta
+    \epsilon } - \boldsymbol{D} \cdot \boldsymbol{b_1} d \Delta \gamma_1 -
+  \boldsymbol{D} \cdot \boldsymbol{b_2} d \Delta \gamma_2.
+\end{equation}
+
+A relationship between the change in $\Delta \gamma$ and the change in
+$\boldsymbol{\Delta \epsilon }$ can again be obtained by considering the
+adjacent yield
+faces (i=1,2):
+
+\begin{equation}
+  f_i(\boldsymbol{\sigma}_n + \boldsymbol{\Delta \sigma }, c(\gamma + \Delta
+  \gamma_1 + \Delta \gamma_2))=0,
+\end{equation}
+
+from which
+
+\begin{equation}
+  \left . \frac{\partial f_i}{\partial \boldsymbol{\sigma } } \right |
+  _{\boldsymbol{\sigma }_n + \boldsymbol{\Delta \sigma }} \cdot d
+  \boldsymbol{\Delta \sigma } + \left . \frac{\partial f_i}{\partial c} \frac{\partial
+    c}{\partial \gamma} \right | _ {\gamma + \Delta \gamma_1+\Delta \gamma_2}
+  d \Delta \gamma_1 + \left . \frac{\partial f_i}{\partial c} \frac{\partial
+    c}{\partial \gamma} \right | _ {\gamma + \Delta \gamma_1+\Delta \gamma_2}
+  d \Delta \gamma_1  =0
+\end{equation}
+
+or
+
+\begin{equation}
+  \begin{bmatrix} \boldsymbol{a_1} \cdot \boldsymbol{s_1}
+    + k^*m^* \frac{\partial c}{\partial \epsilon ^{\text{peq}}} & \boldsymbol{a_1} \cdot \boldsymbol{s_2}
+    + k^*m^* \frac{\partial c}{\partial \epsilon ^{\text{peq}}} \\ \boldsymbol{a_2} \cdot \boldsymbol{s_1}
+    + k^*m^* \frac{\partial c}{\partial \epsilon ^{\text{peq}}} & \boldsymbol{a_2} \cdot \boldsymbol{s_2}
+    + k^*m^* \frac{\partial c}{\partial \epsilon
+      ^{\text{peq}}} \end{bmatrix} \cdot \begin{Bmatrix} d \Delta \gamma_1 \\ d
+    \Delta \gamma_2 \end{Bmatrix} = \begin{Bmatrix} \boldsymbol{a_1} \cdot
+    \boldsymbol{D} \cdot d\boldsymbol{\Delta \epsilon } \\ \boldsymbol{a_2} \cdot
+    \boldsymbol{D} \cdot d\boldsymbol{\Delta \epsilon }  \end{Bmatrix} .
+\end{equation}
+
+Denoting the inverse of the left hand matrix by $[B]$ the solution of the
+above system can be written as:
+
+\begin{eqnarray}
+  d \Delta \gamma_1 &=& B_{11} \boldsymbol{a_1} \cdot
+    \boldsymbol{D} \cdot d\boldsymbol{\Delta \epsilon } + B_{12} \boldsymbol{a_2} \cdot
+    \boldsymbol{D} \cdot d\boldsymbol{\Delta \epsilon } \\    d \Delta
+    \gamma_2 &=& B_{12} \boldsymbol{a_1} \cdot
+    \boldsymbol{D} \cdot d\boldsymbol{\Delta \epsilon } + B_{22} \boldsymbol{a_2} \cdot
+    \boldsymbol{D} \cdot d\boldsymbol{\Delta \epsilon },
+\end{eqnarray}
+
+leading to:
+
+\begin{equation} 
+\boldsymbol{D}^{ep} = \boldsymbol{D} - B_{11} 
+\boldsymbol{s_1} \otimes \boldsymbol{a_1} \cdot \boldsymbol{D}- B_{11} 
+\boldsymbol{s_1} \otimes \boldsymbol{a_2} \cdot \boldsymbol{D}- B_{11} 
+\boldsymbol{s_2} \otimes \boldsymbol{a_1} \cdot \boldsymbol{D} - B_{11} 
+\boldsymbol{s_2} \otimes \boldsymbol{a_2} \cdot \boldsymbol{D}.
+\end{equation} 
+
+The derivation for the return to the apex is similar (now three equations have
+to be satisfied).
+
 \subsubsection{Tension-only and compression-only materials.}
 
 These are material models which can be used to simulate textile behavior
@@ -12570,7 +13152,12 @@ obtained by using the shape functions at the spring location.
 
 To accelerate explicit dynamic calculations mass scaling can be used
 \cite{Olovsson}. It was introduced in CalculiX in the course of a Master
-Thesis \cite{Czech}. Mass scaling is triggered by specifying the minimum time
+Thesis \cite{Czech}. Applying mass scaling the time increment can be
+increased, which reduces the overall computational time. In the mass scaling
+procedure the lumped mass matrix of each element is augmented by a fully
+populated matrix. The resulting computational increase is, however,
+neglegible, since the LU-decomposition has only to be performed once at the
+start of the calculation. Mass scaling is triggered by specifying the minimum time
 increment which the user wants to allow underneath the \htmlref{*DYNAMIC }{dynamic} keyword (third
 parameter). If for any volumetric element the increment size calculated by CalculiX
 (based on the wave speed) is less than the
@@ -15171,7 +15758,14 @@ only the selected degrees of freedom are addressable, e.g. to apply loads or
 boundary conditions. The other degrees of freedom have been removed, thereby
 substantially reducing the size of the stiffness matrix. The retained degrees
 of freedom kind of constitute a new element (which explains the term
-superelement). 
+superelement).
+
+The stiffness matrix is obtained by successively applying a unit displacement
+to one of the retained nodes in one global direction while setting all other
+displacement values in the retained nodes to zero. This yields one column in
+the stiffness matrix of the superelement. Notice that in order to obtain the correct stiffness matrix only the elements belonging to
+the superelement should be retained in the input deck. Any other elements will
+influence the stiffness matrix and lead to a wrong matrix.
 
 The substructure generation is triggered by the procedure card
 \htmlref{*SUBSTRUCTURE GENERATE}{substructuregenerate}. The degrees of freedom
@@ -15180,9 +15774,11 @@ which should be retained can be defined by using the \htmlref{*RETAINED NODAL
 the degrees of freedom apply to the global Carthesian system. Finally, the
 storage of the stiffness matrix is governed by the \htmlref{*SUBSTRUCTURE
   MATRIX OUTPUT}{substructurematrixoutput} card, specifying the name of the
-file without extension. The extension .mtx is default. 
+file without extension. The extension .mtx is default. The stiffness matrix
+can be stored in a USER DEFINED format or in a MATRIX format.
 
-The output in the .mtx file constitutes the input one needs to use the
+If the storage is in USER DEFINED format (OUTPUT FILE=USER DEFINED on the
+*SUBSTRUCTURE MATRIX OUTPUT card) the output in the .mtx file constitutes the input one needs to use the
 superelement in ABAQUS. It consists of:
 
 \begin{itemize}
@@ -15199,8 +15795,9 @@ superelement in ABAQUS. It consists of:
   separated.
 \end{itemize}
 
-Since substructures cannot be used in CalculiX, the generation of the
-substructure stiffness matrix is meant to be used by other programs.
+If the storage is in MATRIX format (OUTPUT FILE=MATRIX on the *SUBSTRUCTURE
+MATRIX OUTPUT card) the resulting file can be used in a \htmlref{*MATRIX
+  ASSEMBLE}{matrixassemble} card for further usage in CalculiX. 
 
 \subsubsection{Electromagnetism \label{electromagnetism}}
 
@@ -18487,6 +19084,10 @@ resolution of the contact area. Here, ``NODE TO SURFACE'' and ``MASSLESS''
 perform better. Therefore, the present keyword was introduced in order to
 change the contact formulation at the start of a dynamic step.
 
+The option *CHANGE CONTACT TYPE can also be used if a previous static step was
+calculated with ``NODE TO SURFACE'' contact (for whatever reason) and the subsequent
+dynamic step is to be performed with ``MASSLESS'' contact.
+
 Either the parameter TO NODE TO SURFACE or TO MASSLESS is required.
 
 \bigskip
@@ -20230,7 +20831,8 @@ in a cyclic symmetric structure for use in a cyclic symmetry calculation
 must be preceded by two *SURFACE cards defining the nodes belonging to the
 left and right boundary of the sector and a *TIE card linking those surfaces. The axis of symmetry is defined by two points a and b, defined in global Cartesian coordinates.
 
-For structural calculations there are five parameters, N, NGRAPH, TIE, ELSET and CHECK. The parameter N,
+For structural calculations there are six parameters, N, NGRAPH, TIE, ELSET,
+MATRIX and CHECK. The parameter N,
 specifying the number of sectors, is required, TIE is required if more than
 one cyclic symmetry tie is defined.
 
@@ -20249,6 +20851,12 @@ The element set specified by ELSET specifies the elements to which the
 parameter NGRAPH should be applied. Default if only one cyclic symmetry *TIE
 card is used in the input deck is
 the complete model. 
+
+The MATRIX parameter is needed if a substructure, the matrices for which were
+read from file, is present in the model. The value of MATRIX is the name of
+the matrix, which contains at most 4 characters, e.g. MATRIX=TEST for a
+substructure with the name TEST. The parameters ELSET and
+MATRIX are mutually exclusive.
 
 The last parameter, CHECK, specifies whether CalculiX should compare the
 sector angle based on its geometry with its value based on N. If the deviation
@@ -22869,6 +23477,16 @@ strategy which means that the steepest descent direction is chosen as long as
 no constraint boundary is reached. As soon as a constraint boundary is active
 the fasible direction is calculated by projection the objective gradient on
 the subspace tangent of all active constraints.
+
+The feasible direction procedure yields values for the motion of the design
+variables normal to the surface which is needed to reach the objective subject
+to the constraints. These values are normed to 1 (i.e. the maximum absolute
+value is 1) and they can be used for a subsequent mesh modification by applying them
+as boundary conditions to the mesh in a linear elastic calculation. The input
+deck for this calculation is automatically generated in the feasible direction
+step and gets the name jobname.equ. Before creating this input deck, the
+values are scaled by the mesh modification factor, which the user specifies on
+the line underneath *FEASIBLE DIRECTION. 
 \bigskip
 
 First line:
@@ -22877,14 +23495,20 @@ First line:
 \item Enter the parameter METHOD if needed and its value
 \end{itemize}
 
+Second line:
+\begin{itemize}
+\item Mesh modification size.
+\end{itemize}
+
 \begin{verbatim}
 Example:
 
 *FEASIBLE DIRECTION,METHOD=GRADIENT PROJECTION
+.1
 \end{verbatim}
 
 defines a feasible direction step with the gradient method for the treatment
-of the constraints.
+of the constraints. The maximum modification of the mesh is 0.1.
 
 \bigskip
 Example files: opt1, opt3.
@@ -24993,6 +25617,54 @@ starts a material block with name EL.
 \bigskip
 Example files: fullseg, beamnldype, beamog.
 
+\subsection{\label{matrixassemble}*MATRIX ASSEMBLE}
+
+Keyword type: model definition
+
+This keyword card is used to define a substructure (sometimes called a
+superelement in other codes), cf. Section \ref{substructurelem}. There are two required parameters NAME and
+STIFFNESS FILE and one optional parameter MASS FILE.
+
+The name of a substructure consists of at most 4 characters. Internally, a
+``U'' is appended in front of them and the substructure is considered as a
+special kind of user element. Therefore, the name of a substructure should not
+coincide with the characters following ``U'' of any coded user elements (such
+as S3 for the US3 element).
+
+The STIFFNESS FILE refers to the file containing the entries in the stiffness
+matrix. It is assumed to be symmetric and only the upper triangular values or
+the lower triangular values should be contained (including the diagonal) in the form
+
+\begin{verbatim}
+  row node,row dof,column node,column dof,value
+\end{verbatim}
+
+one entry per line. The order is irrelevant. The same applies to the mass
+matrix. The latter is only needed in frequency
+(\htmlref{*FREQUENCY}{frequency}) or dynamic (\htmlref{*DYNAMIC}{dynamic})
+calculations. The name of the stiffness and the mass matrix can be at most 80
+characters long.
+
+ \bigskip
+
+First line:
+\begin{itemize}
+\item *MATRIX ASSEMBLE
+\item Enter any parameters and their value
+\end{itemize}
+
+\begin{verbatim}
+Example:
+
+*MATRIX ASSEMBLE,NAME=TEST,STIFFNESSFILE=beampsuper.stiff
+\end{verbatim}
+
+defines a substructure with name TEST. The stiffness matrix is stored in file
+``beampsuper.stiff''. 
+
+\bigskip
+Example files: beamfsuper,beampsuper, segmentsuper.
+
 \subsection{\label{membranesection}*MEMBRANE SECTION}
 
 Keyword type: model definition
@@ -25275,6 +25947,98 @@ deactivates contact between the surfaces dep and ind.
 \bigskip
 Example files: modelchel,modelchel2
 
+\subsection{\label{mohrcoulomb}*MOHR COULOMB}
+
+Keyword type: model definition, material
+
+This keyword is used to define the friction angle and dilation angle for the
+yield surface and the flow rule, respectively, of a Mohr-Coulomb material. The
+theory for this plasticity model is described in Section
+\ref{mohrcoulombplasticity}. There are no parameters for this keyword.
+
+The temperature dependence is taken into account in a piecewise linear way
+based on the data at discrete temperature points.
+
+The use of a *MOHR COULOMB card requires a *MOHR COULOMB HARDENING card
+within the same material definition in order to define the cohesion stress
+$c$.
+
+Notice that for $\phi=\psi$ one obtains associative plasticity and for
+$\phi=\psi=0$ the model reduces to Tresca plasticity.
+\bigskip
+
+First line:
+\begin{itemize}
+\item *MOHR COULOMB
+\end{itemize}
+
+Following line:
+\begin{itemize}
+\item Friction angle $\phi$ in degrees.
+\item Dilation angle $\psi$ in degrees.
+\item Temperature.
+\end{itemize}
+Repeat this line if needed to define complete temperature dependence.
+
+\begin{verbatim}
+Example:
+
+*MOHR COULOMB
+20.,10.,294.
+\end{verbatim}
+
+defines a Mohr-Coulomb material for temperature T=294. Since the definition includes values for only one temperature, they are valid for all temperatures.
+
+\bigskip
+Example files: mohr1, mohr2.
+
+\subsection{\label{mohrcoulombhardening}*MOHR COULOMB HARDENING}
+
+Keyword type: model definition, material
+
+This keyword is used to define the (isotropic) hardening behavior of a Mohr-Coulomb
+material. The
+theory for this plasticity model is described in Section
+\ref{mohrcoulombplasticity}. There are no parameters for this keyword.
+
+The temperature dependence is taken into account in a piecewise linear way
+based on the data at discrete temperature points. These temperature points
+should be identical to those used underneath the \htmlref{*MOHR COULOMB}{mohrcoulomb}
+card. The use of a *MOHR COULOMB HARDENING card requires a *MOHR COULOMB card
+within the same material definition.
+\bigskip
+
+First line:
+\begin{itemize}
+\item *MOHR COULOMB HARDENING
+\end{itemize}
+
+Following sets of lines define the isotropic hardening curve:
+First line in the first set:
+\begin{itemize}
+\item Cohesion yield stress $c$.
+\item Equivalent plastic strain.
+\item Temperature.
+\end{itemize}
+Use as many lines in the first set as needed to define the complete hardening curve for this temperature.
+
+Use as many sets as needed to define complete temperature dependence.
+
+\begin{verbatim}
+Example:
+
+*MOHR COULOMB HARDENING
+10.,0.,294.
+100.,1.,294.
+\end{verbatim}
+
+defines the hardening curve for a  Mohr-Coulomb material for temperature
+T=294. The cohesion stress $c$ is 10. for zero equivalent plastic strain and
+100. for an equivalent plastic strain of 1 (= 100 \%). In between linear interpolation is
+applied. Since the definition includes values for only one temperature, they are valid for all temperatures.
+
+\bigskip
+Example files: mohr1, mohr2.
 
 \subsection{\label{mpc}*MPC}
 
@@ -28054,15 +28818,21 @@ Example files: substructure.
 Keyword type: step
 
 This option is used to define the name of the file in which the stiffness
-matrix of the substructure is to be stored which was generated within a
+matrix of the substructure is to be stored which is generated within a
 \htmlref{*SUBSTRUCTURE GENERATE}{substructuregenerate} step. This is the only
 procedure in which this keyword card makes sense.
 
-There are two optional parameters STIFFNESS and OUTPUT FILE, and one required
-parameter FILE NAME.
+There is one optional parameter STIFFNESS, and two required
+parameters FILE NAME and OUTPUT FILE.
 
-The optional parameters can only take a fixed value: STIFFNESS=YES and OUTPUT
-FILE= USER DEFINED. No other value is allowed.
+The optional parameter STIFFNESS can only take a fixed value:
+STIFFNESS=YES. The parameter OUTPUT
+FILE can take the value USER DEFINED or MATRIX. If the value is USER DEFINED
+the output format resembles a user element definition. For the value MATRIX the resulting
+stiffness file can be used in a \htmlref{*MATRIX ASSEMBLE}{matrixassemble}
+keyword. In this way it is defined as superelement and the output format
+consists of lines listing the row node number, row degree of freedom, column
+node number, column degree of freedom and matrix entry value.
 
 The required parameter FILE NAME is used to define the name of the file
  in
@@ -28074,20 +28844,21 @@ be changed. It is automatically appended to the name given by the user.
 First line:
 \begin{itemize}
 \item *SUBSTRUCTURE MATRIX OUTPUT
-\item Enter the parameter FILE NAME and its name, and optionally, the
-  parameters STIFFNESS and OUTPUT FILE with their fixed values.
+\item Enter the parameter FILE NAME and OUTPUT FILE and their values, and optionally, the
+  parameter STIFFNESS with its fixed value.
 \end{itemize}
 
 \begin{verbatim}
 Example:
 
-*SUBSTRUCTURE MATRIX OUTPUT,FILE NAME=substruc
+*SUBSTRUCTURE MATRIX OUTPUT,FILE NAME=substruc,OUTPUT FILE=MATRIX
 \end{verbatim}
 
-defines file substruc.mtx for the storage of the substructure stiffness matrix.
+defines file substruc.mtx for the storage of the substructure stiffness matrix
+in MATRIX format.
 
 \bigskip
-Example files: substructure.
+Example files: substructure, substructure2.
 
 
 \subsection{\label{surface}*SURFACE}
@@ -30971,6 +31742,7 @@ nameref in subroutine keystart.f. Right now, it reads:
 \item *NODE
 \item *USER ELEMENT
 \item *ELEMENT
+\item *MATRIX ASSEMBLE
 \item *NSET
 \item *ELSET
 \item *TRANSFORM
@@ -30991,7 +31763,7 @@ This means that *RESTART,READ has to be read before all other cards, then
 comes *NODE etc. The way inpc is to be read is stored in the fields ipoinp,
 inp and ipoinpc. The two-dimensional field ipoinp consists of 2 columns and nentries rows,
 where nentries is the number of keyword cards listed in the list above,
-i.e. right now nentries=18. The first column of row i in field ipoinp contains
+i.e. right now nentries=19. The first column of row i in field ipoinp contains
 a row number of field inp, for instance j1. Then, the first column
 of row j1 in field inp contains the line number where reading for keyword i
 should start, the second column contains the line number where reading should
@@ -31030,13 +31802,14 @@ keystart.f. It contains the number of characters in each keyword.
         FORTRAN(keystart,(&ifreeinp,ipoinp,inp,"ORIENTATION",
                           nline,&ikey));
 			  }
+\end{verbatim}
+
+in file readinput.c, copy the block and replace ORIENTATION by the new keyword.
+
 \item insert the new keyword in the comment list at the beginning of
   subroutine keystart.f
 \item update this section of the documentation, i.e. insert the new
   keyword in the list above and change the value for nentries;
-\end{verbatim}
-
-in file readinput.c, copy the block and replace ORIENTATION by the new keyword.
 \end{itemize}
 
 \subsubsection{allocate}
@@ -34618,8 +35391,8 @@ nodes belonging to that face}
   defining multiple point constraints based on the local normal(s). Indeed, now more than one normal may be needed, e.g. at sharp
   corners which need be preserved. Therefore, the way the normals are
   determined here (normalsforequ\_se.f) is different from the way this is done
-  in normalsonsurface\_se.f. The equations are stored in file jobname.equ for
-  further use in a CalculiX input deck.
+  in normalsonsurface\_se.f. The equations are stored in the input deck jobname.equ for
+  further use.
 
 \item Determination of the active nodes, i.e. the nodes belonging to elements
   (createinum.f) and storage of the normals determined in
@@ -37559,6 +38332,13 @@ nuel & number of different user element types \\
 \multicolumn{2}{|p{12cm}|}{INCREMENT PARAMETERS}  \\
 \hline
 
+jmax(1) &              in a *SUBSTRUCTURE GENERATE procedure: \\
+& if 1: FILE=USER DEFINED  \\
+& if 2: FILE=MATRIX \\
+& in all other procedures: maximum number of thermomechanical increments  \\
+
+jmax(2) &              maximum number of CFD increments \\
+
       tinc &           user given increment size (can be modified by the 
                       program if the parameter DIRECT is not activated) \\
       tper &           user given step size \\
@@ -37629,7 +38409,9 @@ nuel & number of different user element types \\
       cs(4,i)  & number of nodes on the independent side \\
       cs(5,i)  & number of sections to be plotted \\
       cs(6..12,i) & coordinates of two points on the cyclic symmetry axis \\
-      cs(13,i) & number of the element set (for plotting purposes) \\
+      cs(13,i) & if > 0: number of the element set (e.g. for plotting purposes) \\
+       & if < 0: -cs(13,i) is the number of a substructure element (also
+      called superelement) \\
       cs(14,i) & total number of independent nodes in all previously 
                  defined cyclic symmetry parts \\
       cs(15,i) & cos(angle) where angle = 2*$\pi$/cs(1,mcs) \\
@@ -38071,6 +38853,15 @@ flow over a two-dimensional compression corner. \textit{NASA TR R-385 Report}
  
 \bibitem{Ciarlet} Ciarlet, P.G., \textit{ Mathematical Elasticity, Volume I: Three-dimensional Elasticty}. North Holland, New York (1988). 
 
+\bibitem{Clausen2} Clausen, J., Damkilde, L., Anderson, L., Efficient return
+  algorithms for associated plasticity with multiple yield planes. \textit{
+    Int. J. Num. Meth. Engng. } \textbf{66} , 1036-1059 (2006).
+ 
+\bibitem{Clausen} Clausen, J., \textit{Efficient Non-Linear Finite Element
+  Implementation of Elasto-Plasticity for Geotechnical
+  Problems}. Ph.D. Thesis, Esbjerg
+  Institute of Technology, Aalborg University (2007). 
+
 \bibitem{Crossley} Crossley, A.J., \textit{Accurate and efficient numerical
   solutions for the Saint Venant equations of open channel
   flow}. Ph.D. Thesis,  University of Nottingham (1999).
@@ -38160,7 +38951,6 @@ Comparative Study of Material Models. \textit{J. Elasticity}
 
 \bibitem{Lapidus} Lapidus, L. and Pinder, G.F., \textit{ Numerical solution of partial differential equations in science and engineering}. John Wiley \& Sons, New York (1982). 
 
-
 \bibitem{Laursen} Laursen, T.A., \textit{Computational Contact and Impact
     Mechanics}. Springer-Verlag, Berlin Heidelberg New York (2003).
 
@@ -38174,9 +38964,7 @@ Comparative Study of Material Models. \textit{J. Elasticity}
   Discharge coefficient for incompressible non cavitating flow through long
   orifices. \textit{ Journal of Mechanical Engineering Sciences } \textbf{7}(2) , 210-219 (1965).
 
-
 \bibitem{Liew} Liew, K.M. and Lim, C.W., A higher-order theory for vibration of doubly curved shallow shells. \textit{ Journal of Applied Mechanics } \textbf{63} , 587-593 (1996).
-
 
 \bibitem{Luenberger} Luenberger, D.G., \textit{ Linear and nonlinear
 programming}. Addison-Wesley Publishing Company, Reading, Massachusetts 
@@ -38334,6 +39122,10 @@ Crystal Modeling for Structural Calculations: Part 2 - Finite Element Implementa
 
 \bibitem{Smith} Smith, A.J. Ward, 
   \textit{Internal fluid flow}.  Oxford University Press (1980).
+
+\bibitem{Sorensen} S\o rensen, Emil Smed  \textit{Elasto-Plastic Strain
+    Hardening Mohr-Coulomb Model}.  Master Thesis, Aalborg University (2012),
+  https://vbm.aau.dk, last accessed July 10, 2023.
 
 \bibitem{Spalart} Spalart, P.R., and Rumsey, C.L., Effective Inflow Conditions
   for Turbulence Models in Aerodynamic Calculations. \textit{AIAA Journal}. \textbf{45}(10) , 2544-2553 (2007).

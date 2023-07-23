@@ -35,17 +35,17 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
               ITG *nmethod,ITG *ithermal, ITG *ikboun, ITG *ilboun, 
               ITG *iperturb, ITG *mi, ITG *mortar, char *typeboun,
               char *labmpc, ITG *iit, ITG *icascade,ITG *network,
-              ITG *iexpl){
+              ITG *iexpl,ITG *ielmat,char *matname){
 
   /* determines the structure of the thermo-mechanical matrices;
      (i.e. the location of the nonzeros */
 
-  char lakonl[2]=" \0",lakonl2[3]="  \0";
+  char lakonl[2]=" \0";
 
   ITG i,j,k,l,jj,ll,id,index,jdof1,jdof2,idof1,idof2,mpc1,mpc2,id1,id2,
-    ist1,ist2,node1,node2,isubtract,nmast,ifree,istart,istartold,
-    index1,index2,m,node,nzs_,ist,kflag,indexe,nope,isize,*mast1=NULL,
-    *irow=NULL,icolumn,nmastboun,mt=mi[1]+1,jmax,*next=NULL,nopeold=0,
+    ist1,ist2,node1,node2,nmast,ifree,
+    index1,index2,m,node,nzs_,ist,kflag,indexe,nope,*mast1=NULL,
+    *irow=NULL,icolumn,nmastboun,mt=mi[1]+1,*next=NULL,nopeold=0,
     indexeold,identical,jstart,iatleastonenonzero,idof,ndof,*ithread=NULL;
 
   /* variables for multithreading procedure */
@@ -371,14 +371,35 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 	  ndof=3;
 	}
       }else if(strcmp1(&lakon[8*i],"U")==0){
+	if((strcmp1(&lakon[8*i+1],"1")==0)||
+	   (strcmp1(&lakon[8*i+1],"S45")==0)||
+	   (strcmp1(&lakon[8*i+1],"S3")==0)){
 	  
 	/* user element
 	   number of dofs: 7th entry of label
 	   number of nodes: 8th entry of label */
 	  
-	ndof=lakon[8*i+6];
-	nope=lakon[8*i+7];
+	  ndof=lakon[8*i+6];
+	  nope=lakon[8*i+7];
+	}else{
+
+	  /* substructure (superelement) */
+	  
+	  nope=-1;
+	}
       }else continue;
+
+      if(nope==-1){
+
+	  /* substructure (superelement) 
+             only for mechanical isothermal calculations */
+	
+	mastructread(ipompc,nodempc,nmpc,nactdof,jq,&mast1,neq,ipointer,
+		     &nzs_,nmethod,iperturb,mi,&next,&ifree,&i,ielmat,
+		     matname);
+	  
+	continue;
+      }
       
       for(jj=0;jj<ndof*nope;++jj){
 	
@@ -435,11 +456,11 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 	      }
 	    }
 
-            /* regular DOF/SPC */
+	    /* regular DOF/SPC */
 
-            /* boundary stiffness coefficients (for frequency
-               and modal dynamic calculations) : x-elements
-               on the right of the vertical line */
+	    /* boundary stiffness coefficients (for frequency
+	       and modal dynamic calculations) : x-elements
+	       on the right of the vertical line */
 
 	    //               |x x x
 	    //        x      |x x x
@@ -514,11 +535,10 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 		}
 	      }
 	    }
-	  }
-	}
-      }
-    }
-
+	  }     
+	}	// for(ll=jj;ll<ndof*nope;++ll){
+      }     // for(jj=0;jj<ndof*nope;++jj){
+    }    // for(i=0;i<*ne;++i){
   }
 
   /* thermal entries*/
@@ -750,13 +770,6 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
   for(i=0; i<num_cpus; i++)  pthread_join(tid[i], NULL);
   SFREE(ithread);
 
-  /* for(i=0;i<neq[1];++i){
-    if(jq[i+1]-jq[i]>0){
-      isize=jq[i+1]-jq[i];
-      FORTRAN(isortii,(&irow[jq[i]-1],&mast1[jq[i]-1],&isize,&kflag));
-    }
-    }*/
-
   /* removing duplicate entries */
 
   nmast=0;
@@ -832,13 +845,6 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
     }
     for(i=0; i<num_cpus; i++)  pthread_join(tid[i], NULL);
     SFREE(ithread);
-
-    /*  for(i=neq[1];i<neq[2];++i){
-      if(jq[i+1]-jq[i]>0){
-	isize=jq[i+1]-jq[i];
-	FORTRAN(isortii,(&irow[jq[i]-1],&mast1[jq[i]-1],&isize,&kflag));
-      }
-      }*/
 
     /* removing duplicate entries */
 

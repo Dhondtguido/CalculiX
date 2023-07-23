@@ -71,6 +71,7 @@
       e(2,1)=emec(4)
       e(3,1)=emec(5)
       e(3,2)=emec(6)
+c      write(*,*) 'umat_abaqusnl_total ',(emec(i),i=1,6)
 !     
 !     calculating the eigenvalues and eigenvectors
 !     

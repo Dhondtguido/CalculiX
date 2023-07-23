@@ -70,7 +70,7 @@
 !     
       real*8 temperature,tempact,xfreq,tpinc,tpmin,tpmax
 !     
-      parameter(nentries=18)
+      parameter(nentries=19)
 !     
 !     icfd=-1: initial value
 !     =0: pure mechanical analysis
@@ -847,310 +847,310 @@ c          endif
         ielset=0
 !     
         loop1: do i=2,n
-        if(textpart(i)(1:6).eq.'ELSET=') then
-          elset=textpart(i)(7:86)
-          elset(81:81)=' '
-          ipos=index(elset,' ')
-          elset(ipos:ipos)='E'
-          ielset=1
-          call cident81(set,elset,nset_,id)
-          js=nset_+1
-          if(id.gt.0) then
-            if(set(id).eq.elset) js=id
-          endif
-          if(js.gt.nset_) then
-            nset_=nset_+1
-            do j=nset_,id+2,-1
-              meminset(j)=meminset(j-1)
-              rmeminset(j)=rmeminset(j-1)
-              set(j)=set(j-1)
-            enddo
-            js=id+1
-            set(js)=elset
-            meminset(js)=0
-            rmeminset(js)=0
-          endif
-        elseif(textpart(i)(1:5).eq.'TYPE=') then
-          read(textpart(i)(6:13),'(a8)') label
-          if(label.eq.'        ') then
-            write(*,*) 
-     &           '*ERROR in allocation: element type is lacking'
-            write(*,*) '       '
-            call inputerror(inpc,ipoinpc,iline,
-     &           "*ELEMENT or *ELEMENT OUTPUT%",ier)
-            exit
-          endif
-          if((label(1:2).eq.'DC').and.(label(1:7).ne.'DCOUP3D'))
-     &         then
-            label(1:7)=label(2:8)
-            label(8:8)=' '
-          endif
-!     
-          nopeexp=0
-!     
-          if(label.eq.'C3D20   ') then
-            mi(1)=max(mi(1),27)
-            nope=20
-            nopeexp=20
-          elseif(label(1:8).eq.'C3D20R  ') then
-            mi(1)=max(mi(1),8)
-            nope=20
-            nopeexp=20
-          elseif((label.eq.'C3D8R   ').or.(label.eq.'F3D8R   '))
+          if(textpart(i)(1:6).eq.'ELSET=') then
+            elset=textpart(i)(7:86)
+            elset(81:81)=' '
+            ipos=index(elset,' ')
+            elset(ipos:ipos)='E'
+            ielset=1
+            call cident81(set,elset,nset_,id)
+            js=nset_+1
+            if(id.gt.0) then
+              if(set(id).eq.elset) js=id
+            endif
+            if(js.gt.nset_) then
+              nset_=nset_+1
+              do j=nset_,id+2,-1
+                meminset(j)=meminset(j-1)
+                rmeminset(j)=rmeminset(j-1)
+                set(j)=set(j-1)
+              enddo
+              js=id+1
+              set(js)=elset
+              meminset(js)=0
+              rmeminset(js)=0
+            endif
+          elseif(textpart(i)(1:5).eq.'TYPE=') then
+            read(textpart(i)(6:13),'(a8)') label
+            if(label.eq.'        ') then
+              write(*,*) 
+     &             '*ERROR in allocation: element type is lacking'
+              write(*,*) '       '
+              call inputerror(inpc,ipoinpc,iline,
+     &             "*ELEMENT or *ELEMENT OUTPUT%",ier)
+              exit
+            endif
+            if((label(1:2).eq.'DC').and.(label(1:7).ne.'DCOUP3D'))
      &           then
-            mi(1)=max(mi(1),1)
-            nope=8
-            nopeexp=8
-          elseif((label.eq.'C3D10   ').or.
-     &           (label.eq.'C3D10T  ')) then
-            mi(1)=max(mi(1),4)
-            nope=10
-            nopeexp=10
-          elseif((label.eq.'C3D4    ').or.
-     &           (label.eq.'F3D4    ')) then
-            mi(1)=max(mi(1),1)
-            nope=4
-            nopeexp=4
-          elseif(label.eq.'C3D15   ') then
-            mi(1)=max(mi(1),9)
-            nope=15
-            nopeexp=15
-          elseif(label.eq.'C3D6    ') then
-            mi(1)=max(mi(1),2)
-            nope=6
-            nopeexp=6
-          elseif(label.eq.'F3D6    ') then
-            mi(1)=max(mi(1),1)
-            nope=6
-            nopeexp=6
-          elseif((label.eq.'C3D8    ').or.(label.eq.'F3D8    '))
-     &           then
-            mi(1)=max(mi(1),8)
-            nope=8
-            nopeexp=8
+              label(1:7)=label(2:8)
+              label(8:8)=' '
+            endif
+!     
+            nopeexp=0
+!     
+            if(label.eq.'C3D20   ') then
+              mi(1)=max(mi(1),27)
+              nope=20
+              nopeexp=20
+            elseif(label(1:8).eq.'C3D20R  ') then
+              mi(1)=max(mi(1),8)
+              nope=20
+              nopeexp=20
+            elseif((label.eq.'C3D8R   ').or.(label.eq.'F3D8R   '))
+     &             then
+              mi(1)=max(mi(1),1)
+              nope=8
+              nopeexp=8
+            elseif((label.eq.'C3D10   ').or.
+     &             (label.eq.'C3D10T  ')) then
+              mi(1)=max(mi(1),4)
+              nope=10
+              nopeexp=10
+            elseif((label.eq.'C3D4    ').or.
+     &             (label.eq.'F3D4    ')) then
+              mi(1)=max(mi(1),1)
+              nope=4
+              nopeexp=4
+            elseif(label.eq.'C3D15   ') then
+              mi(1)=max(mi(1),9)
+              nope=15
+              nopeexp=15
+            elseif(label.eq.'C3D6    ') then
+              mi(1)=max(mi(1),2)
+              nope=6
+              nopeexp=6
+            elseif(label.eq.'F3D6    ') then
+              mi(1)=max(mi(1),1)
+              nope=6
+              nopeexp=6
+            elseif((label.eq.'C3D8    ').or.(label.eq.'F3D8    '))
+     &             then
+              mi(1)=max(mi(1),8)
+              nope=8
+              nopeexp=8
 c     Bernhardi start
-          elseif(label.eq.'C3D8I   ') then
-            mi(1)=max(mi(1),8)
-            nope=8
-            nopeexp=11
+            elseif(label.eq.'C3D8I   ') then
+              mi(1)=max(mi(1),8)
+              nope=8
+              nopeexp=11
 c     Bernhardi end
-          elseif((label.eq.'CPE3    ').or.
-     &           (label.eq.'CPS3    ').or.
-     &           (label.eq.'CAX3    ').or.
-     &           (label.eq.'M3D3    ').or.
-     &           (label.eq.'S3      ')) then
-            mi(1)=max(mi(1),2)
-            nope=3
-            nopeexp=9
-          elseif((label.eq.'CPE4R   ').or.
-     &           (label.eq.'CPS4R   ').or.
-     &           (label.eq.'CAX4R   ').or.
-     &           (label.eq.'M3D4R   ').or.
-     &           (label.eq.'S4R     ')) then
-            mi(1)=max(mi(1),1)
-            nope=4
-            nopeexp=12
-          elseif((label.eq.'CPE4    ').or.
-     &           (label.eq.'CPS4    ').or.
-     &           (label.eq.'CAX4    ').or.
-     &           (label.eq.'M3D4    ')) then
-            mi(1)=max(mi(1),8)
-            nope=4
-            nopeexp=12
-          elseif(label.eq.'S4      ') then
-            mi(1)=max(mi(1),8)
-            nope=4
+            elseif((label.eq.'CPE3    ').or.
+     &             (label.eq.'CPS3    ').or.
+     &             (label.eq.'CAX3    ').or.
+     &             (label.eq.'M3D3    ').or.
+     &             (label.eq.'S3      ')) then
+              mi(1)=max(mi(1),2)
+              nope=3
+              nopeexp=9
+            elseif((label.eq.'CPE4R   ').or.
+     &             (label.eq.'CPS4R   ').or.
+     &             (label.eq.'CAX4R   ').or.
+     &             (label.eq.'M3D4R   ').or.
+     &             (label.eq.'S4R     ')) then
+              mi(1)=max(mi(1),1)
+              nope=4
+              nopeexp=12
+            elseif((label.eq.'CPE4    ').or.
+     &             (label.eq.'CPS4    ').or.
+     &             (label.eq.'CAX4    ').or.
+     &             (label.eq.'M3D4    ')) then
+              mi(1)=max(mi(1),8)
+              nope=4
+              nopeexp=12
+            elseif(label.eq.'S4      ') then
+              mi(1)=max(mi(1),8)
+              nope=4
 !     modified into C3D8I (11 nodes)
-            nopeexp=15
-          elseif((label.eq.'CPE6    ').or.
-     &           (label.eq.'CPS6    ').or.
-     &           (label.eq.'CAX6    ').or.
-     &           (label.eq.'M3D6    ').or.
-     &           (label.eq.'S6      ')) then
-            mi(1)=max(mi(1),9)
-            nope=6
-            nopeexp=21
-          elseif((label.eq.'CPE8R   ').or.
-     &           (label.eq.'CPS8R   ').or.
-     &           (label.eq.'CAX8R   ').or.
-     &           (label.eq.'M3D8R   ').or.
-     &           (label.eq.'S8R     ')) then
-            mi(1)=max(mi(1),8)
-            nope=8
-            nopeexp=28
-          elseif((label.eq.'CPE8    ').or.
-     &           (label.eq.'CPS8    ').or.
-     &           (label.eq.'CAX8    ').or.
-     &           (label.eq.'M3D8    ').or.
-     &           (label.eq.'S8      ')) then
-            mi(1)=max(mi(1),27)
-            nope=8
-            nopeexp=28
-          elseif((label.eq.'B31     ').or.
-     &           (label.eq.'B21     ').or.
-     &           (label.eq.'T3D2    ').or.
-     &           (label.eq.'T2D2    ')) then
-            mi(1)=max(mi(1),8)
-            mi(3)=max(mi(3),2)
-            nope=2
+              nopeexp=15
+            elseif((label.eq.'CPE6    ').or.
+     &             (label.eq.'CPS6    ').or.
+     &             (label.eq.'CAX6    ').or.
+     &             (label.eq.'M3D6    ').or.
+     &             (label.eq.'S6      ')) then
+              mi(1)=max(mi(1),9)
+              nope=6
+              nopeexp=21
+            elseif((label.eq.'CPE8R   ').or.
+     &             (label.eq.'CPS8R   ').or.
+     &             (label.eq.'CAX8R   ').or.
+     &             (label.eq.'M3D8R   ').or.
+     &             (label.eq.'S8R     ')) then
+              mi(1)=max(mi(1),8)
+              nope=8
+              nopeexp=28
+            elseif((label.eq.'CPE8    ').or.
+     &             (label.eq.'CPS8    ').or.
+     &             (label.eq.'CAX8    ').or.
+     &             (label.eq.'M3D8    ').or.
+     &             (label.eq.'S8      ')) then
+              mi(1)=max(mi(1),27)
+              nope=8
+              nopeexp=28
+            elseif((label.eq.'B31     ').or.
+     &             (label.eq.'B21     ').or.
+     &             (label.eq.'T3D2    ').or.
+     &             (label.eq.'T2D2    ')) then
+              mi(1)=max(mi(1),8)
+              mi(3)=max(mi(3),2)
+              nope=2
 !     modified into C3D8I (11 nodes)
-            nopeexp=13
-          elseif(label.eq.'B31R    ') then
-            mi(1)=max(mi(1),1)
-            nope=2
-            nopeexp=10
-          elseif((label.eq.'B32     ').or.
-     &           (label.eq.'T3D3    ')) then
-            mi(1)=max(mi(1),27)
-            mi(3)=max(mi(3),2)
-            nope=3
-            nopeexp=23
-          elseif(label.eq.'B32R    ') then
-            mi(1)=max(mi(1),50)
-            nope=3
-            nopeexp=23
-          elseif(label(1:8).eq.'DASHPOTA') then
-            label='EDSHPTA1'
-            nope=2
-            nopeexp=2
-          elseif(label(1:7).eq.'DCOUP3D') then
-            nope=1
-            nopeexp=1
-          elseif(label(1:1).eq.'D') then
-            nope=3
-            nopeexp=3
-            mi(2)=max(3,mi(2))
-          elseif(label(1:7).eq.'SPRINGA') then
-            mi(1)=max(mi(1),1)
-            label='ESPRNGA1'
-            nope=2
-            nopeexp=2
-          elseif(label(1:7).eq.'SPRING1') then
-            mi(1)=max(mi(1),1)
-            label='ESPRNG10'
-            nope=1
-            nopeexp=1
-            ncmat_=max(3,ncmat_)
-          elseif(label(1:7).eq.'SPRING2') then
-            mi(1)=max(mi(1),1)
-            label='ESPRNG21'
-            nope=2
-            nopeexp=2
-            ncmat_=max(4,ncmat_)
-          elseif(label.eq.'GAPUNI  ') then
-            mi(1)=max(mi(1),1)
-            label='ESPGAPA1'
-            nope=2
-            nopeexp=2
-          elseif(label(1:4).eq.'MASS') then
-            nope=1
-            nopeexp=1
-          elseif(label(1:1).eq.'U') then
+              nopeexp=13
+            elseif(label.eq.'B31R    ') then
+              mi(1)=max(mi(1),1)
+              nope=2
+              nopeexp=10
+            elseif((label.eq.'B32     ').or.
+     &             (label.eq.'T3D3    ')) then
+              mi(1)=max(mi(1),27)
+              mi(3)=max(mi(3),2)
+              nope=3
+              nopeexp=23
+            elseif(label.eq.'B32R    ') then
+              mi(1)=max(mi(1),50)
+              nope=3
+              nopeexp=23
+            elseif(label(1:8).eq.'DASHPOTA') then
+              label='EDSHPTA1'
+              nope=2
+              nopeexp=2
+            elseif(label(1:7).eq.'DCOUP3D') then
+              nope=1
+              nopeexp=1
+            elseif(label(1:1).eq.'D') then
+              nope=3
+              nopeexp=3
+              mi(2)=max(3,mi(2))
+            elseif(label(1:7).eq.'SPRINGA') then
+              mi(1)=max(mi(1),1)
+              label='ESPRNGA1'
+              nope=2
+              nopeexp=2
+            elseif(label(1:7).eq.'SPRING1') then
+              mi(1)=max(mi(1),1)
+              label='ESPRNG10'
+              nope=1
+              nopeexp=1
+              ncmat_=max(3,ncmat_)
+            elseif(label(1:7).eq.'SPRING2') then
+              mi(1)=max(mi(1),1)
+              label='ESPRNG21'
+              nope=2
+              nopeexp=2
+              ncmat_=max(4,ncmat_)
+            elseif(label.eq.'GAPUNI  ') then
+              mi(1)=max(mi(1),1)
+              label='ESPGAPA1'
+              nope=2
+              nopeexp=2
+            elseif(label(1:4).eq.'MASS') then
+              nope=1
+              nopeexp=1
+            elseif(label(1:1).eq.'U') then
 !     
 !     the number uniquely characterizes the
 !     element name (consisting of 4 freely
 !     selectable characters in position 2..5)
 !     
-            number=ichar(label(2:2))*256**3+
-     &           ichar(label(3:3))*256**2+
-     &           ichar(label(4:4))*256+
-     &           ichar(label(5:5))
-            nope=-1
-            call nidentk(iuel,number,nuel,id,four)
-            if(id.gt.0) then
-              if(iuel(1,id).eq.number) then
-                mi(1)=max(mi(1),iuel(2,id))
-                mi(2)=max(mi(2),iuel(3,id))
-                nope=iuel(4,id)
-                nopeexp=nope
+              number=ichar(label(2:2))*256**3+
+     &             ichar(label(3:3))*256**2+
+     &             ichar(label(4:4))*256+
+     &             ichar(label(5:5))
+              nope=-1
+              call nidentk(iuel,number,nuel,id,four)
+              if(id.gt.0) then
+                if(iuel(1,id).eq.number) then
+                  mi(1)=max(mi(1),iuel(2,id))
+                  mi(2)=max(mi(2),iuel(3,id))
+                  nope=iuel(4,id)
+                  nopeexp=nope
+                endif
+              endif
+              if(nope.eq.-1) then
+                write(*,*) '*ERROR reading *ELEMENT'
+                write(*,*) '       nonexistent element type:'
+                write(*,*) '       ',label
+                call inputerror(inpc,ipoinpc,iline,
+     &               "*ELEMENT%",ier)
+                call getnewline(inpc,textpart,istat,n,key,iline,ipol,
+     &               inl,ipoinp,inp,ipoinpc)
+                cycle loop
               endif
             endif
-            if(nope.eq.-1) then
-              write(*,*) '*ERROR reading *ELEMENT'
-              write(*,*) '       nonexistent element type:'
-              write(*,*) '       ',label
-              call inputerror(inpc,ipoinpc,iline,
-     &             "*ELEMENT%",ier)
-              call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
-     &             ipoinp,inp,ipoinpc)
-              cycle loop
+            if(label(1:1).eq.'F') then
+              mi(2)=max(mi(2),4)
+              if(icfd.eq.-1) then
+                icfd=1
+              elseif(icfd.eq.0) then
+                icfd=2
+              endif
+            else
+              if(icfd.eq.-1) then
+                icfd=0
+              elseif(icfd.eq.1) then
+                icfd=2
+              endif
             endif
           endif
-          if(label(1:1).eq.'F') then
-            mi(2)=max(mi(2),4)
-            if(icfd.eq.-1) then
-              icfd=1
-            elseif(icfd.eq.0) then
-              icfd=2
-            endif
-          else
-            if(icfd.eq.-1) then
-              icfd=0
-            elseif(icfd.eq.1) then
-              icfd=2
-            endif
-          endif
-        endif
-      enddo loop1
+        enddo loop1
 !     
-      loop2:do
-      call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
+        loop2:do
+          call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &     ipoinp,inp,ipoinpc)
-      if((istat.lt.0).or.(key.eq.1)) exit
-      read(textpart(1)(1:10),'(i10)',iostat=istat) i
-      if(istat.gt.0) then
-        call inputerror(inpc,ipoinpc,iline,
-     &       "*ELEMENT or *ELEMENT OUTPUT%",ier)
-        exit
-      endif
+          if((istat.lt.0).or.(key.eq.1)) exit
+          read(textpart(1)(1:10),'(i10)',iostat=istat) i
+          if(istat.gt.0) then
+            call inputerror(inpc,ipoinpc,iline,
+     &           "*ELEMENT or *ELEMENT OUTPUT%",ier)
+            exit
+          endif
 c     Bernhardi start
 c     space for incompatible mode nodes
-      if(label(1:5).eq.'C3D8I') then
-        nk_=nk_+3
-      endif
+          if(label(1:5).eq.'C3D8I') then
+            nk_=nk_+3
+          endif
 c     Bernhardi end
-      if(label(1:2).ne.'C3') then
-        if(label(1:3).eq.'CPE') then
-          necper=necper+1
-        elseif(label(1:2).eq.'CP') then
-          necpsr=necpsr+1
-        elseif(label(1:1).eq.'C') then
-          necaxr=necaxr+1
-        elseif((label(1:1).eq.'S').or.
-     &         ((label(1:1).eq.'M').and.(label(1:4).ne.'MASS')))
-     &         then
-          nesr=nesr+1
-        elseif((label(1:1).eq.'B').or.
-     &         (label(1:1).eq.'T')) then
-          neb32=neb32+1
-        elseif(label(1:1).eq.'D') then
-          nflow=nflow+1
-        elseif(label(1:1).eq.'F') then
-          nef=nef+1
-        endif
-      endif
-      nteller=n-1
-      if(nteller.lt.nope) then
-        do
-          call getnewline(inpc,textpart,istat,n,key,iline,
-     &         ipol,inl,ipoinp,inp,ipoinpc)
-          if((istat.lt.0).or.(key.eq.1)) exit loop2
-          if(nteller+n.gt.nope) n=nope-nteller
-          nteller=nteller+n
-          if(nteller.eq.nope) exit
-        enddo
-      endif
-      ne_=max(ne_,i)
-      nkon_=nkon_+nopeexp
-      if(ielset.eq.1) then
-        meminset(js)=meminset(js)+1
-        rmeminset(js)=rmeminset(js)+1
-      endif
+          if(label(1:2).ne.'C3') then
+            if(label(1:3).eq.'CPE') then
+              necper=necper+1
+            elseif(label(1:2).eq.'CP') then
+              necpsr=necpsr+1
+            elseif(label(1:1).eq.'C') then
+              necaxr=necaxr+1
+            elseif((label(1:1).eq.'S').or.
+     &             ((label(1:1).eq.'M').and.(label(1:4).ne.'MASS')))
+     &             then
+              nesr=nesr+1
+            elseif((label(1:1).eq.'B').or.
+     &             (label(1:1).eq.'T')) then
+              neb32=neb32+1
+            elseif(label(1:1).eq.'D') then
+              nflow=nflow+1
+            elseif(label(1:1).eq.'F') then
+              nef=nef+1
+            endif
+          endif
+          nteller=n-1
+          if(nteller.lt.nope) then
+            do
+              call getnewline(inpc,textpart,istat,n,key,iline,
+     &             ipol,inl,ipoinp,inp,ipoinpc)
+              if((istat.lt.0).or.(key.eq.1)) exit loop2
+              if(nteller+n.gt.nope) n=nope-nteller
+              nteller=nteller+n
+              if(nteller.eq.nope) exit
+            enddo
+          endif
+          ne_=max(ne_,i)
+          nkon_=nkon_+nopeexp
+          if(ielset.eq.1) then
+            meminset(js)=meminset(js)+1
+            rmeminset(js)=rmeminset(js)+1
+          endif
 c     !
 c     !              up to 8 new mpc's with 22 terms in each mpc
 c     !              (21 = 7 nodes x 3 dofs + inhomogeneous term)
 c     !
-      enddo loop2
+        enddo loop2
       elseif((textpart(1)(1:5).eq.'*NSET').or.
      &     (textpart(1)(1:6).eq.'*ELSET')) then
         if(textpart(1)(1:5).eq.'*NSET')
@@ -1544,6 +1544,11 @@ c     !
      &       inl,ipoinp,inp,ipoinpc)
       elseif(textpart(1)(1:9).eq.'*MATERIAL') then
         nmat_=nmat_+1
+        call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
+     &       ipoinp,inp,ipoinpc)
+      elseif(textpart(1)(1:15).eq.'*MATRIXASSEMBLE') then
+        call matrix2userelem(textpart,n,iuel,nuel,inpc,ipoinpc,iline,
+     &       ier,ipoinp,inp,inl,ipol,nk_,mi,icfd,ne_,nkon_,nmat_)
         call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &       ipoinp,inp,ipoinpc)
       elseif(textpart(1)(1:13).eq.'*MODALDAMPING') then

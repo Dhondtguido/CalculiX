@@ -81,7 +81,7 @@
 !                 for centrifugal loads the centrifugal axis is 
 !                 checked
 !
-                  if(abs(ilabel).eq.1) then
+                  if(ilabel.eq.1) then
                      if(dabs(p2(1)*xbody(5,id)+p2(2)*xbody(6,id)+
      &                       p2(3)*xbody(7,id)-1.d0).gt.1.d-10) then
                         id=id-1
@@ -112,7 +112,7 @@
 !
                   ibody(2,id)=iamplitude
                   ibody(3,id)=lc
-                  if(abs(ilabel).eq.1) then
+                  if(ilabel.eq.1) then
                      if(idefbody(id).eq.0) then
                         xbody(1,id)=xmagnitude
                         idefbody(id)=1
@@ -190,7 +190,7 @@
       ibody(1,id1)=ilabel
       ibody(2,id1)=iamplitude
       ibody(3,id1)=lc
-      if(abs(ilabel).eq.1) then
+      if(ilabel.eq.1) then
          xbody(1,id1)=xmagnitude
          xbody(2,id1)=p1(1)
          xbody(3,id1)=p1(2)

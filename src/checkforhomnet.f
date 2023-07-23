@@ -31,7 +31,17 @@
       integer i,ieg(*),nflow,nelem,indexe,ipkon(*),kon(*),itg(*),
      &     ntg,iponoel(*),inoel(2,*),index,ier,j,newnode,node,id
 !     
+      integer,dimension(:),allocatable::itgcp
+!     
       ier=0
+!     
+!     duplicate field itg for use with nident (entries in itg are     
+!     intermittently multiplied with -1)
+!     
+      allocate(itgcp(ntg))
+      do i=1,ntg
+        itgcp(i)=itg(i)
+      enddo
 !     
       do
         gas=.false.
@@ -90,7 +100,7 @@
 !     
 !     mark the node by a negative sign
 !     
-          call nident(itg,node,ntg,id)
+          call nident(itgcp,node,ntg,id)
           itg(id)=-itg(id)
 !     
           do
@@ -176,7 +186,7 @@
 !     as active by giving it a negative sign
 !     
                 if(newnode.ne.0) then
-                  call nident(itg,newnode,ntg,id)
+                  call nident(itgcp,newnode,ntg,id)
                   itg(id)=-itg(id)
                 endif
                 index=inoel(2,index)
@@ -209,6 +219,8 @@
         nelem=ieg(i)
         if(ipkon(nelem).lt.-1) ipkon(nelem)=-2-ipkon(nelem)
       enddo
+!
+      deallocate(itgcp)
 !     
       if(ier.eq.1) call exit(201)
 !     

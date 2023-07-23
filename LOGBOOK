@@ -5179,3 +5179,39 @@ Dec 2002        - started to work on single crystal plasticity
  23 May 2023    - replaced ",26)" by ",20)" (no more than 20 nodes per
                   element)
 		- worked on Mohr-Coulomb
+
+ 2 June 2023    - made a correction in changekon.f (included newly
+                  defined elements)
+                - worked on 2D feasible direction
+
+ 4 June 2023    - made a correction in the transformation matrix in
+                  mohrcoulomb.f
+
+ 13 June 2023   - if at least one initial temperature was defined, the initial
+                  temperatures AND the temperature in all nodes used by
+		  elements must be defined.
+
+ 18 June 2023   - worked on *matrix assemble in combination with
+                  cyclic symmetry
+
+ 27 June 2023   - finished *matrix assemble in combination with cyclic
+                  symmetry
+
+ 4 July 2023    - worked on *SUBSTRUCTURE MATRIX OUTPUT,OUTPUT FILE=MATRIX
+                - removed the network nodes from the change-in-temperature-
+		  check w.r.t. deltmx (resultsini, cam[2])
+
+ 7 July 2023    - fixed an error in resultsmech: energy was not calculated
+                  in an increment for which no printing output was requested.
+
+ 8 July 2023    - initialized xstateini for explicit dynamic calculations
+                  with plasticity and contact
+
+ 17 July 2023   - changed the header of the block for CDISP and CSTRE in
+                  the frd-file
+
+ 22 July 2023   - removed an error in the Johnson-Cook umat routine
+                - in nonlingeo.c, explicit dynamics, line 3130: displacements
+		  alone are not sufficient?
+		- hgforce.f needs an entry in the stiffness matrix:
+		  problematic for explicit dynamics (icmd=3 in line 1476).

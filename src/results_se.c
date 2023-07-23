@@ -33,12 +33,10 @@ static ITG *kon1,*ipkon1,*ne1,*nelcon1,*nrhcon1,*nalcon1,*ielmat1,*ielorien1,
     *icoordinate1,*ialdesi1,*neapar=NULL,*nebpar=NULL;
 
 static double *co1,*v1,*stx1,*elcon1,*rhcon1,*alcon1,*alzero1,*orab1,*t01,*t11,
-    *prestr1,*eme1,*fn1=NULL,*vold1,*veold1,*dtime1,*time1,
-    *ttime1,*plicon1,*plkcon1,*xstateini1,*xstiff1,*xstate1,*stiini1,
-    *vini1,*ener1,*eei1,*enerini1,*springarea1,*reltime1,
-    *thicke1,*emeini1,*prop1,*dxstiff1,
-    *pslavsurf1,*pmastsurf1,*clearini1,*dfn1,*fn01,
-    *sti1,*xdesi1;
+    *prestr1,*eme1,*fn1=NULL,*vold1,*veold1,*dtime1,*time1,*ttime1,*plicon1,
+    *plkcon1,*xstateini1,*xstiff1,*xstate1,*stiini1,*vini1,*ener1,*eei1,
+    *enerini1,*springarea1,*reltime1,*thicke1,*emeini1,*prop1,*dxstiff1,
+  *pslavsurf1,*pmastsurf1,*clearini1,*dfn1,*fn01,*sti1,*xdesi1,*physcon1;
 
 void results_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
        double *v,double *stn,ITG *inum,double *stx,double *elcon,ITG *nelcon,
@@ -75,11 +73,11 @@ void results_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
        double *sti,ITG *nkon,ITG *jqs,ITG *irows,
        ITG *nactdofinv,ITG *icoordinate,double *dxstiff,ITG *istartdesi,
        ITG *ialdesi,double *xdesi,ITG *ieigenfrequency,double *fint,
-       ITG *ishapeenergy,char *typeboun){
+       ITG *ishapeenergy,char *typeboun,double *physcon){
 
     ITG intpointvarm,calcul_fn,calcul_f,calcul_qa,calcul_cauchy,nener=0,ikin,
         intpointvart,mt=mi[1]+1,i,j,idesvar,iorien,idir,im,
-        nea,neb;
+        nea,neb,*iponoel=NULL,network=0;
     
     double *dfn=NULL,*fn0=NULL,a[9],pgauss[3],rotvec[3],orabsav[7];
 
@@ -148,7 +146,8 @@ void results_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 	       xboun,nboun,ipompc,nodempc,coefmpc,labmpc,nmpc,nmethod,cam,neq,
 	       veold,accold,bet,gam,dtime,mi,vini,nprint,prlab,
 	       &intpointvarm,&calcul_fn,&calcul_f,&calcul_qa,&calcul_cauchy,
-	       &ikin,&intpointvart,typeboun,&num_cpus,mortar,&nener);
+	       &ikin,&intpointvart,typeboun,&num_cpus,mortar,&nener,iponoel,
+	       &network);
 
     NNEW(fn0,double,mt**nkon);
     NNEW(dfn,double,mt**nk);
@@ -193,7 +192,7 @@ void results_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 	pmastsurf1=pmastsurf;mortar1=mortar;ielprop1=ielprop;prop1=prop;
 	idesvar1=idesvar;nodedesi1=nodedesi;
 	sti1=sti;nkon1=nkon;icoordinate1=icoordinate;
-	dxstiff1=dxstiff;ialdesi1=ialdesi;xdesi1=xdesi;
+	dxstiff1=dxstiff;ialdesi1=ialdesi;xdesi1=xdesi;physcon1=physcon;
 	
 	/* create threads and wait */
 	
@@ -280,7 +279,7 @@ void results_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
                 &ikin,ne0,thicke,emeini,
                 pslavsurf,pmastsurf,mortar,clearini,&nea,&neb,ielprop,prop,
                 dfn,&idesvar,nodedesi,
-	        fn0,sti,icoordinate,dxstiff,ialdesi,xdesi));
+		fn0,sti,icoordinate,dxstiff,ialdesi,xdesi,physcon));
 	}
 	
 	/* calculating the matrix system internal force vector
@@ -345,7 +344,8 @@ void *resultsmechmt_se(ITG *i){
           &ikin1,ne01,thicke1,emeini1,
           pslavsurf1,pmastsurf1,mortar1,clearini1,&nea,&neb,ielprop1,prop1,
           &dfn1[indexdfn],&idesvar1,nodedesi1,
-	  &fn01[indexfn0],sti1,icoordinate1,dxstiff1,ialdesi1,xdesi1));
+	  &fn01[indexfn0],sti1,icoordinate1,dxstiff1,ialdesi1,xdesi1,
+	  physcon1));
 
     return NULL;
 }

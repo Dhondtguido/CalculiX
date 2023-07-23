@@ -52,6 +52,11 @@ void radcyc(ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
   /* assigning nodes and elements to sectors */
 
   ielset=cs[12];
+    if(ielset<0){
+      printf(" *ERROR in radcyc.c:\n");
+      printf("        matrix input is not allowed\n\n");
+      FORTRAN(stop,());
+    }
   if((*mcs!=1)||(ielset!=0)){
     for(i=0;i<*nk;i++) inocs[i]=-1;
   }
