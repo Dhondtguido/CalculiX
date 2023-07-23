@@ -29,10 +29,10 @@
 !                   sensitivity feasdir is scaled to 1
 !
       implicit none
-!     
+!
       character*81 objectset(5,*)
 !     
-      integer nk,nodedesi(*),i,ndesi,iobject,iscaleflag,node,ne2d
+      integer nk,nodedesi(*),i,j,k,m,ndesi,iobject,iscaleflag,node,ne2d
 !     
       real*8 dgdxglob(2,nk,*),feasdir(2,*),dd,dd2
 !     
@@ -86,19 +86,14 @@ c            dgdxglob(1,node,1)=-dgdxglob(1,node,1)
         dd2=0.d0
         do i=1,ndesi
           node=nodedesi(i)
-c          dd=max(dd,abs(feasdir(1,node)))
           dd2=max(dd2,abs(feasdir(2,node)))
         enddo
-c        if(dd.le.0.d0) then
-c          dd=1.0
-c        endif
         if(dd2.le.0.d0) then
           dd2=1.0
         endif
         if(ne2d.eq.0) then
           do i=1,ndesi
             node=nodedesi(i)
-c     feasdir(1,node)=feasdir(1,node)/dd
             feasdir(2,node)=feasdir(2,node)/dd2
           enddo
         else
@@ -108,7 +103,6 @@ c     feasdir(1,node)=feasdir(1,node)/dd
 !
           do i=1,ndesi
             node=nodedesi(i)
-c     feasdir(1,node)=feasdir(1,node)/dd
             feasdir(2,node)=feasdir(2,node)/dd2
             feasdir(1,node+1)=feasdir(1,node)
             feasdir(1,node+2)=feasdir(1,node)

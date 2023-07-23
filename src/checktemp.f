@@ -56,11 +56,11 @@
 !
          do j=1,nope
             node=kon(index+j)
-            if(dabs(t0(node)-1.2357111317d0).lt.1.d-10) then
+            if(dabs(t0(node)-1.2357111319d0).lt.1.d-10) then
                write(*,*) '*ERROR in checktemp: no initial temperature'
                write(*,*) '       defined in node ',node
                call exit(201)
-            elseif(dabs(t1(node)-1.2357111317d0).lt.1.d-10) then
+            elseif(dabs(t1(node)-1.2357111319d0).lt.1.d-10) then
                write(*,*) '*ERROR in checktemp: no final temperature'
                write(*,*) '       defined in node ',node
                call exit(201)

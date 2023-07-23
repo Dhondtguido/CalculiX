@@ -31,7 +31,7 @@
       character*132 textpart(16)
 !
       integer iperturb(*),nforc,nload,ithermal(*),nk,istep,istat,n,key,
-     &  i,j,iprestr,jmax(2),irstrt(*),iline,ipol,inl,ipoinp(2,*),
+     &  i,j,iprestr,jmax(*),irstrt(*),iline,ipol,inl,ipoinp(2,*),
      &  inp(3,*),namtot_,
      &  newstep,nbody,ipoinpc(0:*),network,iamplitudedefault,nam,
      &  nam_,namta(3,*),namtot,nstam,ier

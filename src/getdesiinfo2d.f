@@ -63,6 +63,8 @@
      &     ipos2,ielem,iponor2d(2,*),num,knor2d(*),inode,nodenew,nope2d,
      &     ishift,nobject,iobject,numtest,nod1st(*),ne,id,iwrite,
      &     index2d,rig(*)
+!
+      integer,dimension(:),allocatable::itreated
 !     
       setname(1:1)=' '
       ndesi=0
@@ -92,7 +94,12 @@
 !     
 !     Change the node numbers in the sets for the objective and constraint
 !     function
-!     
+!
+      allocate(itreated(nset))
+      do i=1,nset
+        itreated(i)=0
+      enddo
+!      
       do iobject=1,nobject
 !     
 !     only node-based design responses are treated
@@ -107,9 +114,12 @@
 !     design variables are treated later
 !     (set of design and objective variables may coincide)
 !     
-              if(objectset(3,iobject).ne.setname) then
+              if((objectset(3,iobject).ne.setname).and.
+     &             (itreated(i).ne.1)) then
+                itreated(i)=1
                 do inode=istartset(i),iendset(i)
                   nodeold=ialset(inode)
+c                  write(*,*) 'getdesiinfo2d',nodeold,iponoel2d(nodeold)
                   index2d=iponoel2d(nodeold)
                   if(index2d.eq.0) cycle
                   ielem=inoel2d(1,index2d)
@@ -135,6 +145,7 @@
           endif
         endif
       enddo
+      deallocate(itreated)
 !     
 !     opening a file to store the nodes which are rejected as
 !     design variables

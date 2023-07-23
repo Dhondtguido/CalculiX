@@ -64,7 +64,7 @@ int main(int argc,char *argv[])
     *irandomtype=NULL,irobustdesign[3],*iparentel=NULL,ifreebody,
     *ipobody=NULL,inewton=0,*iprfn=NULL,*konrfn=NULL;
      
-  ITG nk,ne,nboun,nmpc,nforc,nload,nprint,nset,nalset,nentries=18,
+  ITG nk,ne,nboun,nmpc,nforc,nload,nprint,nset,nalset,nentries=19,
     nmethod,neq[3],i,mpcfree,mei[4]={0,0,0,0},j,nzl,nam,nbounold,
     nforcold,nloadold,nbody,nbody_,nbodyold,network,nheading_,
     k,nzs[3],nmpc_,nload_,nforc_,istep,istat,nboun_,nintpoint,
@@ -149,12 +149,16 @@ int main(int argc,char *argv[])
   FORTRAN(openfile,(jobnamef));
 
   printf("\n************************************************************\n\n");
+#ifdef INTSIZE64
+  printf("CalculiX Version DEVELOPMENT i8, Copyright(C) 1998-2015 Guido Dhondt\n");
+#else
   printf("CalculiX Version DEVELOPMENT, Copyright(C) 1998-2015 Guido Dhondt\n");
+#endif
   printf("CalculiX comes with ABSOLUTELY NO WARRANTY. This is free\n");
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Tue May 23 23:07:31 CEST 2023\n");
+  printf("You are using an executable made on Sat Jul 22 18:12:52 CEST 2023\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -1174,7 +1178,7 @@ int main(int argc,char *argv[])
 		 nodempc,&nmpc,nactdof,icol,jq,&mast1,&irow,&isolver,neq,
 		 ikmpc,ilmpc,ipointer,nzs,&nmethodl,ithermal,
 		 ikboun,ilboun,iperturb,mi,&mortar,typeboun,labmpc,
-		 &iit,&icascade,&network,&iexpl);
+		 &iit,&icascade,&network,&iexpl,ielmat,matname);
       }
       else{neq[0]=1;neq[1]=1;neq[2]=1;}
     }
@@ -1188,7 +1192,7 @@ int main(int argc,char *argv[])
       mastructcs(&nk,kon,ipkon,lakon,&ne,nodeboun,ndirboun,&nboun,
 		 ipompc,nodempc,&nmpc,nactdof,icol,jq,&mast1,&irow,&isolver,
 		 neq,ikmpc,ilmpc,ipointer,nzs,&nmethodl,
-		 ics,cs,labmpc,&mcs,mi,&mortar);
+		 ics,cs,labmpc,&mcs,mi,&mortar,ielmat,matname);
     }
   
     SFREE(ipointer);SFREE(mast1);
@@ -1244,7 +1248,7 @@ int main(int argc,char *argv[])
 		    &nbody,
 		    xbodyold,timepar,thicke,jobnamec,tieset,&ntie,&istep,&nmat,
 		    ielprop,prop,typeboun,&mortar,mpcinfo,tietol,ics,
-		    orname,itempuser,t0g,t1g);
+		    orname,itempuser,t0g,t1g,jmax);
 
 	  for(i=0;i<3;i++){nzsprevstep[i]=nzs[i];}
 
@@ -1612,7 +1616,7 @@ int main(int argc,char *argv[])
 			ielprop,prop,&kode,&nmethod,filab,&nstate_,&istep,cs,
 			set,&nset,istartset,iendset,ialset,jobnamec,output,
 			&ntrans,inotr,trab,orname,xdesi,timepar,coini,ikboun,
-			nactdof,&ne2d);         
+			nactdof,&ne2d,&nkon);         
       
     }
 

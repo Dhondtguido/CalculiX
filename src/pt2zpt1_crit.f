@@ -62,8 +62,9 @@
 !        root iteratively by 2)
 !     
          i=1
-!
-         M1_min=0.001d0
+! Change on 10th of July 2023
+         M1_min=0.0000001d0
+c         M1_min=0.001d0
          M1_max=1
 !
          Z1_min=M1_min**2

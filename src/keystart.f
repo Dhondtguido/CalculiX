@@ -30,23 +30,24 @@
 !     2)  *NODE
 !     3)  *USER ELEMENT
 !     4)  *ELEMENT
-!     5)  *NSET
-!     6)  *ELSET
-!     7)  *SURFACE
-!     8)  *TRANSFORM
-!     9)  *MATERIAL
-!     10) *DISTRIBUTION
-!     11) *ORIENTATION
-!     12) *TIE
-!     13) *SURFACE INTERACTION
-!     14) *INITIAL CONDITIONS
-!     15) *AMPLITUDE
-!     16) *CONTACT PAIR
-!     17) *COUPLING
-!     18) everything else
+!     5)  *MATRIX ASSEMBLE
+!     6)  *NSET
+!     7)  *ELSET
+!     8)  *SURFACE
+!     9)  *TRANSFORM
+!     10)  *MATERIAL
+!     11) *DISTRIBUTION
+!     12) *ORIENTATION
+!     13) *TIE
+!     14) *SURFACE INTERACTION
+!     15) *INITIAL CONDITIONS
+!     16) *AMPLITUDE
+!     17) *CONTACT PAIR
+!     18) *COUPLING
+!     19) everything else
 !
       integer nentries
-      parameter(nentries=18)
+      parameter(nentries=19)
 !
       character*20 name,nameref(nentries)
 !
@@ -56,7 +57,7 @@
 !     order in which the cards have to be read
 !
       data nameref /'RESTART,READ','NODE','USERELEMENT','ELEMENT',
-     &              'NSET',
+     &              'MATRIXASSEMBLE','NSET',
      &              'ELSET','SURFACE','TRANSFORM','MATERIAL',
      &              'DISTRIBUTION',
      &              'ORIENTATION','TIE','INTERACTION',
@@ -65,7 +66,7 @@
 !
 !     length of the names in field nameref
 !
-      data namelen /12,4,11,7,4,5,7,9,8,12,11,3,11,17,9,11,8,4/
+      data namelen /12,4,11,7,14,4,5,7,9,8,12,11,3,11,17,9,11,8,4/
 !
       do i=1,nentries
          if(name(1:namelen(i)).eq.nameref(i)(1:namelen(i))) then

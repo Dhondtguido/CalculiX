@@ -298,7 +298,6 @@ envtemp.f \
 eplane.f \
 eqspacednodes.f \
 equationcheck.f \
-equationfs.f \
 equations.f \
 errorestimator.f \
 evalshapefunc.f \
@@ -497,9 +496,11 @@ mafillsm.f \
 mafillsmas.f \
 mafillsmcsas.f \
 mafillsmcs.f \
+mafillsmcsmatrix.f \
 mafillsmcsse.f \
 mafillsmduds.f \
 mafillsmforc.f \
+mafillsmmatrix.f \
 mafillsmse.f \
 mafillv1rhs.f \
 mafillv2rhs.f \
@@ -524,6 +525,8 @@ materialdata_sp.f \
 materialdata_tg.f \
 materialdata_th.f \
 materials.f \
+matrix2userelem.f \
+matrixassembles.f \
 matvec.f \
 matvec_struct.f \
 maxdesvardisp.f \
@@ -582,7 +585,8 @@ noelfiles.f \
 noelsets.f \
 nonlinmpc.f \
 normals.f \
-normalsforequ_se.f \
+writeinputdeck.f \
+writeinputdeck2.f \
 normalsoninterface.f \
 normalsonsurface_robust.f \
 normalsonsurface_se.f \
@@ -730,6 +734,7 @@ resultsini_em.f \
 resultsini_mortar.f \
 resultsk.f \
 resultsmech.f \
+resultsmech_matrix.f \
 resultsmech_se.f \
 resultsmech_u1.f \
 resultsmech_us3.f \
@@ -1050,9 +1055,13 @@ mastructdmatrix.c \
 mastructem.c \
 mastructffem.c \
 mastructfilter.c \
+mastructmatrix.c \
+mastructmatrixcs.c \
 mastructnmatrix.c \
 mastructrad.c \
 mastructrand.c \
+mastructread.c \
+mastructreadcs.c \
 mastructse.c \
 matrixsort.c \
 matrixstorage.c \
@@ -1078,6 +1087,7 @@ prediction.c \
 prediction_em.c \
 preiter.c \
 preparll.c \
+printenergy.c \
 radcyc.c \
 radflowload.c \
 randomfieldmain.c \

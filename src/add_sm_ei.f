@@ -20,17 +20,15 @@
      &  i0,i1)
 !
 !     stores the stiffness coefficient (i,j) with value "value"
-!     in the stiffness matrix stored in spare matrix format and 
-!     the mass coefficient (i,j) with value "valuem" in the lumped 
-!     mass matrix
+!     in the stiffness matrix stored in sparse matrix format and 
+!     the mass coefficient (i,j) with value "valuem" in the  
+!     mass matrix stored in sparse matrix format
 !
       implicit none
 !
       integer jq(*),irow(*),i,j,ii,jj,ipointer,id,i0,i1
 !
       real*8 ad(*),au(*),adb(*),aub(*),value,valuem
-!
-!
 !
       if(i.eq.j) then
          if(i0.eq.i1) then

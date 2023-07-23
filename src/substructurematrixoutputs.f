@@ -18,7 +18,7 @@
 !
       subroutine substructurematrixoutputs(textpart,istep,
      &  inpc,istat,n,key,iline,ipol,inl,ipoinp,inp,jobnamec,ipoinpc,
-     &  ier)
+     &  ier,jmax)
 !
 !     reading the input deck: *SUBSTRUCTURE MATRIX OUTPUT
 !
@@ -27,7 +27,7 @@
       character*1 inpc(*)
       character*132 textpart(16),jobnamec(*)
 !
-      integer i,istep,n,istat,iline,ipol,inl,ipoinp(2,*),
+      integer i,istep,n,istat,iline,ipol,inl,ipoinp(2,*),jmax(*),
      &  inp(3,*),key,j,k,l,ipoinpc(0:*),ier
 !
       if(istep.lt.1) then
@@ -41,6 +41,9 @@
       do i=2,n
          if(textpart(i)(1:13).eq.'STIFFNESS=YES') then
          elseif(textpart(i)(1:22).eq.'OUTPUTFILE=USERDEFINED') then
+           jmax(1)=1
+         elseif(textpart(i)(1:17).eq.'OUTPUTFILE=MATRIX') then
+           jmax(1)=2
          elseif(textpart(i)(1:9).eq.'FILENAME=') then
             jobnamec(5)(1:123)=textpart(i)(10:132)
             jobnamec(5)(124:132)='      '

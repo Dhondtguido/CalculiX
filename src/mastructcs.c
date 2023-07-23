@@ -25,12 +25,12 @@
 #define max(a,b) ((a) >= (b) ? (a) : (b))
 
 void mastructcs(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
-	      ITG *nodeboun, ITG *ndirboun, ITG *nboun, ITG *ipompc,
-	      ITG *nodempc, ITG *nmpc, ITG *nactdof, ITG *icol,
-	      ITG *jq, ITG **mast1p, ITG **irowp, ITG *isolver, ITG *neq,
-	      ITG *ikmpc, ITG *ilmpc,ITG *ipointer, ITG *nzs, 
-              ITG *nmethod,ITG *ics, double *cs, char *labmpc, ITG *mcs, 
-              ITG *mi,ITG *mortar){
+		ITG *nodeboun, ITG *ndirboun, ITG *nboun, ITG *ipompc,
+		ITG *nodempc, ITG *nmpc, ITG *nactdof, ITG *icol,
+		ITG *jq, ITG **mast1p, ITG **irowp, ITG *isolver, ITG *neq,
+		ITG *ikmpc, ITG *ilmpc,ITG *ipointer, ITG *nzs, 
+		ITG *nmethod,ITG *ics, double *cs, char *labmpc, ITG *mcs, 
+		ITG *mi,ITG *mortar,ITG *ielmat,char *matname){
 
   /* determines the structure of the thermo-mechanical matrices with
      cyclic symmetry;
@@ -64,8 +64,15 @@ void mastructcs(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
     
     if(ipkon[i]<0) continue;
     indexe=ipkon[i];
-/* Bernhardi start */
-    if (strcmp1(&lakon[8*i+3],"8I")==0)nope=11;
+    if(strcmp1(&lakon[8*i],"U")==0){
+
+      /* user element
+	 number of dofs: 7th entry of label
+	 number of nodes: 8th entry of label */
+
+      nope=lakon[8*i+7];}
+    /* Bernhardi start */
+    else if (strcmp1(&lakon[8*i+3],"8I")==0)nope=11;
     else if(strcmp1(&lakon[8*i+3],"20")==0)nope=20;
 /* Bernhardi end */
     else if(strcmp1(&lakon[8*i+3],"2")==0)nope=26;
@@ -166,12 +173,34 @@ void mastructcs(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 	    lakonl[0]=lakon[8*i+7];
 	    nope=atoi(lakonl)+1;
 	}
+    }else if(strcmp1(&lakon[8*i],"U")==0){
+      if((strcmp1(&lakon[8*i+1],"1")==0)||
+	 (strcmp1(&lakon[8*i+1],"S45")==0)||
+	 (strcmp1(&lakon[8*i+1],"S3")==0)){
+	  
+	/* user element
+	   number of dofs: 7th entry of label
+	   number of nodes: 8th entry of label */
+	  
+	nope=lakon[8*i+7];
+      }else{
+
+	/* substructure (superelement) */
+	  
+	nope=-1;
+      }
     }else continue;
 
-/*    else if (strcmp1(&lakon[8*i],"E")==0){
-	lakonl[0]=lakon[8*i+7];
-	nope=atoi(lakonl)+1;}
-	else continue;*/
+    if(nope==-1){
+
+      /* substructure (superelement) */
+	
+      mastructreadcs(ipompc,nodempc,nmpc,nactdof,jq,&mast1,neq,ipointer,
+		     &nzs_,nmethod,mi,&next,&ifree,&i,ielmat,
+		     matname,labmpc,mcs,cs,ics);
+	  
+      continue;
+    }
       
     for(jj=0;jj<3*nope;++jj){
 	
@@ -204,21 +233,16 @@ void mastructcs(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 	  if(jdof1<=0){
 	    idof1=jdof2;
 	    idof2=jdof1;}
-//	    idof2=8*node1+k-7;}
 	  else{
 	    idof1=jdof1;
 	    idof2=jdof2;}
-//	    idof2=8*node2+m-7;}
 	  
 	  if(*nmpc>0){
 	    
-//	    FORTRAN(nident,(ikmpc,&idof2,nmpc,&id));
-//	    if((id>0)&&(ikmpc[id-1]==idof2)){
 	    if(idof2!=2*(idof2/2)){
 	      
 	      /* regular DOF / MPC */
 	      
-//	      id1=ilmpc[id-1];
 	      id1=(-idof2+1)/2;
 	      ist=ipompc[id1-1];
 	      index=nodempc[3*ist-1];
@@ -262,23 +286,15 @@ void mastructcs(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 	}
 	
 	else{
-//	  idof1=8*node1+k-7;
-//	  idof2=8*node2+m-7;
 	  idof1=jdof1;
 	  idof2=jdof2;
 	  mpc1=0;
 	  mpc2=0;
 	  if(*nmpc>0){
-/*	    FORTRAN(nident,(ikmpc,&idof1,nmpc,&id1));
-	    if((id1>0)&&(ikmpc[id1-1]==idof1)) mpc1=1;
-	    FORTRAN(nident,(ikmpc,&idof2,nmpc,&id2));
-	    if((id2>0)&&(ikmpc[id2-1]==idof2)) mpc2=1;*/
 	    if(idof1!=2*(idof1/2)) mpc1=1;
 	    if(idof2!=2*(idof2/2)) mpc2=1;
 	  }
 	  if((mpc1==1)&&(mpc2==1)){
-//	    id1=ilmpc[id1-1];
-//	    id2=ilmpc[id2-1];
 	    id1=(-idof1+1)/2;
 	    id2=(-idof2+1)/2;
 	    if(id1==id2){
@@ -307,7 +323,6 @@ void mastructcs(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
                     }
                   }
 		}
-//		idof1=nactdof[mt*inode1+nodempc[3*index1-2]-4];
 		idof1=nactdof[mt*(inode1-1)+nodempc[3*index1-2]];
 		index2=index1;
 		while(1){
@@ -329,7 +344,6 @@ void mastructcs(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
                       }
                     }
                   }
-//		  idof2=nactdof[mt*inode2+nodempc[3*index2-2]-4];
 		  idof2=nactdof[mt*(inode2-1)+nodempc[3*index2-2]];
 		  if((idof1>0)&&(idof2>0)){
 		    insert(ipointer,&mast1,&next,&idof1,&idof2,&ifree,&nzs_);
@@ -337,8 +351,6 @@ void mastructcs(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 		    insert(ipointer,&mast1,&next,&kdof1,&kdof2,&ifree,&nzs_);
                     if(((icomplex1!=0)||(icomplex2!=0))&&
                        (icomplex1!=icomplex2)){
-                    /*   if(((icomplex1!=0)||(icomplex2!=0))&&
-                         ((icomplex1==0)||(icomplex2==0))){*/
 		      insert(ipointer,&mast1,&next,&kdof1,&idof2,&ifree,&nzs_);
 		      insert(ipointer,&mast1,&next,&idof1,&kdof2,&ifree,&nzs_);
 		    }
@@ -377,7 +389,6 @@ void mastructcs(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
                     }
                   }
 		}
-//		idof1=nactdof[mt*inode1+nodempc[3*index1-2]-4];
 		idof1=nactdof[mt*(inode1-1)+nodempc[3*index1-2]];
 		ist2=ipompc[id2-1];
 		index2=nodempc[3*ist2-1];
@@ -405,7 +416,6 @@ void mastructcs(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
                       }
                     }
                   }
-//		  idof2=nactdof[mt*inode2+nodempc[3*index2-2]-4];
 		  idof2=nactdof[mt*(inode2-1)+nodempc[3*index2-2]];
 		  if((idof1>0)&&(idof2>0)){
 		    insert(ipointer,&mast1,&next,&idof1,&idof2,&ifree,&nzs_);
@@ -413,8 +423,6 @@ void mastructcs(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 		    insert(ipointer,&mast1,&next,&kdof1,&kdof2,&ifree,&nzs_);
                     if(((icomplex1!=0)||(icomplex2!=0))&&
                        (icomplex1!=icomplex2)){
-                    /*   if(((icomplex1!=0)||(icomplex2!=0))&&
-                         ((icomplex1==0)||(icomplex2==0))){*/
 		      insert(ipointer,&mast1,&next,&kdof1,&idof2,&ifree,&nzs_);
 		      insert(ipointer,&mast1,&next,&idof1,&kdof2,&ifree,&nzs_);
 		    }
@@ -458,7 +466,6 @@ void mastructcs(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 	    index=next[index-1];
 	}while(1);
 	jq[i+1]=nmast+1;
-//	icol[i]=jq[i+1]-jq[i];
     }
 
     /* sorting the row numbers within each column */

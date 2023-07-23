@@ -67,8 +67,6 @@
         ipos=index(elset,' ')
         elset(ipos:ipos)='E'
         ielset=1
-c        do js=1,nset
-c          if(set(js).eq.elset) then
         call cident81(set,elset,nset,js)
         if(js.gt.0) then
           if(elset.eq.set(js)) then
@@ -108,11 +106,9 @@ c          if(set(js).eq.elset) then
             endif
           endif
         endif
-c        enddo
 !     
 !     new set
 !     
-cc        call cident81(set,elset,nset,id)
         nset=nset+1
         if(nset.gt.nset_) then
           write(*,*) '*ERROR reading *ELEMENT: increase nset_'
