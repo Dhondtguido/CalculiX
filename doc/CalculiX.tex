@@ -11186,6 +11186,42 @@ leading to:
 The derivation for the return to the apex is similar (now three equations have
 to be satisfied).
 
+The tangent derived here only applies to the normal directions. It has to be
+complemented by a shear part $\hat{T}$ in the form \cite{Clausen2}:
+
+\begin{equation}
+  \boldsymbol{C}= \begin{bmatrix} \boldsymbol{D}^{ep} & 0 \\  0 & \boldsymbol{\hat{T}}
+  \end{bmatrix}
+\end{equation}
+
+where
+
+\begin{equation}
+  \boldsymbol{\hat{T}} = \begin{bmatrix}
+    \frac{\sigma_{1,n+1}-\sigma_{2,n+1}}{\sigma_{1,n+1}^{\text{trial}}-\sigma_{2,n+1}
+      ^{\text{trial}}} & 0 & 0 \\ 0 & \frac{\sigma_{1,n+1}-\sigma_{3,n+1}}{\sigma_{1,n+1}^{\text{trial}}-\sigma_{3,n+1}
+      ^{\text{trial}}} & 0 \\ 0 & 0 & \frac{\sigma_{2,n+1}-\sigma_{3,n+1}}{\sigma_{2,n+1}^{\text{trial}}-\sigma_{3,n+1}
+      ^{\text{trial}}} \end{bmatrix}
+\end{equation}
+
+Finally, the tangent matrix $\boldsymbol{C}$ has to be transformed back into
+the global system yielding $\boldsymbol{C'}$:
+
+\begin{equation}
+  \boldsymbol{C'} = \boldsymbol{A}^T \cdot \boldsymbol{C} \cdot
+  \boldsymbol{A},
+\end{equation}
+
+where $\boldsymbol{A}$ is the transformation matrix in equation (A5) in
+\cite{Clausen2}. Notice that equation (A6) in  \cite{Clausen2} is wrong and
+has to be replaced by the equation above. Similarly the stress is to be
+transformed into the global system by:
+
+\begin{equation}
+  \boldsymbol{\sigma '} = \boldsymbol{A}^T \cdot \boldsymbol{\sigma }.
+\end{equation}
+
+
 \subsubsection{Tension-only and compression-only materials.}
 
 These are material models which can be used to simulate textile behavior
