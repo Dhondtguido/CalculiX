@@ -772,48 +772,66 @@ c     enddo
               alpha2=extnor(1,i)*xnorloc2(1)+extnor(2,i)*xnorloc2(2)+
      &             extnor(3,i)*xnorloc2(3)
 !
-!             check whether a normal direction is orthogonal to the
+!             sorting the indices for the sensitivity direction
+!
+              do j=1,3
+                sort(j)=dabs(extnor(j,i))
+                inor(j)=j
+              enddo
+              call dsort(sort,inor,three,mtwo)
+!
+!             if the two largest values are equal, the entry with the
+!             smallest index is taken as dependent entry
+!
+              if(dabs(sort(1)-sort(2)).lt.1.e-10) then
+                if(inor(2).lt.inor(1)) then
+                  idummy=inor(1)
+                  inor(1)=inor(2)
+                  inor(2)=idummy
+                endif
+              endif
+!
+!             determining the direction perpendicular to the
 !             sensitivity direction
 !
-              if(dabs(alpha1).lt.1.d-10) then
-                do j=1,3
-                  sort(j)=dabs(xnorloc1(j))
-                  inor1(j)=j
-                enddo
-                call dsort(sort,inor2,three,mtwo)
-                write(20,106) three
-                write(20,104) node,inor1(1),xnorloc(inor1(1)),
-     &               node,inor1(2),xnorloc(inor1(2)),
-     &               node,inor1(3),xnorloc(inor1(3))
-              elseif(dabs(alpha2).lt.1.d-10) then
-                do j=1,3
-                  sort(j)=dabs(xnorloc2(j))
-                  inor2(j)=j
-                enddo
-                call dsort(sort,inor2,three,mtwo)
-                write(20,106) three
-                write(20,104) node,inor2(1),xnorloc(inor2(1)),
-     &               node,inor2(2),xnorloc(inor2(2)),
-     &               node,inor2(3),xnorloc(inor2(3))
-              else
+              do j=1,3
+                xnorloc(j)=alpha2*xnorloc1(j)-alpha1*xnorloc2(j)
+              enddo
+              dd=dsqrt(xnorloc(1)**2+xnorloc(2)**2+xnorloc(3)**2)
+              do j=1,3
+                xnorloc(j)=xnorloc(j)/dd
+              enddo
 !
-!               direction in the plane of the normals and
-!               orthogonal to the sensitivity direction
+!             sorting the indices for the displacement restriction
+!             perpendicular to the sensitivity direction
 !
-                do j=1,3
-                  xnorloc(j)=xnorloc1(j)-alpha1/alpha2*xnorloc2(j)
-                enddo
-                do j=1,3
-                  sort(j)=dabs(xnorloc(j))
-                  inor(j)=j
-                enddo
-                call dsort(sort,inor,three,mtwo)
-                write(20,106) three
-                write(20,104) node,inor(1),xnorloc(inor(1)),
-     &               node,inor(2),xnorloc(inor(2)),
-     &               node,inor(3),xnorloc(inor(3))
-              endif
-!                
+              do j=1,3
+                sort(j)=dabs(xnorloc(j))
+                inor1(j)=j
+              enddo
+              call dsort(sort,inor1,three,mtwo)
+!
+!             looking for a dependent component which is different
+!             from the dependent component (= inor(1)) for the condition in
+!             sensitivity direction (which is writting in routine
+!             writeinputdeck2.f from the feasible direction procedure)
+!
+              do j=1,3
+                if(inor1(j).ne.inor(1)) exit
+              enddo
+!
+              inor(1)=inor1(j)
+              j=j+1
+              if(j.gt.3) j=1
+              inor(2)=inor1(j)
+              j=j+1
+              if(j.gt.3) j=1
+              inor(3)=inor1(j)
+!
+              write(20,106) three
+              write(20,104) node,inor(1),xnorloc(inor(1)),
+     &             node,inor(2),xnorloc(inor(2)),
+     &             node,inor(3),xnorloc(inor(3))
             endif
           endif
         endif
