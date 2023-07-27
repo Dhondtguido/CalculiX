@@ -10162,7 +10162,7 @@ interdependent. Exactly one of the following is required: *ELASTIC,
 *HYPERELASTIC, *HYPERFOAM, *DEFORMATION PLASTICITY and *USER
 MATERIAL. The keyword *PLASTIC must be preceded by *ELASTIC(,TYPE=ISO). The same applies to the *CREEP card. A *PLASTIC card in between the *ELASTIC and *CREEP card defines a viscoplastic material. The other keywords can be used according to your needs.
 
-\subsubsection{Linear elastic materials}
+\subsubsection{Linear elasticity}
 
 Linear elastic materials are characterized by an elastic potential of which
 only the quadratic terms in the strain are kept. It can be defined in a
@@ -10207,7 +10207,7 @@ For finite strain (visco)plasticity, triggered by the keywords *PLASTIC and/or
 hyperelastic-type potential is used for the elastic range. For details the
 reader is referred to \cite{Dhondt}, Section 6.3.1.
 
-\subsubsection{Linear elastic materials for large strains (Ciarlet model)}
+\subsubsection{Linear elasticity for large strains (Ciarlet model)}
 
 In \cite{Dhondt} it is explained that substituting the infinitesimal strains
 in the classical Hooke law by the Lagrangian strain and the stress by the
@@ -10290,7 +10290,7 @@ chosen by the user). Recall
 \end{equation}
   
 
-\subsubsection{Linear elastic materials for rotation-insensitive small
+\subsubsection{Linear elasticity for rotation-insensitive small
   strains}
 
 This is a material formulation for very special applications. Small strains
@@ -11882,8 +11882,7 @@ defines a single crystal with elastic constants
 $A={10}^{-10}$, $n=5$ and $m=0$. Thus, the yield surface has a zero radius
 and there is no hardening. Only creep is activated.
 
-\subsubsection{Elastic anisotropy with isotropic creep defined by a creep
-  user subroutine.}
+\subsubsection{Elastic anisotropy with user defined isotropic creep.}
 
 This material model is similar to the previous one, except that 
 
