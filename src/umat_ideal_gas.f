@@ -186,7 +186,7 @@ c      write(*,*) 'cinv umat_ideal_gas2 ',cinv(1,2),cinv(1,3),cinv(2,3)
       stre(4)=-v3*cinv(1,2)
       stre(5)=-v3*cinv(1,3)
       stre(6)=-v3*cinv(2,3)
-      write(*,*) 'umat_ideal_gas ',stre(1),stre(2),stre(4)
+c      write(*,*) 'umat_ideal_gas ',stre(1),stre(2),stre(4)
 !     
 !     tangent=-2*rho_0*r*T*d(C^{-1})/dC
 !     
