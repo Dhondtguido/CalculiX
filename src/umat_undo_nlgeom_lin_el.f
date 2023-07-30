@@ -152,7 +152,7 @@
 !
       d=(/1.d0,1.d0,1.d0,0.d0,0.d0,0.d0/)
 !
-      write(*,*) 'umat_undo_nlgeom_lin_el ielas=',ielas
+c      write(*,*) 'umat_undo_nlgeom_lin_el ielas=',ielas
 !     
       nlgeom_undo=1
 !     

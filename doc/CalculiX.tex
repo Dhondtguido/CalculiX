@@ -10162,7 +10162,7 @@ interdependent. Exactly one of the following is required: *ELASTIC,
 *HYPERELASTIC, *HYPERFOAM, *DEFORMATION PLASTICITY and *USER
 MATERIAL. The keyword *PLASTIC must be preceded by *ELASTIC(,TYPE=ISO). The same applies to the *CREEP card. A *PLASTIC card in between the *ELASTIC and *CREEP card defines a viscoplastic material. The other keywords can be used according to your needs.
 
-\subsubsection{Linear elastic materials}
+\subsubsection{Linear elasticity}
 
 Linear elastic materials are characterized by an elastic potential of which
 only the quadratic terms in the strain are kept. It can be defined in a
@@ -10207,7 +10207,7 @@ For finite strain (visco)plasticity, triggered by the keywords *PLASTIC and/or
 hyperelastic-type potential is used for the elastic range. For details the
 reader is referred to \cite{Dhondt}, Section 6.3.1.
 
-\subsubsection{Linear elastic materials for large strains (Ciarlet model)}
+\subsubsection{Linear elasticity for large strains (Ciarlet model)}
 
 In \cite{Dhondt} it is explained that substituting the infinitesimal strains
 in the classical Hooke law by the Lagrangian strain and the stress by the
@@ -10290,7 +10290,7 @@ chosen by the user). Recall
 \end{equation}
   
 
-\subsubsection{Linear elastic materials for rotation-insensitive small
+\subsubsection{Linear elasticity for rotation-insensitive small
   strains}
 
 This is a material formulation for very special applications. Small strains
@@ -10703,7 +10703,7 @@ direction. The other faces correspond to sectors in which the order of $\sigma_1
 
 \begin{figure}
 \begin{center}
-\epsfig{file=sectionplane111.eps,width=9cm}
+\epsfig{file=sectionplane111.eps,width=8cm}
 \caption{\label{sectionplane111}Section plane $\perp$ (1,1,1) through (0,0,0)}
 \end{center}
 \end{figure}
@@ -10718,7 +10718,7 @@ that sector (labeled 1) and the neighboring ones (labeled 6 and 2).
 
 \begin{figure}
 \begin{center}
-\epsfig{file=yieldalong111.eps,width=9cm}
+\epsfig{file=yieldalong111.eps,width=8cm}
 \caption{\label{yieldalong111}Pressure distribution in the lid-driven cavity}
 \end{center}
 \end{figure}
@@ -10952,7 +10952,7 @@ where
 
 \begin{figure}
 \begin{center}
-\epsfig{file=lidprefem.eps,width=9cm}
+\epsfig{file=regionsmc.eps,width=7cm}
 \caption{\label{regionsmc}Limits of the return regions for Mohr-Coulomb}
 \end{center}
 \end{figure}
@@ -11185,6 +11185,42 @@ leading to:
 
 The derivation for the return to the apex is similar (now three equations have
 to be satisfied).
+
+The tangent derived here only applies to the normal directions. It has to be
+complemented by a shear part $\hat{T}$ in the form \cite{Clausen2}:
+
+\begin{equation}
+  \boldsymbol{C}= \begin{bmatrix} \boldsymbol{D}^{ep} & 0 \\  0 & \boldsymbol{\hat{T}}
+  \end{bmatrix}
+\end{equation}
+
+where
+
+\begin{equation}
+  \boldsymbol{\hat{T}} = \begin{bmatrix}
+    \frac{\sigma_{1,n+1}-\sigma_{2,n+1}}{\sigma_{1,n+1}^{\text{trial}}-\sigma_{2,n+1}
+      ^{\text{trial}}} & 0 & 0 \\ 0 & \frac{\sigma_{1,n+1}-\sigma_{3,n+1}}{\sigma_{1,n+1}^{\text{trial}}-\sigma_{3,n+1}
+      ^{\text{trial}}} & 0 \\ 0 & 0 & \frac{\sigma_{2,n+1}-\sigma_{3,n+1}}{\sigma_{2,n+1}^{\text{trial}}-\sigma_{3,n+1}
+      ^{\text{trial}}} \end{bmatrix}
+\end{equation}
+
+Finally, the tangent matrix $\boldsymbol{C}$ has to be transformed back into
+the global system yielding $\boldsymbol{C'}$:
+
+\begin{equation}
+  \boldsymbol{C'} = \boldsymbol{A}^T \cdot \boldsymbol{C} \cdot
+  \boldsymbol{A},
+\end{equation}
+
+where $\boldsymbol{A}$ is the transformation matrix in equation (A5) in
+\cite{Clausen2}. Notice that equation (A6) in  \cite{Clausen2} is wrong and
+has to be replaced by the equation above. Similarly the stress is to be
+transformed into the global system by:
+
+\begin{equation}
+  \boldsymbol{\sigma '} = \boldsymbol{A}^T \cdot \boldsymbol{\sigma }.
+\end{equation}
+
 
 \subsubsection{Tension-only and compression-only materials.}
 
@@ -11846,8 +11882,7 @@ defines a single crystal with elastic constants
 $A={10}^{-10}$, $n=5$ and $m=0$. Thus, the yield surface has a zero radius
 and there is no hardening. Only creep is activated.
 
-\subsubsection{Elastic anisotropy with isotropic creep defined by a creep
-  user subroutine.}
+\subsubsection{Elastic anisotropy with user defined isotropic creep.}
 
 This material model is similar to the previous one, except that 
 
@@ -20870,7 +20905,7 @@ the sector angle based on the geometry is still calculated for other purposes,
 it is just not compared to the sector angle based on the value of N.
 
 Several *CYCLIC SYMMETRY MODEL cards within one input deck defining several
-cyclic symmetries within one and the same model are allowed. This, however,
+cyclic symmetries about the same axis within one and the same model are allowed. This, however,
 always is an approximation, since several cyclic symmetries within one model
 cannot really exist. Good results are only feasible if the values of N for the
 different *CYCLIC SYMMETRY MODEL cards do not deviate substantially.
