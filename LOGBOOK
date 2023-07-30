@@ -5215,3 +5215,10 @@ Dec 2002        - started to work on single crystal plasticity
 		  alone are not sufficient?
 		- hgforce.f needs an entry in the stiffness matrix:
 		  problematic for explicit dynamics (icmd=3 in line 1476).
+
+ 25 July 2023   - added interpolation for 2D-velocity in resultsprint.f
+                - made some changes in writeinputdeck.f and writeinputdeck2.f
+
+ 27 July 2023   - made some changes for the gas network elements
+                - corrected an error for the connection of linear beams
+		  and trusses.

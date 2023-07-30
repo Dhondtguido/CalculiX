@@ -2196,7 +2196,7 @@ void *objectivemt_shapeener_dx(ITG *i){
 				  ielprop1,prop1,distmin1,ndesi1,nodedesi1,
 				  nobject1,&g01[indexg0],&dgdx1[indexdgdx],
 				  &iobject1,sti1,xener1,istartdesi1,ialdesi1,
-				  xdesi1,&idesvar1,&physcon1));
+				  xdesi1,&idesvar1,physcon1));
 
   return NULL;
 }

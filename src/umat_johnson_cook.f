@@ -215,10 +215,10 @@ c              ddsdde(j,i)=eff_al
               ddsdde(j,i)=ddsdde(j,i)+flow(j)*flow(i)*(eff_hard-eff_um3)
             end do 
           end do
-        do i=1,6
-          write(*,*) 'umat_johnson_cook pl ',(ddsdde(i,j),j=1,i)
-        enddo
-        if(i.ne.-1) stop
+c        do i=1,6
+c          write(*,*) 'umat_johnson_cook pl ',(ddsdde(i,j),j=1,i)
+c        enddo
+c        if(i.ne.-1) stop
         endif
       else
         dep=0.d0

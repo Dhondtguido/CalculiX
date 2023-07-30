@@ -63,7 +63,8 @@
      &         (lakon(nelem)(2:5).ne.'ORB2').and.
      &         (lakon(nelem)(2:5).ne.'ORBT').and.
      &         (lakon(nelem)(2:5).ne.'ORPN').and.
-     &         (lakon(nelem)(2:5).ne.'ORFL')) then
+     &         (lakon(nelem)(2:5).ne.'ORFL').and.
+     &         (lakon(nelem)(2:5).ne.'ORFS'))then
           if(prop(index+2).lt.0.d0) then
             write(*,*) '*ERROR in checkinputvaluesnet: diameter '
             write(*,*) '       of the orifice is not positive'
@@ -314,6 +315,26 @@
             write(*,*) '       the value is:',prop(index+4)
             call exit(201)
           endif
+!
+        elseif(lakon(nelem)(2:5).eq.'ORFS')then
+          if(prop(index+3).lt.1.4d0.or.
+     &       prop(index+3).gt.7.0d0)then
+            write(*,*) '*ERROR in checkinputvaluesnet: '
+            write(*,*) '       The roughness out of the allowed'
+            write(*,*) '       range: 1.4<=ra<=7'
+            write(*,*) '       For element number:', nelem
+            write(*,*) '       the value is:',prop(index+3)
+            call exit(201)
+          elseif(prop(index+1).eq.0.d0.or.
+     &           prop(index+2).eq.0.d0)then
+            write(*,*) '*ERROR in checkinputvaluesnet: '
+            write(*,*) '       The Number or the length'
+            write(*,*) '       of the spilne seal is zero'
+            write(*,*) '       For element number:', nelem
+            write(*,*) '       the number is:',prop(index+1)
+            write(*,*) '       the length is:',prop(index+2)
+            call exit(201)     
+          endif 
 !     
         elseif((lakon(nelem)(2:4).eq.'LAB').and.
      &         (lakon(nelem)(2:5).ne.'LABF').and.
@@ -737,6 +758,7 @@
      &         (lakon(nelem).ne.'       ').and.
      &         (lakon(nelem)(2:4).ne.'LAB').and.
      &         (lakon(nelem)(2:5).ne.'CHAR').and.
+     &         (lakon(nelem)(2:5).ne.'MFPC').and.
      &         (lakon(nelem)(2:6).ne.'CARBS')) then
           if((prop(index+1).lt.0.d0)) then
             write(*,*) '*ERROR in checkinputvaluesnet: section area'

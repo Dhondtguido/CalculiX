@@ -50,7 +50,7 @@
      &     nplicon(0:ntmat_,*),nplkcon(0:ntmat_,*),npmat_,calcul_fn,
      &     calcul_cauchy,calcul_qa,nopered,mortar,jfaces,igauss,
      &     istrainfree,nlgeom_undo,list,ilist(*),m,j1,mscalmethod,
-     &     irowtloc(*),jqtloc(*),jqtloc1(21),irowtloc1(96),
+     &     irowtloc(*),jqtloc(*),jqtloc1(21),irowtloc1(96),icmdcpy,
      &     islavelinv(*),node1,node2,j2,ii,mortartrafoflag
 !     
       real*8 co(3,*),v(0:mi(2),*),shp(4,20),stiini(6,mi(1),*),
@@ -618,6 +618,11 @@ c              if(nener.eq.1) venergy=enerini(2,1,ne0+igauss)
 c     Bernhardi start
           if(lakonl(1:5).eq.'C3D8R') then
             call shape8hr(xl,xsj,shp,gs,a)
+            icmdcpy=icmd
+!     
+!           tangent stiffness ds/de is needed in hgforce.f    
+!     
+            icmd=0
           elseif(lakonl(1:5).eq.'C3D8I') then
             call shape8hu(xi,et,ze,xl,xsj,shp,iflag)
           elseif(nope.eq.20) then
@@ -1186,6 +1191,7 @@ c          if((iout.ge.0).or.(iout.eq.-2).or.(kode.le.-100).or.
 c     Bernhardi start
             if(lakonl(1:5).eq.'C3D8R') then
               call hgforce(fn,elas,a,gs,vl,mi,konl)
+              icmd=icmdcpy
             endif
 c     Bernhardi end
           endif

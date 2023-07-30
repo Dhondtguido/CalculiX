@@ -1109,7 +1109,7 @@ c          call nident(itg,node,ntg,id)
 !     previous element is a preswirl nozzle
 !     
             if(lakon(nelemswirl)(2:5).eq.'ORPN') then
-              ct=prop(index2+4)
+              ct=prop(index2+5)
 !     
 !     previous element is a forced vortex
 !     

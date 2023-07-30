@@ -391,7 +391,7 @@ void FORTRAN(calcfeasibledirection_gd,(ITG *ndesi,ITG *nodedesi,
 void FORTRAN(calcfeasibledirection_gp,(ITG *ndesi,ITG *nodedesi,
 				       double *dgdxglob,ITG *nactive,
 				       ITG *nobject,ITG *nk,double *gradproj,
-				       double *gradprojname));
+				       char *gradprojname));
 
 void FORTRAN(calch0interface,(ITG *nmpc,ITG *ipompc,ITG *nodempc,
                               double *coefmpc,double *h0));

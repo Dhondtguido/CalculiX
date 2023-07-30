@@ -105,6 +105,18 @@
           nsort(k)=k
         enddo
         call dsort(sort,nsort,three,two)
+!
+!       if the two largest values are equal, the entry with the
+!       smallest index is taken as dependent entry
+!
+        if(dabs(sort(2)-sort(3)).lt.1.d-10) then
+          if(nsort(2).lt.nsort(3)) then
+            idummy=nsort(2)
+            nsort(2)=nsort(3)
+            nsort(3)=idummy
+          endif
+        endif
+!
         write(20,101) four
         write(20,102) node,nsort(3),xnorloc(nsort(3)),
      &       node,nsort(2),xnorloc(nsort(2)),

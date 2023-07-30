@@ -51,7 +51,7 @@
      &     jl(999),ial(999),ifi(999),idepnodes(800),indexx,k,l,ifix,
      &     jact,ixfree,ikfree,node,nelshell,irefnode,idof,id,mpcfreeold,
      &     irotnode,imax,iamplitude,nmethod,ithermal(*),iexpnode,idim,
-     &     iflagpl,nodempc(3,*),nboun,inotr(2,*),idmpc,nemin
+     &     iflagpl,nodempc(3,*),nboun,inotr(2,*),idmpc,nemin,jmax
 !     
       real*8 co(3,*),thicke(mi(3),*),offset(2,*),xnor(*),tinc,tper,tmin,
      &     tmax,ctrl(*),coefmpc(*),xboun(*),trab(7,*),vold(0:mi(2),*),
@@ -861,8 +861,14 @@ c     endif
               write(27,*)
 !     
               do k=1,ndepnodes
+                if(idim.ne.3) then
+                  jmax=2
+                else
+                  jmax=3
+                endif
                 node=idepnodes(k)
-                do j=1,2
+c                do j=1,2
+                do j=1,jmax
                   idof=8*(node-1)+j
                   call nident(ikmpc,idof,nmpc,id)
                   nmpc=nmpc+1
