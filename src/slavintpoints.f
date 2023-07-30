@@ -81,6 +81,12 @@
 !     
       ifaces=islavsurf(1,l)
       nelems=int(ifaces/10)
+      if(ipkon(nelems).lt.0) then
+        write(*,*) '*WARNING in slavintpoints'
+        write(*,*) '         element ',nelems,' on slave contact'
+        write(*,*) '         surface does not exist'
+        return
+      endif
       jfaces=ifaces-nelems*10
 !     
 !     get nope,nopes

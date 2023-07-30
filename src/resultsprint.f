@@ -181,6 +181,16 @@
         endif
       endif
 !     
+      if(filab(21)(1:4).eq.'V   ') then
+        if(filab(21)(5:5).eq.'I') then
+          nfield=mt
+          cflag=filab(21)(5:5)
+          iforce=0
+          call map3dto1d2d(veold,ipkon,inum,kon,lakon,nfield,nk,
+     &         ne,cflag,co,vold,iforce,mi,ielprop,prop)
+        endif
+      endif
+!     
 !     check whether forces are requested in the frd-file. If so, but
 !     none are requested in the .dat file, and output=2d, 
 !     map3dto1d2d has to be called
