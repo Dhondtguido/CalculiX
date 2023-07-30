@@ -54,16 +54,17 @@
      &     three,iponexp(2,*),nmpc,ipompc(*),nodempc(3,*),indexf,
      &     ipretinfo(*),pretflag,inoel(2,*),nope,idummy,isix,nodeext,
      &     nodepret,kon(*),ipkon(*),iponoel(*),iface,n,nodes(*),
-     &     ifaceq(8,6),ifacew(8,5),iposn,iponor2d(2,*),
+     &     ifaceq(8,6),ifacew(8,5),iposn,iponor2d(2,*),inor(3),
      &     knor2d(*),node2d,ipoface(*),node1,node2,node3,kflag,
      &     nodface(5,*),nopem,ifaceqmid(6),ifacewmid(5),node3d,
      &     nnor1,nnor2,inor1(3),inor2(3),nx(*),ny(*),nz(*),id,
-     &     neigh(1),ne2d,nod1st(*),nod2nd3rd(2,*),one
+     &     neigh(1),ne2d,nod1st(*),nod2nd3rd(2,*),one,mtwo
 !     
       real*8 co(3,*),xnor(*),xno(3,100),coloc6(2,6),coloc8(2,8),
      &     xl(3,20),dd,xnoref(3),dot,xnorloc(6),sort(6),x(*),y(*),z(*),
      &     xo(*),yo(*),zo(*),xi,et,ze,shp(4,20),xsj,p(3),dist(*),
-     &     distmax,e,emax,extnor(3,*)
+     &     distmax,e,emax,extnor(3,*),xnorloc1(3),xnorloc2(3),alpha1,
+     &     alpha2
 !     
 !     In this routine the faces at the free surface play an
 !     important role. They are considered to be like a layer of
@@ -107,6 +108,7 @@
 !     
       one=1
       two=2
+      mtwo=-2
       three=3
       six=6
 !     
@@ -699,90 +701,139 @@ c     enddo
 !     write equations in case nexp is 2
 !     
           elseif(nexp.eq.2) then
-            do j=1,6
-              xnorloc(j)=xnor(ixfree+j)
-              sort(j)=dabs(xnorloc(j))
-              nsort(j)=j
-            enddo
-            call dsort(sort,nsort, six,two)
-            nnor1=0
-            nnor2=0
+            if(nodedesiinv(i).eq.0) then
+!     
+!     node is not a design variable: both normal directions     
+!     are blocked
+!     
+              do j=1,6
+                xnorloc(j)=xnor(ixfree+j)
+                sort(j)=dabs(xnorloc(j))
+                nsort(j)=j
+              enddo
+              call dsort(sort,nsort, six,two)
+              nnor1=0
+              nnor2=0
 !     
 !     sorting the two normals apart
 !     
-            do j=6,1,-1
-              if(nsort(j).le.3) then
-                nnor1=nnor1+1
-                inor1(nnor1)=nsort(j)
-                if(j.eq.6) isix=1
-              else
-                nnor2=nnor2+1
-                inor2(nnor2)=nsort(j)
-                if(j.eq.6) isix=2
-              endif
-            enddo
+              do j=6,1,-1
+                if(nsort(j).le.3) then
+                  nnor1=nnor1+1
+                  inor1(nnor1)=nsort(j)
+                  if(j.eq.6) isix=1
+                else
+                  nnor2=nnor2+1
+                  inor2(nnor2)=nsort(j)
+                  if(j.eq.6) isix=2
+                endif
+              enddo
 !     
 !     check that the dependent dof in both normals is not identical
 !     
-            if(isix.eq.1) then
-              if(inor2(1)-3.eq.inor1(1)) then
-                idummy=inor2(1)
-                inor2(1)=inor2(2)
-                inor2(2)=idummy
+              if(isix.eq.1) then
+                if(inor2(1)-3.eq.inor1(1)) then
+                  idummy=inor2(1)
+                  inor2(1)=inor2(2)
+                  inor2(2)=idummy
+                endif
+              else
+                if(inor1(1)+3.eq.inor2(1)) then
+                  idummy=inor1(1)
+                  inor1(1)=inor1(2)
+                  inor1(2)=idummy
+                endif
               endif
-            else
-              if(inor1(1)+3.eq.inor2(1)) then
-                idummy=inor1(1)
-                inor1(1)=inor1(2)
-                inor1(2)=idummy
-              endif
-            endif
-!
-            if(nodedesiinv(i).eq.0) then
-              out=.true.
-            elseif(extnor(inor1(1),i)*xnorloc(inor1(1))+
-     &             extnor(inor1(2),i)*xnorloc(inor1(2))+
-     &             extnor(inor1(3),i)*xnorloc(inor1(3))
-     &             .le.1.d-10) then
-              out=.true.
-            else
-              out=.false.
-            endif
-            if(out) then
+!     
               write(20,106) three
               write(20,104) node,inor1(1),xnorloc(inor1(1)),
      &             node,inor1(2),xnorloc(inor1(2)),
      &             node,inor1(3),xnorloc(inor1(3))
-            endif
 !     
-            if(nodedesiinv(i).eq.0) then
-              out=.true.
-            elseif(extnor(inor2(1)-3,i)*xnorloc(inor2(1))+
-     &             extnor(inor2(2)-3,i)*xnorloc(inor2(2))+
-     &             extnor(inor2(3)-3,i)*xnorloc(inor2(3))
-     &             .le.1.d-10) then
-              out=.true.
-            else
-              out=.false.
-            endif
-            if(out) then
               write(20,106) three
               write(20,104) node,inor2(1)-3,xnorloc(inor2(1)),
      &             node,inor2(2)-3,xnorloc(inor2(2)),
      &             node,inor2(3)-3,xnorloc(inor2(3))
+            else
+!     
+!             node is a design variable  
+!             storing both normals     
+!     
+              do j=1,3
+                xnorloc1(j)=xnor(ixfree+j)
+                xnorloc2(j)=xnor(ixfree+j+3)
+              enddo
+!
+!             scalar product of normals with sensitivity direction,
+!             which is stored in extnor
+!
+              alpha1=extnor(1,i)*xnorloc1(1)+extnor(2,i)*xnorloc1(2)+
+     &               extnor(3,i)*xnorloc1(3)
+              alpha2=extnor(1,i)*xnorloc2(1)+extnor(2,i)*xnorloc2(2)+
+     &             extnor(3,i)*xnorloc2(3)
+!
+!             sorting the indices for the sensitivity direction
+!
+              do j=1,3
+                sort(j)=dabs(extnor(j,i))
+                inor(j)=j
+              enddo
+              call dsort(sort,inor,three,mtwo)
+!
+!             if the two largest values are equal, the entry with the
+!             smallest index is taken as dependent entry
+!
+              if(dabs(sort(1)-sort(2)).lt.1.e-10) then
+                if(inor(2).lt.inor(1)) then
+                  idummy=inor(1)
+                  inor(1)=inor(2)
+                  inor(2)=idummy
+                endif
+              endif
+!
+!             determining the direction perpendicular to the
+!             sensitivity direction
+!
+              do j=1,3
+                xnorloc(j)=alpha2*xnorloc1(j)-alpha1*xnorloc2(j)
+              enddo
+              dd=dsqrt(xnorloc(1)**2+xnorloc(2)**2+xnorloc(3)**2)
+              do j=1,3
+                xnorloc(j)=xnorloc(j)/dd
+              enddo
+!
+!             sorting the indices for the displacement restriction
+!             perpendicular to the sensitivity direction
+!
+              do j=1,3
+                sort(j)=dabs(xnorloc(j))
+                inor1(j)=j
+              enddo
+              call dsort(sort,inor1,three,mtwo)
+!
+!             looking for a dependent component which is different
+!             from the dependent component (= inor(1)) for the condition in
+!             sensitivity direction (which is writting in routine
+!             writeinputdeck2.f from the feasible direction procedure)
+!
+              do j=1,3
+                if(inor1(j).ne.inor(1)) exit
+              enddo
+!
+              inor(1)=inor1(j)
+              j=j+1
+              if(j.gt.3) j=1
+              inor(2)=inor1(j)
+              j=j+1
+              if(j.gt.3) j=1
+              inor(3)=inor1(j)
+!
+              write(20,106) three
+              write(20,104) node,inor(1),xnorloc(inor(1)),
+     &             node,inor(2),xnorloc(inor(2)),
+     &             node,inor(3),xnorloc(inor(3))
             endif
           endif
-!     
-c        elseif(nodedesiinv(i).eq.1) then
-c          ielem=inoel(1,iponoel(i))
-c          if((lakon(ielem)(7:7).eq.'A').or.
-c     &         (lakon(ielem)(7:7).eq.'S').or.
-c     &         (lakon(ielem)(7:7).eq.'L').or.
-c     &         (lakon(ielem)(7:7).eq.'E')) then
-c!     
-c            nodedesiinv(i+1)=-1  
-c            nodedesiinv(i+2)=-1 
-c          endif
         endif
 !     
       enddo

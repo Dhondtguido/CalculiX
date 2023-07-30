@@ -44,8 +44,6 @@
      &     initial_radius,co(3,*),vold(0:mi(2),*),offset,ttime,time,
      &     x_tab(100), y_tab(100),x_tab2(100),y_tab2(100),curve,xmach
 !
-!
-!
       pi=4.d0*datan(1.d0)   
       if(kflag.eq.0) then
          identity=.true.
@@ -367,13 +365,21 @@
             k_phi=prop(index+3)
 !     
             if(p2/p1.gt.(2/(kappa+1.d0))**(kappa/(kappa-1.d0))) then
-               c2u_new=k_phi*cd*sin(theta*Pi/180.d0)*r*
-     &              dsqrt(2.d0*kappa/(r*(kappa-1)))*
+c               c2u_new=k_phi*cd*sin(theta*Pi/180.d0)*r*
+c     &              dsqrt(2.d0*kappa/(r*(kappa-1)))*
+c     &              dsqrt(T1*(1.d0-(p2/p1)**((kappa-1)/kappa)))
+               c2u_new=k_phi*cd*dcos(theta*Pi/180.d0)*r*
+     &              dsqrt(2.d0*kappa/(r*(kappa-1.d0))*
+     &              (p2/p1)**(2.d0/kappa))*
      &              dsqrt(T1*(1.d0-(p2/p1)**((kappa-1)/kappa)))
 !     
             else
-               c2u_new=k_phi*cd*sin(theta*Pi/180.d0)*r*
-     &              dsqrt(2.d0*kappa/(r*(kappa-1)))*
+c               c2u_new=k_phi*cd*sin(theta*Pi/180.d0)*r*
+c     &              dsqrt(2.d0*kappa/(r*(kappa-1)))*
+c     &              dsqrt(T1*(1.d0-2/(kappa+1)))
+               c2u_new=k_phi*cd*dcos(theta*Pi/180.d0)*r*
+     &              dsqrt(2.d0*kappa/(r*(kappa-1))*
+     &              (2.d0/(kappa+1.d0))**(2.d0/(kappa-1.d0)))*
      &              dsqrt(T1*(1.d0-2/(kappa+1)))
             endif
             prop(index+5)=c2u_new
@@ -381,7 +387,6 @@
          elseif(lakon(nelem)(2:5).eq.'ORFL') then
             nodea=nint(prop(index+1))
             nodeb=nint(prop(index+2))
-c            iaxial=nint(prop(index+3))
             offset=prop(index+4)
             radius=dsqrt((co(1,nodeb)+vold(1,nodeb)-
      &           co(1,nodea)-vold(1,nodea))**2)-offset
@@ -686,13 +691,21 @@ c            endif
             k_phi=prop(index+3)
 !     
             if(p2/p1.gt.(2/(kappa+1.d0))**(kappa/(kappa-1.d0))) then
-               c2u_new=k_phi*cd*sin(theta*Pi/180.d0)*r*
-     &              dsqrt(2.d0*kappa/(r*(kappa-1)))*
+c               c2u_new=k_phi*cd*sin(theta*Pi/180.d0)*r*
+c     &              dsqrt(2.d0*kappa/(r*(kappa-1)))*
+c     &              dsqrt(T1*(1.d0-(p2/p1)**((kappa-1)/kappa)))
+               c2u_new=k_phi*cd*dcos(theta*Pi/180.d0)*r*
+     &              dsqrt(2.d0*kappa/(r*(kappa-1.d0))*
+     &              (p2/p1)**(2.d0/kappa))*
      &              dsqrt(T1*(1.d0-(p2/p1)**((kappa-1)/kappa)))
 !     
             else
-               c2u_new=k_phi*cd*sin(theta*Pi/180.d0)*r*
-     &              dsqrt(2.d0*kappa/(r*(kappa-1)))*
+c               c2u_new=k_phi*cd*sin(theta*Pi/180.d0)*r*
+c     &              dsqrt(2.d0*kappa/(r*(kappa-1)))*
+c     &              dsqrt(T1*(1.d0-2/(kappa+1)))
+               c2u_new=k_phi*cd*dcos(theta*Pi/180.d0)*r*
+     &              dsqrt(2.d0*kappa/(r*(kappa-1))*
+     &              (2.d0/(kappa+1.d0))**(2.d0/(kappa-1.d0)))*
      &              dsqrt(T1*(1.d0-2/(kappa+1)))
             endif
             prop(index+5)=c2u_new
