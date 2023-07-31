@@ -109,7 +109,10 @@
 !        shift of the connectivity for composite elements
 !
          if(icomposite.eq.1) then
-            call changekon(ne,ipkon,lakon,mi,nkon,thicke,ielmat,kon)
+! Victor Kemp 2023-07-31 start of change for other elements with composites.
+            call changekon(ne,ipkon,lakon,mi,nkon,thicke,ielmat,kon,
+     &        iponor)
+! Victor Kemp 2023-07-31 end of change
          endif
 !
          itransaxial=0
