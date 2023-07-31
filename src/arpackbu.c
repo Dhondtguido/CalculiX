@@ -735,8 +735,9 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		    &ncv,z,&dz,iparam,ipntr,workd,workl,&lworkl,&info));
 
     printf("sigma=%f,d[0]=%f\n\n",sigma,d[0]);
-  
-    /*  if((5.>d[0]/sigma)||(50000.<d[0]/sigma)){
+
+/* Changed by Victor Kemp 2023-04-10 */  
+      if((5.>d[0]/sigma)||(50000.<d[0]/sigma)){
 	if(iconverged<-4) {
 	printf("no convergence for the buckling factor; maybe no buckling occurs");
 	FORTRAN(stop,());
@@ -746,7 +747,9 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	--iconverged;
 	SFREE(z);SFREE(d);
 	}
-	else{iconverged=0;}*/
+	else{iconverged=0;}
+/* End of change */  
+
      
     SFREE(resid);SFREE(workd);SFREE(workl);SFREE(select);SFREE(temp_array);
 
