@@ -5121,7 +5121,7 @@ Dec 2002        - started to work on single crystal plasticity
  4 Feb 2023     - taking the thermal expansion into account in
                   umat_abaqusnl: the total right stretch tensor has to
 		  be taken to calculate the corotational stress from the
-		  PK2 stress, no the mechanical right stretch tensor.
+		  PK2 stress, not the mechanical right stretch tensor.
 
  11 Feb 2023    - updated the feasible direction procedure
 
@@ -5222,3 +5222,5 @@ Dec 2002        - started to work on single crystal plasticity
  27 July 2023   - made some changes for the gas network elements
                 - corrected an error for the connection of linear beams
 		  and trusses.
+
+ 31 July 2023   - posted version 2.21.
