@@ -302,11 +302,12 @@ c      enddo
                   do l=1,3
                      xn(l)=co(l,node2)-co(l,node1)
                   enddo
-                  if(dabs(xn(1)).gt.0.d0) then
+! Changed by Victor Kemp 2023-04-13 to fix bug with near-zero vector components.
+                  if(dabs(xn(1)).ge.dabs(xn(2))) then
                      p(1)=-xn(3)
                      p(2)=0.d0
                      p(3)=xn(1)
-                  elseif(dabs(xn(2)).gt.0.d0) then
+                  elseif(dabs(xn(2)).ge.dabs(xn(3))) then
                      p(1)=xn(2)
                      p(2)=-xn(1)
                      p(3)=0.d0
@@ -315,6 +316,7 @@ c      enddo
                      p(2)=xn(3)
                      p(3)=-xn(2)
                   endif
+! End of change
                   dd=dsqrt(p(1)*p(1)+p(2)*p(2)+p(3)*p(3))
                   if(dd.lt.1.d-10) then
                      write(*,*) 
@@ -369,11 +371,12 @@ c      enddo
                      do l=1,3
                         xn(l)=co(l,node2)-co(l,node1)
                      enddo
-                     if(dabs(xn(1)).gt.0.d0) then
+! Changed by Victor Kemp 2023-04-13 to fix bug with near-zero vector components.
+                     if(dabs(xn(1)).ge.dabs(xn(2))) then
                         p(1)=-xn(3)
                         p(2)=0.d0
                         p(3)=xn(1)
-                     elseif(dabs(xn(2)).gt.0.d0) then
+                     elseif(dabs(xn(2)).ge.dabs(xn(3))) then
                         p(1)=xn(2)
                         p(2)=-xn(1)
                         p(3)=0.d0
@@ -382,6 +385,7 @@ c      enddo
                         p(2)=xn(3)
                         p(3)=-xn(2)
                      endif
+! End of change
                      dd=dsqrt(p(1)*p(1)+p(2)*p(2)+p(3)*p(3))
                      if(dd.lt.1.d-10) then
                         write(*,*) 
