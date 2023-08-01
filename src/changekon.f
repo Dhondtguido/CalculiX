@@ -16,7 +16,10 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-      subroutine changekon(ne,ipkon,lakon,mi,nkon,thicke,ielmat,kon)
+! Victor Kemp 2023-07-31 start of change for other elements with composites.
+      subroutine changekon(ne,ipkon,lakon,mi,nkon,thicke,ielmat,kon,
+     &  iponor)
+! End of change
 !
 !     for composites the connectivity has to be changed to 
 !     allow for the multiple expansions of the composite elements.
@@ -39,13 +42,16 @@
 !     
       character*8 lakon(*)
 !     
+! Victor Kemp 2023-07-31 start of change for other elements with composites.
       integer ne,ipkon(*),mi(*),nkon,ielmat(mi(3),*),nkondiff,i,j,k,
-     &     kon(*),nexp,nopeexp,nlayer,ipointer
+     &     kon(*),nexp,nopeexp,nlayer,ipointer,iponor(2,*)
 !     
       real*8 thicke(mi(3),*)
 !     
       integer,dimension(:),allocatable::koncp
       real*8,dimension(:,:),allocatable::thickecp
+      integer,dimension(:,:),allocatable::iponorcp
+! End of change
 !     
 !     calculate the extra space needed in kon
 !     
@@ -72,6 +78,9 @@
 !     
       allocate(koncp(nkon))
       allocate(thickecp(mi(3),nkon))
+! Victor Kemp 2023-07-31 start of change for other elements with composites.
+      allocate(iponorcp(2,nkon))
+! End of change
 !     
       do i=ne,1,-1
         if(ipkon(i).lt.0) cycle
@@ -185,6 +194,11 @@
           do k=1,mi(3)
             thickecp(k,ipointer+j)=thicke(k,ipkon(i)+j)
           enddo
+! Victor Kemp 2023-07-31 start of change for other elements with composites.
+          do k=1,2
+             iponorcp(k,ipointer+j)=iponor(k,ipkon(i)+j)
+          enddo
+! End of change
         enddo
         ipkon(i)=ipointer
       enddo
@@ -194,10 +208,18 @@
         do j=1,mi(3)
           thicke(j,i)=thickecp(j,i)
         enddo
+! Victor Kemp 2023-07-31 start of change for other elements with composites.
+        do j=1,2
+          iponor(j,i)=iponorcp(j,i)
+        enddo
+! End of change
       enddo
 !     
       deallocate(koncp)
       deallocate(thickecp)
+! Victor Kemp 2023-07-31 start of change for other elements with composites.
+      deallocate(iponorcp)
+! End of change
 !     
       return
       end
