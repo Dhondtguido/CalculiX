@@ -38,6 +38,17 @@
       real*8 coefmpc(*),co(3,*),aa(3),dd,cgx(3),pi(3),c1,c4,c9,
      &  c10,amax,xcoef,transcoef(3),xboun(*),stdev
 !
+!     Change by Victor Kemp 2023-07-29 ==============================
+      integer maxriskympcs
+      parameter(maxriskympcs=100)
+      integer riskympcs(maxriskympcs),nodeother,idirother,idother,
+     & indexa,nodea,idira,index2,nodethis,idirthis
+
+      real*8 coeffa,coeffb,coeffc,coeffd
+
+      logical chosen
+!
+!     End of change =================================================
       save nodevector
 !
       if(node.ne.0) then
@@ -334,6 +345,28 @@ c               if(c1.lt.1.d-20) then
             else
                nendnode=nnodes-1
             endif
+
+!           Changed by Victor Kemp 2023-07-29 =======================
+!
+!           Build a list of other MPCs whos condensed DOF exists in this one.
+            do i=1,min(nnodes,maxriskympcs)
+              riskympcs(i)=0
+              node=nodempc(1,index)
+              idir=nodempc(2,index)
+              idof=8*(node-1)+idir
+              call nident(ikmpc,idof,nmpc-1,id)
+              if(id.gt.0) then
+                 if(ikmpc(id).eq.idof) then
+                    riskympcs(i)=id
+                 endif
+              endif
+              index=nodempc(3,index)
+            enddo
+
+            index=ipompc(nmpc)
+            
+!           End of change ===========================================
+
             do i=1,nendnode
                if(dabs(coefmpc(index)).gt.amax) then
                   idir=nodempc(2,index)
@@ -374,6 +407,88 @@ c               if(c1.lt.1.d-20) then
                      endif
                   endif
 !
+
+!                 Change by Victor Kemp 2023-07-29 ==================
+!
+!                 If this DOF exists in another MPC, and that MPC's dependent DOF
+!                 also exists in this MPC, then one of them can get eliminated by 
+!                 cascade if the ratios of their coefficients are equal, leading
+!                 to zero coefficient on the dependent side of an equation. In
+!                 that case, don't use this DOF as the dependent one. Prevents 
+!                 failure of beam in certain orientations with 2 constrained
+!                 rotational DOFs on the same node. If there are 3 constrained
+!                 rotational DOFs, this only helps sometimes.
+!                 Eg:
+!                     Other MPC: Ax + By + ... = ...
+!                     This MPC:  Cx + Dy + ... = ...
+!                  If A and D are the coefficients of the dependent terms, don't
+!                  allow D/B = C/A
+!
+!                 Look at all other existing MPCs whose dependent DOF also exists in this one.
+                  chosen=.false.
+                  coeffd=coefmpc(index)
+!                 If nnodes > maxriskympcs then this extra check won't be applied to the 
+!                 later DOFs of this MPC so this extra check may not help but it won't hurt.
+                  do index1=1,min(nnodes,maxriskympcs)
+                    idother=riskympcs(index1)
+                    if(idother.ne.0) then
+!                     Search for the term in the other MPC having this MPC's candidate dependent DOF.
+                      index2=ipompc(idother)
+                      coeffb=0
+                      do
+                         nodeother=nodempc(1,index2)
+                         idirother=nodempc(2,index2)
+                         if((nodeother.eq.node).and.(
+     &                       idirother.eq.idir)) then
+                           coeffb=coefmpc(index2)
+                         endif
+                         index2=nodempc(3,index2)
+                         if(index2.eq.0) exit
+                      enddo
+                      indexa=ipompc(idother)
+                      nodea=nodempc(1,indexa)
+                      idira=nodempc(2,indexa)
+                      coeffa=coefmpc(indexa)
+!                     Search for the term in this MPC having the other MPC's dependent DOF.
+                      index2=ipompc(nmpc)
+                      coeffc=0
+                      do
+                         nodethis=nodempc(1,index2)
+                         idirthis=nodempc(2,index2)
+                         if((nodethis.eq.nodea).and.(
+     &                       idirthis.eq.idira)) then
+                           coeffc=coefmpc(index2)
+                         endif
+                         index2=nodempc(3,index2)
+                         if(index2.eq.0) exit
+                      enddo
+!                     Check if the coefficients A,B,C,D have the disallowed relationship.
+                      if(dabs(coeffb).gt.1.d-10) then
+!                       A, B, D are non-zero. C might be zero so use it in the numerator.
+!                       If this threshold is too small (1.e-10?), it might cause numerical error
+!                       when cascade gives the dependent dof a tiny coefficient. If it's too big
+!                       (1.d-5?), it might skip useful candidate DOFs, leaving nothing available
+!                       and omitting the whole MPC.
+                        if(dabs((coeffb*coeffc)/
+     &                          (coeffd*coeffa)-1).lt.1.d-6) then
+!                         This message shows that this change did something and could help identify 
+!                         new bugs caused by it. It should be removed if it turns out to be harmless.
+                          write(*,*) '*INFO in usermpc: Avoiding '//
+     &                               'risky dependent DOF.'
+                          write(*,*)
+                          if(((i/3)*3.eq.i).and.(indexmax.ne.0)) then
+                            chosen=.true.
+                            exit
+                          endif
+                          index=nodempc(3,index)
+                          cycle
+                        endif
+                      endif
+                    endif
+                  enddo
+                  if(chosen) exit
+!                 End of change =====================================
+
                   amax=dabs(coefmpc(index))
                   indexmax=index
                endif
