@@ -169,6 +169,53 @@ c     indexe=ipkon(ielem)
                   nodempc(3,mpcfree)=0
                   mpcfree=mpcfreenew
                 endif
+!Change by Victor Kemp 2023-07-31 ===================================
+!Fixes bug of transformed shell midsurface nodes not following 
+!prescribed displacement boundary conditions. Code copied from
+!gen3dboun.f
+!     
+!     u(n_2)=u(n)
+!     
+                newnode=knor(indexk+2)
+                idof=8*(newnode-1)+idir
+                call nident(ikmpc,idof,nmpc,id)
+                if((id.le.0).or.(ikmpc(id).ne.idof)) then
+                  nmpc=nmpc+1
+                  if(nmpc.gt.nmpc_) then
+                    write(*,*) 
+     &                   '*ERROR in gen3dmpc: increase nmpc_'
+                    call exit(201)
+                  endif
+                  labmpc(nmpc)='                    '
+                  ipompc(nmpc)=mpcfree
+                  do j=nmpc,id+2,-1
+                    ikmpc(j)=ikmpc(j-1)
+                    ilmpc(j)=ilmpc(j-1)
+                  enddo
+                  ikmpc(id+1)=idof
+                  ilmpc(id+1)=nmpc
+                  nodempc(1,mpcfree)=newnode
+                  nodempc(2,mpcfree)=idir
+                  coefmpc(mpcfree)=1.d0
+                  mpcfree=nodempc(3,mpcfree)
+                  if(mpcfree.eq.0) then
+                    write(*,*) 
+     &                   '*ERROR in gen3dmpc: increase memmpc_'
+                    call exit(201)
+                  endif
+                  nodempc(1,mpcfree)=node
+                  nodempc(2,mpcfree)=idir
+                  coefmpc(mpcfree)=-1.d0
+                  mpcfreenew=nodempc(3,mpcfree)
+                  if(mpcfreenew.eq.0) then
+                    write(*,*) 
+     &                   '*ERROR in gen3dmpc: increase memmpc_'
+                    call exit(201)
+                  endif
+                  nodempc(3,mpcfree)=0
+                  mpcfree=mpcfreenew
+                endif
+!End of change ======================================================
 !     
 !     fixing the temperature degrees of freedom
 !     
