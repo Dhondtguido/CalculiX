@@ -92,12 +92,7 @@
           index=inoel(3,index)
         enddo
 !          
-c        if(index.eq.0) then
-c          cycle
-c        endif
-c        ielem=inoel(1,index)
         j=inoel(2,index)
-c        indexe=ipkon(ielem)
         indexk=iponor(2,indexe+j)
         idir=ndirboun(i)
         val=xboun(i)
@@ -140,9 +135,9 @@ c        indexe=ipkon(ielem)
 !     
 !     knots (expandable rigid bodies) can take rotational
 !     values arbitrarily exceeding 90 degrees
-!     
-          if((idir.gt.3).and.((nmethod.eq.4).and.(iperturb(1).gt.1)))
-     &         then
+!
+          if((idir.gt.3).and.((nmethod.eq.4).and.(iperturb(1).gt.1))
+     &         ) then
 !     
 !     create a knot: determine the knot
 !     

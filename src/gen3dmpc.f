@@ -102,18 +102,6 @@
                 if(indexe.ge.0) exit
                 index2=inoel(3,index2)
               enddo
-c     !
-c     !                 check for nodes not belonging to 1d or 2d elements
-c     !
-c     if(index2.eq.0) then
-c     index1=nodempc(3,index1)
-c     dependent=.false.
-c     if(index1.eq.0) exit
-c     cycle
-c     endif
-c     
-c     ielem=inoel(1,index2)
-c     indexe=ipkon(ielem)
               j=inoel(2,index2)
               indexk=iponor(2,indexe+j)
 !     

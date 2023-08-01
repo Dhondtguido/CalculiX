@@ -518,12 +518,6 @@ c               if(c1.lt.1.d-20) then
             write(*,*) '      effects are turned on'
             write(*,*)
             if(iperturb(1).eq.0) iperturb(1)=2
-c         elseif(labmpc(nmpc)(1:3).eq.'GAP') then
-c            iperturb(2)=1
-c            write(*,*) '*INFO in usermpc: nonlinear geometric'
-c            write(*,*) '      effects are turned on'
-c            write(*,*)
-c            if(iperturb(1).eq.0) iperturb(1)=2
          elseif(labmpc(nmpc)(1:4).eq.'USER') then
             iperturb(2)=1
             write(*,*) '*INFO in usermpc: nonlinear geometric'

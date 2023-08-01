@@ -302,11 +302,26 @@ c      enddo
                   do l=1,3
                      xn(l)=co(l,node2)-co(l,node1)
                   enddo
-                  if(dabs(xn(1)).gt.0.d0) then
+                  dd=dsqrt(xn(1)*xn(1)+xn(2)*xn(2)+xn(3)*xn(3))
+                  if(dd.lt.1.d-30) then
+                     write(*,*) 
+     &                    '*ERROR reading *SOLID SECTION: truss has'
+                     write(*,*) '       length of zero size'
+                     ier=1
+                     return
+                  endif
+                  do l=1,3
+                     xn(l)=xn(l)/dd
+                  enddo
+!
+!                 at least one component must exceed 1/sqrt(3)
+!                 in absolute value
+!
+                  if(dabs(xn(1)).gt.0.57d0) then
                      p(1)=-xn(3)
                      p(2)=0.d0
                      p(3)=xn(1)
-                  elseif(dabs(xn(2)).gt.0.d0) then
+                  elseif(dabs(xn(2)).gt.0.57d0) then
                      p(1)=xn(2)
                      p(2)=-xn(1)
                      p(3)=0.d0
@@ -316,13 +331,6 @@ c      enddo
                      p(3)=-xn(2)
                   endif
                   dd=dsqrt(p(1)*p(1)+p(2)*p(2)+p(3)*p(3))
-                  if(dd.lt.1.d-10) then
-                     write(*,*) 
-     &                    '*ERROR reading *SOLID SECTION: normal'
-                     write(*,*) '       in direction 1 has zero size'
-                     ier=1
-                     return
-                  endif
                   do l=1,3
                      p(l)=p(l)/dd
                   enddo
@@ -369,11 +377,26 @@ c      enddo
                      do l=1,3
                         xn(l)=co(l,node2)-co(l,node1)
                      enddo
-                     if(dabs(xn(1)).gt.0.d0) then
+                     dd=dsqrt(xn(1)*xn(1)+xn(2)*xn(2)+xn(3)*xn(3))
+                     if(dd.lt.1.d-30) then
+                       write(*,*) 
+     &                      '*ERROR reading *SOLID SECTION: truss has'
+                       write(*,*) '       length of zero size'
+                       ier=1
+                       return
+                     endif
+                     do l=1,3
+                       xn(l)=xn(l)/dd
+                     enddo
+!
+!                    at least one component must exceed 1/sqrt(3) 
+!                    in absolute value
+!
+                     if(dabs(xn(1)).gt.0.57d0) then
                         p(1)=-xn(3)
                         p(2)=0.d0
                         p(3)=xn(1)
-                     elseif(dabs(xn(2)).gt.0.d0) then
+                     elseif(dabs(xn(2)).gt.0.57d0) then
                         p(1)=xn(2)
                         p(2)=-xn(1)
                         p(3)=0.d0
@@ -383,6 +406,9 @@ c      enddo
                         p(3)=-xn(2)
                      endif
                      dd=dsqrt(p(1)*p(1)+p(2)*p(2)+p(3)*p(3))
+!
+!                    next check is not needed anymore
+!
                      if(dd.lt.1.d-10) then
                         write(*,*) 
      &                       '*ERROR reading *SOLID SECTION: normal'

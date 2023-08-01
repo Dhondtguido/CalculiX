@@ -5224,3 +5224,5 @@ Dec 2002        - started to work on single crystal plasticity
 		  and trusses.
 
  31 July 2023   - posted version 2.21.
+
+ 1 Aug 2023     - solved problem with normal on truss axis
