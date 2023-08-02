@@ -5226,3 +5226,8 @@ Dec 2002        - started to work on single crystal plasticity
  31 July 2023   - posted version 2.21.
 
  1 Aug 2023     - solved problem with normal on truss axis
+
+ 2 Aug 2023     - applied an aleatoric variation of the MEANROTBS coefficients
+                  for beam elements: seems to solve the zero coefficient
+		  issue of the dependent term
+		- corrected an error in changekon.f

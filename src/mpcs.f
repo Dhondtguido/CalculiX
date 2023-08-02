@@ -34,7 +34,7 @@
       character*132 textpart(16)
 !
       integer istartset(*),iendset(*),ialset(*),ipompc(*),
-     &  nodempc(3,*),idirref,ier,
+     &  nodempc(3,*),idirref,ier,ialeatoric,
      &  nset,nset_,nalset,nalset_,nmpc,nmpc_,mpcfree,nk,nk_,ikmpc(*),
      &  ilmpc(*),ipkon(*),kon(*),i,node,ipos,istep,istat,n,ne_,
      &  j,k,nodeboun(*),ndirboun(*),ikboun(*),ilboun(*),ipoinpc(0:*),
@@ -43,6 +43,7 @@
 !
       real*8 coefmpc(3,*),co(3,*),xboun(*),ctrl(*)
 !
+      ialeatoric=0
       idirref=0
 !
       if(istep.gt.0) then
@@ -122,7 +123,8 @@ c                  if(noset.eq.set(j)) then
      &                      labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
      &                      nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
      &                      nboun,nboun_,inode,node,co,label,
-     &                      typeboun,iperturb,node,idirref,xboun)
+     &                      typeboun,iperturb,node,idirref,xboun,
+     &                      ialeatoric)
                      endif
                    enddo
 c     exit
@@ -165,7 +167,8 @@ c     enddo
      &                 labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
      &                 nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
      &                 nboun,nboun_,inode,node,co,label,
-     &                 typeboun,iperturb,node,idirref,xboun)
+     &                 typeboun,iperturb,node,idirref,xboun,
+     &                ialeatoric)
                endif
             endif
          enddo
@@ -182,7 +185,8 @@ c     enddo
      &        labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
      &        nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
      &        nboun,nboun_,inode,node,co,label,typeboun,
-     &        iperturb,node,idirref,xboun)
+     &        iperturb,node,idirref,xboun,
+     &        ialeatoric)
       else
 !
 !     the *MPC option implies a nonlinear geometric 

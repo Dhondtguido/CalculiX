@@ -19,7 +19,7 @@
       subroutine usermpc(ipompc,nodempc,coefmpc,
      &  labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,nk,nk_,nodeboun,ndirboun,
      &  ikboun,ilboun,nboun,nboun_,nnodes,node,co,label,typeboun,
-     &  iperturb,noderef,idirref,xboun)
+     &  iperturb,noderef,idirref,xboun,ialeatoric)
 !
 !     initializes mpc fields for a user MPC
 !
@@ -33,10 +33,10 @@
      &  ilmpc(*),node,id,mpcfreeold,idof,l,nodeboun(*),iperturb(*),
      &  ndirboun(*),ikboun(*),ilboun(*),nboun,nboun_,nnodes,nodevector,
      &  index,index1,node1,i,j,nkn,idirold,idirmax,noderef,idirref,
-     &  nendnode
+     &  nendnode,ialeatoric
 !
       real*8 coefmpc(*),co(3,*),aa(3),dd,cgx(3),pi(3),c1,c4,c9,
-     &  c10,amax,xcoef,transcoef(3),xboun(*),stdev
+     &  c10,amax,xcoef,transcoef(3),xboun(*),stdev,harvest
 !
       save nodevector
 !
@@ -212,7 +212,20 @@
                enddo
                index=nodempc(3,nodempc(3,nodempc(3,index)))
             enddo
-            stdev=stdev/nkn
+            stdev=dsqrt(stdev/nkn)
+c!
+c!           adding a small random deviation to the center of gravity
+c!           this changes the coefficients of the mean rotation MPC
+c!           in a random way and avoids problems in cascade.c caused
+c!           by a zero coefficient of the dependent term
+c!
+c            call random_seed()
+c            call random_number(harvest)
+c            cgx(1)=cgx(1)+stdev*harvest*1.d-3
+c            call random_number(harvest)
+c            cgx(2)=cgx(2)+stdev*harvest*1.d-3
+c            call random_number(harvest)
+c            cgx(3)=cgx(3)+stdev*harvest*1.d-3
 !
 !           calculating the derivatives
 !
@@ -330,9 +343,18 @@ c               if(c1.lt.1.d-20) then
 !           loop over all nodes - angle node - last regular node
 !
             if(label(8:9).eq.'BS') then
-               nendnode=nnodes-4
+              nendnode=nnodes-4
             else
-               nendnode=nnodes-1
+              nendnode=nnodes-1
+            endif
+            if(ialeatoric.eq.1) then
+              call random_seed()
+              do i=1,nendnode
+                call random_number(harvest)
+                coefmpc(index)=coefmpc(index)*(1.d0+harvest*1.d-5)
+                index=nodempc(3,index)
+              enddo
+              index=ipompc(nmpc)
             endif
             do i=1,nendnode
                if(dabs(coefmpc(index)).gt.amax) then
