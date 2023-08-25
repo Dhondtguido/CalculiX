@@ -224,7 +224,7 @@
                   endif
                enddo
                if(idof.eq.1) then
-                  if(ncmat_.lt.4) then
+                  if(ncmat_.lt.3) then
                      write(*,*) '*ERROR reading *SPRING: a degree'
                      write(*,*) '       of freedom was specified'
                      write(*,*) '       (no decimal point in entry),'
