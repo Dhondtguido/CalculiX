@@ -2961,8 +2961,15 @@ the initial specimen length.
 Notice that the same approach is taken in CalculiX for the calculation of the
 corotational logarithmic strain needed for an Abaqus User Material
 Routine. First, the thermal strain is subtracted from the total stretch to
-obtain the mechanical stretch and then the corational logarithmic strain is
+obtain the mechanical stretch and then the corational logarithmic mechanical strain is
 built:
+
+\begin{equation}
+  \hat{E}_{\text{ln,mech}} = \sum_{i} \ln \lambda_{\text{mech},i}
+  \boldsymbol{N}_i \otimes \boldsymbol{N}_i,
+\end{equation}
+
+In Abaqus, however, it is obtained according to:
 
 \begin{equation}
   \hat{E}_{\text{ln,mech}} = \sum_{i} (\ln \lambda_i - \overline{\alpha} \Delta T)
