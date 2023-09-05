@@ -10603,7 +10603,8 @@ dynamical phenomena such as explosions, bird strike in a jet engine etc.
 
 For $\dot{\epsilon}_p < \dot{\epsilon}_0$ the logarithm becomes negative and
 also for small $\epsilon_p$ convergence seems more difficult. Therefore,
-  Bernhardi and co-workers \cite{Mazza} have modified the above law to:
+  Bernhardi and co-workers \cite{Mazza} have modified the above law for the
+  following special ranges of $\epsilon_p$ and $\dot{\epsilon}_p$ to:
 
 \begin{eqnarray}
   \sigma_{\text{vm}} &=& \left [A+B \epsilon_p \delta ^{n-1} \right ] \left [1+C \ln \left(
@@ -10622,8 +10623,8 @@ $\delta=10^{-4}$ was taken.
 
 In the input deck the Johnson-Cook model is activated by the HARDENING=JOHNSON
 COOK parameter on the \htmlref{*PLASTIC}{plastic} card. Underneath this card
-the rate-independent terms are defined, i.e. the parameters $A,B,n,m,T_m and
-T_0$. If $T_m=T_0$ no temperature dependence is taken into account. The rate
+the rate-independent terms are defined, i.e. the parameters $A,B,n,m,T_m$ and
+$T_0$. If $T_m=T_0$ no temperature dependence is taken into account. The rate
 dependence has to be defined using a \htmlref{*RATE DEPENDENT}{ratedependent}
 card with the parameter TYPE=JOHNSON COOK, listing underneath the parameters
 $C$ and $\dot{\epsilon}_0$.
