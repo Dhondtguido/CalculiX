@@ -122,11 +122,11 @@
 !              no plasticity
 !              Norton creep: -114
 !
-!              14 state variables: cf. Section 6.8.12
+!              20 state variables: cf. Section 6.8.12
 !              "Elastic anisotropy with isotropic viscoplasticity" 
 !              in the User's Manual
 !
-               nstate_=max(nstate_,14)
+               nstate_=max(nstate_,20)
                do i=1,nelcon(2,nmat)
                   elcon(10,i,nmat)=0.d0
                   elcon(11,i,nmat)=0.d0

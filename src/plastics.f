@@ -196,7 +196,7 @@
       else
          ianisoplas=1
          nelcon(1,nmat)=-114
-         nstate_=max(nstate_,14)
+         nstate_=max(nstate_,20)
       endif
 !
       if(iso) then

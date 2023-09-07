@@ -5231,3 +5231,9 @@ Dec 2002        - started to work on single crystal plasticity
                   for beam elements: seems to solve the zero coefficient
 		  issue of the dependent term
 		- corrected an error in changekon.f
+
+ 7 Sept 2023    - made some corrections in umat_aniso_plas.f
+                - added test examples for anisotropic elasticity with
+		  isotropic plasticity (isotropic and kinematic hardening)
+                - increased the number of state variables for
+		  umat_aniso_plas from 14 to 20 (included q2)
