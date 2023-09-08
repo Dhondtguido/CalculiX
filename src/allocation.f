@@ -441,7 +441,7 @@
           ncmat_=max(9,ncmat_)
         else
 !     elastic anisotropic
-          ncmat_=max(19,ncmat_)
+          ncmat_=max(16,ncmat_)
         endif
         do
           call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
@@ -1825,7 +1825,7 @@ c     !
             npmatl=npmatl+1
             npmat_=max(npmatl,npmat_)
           enddo
-          if(ncmat_.ge.9) ncmat_=max(19,ncmat_)
+          if(ncmat_.ge.9) ncmat_=max(16,ncmat_)
         endif
       elseif(textpart(1)(1:19).eq.'*PRE-TENSIONSECTION') then
         surface(1:1)=' '

@@ -43,6 +43,7 @@
 !          -51: incremental plasticity (no viscosity)
 !          -52: viscoplasticity
 !          -53: Mohr-Coulomb plasticity
+!          -54: orthotropic elasticity with isotropic plasticity
 !       < -100: user material routine with -kode-100 user
 !               defined constants with keyword *USER MATERIAL
 !
@@ -97,13 +98,20 @@ c     &     ckl,vj,xstate,nstate_,iel,iint,mi)
           call mohrcoulomb(elconloc,plconloc,xstate,xstateini,
      &         elas,emec,icmd,beta,stre,
      &         ielas,dtime,time,ttime,iel,iint,nstate_,mi,pnewdt)
+        elseif(kode.eq.-54) then
+          mattyp=3
+          call ortho_plas(amat,
+     &         iel,iint,kode,elconloc,emec,emec0,
+     &         beta,xikl,vij,xkl,vj,ithermal,t1l,dtime,time,ttime,
+     &         icmd,ielas,mi(1),nstate_,xstateini,xstate,stre,elas,
+     &         iorien,pgauss,orab,nmethod,pnewdt)
         else
           mattyp=3
-         call umat_main(amat,iel,iint,kode,elconloc,emec,emec0,beta,
-     &        xikl,vij,xkl,vj,ithermal,t1l,dtime,time,ttime,icmd,ielas,
-     &        mi,nstate_,xstateini,xstate,stre,elas,iorien,pgauss,
-     &        orab,pnewdt,istep,iinc,ipkon,nmethod,iperturb,depvisc,
-     &        eloc,nlgeom_undo,physcon,ncmat_)
+          call umat_main(amat,iel,iint,kode,elconloc,emec,emec0,beta,
+     &         xikl,vij,xkl,vj,ithermal,t1l,dtime,time,ttime,icmd,ielas,
+     &         mi,nstate_,xstateini,xstate,stre,elas,iorien,pgauss,
+     &         orab,pnewdt,istep,iinc,ipkon,nmethod,iperturb,depvisc,
+     &         eloc,nlgeom_undo,physcon,ncmat_)
       endif
 !
       return
