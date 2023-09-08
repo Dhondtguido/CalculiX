@@ -170,6 +170,8 @@ c        if(j.gt.0) stop
             nelconst=5
           elseif(nelconst.eq.-53) then
             nelconst=4
+          elseif(nelconst.eq.-54) then
+            nelconst=12
           elseif(nelconst.le.-100) then
             nelconst=-nelconst-100
           endif

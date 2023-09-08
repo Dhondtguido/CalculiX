@@ -151,9 +151,7 @@
       dxitril=dsqrt(dxitril)
 !
 !        restoring the hardening curves for the actual temperature
-!        plconloc contains the true stresses. By multiplying by
-!        the Jacobian, yiso and ykin are Kirchhoff stresses, as
-!        required by the hyperelastic theory (cf. Simo, 1988).
+!        plconloc contains the true stresses.
 !
       niso=int(plconloc(801))
       nkin=int(plconloc(802))

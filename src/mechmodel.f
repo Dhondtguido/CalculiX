@@ -104,7 +104,7 @@ c     &     ckl,vj,xstate,nstate_,iel,iint,mi)
      &         iel,iint,kode,elconloc,emec,emec0,
      &         beta,xikl,vij,xkl,vj,ithermal,t1l,dtime,time,ttime,
      &         icmd,ielas,mi(1),nstate_,xstateini,xstate,stre,elas,
-     &         iorien,pgauss,orab,nmethod,pnewdt)
+     &         iorien,pgauss,orab,nmethod,pnewdt,plconloc)
         else
           mattyp=3
           call umat_main(amat,iel,iint,kode,elconloc,emec,emec0,beta,

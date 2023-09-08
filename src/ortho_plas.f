@@ -217,10 +217,7 @@
 !     
 !     (visco)plastic constants
 !     
-      ca=c0/(elconloc(13)*(ttime+time-dtime)**elconloc(15)*dtime)
-      cn=elconloc(14)
-!     
-      if((elconloc(13).lt.0.d0).or.
+      if((elconloc(10).lt.0.d0).or.
      &     ((nmethod.eq.1).and.(ithermal(1).ne.3))) then
         visco=0
       else
@@ -228,7 +225,7 @@
 !     
 !     viscous constants
 !     
-c     ca=c0/(elconloc(10)*(ttime+time-dtime)**elconloc(12)*dtime)
+c       ca=c0/(elconloc(10)*(ttime+time-dtime)**elconloc(12)*dtime)
         ca=c0/(elconloc(10)*(ttime+time)**elconloc(12)*dtime)
         cn=elconloc(11)
       endif
@@ -249,13 +246,13 @@ c     ca=c0/(elconloc(10)*(ttime+time-dtime)**elconloc(12)*dtime)
       if(niso.ne.0) then
         do i=1,niso
           xiso(i)=plconloc(2*i-1)
-          yiso(i)=vj*plconloc(2*i)
+          yiso(i)=plconloc(2*i)
         enddo
       endif
       if(nkin.ne.0) then
         do i=1,nkin
           xkin(i)=plconloc(399+2*i)
-          ykin(i)=vj*plconloc(400+2*i)
+          ykin(i)=plconloc(400+2*i)
         enddo
       endif
 !     
@@ -266,7 +263,7 @@ c     ca=c0/(elconloc(10)*(ttime+time-dtime)**elconloc(12)*dtime)
      &       fiso,dfiso,fkin,dfkin)
       else
         if(niso.ne.0) then
-          call ident(xiso,al1,niso,id)
+          call ident(xiso,al10,niso,id)
           if(id.eq.0) then
             fiso=yiso(1)
             dfiso=0.d0
@@ -275,7 +272,7 @@ c     ca=c0/(elconloc(10)*(ttime+time-dtime)**elconloc(12)*dtime)
             dfiso=0.d0
           else
             dfiso=(yiso(id+1)-yiso(id))/(xiso(id+1)-xiso(id))
-            fiso=yiso(id)+dfiso*(al1-xiso(id))
+            fiso=yiso(id)+dfiso*(al10-xiso(id))
           endif
         elseif(nkin.ne.0) then
           fiso=ykin(1)
@@ -286,7 +283,7 @@ c     ca=c0/(elconloc(10)*(ttime+time-dtime)**elconloc(12)*dtime)
         endif
 !     
         if(nkin.ne.0) then
-          call ident(xkin,al1,nkin,id)
+          call ident(xkin,al10,nkin,id)
           if(id.eq.0) then
             fkin=ykin(1)
             dfkin=0.d0
@@ -295,7 +292,7 @@ c     ca=c0/(elconloc(10)*(ttime+time-dtime)**elconloc(12)*dtime)
             dfkin=0.d0
           else
             dfkin=(ykin(id+1)-ykin(id))/(xkin(id+1)-xkin(id))
-            fkin=ykin(id)+dfkin*(al1-xkin(id))
+            fkin=ykin(id)+dfkin*(al10-xkin(id))
           endif
         elseif(niso.ne.0) then
           fkin=yiso(1)
@@ -390,17 +387,20 @@ c     ca=c0/(elconloc(10)*(ttime+time-dtime)**elconloc(12)*dtime)
         do i=1,6
           stre(i)=stri(i)
         enddo
-c     !     
-c     !     updating the state variables
-c     !     
-c     xstate(1,iint,iel)=eeq
-c     do i=1,6
-c     xstate(1+i,iint,iel)=ep0(i)
-c     enddo
-c     xstate(8,iint,iel)=al10
-c     do i=1,6
-c     xstate(8+i,iint,iel)=al20(i)
-c     enddo
+!     
+!     updating the state variables
+!     
+        xstate(1,iint,iel)=eeq
+        do i=1,6
+          xstate(1+i,iint,iel)=ep0(i)
+        enddo
+        xstate(8,iint,iel)=al10
+        do i=1,6
+          xstate(8+i,iint,iel)=al20(i)
+        enddo
+        do i=1,6
+          xstate(14+i,iint,iel)=q20(i)
+        enddo
 !     
 !     elastic stiffness
 !     
