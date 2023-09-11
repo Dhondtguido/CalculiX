@@ -224,7 +224,7 @@
      &     stx(6,mi(1),*),xl(3,20),vl(0:mi(2),20),stre(6),prop(*),
      &     elcon(0:ncmat_,ntmat_,*),rhcon(0:1,ntmat_,*),
      &     alcon(0:6,ntmat_,*),vini(0:mi(2),*),q1,
-     &     alzero(*),orab(7,*),elas(21),rho,fn(0:mi(2),*),
+     &     alzero(*),orab(7,*),stiff(21),rho,fn(0:mi(2),*),
      &     q(0:mi(2),20),t0(*),t1(*),prestr(6,mi(1),*),eme(6,mi(1),*),
      &     vold(0:mi(2),*),eloc(9),elconloc(ncmat_),eth(6),coords(3),
      &     ener(2,mi(1),*),emec(6),eei(6,mi(1),*),enerini(2,mi(1),*),
@@ -346,7 +346,7 @@
         istiff=0
         call us3_materialdata_me(elcon,nelcon,rhcon,nrhcon,alcon,
      &       nalcon,imat,amat,iorien,pgauss,orab,ntmat_,
-     &       elas,rho,i,ithermal,alzero,mattyp,t0l,t1l,ihyper,
+     &       stiff,rho,i,ithermal,alzero,mattyp,t0l,t1l,ihyper,
      &       istiff,elconloc,eth,kode,plicon,nplicon,
      &       plkcon,nplkcon,npmat_,plconloc,mi(1),dtime,jjj,
      &       xstiff,ncmat_)     
@@ -379,10 +379,10 @@
 ! this includes the calculation of the stiffness
 ! matrix 
         kode=2
-        call linel(kode,mattyp,beta,eme,stre,elas,elconloc,
+        call linel(kode,mattyp,beta,eme,stre,stiff,elconloc,
      &       iorien,orab,pgauss,ncmat_)
         do m1=1,21
-          xstiff(m1,jjj,i)=elas(m1) ! elas for each gp saved in xstiff    
+          xstiff(m1,jjj,i)=stiff(m1) ! elas for each gp saved in xstiff    
         enddo
 !
         call bm_ANDES(x,Bm,Qin,h,di,di)
@@ -456,7 +456,7 @@
 !
           istiff=1
           call us3_materialdata_me(elcon,nelcon,rhcon,nrhcon,alcon,
-     &         nalcon,imat,amat,iorien,coords,orab,ntmat_,elas,rho,
+     &         nalcon,imat,amat,iorien,coords,orab,ntmat_,stiff,rho,
      &         i,ithermal,alzero,mattyp,t0l,t1l,
      &         ihyper,istiff,elconloc,eth,kode,plicon,
      &         nplicon,plkcon,nplkcon,npmat_,

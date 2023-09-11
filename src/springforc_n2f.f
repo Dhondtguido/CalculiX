@@ -17,7 +17,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine springforc_n2f(xl,konl,vl,imat,elcon,nelcon,
-     &  elas,fnl,ncmat_,ntmat_,nope,lakonl,t1l,kode,elconloc,
+     &  stiff,fnl,ncmat_,ntmat_,nope,lakonl,t1l,kode,elconloc,
      &  plicon,nplicon,npmat_,senergy,nener,cstr,mi,
      &  springarea,nmethod,ne0,nstate_,xstateini,
      &  xstate,reltime,ielas,venergy,ielorien,orab,norien,
@@ -34,7 +34,7 @@
      &  nmethod,ne0,nstate_,ielas,norien,nelem,ielorien(mi(3),*),
      &  iorien,idof,idof1,idof2,mscalmethod
 !
-      real*8 xl(3,10),elas(21),ratio(9),t1l,al(3),vl(0:mi(2),10),
+      real*8 xl(3,10),stiff(21),ratio(9),t1l,al(3),vl(0:mi(2),10),
      &  pl(3,10),xn(3),dm,alpha,beta,fnl(3,10),tp(3),te(3),ftrial(3),
      &  dist,t(3),dftrial,overclosure,venergy,orab(7,*),a(3,3),
      &  elcon(0:ncmat_,ntmat_,*),pproj(3),xsj2(3),xs2(3,7),clear,
@@ -271,7 +271,7 @@
 !        exponential overclosure
 !
          if(dabs(elcon(2,1,imat)).lt.1.d-30) then
-            elas(1)=0.d0
+            stiff(1)=0.d0
             beta=1.d0
          else
 !     
@@ -280,10 +280,10 @@
             if(-beta*clear.gt.23.d0-dlog(alpha)) then
                beta=(dlog(alpha)-23.d0)/clear
             endif
-            elas(1)=dexp(-beta*clear+dlog(alpha))
+            stiff(1)=dexp(-beta*clear+dlog(alpha))
          endif
          if(nener.eq.1) then
-            senergy=elas(1)/beta
+            senergy=stiff(1)/beta
          endif
       elseif(int(elcon(3,1,imat)).eq.2) then
 !     
@@ -306,25 +306,25 @@
                endif
 !               
                eps=elcon(1,1,imat)*pi/xk
-               elas(1)=(-springarea(1)*xk*clear*
+               stiff(1)=(-springarea(1)*xk*clear*
      &              (0.5d0+datan(-clear/eps)/pi))
                if(nener.eq.1)
      &             senergy=springarea(1)*xk*(clear**2/4.d0+ 
      &             (0.5d0*datan(-clear/eps)*clear**2+
      &             0.5d0*(eps*clear+datan(-clear/eps)*eps**2))/pi)
             else
-               elas(1)=0.d0
+               stiff(1)=0.d0
                if(nener.eq.1) senergy=0.d0
             endif
 !     
          else
             pi=4.d0*datan(1.d0)
             eps=elcon(1,1,imat)*pi/elcon(2,1,imat)
-            elas(1)=(-springarea(1)*elcon(2,1,imat)*clear*
+            stiff(1)=(-springarea(1)*elcon(2,1,imat)*clear*
      &           (0.5d0+datan(-clear/eps)/pi)) 
-c               write(*,*) 'springforc_n2f.f',clear,springarea(1),elas(1)
+c               write(*,*) 'springforc_n2f.f',clear,springarea(1),stiff(1)
             if(nener.eq.1) then
-               senergy=-elas(1)*clear/2.d0
+               senergy=-stiff(1)*clear/2.d0
             endif
          endif
 !     MPADD end
@@ -370,7 +370,7 @@ c               write(*,*) 'springforc_n2f.f',clear,springarea(1),elas(1)
                senergy=senergy+(overlap-xiso(id))*(pres+yiso(id))/2.d0
             endif
          endif
-         elas(1)=springarea(1)*pres
+         stiff(1)=springarea(1)*pres
          if(nener.eq.1) senergy=springarea(1)*senergy
       else
          write(*,*) '*ERROR in springforc: no overclosure model'
@@ -383,9 +383,9 @@ c               write(*,*) 'springforc_n2f.f',clear,springarea(1),elas(1)
 !     forces in the nodes of the contact element
 !
       do i=1,3
-         fnl(i,nope)=-elas(1)*xn(i)
+         fnl(i,nope)=-stiff(1)*xn(i)
       enddo
-      cstr(4)=elas(1)/springarea(1)
+      cstr(4)=stiff(1)/springarea(1)
 !
 !     Coulomb friction for static calculations
 !

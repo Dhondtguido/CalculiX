@@ -71,7 +71,7 @@
      &     plicon(0:2*npmat_,ntmat_,*),plkcon(0:2*npmat_,ntmat_,*),
      &     xstiff(27,mi(1),*),veold(0:mi(2),*),om,value,dtime,ttime,
      &     time,thicke(mi(3),*),doubleglob(*),clearini(3,9,*),damping,
-     &     pslavsurf(3,*),pmastsurf(6,*),freq,elas(21),dacon(*),
+     &     pslavsurf(3,*),pmastsurf(6,*),freq,stiff(21),dacon(*),
      &     autloc(1)
 !     
       mortartrafoflag=0
@@ -174,14 +174,14 @@
 !     determined and saved
 !     
           if(mortar.eq.0) then
-            call springdamp_n2f(xl,elas,voldl,s,imat,elcon,
+            call springdamp_n2f(xl,stiff,voldl,s,imat,elcon,
      &           ncmat_,ntmat_,nope,iperturb,
      &           springarea(1,konl(nope+1)),nmethod,
      &           mi,reltime,nasym)
           elseif(mortar.eq.1) then
             jfaces=kon(indexe+nope+2)
             igauss=kon(indexe+nope+1) 
-            call springdamp_f2f(xl,elas,voldl,s,imat,elcon,
+            call springdamp_f2f(xl,stiff,voldl,s,imat,elcon,
      &           ncmat_,ntmat_,nope,lakon(i),iperturb,
      &           springarea(1,igauss),
      &           nmethod,mi,reltime,nasym,jfaces,igauss,pslavsurf,

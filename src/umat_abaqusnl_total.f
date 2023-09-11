@@ -17,9 +17,10 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine umat_abaqusnl_total(amat,iel,iint,kode,elconloc,emec,
-     &        emec0,beta,xokl,voj,xkl,vj,ithermal,t1l,dtime,time,ttime,
-     &        icmd,ielas,mi,nstate_,xstateini,xstate,stre,elas,
-     &        iorien,pgauss,orab,istep,kinc,pnewdt,nmethod,iperturb)
+     &     emec0,beta,xokl,voj,xkl,vj,ithermal,t1l,dtime,time,ttime,
+     &     icmd,ielas,mi,nstate_,xstateini,xstate,stre,stiff,
+     &     iorien,pgauss,orab,istep,kinc,pnewdt,nmethod,iperturb,
+     &     plconloc)
 !
 !     converting nonlinear fields used by CalculiX into nonlinear
 !     fields used by Abaqus and vice versa.
@@ -41,13 +42,13 @@
      &     iorien,nmethod,iperturb(*),istep,nprops,jstep(4),kinc,
      &     kel(4,21),j1,j2,j3,j4,j5,j6,j7,j8,jj,n,ier,j,matz,kal(2,6)
 !     
-      real*8 elconloc(*),elas(21),emec(6),emec0(6),beta(6),stre(6),
+      real*8 elconloc(*),stiff(21),emec(6),emec0(6),beta(6),stre(6),
      &     vj,t1l,dtime,xkl(3,3),xokl(3,3),voj,pgauss(3),orab(7,*),
      &     time,ttime,skl(3,3),xa(3,3),ya(3,3,3,3),z(3,3),
      &     xstateini(nstate_,mi(1),*),w(3),fv1(3),fv2(3),d(6),c(6),
      &     v1,v2,v3,eln(6),e(3,3),tkl(3,3),u(6),c2(6),dd,um1(3,3),
      &     expansion,ctot(3,3),ddsdde(6,6),spd,rpl,pnewdt,stran(6),temp,
-     &     xstate(nstate_,mi(1),*),xm1(6),xm2(6),
+     &     xstate(nstate_,mi(1),*),xm1(6),xm2(6),plconloc(802),
      &     xm3(6)
 !     
       kal=reshape((/1,1,2,2,3,3,1,2,1,3,2,3/),(/2,6/))
@@ -252,8 +253,17 @@ c      write(*,*) 'umat_abaqusnl_total ',(emec(i),i=1,6)
 !     
 !     deformation plasticity
 !     
-        call umat_def_plas(elconloc,elas,stran,icmd,stre,
+        call umat_def_plas(elconloc,stiff,stran,icmd,stre,
      &       xstate(1,iint,iel),iel,iint)
+!     
+      elseif(kode.eq.-54) then
+!     
+!       orthotropic elasticity with isotropic plasticity
+!     
+        call ortho_plas(amat,iel,iint,kode,elconloc,emec,
+     &       emec0,beta,xokl,voj,xkl,vj,ithermal,t1l,dtime,time,ttime,
+     &       icmd,ielas,mi,nstate_,xstateini,xstate,stre,stiff,iorien,
+     &       pgauss,orab,nmethod,pnewdt,plconloc)
       endif
 !     
 !     rotating the stress into the global system
@@ -338,50 +348,50 @@ c      enddo
 !     
       if(icmd.ne.3) then
         if(amat(1:11).eq.'JOHNSONCOOK') then
-          elas(1)=ddsdde(1,1)
-          elas(2)=ddsdde(2,1)
-          elas(3)=ddsdde(2,2)
-          elas(4)=ddsdde(3,1)
-          elas(5)=ddsdde(3,2)
-          elas(6)=ddsdde(3,3)
-          elas(7)=ddsdde(4,1)
-          elas(8)=ddsdde(4,2)
-          elas(9)=ddsdde(4,3)
-          elas(10)=ddsdde(4,4)
-          elas(11)=ddsdde(5,1)
-          elas(12)=ddsdde(5,2)
-          elas(13)=ddsdde(5,3)
-          elas(14)=ddsdde(5,4)
-          elas(15)=ddsdde(5,5)
-          elas(16)=ddsdde(6,1)
-          elas(17)=ddsdde(6,2)
-          elas(18)=ddsdde(6,3)
-          elas(19)=ddsdde(6,4)
-          elas(20)=ddsdde(6,5)
-          elas(21)=ddsdde(6,6)
+          stiff(1)=ddsdde(1,1)
+          stiff(2)=ddsdde(2,1)
+          stiff(3)=ddsdde(2,2)
+          stiff(4)=ddsdde(3,1)
+          stiff(5)=ddsdde(3,2)
+          stiff(6)=ddsdde(3,3)
+          stiff(7)=ddsdde(4,1)
+          stiff(8)=ddsdde(4,2)
+          stiff(9)=ddsdde(4,3)
+          stiff(10)=ddsdde(4,4)
+          stiff(11)=ddsdde(5,1)
+          stiff(12)=ddsdde(5,2)
+          stiff(13)=ddsdde(5,3)
+          stiff(14)=ddsdde(5,4)
+          stiff(15)=ddsdde(5,5)
+          stiff(16)=ddsdde(6,1)
+          stiff(17)=ddsdde(6,2)
+          stiff(18)=ddsdde(6,3)
+          stiff(19)=ddsdde(6,4)
+          stiff(20)=ddsdde(6,5)
+          stiff(21)=ddsdde(6,6)
         endif
 !     
 !     rotating the stiffness coefficients into the global system
 !     
-        call anisotropic(elas,ya)
+        call anisotropic(stiff,ya)
 !     
         do jj=1,21
           j1=kel(1,jj)
           j2=kel(2,jj)
           j3=kel(3,jj)
           j4=kel(4,jj)
-          elas(jj)=0.d0
+          stiff(jj)=0.d0
           do j5=1,3
             do j6=1,3
               do j7=1,3
                 do j8=1,3
-                  elas(jj)=elas(jj)+ya(j5,j6,j7,j8)*
+                  stiff(jj)=stiff(jj)+ya(j5,j6,j7,j8)*
      &                 tkl(j1,j5)*tkl(j2,j6)*tkl(j3,j7)*tkl(j4,j8)
                 enddo
               enddo
             enddo
           enddo
-          elas(jj)=elas(jj)*vj/expansion**2
+          stiff(jj)=stiff(jj)*vj/expansion**2
         enddo
       endif
 !     

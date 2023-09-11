@@ -5240,3 +5240,6 @@ Dec 2002        - started to work on single crystal plasticity
 
  8 Sept 2023    - allowed arbitrary hardening curves for orthotropic
                   elasticity with isotropic plasticity
+
+ 11 Sept 2023   - worked on ortho_plas.f in Abaqus umat-form (for
+                  nlgeom calculations)
