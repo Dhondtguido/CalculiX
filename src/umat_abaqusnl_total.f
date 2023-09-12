@@ -260,7 +260,7 @@ c      write(*,*) 'umat_abaqusnl_total ',(emec(i),i=1,6)
 !     
 !       orthotropic elasticity with isotropic plasticity
 !     
-        call ortho_plas(amat,iel,iint,kode,elconloc,emec,
+        call ortho_plas(amat,iel,iint,kode,elconloc,stran,
      &       emec0,beta,xokl,voj,xkl,vj,ithermal,t1l,dtime,time,ttime,
      &       icmd,ielas,mi,nstate_,xstateini,xstate,stre,stiff,iorien,
      &       pgauss,orab,nmethod,pnewdt,plconloc)

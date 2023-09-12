@@ -404,11 +404,13 @@
                   write(*,*) '         frequency or bucking calculation'
                else
                   write(*,*) 
-     &            '*WARNING in elprints: selection of CEEQ or CE or PE'
+     &                '*WARNING reading *NODE/EL/CONTACT FILE:'
+                  write(*,*) '         selection of CEEQ or CE or PE'
                   write(*,*) '         is converted into PEEQ; no distin
      &ction'
                   write(*,*) 
-     &             '        is made between PEEQ, CEEQ, CE and PE'
+     &                 '         is made between PEEQ, CEEQ, CE and PE'
+                  write(*,*)
                   filab(6)(1:4)='PEEQ'
                   filab(6)(6:6)=elemsys
                   filab(6)(7:87)=noset

@@ -5243,3 +5243,5 @@ Dec 2002        - started to work on single crystal plasticity
 
  11 Sept 2023   - worked on ortho_plas.f in Abaqus umat-form (for
                   nlgeom calculations)
+
+ 12 Sept 2023   - continued to work on ortho_plas with NLGEOM

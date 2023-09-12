@@ -217,7 +217,7 @@
 !     
 !     (visco)plastic constants
 !     
-      if((elconloc(10).lt.0.d0).or.
+      if((elconloc(10).le.0.d0).or.
      &     ((nmethod.eq.1).and.(ithermal(1).ne.3))) then
         visco=0
       else
@@ -563,113 +563,118 @@ c     write(*,*)
           pnewdt=0.25d0
           return
         endif
+!
+!       for iloop=1 the values were calculated before the loop
+!
+        if(iloop.gt.1) then
 !     
 !     elastic strains
 !     
-        do i=1,6
-          ee(i)=emec(i)-ep(i)
-        enddo
+          do i=1,6
+            ee(i)=emec(i)-ep(i)
+          enddo
 !     
 !     determining fiso, dfiso and dfkin     
 !     
-        if(user_hardening.eq.1) then
-          call uhardening(amat,iel,iint,t1l,al10,al1,dtime,
-     &         fiso,dfiso,fkin,dfkin)
-        else
-          if(niso.ne.0) then
-            call ident(xiso,al1,niso,id)
-            if(id.eq.0) then
-              fiso=yiso(1)
-              dfiso=0.d0
-            elseif(id.eq.niso) then
-              fiso=yiso(niso)
+          if(user_hardening.eq.1) then
+            call uhardening(amat,iel,iint,t1l,al10,al1,dtime,
+     &           fiso,dfiso,fkin,dfkin)
+          else
+            if(niso.ne.0) then
+              call ident(xiso,al1,niso,id)
+              if(id.eq.0) then
+                fiso=yiso(1)
+                dfiso=0.d0
+              elseif(id.eq.niso) then
+                fiso=yiso(niso)
+                dfiso=0.d0
+              else
+                dfiso=(yiso(id+1)-yiso(id))/(xiso(id+1)-xiso(id))
+                fiso=yiso(id)+dfiso*(al1-xiso(id))
+              endif
+            elseif(nkin.ne.0) then
+              fiso=ykin(1)
               dfiso=0.d0
             else
-              dfiso=(yiso(id+1)-yiso(id))/(xiso(id+1)-xiso(id))
-              fiso=yiso(id)+dfiso*(al1-xiso(id))
+              fiso=0.d0
+              dfiso=0.d0
             endif
-          elseif(nkin.ne.0) then
-            fiso=ykin(1)
-            dfiso=0.d0
-          else
-            fiso=0.d0
-            dfiso=0.d0
-          endif
 !     
-          if(nkin.ne.0) then
-            call ident(xkin,al1,nkin,id)
-            if(id.eq.0) then
-              fkin=ykin(1)
-              dfkin=0.d0
-            elseif(id.eq.nkin) then
-              fkin=ykin(nkin)
+            if(nkin.ne.0) then
+              call ident(xkin,al1,nkin,id)
+              if(id.eq.0) then
+                fkin=ykin(1)
+                dfkin=0.d0
+              elseif(id.eq.nkin) then
+                fkin=ykin(nkin)
+                dfkin=0.d0
+              else
+                dfkin=(ykin(id+1)-ykin(id))/(xkin(id+1)-xkin(id))
+                fkin=ykin(id)+dfkin*(al1-xkin(id))
+              endif
+            elseif(niso.ne.0) then
+              fkin=yiso(1)
               dfkin=0.d0
             else
-              dfkin=(ykin(id+1)-ykin(id))/(xkin(id+1)-xkin(id))
-              fkin=ykin(id)+dfkin*(al1-xkin(id))
+              fkin=0.d0
+              dfkin=0.d0
             endif
-          elseif(niso.ne.0) then
-            fkin=yiso(1)
-            dfkin=0.d0
-          else
-            fkin=0.d0
-            dfkin=0.d0
           endif
-        endif
 !     
 !     h2=1/a  (equation 5.322)    
 !     
-        h1=dfiso
-        h2=2.d0*dfkin/3.d0
+          h1=dfiso
+          h2=2.d0*dfkin/3.d0
 !     
 !     stress state variables q1 and q2
 !     
-        q1=-fiso
-        do i=1,6
-          q2(i)=q20(i)-h2*(al2(i)-al20(i))
-        enddo
+          q1=-fiso
+          do i=1,6
+            q2(i)=q20(i)-h2*(al2(i)-al20(i))
+          enddo
 !     
 !     global trial stress tensor
 !     
-        if(iorien.gt.0) then
-          stri(1)=c(1)*ee(1)+c(2)*ee(2)+c(4)*ee(3)+
-     &         2.d0*(c(7)*ee(4)+c(11)*ee(5)+c(16)*ee(6))
-     &         -beta(1)
-          stri(2)=c(2)*ee(1)+c(3)*ee(2)+c(5)*ee(3)+
-     &         2.d0*(c(8)*ee(4)+c(12)*ee(5)+c(17)*ee(6))
-     &         -beta(2)
-          stri(3)=c(4)*ee(1)+c(5)*ee(2)+c(6)*ee(3)+
-     &         2.d0*(c(9)*ee(4)+c(13)*ee(5)+c(18)*ee(6))
-     &         -beta(3)
-          stri(4)=c(7)*ee(1)+c(8)*ee(2)+c(9)*ee(3)+
-     &         2.d0*(c(10)*ee(4)+c(14)*ee(5)+c(19)*ee(6))
-     &         -beta(4)
-          stri(5)=c(11)*ee(1)+c(12)*ee(2)+c(13)*ee(3)+
-     &         2.d0*(c(14)*ee(4)+c(15)*ee(5)+c(20)*ee(6))
-     &         -beta(5)
-          stri(6)=c(16)*ee(1)+c(17)*ee(2)+c(18)*ee(3)+
-     &         2.d0*(c(19)*ee(4)+c(20)*ee(5)+c(21)*ee(6))
-     &         -beta(6)
-        else
-          stri(1)=c(1)*ee(1)+c(2)*ee(2)+c(4)*ee(3)-beta(1)
-          stri(2)=c(2)*ee(1)+c(3)*ee(2)+c(5)*ee(3)-beta(1)
-          stri(3)=c(4)*ee(1)+c(5)*ee(2)+c(6)*ee(3)-beta(1)
-          stri(4)=2.d0*c(7)*ee(4)-beta(4)
-          stri(5)=2.d0*c(8)*ee(5)-beta(5)
-          stri(6)=2.d0*c(9)*ee(6)-beta(6)
-        endif
+          if(iorien.gt.0) then
+            stri(1)=c(1)*ee(1)+c(2)*ee(2)+c(4)*ee(3)+
+     &           2.d0*(c(7)*ee(4)+c(11)*ee(5)+c(16)*ee(6))
+     &           -beta(1)
+            stri(2)=c(2)*ee(1)+c(3)*ee(2)+c(5)*ee(3)+
+     &           2.d0*(c(8)*ee(4)+c(12)*ee(5)+c(17)*ee(6))
+     &           -beta(2)
+            stri(3)=c(4)*ee(1)+c(5)*ee(2)+c(6)*ee(3)+
+     &           2.d0*(c(9)*ee(4)+c(13)*ee(5)+c(18)*ee(6))
+     &           -beta(3)
+            stri(4)=c(7)*ee(1)+c(8)*ee(2)+c(9)*ee(3)+
+     &           2.d0*(c(10)*ee(4)+c(14)*ee(5)+c(19)*ee(6))
+     &           -beta(4)
+            stri(5)=c(11)*ee(1)+c(12)*ee(2)+c(13)*ee(3)+
+     &           2.d0*(c(14)*ee(4)+c(15)*ee(5)+c(20)*ee(6))
+     &           -beta(5)
+            stri(6)=c(16)*ee(1)+c(17)*ee(2)+c(18)*ee(3)+
+     &           2.d0*(c(19)*ee(4)+c(20)*ee(5)+c(21)*ee(6))
+     &           -beta(6)
+          else
+            stri(1)=c(1)*ee(1)+c(2)*ee(2)+c(4)*ee(3)-beta(1)
+            stri(2)=c(2)*ee(1)+c(3)*ee(2)+c(5)*ee(3)-beta(1)
+            stri(3)=c(4)*ee(1)+c(5)*ee(2)+c(6)*ee(3)-beta(1)
+            stri(4)=2.d0*c(7)*ee(4)-beta(4)
+            stri(5)=2.d0*c(8)*ee(5)-beta(5)
+            stri(6)=2.d0*c(9)*ee(6)-beta(6)
+          endif
 !     
 !     stress radius (only deviatoric part of stress enters)
 !     
-        strinv=(stri(1)+stri(2)+stri(3))/3.d0
-        do i=1,3
-          sg(i)=stri(i)-strinv+q2(i)
-        enddo
-        do i=4,6
-          sg(i)=stri(i)+q2(i)
-        enddo
-        dsg=dsqrt(sg(1)*sg(1)+sg(2)*sg(2)+sg(3)*sg(3)+
-     &       2.d0*(sg(4)*sg(4)+sg(5)*sg(5)+sg(6)*sg(6)))      
+          strinv=(stri(1)+stri(2)+stri(3))/3.d0
+          do i=1,3
+            sg(i)=stri(i)-strinv+q2(i)
+          enddo
+          do i=4,6
+            sg(i)=stri(i)+q2(i)
+          enddo
+          dsg=dsqrt(sg(1)*sg(1)+sg(2)*sg(2)+sg(3)*sg(3)+
+     &         2.d0*(sg(4)*sg(4)+sg(5)*sg(5)+sg(6)*sg(6)))
+        endif
 !     
 !     evaluation of the yield surface
 !     
@@ -693,9 +698,13 @@ c     write(*,*)
           r(7+i)=al20(i)-al2(i)+dg*sg(i)
         enddo
 !     
-!     check convergence
-!     
-        if((dabs(htri).le.1.d-5).or.(dabs(ddg).lt.1.d-3*dabs(dg))) then
+!     check convergence (for iloop=1 the remaining parts of the loop
+!     have not been executed: => P:n ... needed for the stiffness
+!     matrix are not calculated)
+!
+        if(iloop.gt.1) then
+          if((dabs(htri).le.1.d-5).or.(dabs(ddg).lt.1.d-3*dabs(dg)))
+     &         then
           dd=0.d0
           do i=1,13
             dd=dd+r(i)*r(i)
@@ -705,6 +714,7 @@ c     write(*,*)
             exit
           endif
         endif
+      endif
 !     
 !     determining b.x
 !     
