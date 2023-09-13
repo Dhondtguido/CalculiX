@@ -5245,3 +5245,7 @@ Dec 2002        - started to work on single crystal plasticity
                   nlgeom calculations)
 
  12 Sept 2023   - continued to work on ortho_plas with NLGEOM
+
+ 13 Sept 2023   - extended the Mohr-Coulomb and Anisotropic Creep model
+                  to large strains and/or rotations by using the Abaqus
+		  interface routines

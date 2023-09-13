@@ -20,7 +20,7 @@
      &     emec0,beta,xokl,voj,xkl,vj,ithermal,t1l,dtime,time,ttime,
      &     icmd,ielas,mi,nstate_,xstateini,xstate,stre,stiff,
      &     iorien,pgauss,orab,istep,kinc,pnewdt,nmethod,iperturb,
-     &     plconloc)
+     &     plconloc,depvisc)
 !
 !     converting nonlinear fields used by CalculiX into nonlinear
 !     fields used by Abaqus and vice versa.
@@ -36,7 +36,7 @@
 ! 
       implicit none
 !     
-      character*80 amat
+      character*80 amat,amatloc
 !     
       integer ithermal(*),icmd,kode,ielas,iel,iint,nstate_,mi(*),i,
      &     iorien,nmethod,iperturb(*),istep,nprops,jstep(4),kinc,
@@ -44,7 +44,7 @@
 !     
       real*8 elconloc(*),stiff(21),emec(6),emec0(6),beta(6),stre(6),
      &     vj,t1l,dtime,xkl(3,3),xokl(3,3),voj,pgauss(3),orab(7,*),
-     &     time,ttime,skl(3,3),xa(3,3),ya(3,3,3,3),z(3,3),
+     &     time,ttime,skl(3,3),xa(3,3),ya(3,3,3,3),z(3,3),depvisc,
      &     xstateini(nstate_,mi(1),*),w(3),fv1(3),fv2(3),d(6),c(6),
      &     v1,v2,v3,eln(6),e(3,3),tkl(3,3),u(6),c2(6),dd,um1(3,3),
      &     expansion,ctot(3,3),ddsdde(6,6),spd,rpl,pnewdt,stran(6),temp,
@@ -249,12 +249,33 @@ c      write(*,*) 'umat_abaqusnl_total ',(emec(i),i=1,6)
      &       spd,rpl,stran,dtime,temp,elconloc,nprops,
      &       iel,iint,jstep,kinc,icmd)
 !     
+      elseif(amat(1:11).eq.'ANISO_CREEP') then
+!     
+!       orthotropic elasticity with isotropic creep defined by
+!       a user subroutine     
+!     
+        amatloc(1:69)=amat(12:80)
+        amatloc(70:80)='           '
+        call umat_aniso_creep(amatloc,
+     &       iel,iint,kode,elconloc,stran,emec0,
+     &       beta,xkl,vj,ithermal,t1l,dtime,time,ttime,
+     &       icmd,ielas,mi(1),nstate_,xstateini,xstate,stre,stiff,
+     &       iorien,pgauss,orab,nmethod,pnewdt,depvisc)
+!          
       elseif(kode.eq.-50) then
 !     
-!     deformation plasticity
+!       deformation plasticity
 !     
         call umat_def_plas(elconloc,stiff,stran,icmd,stre,
      &       xstate(1,iint,iel),iel,iint)
+!     
+      elseif(kode.eq.-53) then
+!     
+!       Mohr-Coulomb plasticity
+!     
+        call mohrcoulomb(elconloc,plconloc,xstate,xstateini,
+     &       stiff,stran,icmd,beta,stre,
+     &       ielas,dtime,time,ttime,iel,iint,nstate_,mi,pnewdt)
 !     
       elseif(kode.eq.-54) then
 !     

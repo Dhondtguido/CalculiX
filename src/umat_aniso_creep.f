@@ -17,7 +17,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine umat_aniso_creep(amat,iel,iint,kode,elconloc,emec,
-     &        emec0,beta,xokl,voj,xkl,vj,ithermal,t1l,dtime,time,ttime,
+     &        emec0,beta,xkl,vj,ithermal,t1l,dtime,time,ttime,
      &        icmd,ielas,mi,nstate_,xstateini,xstate,stre,stiff,iorien,
      &        pgauss,orab,nmethod,pnewdt,depvisc)
 !

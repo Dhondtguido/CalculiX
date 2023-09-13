@@ -79,7 +79,7 @@ c     &     ckl,vj,xstate,nstate_,iel,iint,mi)
      &        emec0,beta,xikl,vij,xkl,vj,ithermal,t1l,dtime,time,ttime,
      &        icmd,ielas,mi,nstate_,xstateini,xstate,stre,stiff,
      &        iorien,pgauss,orab,istep,iinc,pnewdt,nmethod,iperturb,
-     &        plconloc)
+     &        plconloc,depvisc)
       elseif((kode.eq.-51).or.(kode.eq.-52)) then
          mattyp=3
          if(iperturb(2).eq.1) then
@@ -96,9 +96,17 @@ c     &     ckl,vj,xstate,nstate_,iel,iint,mi)
           endif
         elseif(kode.eq.-53) then
           mattyp=3
-          call mohrcoulomb(elconloc,plconloc,xstate,xstateini,
-     &         stiff,emec,icmd,beta,stre,
-     &         ielas,dtime,time,ttime,iel,iint,nstate_,mi,pnewdt)
+          if(iperturb(2).eq.0) then
+            call mohrcoulomb(elconloc,plconloc,xstate,xstateini,
+     &           stiff,emec,icmd,beta,stre,
+     &           ielas,dtime,time,ttime,iel,iint,nstate_,mi,pnewdt)
+          else
+            call umat_abaqusnl_total(amat,iel,iint,kode,elconloc,emec,
+     &           emec0,beta,xikl,vij,xkl,vj,ithermal,t1l,dtime,time,
+     &           ttime,icmd,ielas,mi,nstate_,xstateini,xstate,stre,
+     &           stiff,iorien,pgauss,orab,istep,iinc,pnewdt,nmethod,
+     &           iperturb,plconloc,depvisc)
+          endif
         elseif(kode.eq.-54) then
           mattyp=3
           if(iperturb(2).eq.0) then
@@ -112,7 +120,7 @@ c     &     ckl,vj,xstate,nstate_,iel,iint,mi)
      &           emec0,beta,xikl,vij,xkl,vj,ithermal,t1l,dtime,time,
      &           ttime,icmd,ielas,mi,nstate_,xstateini,xstate,stre,
      &           stiff,iorien,pgauss,orab,istep,iinc,pnewdt,nmethod,
-     &           iperturb,plconloc)
+     &           iperturb,plconloc,depvisc)
           endif
         else
           mattyp=3

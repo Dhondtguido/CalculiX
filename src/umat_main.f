@@ -71,25 +71,33 @@
      &       icmd,ielas,mi(1),nstate_,xstateini,xstate,stre,stiff,
      &       iorien,pgauss,orab,istep,iinc,pnewdt,nmethod,iperturb)
 !     
-      elseif(amat(1:10).eq.'ANISO_PLAS') then
-!     
-        amatloc(1:70)=amat(11:80)
-        amatloc(71:80)='          '
-        call umat_aniso_plas(amatloc,
-     &       iel,iint,kode,elconloc,emec,emec0,
-     &       beta,xikl,vij,xkl,vj,ithermal,t1l,dtime,time,ttime,
-     &       icmd,ielas,mi(1),nstate_,xstateini,xstate,stre,stiff,
-     &       iorien,pgauss,orab,nmethod,pnewdt)
+c      elseif(amat(1:10).eq.'ANISO_PLAS') then
+c!     
+c        amatloc(1:70)=amat(11:80)
+c        amatloc(71:80)='          '
+c        call umat_aniso_plas(amatloc,
+c     &       iel,iint,kode,elconloc,emec,emec0,
+c     &       beta,xikl,vij,xkl,vj,ithermal,t1l,dtime,time,ttime,
+c     &       icmd,ielas,mi(1),nstate_,xstateini,xstate,stre,stiff,
+c     &       iorien,pgauss,orab,nmethod,pnewdt)
 !     
       elseif(amat(1:11).eq.'ANISO_CREEP') then
 !     
         amatloc(1:69)=amat(12:80)
         amatloc(70:80)='           '
-        call umat_aniso_creep(amatloc,
-     &       iel,iint,kode,elconloc,emec,emec0,
-     &       beta,xikl,vij,xkl,vj,ithermal,t1l,dtime,time,ttime,
-     &       icmd,ielas,mi(1),nstate_,xstateini,xstate,stre,stiff,
-     &       iorien,pgauss,orab,nmethod,pnewdt,depvisc)
+        if(iperturb(2).eq.0) then
+          call umat_aniso_creep(amatloc,
+     &         iel,iint,kode,elconloc,emec,emec0,
+     &         beta,xkl,vj,ithermal,t1l,dtime,time,ttime,
+     &         icmd,ielas,mi(1),nstate_,xstateini,xstate,stre,stiff,
+     &         iorien,pgauss,orab,nmethod,pnewdt,depvisc)
+        else
+          call umat_abaqusnl_total(amat,iel,iint,kode,elconloc,emec,
+     &         emec0,beta,xikl,vij,xkl,vj,ithermal,t1l,dtime,time,
+     &         ttime,icmd,ielas,mi,nstate_,xstateini,xstate,stre,
+     &         stiff,iorien,pgauss,orab,istep,iinc,pnewdt,nmethod,
+     &         iperturb,plconloc,depvisc)
+        endif
 !     
       elseif(amat(1:10).eq.'CIARLET_EL') then
 !     
@@ -127,7 +135,7 @@
      &       emec0,beta,xikl,vij,xkl,vj,ithermal,t1l,dtime,time,ttime,
      &       icmd,ielas,mi(1),nstate_,xstateini,xstate,stre,stiff,
      &       iorien,pgauss,orab,istep,iinc,pnewdt,nmethod,iperturb,
-     &       plconloc)
+     &       plconloc,depvisc)
 !     
       elseif(amat(1:12).eq.'LIN_EL_COROT') then
 !     

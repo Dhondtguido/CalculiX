@@ -77,7 +77,7 @@
            endif
         else
             write(*,*) 
-     &             '*WARNING reading *NODE FILE or *EL FILE:' 
+     &             '*WARNING reading *OUTPUT:' 
             write(*,*) '         parameter not recognized:'
             write(*,*) '         ',
      &                 textpart(ii)(1:index(textpart(ii),' ')-1)

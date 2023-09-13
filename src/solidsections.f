@@ -91,8 +91,8 @@
          do i=1,nmat
             if(matname(i)(1:11).eq.'ANISO_CREEP') then
                if(matname(i)(12:20).eq.material(1:9)) exit
-            elseif(matname(i)(1:10).eq.'ANISO_PLAS') then
-               if(matname(i)(11:20).eq.material(1:10)) exit
+            elseif(matname(i)(1:11).eq.'JOHNSONCOOK') then
+               if(matname(i)(12:20).eq.material(1:9)) exit
             endif
          enddo
       endif

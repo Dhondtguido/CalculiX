@@ -65,7 +65,7 @@
      &  om,omx,e,un,al,um,xi,et,ze,tt,const,xsj,xsjj,sm(60,60),
      &  sti(6,mi(1),*),stx(6,mi(1),*),s11,s22,s33,s12,s13,s23,s11b,
      &  s22b,s33b,s12b,s13b,s23b,t0l,t1l,
-     &  senergy,senergyb,rho,elas(21),
+     &  senergy,senergyb,rho,stiff(21),
      &  sume,factorm,factore,alp,elconloc(ncmat_),eth(6),
      &  weight,coords(3),dmass,xl1(3,8),term
 !
@@ -248,7 +248,7 @@ c     Bernhardi end
 !
          istiff=1
          call materialdata_me(elcon,nelcon,rhcon,nrhcon,alcon,nalcon,
-     &        imat,amat,iorien,coords,orab,ntmat_,elas,rho,
+     &        imat,amat,iorien,coords,orab,ntmat_,stiff,rho,
      &        nelem,ithermal,alzero,mattyp,t0l,t1l,
      &        ihyper,istiff,elconloc,eth,kode,plicon,
      &        nplicon,plkcon,nplkcon,npmat_,
