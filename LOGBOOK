@@ -5249,3 +5249,5 @@ Dec 2002        - started to work on single crystal plasticity
  13 Sept 2023   - extended the Mohr-Coulomb and Anisotropic Creep model
                   to large strains and/or rotations by using the Abaqus
 		  interface routines
+
+ 15 Sept 2023   - reworked umat_aniso_creep.f based on ortho_plas.f

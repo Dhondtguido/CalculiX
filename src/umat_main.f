@@ -83,9 +83,9 @@ c     &       iorien,pgauss,orab,nmethod,pnewdt)
 !     
       elseif(amat(1:11).eq.'ANISO_CREEP') then
 !     
-        amatloc(1:69)=amat(12:80)
-        amatloc(70:80)='           '
         if(iperturb(2).eq.0) then
+          amatloc(1:69)=amat(12:80)
+          amatloc(70:80)='           '
           call umat_aniso_creep(amatloc,
      &         iel,iint,kode,elconloc,emec,emec0,
      &         beta,xkl,vj,ithermal,t1l,dtime,time,ttime,

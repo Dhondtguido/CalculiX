@@ -737,7 +737,8 @@ c     Bernhardi end
 !     coordinates to material coordinates
 !     deformation plasticity)
 !     
-          if((kode.eq.-50).or.(kode.eq.-54).or.(kode.le.-100)) then
+          if((kode.eq.-50).or.(kode.eq.-53).or.(kode.eq.-54).or.
+     &         (kode.le.-100)) then
 !     
 !     calculating the deformation gradient
 !     
