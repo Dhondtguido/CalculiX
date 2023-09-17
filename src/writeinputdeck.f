@@ -21,7 +21,7 @@
      &     iponexp,nmpc,labmpc,ipompc,nodempc,ipretinfo,kon,ipkon,lakon,
      &     iponoel,inoel,iponor2d,knor2d,ipoface,nodface,ne,x,y,z,
      &     xo,yo,zo,nx,ny,nz,nodes,dist,ne2d,nod1st,nod2nd3rd,
-     &     extnor)
+     &     extnor,nodedesi,ndesi)
 !     
 !     calculates the normal boundary conditions on the surface for
 !     mesh modification purposes in an optimization loop
@@ -58,13 +58,19 @@
      &     knor2d(*),node2d,ipoface(*),node1,node2,node3,kflag,
      &     nodface(5,*),nopem,ifaceqmid(6),ifacewmid(5),node3d,
      &     nnor1,nnor2,inor1(3),inor2(3),nx(*),ny(*),nz(*),id,
-     &     neigh(1),ne2d,nod1st(*),nod2nd3rd(2,*),one,mtwo
+     &     neigh(1),ne2d,nod1st(*),nod2nd3rd(2,*),one,nodedesi(*),
+     &     ndesi,ifree,ndist
+!
+      integer,dimension(:),allocatable::ipo
+      integer,dimension(:,:),allocatable::idiste
 !     
       real*8 co(3,*),xnor(*),xno(3,100),coloc6(2,6),coloc8(2,8),
      &     xl(3,20),dd,xnoref(3),dot,xnorloc(6),sort(6),x(*),y(*),z(*),
      &     xo(*),yo(*),zo(*),xi,et,ze,shp(4,20),xsj,p(3),dist(*),
      &     distmax,e,emax,extnor(3,*),xnorloc1(3),xnorloc2(3),alpha1,
      &     alpha2
+!     
+      real*8,dimension(:),allocatable::xdist
 !     
 !     In this routine the faces at the free surface play an
 !     important role. They are considered to be like a layer of
@@ -108,7 +114,6 @@
 !     
       one=1
       two=2
-      mtwo=-2
       three=3
       six=6
 !     
@@ -412,56 +417,55 @@
             label='C3D4    '
           endif
         endif
-        write(20,107) label,i
- 107    format('*ELEMENT,TYPE=',a8,',ELSET=',i10,'E')
+        write(20,107) label
+ 107    format('*ELEMENT,TYPE=',a8)
         write(20,108) i,(ipretinfo(kon(indexe+nopeexp+j)),j=1,nope)
  108    format(16(i10,','))
       enddo
 !
-!     catalogueing all external face nodes in field nodes(*)
+c!     catalogueing all external face nodes in field nodes(*)
+c!
+c      n=0
+c      do i=1,nsurfs
+c        do j=ipkonfa(i)+1,ipkonfa(i+1)
+c          node=konfa(j)
+c          call nident(nodes,node,n,id)
+c          if(id.gt.0) then
+c            if(nodes(id).eq.node) cycle
+c          endif
+c          n=n+1
+c          do k=n,id+2,-1
+c            nodes(k)=nodes(k-1)
+c          enddo
+c          nodes(id+1)=node
+c        enddo
+c      enddo
 !
-      n=0
-      do i=1,nsurfs
-        do j=ipkonfa(i)+1,ipkonfa(i+1)
-          node=konfa(j)
-          call nident(nodes,node,n,id)
-          if(id.gt.0) then
-            if(nodes(id).eq.node) cycle
-          endif
-          n=n+1
-          do k=n,id+2,-1
-            nodes(k)=nodes(k-1)
-          enddo
-          nodes(id+1)=node
-        enddo
-      enddo
-!
-!     preparing fields for near3d
+!     preparing fields for near3d: considering all design nodes
 !
       kneigh=1
-      kflag=2
-      do j=1,n
-        xo(j)=co(1,nodes(j))
+      do j=1,ndesi
+        xo(j)=co(1,nodedesi(j))
         x(j)=xo(j)
         nx(j)=j
-        yo(j)=co(2,nodes(j))
+        yo(j)=co(2,nodedesi(j))
         y(j)=yo(j)
         ny(j)=j
-        zo(j)=co(3,nodes(j))
+        zo(j)=co(3,nodedesi(j))
         z(j)=zo(j)
         nz(j)=j
       enddo
       kflag=2
-      call dsort(x,nx,n,kflag)
-      call dsort(y,ny,n,kflag)
-      call dsort(z,nz,n,kflag)
+      call dsort(x,nx,ndesi,kflag)
+      call dsort(y,ny,ndesi,kflag)
+      call dsort(z,nz,ndesi,kflag)
 !
 !     determining the center of each element and determine the
-!     distance from this center to the closest node belonging to
-!     the external faces
+!     distance from this center to the closest design node
 !
       distmax=0.d0
       iflag=1
+      kflag=-2
       do i=1,ne
         if(ipkon(i).lt.0) cycle
         indexe=ipkon(i)
@@ -542,9 +546,9 @@ c        write(*,*) i,p(1),p(2),p(3)
 !     determining the neighboring external face node
 !     
         call near3d(xo,yo,zo,x,y,z,nx,ny,nz,p(1),p(2),p(3),
-     &       n,neigh,kneigh)
+     &       ndesi,neigh,kneigh)
 !
-        nodeext=nodes(neigh(1))
+        nodeext=nodedesi(neigh(1))
 c        write(*,*) i,nodeext
         dist(i)=dsqrt((p(1)-co(1,nodeext))**2+
      &                (p(2)-co(2,nodeext))**2+
@@ -553,14 +557,41 @@ c        write(*,*) i,nodeext
       enddo
 !
 !     determine the Young's modulus depending on the distance from
-!     the free surface
+!     the closest design node
+!
+      ndist=10
+      allocate(xdist(ndist))
+      do i=1,ndist
+        xdist(i)=(i-1)/(1.d0*ndist)
+      enddo
+!
+      allocate(ipo(ndist))
+      do i=1,ndist
+        ipo(i)=0
+      enddo
+      allocate(idiste(2,ne))
+      ifree=0
+      do i=1,ne
+        call ident(xdist,dist(i),ndist,id)
+        ifree=ifree+1
+        idiste(2,ifree)=ipo(id)
+        idiste(1,ifree)=i
+        ipo(id)=ifree
+      enddo
+!
+!     fictitious Young's modulus
 !
       emax=1.d0
-      do i=1,ne
-        if(ipkon(i).lt.0) cycle
-        xi=dist(i)/distmax
-c        write(*,*) i,dist(i),distmax
+      do i=1,ndist
+        xi=xdist(i)
         e=(2.d0-xi)*emax/2.d0
+        write(20,113) i
+        index=ipo(i)
+        do
+          if(index.eq.0) exit
+          write(20,108) idiste(1,index)
+          index=idiste(2,index)
+        enddo
         write(20,110) i
         write(20,111) e
         write(20,112) i,i
@@ -568,6 +599,29 @@ c        write(*,*) i,dist(i),distmax
  110  format('*MATERIAL,NAME=',i10,'M')
  111  format('*ELASTIC',/,e15.8,',0.3')
  112  format('*SOLID SECTION,ELSET=',i10,'E,MATERIAL=',i10,'M')
+ 113  format('*ELSET,ELSET=',i10,'E')
+!
+      deallocate(xdist)
+      deallocate(ipo)
+      deallocate(idiste)
+!      
+c!
+c!     determine the Young's modulus depending on the distance from
+c!     the free surface
+c!
+c      emax=1.d0
+c      do i=1,ne
+c        if(ipkon(i).lt.0) cycle
+c        xi=dist(i)/distmax
+cc        write(*,*) i,dist(i),distmax
+c        e=(2.d0-xi)*emax/2.d0
+c        write(20,110) i
+c        write(20,111) e
+c        write(20,112) i,i
+c      enddo
+c 110  format('*MATERIAL,NAME=',i10,'M')
+c 111  format('*ELASTIC',/,e15.8,',0.3')
+c 112  format('*SOLID SECTION,ELSET=',i10,'E,MATERIAL=',i10,'M')
 !     
 !     write equations in file "jobname.equ"
 !     
@@ -778,7 +832,7 @@ c     enddo
                 sort(j)=dabs(extnor(j,i))
                 inor(j)=j
               enddo
-              call dsort(sort,inor,three,mtwo)
+              call dsort(sort,inor,three,kflag)
 !
 !             if the two largest values are equal, the entry with the
 !             smallest index is taken as dependent entry
@@ -809,7 +863,7 @@ c     enddo
                 sort(j)=dabs(xnorloc(j))
                 inor1(j)=j
               enddo
-              call dsort(sort,inor1,three,mtwo)
+              call dsort(sort,inor1,three,kflag)
 !
 !             looking for a dependent component which is different
 !             from the dependent component (= inor(1)) for the condition in

@@ -3194,7 +3194,8 @@ void FORTRAN(writeinputdeck,(ITG *nk,double *co,ITG *iponoelfa,
 			     double *y,double *z,double *xo,double *yo,
 			     double *zo,ITG *nx,ITG *ny,ITG *nz,ITG *nodes,
 			     double *dist,ITG *ne2d,ITG *nod1st,
-			     ITG *nod2nd3rd,double *extnor));
+			     ITG *nod2nd3rd,double *extnor,ITG *nodedesi,
+			     ITG *ndesi));
   
 void FORTRAN(writeinputdeck2,(double *feasdir,ITG *nodedesi,ITG *ndesi,
 			      ITG *inoel,ITG *iponoel,double *xdesi,double *co,

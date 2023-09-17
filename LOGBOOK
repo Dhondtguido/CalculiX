@@ -5251,3 +5251,8 @@ Dec 2002        - started to work on single crystal plasticity
 		  interface routines
 
  15 Sept 2023   - reworked umat_aniso_creep.f based on ortho_plas.f
+
+ 16 Sept 2023   - updated the documentation on anisotropic elasticity
+                  combined with isotropic viscoplasticity
+ 
+ 17 Sept 2023   - worked on writeinputdeck.f
