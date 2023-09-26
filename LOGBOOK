@@ -5256,3 +5256,7 @@ Dec 2002        - started to work on single crystal plasticity
                   combined with isotropic viscoplasticity
  
  17 Sept 2023   - worked on writeinputdeck.f
+
+ 26 Sept 2023   - corrected an error in writeinputdeck.f
+                - corrected an error in the documentation (RF).
+		- worked on the consistent tangent in umat_abaqusnl_total.f

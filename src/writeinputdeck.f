@@ -543,7 +543,7 @@ c      enddo
         enddo
 c        write(*,*) i,p(1),p(2),p(3)
 !     
-!     determining the neighboring external face node
+!     determining the neighboring design node
 !     
         call near3d(xo,yo,zo,x,y,z,nx,ny,nz,p(1),p(2),p(3),
      &       ndesi,neigh,kneigh)
@@ -557,7 +557,10 @@ c        write(*,*) i,nodeext
       enddo
 !
 !     determine the Young's modulus depending on the distance from
-!     the closest design node
+!     the closest design node; to reduce the number of materials
+!     only ndist different E-moduli are taken. To this end the 
+!     normalized distance from the nearest design node is sorted
+!     into ndist intervals
 !
       ndist=10
       allocate(xdist(ndist))
@@ -572,6 +575,13 @@ c        write(*,*) i,nodeext
       allocate(idiste(2,ne))
       ifree=0
       do i=1,ne
+!
+!       normalizing the distance (0 to 1)
+!
+        dist(i)=dist(i)/distmax
+!
+!       determining to which of the ndist intervals i belongs
+!
         call ident(xdist,dist(i),ndist,id)
         ifree=ifree+1
         idiste(2,ifree)=ipo(id)

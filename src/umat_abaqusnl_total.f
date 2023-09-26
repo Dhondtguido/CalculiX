@@ -55,12 +55,14 @@
 !     
       real*8 elconloc(*),stiff(21),emec(6),emec0(6),beta(6),stre(6),
      &     vj,t1l,dtime,xkl(3,3),xokl(3,3),voj,pgauss(3),orab(7,*),
-     &     time,ttime,skl(3,3),xa(3,3),ya(3,3,3,3),z(3,3),depvisc,
-     &     xstateini(nstate_,mi(1),*),w(3),fv1(3),fv2(3),d(6),c(6),
+     &     time,ttime,skl(3,3),scc(3,3),ya(3,3,3,3),z(3,3),depvisc,
+     &     xstateini(nstate_,mi(1),*),w(3),fv1(3),fv2(3),d(6),c(3,3),
      &     v1,v2,v3,eln(6),e(3,3),tkl(3,3),u(6),c2(6),dd,um1(3,3),
      &     expansion,ctot(3,3),ddsdde(6,6),spd,rpl,pnewdt,stran(6),temp,
      &     xstate(nstate_,mi(1),*),xm1(6),xm2(6),plconloc(802),
-     &     xm3(6),wum1(3),weln(3),um1new(3,3)
+     &     xm3(6),wum1(3),weln(3),um1new(3,3),xa(3,3),ym1(3,3),
+     &     ym2(3,3),ym3(3,3),sccum1(3,3),cm1(3,3),um1sccum1(3,3),
+     &     c4(21),d4(21)
 !     
       kal=reshape((/1,1,2,2,3,3,1,2,1,3,2,3/),(/2,6/))
 !     
@@ -70,6 +72,12 @@
      &     1,2,2,3,1,3,2,3,2,3,2,3/),(/4,21/))
 !     
       d=(/1.d0,1.d0,1.d0,0.d0,0.d0,0.d0/)
+!     
+c      d2=reshape((/1.d0,0.d0,0.d0,0.d0,1.d0,0.d0,0.d0,0.d0,1.d0/),
+c     &       (/3,3/))
+!     
+      d4=(/1.d0,0.d0,1.d0,0.d0,0.d0,1.d0,0.d0,0.d0,0.d0,0.5d0,0.d0,0.d0,
+     &0.d0,0.d0,0.5d0,0.d0,0.d0,0.d0,0.d0,0.d0,0.5d0/)
 !     
 !     calculating the logarithmic mechanical strain at the
 !     end of the increment
@@ -124,61 +132,14 @@ c      v3=w(1)*w(2)*w(3)
 !     increment
 !     
       do i=1,3
-        c(i)=2.d0*emec(i)+1.d0
+        c(i,i)=2.d0*e(i,i)+1.d0
       enddo
-      do i=4,6
-        c(i)=2.d0*emec(i)
-      enddo
-c!     
-c!     calculating the square of the right Cauchy-Green tensor at the
-c!     end of the increment
-c!     
-c      c2(1)=c(1)*c(1)+c(4)*c(4)+c(5)*c(5)
-c      c2(2)=c(4)*c(4)+c(2)*c(2)+c(6)*c(6)
-c      c2(3)=c(5)*c(5)+c(6)*c(6)+c(3)*c(3)
-c      c2(4)=c(1)*c(4)+c(4)*c(2)+c(5)*c(6)
-c      c2(5)=c(1)*c(5)+c(4)*c(6)+c(5)*c(3)
-c      c2(6)=c(4)*c(5)+c(2)*c(6)+c(6)*c(3)
-c!     
-c!     calculating the right stretch tensor at the end of the increment
-c!     (cf. Simo and Hughes, Computational Inelasticity)
-c!     
-c!     This is the mechanical right stretch tensor, i.e. without
-c!     thermal expansion (since it is based on emec)
-c!     
-c      dd=v1*v2-v3
-c      do i=1,6
-c        u(i)=(-c2(i)+(v1*v1-v2)*c(i)+v1*v3*d(i))/dd
-c      enddo
-c!     
-c!     calculating the inverse of the right stretch tensor at the end
-c!     of the increment
-c!     
-c      um1(1,1)=(c(1)-v1*u(1)+v2)/v3
-c      um1(2,2)=(c(2)-v1*u(2)+v2)/v3
-c      um1(3,3)=(c(3)-v1*u(3)+v2)/v3
-c      um1(1,2)=(c(4)-v1*u(4))/v3
-c      um1(1,3)=(c(5)-v1*u(5))/v3
-c      um1(2,3)=(c(6)-v1*u(6))/v3
-c      um1(2,1)=um1(1,2)
-c      um1(3,1)=um1(1,3)
-c      um1(3,2)=um1(2,3)
-c!     
-c!     calculating the logarithmic strain at the end of the increment
-c!     Elog=Z.ln(w).Z^T
-c!     
-c      do i=1,3
-c        w(i)=dlog(w(i))
-c      enddo
-c!     
-c!     logarithmic strain in global coordinates at the end of the
-c!     increment = ln(lambda) N diadic N;
-c!     
-c!     the true logarithmic strain is ln(lambda) n diadic n;
-c!     the rotation tensor R = n diadic N;
-c!     therefore, ln(lambda) N diadic N is R^T true logarithmic strain R, 
-c!     in other words the corotational true logarithmic strain (required
-c!     by the abaqus routine)
+      c(1,2)=2.d0*e(1,2)
+      c(1,3)=2.d0*e(1,3)
+      c(2,3)=2.d0*e(2,3)
+      c(2,1)=c(1,2)
+      c(3,1)=c(1,3)
+      c(3,2)=c(2,3)
 !     
 !     calculating the structural tensors    
 !     
@@ -383,8 +344,8 @@ c      write(*,*)
 !     Ctot=C*(1+alpha*Delta T)**2
 !     expansion:=1+alpha*Delta T
 !     
-      expansion=dsqrt((ctot(1,1)/c(1)+ctot(2,2)/c(2)+
-     &     ctot(3,3)/c(3))/3.d0)
+      expansion=dsqrt((ctot(1,1)/c(1,1)+ctot(2,2)/c(2,2)+
+     &     ctot(3,3)/c(3,3))/3.d0)
 !     
 c!     calculate the inverse total right stretch tensor at the end
 c!     of the increment (= inverse mechanical right stretch tensor
@@ -411,15 +372,17 @@ c      enddo
         enddo
       endif
 !     
-      xa(1,1)=stre(1)
-      xa(1,2)=stre(4)
-      xa(1,3)=stre(5)
-      xa(2,1)=stre(4)
-      xa(2,2)=stre(2)
-      xa(2,3)=stre(6)
-      xa(3,1)=stre(5)
-      xa(3,2)=stre(6)
-      xa(3,3)=stre(3)
+!     scc is the corotational Cauchy stress as matrix    
+!     
+      scc(1,1)=stre(1)
+      scc(1,2)=stre(4)
+      scc(1,3)=stre(5)
+      scc(2,1)=stre(4)
+      scc(2,2)=stre(2)
+      scc(2,3)=stre(6)
+      scc(3,1)=stre(5)
+      scc(3,2)=stre(6)
+      scc(3,3)=stre(3)
 !     
       do jj=1,6
         stre(jj)=0.d0
@@ -428,7 +391,7 @@ c      enddo
         do j3=1,3
           do j4=1,3
             stre(jj)=stre(jj)+
-     &           xa(j3,j4)*tkl(j1,j3)*tkl(j2,j4)
+     &           scc(j3,j4)*tkl(j1,j3)*tkl(j2,j4)
           enddo
         enddo
         stre(jj)=stre(jj)*vj/expansion**2
@@ -437,29 +400,6 @@ c      enddo
 !     calculate the stiffness matrix (the matrix is symmetrized)
 !     
       if(icmd.ne.3) then
-c        if(amat(1:11).eq.'JOHNSONCOOK') then
-c          stiff(1)=ddsdde(1,1)
-c          stiff(2)=ddsdde(2,1)
-c          stiff(3)=ddsdde(2,2)
-c          stiff(4)=ddsdde(3,1)
-c          stiff(5)=ddsdde(3,2)
-c          stiff(6)=ddsdde(3,3)
-c          stiff(7)=ddsdde(4,1)
-c          stiff(8)=ddsdde(4,2)
-c          stiff(9)=ddsdde(4,3)
-c          stiff(10)=ddsdde(4,4)
-c          stiff(11)=ddsdde(5,1)
-c          stiff(12)=ddsdde(5,2)
-c          stiff(13)=ddsdde(5,3)
-c          stiff(14)=ddsdde(5,4)
-c          stiff(15)=ddsdde(5,5)
-c          stiff(16)=ddsdde(6,1)
-c          stiff(17)=ddsdde(6,2)
-c          stiff(18)=ddsdde(6,3)
-c          stiff(19)=ddsdde(6,4)
-c          stiff(20)=ddsdde(6,5)
-c          stiff(21)=ddsdde(6,6)
-c        endif
 !     
 !     rotating the stiffness coefficients into the global system
 !     
@@ -483,6 +423,108 @@ c        endif
           enddo
           stiff(jj)=stiff(jj)*vj/expansion**2
         enddo
+!     
+!       sccum1=scc*um1
+!
+        do i=1,3
+          do j=1,3
+            sccum1(i,j)=scc(i,1)*um1(1,j)+scc(i,2)*um1(2,j)+
+     &           scc(i,3)*um1(3,j)
+          enddo
+        enddo
+!     
+!       cm1=um1*um1 (symmetric)
+!
+        do i=1,3
+          do j=i,3
+            cm1(i,j)=um1(i,1)*um1(1,j)+um1(i,2)*um1(2,j)+
+     &           um1(i,3)*um1(3,j)
+          enddo
+        enddo
+        cm1(2,1)=cm1(1,2)
+        cm1(3,1)=cm1(1,3)
+        cm1(3,2)=cm1(2,3)
+!     
+!       um1sccum1=um1*sccum1 (symmetric)
+!
+        do i=1,3
+          do j=i,3
+            um1sccum1(i,j)=um1(i,1)*sccum1(1,j)+um1(i,2)*sccum1(2,j)+
+     &           um1(i,3)*sccum1(3,j)
+          enddo
+        enddo
+        um1sccum1(2,1)=um1sccum1(1,2)
+        um1sccum1(3,1)=um1sccum1(1,3)
+        um1sccum1(3,2)=um1sccum1(2,3)
+!     
+!       ym1, ym2 and ym3 are the structural tensors as matrices
+!     
+        ym1(1,1)=xm1(1)
+        ym1(1,2)=xm1(4)
+        ym1(1,3)=xm1(5)
+        ym1(2,1)=xm1(4)
+        ym1(2,2)=xm1(2)
+        ym1(2,3)=xm1(6)
+        ym1(3,1)=xm1(5)
+        ym1(3,2)=xm1(6)
+        ym1(3,3)=xm1(3)
+!     
+        ym2(1,1)=xm2(1)
+        ym2(1,2)=xm2(4)
+        ym2(1,3)=xm2(5)
+        ym2(2,1)=xm2(4)
+        ym2(2,2)=xm2(2)
+        ym2(2,3)=xm2(6)
+        ym2(3,1)=xm2(5)
+        ym2(3,2)=xm2(6)
+        ym2(3,3)=xm2(3)
+!     
+        ym3(1,1)=xm3(1)
+        ym3(1,2)=xm3(4)
+        ym3(1,3)=xm3(5)
+        ym3(2,1)=xm3(4)
+        ym3(2,2)=xm3(2)
+        ym3(2,3)=xm3(6)
+        ym3(3,1)=xm3(5)
+        ym3(3,2)=xm3(6)
+        ym3(3,3)=xm3(3)
+!     
+!       derivative of c*c w.r.t. c (symmetric 4th order tensor)     
+!     
+        c4(1)=2.d0*c(1,1)
+        c4(2)=0.d0
+        c4(3)=2.d0*c(2,2)
+        c4(4)=0.d0
+        c4(5)=0.d0
+        c4(6)=2.d0*c(3,3)
+        c4(7)=c(2,1)
+        c4(8)=c(1,2)
+        c4(9)=0.d0
+        c4(10)=(c(2,2)+c(1,1))/2.d0
+        c4(11)=c(3,1)
+        c4(12)=0.d0
+        c4(13)=c(1,3)
+        c4(14)=c(3,2)/2.d0
+        c4(15)=(c(3,3)+c(1,1))/2.d0
+        c4(16)=0.d0
+        c4(17)=c(3,2)
+        c4(18)=c(2,3)
+        c4(19)=c(3,1)/2.d0
+        c4(20)=c(2,1)/2.d0
+        c4(21)=(c(3,3)+c(2,2))/2.d0
+!     
+c        do jj=1,21
+c          k=kel(1,jj)
+c          l=kel(2,jj)
+c          p=kel(3,jj)
+c          q=kel(4,jj)
+c          write(*,100)jj,d2(p,k),q,l,d2(q,k),p,l,d2(q,l),p,k,d2(p,l),q,k
+c        enddo
+c 100    format('c4(',i2,')=(',f2.0,'*c(',i1,',',i1,')+',f2.0,
+c     &       '*c(',i1,',',i1,')+',
+c     &       f2.0,'*c(',i1,',',i1,')+',f2.0,'*c(',i1,',',i1,'))/2.d0')
+c        stop
+!     
       endif
 !     
       return
