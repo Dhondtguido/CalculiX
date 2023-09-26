@@ -1,6 +1,6 @@
 !     
 !     CalculiX - A 3-dimensional finite element program
-!     Copyright (C) 1998-2015 Guido Dhondt
+!     Copyright (C) 1998-2023 Guido Dhondt
 !     
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -60,7 +60,7 @@
 !     
       integer nset,nload,nforc,nboun,nk,ne,nmpc,nalset,nmat,
      &     ntmat_,npmat_,norien,nam,nprint,mi(*),ntrans,ncs_,
-     &     namtot_,ncmat_,mpcend,ne1d,ne2d,nflow,nlabel,iplas,nkon,
+     &     ncmat_,mpcend,ne1d,ne2d,nflow,nlabel,iplas,nkon,
      &     ithermal(*),nmethod,iperturb(*),nstate_,istartset(*),
      &     ialset(*),kon(*),ipkon(*),nodeboun(*),ndirboun(*),iamboun(*),
      &     ikboun(*),ilboun(*),ipompc(*),nodempc(*),ikmpc(*),ilmpc(*),
@@ -73,7 +73,7 @@
      &     nshcon(*),ncocon(*),ics(*),infree(*),i,ipos,nfc,ndc,
      &     nener,iprestr,istepnew,maxlenmpc,mcs,ntie,ikdc(*),
      &     ibody(*),nbody,mt,nslavs,namtot,nef,ne2boun(*),
-     &     memmpc_,nheading_,network
+     &     memmpc_,nheading_,network, stat
 !     
       real*8 co(*),xboun(*),coefmpc(*),xforc(*),xload(*),elcon(*),
      &     rhcon(*),alcon(*),alzero(*),plicon(*),plkcon(*),orab(*),
@@ -89,6 +89,7 @@
 !     
       ipos=index(jobnamec(1),char(0))
       fnrstrt(1:ipos-1)=jobnamec(1)(1:ipos-1)
+!     fnrstrt(1:ipos+4) is the basename of the input file (=filename without extension) + extension .rout:
       fnrstrt(ipos:ipos+4)=".rout"
       do i=ipos+5,132
          fnrstrt(i:i)=' '
@@ -96,7 +97,7 @@
 !     
       if(irstrt(2).eq.0) then
 !     
-!     check whether the restart file exists and is opened
+!        check whether the restart file exists and is opened
 !     
          inquire(FILE=fnrstrt,OPENED=op,err=152)
 !     
@@ -106,20 +107,23 @@
          endif
       else
 !     
-!     overlay mode: store data in a temporary file, close
-!     temparary file after writing and rename temparary file
-!     into .rout file
+!        overlay mode: store data in a temporary file, close
+!        temporary file after writing and rename temporary file
+!        into .rout file
 !     
+!        check whether the restart file exists and is opened
 !     
-!     check whether the restart file exists and is opened
-!     
-         call system("rm -f temporaryrestartfile")
-!     
-         open(15,file="temporaryrestartfile",ACCESS='SEQUENTIAL',
+         open(15, iostat=stat, file='temporaryrestartfile',
+     &        status='old')
+!        if stat is equal 0 then opening the file was successful 
+!        and we can delete it then:
+         if (stat.EQ.0) close(15, status='delete')
+    
+         open(15,file='temporaryrestartfile',ACCESS='SEQUENTIAL',
      &        FORM='UNFORMATTED',err=151)
       endif
 !     
-      version='Version DEVELOPMENT'
+      version='Version 2.21'
       write(15) version
 !     
       write(15)istepnew
@@ -405,6 +409,7 @@
 !     
       write(15)(vold(i),i=1,mt*nk)
       if((nmethod.eq.4).or.((nmethod.eq.1).and.(iperturb(1).ge.2))) then
+!        nmethod=1 --> Static (non-)linear, nmethod=4 --> Dynamic (non-)linear
          write(15)(veold(i),i=1,mt*nk)
       endif
 !     
@@ -491,8 +496,16 @@
 !     
       if(irstrt(2).eq.1) then
          close(15)
-         call system("rm -f "//fnrstrt(1:ipos+4))
-         call system("mv temporaryrestartfile "//fnrstrt(1:ipos+4))
+         open(15, iostat=stat, file=fnrstrt(1:ipos+4),
+     &        status='OLD')
+!        if stat is equal 0 then opening the file was successful 
+!        and we can delete it then:
+         if (stat.EQ.0) close(15, status='delete')
+
+         stat = rename('temporaryrestartfile', fnrstrt(1:ipos+4) ) 
+         if (stat .ne. 0 ) goto 153
+
+
       endif
 !     
       return
@@ -503,8 +516,11 @@
  152  write(*,*) '*ERROR in restartwrite: could not inquire file ',
      &     fnrstrt
       call exit(201)
+ 153  write(*,*) '*ERROR in restartwrite:'
+      write(*,*) '  Temporary restart file with name'
+      write(*,*) '  temporaryrestartfile cannot be renamed.'
+      call exit(201)
       end
-
 
 
 
