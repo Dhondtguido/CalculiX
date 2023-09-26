@@ -16,7 +16,7 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-      subroutine springstiff_f2f(xl,elas,voldl,s,imat,elcon,nelcon,
+      subroutine springstiff_f2f(xl,stiff,voldl,s,imat,elcon,nelcon,
      &  ncmat_,ntmat_,nope,lakonl,t1l,kode,elconloc,plicon,
      &  nplicon,npmat_,iperturb,springarea,nmethod,mi,ne0,
      &  nstate_,xstateini,xstate,reltime,nasym,
@@ -33,7 +33,7 @@
      &  iperturb(*),nmethod,mi(*),ne0,nstate_,nasym,
      &  jfaces,igauss,nopem,nopes,nopep,kscale
 !
-      real*8 xl(3,19),elas(21),pproj(3),val,shp2m(7,9),
+      real*8 xl(3,19),stiff(21),pproj(3),val,shp2m(7,9),
      &  al(3),s(60,60),voldl(0:mi(2),19),pl(3,19),xn(3),
      &  c1,c3,alpha,beta,elcon(0:ncmat_,ntmat_,*),xm(3),
      &  fpu(3,3),xi,et,fnl(3),
@@ -159,16 +159,16 @@
 !        exponential overclosure
 !
          if(dabs(elcon(2,1,imat)).lt.1.d-30) then
-            elas(1)=0.d0
-            elas(2)=0.d0
+            stiff(1)=0.d0
+            stiff(2)=0.d0
          else
             alpha=elcon(2,1,imat)*springarea(1)
             beta=elcon(1,1,imat)
             if(-beta*clear.gt.23.d0-dlog(alpha)) then
                beta=(dlog(alpha)-23.d0)/clear
             endif
-            elas(1)=dexp(-beta*clear+dlog(alpha))
-            elas(2)=-beta*elas(1)
+            stiff(1)=dexp(-beta*clear+dlog(alpha))
+            stiff(2)=-beta*stiff(1)
          endif
       elseif((int(elcon(3,1,imat)).eq.2).or.
      &       (int(elcon(3,1,imat)).eq.4)) then
@@ -177,8 +177,8 @@
 !
 c        write(*,*) 'springstiff_f2f',springarea(1),elcon(2,1,imat),
 c     &       kscale
-         elas(2)=-springarea(1)*elcon(2,1,imat)/kscale
-         elas(1)=elas(2)*clear
+         stiff(2)=-springarea(1)*elcon(2,1,imat)/kscale
+         stiff(1)=stiff(2)*clear
       elseif(int(elcon(3,1,imat)).eq.3) then
 !     
 !        tabular overclosure
@@ -204,17 +204,17 @@ c     &       kscale
             dpresdoverlap=(yiso(id+1)-yiso(id))/(xiso(id+1)-xiso(id))
             pres=yiso(id)+dpresdoverlap*(overlap-xiso(id))
          endif
-         elas(1)=springarea(1)*pres
-         elas(2)=-springarea(1)*dpresdoverlap
+         stiff(1)=springarea(1)*pres
+         stiff(2)=-springarea(1)*dpresdoverlap
       endif
 !
 !     contact force
 !
       do i=1,3
-         fnl(i)=-elas(1)*xn(i)
+         fnl(i)=-stiff(1)*xn(i)
       enddo
 !     
-      c3=elas(2)
+      c3=stiff(2)
 !
 !     derivatives of the forces w.r.t. the displacement vectors
 !

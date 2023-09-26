@@ -5231,3 +5231,28 @@ Dec 2002        - started to work on single crystal plasticity
                   for beam elements: seems to solve the zero coefficient
 		  issue of the dependent term
 		- corrected an error in changekon.f
+
+ 7 Sept 2023    - made some corrections in umat_aniso_plas.f
+                - added test examples for anisotropic elasticity with
+		  isotropic plasticity (isotropic and kinematic hardening)
+                - increased the number of state variables for
+		  umat_aniso_plas from 14 to 20 (included q2)
+
+ 8 Sept 2023    - allowed arbitrary hardening curves for orthotropic
+                  elasticity with isotropic plasticity
+
+ 11 Sept 2023   - worked on ortho_plas.f in Abaqus umat-form (for
+                  nlgeom calculations)
+
+ 12 Sept 2023   - continued to work on ortho_plas with NLGEOM
+
+ 13 Sept 2023   - extended the Mohr-Coulomb and Anisotropic Creep model
+                  to large strains and/or rotations by using the Abaqus
+		  interface routines
+
+ 15 Sept 2023   - reworked umat_aniso_creep.f based on ortho_plas.f
+
+ 16 Sept 2023   - updated the documentation on anisotropic elasticity
+                  combined with isotropic viscoplasticity
+ 
+ 17 Sept 2023   - worked on writeinputdeck.f

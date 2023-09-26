@@ -57,7 +57,7 @@
      &     stx(6,mi(1),*),xl(3,20),vl(0:mi(2),20),stre(6),prop(*),
      &     elcon(0:ncmat_,ntmat_,*),rhcon(0:1,ntmat_,*),xs2(3,7),
      &     alcon(0:6,ntmat_,*),vini(0:mi(2),*),thickness,
-     &     alzero(*),orab(7,*),elas(21),rho,fn(0:mi(2),*),
+     &     alzero(*),orab(7,*),stiff(21),rho,fn(0:mi(2),*),
      &     fnl(3,10),skl(3,3),beta(6),q(0:mi(2),20),xl2(3,8),
      &     vkl(0:3,3),t0(*),t1(*),prestr(6,mi(1),*),eme(6,mi(1),*),
      &     ckl(3,3),vold(0:mi(2),*),eloc(6),veold(0:mi(2),*),
@@ -407,7 +407,7 @@ c     Bernhardi end
 c                venergy=enerini(2,1,nr)
                 venergy=0.d0
               endif
-              call springforc_n2f(xl,konl,vl,imat,elcon,nelcon,elas,
+              call springforc_n2f(xl,konl,vl,imat,elcon,nelcon,stiff,
      &             fnl,ncmat_,ntmat_,nope,lakonl,t1l,kode,elconloc,
      &             plicon,nplicon,npmat_,senergy,nener,
      &             stx(1,1,i),mi,springarea(1,konl(nope+1)),nmethod,
@@ -425,7 +425,7 @@ c                venergy=enerini(2,1,nr)
               igauss=kon(indexe+nope+1)
 c              if(nener.eq.1) venergy=enerini(2,1,ne0+igauss)
               if(nener.eq.1) venergy=0.d0
-              call springforc_f2f(xl,vl,imat,elcon,nelcon,elas,
+              call springforc_f2f(xl,vl,imat,elcon,nelcon,stiff,
      &             fnl,ncmat_,ntmat_,nope,lakonl,t1l,kode,elconloc,
      &             plicon,nplicon,npmat_,senergy,nener,
      &             stx(1,1,i),mi,springarea(1,igauss),nmethod,
@@ -737,7 +737,8 @@ c     Bernhardi end
 !     coordinates to material coordinates
 !     deformation plasticity)
 !     
-          if((kode.eq.-50).or.(kode.le.-100)) then
+          if((kode.eq.-50).or.(kode.eq.-53).or.(kode.eq.-54).or.
+     &         (kode.le.-100)) then
 !     
 !     calculating the deformation gradient
 !     
@@ -922,7 +923,7 @@ c            endif
 !     
           call materialdata_me(elcon,nelcon,rhcon,nrhcon,alcon,
      &         nalcon,imat,amat,iorien,pgauss,orab,ntmat_,
-     &         elas,rho,i,ithermal,alzero,mattyp,t0l,t1l,ihyper,
+     &         stiff,rho,i,ithermal,alzero,mattyp,t0l,t1l,ihyper,
      &         istiff,elconloc,eth,kode,plicon,nplicon,
      &         plkcon,nplkcon,npmat_,plconloc,mi(1),dtime,jj,
      &         xstiff,ncmat_)
@@ -962,7 +963,7 @@ c            endif
 !     calculating the local stiffness and stress
 !     
           nlgeom_undo=0
-          call mechmodel(elconloc,elas,emec,kode,emec0,ithermal,
+          call mechmodel(elconloc,stiff,emec,kode,emec0,ithermal,
      &         icmd,beta,stre,xkl,ckl,vj,xikl,vij,
      &         plconloc,xstate,xstateini,ielas,
      &         amat,t1l,dtime,time,ttime,i,jj,nstate_,mi(1),
@@ -973,7 +974,7 @@ c            endif
           if(((nmethod.ne.4).or.(iperturb(1).ne.0)).and.
      &         (nmethod.ne.5).and.(icmd.ne.3)) then
             do m1=1,21
-              xstiff(m1,jj,i)=elas(m1)
+              xstiff(m1,jj,i)=stiff(m1)
             enddo
           endif
 !     
@@ -996,8 +997,8 @@ c            endif
             eloc(6)=elineng(6)-(vokl(2,3)+vokl(3,2))
 !     
             if(mattyp.eq.1) then
-              e=elas(1)
-              un=elas(2)
+              e=stiff(1)
+              un=stiff(2)
               um=e/(1.d0+un)
               al=un*um/(1.d0-2.d0*un)
               um=um/2.d0
@@ -1009,34 +1010,34 @@ c            endif
               stre(5)=um*eloc(5)
               stre(6)=um*eloc(6)
             elseif(mattyp.eq.2) then
-              stre(1)=eloc(1)*elas(1)+eloc(2)*elas(2)
-     &             +eloc(3)*elas(4)
-              stre(2)=eloc(1)*elas(2)+eloc(2)*elas(3)
-     &             +eloc(3)*elas(5)
-              stre(3)=eloc(1)*elas(4)+eloc(2)*elas(5)
-     &             +eloc(3)*elas(6)
-              stre(4)=eloc(4)*elas(7)
-              stre(5)=eloc(5)*elas(8)
-              stre(6)=eloc(6)*elas(9)
+              stre(1)=eloc(1)*stiff(1)+eloc(2)*stiff(2)
+     &             +eloc(3)*stiff(4)
+              stre(2)=eloc(1)*stiff(2)+eloc(2)*stiff(3)
+     &             +eloc(3)*stiff(5)
+              stre(3)=eloc(1)*stiff(4)+eloc(2)*stiff(5)
+     &             +eloc(3)*stiff(6)
+              stre(4)=eloc(4)*stiff(7)
+              stre(5)=eloc(5)*stiff(8)
+              stre(6)=eloc(6)*stiff(9)
             elseif(mattyp.eq.3) then
-              stre(1)=eloc(1)*elas(1)+eloc(2)*elas(2)+
-     &             eloc(3)*elas(4)+eloc(4)*elas(7)+
-     &             eloc(5)*elas(11)+eloc(6)*elas(16)
-              stre(2)=eloc(1)*elas(2)+eloc(2)*elas(3)+
-     &             eloc(3)*elas(5)+eloc(4)*elas(8)+
-     &             eloc(5)*elas(12)+eloc(6)*elas(17)
-              stre(3)=eloc(1)*elas(4)+eloc(2)*elas(5)+
-     &             eloc(3)*elas(6)+eloc(4)*elas(9)+
-     &             eloc(5)*elas(13)+eloc(6)*elas(18)
-              stre(4)=eloc(1)*elas(7)+eloc(2)*elas(8)+
-     &             eloc(3)*elas(9)+eloc(4)*elas(10)+
-     &             eloc(5)*elas(14)+eloc(6)*elas(19)
-              stre(5)=eloc(1)*elas(11)+eloc(2)*elas(12)+
-     &             eloc(3)*elas(13)+eloc(4)*elas(14)+
-     &             eloc(5)*elas(15)+eloc(6)*elas(20)
-              stre(6)=eloc(1)*elas(16)+eloc(2)*elas(17)+
-     &             eloc(3)*elas(18)+eloc(4)*elas(19)+
-     &             eloc(5)*elas(20)+eloc(6)*elas(21)
+              stre(1)=eloc(1)*stiff(1)+eloc(2)*stiff(2)+
+     &             eloc(3)*stiff(4)+eloc(4)*stiff(7)+
+     &             eloc(5)*stiff(11)+eloc(6)*stiff(16)
+              stre(2)=eloc(1)*stiff(2)+eloc(2)*stiff(3)+
+     &             eloc(3)*stiff(5)+eloc(4)*stiff(8)+
+     &             eloc(5)*stiff(12)+eloc(6)*stiff(17)
+              stre(3)=eloc(1)*stiff(4)+eloc(2)*stiff(5)+
+     &             eloc(3)*stiff(6)+eloc(4)*stiff(9)+
+     &             eloc(5)*stiff(13)+eloc(6)*stiff(18)
+              stre(4)=eloc(1)*stiff(7)+eloc(2)*stiff(8)+
+     &             eloc(3)*stiff(9)+eloc(4)*stiff(10)+
+     &             eloc(5)*stiff(14)+eloc(6)*stiff(19)
+              stre(5)=eloc(1)*stiff(11)+eloc(2)*stiff(12)+
+     &             eloc(3)*stiff(13)+eloc(4)*stiff(14)+
+     &             eloc(5)*stiff(15)+eloc(6)*stiff(20)
+              stre(6)=eloc(1)*stiff(16)+eloc(2)*stiff(17)+
+     &             eloc(3)*stiff(18)+eloc(4)*stiff(19)+
+     &             eloc(5)*stiff(20)+eloc(6)*stiff(21)
             endif
           endif
 !     
@@ -1190,7 +1191,7 @@ c          if((iout.ge.0).or.(iout.eq.-2).or.(kode.le.-100).or.
             endif
 c     Bernhardi start
             if(lakonl(1:5).eq.'C3D8R') then
-              call hgforce(fn,elas,a,gs,vl,mi,konl)
+              call hgforce(fn,stiff,a,gs,vl,mi,konl)
               icmd=icmdcpy
             endif
 c     Bernhardi end

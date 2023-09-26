@@ -64,7 +64,7 @@
      &     nfaces,ig,ifaceq(8,6),ifacet(6,4),ifacew(8,5),
      &     mscalmethod,icount,mortar
 !     
-      real*8 elas(21),wavespeed(*),rhcon(0:1,ntmat_,*),volfac,
+      real*8 stiff(21),wavespeed(*),rhcon(0:1,ntmat_,*),volfac,
      &     alcon(0:6,ntmat_,*),coords(3),orab(7,*),rho,alzero(*),
      &     t0l,t1l,elconloc(ncmat_),eth(6),plicon(0:2*npmat_,ntmat_,*),
      &     plkcon(0:2*npmat_,ntmat_,*),plconloc(802),dtime,
@@ -311,7 +311,7 @@ c            elemfac=0.5d0
 !     material data
           istiff=1
           call materialdata_me(elcon,nelcon,rhcon,nrhcon,alcon,nalcon,
-     &         imat,amat,iorien,coords,orab,ntmat_,elas,rho,
+     &         imat,amat,iorien,coords,orab,ntmat_,stiff,rho,
      &         nelem,ithermal,alzero,mattyp,t0l,t1l,
      &         ihyper,istiff,elconloc,eth,kode,plicon,
      &         nplicon,plkcon,nplkcon,npmat_,
@@ -319,32 +319,32 @@ c            elemfac=0.5d0
      &         xstiff,ncmat_)
 !     
           if(mattyp.eq.1) then
-            e=elas(1)
-            un=elas(2)
+            e=stiff(1)
+            un=stiff(2)
             wavspd=max(wavspd,
      &           dsqrt((e*(1-un))/((1+un)*(1-2*un)*rho)))
           elseif(mattyp.eq.2) then
 !     
 !     single crystal
 !     
-c            if(((elas(1).eq.elas(3)).and.(elas(1).eq.elas(6)).and.
-c     &           (elas(3).eq.elas(6))).and.
-c     &           ((elas(2).eq.elas(4)).and.(elas(2).eq.elas(5)).and.
-c     &           (elas(4).eq.elas(5))).and.
-c     &           ((elas(7).eq.elas(8)).and.(elas(7).eq.elas(9)).and.
-c     &           (elas(8).eq.elas(9)))) then
-c              wavspd=max(wavspd,dsqrt((1/3.d0)*(elas(1)+2.0*elas(2)+
-c     &             4.0d0*elas(7))/rho))
+c            if(((stiff(1).eq.stiff(3)).and.(stiff(1).eq.stiff(6)).and.
+c     &           (stiff(3).eq.stiff(6))).and.
+c     &           ((stiff(2).eq.stiff(4)).and.(stiff(2).eq.stiff(5)).and.
+c     &           (stiff(4).eq.stiff(5))).and.
+c     &           ((stiff(7).eq.stiff(8)).and.(stiff(7).eq.stiff(9)).and.
+c     &           (stiff(8).eq.stiff(9)))) then
+c              wavspd=max(wavspd,dsqrt((1/3.d0)*(stiff(1)+2.0*stiff(2)+
+c     &             4.0d0*stiff(7))/rho))
 c              wavspd=max(wavspd,dsqrt((1/2.d0)*
-c     &             (elas(1)+elas(2)+2.0*elas(7))/rho))
-c              wavspd=max(wavspd,dsqrt(elas(1)/rho))
+c     &             (stiff(1)+stiff(2)+2.0*stiff(7))/rho))
+c              wavspd=max(wavspd,dsqrt(stiff(1)/rho))
 c            else
               iorth=1
-              call anisomaxwavspd(elas,rho,iorth,wavspd)
+              call anisomaxwavspd(stiff,rho,iorth,wavspd)
 c            endif
           elseif(mattyp.eq.3) then
             iorth=0
-            call anisomaxwavspd(elas,rho,iorth,wavspd)
+            call anisomaxwavspd(stiff,rho,iorth,wavspd)
           endif
 !     
           wavespeed(imat)=wavspd

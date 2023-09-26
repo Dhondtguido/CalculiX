@@ -2961,8 +2961,15 @@ the initial specimen length.
 Notice that the same approach is taken in CalculiX for the calculation of the
 corotational logarithmic strain needed for an Abaqus User Material
 Routine. First, the thermal strain is subtracted from the total stretch to
-obtain the mechanical stretch and then the corational logarithmic strain is
+obtain the mechanical stretch and then the corational logarithmic mechanical strain is
 built:
+
+\begin{equation}
+  \hat{E}_{\text{ln,mech}} = \sum_{i} \ln \lambda_{\text{mech},i}
+  \boldsymbol{N}_i \otimes \boldsymbol{N}_i,
+\end{equation}
+
+In Abaqus, however, it is obtained according to:
 
 \begin{equation}
   \hat{E}_{\text{ln,mech}} = \sum_{i} (\ln \lambda_i - \overline{\alpha} \Delta T)
@@ -10596,7 +10603,8 @@ dynamical phenomena such as explosions, bird strike in a jet engine etc.
 
 For $\dot{\epsilon}_p < \dot{\epsilon}_0$ the logarithm becomes negative and
 also for small $\epsilon_p$ convergence seems more difficult. Therefore,
-  Bernhardi and co-workers \cite{Mazza} have modified the above law to:
+  Bernhardi and co-workers \cite{Mazza} have modified the above law for the
+  following special ranges of $\epsilon_p$ and $\dot{\epsilon}_p$ to:
 
 \begin{eqnarray}
   \sigma_{\text{vm}} &=& \left [A+B \epsilon_p \delta ^{n-1} \right ] \left [1+C \ln \left(
@@ -10615,11 +10623,14 @@ $\delta=10^{-4}$ was taken.
 
 In the input deck the Johnson-Cook model is activated by the HARDENING=JOHNSON
 COOK parameter on the \htmlref{*PLASTIC}{plastic} card. Underneath this card
-the rate-independent terms are defined, i.e. the parameters $A,B,n,m,T_m and
-T_0$. If $T_m=T_0$ no temperature dependence is taken into account. The rate
+the rate-independent terms are defined, i.e. the parameters $A,B,n,m,T_m$ and
+$T_0$. If $T_m=T_0$ no temperature dependence is taken into account. The rate
 dependence has to be defined using a \htmlref{*RATE DEPENDENT}{ratedependent}
 card with the parameter TYPE=JOHNSON COOK, listing underneath the parameters
 $C$ and $\dot{\epsilon}_0$.
+
+The name of a material with Johnson-Cook hardening is not allowed to contain
+more than 69 characters.
 
 \subsubsection{\label{mohrcoulombplasticity}Mohr-Coulomb plasticity.}
 
@@ -11656,15 +11667,16 @@ defines a single crystal with elastic constants
 $\{135468.,68655.,201207.\}$, octaeder parameters $\{1550.,3.89\}$ and cubic
 parameters $\{980.,3.89\}$ for a temperature of 400.
 
-\subsubsection{Elastic anisotropy with isotropic
+\subsubsection{\label{s533}Elastic anisotropy with isotropic
 viscoplasticity.}
 
-\label{s533}
-
 This model describes small deformations for elastically anisotropic materials with a von
-Mises type yield surface. Often, this model is used as a compromise
+Mises type yield surface (\cite{Dhondt}, Section 5.5). Often, this model is used as a compromise
 for anisotropic materials with lack of data or detailed knowledge
 about the anisotropic behavior in the viscoplastic range.
+
+It is activated as soon as a *ELASTIC,TYPE=ORTHO card is followed by a
+*PLASTIC card and/or *CREEP card (the latter without the LAW=USER parameter).
 
 The total strain is supposed to be the sum of the elastic strain and
 the plastic strain:
@@ -11679,22 +11691,22 @@ isotropic and kinematic change of the yield surface,
 respectively. The yield surface takes the form:
 
 \begin{equation}
-f := \left\| \mbox{\boldmath{$dev({\sigma})$}} + \mathbf{q_2} \right\| +
-\sqrt{\frac{2}{3}}(q_1-r_0) = 0
+f := \left\| \mbox{\boldmath${\text{dev}(\sigma)}$} + \mathbf{q_2} \right\| +
+\sqrt{\frac{2}{3}}q_1 = 0
 \end{equation}
 
-where $\mbox{\boldmath${dev(\sigma)}$}$ is the deviatoric stress tensor, and $r_0$ is the
-size of the elastic range at zero yield. The constitutive equations for the
+where $\mbox{\boldmath${\text{dev}(\sigma)}$}$ is the deviatoric stress tensor. The constitutive equations for the
 hardening variables satisfy:
 
 \begin{equation}
-q_1 = -d_1 \alpha_1
+q_1 = -h_1 (\alpha_1)
 \end{equation}
 
 and
 
 \begin{equation}
-\mathbf{q_2} = - \frac{2}{3} d_2 \mbox{\boldmath${\alpha_2}$}
+\mathbf{\dot{q_2}} = - \frac{2}{3} d_2 \frac{\partial h_2^{eq}}{\partial
+  \alpha_2^{eq}} \mathbf{\dot{\alpha_2}}
 \end{equation}
 
 where $\alpha_1$ and $\mbox{\boldmath${\alpha_2}$}$ are the hardening variables
@@ -11712,36 +11724,14 @@ where ${\epsilon}^{peq}$ is the equivalent plastic strain
 defined by
 
 \begin{equation}
-{\epsilon}^{peq} = \sqrt{\frac{2}{3}} \left \| \mbox{\boldmath${{\epsilon}^p}$} \right
+\dot{{\epsilon}^{peq}} = \sqrt{\frac{2}{3}} \left \| \mbox{\boldmath${\dot{\epsilon^p}}$} \right
 \|.
 \end{equation}
 
 and ${\alpha_2}^{eq}$ is the equivalent value of the tensor
-$\mbox{\boldmath${\alpha_2}$}$ defined in a similar way. Thus, the
-constitutive equations amount to
-
-
-\begin{equation}
-q_1 = -d_1 {\epsilon}^{peq}
-\end{equation}
-
-and 
-
-\begin{equation}
-{q_2}^{eq} = d_2 {\epsilon}^{peq},
-\end{equation}
-
-where
-
-\begin{equation}
-{q_2}^{eq} = \sqrt{\frac{3}{2}} \left \| \mathbf{q_2} \right
-\|
-\end{equation}
-
-has the meaning of an equivalent stress value or von Mises value. The
-same applies to $q_1$. Consequently, the constitutive equations assume a
-linear relationship between the hardening stress and the equivalent
-plastic strain.
+$\mbox{\boldmath${\alpha_2}$}$ defined in a similar way. The isotropic
+hardening curve to be defined by the user is $h_1(\epsilon^{peq})$, the
+kinematic one is $h_2^{eq}(\epsilon^{peq})$.
 
 The constitutive equation for the stress is
  Hooke's law:
@@ -11774,8 +11764,8 @@ where
 
 \begin{equation}
 \mathbf{n}  = 
- \frac {\mbox{\boldmath${dev(\sigma)}$} + \mathbf{q_2}}
-{\left \| \mbox{\boldmath${dev(\sigma)}$} + \mathbf{q_2} \right \| }.
+ \frac {\mbox{\boldmath${\text{dev}(\sigma)}$} + \mathbf{q_2}}
+{\left \| \mbox{\boldmath${\text{dev}(\sigma)}$} + \mathbf{q_2} \right \| }.
 \end{equation}
 
 The variable $\dot{\gamma}$ is the consistency coefficient known
@@ -11799,97 +11789,96 @@ while leaving positive values unchanged, i.e. $\langle x \rangle =0$
 if $x <0 $ and $\langle x \rangle =x$ if $x \ge 0$.
 
 In the present implementation orthotropic elastic behavior is
-assumed. Consequently, for each temperature 15
-constants need to be defined: the elastic constants $C_{1111}$,
+assumed. Consequently, for each temperature 9
+constants need to be defined: $C_{1111}$,
 $C_{1122}$, $C_{2222}$,$C_{1133}$,
 $C_{2233}$, $C_{3333}$,$C_{1212}$,
-$C_{1313}$, $C_{2323}$, and the viscoplastic constants 
-$r_0,d_1,d_2,A,n,m$. 
+$C_{1313}$, $C_{2323}$.
 
- The material
-definition consists of a *MATERIAL card defining the name of
-the material. This name HAS TO START WITH ''ANISO\_PLAS'' but can be
-up to 80 characters long. Thus, the last 70 characters can be freely
-chosen by the user. Within the material definition a \htmlref{*USER
-MATERIAL}{usermaterial} card has to be used satisfying:
-
-First line:
-\begin{itemize}
-\item *USER MATERIAL
-\item Enter the CONSTANTS parameter and its value, i.e. 15.
-\end{itemize}
-
-Following lines, in sets of 2:
-
-\bigskip
-First line of set:
-\begin{itemize}
-\item $C_{1111}$.
-\item $C_{1122}$.
-\item $C_{2222}$.
-\item $C_{1133}$.
-\item $C_{2233}$.
-\item $C_{3333}$.
-\item $C_{1212}$.
-\item $C_{1313}$.
-\end{itemize}
-Second line of set:
-\begin{itemize}
-\item $C_{2323}$.
-\item $r_0$.
-\item $d_1$.
-\item $d_2$.
-\item $A$.
-\item $n$.
-\item $m$.
-\item Temperature.
-\end{itemize}
-
-Repeat this set if needed to define complete temperature dependence.
+With isotropic hardening only, the user has to define  $h_1(\epsilon^{peq})$
+underneath the \htmlref{*PLASTIC}{plastic} card, with kinematic hardening only
+$h_2^{eq}(\epsilon^{peq})$ has to be defined underneath a
+*PLASTIC, HARDENING=KINEMATIC card. For combined hardening the
+$h_2^{eq}(\epsilon^{peq})$ curve must be defined underneath a *PLASTIC,
+HARDENING=KINEMATIC card and $h_1(\epsilon^{peq})$ underneath a
+\htmlref{*CYCLIC HARDENING}{cyclichardening} card. For the viscous constants
+the \htmlref{*CREEP}{creep} card is to be used. So the viscoplastic input deck
+format is essentially the same as for an elastically isotropic material with
+isotropic plasticity.
 
 The principal axes of the material are assumed to coincide with the global
 coordinate system. If this is not the case, use an
 \htmlref{*ORIENTATION}{orientation} card to define a local system.
 
-For this model, there are 14 internal state variables: 
+For this model, there are 20 internal state variables: 
 \begin{itemize}
 \item the equivalent plastic strain ${\epsilon}^{peq}$ (1)
 \item the plastic strain tensor \mbox{\boldmath${\epsilon^p}$} (6) 
 \item the isotropic hardening variable $\alpha_1$ (1)
 \item the kinematic hardening tensor $\mathbf{\alpha_2}$ (6)
+\item the back stress tensor $\mathbf{q_2}$ (6)
 \end{itemize}
 
 These variables are accessible through the \htmlref{*EL
 PRINT}{elprint} (.dat file) and \htmlref{*EL FILE}{elfile} (.frd file)
-keywords in exactly this order (label SDV). The
-\htmlref{*DEPVAR}{depvar} card must be included in the material
-definition with a value of 14.
+keywords in exactly this order (label SDV).
+
+This model is for small deformations (small strains and small
+rotations). However, if NLGEOM is activated on the \htmlref{*STEP}{step} card
+this model is considered to be an Abaqus umat routine linking the corotational
+Cauchy stress to the corotational mechanical logarithmic strain. In this way, the routine
+can also be used for large deformations.
 
 \begin{verbatim}
 Example:
 
-*MATERIAL,NAME=ANISO_PLAS
-*USER MATERIAL,CONSTANTS=15
+*MATERIAL,NAME=MAT1
+*ELASTIC,TYPE=ORTHO
 500000.,157200.,500000.,157200.,157200.,500000.,126200.,126200.,
-126200.,0.,0.,0.,1.E-10,5,0.
-*DEPVAR
-14
+126200.
+*CREEP
+1.E-10,5,0.
 \end{verbatim}
 
 defines a single crystal with elastic constants
 500000., 157200., 500000., 157200., 157200., 500000., 126200., 126200.,
-126200., and viscoplastic parameters $r_0=0.$, $d_1=0.$, $d_2=0.$,
-$A={10}^{-10}$, $n=5$ and $m=0$. Thus, the yield surface has a zero radius
-and there is no hardening. Only creep is activated.
+126200., and viscoplastic parameters 
+$A={10}^{-10}$, $n=5$ and $m=0$. The yield surface has a zero radius
+and there is no hardening (since neither the *PLASTIC or the *CYCLIC HARDENING
+card was used). Only creep is activated.
+
+\begin{verbatim}
+Example:
+
+*MATERIAL,NAME=EL
+*ELASTIC,TYPE=ORTHO
+500000.,157200.,500000.,157200.,157200.,500000.,126200.,126200.,
+126200.
+*PLASTIC
+100.,0.
+110.,0.01
+2110.,1.01
+\end{verbatim}
+
+defines a single crystal with the same elastic constants as in the previous
+example. Now, a bilinear isotropic hardening curve is defined. No time
+dependent behavior was defined.
+
+\bigskip
+Example files: anipla, anipla2, anipla3, anipla4, anipla\_nl\_st,
+anipla\_nl\_dy\_imp, anipla\_nl\_dy\_exp.
 
 \subsubsection{Elastic anisotropy with user defined isotropic creep.}
 
 This material model is similar to the previous one, except that 
 
 \begin{itemize}
-\item no plasticity is assumed (yield surface coincides with the origine)
+\item no plasticity is assumed (yield surface coincides with the origin)
 \item the creep model is to be provided by a creep user subroutine
 \end{itemize}
+
+It is activated as soon as a *ELASTIC, TYPE=ORTHO card is followed by a *CREEP,
+LAW=USER card.
 
 In the present implementation orthotropic elastic behavior is
 assumed. Consequently, for each temperature 9
@@ -11900,38 +11889,9 @@ $C_{1313}$ and  $C_{2323}$.
 
  The material
 definition consists of a *MATERIAL card defining the name of
-the material. This name HAS TO START WITH ''ANISO\_CREEP'' but can be
-up to 80 characters long. Thus, the last 69 characters can be freely
-chosen by the user. Within the material definition a \htmlref{*USER
-MATERIAL}{usermaterial} card has to be used satisfying:
-
-First line:
-\begin{itemize}
-\item *USER MATERIAL
-\item Enter the CONSTANTS parameter and its value, i.e. 9.
-\end{itemize}
-
-Following lines, in sets of 2:
-
-\bigskip
-First line of set:
-\begin{itemize}
-\item $C_{1111}$.
-\item $C_{1122}$.
-\item $C_{2222}$.
-\item $C_{1133}$.
-\item $C_{2233}$.
-\item $C_{3333}$.
-\item $C_{1212}$.
-\item $C_{1313}$.
-\end{itemize}
-Second line of set:
-\begin{itemize}
-\item $C_{2323}$.
-\item Temperature.
-\end{itemize}
-
-Repeat this set if needed to define complete temperature dependence.
+the material. The elastic constants are to be defined underneath a *ELASTIC,
+TYPE=ORTHO card. The creep user subroutine (creep.f) is activated by a *CREEP,
+LAW=USER card.
 
 The principal axes of the material are assumed to coincide with the global
 coordinate system. If this is not the case, use an
@@ -11939,7 +11899,7 @@ coordinate system. If this is not the case, use an
 
 For this model, there are 7 internal state variables (recall that CalculiX
 does not make a distinction between plastic strain and creep strain: the field
-${\epsilon^p}$ contains the sum of both): 
+\mbox{\boldmath${\epsilon^p}$} contains the sum of both): 
 \begin{itemize}
 \item the equivalent plastic strain ${\epsilon}^{peq}$ (1)
 \item the plastic strain tensor \mbox{\boldmath${\epsilon^p}$} (6) 
@@ -11947,9 +11907,7 @@ ${\epsilon^p}$ contains the sum of both):
 
 These variables are accessible through the \htmlref{*EL
 PRINT}{elprint} (.dat file) and \htmlref{*EL FILE}{elfile} (.frd file)
-keywords in exactly this order (label SDV). The
-\htmlref{*DEPVAR}{depvar} card must be included in the material
-definition with a value of 7.
+keywords in exactly this order (label SDV).
 
 The creep subroutine has to be provided by the user (cf. Section
 \ref{creepf}). Since the material is anisotropic the input to the creep
@@ -11957,20 +11915,28 @@ routine is the equivalent deviatoric creep strain, the output is the von Mises
 stress and the derivative of the equivalent deviatoric creep strain increment
 w.r.t. the von Mises stress.
 
+This model is for small deformations (small strains and small
+rotations). However, if NLGEOM is activated on the \htmlref{*STEP}{step} card
+this model is considered to be an Abaqus umat routine linking the corotational
+Cauchy stress to the corotational mechanical logarithmic strain. In this way, the routine
+can also be used for large deformations.
+
 \begin{verbatim}
 Example:
 
-*MATERIAL,NAME=ANISO_CREEP
-*USER MATERIAL,CONSTANTS=9
+*MATERIAL,NAME=MAT
+*ELASTIC,TYPE=ORTHO
 500000.,157200.,500000.,157200.,157200.,500000.,126200.,126200.,
 126200.
-*DEPVAR
-7
+*CREEP,LAW=USER
 \end{verbatim}
 
 defines a single crystal with elastic constants
 500000., 157200., 500000., 157200., 157200., 500000., 126200., 126200. and
 126200.. The creep law has to be provide by the user in the form of a creep.f subroutine.
+
+\bigskip
+Example files: beamcr4.
 
 \subsubsection{User materials}
 
@@ -12004,18 +11970,20 @@ umat.f, for limitations on the use of the Abaqus interface fields section
 Here, some information is given on how the fields used in CalculiX (mechanical
 Lagrange strain and Piola-Kirchhoff stress of the second kind) are converted
 into the fields required by Abaqus (corotational mechanical logarithmic strain and
-corotational Cauchy stress) and vice versa. The conversions is coded in
-umat\_abaqusnl.f.
+corotational Cauchy stress) and vice versa. The conversions are coded in
+umat\_abaqusnl.f. The fields $\boldsymbol{F}$, $\boldsymbol{E} ^{\mathcal{M}}$
+and $\boldsymbol{S}$ are available at the start of the routine (the meaning of
+these variables is explained in the following paragraphs). 
 
 The mechanical logarithmic strain satisfies
 
 \begin{equation}
-  e_{\ln}^{\mathcal{M}} = \sum_{i} \lambda_i^{\mathcal{M}}
+  e_{\ln}^{\mathcal{M}} = \sum_{i} \ln{\lambda_i^{\mathcal{M}}}
   \boldsymbol{n}_i \otimes \boldsymbol{n}_i,
 \end{equation}
 
 where $\lambda_i^{\mathcal{M}}$ are the eigenvalues of the mechanical
-deformation gradient $\boldsymbol{F} ^{\mathcal{M}}$. In calculiX, the
+deformation gradient $\boldsymbol{F} ^{\mathcal{M}}$. In CalculiX, the
 mechanical deformation gradient is obtained by subtracting the thermal
 expansion from the total deformation gradient, i.e.
 
@@ -12024,9 +11992,13 @@ expansion from the total deformation gradient, i.e.
   \boldsymbol{I}
 \end{equation}
 
-for isotropic expansion. The rotation tensor $\boldsymbol{R}= \boldsymbol{n}_{\underline{i}}
+for isotropic expansion. This is a first order approximation of a
+multiplicative decomposition of the total deformation gradient into a
+mechanical and thermal component in the form $\boldsymbol{F}=
+\boldsymbol{F}^{\mathcal{M}}  (1 + \alpha \Delta T)$, recall also
+$\boldsymbol{F}=\boldsymbol{I} + (\nabla_0 \boldsymbol{u})^T$.  The rotation tensor $\boldsymbol{R}= \boldsymbol{n}_{\underline{i}}
 \otimes \boldsymbol{N}_{\underline{i}}$   rotates the principal vectors
-$\boldsymbol{N}_i$ of the motion in material coordinates in spatial
+$\boldsymbol{N}_i$ of the motion in material coordinates into spatial
 coordinates $\boldsymbol{n}_i$:
 
 \begin{equation}
@@ -12040,7 +12012,7 @@ orthogonal, i.e. $\boldsymbol{R}^{-1} = \boldsymbol{R}^T$)   :
 
 \begin{equation}
   \hat{\boldsymbol{e}}_{\ln}^ {\mathcal{M}} = \boldsymbol{R}^T \cdot
-  e_{\ln}^{\mathcal{M}} \cdot \boldsymbol{R} = \sum_{i} \lambda_i^{\mathcal{M}}
+  e_{\ln}^{\mathcal{M}} \cdot \boldsymbol{R} = \sum_{i} \ln{\lambda_i^{\mathcal{M}}}
   \boldsymbol{N}_i \otimes \boldsymbol{N}_i.
 \end{equation}
 
@@ -12069,7 +12041,7 @@ stress of the second kind and $\boldsymbol{U}$ is the right-stretch
 tensor. The latter is the square root of the Cauchy-Green tensor
 $\boldsymbol{C}$ and therefore it can also be derived from the Lagrange
 tensor. However, in routine umat\_abaqusnl.f the mechanical Lagrange tensor is
-available and not the total one. So a relationships is needed between the
+available and not the total one. So a relationship is needed between the
 total right-stretch tensor and the mechanical right-stretch tensor. Since
 $\boldsymbol{U}$ has the same eigenvalues as $\boldsymbol{F}$ and the
 multiplicative decomposition of the deformation gradient in a mechanical and
@@ -12111,7 +12083,7 @@ $\partial \boldsymbol{S}/\partial \boldsymbol{E}^{\mathcal{M}}$ - matrix even
 if  $\partial \hat{\boldsymbol{\sigma}} /\partial \hat{\boldsymbol{e}}_{\ln}^{\mathcal{M}}$ is
 symmetric. To avoid longer computational times due to the use of an asymmetric
 linear equation solver a symmetrization is usually performed leading to an
-approximation anyway. Therefore, a simplified approach is taken which reduced
+approximation anyway. Therefore, a simplified approach is taken which reduces
 the computational effort to a minimum while leading to acceptable convergence
 rates despite the approximations involved.
 
@@ -12252,7 +12224,7 @@ One finally obtains:
   \hat{\boldsymbol{e}}_{\ln,PQ} ^{\mathcal{M}}} \right) \boldsymbol{U}^{-1}_{IM} \boldsymbol{U}^{-1}_{JN} {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{KP} {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{LQ}.
 \end{equation}
 
-This is the expresson which is used for the material tangent. The
+This is the expression which is used for the material tangent. The
 approximations do not lead to a false result, they just slow down the
 convergence. Since the wish to avoid asymmetric matrices precludes quadratic
 convergence anyway the above approximations seem tolerable. This has been

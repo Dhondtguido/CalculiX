@@ -213,19 +213,6 @@
                index=nodempc(3,nodempc(3,nodempc(3,index)))
             enddo
             stdev=dsqrt(stdev/nkn)
-c!
-c!           adding a small random deviation to the center of gravity
-c!           this changes the coefficients of the mean rotation MPC
-c!           in a random way and avoids problems in cascade.c caused
-c!           by a zero coefficient of the dependent term
-c!
-c            call random_seed()
-c            call random_number(harvest)
-c            cgx(1)=cgx(1)+stdev*harvest*1.d-3
-c            call random_number(harvest)
-c            cgx(2)=cgx(2)+stdev*harvest*1.d-3
-c            call random_number(harvest)
-c            cgx(3)=cgx(3)+stdev*harvest*1.d-3
 !
 !           calculating the derivatives
 !

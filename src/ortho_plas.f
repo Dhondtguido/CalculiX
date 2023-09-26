@@ -16,10 +16,10 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-      subroutine umat_aniso_creep(amat,iel,iint,kode,elconloc,emec,
-     &        emec0,beta,xkl,vj,ithermal,t1l,dtime,time,ttime,
-     &        icmd,ielas,mi,nstate_,xstateini,xstate,stre,stiff,iorien,
-     &        pgauss,orab,nmethod,pnewdt,depvisc)
+      subroutine ortho_plas(amat,iel,iint,kode,elconloc,emec,
+     &     emec0,beta,xokl,voj,xkl,vj,ithermal,t1l,dtime,time,ttime,
+     &     icmd,ielas,mi,nstate_,xstateini,xstate,stre,stiff,iorien,
+     &     pgauss,orab,nmethod,pnewdt,plconloc)
 !
 !     calculates stiffness and stresses for orthotropic elasticity
 !     in combination with isotropic plasticity
@@ -55,6 +55,8 @@
 !     beta(6)            residual stress tensor (the stress entered under
 !                        the keyword *INITIAL CONDITIONS,TYPE=STRESS)
 !
+!     xokl(3,3)          deformation gradient at the start of the increment
+!     voj                Jacobian at the start of the increment
 !     xkl(3,3)           deformation gradient at the end of the increment
 !     vj                 Jacobian at the end of the increment
 !
@@ -116,22 +118,25 @@
 !
       implicit none
 !     
+      integer visco
+!     
       character*80 amat
 !     
       integer ithermal(*),icmd,kode,ielas,iel,iint,nstate_,mi(*),iorien,
-     &     i,j,ipiv(6),info,neq,lda,ldb,j1,j2,j3,j4,j5,j6,j7,j8,
-     &     nrhs,iplas,kel(4,21),nmethod,iloop,leximp,lend,layer,kspt,
-     &     kstep,kinc,exitcriterion
+     &     i,j,ipiv(6),info,neq,lda,ldb,j1,j2,j3,j4,j5,j6,j7,j8,id,
+     &     nrhs,iplas,kel(4,21),nmethod,ielastic,iloop,niso,nkin,
+     &     user_hardening
 !     
-      real*8 ep0(6),eeq,ep(6),b,Pn(6),ec(2),timeabq(2),dtemp,
-     &     dg,ddg,c(21),x(21),cm1(21),svm,stri(6),htri,sg(6),r(6),
-     &     ee(6),dd,gl(6,6),gr(6,6),c0,c1,c2,pnewdt,
-     &     skl(3,3),gcreep,gm1,ya(3,3,3,3),dsg,detc,strinv,
+      real*8 ep0(6),al10,al20(6),eeq,ep(6),al1,b,Pn(6),QSn(6),fiso,
+     &     al2(6),dg,ddg,ca,cn,c(21),x(21),cm1(21),h1,h2,dfiso,fkin,
+     &     q1,q20(6),q2(6),stri(6),htri,sg(6),r(13),au1(21),au2(21),
+     &     ee(6),dd,gl(6,6),gr(6,6),c0,c1,c2,c3,c4,c5,c6,pnewdt,dfkin,
+     &     skl(3,3),gcreep,gm1,ya(3,3,3,3),d1,d2,dsg,detc,strinv,
      &     elconloc(*),stiff(21),emec(6),emec0(6),beta(6),stre(6),
-     &     vj,t1l,dtime,xkl(3,3),pgauss(3),orab(7,*),
-     &     time,ttime,xstate(nstate_,mi(1),*),depvisc,
-     &     xstateini(nstate_,mi(1),*),decra(5),deswa(5),serd,esw(2),
-     &     p,predef(1),dpred(1)
+     &     vj,t1l,dtime,xkl(3,3),xokl(3,3),voj,pgauss(3),orab(7,*),
+     &     time,ttime,xstate(nstate_,mi(1),*),plconloc(802),
+     &     xstateini(nstate_,mi(1),*),xiso(200),yiso(200),xkin(200),
+     &     ykin(200)
 !     
       kel=reshape((/1,1,1,1,1,1,2,2,2,2,2,2,1,1,3,3,2,2,3,3,3,3,3,3,
      &     1,1,1,2,2,2,1,2,3,3,1,2,1,2,1,2,1,1,1,3,2,2,1,3,
@@ -188,10 +193,137 @@
         ep0(i)=xstateini(1+i,iint,iel)
       enddo
 !     
+!     isotropic hardening variable
+!     
+      al10=xstateini(8,iint,iel)
+!     
+!     kinematic hardening variable
+!     
+      do i=1,6
+        al20(i)=xstateini(8+i,iint,iel)
+      enddo
+!     
+!     backstress
+!     
+      do i=1,6
+        q20(i)=xstateini(14+i,iint,iel)
+      enddo
+!     
 !     elastic strains
 !     
       do i=1,6
         ee(i)=emec(i)-ep0(i)
+      enddo
+!     
+!     (visco)plastic constants
+!     
+      if((elconloc(10).le.0.d0).or.
+     &     ((nmethod.eq.1).and.(ithermal(1).ne.3))) then
+        visco=0
+      else
+        visco=1
+!     
+!     viscous constants
+!     
+c       ca=c0/(elconloc(10)*(ttime+time-dtime)**elconloc(12)*dtime)
+        ca=c0/(elconloc(10)*(ttime+time)**elconloc(12)*dtime)
+        cn=elconloc(11)
+      endif
+!     
+!     check for user subroutines
+!     
+      if((plconloc(801).lt.0.8d0).and.(plconloc(802).lt.0.8d0)) then
+        user_hardening=1
+      else
+        user_hardening=0
+      endif
+!     
+!     restoring the hardening curves for the actual temperature
+!     plconloc contains the true stresses.
+!     
+      niso=int(plconloc(801))
+      nkin=int(plconloc(802))
+      if(niso.ne.0) then
+        do i=1,niso
+          xiso(i)=plconloc(2*i-1)
+          yiso(i)=plconloc(2*i)
+        enddo
+      endif
+      if(nkin.ne.0) then
+        do i=1,nkin
+          xkin(i)=plconloc(399+2*i)
+          ykin(i)=plconloc(400+2*i)
+        enddo
+      endif
+!     
+!     determining fiso, dfiso and dfkin
+!     
+      if(user_hardening.eq.1) then
+        call uhardening(amat,iel,iint,t1l,al10,al1,dtime,
+     &       fiso,dfiso,fkin,dfkin)
+      else
+        if(niso.ne.0) then
+          call ident(xiso,al10,niso,id)
+          if(id.eq.0) then
+            fiso=yiso(1)
+            dfiso=0.d0
+          elseif(id.eq.niso) then
+            fiso=yiso(niso)
+            dfiso=0.d0
+          else
+            dfiso=(yiso(id+1)-yiso(id))/(xiso(id+1)-xiso(id))
+            fiso=yiso(id)+dfiso*(al10-xiso(id))
+          endif
+        elseif(nkin.ne.0) then
+          fiso=ykin(1)
+          dfiso=0.d0
+        else
+          fiso=0.d0
+          dfiso=0.d0
+        endif
+!     
+        if(nkin.ne.0) then
+          call ident(xkin,al10,nkin,id)
+          if(id.eq.0) then
+            fkin=ykin(1)
+            dfkin=0.d0
+          elseif(id.eq.nkin) then
+            fkin=ykin(nkin)
+            dfkin=0.d0
+          else
+            dfkin=(ykin(id+1)-ykin(id))/(xkin(id+1)-xkin(id))
+            fkin=ykin(id)+dfkin*(al10-xkin(id))
+          endif
+        elseif(niso.ne.0) then
+          fkin=yiso(1)
+          dfkin=0.d0
+        else
+          fkin=0.d0
+          dfkin=0.d0
+        endif
+      endif
+!     
+!     if the user did not activate a viscous calculation, a pure
+!     creep calculation (without plasticity) is reduced to an
+!     elastic calculation
+!     
+      ielastic=0
+      if(visco.eq.0) then
+        if((dabs(fiso).lt.1.d-10).and.
+     &       (dabs(dfiso).lt.1.d-10).and.
+     &       (dabs(dfkin).lt.1.d-10)) ielastic=1
+      endif
+!     
+!     h2=1/a  (equation 5.322)    
+!     
+      h1=dfiso
+      h2=2.d0*dfkin/3.d0
+!     
+!     stress state variables q1 and q2
+!     
+      q1=-fiso
+      do i=1,6
+        q2(i)=q20(i)
       enddo
 !     
 !     global trial stress tensor
@@ -228,17 +360,17 @@
 !     
       strinv=(stri(1)+stri(2)+stri(3))/3.d0
       do i=1,3
-        sg(i)=stri(i)-strinv
+        sg(i)=stri(i)-strinv+q2(i)
       enddo
       do i=4,6
-        sg(i)=stri(i)
+        sg(i)=stri(i)+q2(i)
       enddo
       dsg=dsqrt(sg(1)*sg(1)+sg(2)*sg(2)+sg(3)*sg(3)+
-     &     2.d0*(sg(4)*sg(4)+sg(5)*sg(5)+sg(6)*sg(6)))
+     &     2.d0*(sg(4)*sg(4)+sg(5)*sg(5)+sg(6)*sg(6)))      
 !     
 !     evaluation of the yield surface
 !     
-      htri=dsg
+      htri=dsg+c0*q1
 !     
 !     check whether plasticity occurs
 !     
@@ -248,8 +380,7 @@
         iplas=0
       endif
 !     
-      if((iplas.eq.0).or.(ielas.eq.1).or.(dtime.lt.1.d-30).or.
-     &                   ((nmethod.eq.1).and.(ithermal(1).ne.3))) then
+      if((iplas.eq.0).or.(ielas.eq.1).or.(ielastic.eq.1)) then
 !     
 !     elastic stress
 !     
@@ -262,6 +393,13 @@
         xstate(1,iint,iel)=eeq
         do i=1,6
           xstate(1+i,iint,iel)=ep0(i)
+        enddo
+        xstate(8,iint,iel)=al10
+        do i=1,6
+          xstate(8+i,iint,iel)=al20(i)
+        enddo
+        do i=1,6
+          xstate(14+i,iint,iel)=q20(i)
         enddo
 !     
 !     elastic stiffness
@@ -311,7 +449,12 @@
       do i=1,6
         ep(i)=ep0(i)
       enddo
+      al1=al10
+      do i=1,6
+        al2(i)=al20(i)
+      enddo
       dg=0.d0
+      ddg=0.d0
 !     
 !     determining the inverse of C (field cm)
 !     
@@ -431,6 +574,65 @@ c     write(*,*)
             ee(i)=emec(i)-ep(i)
           enddo
 !     
+!     determining fiso, dfiso and dfkin     
+!     
+          if(user_hardening.eq.1) then
+            call uhardening(amat,iel,iint,t1l,al10,al1,dtime,
+     &           fiso,dfiso,fkin,dfkin)
+          else
+            if(niso.ne.0) then
+              call ident(xiso,al1,niso,id)
+              if(id.eq.0) then
+                fiso=yiso(1)
+                dfiso=0.d0
+              elseif(id.eq.niso) then
+                fiso=yiso(niso)
+                dfiso=0.d0
+              else
+                dfiso=(yiso(id+1)-yiso(id))/(xiso(id+1)-xiso(id))
+                fiso=yiso(id)+dfiso*(al1-xiso(id))
+              endif
+            elseif(nkin.ne.0) then
+              fiso=ykin(1)
+              dfiso=0.d0
+            else
+              fiso=0.d0
+              dfiso=0.d0
+            endif
+!     
+            if(nkin.ne.0) then
+              call ident(xkin,al1,nkin,id)
+              if(id.eq.0) then
+                fkin=ykin(1)
+                dfkin=0.d0
+              elseif(id.eq.nkin) then
+                fkin=ykin(nkin)
+                dfkin=0.d0
+              else
+                dfkin=(ykin(id+1)-ykin(id))/(xkin(id+1)-xkin(id))
+                fkin=ykin(id)+dfkin*(al1-xkin(id))
+              endif
+            elseif(niso.ne.0) then
+              fkin=yiso(1)
+              dfkin=0.d0
+            else
+              fkin=0.d0
+              dfkin=0.d0
+            endif
+          endif
+!     
+!     h2=1/a  (equation 5.322)    
+!     
+          h1=dfiso
+          h2=2.d0*dfkin/3.d0
+!     
+!     stress state variables q1 and q2
+!     
+          q1=-fiso
+          do i=1,6
+            q2(i)=q20(i)-h2*(al2(i)-al20(i))
+          enddo
+!     
 !     global trial stress tensor
 !     
           if(iorien.gt.0) then
@@ -465,10 +667,10 @@ c     write(*,*)
 !     
           strinv=(stri(1)+stri(2)+stri(3))/3.d0
           do i=1,3
-            sg(i)=stri(i)-strinv
+            sg(i)=stri(i)-strinv+q2(i)
           enddo
           do i=4,6
-            sg(i)=stri(i)
+            sg(i)=stri(i)+q2(i)
           enddo
           dsg=dsqrt(sg(1)*sg(1)+sg(2)*sg(2)+sg(3)*sg(3)+
      &         2.d0*(sg(4)*sg(4)+sg(5)*sg(5)+sg(6)*sg(6)))
@@ -476,28 +678,12 @@ c     write(*,*)
 !     
 !     evaluation of the yield surface
 !     
-         ec(1)=eeq
-         decra(1)=c0*dg
-         timeabq(1)=time
-         timeabq(2)=ttime+time
-         call creep(decra,deswa,xstateini(1,iint,iel),serd,ec,
-     &        esw,p,svm,t1l,dtemp,predef,dpred,timeabq,dtime,
-     &        amat,leximp,lend,pgauss,nstate_,iel,iint,layer,kspt,
-     &        kstep,kinc)
-!
-!        if the creep routine returns an increased value of decra(1)
-!        it means that there is a lower cut-off for decra(1);
-!        if the routine stays in a range lower than this cut-off,
-!        it will never leave it and the exit conditions are
-!        assumed to be satisfied.
-!
-         if(decra(1).gt.c0*dg) then
-            dg=decra(1)/c0
-            if(iloop.gt.1) exitcriterion=1
-         endif
+        if(visco.eq.1) then
+          htri=dsg+c0*(q1-(ca*dg)**(1.d0/cn))
+        else
+          htri=dsg+c0*q1
+        endif
 !     
-         htri=dsg-c0*svm
-!
         do i=1,6
           sg(i)=sg(i)/dsg
         enddo
@@ -507,18 +693,20 @@ c     write(*,*)
         do i=1,6  
           r(i)=ep0(i)-ep(i)+dg*sg(i)
         enddo
+        r(7)=al10-al1+dg*c0
+        do i=1,6
+          r(7+i)=al20(i)-al2(i)+dg*sg(i)
+        enddo
 !     
 !     check convergence (for iloop=1 the remaining parts of the loop
 !     have not been executed: => P:n ... needed for the stiffness
 !     matrix are not calculated)
 !
-        if(exitcriterion.eq.1) exit
-!
         if(iloop.gt.1) then
           if((dabs(htri).le.1.d-5).or.(dabs(ddg).lt.1.d-3*dabs(dg)))
      &         then
           dd=0.d0
-          do i=1,6
+          do i=1,13
             dd=dd+r(i)*r(i)
           enddo
           dd=sqrt(dd)
@@ -554,30 +742,82 @@ c     write(*,*)
         x(20)=-b*sg(5)*sg(6)
         x(21)=b*(.5d0-sg(6)*sg(6))
 !     
+        do i=1,21
+          au1(i)=h2*x(i)
+        enddo
+        au1(1)=au1(1)+1.d0
+        au1(3)=au1(3)+1.d0
+        au1(6)=au1(6)+1.d0
+        au1(10)=au1(10)+.5d0
+        au1(15)=au1(15)+.5d0
+        au1(21)=au1(21)+.5d0
+!     
 !     filling the LHS (Equation 5.336)
 !     
         if(iorien.gt.0) then
-          gl(1,1)=cm1(1)+x(1)
-          gl(1,2)=cm1(2)+x(2)
-          gl(2,2)=cm1(3)+x(3)
-          gl(1,3)=cm1(4)+x(4)
-          gl(2,3)=cm1(5)+x(5)
-          gl(3,3)=cm1(6)+x(6)
-          gl(1,4)=cm1(7)+x(7)
-          gl(2,4)=cm1(8)+x(8)
-          gl(3,4)=cm1(9)+x(9)
-          gl(4,4)=cm1(10)+x(10)
-          gl(1,5)=cm1(11)+x(11)
-          gl(2,5)=cm1(12)+x(12)
-          gl(3,5)=cm1(13)+x(13)
-          gl(4,5)=cm1(14)+x(14)
-          gl(5,5)=cm1(15)+x(15)
-          gl(1,6)=cm1(16)+x(16)
-          gl(2,6)=cm1(17)+x(17)
-          gl(3,6)=cm1(18)+x(18)
-          gl(4,6)=cm1(19)+x(19)
-          gl(5,6)=cm1(20)+x(20)
-          gl(6,6)=cm1(21)+x(21)
+          gl(1,1)=au1(1)*cm1(1)+au1(2)*cm1(2)+au1(4)*cm1(4)+
+     &         2.d0*(au1(7)*cm1(7)+au1(11)*cm1(11)+au1(16)*cm1(16))+
+     &         x(1)
+          gl(1,2)=au1(1)*cm1(2)+au1(2)*cm1(3)+au1(4)*cm1(5)+
+     &         2.d0*(au1(7)*cm1(8)+au1(11)*cm1(12)+au1(16)*cm1(17))+
+     &         x(2)
+          gl(2,2)=au1(2)*cm1(2)+au1(3)*cm1(3)+au1(5)*cm1(5)+
+     &         2.d0*(au1(8)*cm1(8)+au1(12)*cm1(12)+au1(17)*cm1(17))+
+     &         x(3)
+          gl(1,3)=au1(1)*cm1(4)+au1(2)*cm1(5)+au1(4)*cm1(6)+
+     &         2.d0*(au1(7)*cm1(9)+au1(11)*cm1(13)+au1(16)*cm1(18))+
+     &         x(4)
+          gl(2,3)=au1(2)*cm1(4)+au1(3)*cm1(5)+au1(5)*cm1(6)+
+     &         2.d0*(au1(8)*cm1(9)+au1(12)*cm1(13)+au1(17)*cm1(18))+
+     &         x(5)
+          gl(3,3)=au1(4)*cm1(4)+au1(5)*cm1(5)+au1(6)*cm1(6)+
+     &         2.d0*(au1(9)*cm1(9)+au1(13)*cm1(13)+au1(18)*cm1(18))+
+     &         x(6)
+          gl(1,4)=au1(1)*cm1(7)+au1(2)*cm1(8)+au1(4)*cm1(9)+
+     &         2.d0*(au1(7)*cm1(10)+au1(11)*cm1(14)+au1(16)*cm1(19))+
+     &         x(7)
+          gl(2,4)=au1(2)*cm1(7)+au1(3)*cm1(8)+au1(5)*cm1(9)+
+     &         2.d0*(au1(8)*cm1(10)+au1(12)*cm1(14)+au1(17)*cm1(19))+
+     &         x(8)
+          gl(3,4)=au1(4)*cm1(7)+au1(5)*cm1(8)+au1(6)*cm1(9)+
+     &         2.d0*(au1(9)*cm1(10)+au1(13)*cm1(14)+au1(18)*cm1(19))+
+     &         x(9)
+          gl(4,4)=au1(7)*cm1(7)+au1(8)*cm1(8)+au1(9)*cm1(9)+
+     &         2.d0*(au1(10)*cm1(10)+au1(14)*cm1(14)+au1(19)*cm1(19))+
+     &         x(10)
+          gl(1,5)=au1(1)*cm1(11)+au1(2)*cm1(12)+au1(4)*cm1(13)+
+     &         2.d0*(au1(7)*cm1(14)+au1(11)*cm1(15)+au1(16)*cm1(20))+
+     &         x(11)
+          gl(2,5)=au1(2)*cm1(11)+au1(3)*cm1(12)+au1(5)*cm1(13)+
+     &         2.d0*(au1(8)*cm1(14)+au1(12)*cm1(15)+au1(17)*cm1(20))+
+     &         x(12)
+          gl(3,5)=au1(4)*cm1(11)+au1(5)*cm1(12)+au1(6)*cm1(13)+
+     &         2.d0*(au1(9)*cm1(14)+au1(13)*cm1(15)+au1(18)*cm1(20))+
+     &         x(13)
+          gl(4,5)=au1(7)*cm1(11)+au1(8)*cm1(12)+au1(9)*cm1(13)+
+     &         2.d0*(au1(10)*cm1(14)+au1(14)*cm1(15)+au1(19)*cm1(20))+
+     &         x(14)
+          gl(5,5)=au1(11)*cm1(11)+au1(12)*cm1(12)+au1(13)*cm1(13)+
+     &         2.d0*(au1(14)*cm1(14)+au1(15)*cm1(15)+au1(20)*cm1(20))+
+     &         x(15)
+          gl(1,6)=au1(1)*cm1(16)+au1(2)*cm1(17)+au1(4)*cm1(18)+
+     &         2.d0*(au1(7)*cm1(19)+au1(11)*cm1(20)+au1(16)*cm1(21))+
+     &         x(16)
+          gl(2,6)=au1(2)*cm1(16)+au1(3)*cm1(17)+au1(5)*cm1(18)+
+     &         2.d0*(au1(8)*cm1(19)+au1(12)*cm1(20)+au1(17)*cm1(21))+
+     &         x(17)
+          gl(3,6)=au1(4)*cm1(16)+au1(5)*cm1(17)+au1(6)*cm1(18)+
+     &         2.d0*(au1(9)*cm1(19)+au1(13)*cm1(20)+au1(18)*cm1(21))+
+     &         x(18)
+          gl(4,6)=au1(7)*cm1(16)+au1(8)*cm1(17)+au1(9)*cm1(18)+
+     &         2.d0*(au1(10)*cm1(19)+au1(14)*cm1(20)+au1(19)*cm1(21))+
+     &         x(19)
+          gl(5,6)=au1(11)*cm1(16)+au1(12)*cm1(17)+au1(13)*cm1(18)+
+     &         2.d0*(au1(14)*cm1(19)+au1(15)*cm1(20)+au1(20)*cm1(21))+
+     &         x(20)
+          gl(6,6)=au1(16)*cm1(16)+au1(17)*cm1(17)+au1(18)*cm1(18)+
+     &         2.d0*(au1(19)*cm1(19)+au1(20)*cm1(20)+au1(21)*cm1(21))+
+     &         x(21)
           do i=1,6
             do j=1,i-1
               gl(i,j)=gl(j,i)
@@ -589,27 +829,27 @@ c     write(*,*)
             enddo
           enddo
         else
-          gl(1,1)=cm1(1)+x(1)
-          gl(1,2)=cm1(2)+x(2)
-          gl(2,2)=cm1(3)+x(3)
-          gl(1,3)=cm1(4)+x(4)
-          gl(2,3)=cm1(5)+x(5)
-          gl(3,3)=cm1(6)+x(6)
-          gl(1,4)=x(7)
-          gl(2,4)=x(8)
-          gl(3,4)=x(9)
-          gl(4,4)=cm1(7)+x(10)
-          gl(1,5)=x(11)
-          gl(2,5)=x(12)
-          gl(3,5)=x(13)
-          gl(4,5)=x(14)
-          gl(5,5)=cm1(8)+x(15)
-          gl(1,6)=x(16)
-          gl(2,6)=x(17)
-          gl(3,6)=x(18)
-          gl(4,6)=x(19)
-          gl(5,6)=x(20)
-          gl(6,6)=cm1(9)+x(21)
+          gl(1,1)=au1(1)*cm1(1)+au1(2)*cm1(2)+au1(4)*cm1(4)+x(1)
+          gl(1,2)=au1(1)*cm1(2)+au1(2)*cm1(3)+au1(4)*cm1(5)+x(2)
+          gl(2,2)=au1(2)*cm1(2)+au1(3)*cm1(3)+au1(5)*cm1(5)+x(3)
+          gl(1,3)=au1(1)*cm1(4)+au1(2)*cm1(5)+au1(4)*cm1(6)+x(4)
+          gl(2,3)=au1(2)*cm1(4)+au1(3)*cm1(5)+au1(5)*cm1(6)+x(5)
+          gl(3,3)=au1(4)*cm1(4)+au1(5)*cm1(5)+au1(6)*cm1(6)+x(6)
+          gl(1,4)=2.d0*au1(7)*cm1(7)+x(7)
+          gl(2,4)=2.d0*au1(8)*cm1(7)+x(8)
+          gl(3,4)=2.d0*au1(9)*cm1(7)+x(9)
+          gl(4,4)=2.d0*au1(10)*cm1(7)+x(10)
+          gl(1,5)=2.d0*au1(11)*cm1(8)+x(11)
+          gl(2,5)=2.d0*au1(12)*cm1(8)+x(12)
+          gl(3,5)=2.d0*au1(13)*cm1(8)+x(13)
+          gl(4,5)=2.d0*au1(14)*cm1(8)+x(14)
+          gl(5,5)=2.d0*au1(15)*cm1(8)+x(15)
+          gl(1,6)=2.d0*au1(16)*cm1(9)+x(16)
+          gl(2,6)=2.d0*au1(17)*cm1(9)+x(17)
+          gl(3,6)=2.d0*au1(18)*cm1(9)+x(18)
+          gl(4,6)=2.d0*au1(19)*cm1(9)+x(19)
+          gl(5,6)=2.d0*au1(20)*cm1(9)+x(20)
+          gl(6,6)=2.d0*au1(21)*cm1(9)+x(21)
           do i=1,6
             do j=1,i-1
               gl(i,j)=gl(j,i)
@@ -643,42 +883,90 @@ c     write(*,*)
           Pn(i)=gr(i,1)
         enddo
 !     
+!       QSn = Q:n + S:n     
+!     
+        c3=-h2/(1.d0+b*h2)
+        QSn(1)=c3*(x(1)*Pn(1)+x(2)*Pn(2)+x(4)*Pn(3)+
+     &       2.d0*(x(7)*Pn(4)+x(11)*Pn(5)+x(16)*Pn(6)))+sg(1)*h2
+        QSn(2)=c3*(x(2)*Pn(1)+x(3)*Pn(2)+x(5)*Pn(3)+
+     &       2.d0*(x(8)*Pn(4)+x(12)*Pn(5)+x(17)*Pn(6)))+sg(2)*h2
+        QSn(3)=c3*(x(4)*Pn(1)+x(5)*Pn(2)+x(6)*Pn(3)+
+     &       2.d0*(x(9)*Pn(4)+x(13)*Pn(5)+x(18)*Pn(6)))+sg(3)*h2
+        QSn(4)=c3*(x(7)*Pn(1)+x(8)*Pn(2)+x(9)*Pn(3)+
+     &       2.d0*(x(10)*Pn(4)+x(14)*Pn(5)+x(19)*Pn(6)))+sg(4)*h2
+        QSn(5)=c3*(x(11)*Pn(1)+x(12)*Pn(2)+x(13)*Pn(3)+
+     &       2.d0*(x(14)*Pn(4)+x(15)*Pn(5)+x(20)*Pn(6)))+sg(5)*h2
+        QSn(6)=c3*(x(16)*Pn(1)+x(17)*Pn(2)+x(18)*Pn(3)+
+     &       2.d0*(x(19)*Pn(4)+x(20)*Pn(5)+x(21)*Pn(6)))+sg(6)*h2
+!     
 !     calculating the creep contribution
 !     
-        if(dg.le.0.d0) then
-          ec(1)=eeq
-          decra(1)=c0*1.d-10
-          timeabq(1)=time
-          timeabq(2)=ttime+time
-          call creep(decra,deswa,xstateini(1,iint,iel),serd,ec,
-     &         esw,p,svm,t1l,dtemp,predef,dpred,timeabq,dtime,
-     &         amat,leximp,lend,pgauss,nstate_,iel,iint,layer,kspt,
-     &         kstep,kinc)
+        if(visco.eq.1) then
+          if(dg.gt.0.d0) then
+            gcreep=c0*ca/cn*(dg*ca)**(1.d0/cn-1.d0)
+          else
+!     
+!     for gamma ein default of 1.d-10 is taken to
+!     obtain a finite gradient
+!     
+            gcreep=c0*ca/cn*(1.d-10*ca)**(1.d0/cn-1.d0)
+          endif
         endif
-        gcreep=c1/decra(5)
-!
+!     
 !     calculating the correction to the consistency parameter
 !     
         gm1=Pn(1)*sg(1)+Pn(2)*sg(2)+Pn(3)*sg(3)+
-     &       2.d0*(Pn(4)*sg(4)+Pn(5)*sg(5)+Pn(6)*sg(6))
-        gm1=1.d0/(gm1+gcreep)
+     &       2.d0*(Pn(4)*sg(4)+Pn(5)*sg(5)+Pn(6)*sg(6))+
+     &       c1*h1+
+     &       QSn(1)*sg(1)+QSn(2)*sg(2)+QSn(3)*sg(3)+
+     &       2.d0*(QSn(4)*sg(4)+QSn(5)*sg(5)+QSn(6)*sg(6))
+        if(visco.eq.1) then
+          gm1=1.d0/(gm1+gcreep)
+        else
+          gm1=1.d0/gm1
+        endif
         ddg=gm1*(htri-(Pn(1)*r(1)+Pn(2)*r(2)+Pn(3)*r(3)+
-     &       2.d0*(Pn(4)*r(4)+Pn(5)*r(5)+Pn(6)*r(6))))
+     &       2.d0*(Pn(4)*r(4)+Pn(5)*r(5)+Pn(6)*r(6))+
+     &       c0*h1*r(7)+
+     &       QSn(1)*r(8)+QSn(2)*r(9)+QSn(3)*r(10)+
+     &       2.d0*(QSn(4)*r(11)+QSn(5)*r(12)+QSn(6)*r(13))))
 !     
 !     updating the residual matrix
 !     
         do i=1,6
           r(i)=r(i)+ddg*sg(i)
         enddo
+        r(7)=r(7)+ddg*c0
+        do i=1,6
+          r(7+i)=r(7+i)+ddg*sg(i)
+        enddo
 !     
 !     update the plastic strain
 !     
-        gr(1,1)=r(1)
-        gr(2,1)=r(2)
-        gr(3,1)=r(3)
-        gr(4,1)=r(4)
-        gr(5,1)=r(5)
-        gr(6,1)=r(6)
+        gr(1,1)=au1(1)*r(1)+au1(2)*r(2)+au1(4)*r(3)+
+     &       2.d0*(au1(7)*r(4)+au1(11)*r(5)+au1(16)*r(6))
+     &       -h2*(x(1)*r(8)+x(2)*r(9)+x(4)*r(10)+
+     &       2.d0*(x(7)*r(11)+x(11)*r(12)+x(16)*r(13)))
+        gr(2,1)=au1(2)*r(1)+au1(3)*r(2)+au1(5)*r(3)+
+     &       2.d0*(au1(8)*r(4)+au1(12)*r(5)+au1(17)*r(6))
+     &       -h2*(x(2)*r(8)+x(3)*r(9)+x(5)*r(10)+
+     &       2.d0*(x(8)*r(11)+x(12)*r(12)+x(17)*r(13)))
+        gr(3,1)=au1(4)*r(1)+au1(5)*r(2)+au1(6)*r(3)+
+     &       2.d0*(au1(9)*r(4)+au1(13)*r(5)+au1(18)*r(6))
+     &       -h2*(x(4)*r(8)+x(5)*r(9)+x(6)*r(10)+
+     &       2.d0*(x(9)*r(11)+x(13)*r(12)+x(18)*r(13)))
+        gr(4,1)=au1(7)*r(1)+au1(8)*r(2)+au1(9)*r(3)+
+     &       2.d0*(au1(10)*r(4)+au1(14)*r(5)+au1(19)*r(6))
+     &       -h2*(x(7)*r(8)+x(8)*r(9)+x(9)*r(10)+
+     &       2.d0*(x(10)*r(11)+x(14)*r(12)+x(19)*r(13)))
+        gr(5,1)=au1(11)*r(1)+au1(12)*r(2)+au1(13)*r(3)+
+     &       2.d0*(au1(14)*r(4)+au1(15)*r(5)+au1(20)*r(6))
+     &       -h2*(x(11)*r(8)+x(12)*r(9)+x(13)*r(10)+
+     &       2.d0*(x(14)*r(11)+x(15)*r(12)+x(20)*r(13)))
+        gr(6,1)=au1(16)*r(1)+au1(17)*r(2)+au1(18)*r(3)+
+     &       2.d0*(au1(19)*r(4)+au1(20)*r(5)+au1(21)*r(6))
+     &       -h2*(x(16)*r(8)+x(17)*r(9)+x(18)*r(10)+
+     &       2.d0*(x(19)*r(11)+x(20)*r(12)+x(21)*r(13)))
 !     
 !       Solving Equation (5.349)    
 !     
@@ -711,6 +999,62 @@ c     write(*,*)
           ep(6)=ep(6)+2.d0*cm1(9)*gr(6,1)
         endif
 !     
+!     update the isotropic hardening variable
+!     
+        al1=al1+r(7)
+!     
+!     update the kinematic hardening variables (Equation (5.354))
+!     
+        c4=1.d0/(1.d0+b*h2)
+        c6=c4*b*h2
+        c5=c6/3.d0
+        au2(1)=c4+c5+c6*sg(1)*sg(1)
+        au2(2)=c5+c6*sg(1)*sg(2)
+        au2(3)=c4+c5+c6*sg(2)*sg(2)
+        au2(4)=c5+c6*sg(1)*sg(3)
+        au2(5)=c5+c6*sg(2)*sg(3)
+        au2(6)=c4+c5+c6*sg(3)*sg(3)
+        au2(7)=c6*sg(1)*sg(4)
+        au2(8)=c6*sg(2)*sg(4)
+        au2(9)=c6*sg(3)*sg(4)
+        au2(10)=c4/2.d0+c6*sg(4)*sg(4)
+        au2(11)=c6*sg(1)*sg(5)
+        au2(12)=c6*sg(2)*sg(5)
+        au2(13)=c6*sg(3)*sg(5)
+        au2(14)=c6*sg(4)*sg(5)
+        au2(15)=c4/2.d0+c6*sg(5)*sg(5)
+        au2(16)=c6*sg(1)*sg(6)
+        au2(17)=c6*sg(2)*sg(6)
+        au2(18)=c6*sg(3)*sg(6)
+        au2(19)=c6*sg(4)*sg(6)
+        au2(20)=c6*sg(5)*sg(6)
+        au2(21)=c4/2.d0+c6*sg(6)*sg(6)
+!     
+        al2(1)=al2(1)+au2(1)*r(8)+au2(2)*r(9)+au2(4)*r(10)+
+     &       2.d0*(au2(7)*r(11)+au2(11)*r(12)+au2(16)*r(13))
+     &       -c4*(x(1)*gr(1,1)+x(2)*gr(2,1)+x(4)*gr(3,1)+
+     &       2.d0*(x(7)*gr(4,1)+x(11)*gr(5,1)+x(16)*gr(6,1)))
+        al2(2)=al2(2)+au2(2)*r(8)+au2(3)*r(9)+au2(5)*r(10)+
+     &       2.d0*(au2(8)*r(11)+au2(12)*r(12)+au2(17)*r(13))
+     &       -c4*(x(2)*gr(1,1)+x(3)*gr(2,1)+x(5)*gr(3,1)+
+     &       2.d0*(x(8)*gr(4,1)+x(12)*gr(5,1)+x(17)*gr(6,1)))
+        al2(3)=al2(3)+au2(4)*r(8)+au2(5)*r(9)+au2(6)*r(10)+
+     &       2.d0*(au2(9)*r(11)+au2(13)*r(12)+au2(18)*r(13))
+     &       -c4*(x(4)*gr(1,1)+x(5)*gr(2,1)+x(6)*gr(3,1)+
+     &       2.d0*(x(9)*gr(4,1)+x(13)*gr(5,1)+x(18)*gr(6,1)))
+        al2(4)=al2(4)+au2(7)*r(8)+au2(8)*r(9)+au2(9)*r(10)+
+     &       2.d0*(au2(10)*r(11)+au2(14)*r(12)+au2(19)*r(13))
+     &       -c4*(x(7)*gr(1,1)+x(8)*gr(2,1)+x(9)*gr(3,1)+
+     &       2.d0*(x(10)*gr(4,1)+x(14)*gr(5,1)+x(19)*gr(6,1)))
+        al2(5)=al2(5)+au2(11)*r(8)+au2(12)*r(9)+au2(13)*r(10)+
+     &       2.d0*(au2(14)*r(11)+au2(15)*r(12)+au2(20)*r(13))
+     &       -c4*(x(11)*gr(1,1)+x(12)*gr(2,1)+x(13)*gr(3,1)+
+     &       2.d0*(x(14)*gr(4,1)+x(15)*gr(5,1)+x(20)*gr(6,1)))
+        al2(6)=al2(6)+au2(16)*r(8)+au2(17)*r(9)+au2(18)*r(10)+
+     &       2.d0*(au2(19)*r(11)+au2(20)*r(12)+au2(21)*r(13))
+     &       -c4*(x(16)*gr(1,1)+x(17)*gr(2,1)+x(18)*gr(3,1)+
+     &       2.d0*(x(19)*gr(4,1)+x(20)*gr(5,1)+x(21)*gr(6,1)))
+!     
 !     update the consistency parameter
 !     
         dg=dg+ddg
@@ -731,27 +1075,27 @@ c     write(*,*)
 !     
 !     determining p
 !     
-        gr(1,1)=1.d0 
-        gr(1,2)=0.d0 
-        gr(2,2)=1.d0 
-        gr(1,3)=0.d0 
-        gr(2,3)=0.d0 
-        gr(3,3)=1.d0 
-        gr(1,4)=0.d0
-        gr(2,4)=0.d0 
-        gr(3,4)=0.d0 
-        gr(4,4)=0.5d0
-        gr(1,5)=0.d0
-        gr(2,5)=0.d0
-        gr(3,5)=0.d0
-        gr(4,5)=0.d0
-        gr(5,5)=0.5d0
-        gr(1,6)=0.d0
-        gr(2,6)=0.d0
-        gr(3,6)=0.d0
-        gr(4,6)=0.d0
-        gr(5,6)=0.d0
-        gr(6,6)=0.5d0
+        gr(1,1)=au1(1) 
+        gr(1,2)=au1(2) 
+        gr(2,2)=au1(3) 
+        gr(1,3)=au1(4) 
+        gr(2,3)=au1(5) 
+        gr(3,3)=au1(6) 
+        gr(1,4)=au1(7) 
+        gr(2,4)=au1(8) 
+        gr(3,4)=au1(9) 
+        gr(4,4)=au1(10)
+        gr(1,5)=au1(11)
+        gr(2,5)=au1(12)
+        gr(3,5)=au1(13)
+        gr(4,5)=au1(14)
+        gr(5,5)=au1(15)
+        gr(1,6)=au1(16)
+        gr(2,6)=au1(17)
+        gr(3,6)=au1(18)
+        gr(4,6)=au1(19)
+        gr(5,6)=au1(20)
+        gr(6,6)=au1(21)
         do i=1,6
           do j=1,i-1
             gr(i,j)=gr(j,i)
@@ -796,8 +1140,13 @@ c     write(*,*)
       do i=1,6
         xstate(1+i,iint,iel)=ep(i)
       enddo
-!     
-      depvisc=0.d0
+      xstate(8,iint,iel)=al1
+      do i=1,6
+        xstate(8+i,iint,iel)=al2(i)
+      enddo
+      do i=1,6
+        xstate(14+i,iint,iel)=q2(i)
+      enddo
 !     
       return
       end

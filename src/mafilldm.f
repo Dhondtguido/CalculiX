@@ -55,7 +55,7 @@
      &  t0(*),t1(*),prestr(6,mi(1),*),vold(0:mi(2),*),s(60,60),
      &  ff(60),
      &  sti(6,mi(1),*),sm(60,60),stx(6,mi(1),*),adb(*),aub(*),
-     &  elcon(0:ncmat_,ntmat_,*),rhcon(0:1,ntmat_,*),elas(21),
+     &  elcon(0:ncmat_,ntmat_,*),rhcon(0:1,ntmat_,*),stiff(21),
      &  alcon(0:6,ntmat_,*),alzero(*),orab(7,*),xbody(7,*),cgr(4,*),
      &  plicon(0:2*npmat_,ntmat_,*),plkcon(0:2*npmat_,ntmat_,*),
      &  xstiff(27,mi(1),*),om,value,dtime,ttime,time,elconloc(ncmat_),
@@ -135,14 +135,14 @@
 !
                if(ne0.eq.0) ne0=i-1
                if(mortar.eq.0) then
-                  call springdamp_n2f(xl,elas,voldl,s,imat,elcon,
+                  call springdamp_n2f(xl,stiff,voldl,s,imat,elcon,
      &                 ncmat_,ntmat_,nope,iperturb,
      &                 springarea(1,konl(nope+1)),nmethod,
      &                 mi,reltime,nasym)
                elseif(mortar.eq.1) then
                   jfaces=kon(indexe+nope+2)
                   igauss=kon(indexe+nope+1) 
-                  call springdamp_f2f(xl,elas,voldl,s,imat,elcon,
+                  call springdamp_f2f(xl,stiff,voldl,s,imat,elcon,
      &                 ncmat_,ntmat_,nope,lakon(i),iperturb,
      &                 springarea(1,igauss),
      &                 nmethod,mi,reltime,nasym,jfaces,igauss,pslavsurf,

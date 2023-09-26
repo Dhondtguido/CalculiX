@@ -16,7 +16,7 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-      subroutine linel(kode,mattyp,beta,emec,stre,elas,elconloc,
+      subroutine linel(kode,mattyp,beta,emec,stre,stiff,elconloc,
      &  iorien,orab,pgauss,ncmat_)
 !
 !     calculates stresses for linear elastic materials
@@ -26,7 +26,7 @@
       integer mattyp,j1,j2,j3,j4,j5,j6,j7,j8,j,jj,kel(4,21),
      &  iorien,i,kode,ncmat_
 !
-      real*8 beta(6),elas(21),stre(6),fxx,fyy,fzz,fxy,fxz,fyz,
+      real*8 beta(6),stiff(21),stre(6),fxx,fyy,fzz,fxy,fxz,fyz,
      &  elconloc(*),emax,ya(3,3,3,3),orab(7,*),skl(3,3),e,un,
      &  um,um2,al,am1,pgauss(3),emec(6)
 !
@@ -49,11 +49,11 @@
 !        isotropic
 !
          do i=1,2
-            elas(i)=elconloc(i)
+            stiff(i)=elconloc(i)
          enddo
 !
-         e=elas(1)
-         un=elas(2)
+         e=stiff(1)
+         un=stiff(2)
          um2=e/(1.d0+un)
          al=un*um2/(1.d0-2.d0*un)
          um=um2/2.d0
@@ -75,28 +75,28 @@
 !           orthotropic
 !
             do i=1,9
-               elas(i)=elconloc(i)
+               stiff(i)=elconloc(i)
             enddo
             do i=10,21
-               elas(i)=0.d0
+               stiff(i)=0.d0
             enddo
 !
-            stre(1)=elas(1)*fxx+elas(2)*fyy+
-     &           elas(4)*fzz-beta(1)
-            stre(2)=elas(2)*fxx+elas(3)*fyy+
-     &           elas(5)*fzz-beta(2)
-            stre(3)=elas(4)*fxx+elas(5)*fyy+
-     &           elas(6)*fzz-beta(3)
-            stre(4)=elas(7)*fxy-beta(4)
-            stre(5)=elas(8)*fxz-beta(5)
-            stre(6)=elas(9)*fyz-beta(6)
+            stre(1)=stiff(1)*fxx+stiff(2)*fyy+
+     &           stiff(4)*fzz-beta(1)
+            stre(2)=stiff(2)*fxx+stiff(3)*fyy+
+     &           stiff(5)*fzz-beta(2)
+            stre(3)=stiff(4)*fxx+stiff(5)*fyy+
+     &           stiff(6)*fzz-beta(3)
+            stre(4)=stiff(7)*fxy-beta(4)
+            stre(5)=stiff(8)*fxz-beta(5)
+            stre(6)=stiff(9)*fyz-beta(6)
 !
             mattyp=2
 !
          else
 !
             do i=1,ncmat_
-               elas(i)=elconloc(i)
+               stiff(i)=elconloc(i)
             enddo
 !
             mattyp=3
@@ -110,9 +110,9 @@
 !              transforming the elastic coefficients
 !
                if(kode.eq.9) then
-                  call orthotropic(elas,ya)
+                  call orthotropic(stiff,ya)
                else
-                  call anisotropic(elas,ya)
+                  call anisotropic(stiff,ya)
                endif
 !
                do jj=1,21
@@ -120,12 +120,12 @@
                   j2=kel(2,jj)
                   j3=kel(3,jj)
                   j4=kel(4,jj)
-                  elas(jj)=0.d0
+                  stiff(jj)=0.d0
                   do j5=1,3
                      do j6=1,3
                         do j7=1,3
                            do j8=1,3
-                              elas(jj)=elas(jj)+ya(j5,j6,j7,j8)*
+                              stiff(jj)=stiff(jj)+ya(j5,j6,j7,j8)*
      &                             skl(j1,j5)*skl(j2,j6)*skl(j3,j7)*
      &                             skl(j4,j8)
                            enddo
@@ -138,17 +138,17 @@
 !
                emax=0.d0
                do j=1,21
-                  emax=max(emax,dabs(elas(j)))
+                  emax=max(emax,dabs(stiff(j)))
                enddo
                do j=7,9
-                  if(dabs(elas(j)).gt.emax*1.d-10) then
+                  if(dabs(stiff(j)).gt.emax*1.d-10) then
                      emax=-1.d0
                      exit
                   endif
                enddo
                if(emax.ge.0.d0) then
                   do j=11,14
-                     if(dabs(elas(j)).gt.emax*1.d-10) then
+                     if(dabs(stiff(j)).gt.emax*1.d-10) then
                         emax=-1.d0
                         exit
                      endif
@@ -156,23 +156,23 @@
                endif
                if(emax.ge.0.d0) then
                   do j=16,20
-                     if(dabs(elas(j)).gt.emax*1.d-10) then
+                     if(dabs(stiff(j)).gt.emax*1.d-10) then
                         emax=-1.d0
                         exit
                      endif
                   enddo
                endif
                if(emax.ge.0.d0) then
-                  elas(7)=elas(10)
-                  elas(8)=elas(15)
-                  elas(9)=elas(21)
+                  stiff(7)=stiff(10)
+                  stiff(8)=stiff(15)
+                  stiff(9)=stiff(21)
 !
                   do j=10,21
-                     elas(j)=0.d0
+                     stiff(j)=0.d0
                   enddo
-c                  elas(10)=0.d0
-c                  elas(15)=0.d0
-c                  elas(21)=0.d0
+c                  stiff(10)=0.d0
+c                  stiff(15)=0.d0
+c                  stiff(21)=0.d0
 !
                   mattyp=2
                endif
@@ -182,55 +182,55 @@ c                  elas(21)=0.d0
 !
 !              orthotropic
 !
-               stre(1)=elas(1)*fxx+elas(2)*fyy+
-     &              elas(4)*fzz-beta(1)
-               stre(2)=elas(2)*fxx+elas(3)*fyy+
-     &              elas(5)*fzz-beta(2)
-               stre(3)=elas(4)*fxx+elas(5)*fyy+
-     &              elas(6)*fzz-beta(3)
-               stre(4)=elas(7)*fxy-beta(4)
-               stre(5)=elas(8)*fxz-beta(5)
-               stre(6)=elas(9)*fyz-beta(6)
+               stre(1)=stiff(1)*fxx+stiff(2)*fyy+
+     &              stiff(4)*fzz-beta(1)
+               stre(2)=stiff(2)*fxx+stiff(3)*fyy+
+     &              stiff(5)*fzz-beta(2)
+               stre(3)=stiff(4)*fxx+stiff(5)*fyy+
+     &              stiff(6)*fzz-beta(3)
+               stre(4)=stiff(7)*fxy-beta(4)
+               stre(5)=stiff(8)*fxz-beta(5)
+               stre(6)=stiff(9)*fyz-beta(6)
             else
 !
 !              fully anisotropic
 !
-               stre(1)=elas(1)*fxx+
-     &              elas(2)*fyy+
-     &              elas(4)*fzz+
-     &              elas(7)*fxy+
-     &              elas(11)*fxz+
-     &              elas(16)*fyz-beta(1)
-               stre(2)=elas(2)*fxx+
-     &              elas(3)*fyy+
-     &              elas(5)*fzz+
-     &              elas(8)*fxy+
-     &              elas(12)*fxz+
-     &              elas(17)*fyz-beta(2)
-               stre(3)=elas(4)*fxx+
-     &              elas(5)*fyy+
-     &              elas(6)*fzz+
-     &              elas(9)*fxy+
-     &              elas(13)*fxz+
-     &              elas(18)*fyz-beta(3)
-               stre(4)=elas(7)*fxx+
-     &              elas(8)*fyy+
-     &              elas(9)*fzz+
-     &              elas(10)*fxy+
-     &              elas(14)*fxz+
-     &              elas(19)*fyz-beta(4)
-               stre(5)=elas(11)*fxx+
-     &              elas(12)*fyy+
-     &              elas(13)*fzz+
-     &              elas(14)*fxy+
-     &              elas(15)*fxz+
-     &              elas(20)*fyz-beta(5)
-               stre(6)=elas(16)*fxx+
-     &              elas(17)*fyy+
-     &              elas(18)*fzz+
-     &              elas(19)*fxy+
-     &              elas(20)*fxz+
-     &              elas(21)*fyz-beta(6)
+               stre(1)=stiff(1)*fxx+
+     &              stiff(2)*fyy+
+     &              stiff(4)*fzz+
+     &              stiff(7)*fxy+
+     &              stiff(11)*fxz+
+     &              stiff(16)*fyz-beta(1)
+               stre(2)=stiff(2)*fxx+
+     &              stiff(3)*fyy+
+     &              stiff(5)*fzz+
+     &              stiff(8)*fxy+
+     &              stiff(12)*fxz+
+     &              stiff(17)*fyz-beta(2)
+               stre(3)=stiff(4)*fxx+
+     &              stiff(5)*fyy+
+     &              stiff(6)*fzz+
+     &              stiff(9)*fxy+
+     &              stiff(13)*fxz+
+     &              stiff(18)*fyz-beta(3)
+               stre(4)=stiff(7)*fxx+
+     &              stiff(8)*fyy+
+     &              stiff(9)*fzz+
+     &              stiff(10)*fxy+
+     &              stiff(14)*fxz+
+     &              stiff(19)*fyz-beta(4)
+               stre(5)=stiff(11)*fxx+
+     &              stiff(12)*fyy+
+     &              stiff(13)*fzz+
+     &              stiff(14)*fxy+
+     &              stiff(15)*fxz+
+     &              stiff(20)*fyz-beta(5)
+               stre(6)=stiff(16)*fxx+
+     &              stiff(17)*fyy+
+     &              stiff(18)*fzz+
+     &              stiff(19)*fxy+
+     &              stiff(20)*fxz+
+     &              stiff(21)*fyz-beta(6)
 !     
             endif
          endif

@@ -17,9 +17,10 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine umat_abaqusnl_total(amat,iel,iint,kode,elconloc,emec,
-     &        emec0,beta,xokl,voj,xkl,vj,ithermal,t1l,dtime,time,ttime,
-     &        icmd,ielas,mi,nstate_,xstateini,xstate,stre,elas,
-     &        iorien,pgauss,orab,istep,kinc,pnewdt,nmethod,iperturb)
+     &     emec0,beta,xokl,voj,xkl,vj,ithermal,t1l,dtime,time,ttime,
+     &     icmd,ielas,mi,nstate_,xstateini,xstate,stre,stiff,
+     &     iorien,pgauss,orab,istep,kinc,pnewdt,nmethod,iperturb,
+     &     plconloc,depvisc)
 !
 !     converting nonlinear fields used by CalculiX into nonlinear
 !     fields used by Abaqus and vice versa.
@@ -33,22 +34,33 @@
 !                          derivative of the PK2 stress w.r.t. the
 !                          Lagrange strain
 ! 
+!     the appendix "total" means that in this routine only the mechanical
+!     strain at the end of the increment is converted from Lagrange to
+!     logarithmic. The mechanical strain at the start of the increment is 
+!     left unchanged and so is the stress. So the constitutive equation 
+!     should be based solely on the mechanical strain at the end of the
+!     increment, on not on its change within the increment.
+! 
+!     emec is the mechanical Lagrange strain (excluding thermal effects)
+!     xkl is the total deformation gradient (including thermal effects)
+!     vj is the total Jacobian (including thermal effects)
+! 
       implicit none
 !     
-      character*80 amat
+      character*80 amat,amatloc
 !     
       integer ithermal(*),icmd,kode,ielas,iel,iint,nstate_,mi(*),i,
      &     iorien,nmethod,iperturb(*),istep,nprops,jstep(4),kinc,
      &     kel(4,21),j1,j2,j3,j4,j5,j6,j7,j8,jj,n,ier,j,matz,kal(2,6)
 !     
-      real*8 elconloc(*),elas(21),emec(6),emec0(6),beta(6),stre(6),
+      real*8 elconloc(*),stiff(21),emec(6),emec0(6),beta(6),stre(6),
      &     vj,t1l,dtime,xkl(3,3),xokl(3,3),voj,pgauss(3),orab(7,*),
-     &     time,ttime,skl(3,3),xa(3,3),ya(3,3,3,3),z(3,3),
+     &     time,ttime,skl(3,3),xa(3,3),ya(3,3,3,3),z(3,3),depvisc,
      &     xstateini(nstate_,mi(1),*),w(3),fv1(3),fv2(3),d(6),c(6),
      &     v1,v2,v3,eln(6),e(3,3),tkl(3,3),u(6),c2(6),dd,um1(3,3),
      &     expansion,ctot(3,3),ddsdde(6,6),spd,rpl,pnewdt,stran(6),temp,
-     &     xstate(nstate_,mi(1),*),xm1(6),xm2(6),
-     &     xm3(6)
+     &     xstate(nstate_,mi(1),*),xm1(6),xm2(6),plconloc(802),
+     &     xm3(6),wum1(3),weln(3),um1new(3,3)
 !     
       kal=reshape((/1,1,2,2,3,3,1,2,1,3,2,3/),(/2,6/))
 !     
@@ -86,7 +98,9 @@ c      write(*,*) 'umat_abaqusnl_total ',(emec(i),i=1,6)
         call exit(201)
       endif
 !     
-!     calculating the principal stretches at the end of the increment
+!     calculating the principal stretches square at the end of the increment
+!                     eigenvalues of the logarithmic strain
+!                     eigenvalues of the inverse right stretch tensor
 !     
       do i=1,3
         if(w(i).lt.-0.5d0) then
@@ -94,15 +108,17 @@ c      write(*,*) 'umat_abaqusnl_total ',(emec(i),i=1,6)
           write(*,*) '         of the Cauchy-Green tensor;'
           call exit(201)
         else
-          w(i)=dsqrt(2.d0*w(i)+1.d0)
+          w(i)=2.d0*w(i)+1.d0
+          weln(i)=dlog(w(i))/2.d0
+          wum1(i)=1.d0/dsqrt(w(i))
         endif
       enddo
-!     
-!     calculating the invariants at the end of the increment
-!     
-      v1=w(1)+w(2)+w(3)
-      v2=w(1)*w(2)+w(2)*w(3)+w(3)*w(1)
-      v3=w(1)*w(2)*w(3)
+c!     
+c!     calculating the invariants at the end of the increment
+c!     
+c      v1=w(1)+w(2)+w(3)
+c      v2=w(1)*w(2)+w(2)*w(3)+w(3)*w(1)
+c      v3=w(1)*w(2)*w(3)
 !     
 !     calculating the right Cauchy-Green tensor at the end of the
 !     increment
@@ -113,56 +129,58 @@ c      write(*,*) 'umat_abaqusnl_total ',(emec(i),i=1,6)
       do i=4,6
         c(i)=2.d0*emec(i)
       enddo
+c!     
+c!     calculating the square of the right Cauchy-Green tensor at the
+c!     end of the increment
+c!     
+c      c2(1)=c(1)*c(1)+c(4)*c(4)+c(5)*c(5)
+c      c2(2)=c(4)*c(4)+c(2)*c(2)+c(6)*c(6)
+c      c2(3)=c(5)*c(5)+c(6)*c(6)+c(3)*c(3)
+c      c2(4)=c(1)*c(4)+c(4)*c(2)+c(5)*c(6)
+c      c2(5)=c(1)*c(5)+c(4)*c(6)+c(5)*c(3)
+c      c2(6)=c(4)*c(5)+c(2)*c(6)+c(6)*c(3)
+c!     
+c!     calculating the right stretch tensor at the end of the increment
+c!     (cf. Simo and Hughes, Computational Inelasticity)
+c!     
+c!     This is the mechanical right stretch tensor, i.e. without
+c!     thermal expansion (since it is based on emec)
+c!     
+c      dd=v1*v2-v3
+c      do i=1,6
+c        u(i)=(-c2(i)+(v1*v1-v2)*c(i)+v1*v3*d(i))/dd
+c      enddo
+c!     
+c!     calculating the inverse of the right stretch tensor at the end
+c!     of the increment
+c!     
+c      um1(1,1)=(c(1)-v1*u(1)+v2)/v3
+c      um1(2,2)=(c(2)-v1*u(2)+v2)/v3
+c      um1(3,3)=(c(3)-v1*u(3)+v2)/v3
+c      um1(1,2)=(c(4)-v1*u(4))/v3
+c      um1(1,3)=(c(5)-v1*u(5))/v3
+c      um1(2,3)=(c(6)-v1*u(6))/v3
+c      um1(2,1)=um1(1,2)
+c      um1(3,1)=um1(1,3)
+c      um1(3,2)=um1(2,3)
+c!     
+c!     calculating the logarithmic strain at the end of the increment
+c!     Elog=Z.ln(w).Z^T
+c!     
+c      do i=1,3
+c        w(i)=dlog(w(i))
+c      enddo
+c!     
+c!     logarithmic strain in global coordinates at the end of the
+c!     increment = ln(lambda) N diadic N;
+c!     
+c!     the true logarithmic strain is ln(lambda) n diadic n;
+c!     the rotation tensor R = n diadic N;
+c!     therefore, ln(lambda) N diadic N is R^T true logarithmic strain R, 
+c!     in other words the corotational true logarithmic strain (required
+c!     by the abaqus routine)
 !     
-!     calculating the square of the right Cauchy-Green tensor at the
-!     end of the increment
-!     
-      c2(1)=c(1)*c(1)+c(4)*c(4)+c(5)*c(5)
-      c2(2)=c(4)*c(4)+c(2)*c(2)+c(6)*c(6)
-      c2(3)=c(5)*c(5)+c(6)*c(6)+c(3)*c(3)
-      c2(4)=c(1)*c(4)+c(4)*c(2)+c(5)*c(6)
-      c2(5)=c(1)*c(5)+c(4)*c(6)+c(5)*c(3)
-      c2(6)=c(4)*c(5)+c(2)*c(6)+c(6)*c(3)
-!     
-!     calculating the right stretch tensor at the end of the increment
-!     (cf. Simo and Hughes, Computational Inelasticity)
-!     
-!     This is the mechanical right stretch tensor, i.e. without
-!     thermal expansion (since it is based on emec)
-!     
-      dd=v1*v2-v3
-      do i=1,6
-        u(i)=(-c2(i)+(v1*v1-v2)*c(i)+v1*v3*d(i))/dd
-      enddo
-!     
-!     calculating the inverse of the right stretch tensor at the end
-!     of the increment
-!     
-      um1(1,1)=(c(1)-v1*u(1)+v2)/v3
-      um1(2,2)=(c(2)-v1*u(2)+v2)/v3
-      um1(3,3)=(c(3)-v1*u(3)+v2)/v3
-      um1(1,2)=(c(4)-v1*u(4))/v3
-      um1(1,3)=(c(5)-v1*u(5))/v3
-      um1(2,3)=(c(6)-v1*u(6))/v3
-      um1(2,1)=um1(1,2)
-      um1(3,1)=um1(1,3)
-      um1(3,2)=um1(2,3)
-!     
-!     calculating the logarithmic strain at the end of the increment
-!     Elog=Z.ln(w).Z^T
-!     
-      do i=1,3
-        w(i)=dlog(w(i))
-      enddo
-!     
-!     logarithmic strain in global coordinates at the end of the
-!     increment = ln(lambda) N diadic N;
-!     
-!     the true logarithmic strain is ln(lambda) n diadic n;
-!     the rotation tensor R = n diadic N;
-!     therefore, ln(lambda) N diadic N is R^T true logarithmic strain R, 
-!     in other words the corotational true logarithmic strain (required
-!     by the abaqus routine)
+!     calculating the structural tensors    
 !     
       xm1(1)=z(1,1)*z(1,1)
       xm1(2)=z(2,1)*z(2,1)
@@ -185,12 +203,40 @@ c      write(*,*) 'umat_abaqusnl_total ',(emec(i),i=1,6)
       xm3(5)=z(1,3)*z(3,3)
       xm3(6)=z(2,3)*z(3,3)
 !     
-      eln(1)=xm1(1)*w(1)+xm2(1)*w(2)+xm3(1)*w(3)          
-      eln(2)=xm1(2)*w(1)+xm2(2)*w(2)+xm3(2)*w(3)          
-      eln(3)=xm1(3)*w(1)+xm2(3)*w(2)+xm3(3)*w(3)          
-      eln(4)=xm1(4)*w(1)+xm2(4)*w(2)+xm3(4)*w(3)          
-      eln(5)=xm1(5)*w(1)+xm2(5)*w(2)+xm3(5)*w(3)          
-      eln(6)=xm1(6)*w(1)+xm2(6)*w(2)+xm3(6)*w(3)  
+!     corotational logarithmic strain in global coordinates at the end of the
+!     increment = ln(lambda) N diadic N;
+!     
+!     the true logarithmic strain is ln(lambda) n diadic n;
+!     the rotation tensor R = n diadic N;
+!     therefore, ln(lambda) N diadic N is R^T true logarithmic strain R, 
+!     in other words the corotational true logarithmic strain (required
+!     by the abaqus routine)
+!     
+      eln(1)=xm1(1)*weln(1)+xm2(1)*weln(2)+xm3(1)*weln(3)          
+      eln(2)=xm1(2)*weln(1)+xm2(2)*weln(2)+xm3(2)*weln(3)          
+      eln(3)=xm1(3)*weln(1)+xm2(3)*weln(2)+xm3(3)*weln(3)          
+      eln(4)=xm1(4)*weln(1)+xm2(4)*weln(2)+xm3(4)*weln(3)          
+      eln(5)=xm1(5)*weln(1)+xm2(5)*weln(2)+xm3(5)*weln(3)          
+      eln(6)=xm1(6)*weln(1)+xm2(6)*weln(2)+xm3(6)*weln(3)  
+!     
+!     calculating the inverse right stretch tensor U^{-1}
+!     
+      um1(1,1)=xm1(1)*wum1(1)+xm2(1)*wum1(2)+xm3(1)*wum1(3)          
+      um1(2,2)=xm1(2)*wum1(1)+xm2(2)*wum1(2)+xm3(2)*wum1(3)          
+      um1(3,3)=xm1(3)*wum1(1)+xm2(3)*wum1(2)+xm3(3)*wum1(3)          
+      um1(1,2)=xm1(4)*wum1(1)+xm2(4)*wum1(2)+xm3(4)*wum1(3)          
+      um1(1,3)=xm1(5)*wum1(1)+xm2(5)*wum1(2)+xm3(5)*wum1(3)          
+      um1(2,3)=xm1(6)*wum1(1)+xm2(6)*wum1(2)+xm3(6)*wum1(3)
+      um1(2,1)=um1(1,2)
+      um1(3,1)=um1(1,3)
+      um1(3,2)=um1(2,3)
+c      write(*,*) 'umat_abaqusnl_total',um1(1,1),um1(1,1)
+c      write(*,*) 'umat_abaqusnl_total',um1(2,2),um1(2,2)
+c      write(*,*) 'umat_abaqusnl_total',um1(3,3),um1(3,3)
+c      write(*,*) 'umat_abaqusnl_total',um1(1,2),um1(1,2)
+c      write(*,*) 'umat_abaqusnl_total',um1(1,3),um1(1,3)
+c      write(*,*) 'umat_abaqusnl_total',um1(2,3),um1(2,3)
+c      write(*,*)
 !     
       do i=1,nstate_
         xstate(i,iint,iel)=xstateini(i,iint,iel)
@@ -247,13 +293,67 @@ c      write(*,*) 'umat_abaqusnl_total ',(emec(i),i=1,6)
         call umat_johnson_cook(stre,xstate(1,iint,iel),ddsdde,
      &       spd,rpl,stran,dtime,temp,elconloc,nprops,
      &       iel,iint,jstep,kinc,icmd)
+        if(icmd.ne.3) then
 !     
+          stiff(1)=ddsdde(1,1)
+          stiff(2)=ddsdde(2,1)
+          stiff(3)=ddsdde(2,2)
+          stiff(4)=ddsdde(3,1)
+          stiff(5)=ddsdde(3,2)
+          stiff(6)=ddsdde(3,3)
+          stiff(7)=ddsdde(4,1)
+          stiff(8)=ddsdde(4,2)
+          stiff(9)=ddsdde(4,3)
+          stiff(10)=ddsdde(4,4)
+          stiff(11)=ddsdde(5,1)
+          stiff(12)=ddsdde(5,2)
+          stiff(13)=ddsdde(5,3)
+          stiff(14)=ddsdde(5,4)
+          stiff(15)=ddsdde(5,5)
+          stiff(16)=ddsdde(6,1)
+          stiff(17)=ddsdde(6,2)
+          stiff(18)=ddsdde(6,3)
+          stiff(19)=ddsdde(6,4)
+          stiff(20)=ddsdde(6,5)
+          stiff(21)=ddsdde(6,6)
+        endif
+!     
+      elseif(amat(1:11).eq.'ANISO_CREEP') then
+!     
+!       orthotropic elasticity with isotropic creep defined by
+!       a user subroutine     
+!     
+        amatloc(1:69)=amat(12:80)
+        amatloc(70:80)='           '
+        call umat_aniso_creep(amatloc,
+     &       iel,iint,kode,elconloc,stran,emec0,
+     &       beta,xkl,vj,ithermal,t1l,dtime,time,ttime,
+     &       icmd,ielas,mi(1),nstate_,xstateini,xstate,stre,stiff,
+     &       iorien,pgauss,orab,nmethod,pnewdt,depvisc)
+!          
       elseif(kode.eq.-50) then
 !     
-!     deformation plasticity
+!       deformation plasticity
 !     
-        call umat_def_plas(elconloc,elas,stran,icmd,stre,
+        call umat_def_plas(elconloc,stiff,stran,icmd,stre,
      &       xstate(1,iint,iel),iel,iint)
+!     
+      elseif(kode.eq.-53) then
+!     
+!       Mohr-Coulomb plasticity
+!     
+        call mohrcoulomb(elconloc,plconloc,xstate,xstateini,
+     &       stiff,stran,icmd,beta,stre,
+     &       ielas,dtime,time,ttime,iel,iint,nstate_,mi,pnewdt)
+!     
+      elseif(kode.eq.-54) then
+!     
+!       orthotropic elasticity with isotropic plasticity
+!     
+        call ortho_plas(amat,iel,iint,kode,elconloc,stran,
+     &       emec0,beta,xokl,voj,xkl,vj,ithermal,t1l,dtime,time,ttime,
+     &       icmd,ielas,mi,nstate_,xstateini,xstate,stre,stiff,iorien,
+     &       pgauss,orab,nmethod,pnewdt,plconloc)
       endif
 !     
 !     rotating the stress into the global system
@@ -270,8 +370,8 @@ c      write(*,*) 'umat_abaqusnl_total ',(emec(i),i=1,6)
 !     the right stretch tensor with expansion equals the right
 !     stretch tensor without expansion times (1+alpha*Delta T).
 !     
-!     calculate the Cauchy-Green tensor at the beginning of 
-!     the increment
+!     calculate the total Cauchy-Green tensor (based on the
+!     total deformation gradient, i.e. including thermal effects     
 !     
       do i=1,3
         do j=1,3
@@ -337,51 +437,51 @@ c      enddo
 !     calculate the stiffness matrix (the matrix is symmetrized)
 !     
       if(icmd.ne.3) then
-        if(amat(1:11).eq.'JOHNSONCOOK') then
-          elas(1)=ddsdde(1,1)
-          elas(2)=ddsdde(2,1)
-          elas(3)=ddsdde(2,2)
-          elas(4)=ddsdde(3,1)
-          elas(5)=ddsdde(3,2)
-          elas(6)=ddsdde(3,3)
-          elas(7)=ddsdde(4,1)
-          elas(8)=ddsdde(4,2)
-          elas(9)=ddsdde(4,3)
-          elas(10)=ddsdde(4,4)
-          elas(11)=ddsdde(5,1)
-          elas(12)=ddsdde(5,2)
-          elas(13)=ddsdde(5,3)
-          elas(14)=ddsdde(5,4)
-          elas(15)=ddsdde(5,5)
-          elas(16)=ddsdde(6,1)
-          elas(17)=ddsdde(6,2)
-          elas(18)=ddsdde(6,3)
-          elas(19)=ddsdde(6,4)
-          elas(20)=ddsdde(6,5)
-          elas(21)=ddsdde(6,6)
-        endif
+c        if(amat(1:11).eq.'JOHNSONCOOK') then
+c          stiff(1)=ddsdde(1,1)
+c          stiff(2)=ddsdde(2,1)
+c          stiff(3)=ddsdde(2,2)
+c          stiff(4)=ddsdde(3,1)
+c          stiff(5)=ddsdde(3,2)
+c          stiff(6)=ddsdde(3,3)
+c          stiff(7)=ddsdde(4,1)
+c          stiff(8)=ddsdde(4,2)
+c          stiff(9)=ddsdde(4,3)
+c          stiff(10)=ddsdde(4,4)
+c          stiff(11)=ddsdde(5,1)
+c          stiff(12)=ddsdde(5,2)
+c          stiff(13)=ddsdde(5,3)
+c          stiff(14)=ddsdde(5,4)
+c          stiff(15)=ddsdde(5,5)
+c          stiff(16)=ddsdde(6,1)
+c          stiff(17)=ddsdde(6,2)
+c          stiff(18)=ddsdde(6,3)
+c          stiff(19)=ddsdde(6,4)
+c          stiff(20)=ddsdde(6,5)
+c          stiff(21)=ddsdde(6,6)
+c        endif
 !     
 !     rotating the stiffness coefficients into the global system
 !     
-        call anisotropic(elas,ya)
+        call anisotropic(stiff,ya)
 !     
         do jj=1,21
           j1=kel(1,jj)
           j2=kel(2,jj)
           j3=kel(3,jj)
           j4=kel(4,jj)
-          elas(jj)=0.d0
+          stiff(jj)=0.d0
           do j5=1,3
             do j6=1,3
               do j7=1,3
                 do j8=1,3
-                  elas(jj)=elas(jj)+ya(j5,j6,j7,j8)*
+                  stiff(jj)=stiff(jj)+ya(j5,j6,j7,j8)*
      &                 tkl(j1,j5)*tkl(j2,j6)*tkl(j3,j7)*tkl(j4,j8)
                 enddo
               enddo
             enddo
           enddo
-          elas(jj)=elas(jj)*vj/expansion**2
+          stiff(jj)=stiff(jj)*vj/expansion**2
         enddo
       endif
 !     

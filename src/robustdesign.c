@@ -273,7 +273,7 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 			  iponexp,nmpc,labmpc,ipompc,nodempc,ipretinfo,
 			  kon,ipkon,lakon,iponoel,inoel,iponor2d,knor2d,
 			  ipoface,nodface,ne,x,y,z,xo,yo,zo,nx,ny,nz,nodes,
-			  dist,ne2d,nod1st,nod2nd3rd,extnor));
+			  dist,ne2d,nod1st,nod2nd3rd,extnor,nodedesi,&ndesi));
     	  
   SFREE(konfa);SFREE(ipkonfa);SFREE(lakonfa);SFREE(iponor);SFREE(xnor);
   SFREE(iponoelfa);SFREE(inoelfa);SFREE(iponexp);SFREE(ipretinfo);

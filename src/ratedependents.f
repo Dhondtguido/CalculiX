@@ -88,14 +88,27 @@
       if(johnsoncook) then
         iplas=1
         if(matname(nmat)(1:11).ne.'JOHNSONCOOK') then
-          write(*,*) '*ERROR reading *RATE DEPENDENT'
-          write(*,*) '       the name of a Johnson Cook material'
-          write(*,*) '       must start with JOHNSONCOOK'
-          write(*,*) '       (blanks are allowed at any location'
-          write(*,*) '        and the string is not case sensitive)'
-          call inputerror(inpc,ipoinpc,iline,
-     &         "*RATE DEPENDENT%",ier)
-          return
+          if(matname(nmat)(70:80).ne.'           ') then
+            write(*,*)
+     &           '*ERROR reading *RATE DEPENDENT: the material name'
+            write(*,*) '       for a Johnson-Cook material must'
+            write(*,*) '       not exceed 69 characters'
+            ier=1
+            return
+          else
+            do i=80,12,-1
+              matname(nmat)(i:i)=matname(nmat)(i-11:i-11)
+            enddo
+            matname(nmat)(1:11)='JOHNSONCOOK'
+          endif
+c          write(*,*) '*ERROR reading *RATE DEPENDENT'
+c          write(*,*) '       the name of a Johnson Cook material'
+c          write(*,*) '       must start with JOHNSONCOOK'
+c          write(*,*) '       (blanks are allowed at any location'
+c          write(*,*) '        and the string is not case sensitive)'
+c          call inputerror(inpc,ipoinpc,iline,
+c     &         "*RATE DEPENDENT%",ier)
+c          return
         endif
         nelcon(1,nmat)=-111
         nstate_=max(nstate_,9)
