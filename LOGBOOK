@@ -5260,3 +5260,5 @@ Dec 2002        - started to work on single crystal plasticity
  26 Sept 2023   - corrected an error in writeinputdeck.f
                 - corrected an error in the documentation (RF).
 		- worked on the consistent tangent in umat_abaqusnl_total.f
+
+ 28 Sept 2023   - continued work on the consistent tangent

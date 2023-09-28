@@ -51,7 +51,8 @@
 !     
       integer ithermal(*),icmd,kode,ielas,iel,iint,nstate_,mi(*),i,
      &     iorien,nmethod,iperturb(*),istep,nprops,jstep(4),kinc,
-     &     kel(4,21),j1,j2,j3,j4,j5,j6,j7,j8,jj,n,ier,j,matz,kal(2,6)
+     &     kel(4,21),j1,j2,j3,j4,j5,j6,j7,j8,jj,n,ier,j,matz,kal(2,6),
+     &     mel(4,36),jm,jn,js,jt
 !     
       real*8 elconloc(*),stiff(21),emec(6),emec0(6),beta(6),stre(6),
      &     vj,t1l,dtime,xkl(3,3),xokl(3,3),voj,pgauss(3),orab(7,*),
@@ -62,7 +63,10 @@
      &     xstate(nstate_,mi(1),*),xm1(6),xm2(6),plconloc(802),
      &     xm3(6),wum1(3),weln(3),um1new(3,3),xa(3,3),ym1(3,3),
      &     ym2(3,3),ym3(3,3),sccum1(3,3),cm1(3,3),um1sccum1(3,3),
-     &     c4(21),d4(21)
+     &     c4(21),d4(21),dxm1dc(21),dxm2dc(21),dxm3dc(21),
+     &     dum1dc(21),delndc(21),dum1dcexp(3,3,3,3),delndcexp(3,3,3,3),
+     &     stiffexp(3,3,3,3),term1(36),term24(36),term3(36),
+     &     stiffasym(36),aa(21),bb(21),dwum1(3),dweln(3)
 !     
       kal=reshape((/1,1,2,2,3,3,1,2,1,3,2,3/),(/2,6/))
 !     
@@ -70,6 +74,13 @@
      &     1,1,1,2,2,2,1,2,3,3,1,2,1,2,1,2,1,1,1,3,2,2,1,3,
      &     3,3,1,3,1,2,1,3,1,3,1,3,1,1,2,3,2,2,2,3,3,3,2,3,
      &     1,2,2,3,1,3,2,3,2,3,2,3/),(/4,21/))
+!     
+      mel=reshape((/1,1,1,1,1,1,2,2,2,2,2,2,1,1,3,3,2,2,3,3,3,3,3,3,
+     &     1,1,1,2,2,2,1,2,3,3,1,2,1,2,1,2,1,1,1,3,2,2,1,3,
+     &     3,3,1,3,1,2,1,3,1,3,1,3,1,1,2,3,2,2,2,3,3,3,2,3,
+     &     1,2,2,3,1,3,2,3,2,3,2,3,2,2,1,1,3,3,1,1,3,3,2,2,
+     &     1,2,1,1,1,2,2,2,1,2,3,3,1,3,1,1,1,3,2,2,1,3,3,3,
+     &     1,3,1,2,2,3,1,1,2,3,2,2,2,3,3,3,2,3,1,2,2,3,1,3/),(/4,36/))
 !     
       d=(/1.d0,1.d0,1.d0,0.d0,0.d0,0.d0/)
 !     
@@ -512,7 +523,81 @@ c      enddo
         c4(19)=c(3,1)/2.d0
         c4(20)=c(2,1)/2.d0
         c4(21)=(c(3,3)+c(2,2))/2.d0
+!
+!       calculating the derivative of the eigenvalue functions
+!
+        do i=1,3
+          dweln(i)=1.d0/(2.d0*w(i))
+          dwum1(i)=-wum1(i)/(2.d0*w(i))
+        enddo
+!
+!       calculating A, B, dM_i/dC, dU^{-1}/dC and dln(e)/dC
+!       (all of them symmetric, i.e. 21 constants)
+!
+        do jj=1,21
+          j1=kel(1,jj)
+          j2=kel(2,jj)
+          j3=kel(3,jj)
+          j4=kel(4,jj)
+          aa(jj)=d4(jj)-ym1(j1,j2)*ym1(j3,j4)
+     &                 -ym2(j1,j2)*ym2(j3,j4)
+     &                 -ym3(j1,j2)*ym3(j3,j4)
+          bb(jj)=c4(jj)-2.d0*(w(1)*ym1(j1,j2)*ym1(j3,j4)
+     &                       +w(2)*ym2(j1,j2)*ym2(j3,j4)
+     &                       +w(3)*ym3(j1,j2)*ym3(j3,j4))
+          dxm1dc(jj)=(bb(jj)-(w(2)+w(3))*aa(jj))/
+     &         ((w(1)-w(2))*(w(1)-w(3)))
+          dxm2dc(jj)=(bb(jj)-(w(1)+w(3))*aa(jj))/
+     &         ((w(2)-w(1))*(w(2)-w(3)))
+          dxm3dc(jj)=(bb(jj)-(w(1)+w(2))*aa(jj))/
+     &         ((w(3)-w(1))*(w(3)-w(2)))
+          dum1dc(jj)=ym1(j1,j2)*ym1(j3,j4)*dwum1(1)+wum1(1)*dxm1dc(jj)
+     &              +ym2(j1,j2)*ym2(j3,j4)*dwum1(2)+wum1(2)*dxm2dc(jj)
+     &              +ym3(j1,j2)*ym3(j3,j4)*dwum1(3)+wum1(3)*dxm3dc(jj)
+          delndc(jj)=ym1(j1,j2)*ym1(j3,j4)*dweln(1)+weln(1)*dxm1dc(jj)
+     &              +ym2(j1,j2)*ym2(j3,j4)*dweln(2)+weln(2)*dxm2dc(jj)
+     &              +ym3(j1,j2)*ym3(j3,j4)*dweln(3)+weln(3)*dxm3dc(jj)
+         enddo
 !     
+!        expanding dum1dc(21), delndc(21) and stiff(21) into     
+!        dum1dcexp(3,3,3,3), delndcexp(3,3,3,3) and stiffexp(3,3,3,3) 
+!     
+         call anisotropic(dum1dc,dum1dcexp)
+         call anisotropic(delndc,delndcexp)
+         call anisotropic(stiff,stiffexp)
+!     
+!        collecting all terms in the final expression (possibly     
+!        asymmetric, i.e. 36 terms)
+!
+         do jj=1,36
+           j1=mel(1,jj)
+           j2=mel(2,jj)
+           j3=mel(3,jj)
+           j4=mel(4,jj)
+           term1(jj)=um1sccum1(j1,j2)*cm1(j3,j4)
+           term24(jj)=dum1dcexp(j1,1,j3,j4)*sccum1(1,j2)+
+     &                dum1dcexp(j1,2,j3,j4)*sccum1(2,j2)+
+     &                dum1dcexp(j1,3,j3,j4)*sccum1(3,j2)+
+     &                dum1dcexp(j2,1,j3,j4)*sccum1(1,j1)+
+     &                dum1dcexp(j2,2,j3,j4)*sccum1(2,j1)+
+     &                dum1dcexp(j2,3,j3,j4)*sccum1(3,j1)
+           term3(jj)=0.d0
+           do jm=1,3
+             do jn=1,3
+               do js=1,3
+                 do jt=1,3
+                   term3(jj)=term3(jj)+um1(j1,jm)*stiffexp(jm,jn,js,jt)*
+     &                       delndcexp(js,jt,j3,j4)*um1(jn,j2)
+                 enddo
+               enddo
+             enddo
+           enddo
+           stiffasym(jj)=vj*(term1(jj)+2.d0*(term24(jj)+term3(jj)))/
+     &          expansion**2
+         enddo
+!
+!        symmetrizing stiffasym -> stiff
+!
 c        do jj=1,21
 c          k=kel(1,jj)
 c          l=kel(2,jj)
