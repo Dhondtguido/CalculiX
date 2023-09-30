@@ -5264,3 +5264,5 @@ Dec 2002        - started to work on single crystal plasticity
  28 Sept 2023   - continued work on the consistent tangent
                 - reenabled output for the optimizer vamos in
 		  calcfeasibledirection_gd.f
+
+ 30 Sept 2023   - removed some calls of results.c for massless contact
