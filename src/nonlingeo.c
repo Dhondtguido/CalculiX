@@ -119,12 +119,12 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *isolidsurf=NULL,*neighsolidsurf=NULL,*iponoel=NULL,*inoel=NULL,
     nface,nfreestream,nsolidsurf,i,icfd=0,id,mortarsav=0,
     node,networknode,iflagact=0,*nodorig=NULL,*ipivr=NULL,iglob=0,
-    *inomat=NULL,ntrimax,*nx=NULL,*ny=NULL,*nz=NULL,
+    *inomat=NULL,ntrimax,*nx=NULL,*ny=NULL,*nz=NULL,nforcrhs,nloadrhs,
     idampingwithoutcontact=0,*nactdoh=NULL,*nactdohinv=NULL,*ipkonf=NULL,
     *ielmatf=NULL,*ielorienf=NULL,ialeatoric=0,nloadref,isym,
     *nelemloadref=NULL,*iamloadref=NULL,*idefload=NULL,nload_,
     *nelemload=NULL,*iamload=NULL,ncontacts=0,inccontact=0,nrhs=1,
-    j=0,inoelsize=0,isensitivity=0,*konf=NULL,
+    j=0,inoelsize=0,isensitivity=0,*konf=NULL,nbodyrhs,
     *iwork=NULL,nelt,lrgw,*igwk=NULL,itol,itmax,iter,ierr,iunit,ligw,
     mei[4]={0,0,0,0},*itreated=NULL,mscalmethod=-1,inoelfree,
     isiz=0,num_cpus,sys_cpus,ne1d2d=0,kchdep,nkftot,
@@ -139,7 +139,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     intpointvart,*jqbi=NULL,*irowbi=NULL,*jqib=NULL,*irowib=NULL;
 
   double *stn=NULL,*v=NULL,*een=NULL,cam[5],*epn=NULL,*cg=NULL,
-    *cdn=NULL,*pslavsurfold=NULL,
+    *cdn=NULL,*pslavsurfold=NULL,*fextload=NULL,
     *f=NULL,*fn=NULL,qa[4]={0.,0.,-1.,0.},qam[2]={0.,0.},dtheta,theta,
     err,ram[6]={0.,0.,0.,0.,0.,0.},*areaslav=NULL,
     *springarea=NULL,ram1[6]={0.,0.,0.,0.,0.,0.},
@@ -1029,6 +1029,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     if(*iexpl>1){
 
       mscalmethod=0;
+      nloadrhs=*nload;nbodyrhs=*nbody;
 	  
       /* Explicit: Calculation of stable time increment according to
 	 Courant's Law  Carlo Monjaraz Tec (CMT) and Selctive Mass Scaling CC*/
@@ -2544,11 +2545,44 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
            the body forces and surface loading). This effect is
            neglected, since the increment size in dynamic explicit
            calculations is usually small */
-	   
+
+	if((*mortar==-1)&&(masslesslinear==1)&&(iinc==2)){
+
+	  /* check whether the distributed loading changes in this step 
+	   (only for linear massless explicit dynamic calculations) */
+	  
+	  FORTRAN(checktempload,(iamload,nload,sideload,ibody,nbody,
+				 &masslesslinear,&nloadrhs,&nbodyrhs));
+
+	  /* if no change: calculate the external force vector due to this
+             loading only once at the start of the step */
+
+	  if(masslesslinear==2){
+	    NNEW(fextload,double,neq[1]);
+	    nforcrhs=0;
+	    rhsmain(co,nk,kon,ipkon,lakon,ne,
+		    ipompc,nodempc,coefmpc,nmpc,nodeforc,ndirforc,xforcact,
+		    &nforcrhs,nelemload,sideload,xloadact,nload,xbodyact,
+		    ipobody,nbody,cgr,fextload,nactdof,&neq[1],
+		    nmethod,ikmpc,ilmpc,
+		    elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,
+		    ielmat,ielorien,norien,orab,ntmat_,
+		    t0,t1act,ithermal,iprestr,vold,iperturb,
+		    iexpl,plicon,nplicon,plkcon,nplkcon,
+		    npmat_,ttime,&time,istep,&iinc,&dtime,physcon,ibody,
+		    xbodyold,&reltime,veold,matname,mi,ikactmech,
+		    &nactmech,ielprop,prop,sti,xstateini,xstate,nstate_,
+		    ntrans,inotr,trab,fnext);
+	  }
+	}
+
+	/* call to rhsmain in every increment: if the distributed
+           loading does not change only point forces are taken into account */
+	
 	rhsmain(co,nk,kon,ipkon,lakon,ne,
 	  	ipompc,nodempc,coefmpc,nmpc,nodeforc,ndirforc,xforcact,
-	  	nforc,nelemload,sideload,xloadact,nload,xbodyact,ipobody,
-	  	nbody,cgr,fext,nactdof,&neq[1],
+	  	nforc,nelemload,sideload,xloadact,&nloadrhs,xbodyact,ipobody,
+	  	&nbodyrhs,cgr,fext,nactdof,&neq[1],
 	  	nmethod,ikmpc,ilmpc,
 	  	elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,
 	  	ielmat,ielorien,norien,orab,ntmat_,
@@ -2558,6 +2592,12 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	  	xbodyold,&reltime,veold,matname,mi,ikactmech,
 	  	&nactmech,ielprop,prop,sti,xstateini,xstate,nstate_,
 	        ntrans,inotr,trab,fnext);
+
+	/* adding fextload due to distributed loading */
+
+	if(masslesslinear==2){
+	  for(i=0;i<neq[1];i++){fext[i]+=fextload[i];}
+	}
 
       }
       
@@ -4202,7 +4242,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     if(*mortar==-1){
       SFREE(kslav);SFREE(lslav);SFREE(ktot);SFREE(ltot);SFREE(aloc);
       SFREE(adc);SFREE(auc);SFREE(areaslav);SFREE(fric);
-      if(masslesslinear==1){
+      if(masslesslinear>0){
 	SFREE(ad);SFREE(au);SFREE(jqbi);SFREE(aubi);SFREE(irowbi);
 	SFREE(jqib);SFREE(auib);SFREE(irowib);
 	iclean=1;
@@ -4213,6 +4253,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		 iexpl,nener,ener,ne,&jqbi,&aubi,&irowbi,&jqib,&auib,&irowib,
 		 &iclean,&iinc);
       }
+      if(masslesslinear==2){SFREE(fextload);}
 
     }else if(*mortar==0){
       SFREE(areaslav);

@@ -112,11 +112,11 @@
          ier=1
          return
       endif
-      write(*,*) 'INFO reading *VISCO:'
-      write(*,*) '     although the specification of CETOL for a'
-      write(*,*) '     *VISCO procedure is mandatory, it is only'
-      write(*,*) '     used for creep in materials with a linear'
-      write(*,*) '     elastic behavior which is ISOTROPIC'
+      write(*,*) '*INFO reading *VISCO:'
+      write(*,*) '      although the specification of CETOL for a'
+      write(*,*) '      *VISCO procedure is mandatory, it is only'
+      write(*,*) '      used for creep in materials with a linear'
+      write(*,*) '      elastic behavior which is ISOTROPIC'
       write(*,*)
 !
       if(solver(1:7).eq.'SPOOLES') then

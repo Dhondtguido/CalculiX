@@ -5266,3 +5266,7 @@ Dec 2002        - started to work on single crystal plasticity
 		  calcfeasibledirection_gd.f
 
  30 Sept 2023   - removed some calls of results.c for massless contact
+
+ 6 Oct 2023     - for linear massless contact calculations non-changing
+                  distributed loading is taken into account at the start of
+		  a new step

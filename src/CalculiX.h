@@ -776,6 +776,10 @@ void FORTRAN(checkprojectgrad,(ITG *nactiveold,ITG *nactive,ITG *ipoacti,
 void FORTRAN(checksharp,(ITG *nexternedg,ITG *iedgextfa,double *cotet,
 			 ITG *ifacext,ITG *isharp));
 
+void FORTRAN(checktempload,(ITG *iamload,ITG *nload,char *sideload,ITG *ibody,
+			    ITG *nbody,ITG *masslesslinear,ITG *nloadrhs,
+			    ITG *nbodyrhs));
+
 void FORTRAN(checktime,(ITG *itpamp,ITG *namta,double *tinc,double *ttime,
              double *amta,double *tmin,ITG *inext,ITG *itp,ITG *istep,
              double *tper));

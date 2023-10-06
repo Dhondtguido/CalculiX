@@ -143,6 +143,10 @@
       c0=dsqrt(2.d0/3.d0)
       c1=2.d0/3.d0
       c2=-1.d0/3.d0
+!
+      lend=3
+      timeabq(1)=time
+      timeabq(2)=ttime+time
 !     
 !     elastic constants
 !     
@@ -478,8 +482,6 @@ c     write(*,*)
 !     
          ec(1)=eeq
          decra(1)=c0*dg
-         timeabq(1)=time
-         timeabq(2)=ttime+time
          call creep(decra,deswa,xstateini(1,iint,iel),serd,ec,
      &        esw,p,svm,t1l,dtemp,predef,dpred,timeabq,dtime,
      &        amat,leximp,lend,pgauss,nstate_,iel,iint,layer,kspt,
@@ -648,8 +650,6 @@ c     write(*,*)
         if(dg.le.0.d0) then
           ec(1)=eeq
           decra(1)=c0*1.d-10
-          timeabq(1)=time
-          timeabq(2)=ttime+time
           call creep(decra,deswa,xstateini(1,iint,iel),serd,ec,
      &         esw,p,svm,t1l,dtemp,predef,dpred,timeabq,dtime,
      &         amat,leximp,lend,pgauss,nstate_,iel,iint,layer,kspt,

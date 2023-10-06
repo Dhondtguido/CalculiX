@@ -145,6 +145,7 @@ checkprojectgrad.f \
 checksharp.f \
 checkspcmpc.f \
 checktemp.f \
+checktempload.f \
 checktime.f \
 checktruecontact.f \
 checkvol.f \
