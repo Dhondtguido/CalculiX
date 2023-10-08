@@ -2928,8 +2928,7 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,
 	      ITG *neqtot,double *qbk,double *b,double *tinc,
 	      double *aloc,double *fric,ITG *iexpl,ITG *nener,double *ener,
 	      ITG *ne,ITG **jqbip,double **aubip,ITG **irowbip,ITG **jqibp,
-	      double **auibp,ITG **irowibp,ITG *iclean,ITG *iinc,
-	      ITG *irowbbinv,ITG *jqbbinv,double *adbbinv,double *aubbinv);
+	      double **auibp,ITG **irowibp,ITG *iclean,ITG *iinc);
 
 void mastruct(ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
               ITG *nodeboun,ITG *ndirboun,ITG *nboun,ITG *ipompc,
