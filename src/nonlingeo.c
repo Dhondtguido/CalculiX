@@ -127,8 +127,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     j=0,inoelsize=0,isensitivity=0,*konf=NULL,nbodyrhs,
     *iwork=NULL,nelt,lrgw,*igwk=NULL,itol,itmax,iter,ierr,iunit,ligw,
     mei[4]={0,0,0,0},*itreated=NULL,mscalmethod=-1,inoelfree,
-    isiz=0,num_cpus,sys_cpus,ne1d2d=0,kchdep,nkftot,
-    ifreesurface=0,*iponoelf=NULL,*inoelf=NULL,
+    isiz=0,num_cpus,sys_cpus,ne1d2d=0,kchdep,nkftot,*irowbbinv=NULL,
+    ifreesurface=0,*iponoelf=NULL,*inoelf=NULL,*jqbbinv=NULL,
     mortartrafoflag=0,*nelold=NULL,*nelnew=NULL,*nkold=NULL,*nknew=NULL,
     *ipompcf=NULL,*nodempcf=NULL,*nodebounf=NULL,*ndirbounf=NULL,
     *nelemloadf=NULL,*ipobodyf=NULL,nkf,nkonf,memmpcf,nbounf,nloadf,nmpcf,
@@ -173,7 +173,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *smscale=NULL,dtset,energym=0.,energymold=0.,*voldf=NULL,
     *coefmpcf=NULL,*xbounf=NULL,*xloadf=NULL,*xbounoldf=NULL,
     *xbounactf=NULL,*xloadoldf=NULL,*xloadactf=NULL,*auw=NULL,*volddof=NULL,
-    *qb=NULL,*aloc=NULL,dtmin,*fric=NULL,*aubi=NULL,*auib=NULL;
+    *qb=NULL,*aloc=NULL,dtmin,*fric=NULL,*aubi=NULL,*auib=NULL,
+    *adbbinv=NULL,*aubbinv=NULL;
 	 
   FILE *f1;
 
@@ -1242,7 +1243,17 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
       /* no nlgeom and no nonlinear material for massless explicit dynamics */
       
-      if((iperturb[0]<3)&&(iperturb[1]==0)) masslesslinear=1;
+      if((iperturb[0]<3)&&(iperturb[1]==0)){
+	masslesslinear=1;
+
+	/* field for the inverse of Kbb  */
+	
+	NNEW(adbbinv,double,neqtot);
+	NNEW(aubbinv,double,neqtot*(neqtot+1)/2);
+	NNEW(irowbbinv,ITG,neqtot*(neqtot+1)/2);
+	NNEW(jqbbinv,ITG,neqtot+1);
+
+      }
       
     } //endif massless
       
@@ -2659,12 +2670,14 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       }else{
 	NNEW(volddof,double,neq[0]);
 	NNEW(qb,double,neqtot);
+	  
         massless(kslav,lslav,ktot,ltot,au,ad,auc,adc,jq,irow,neq,nzs,auw,jqw,
 		 iroww,&nzsw,islavnode,nslavnode,nslavs,imastnode,nmastnode,
 		 ntie,nactdof,mi,vold,volddof,veold,nk,fext,isolver,
 		 &masslesslinear,co,springarea,&neqtot,qb,b,&dtime,aloc,fric,
 		 iexpl,nener,ener,ne,&jqbi,&aubi,&irowbi,&jqib,&auib,&irowib,
-		 &iclean,&iinc);
+		 &iclean,&iinc,irowbbinv,jqbbinv,adbbinv,aubbinv);
+     
         if(masslesslinear==0){SFREE(ad);SFREE(au);} 
       }
 	
@@ -4243,15 +4256,16 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       SFREE(kslav);SFREE(lslav);SFREE(ktot);SFREE(ltot);SFREE(aloc);
       SFREE(adc);SFREE(auc);SFREE(areaslav);SFREE(fric);
       if(masslesslinear>0){
-	SFREE(ad);SFREE(au);SFREE(jqbi);SFREE(aubi);SFREE(irowbi);
-	SFREE(jqib);SFREE(auib);SFREE(irowib);
 	iclean=1;
         massless(kslav,lslav,ktot,ltot,au,ad,auc,adc,jq,irow,neq,nzs,auw,jqw,
 		 iroww,&nzsw,islavnode,nslavnode,nslavs,imastnode,nmastnode,
 		 ntie,nactdof,mi,vold,volddof,veold,nk,fext,isolver,
 		 &masslesslinear,co,springarea,&neqtot,qb,b,&dtime,aloc,fric,
 		 iexpl,nener,ener,ne,&jqbi,&aubi,&irowbi,&jqib,&auib,&irowib,
-		 &iclean,&iinc);
+		 &iclean,&iinc,irowbbinv,jqbbinv,adbbinv,aubbinv);
+	SFREE(ad);SFREE(au);SFREE(jqbi);SFREE(aubi);SFREE(irowbi);
+	SFREE(jqib);SFREE(auib);SFREE(irowib);SFREE(adbbinv);
+	SFREE(aubbinv);SFREE(irowbbinv);SFREE(jqbbinv);
       }
       if(masslesslinear==2){SFREE(fextload);}
 

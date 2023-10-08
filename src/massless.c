@@ -47,19 +47,20 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
 	      double *b,double *dtime,double *aloc,double *fric,ITG *iexpl,
 	      ITG *nener,double *ener,ITG *ne,ITG **jqbip,double **aubip,
 	      ITG **irowbip,ITG **jqibp,double **auibp,ITG **irowibp,
-	      ITG *iclean,ITG *iinc){
+	      ITG *iclean,ITG *iinc,ITG *irowbbinv,ITG *jqbbinv,
+	      double *adbbinv,double *aubbinv){
 
   /* determining the RHS of the global system for massless contact */
 
-  ITG *jqwnew=NULL,*irowwnew=NULL,symmetryflag=0,mt=mi[1]+1,
-    inputformat=0,*iacti=NULL,nacti=0,itranspose,index,i,j,k,kitermax,
+  ITG *jqwnew=NULL,*irowwnew=NULL,symmetryflag=0,mt=mi[1]+1,jstart,im,
+    inputformat=0,*iacti=NULL,nacti=0,itranspose,i,j,k,kitermax,
     *jqbb=NULL,*irowbb=NULL,*icolbb=NULL,nzsbb,*jqbi=NULL,*irowbi=NULL,
     nzsbi,*jqib=NULL,*irowib=NULL,nzsib,nrhs=1;
 
   double *auwnew=NULL,sigma=0.0,*gapdisp=NULL,*gapnorm=NULL,*cvec=NULL,sum,
     *adbbb=NULL,*aubbb=NULL,*gvec=NULL,*gmatrix=NULL,*qi_kbi=NULL,
     *veolddof=NULL,*alglob=NULL,atol,rtol,*aubb=NULL,*adbb=NULL,
-    *al=NULL,*alnew=NULL,*eps_al=NULL,*rhs=NULL,*aubi=NULL,
+    *al=NULL,*alnew=NULL,*eps_al=NULL,*rhs=NULL,*aubi=NULL,*gsol=NULL,
     *auib=NULL,omega,*alocold=NULL,*ddisp=NULL;
 
   jqbi=*jqbip;aubi=*aubip;irowbi=*irowbip;jqib=*jqibp;auib=*auibp;
@@ -179,6 +180,49 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
     SFREE(aubb);SFREE(adbb);SFREE(irowbb);SFREE(icolbb);SFREE(jqbb);
   }
 
+  /* calculating the inverse of Kbb (only for linear calculations) */
+
+  if((*masslesslinear==1)&&(*iinc==1)){
+    NNEW(gvec,double,*neqtot);
+    jqbbinv[0]=1;
+
+    /* solving the equation system with a unit matrix on the rhs */
+    
+    for(i=0;i<*neqtot;i++){
+      DMEMSET(gvec,0,*neqtot,0.);
+      gvec[i]=1.;
+ 
+      /* Solving the linear system per column */
+
+      if(*isolver==0){
+#ifdef SPOOLES
+	spooles_solve_rad(gvec,neqtot);
+#endif
+      }else if(*isolver==7){
+#ifdef PARDISO
+	pardiso_solve_cp(gvec,neqtot,&symmetryflag,&inputformat,&nrhs);
+#endif
+      }else if(*isolver==8){
+#ifdef PASTIX
+	pastix_solve_cp(gvec,neqtot,&symmetryflag,&nrhs);
+#endif
+      }
+
+      /* filling the diagonal entry and the start of the next column */
+      
+      adbbinv[i]=gvec[i];
+      jqbbinv[i+1]=jqbbinv[i]+i;
+
+      /* filling the upper triangular entries and the row indices */
+      
+      jstart=jqbbinv[i]-1;
+      for(j=0;j<i;j++){
+	aubbinv[jstart+j]=gvec[j];
+	irowbbinv[jstart+j]=j+1;
+      }
+    }
+  }
+  
   /* premultiply gapdisp with Kbb^{-1} */
 
   if(*isolver==0){
@@ -227,6 +271,7 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
     }
 
     /* constructing the g-matrix of the inclusion equation */
+    
     NNEW(gmatrix,double,nacti*nacti);
 
     /* calculate G = Wb^T.Kbb^(-1).Wb 
@@ -234,10 +279,11 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
 
     /* loop over the columns of Wb */
     
+    NNEW(gsol,double,*neqtot);
+    
     for(i=0;i<3**nslavs;i++){
       
       if(iacti[i]!=0) {
-	//	index=i;//  contact index
 
 	NNEW(gvec,double,*neqtot);
 
@@ -249,25 +295,29 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
  
 	/* Solving the linear system per column */
 
-	if(*isolver==0){
+	if(*masslesslinear>0){
+	  FORTRAN(op,(neqtot,gvec,gsol,adbbinv,aubbinv,jqbbinv,irowbbinv));
+	  memcpy(&gvec[0],&gsol[0],sizeof(double)**neqtot);
+	}else{
+	  if(*isolver==0){
 #ifdef SPOOLES
-	  spooles_solve_rad(gvec,neqtot);
+	    spooles_solve_rad(gvec,neqtot);
 #endif
-	}else if(*isolver==7){
+	  }else if(*isolver==7){
 #ifdef PARDISO
-	  pardiso_solve_cp(gvec,neqtot,&symmetryflag,&inputformat,&nrhs);
+	    pardiso_solve_cp(gvec,neqtot,&symmetryflag,&inputformat,&nrhs);
 #endif
-	}else if(*isolver==8){
+	  }else if(*isolver==8){
 #ifdef PASTIX
-	  pastix_solve_cp(gvec,neqtot,&symmetryflag,&nrhs);
+	    pastix_solve_cp(gvec,neqtot,&symmetryflag,&nrhs);
 #endif
+	  }
 	}
 	
 	/* premultiplying per Wb^T */
 
 	for(j=0;j<3**nslavs;++j){
 	  if(iacti[j]!=0){
-	    //	    index=j;
 	    sum=0.0;
 	    for(k=jqw[j]-1;k<jqw[j+1]-1;k++){
 	      sum+=auw[k]*gvec[iroww[k]-1];
@@ -278,6 +328,7 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
 	SFREE(gvec);
       }
     }
+    SFREE(gsol);
 
     /* solve the inclusion problem (augmented Lagrange) */
     
