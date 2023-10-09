@@ -87,22 +87,24 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
   /* expanding the matrix Wb according to the number of degrees
      of freedom */
 
-  NNEW(jqwnew,ITG,3**nslavs+1);
-  NNEW(auwnew,double,*nzsw);
-  NNEW(irowwnew,ITG,*nzsw);
+  if((*masslesslinear==0)||(*iinc==1)){
+    NNEW(jqwnew,ITG,3**nslavs+1);
+    NNEW(auwnew,double,*nzsw);
+    NNEW(irowwnew,ITG,*nzsw);
 
-  /* Rearrange the row entries in the Wb matrix, column by column
-     from the order in islavnode and imastnode to the order as
-     dictated by nactdof */
+    /* Rearrange the row entries in the Wb matrix, column by column
+       from the order in islavnode and imastnode to the order as
+       dictated by nactdof */
   
-  FORTRAN(expand_auw,(auw,jqw,iroww,nslavs,auwnew,jqwnew,irowwnew,
-		      nactdof,mi,ktot,neqtot,islavnode,imastnode));
+    FORTRAN(expand_auw,(auw,jqw,iroww,nslavs,auwnew,jqwnew,irowwnew,
+			nactdof,mi,ktot,neqtot,islavnode,imastnode));
 
-  memcpy(jqw,jqwnew,sizeof(ITG)*(3**nslavs+1));
-  memcpy(auw,auwnew,sizeof(double)**nzsw);
-  memcpy(iroww,irowwnew,sizeof(ITG)**nzsw);
+    memcpy(jqw,jqwnew,sizeof(ITG)*(3**nslavs+1));
+    memcpy(auw,auwnew,sizeof(double)**nzsw);
+    memcpy(iroww,irowwnew,sizeof(ITG)**nzsw);
 
-  SFREE(jqwnew);SFREE(auwnew);SFREE(irowwnew);
+    SFREE(jqwnew);SFREE(auwnew);SFREE(irowwnew);
+  }
 
   /* extracting Kbb,Kbi,Kib,Kii from the stiffness matrix;
      only for a nonlinear calculation or the first increment

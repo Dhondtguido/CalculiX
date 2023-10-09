@@ -173,7 +173,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *smscale=NULL,dtset,energym=0.,energymold=0.,*voldf=NULL,
     *coefmpcf=NULL,*xbounf=NULL,*xloadf=NULL,*xbounoldf=NULL,
     *xbounactf=NULL,*xloadoldf=NULL,*xloadactf=NULL,*auw=NULL,*volddof=NULL,
-    *qb=NULL,*aloc=NULL,dtmin,*fric=NULL,*aubi=NULL,*auib=NULL;
+    *qb=NULL,*aloc=NULL,dtmin,*fric=NULL,*aubi=NULL,*auib=NULL,
+    *fullgmatrix=NULL;
 	 
   FILE *f1;
 
@@ -1860,23 +1861,34 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       /* massless contact: calculate matrix Wb */
       
       if(*mortar==-1){
-	nzsw=5*9**nslavs; // 5 = 1 slave 4 master max and 9 times since 3x3 in 3D
-	NNEW(auw,double,nzsw);
-	NNEW(jqw,ITG,3**nslavs+1);
-	NNEW(iroww,ITG,nzsw);
+
+	if((masslesslinear==0)||(iinc==1)){
+	  nzsw=5*9**nslavs;
+	  
+	  /* 5 = 1 slave + maximal 4 master, so 5 terms in the equation times
+	     3 dofs = 15 terms; for each slave node 3 dofs, so 3 equations */ 
+	  
+	  NNEW(auw,double,nzsw);
+	  NNEW(jqw,ITG,3**nslavs+1);
+	  NNEW(iroww,ITG,nzsw);
+	}
+	if((masslesslinear>0)&&(iinc==1)){
+	  NNEW(fullgmatrix,double,9**nslavs**nslavs);}
       }
-      
-      contact(&ncont,ntie,tieset,nset,set,istartset,iendset,
-	      ialset,itietri,lakon,ipkon,kon,koncont,ne,cg,straight,nkon,
-	      co,vold,ielmat,cs,elcon,istep,&iinc,&iit,ncmat_,ntmat_,
-	      &ne0,nmethod,
-	      iperturb,ikboun,nboun,mi,imastop,nslavnode,islavnode,
-	      islavsurf,
-	      itiefac,areaslav,iponoels,inoels,springarea,tietol,&reltime,
-	      imastnode,nmastnode,xmastnor,filab,mcs,ics,&nasym,
-	      xnoels,mortar,pslavsurf,pmastsurf,clearini,&theta,
-	      xstateini,xstate,nstate_,&icutb,&ialeatoric,jobnamef,
-	      &alea,auw,jqw,iroww,&nzsw);
+
+      if((*mortar!=-1)||(masslesslinear==0)||(iinc==1)){
+	contact(&ncont,ntie,tieset,nset,set,istartset,iendset,
+		ialset,itietri,lakon,ipkon,kon,koncont,ne,cg,straight,nkon,
+		co,vold,ielmat,cs,elcon,istep,&iinc,&iit,ncmat_,ntmat_,
+		&ne0,nmethod,
+		iperturb,ikboun,nboun,mi,imastop,nslavnode,islavnode,
+		islavsurf,
+		itiefac,areaslav,iponoels,inoels,springarea,tietol,&reltime,
+		imastnode,nmastnode,xmastnor,filab,mcs,ics,&nasym,
+		xnoels,mortar,pslavsurf,pmastsurf,clearini,&theta,
+		xstateini,xstate,nstate_,&icutb,&ialeatoric,jobnamef,
+		&alea,auw,jqw,iroww,&nzsw);
+      }
    
       /* check whether, for a dynamic calculation, contact damping 
 	 is involved */
@@ -3507,9 +3519,11 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	iflagact=0;
       }
 
-      if(*mortar==-1){SFREE(auw);SFREE(jqw);SFREE(iroww);}
+      //      if(*mortar==-1){SFREE(auw);SFREE(jqw);SFREE(iroww);}
       
     }
+
+    if((*mortar==-1)&&(masslesslinear==0)){SFREE(auw);SFREE(jqw);SFREE(iroww);}
 
     if(*nmethod!=4)SFREE(resold);
 
@@ -4244,7 +4258,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       SFREE(adc);SFREE(auc);SFREE(areaslav);SFREE(fric);
       if(masslesslinear>0){
 	SFREE(ad);SFREE(au);SFREE(jqbi);SFREE(aubi);SFREE(irowbi);
-	SFREE(jqib);SFREE(auib);SFREE(irowib);
+	SFREE(jqib);SFREE(auib);SFREE(irowib);SFREE(auw);SFREE(jqw);
+	SFREE(iroww);SFREE(fullgmatrix);
 	iclean=1;
         massless(kslav,lslav,ktot,ltot,au,ad,auc,adc,jq,irow,neq,nzs,auw,jqw,
 		 iroww,&nzsw,islavnode,nslavnode,nslavs,imastnode,nmastnode,
