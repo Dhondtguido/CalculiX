@@ -2564,7 +2564,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	   (only for linear massless explicit dynamic calculations) */
 	  
 	  FORTRAN(checktempload,(iamload,nload,sideload,ibody,nbody,
-				 &masslesslinear,&nloadrhs,&nbodyrhs));
+				 &masslesslinear,&nloadrhs,&nbodyrhs,nam));
 
 	  /* if no change: calculate the external force vector due to this
              loading only once at the start of the step */
@@ -2676,10 +2676,9 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		 ntie,nactdof,mi,vold,volddof,veold,nk,fext,isolver,
 		 &masslesslinear,co,springarea,&neqtot,qb,b,&dtime,aloc,fric,
 		 iexpl,nener,ener,ne,&jqbi,&aubi,&irowbi,&jqib,&auib,&irowib,
-		 &iclean,&iinc);
+		 &iclean,&iinc,fullgmatrix);
         if(masslesslinear==0){SFREE(ad);SFREE(au);} 
       }
-	
 
       /* mortar contact */
 
@@ -4266,7 +4265,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		 ntie,nactdof,mi,vold,volddof,veold,nk,fext,isolver,
 		 &masslesslinear,co,springarea,&neqtot,qb,b,&dtime,aloc,fric,
 		 iexpl,nener,ener,ne,&jqbi,&aubi,&irowbi,&jqib,&auib,&irowib,
-		 &iclean,&iinc);
+		 &iclean,&iinc,fullgmatrix);
       }
       if(masslesslinear==2){SFREE(fextload);}
 

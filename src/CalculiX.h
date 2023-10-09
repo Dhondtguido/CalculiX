@@ -778,7 +778,7 @@ void FORTRAN(checksharp,(ITG *nexternedg,ITG *iedgextfa,double *cotet,
 
 void FORTRAN(checktempload,(ITG *iamload,ITG *nload,char *sideload,ITG *ibody,
 			    ITG *nbody,ITG *masslesslinear,ITG *nloadrhs,
-			    ITG *nbodyrhs));
+			    ITG *nbodyrhs,ITG *nam));
 
 void FORTRAN(checktime,(ITG *itpamp,ITG *namta,double *tinc,double *ttime,
              double *amta,double *tmin,ITG *inext,ITG *itp,ITG *istep,
@@ -2928,7 +2928,8 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,
 	      ITG *neqtot,double *qbk,double *b,double *tinc,
 	      double *aloc,double *fric,ITG *iexpl,ITG *nener,double *ener,
 	      ITG *ne,ITG **jqbip,double **aubip,ITG **irowbip,ITG **jqibp,
-	      double **auibp,ITG **irowibp,ITG *iclean,ITG *iinc);
+	      double **auibp,ITG **irowibp,ITG *iclean,ITG *iinc,
+	      double *fullgmatrix);
 
 void mastruct(ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
               ITG *nodeboun,ITG *ndirboun,ITG *nboun,ITG *ipompc,

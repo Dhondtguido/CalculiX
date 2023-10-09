@@ -47,14 +47,14 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
 	      double *b,double *dtime,double *aloc,double *fric,ITG *iexpl,
 	      ITG *nener,double *ener,ITG *ne,ITG **jqbip,double **aubip,
 	      ITG **irowbip,ITG **jqibp,double **auibp,ITG **irowibp,
-	      ITG *iclean,ITG *iinc){
+	      ITG *iclean,ITG *iinc,double *fullgmatrix){
 
   /* determining the RHS of the global system for massless contact */
 
   ITG *jqwnew=NULL,*irowwnew=NULL,symmetryflag=0,mt=mi[1]+1,
     inputformat=0,*iacti=NULL,nacti=0,itranspose,index,i,j,k,kitermax,
     *jqbb=NULL,*irowbb=NULL,*icolbb=NULL,nzsbb,*jqbi=NULL,*irowbi=NULL,
-    nzsbi,*jqib=NULL,*irowib=NULL,nzsib,nrhs=1;
+    nzsbi,*jqib=NULL,*irowib=NULL,nzsib,nrhs=1,neqslavs;
 
   double *auwnew=NULL,sigma=0.0,*gapdisp=NULL,*gapnorm=NULL,*cvec=NULL,sum,
     *adbbb=NULL,*aubbb=NULL,*gvec=NULL,*gmatrix=NULL,*qi_kbi=NULL,
@@ -83,12 +83,14 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
     }
     return;
   }
+
+  neqslavs=3**nslavs;
   
   /* expanding the matrix Wb according to the number of degrees
      of freedom */
 
   if((*masslesslinear==0)||(*iinc==1)){
-    NNEW(jqwnew,ITG,3**nslavs+1);
+    NNEW(jqwnew,ITG,neqslavs+1);
     NNEW(auwnew,double,*nzsw);
     NNEW(irowwnew,ITG,*nzsw);
 
@@ -99,7 +101,7 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
     FORTRAN(expand_auw,(auw,jqw,iroww,nslavs,auwnew,jqwnew,irowwnew,
 			nactdof,mi,ktot,neqtot,islavnode,imastnode));
 
-    memcpy(jqw,jqwnew,sizeof(ITG)*(3**nslavs+1));
+    memcpy(jqw,jqwnew,sizeof(ITG)*(neqslavs+1));
     memcpy(auw,auwnew,sizeof(double)**nzsw);
     memcpy(iroww,irowwnew,sizeof(ITG)**nzsw);
 
@@ -181,6 +183,55 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
     SFREE(aubb);SFREE(adbb);SFREE(irowbb);SFREE(icolbb);SFREE(jqbb);
   }
 
+  /* constructing the maximal g-matrix (only for linear massless
+     contact calculations */
+
+  if((*masslesslinear>0)&&(*iinc==1)){
+
+    /* calculate G = Wb^T.Kbb^(-1).Wb 
+       only for all slave degrees of freedom */
+
+    /* loop over the columns of Wb */
+    
+    for(i=0;i<neqslavs;i++){
+
+	NNEW(gvec,double,*neqtot);
+
+	/* Filling the vector of Wb column */
+	
+	for(j=jqw[i]-1;j<jqw[i+1]-1;j++){
+	  gvec[iroww[j]-1]=auw[j];
+	}
+ 
+	/* Solving the linear system per column */
+
+	if(*isolver==0){
+#ifdef SPOOLES
+	  spooles_solve_rad(gvec,neqtot);
+#endif
+	}else if(*isolver==7){
+#ifdef PARDISO
+	  pardiso_solve_cp(gvec,neqtot,&symmetryflag,&inputformat,&nrhs);
+#endif
+	}else if(*isolver==8){
+#ifdef PASTIX
+	  pastix_solve_cp(gvec,neqtot,&symmetryflag,&nrhs);
+#endif
+	}
+	
+	/* premultiplying per Wb^T */
+
+	for(j=0;j<neqslavs;++j){
+	    sum=0.0;
+	    for(k=jqw[j]-1;k<jqw[j+1]-1;k++){
+	      sum+=auw[k]*gvec[iroww[k]-1];
+	    }
+	    fullgmatrix[i*neqslavs+j]=sum/(*dtime);
+	}
+	SFREE(gvec);
+    }
+  }
+  
   /* premultiply gapdisp with Kbb^{-1} */
 
   if(*isolver==0){
@@ -220,7 +271,7 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
 
     // cvec = Wb^T * cvec
     
-    for (i=0;i<3**nslavs;++i){
+    for (i=0;i<neqslavs;++i){
       if (iacti[i]!=0){
         for (j=jqw[i]-1;j<jqw[i+1]-1;j++){
           cvec[iacti[i]-1]+=auw[j]*gapdisp[iroww[j]-1];
@@ -229,55 +280,70 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
     }
 
     /* constructing the g-matrix of the inclusion equation */
+    
     NNEW(gmatrix,double,nacti*nacti);
 
     /* calculate G = Wb^T.Kbb^(-1).Wb 
        only for active slave degrees of freedom */
 
-    /* loop over the columns of Wb */
+    if(*masslesslinear>0){
     
-    for(i=0;i<3**nslavs;i++){
-      
-      if(iacti[i]!=0) {
-	//	index=i;//  contact index
-
-	NNEW(gvec,double,*neqtot);
-
-	/* Filling the vector of Wb column */
-	
-	for(j=jqw[i]-1;j<jqw[i+1]-1;j++){
-	  gvec[iroww[j]-1]=auw[j];
-	}
- 
-	/* Solving the linear system per column */
-
-	if(*isolver==0){
-#ifdef SPOOLES
-	  spooles_solve_rad(gvec,neqtot);
-#endif
-	}else if(*isolver==7){
-#ifdef PARDISO
-	  pardiso_solve_cp(gvec,neqtot,&symmetryflag,&inputformat,&nrhs);
-#endif
-	}else if(*isolver==8){
-#ifdef PASTIX
-	  pastix_solve_cp(gvec,neqtot,&symmetryflag,&nrhs);
-#endif
-	}
-	
-	/* premultiplying per Wb^T */
-
-	for(j=0;j<3**nslavs;++j){
-	  if(iacti[j]!=0){
-	    //	    index=j;
-	    sum=0.0;
-	    for(k=jqw[j]-1;k<jqw[j+1]-1;k++){
-	      sum+=auw[k]*gvec[iroww[k]-1];
+      for(i=0;i<neqslavs;i++){
+	if(iacti[i]!=0) {
+	  for(j=0;j<neqslavs;++j){
+	    if(iacti[j]!=0){
+	      gmatrix[(iacti[i]-1)*nacti+(iacti[j]-1)]=
+		fullgmatrix[i*neqslavs+j];
 	    }
-	    gmatrix[(iacti[i]-1)*nacti+(iacti[j]-1)]= sum / (*dtime) ;
 	  }
 	}
-	SFREE(gvec);
+      }
+
+    }else{
+    
+      /* loop over the columns of Wb */
+    
+      for(i=0;i<neqslavs;i++){
+      
+	if(iacti[i]!=0) {
+
+	  NNEW(gvec,double,*neqtot);
+
+	  /* Filling the vector of Wb column */
+	
+	  for(j=jqw[i]-1;j<jqw[i+1]-1;j++){
+	    gvec[iroww[j]-1]=auw[j];
+	  }
+ 
+	  /* Solving the linear system per column */
+
+	  if(*isolver==0){
+#ifdef SPOOLES
+	    spooles_solve_rad(gvec,neqtot);
+#endif
+	  }else if(*isolver==7){
+#ifdef PARDISO
+	    pardiso_solve_cp(gvec,neqtot,&symmetryflag,&inputformat,&nrhs);
+#endif
+	  }else if(*isolver==8){
+#ifdef PASTIX
+	    pastix_solve_cp(gvec,neqtot,&symmetryflag,&nrhs);
+#endif
+	  }
+	
+	  /* premultiplying per Wb^T */
+
+	  for(j=0;j<neqslavs;++j){
+	    if(iacti[j]!=0){
+	      sum=0.0;
+	      for(k=jqw[j]-1;k<jqw[j+1]-1;k++){
+		sum+=auw[k]*gvec[iroww[k]-1];
+	      }
+	      gmatrix[(iacti[i]-1)*nacti+(iacti[j]-1)]=sum/(*dtime);
+	    }
+	  }
+	  SFREE(gvec);
+	}
       }
     }
 
@@ -301,7 +367,7 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
     
     // taking values from aloc for initial guess
     
-    for (i=0;i<3**nslavs;++i){
+    for (i=0;i<neqslavs;++i){
       if (iacti[i]!=0){
 	al[iacti[i]-1]=aloc[i];
 	alnew[iacti[i]-1]=aloc[i];
@@ -316,13 +382,13 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
 	     alnew,eps_al,&omega));
 
     if(*nener==1){
-      NNEW(alocold,double,3**nslavs);
-      memcpy(&alocold[0],&aloc[0],sizeof(double)*3**nslavs);
+      NNEW(alocold,double,neqslavs);
+      memcpy(&alocold[0],&aloc[0],sizeof(double)*neqslavs);
     }
     
     // storing back values for next initial guess
     
-    for(i=0;i<3**nslavs;++i){
+    for(i=0;i<neqslavs;++i){
       if(iacti[i]!=0){
 	aloc[i]=alnew[iacti[i]-1];
       }
@@ -369,8 +435,8 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
     /* relative tangential displacements in this increment
        in a local coordinate system: Wb^T*(qb^{n+1}-qb^n) */
 
-    NNEW(ddisp,double,3**nslavs);
-    for(i=0;i<3**nslavs;i++){
+    NNEW(ddisp,double,neqslavs);
+    for(i=0;i<neqslavs;i++){
 
       /* treat only tangential direction */
 
@@ -388,7 +454,7 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
 
     /* friction energy increase = (al^{n+1}+al^n)/2*Wb^T*(qb^{n+1}-qb^n) */
     
-    for(i=0;i<3**nslavs;i++){
+    for(i=0;i<neqslavs;i++){
       if(3*(i/3)!=i){
 	if(iacti[i]!=0){
 	  ener[2*mi[0]*(*ne+i/3)+1]+=-(alocold[i]+aloc[i])*ddisp[i]/2.;

@@ -17,7 +17,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
       subroutine checktempload(iamload,nload,sideload,ibody,nbody,
-     &     masslesslinear,nloadrhs,nbodyrhs)
+     &     masslesslinear,nloadrhs,nbodyrhs,nam)
 !     
 !     checks for linear massless explicit dynamic calculations
 !     whether the distributed loading changes in the step     
@@ -30,7 +30,7 @@
       character*20 sideload(*)
 !
       integer nload,nbody,masslesslinear,nloadrhs,nbodyrhs,iamload(2,*),
-     &     ibody(3,*),i
+     &     ibody(3,*),i,nam
 !
 !     default: no change
 !
@@ -38,11 +38,23 @@
       nloadrhs=0
       nbodyrhs=0
 !
-!     checking facial distributed loading for amplitudes and/or user
-!     subroutines
+!     checking facial distributed loading for amplitudes 
+!
+      if(nam.gt.0) then
+        do i=1,nload
+          if(iamload(1,i).ne.0) then
+            masslesslinear=1
+            nloadrhs=nload
+            nbodyrhs=nbody
+            return
+          endif
+        enddo
+      endif
+!
+!     checking facial distributed loading for user subroutines
 !
       do i=1,nload
-        if((iamload(1,i).ne.0).or.(sideload(i)(3:4).eq.'NU')) then
+        if(sideload(i)(3:4).eq.'NU') then
           masslesslinear=1
           nloadrhs=nload
           nbodyrhs=nbody
