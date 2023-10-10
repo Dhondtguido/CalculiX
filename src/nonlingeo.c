@@ -1463,7 +1463,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	tmp[k] = 1;
       }
       if(nasym==0){
-	FORTRAN(op,(&neq[1],tmp,adblump,adb,aub,jq,irow)); 
+	opmain(&neq[1],tmp,adblump,adb,aub,jq,irow); 
       }else{
 	FORTRAN(opas,(&neq[1],tmp,adblump,adb,aub,jq,irow,nzs)); 
       }

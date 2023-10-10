@@ -471,7 +471,7 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
   /* calculate Kii*qi */
   
   NNEW(rhs,double,neq[0]); 
-  FORTRAN(op,(&neq[0],volddof,rhs,ad,au,jq,irow));
+  opmain(&neq[0],volddof,rhs,ad,au,jq,irow);
 
   /* calculate Kii*qi+Kib*qb */
 
@@ -499,7 +499,7 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
     }
   }
 
-  FORTRAN(op,(&neq[0],veolddof,b,adc,auc,jq,irow));
+  opmain(&neq[0],veolddof,b,adc,auc,jq,irow);
 
   for(i=0;i<neq[0];++i){b[i]=fext[i]-rhs[i]+b[i];}
   SFREE(rhs);

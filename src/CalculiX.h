@@ -3374,17 +3374,28 @@ void FORTRAN(objective_stress_tot,(double *dgdx,double *df,ITG *ndesi,
                                    ITG *iobject,ITG *jqs,ITG *irows,
                                    double *dgdu));
 
-void FORTRAN(op,(ITG *n,double *x,double *y,double *ad,double *au,ITG *jq,ITG *irow));
 
-void FORTRAN(opas,(ITG *n,double *x,double *y,double *ad,double *au,ITG *jq,
-                   ITG *irow,ITG *nzs));
+void FORTRAN(op,(double *x,double *y,double *ad,double *au,ITG *jq,
+		    ITG *irow,ITG *na,ITG *nb));
 
 void FORTRAN(op_corio,(ITG *n,double *x,double *y,double *ad,double *au,
                        ITG *jq,ITG *irow));
 
+void FORTRAN(opas,(ITG *n,double *x,double *y,double *ad,double *au,ITG *jq,
+                   ITG *irow,ITG *nzs));
+
 void FORTRAN(openfile,(char *jobname));
 
 void FORTRAN(openfilefluidfem,(char *jobname));
+
+void FORTRAN(opfortran,(ITG *n,double *x,double *y,double *ad,double *au,ITG *jq,ITG *irow));
+
+void opmain(ITG *n,double *x,double *y,double *ad,double *au,ITG *jq,ITG *irow);
+
+void *opmt(ITG *i);
+
+void FORTRAN(op,(double *x,double *y,double *ad,double *au,ITG *jq,
+		    ITG *irow,ITG *na,ITG *nb));
 
 void packagingmain(double *co,ITG *nobject,ITG *nk,ITG *nodedesi,ITG *ndesi,
 		   char *objectset,char *set,ITG *nset,ITG *istartset,

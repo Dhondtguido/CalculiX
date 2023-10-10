@@ -5270,3 +5270,5 @@ Dec 2002        - started to work on single crystal plasticity
  6 Oct 2023     - for linear massless contact calculations non-changing
                   distributed loading is taken into account at the start of
 		  a new step
+
+ 10 Oct 2023    - parallellized op.f (matrix-vector-multiplication)

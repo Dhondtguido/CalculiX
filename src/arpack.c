@@ -702,7 +702,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	if(nasym==1){
 	  FORTRAN(opas,(&neq[1],&workd[ipntr[0]-1],temp_array,adb,aub,jq,irow,nzs));
 	}else{
-	  FORTRAN(op,(&neq[1],&workd[ipntr[0]-1],temp_array,adb,aub,jq,irow));
+	  opmain(&neq[1],&workd[ipntr[0]-1],temp_array,adb,aub,jq,irow);
 	}
       }
       if((ido==-1)||(ido==1)){
@@ -787,8 +787,8 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	  FORTRAN(opas,(&neq[1],&workd[ipntr[0]-1],&workd[ipntr[1]-1],
 			adb,aub,jq,irow,nzs));
 	}else{
-	  FORTRAN(op,(&neq[1],&workd[ipntr[0]-1],&workd[ipntr[1]-1],
-		      adb,aub,jq,irow));
+	  opmain(&neq[1],&workd[ipntr[0]-1],&workd[ipntr[1]-1],
+		      adb,aub,jq,irow);
 	}
       }
       
@@ -849,8 +849,8 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	FORTRAN(opas,(&neq[1],&z[kref],temp_array,
 		      adb,aub,jq,irow,nzs));
       }else{
-	FORTRAN(op,(neq,&z[kref],temp_array,
-		    adb,aub,jq,irow));
+	opmain(neq,&z[kref],temp_array,
+		    adb,aub,jq,irow);
       }
       sum=0;
       for(k=0;k<neq[1];k++){sum+=z[kref+k]*temp_array[k];}
@@ -1014,27 +1014,12 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
   if(strcmp1(&filab[522],"ENER")==0) NNEW(enern,double,*nk);
   if(strcmp1(&filab[2175],"CONT")==0) NNEW(cdn,double,6**nk);
 
-  //  NNEW(temp_array,double,neq[1]);
-
   lfin=0;
   for(j=0;j<nev;++j){
     lint=lfin;
 
     if(igreen==0){
       lfin=lfin+neq[1];
-      
-      /*      sum=0.;
-	      for(k=0;k<neq[1];++k)
-	      temp_array[k]=0.;
-	      if(nasym==1){
-	      FORTRAN(opas,(&neq[1],&z[lint],temp_array,adb,aub,jq,irow,nzs));
-	      }else{
-	      FORTRAN(op,(&neq[1],&z[lint],temp_array,adb,aub,jq,irow));
-	      }
-	      for(k=0;k<neq[1];++k)
-	      sum+=z[lint+k]*temp_array[k];
-	      for(k=0;k<neq[1];++k)
-	      z[lint+k]=z[lint+k]/sqrt(sum);*/
     }else{
 
       /* Green function: solve the system ([K]-w**2*[M]){X}={Y} */

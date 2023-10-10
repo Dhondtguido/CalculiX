@@ -618,6 +618,7 @@ op_corio.f \
 openfile.f \
 openfilefluidfem.f \
 op.f \
+opfortran.f \
 opnonsym.f \
 opnonsymt.f \
 orientations.f \
@@ -1075,6 +1076,7 @@ multi_rectv.c \
 multi_scal.c \
 nonlingeo.c \
 objectivemain_se.c \
+opmain.c \
 packagingmain.c \
 pardiso.c \
 pardiso_cp.c \

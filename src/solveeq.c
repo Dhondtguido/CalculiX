@@ -71,7 +71,7 @@ void solveeq(double *adb,double *aub,double *adl,double *b,double *sol,
     /* multiplying the difference of the original matrix
        with the lumped matrix with the actual solution */
 
-    FORTRAN(op,(neq,sol,aux,adb,aub,jq,irow));
+    opmain(neq,sol,aux,adb,aub,jq,irow);
 
     for(i=0;i<*neq;i++){
       sol[i]=(b[i]-aux[i])*adl[i];

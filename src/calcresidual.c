@@ -63,7 +63,7 @@ void calcresidual(ITG *nmethod, ITG *neq, double *b, double *fext, double *f,
       }
     }
     if(*nasym==0){
-      FORTRAN(op,(&neq[1],aux2,b,adb,aub,jq,irow)); 
+      opmain(&neq[1],aux2,b,adb,aub,jq,irow); 
     }else{
       FORTRAN(opas,(&neq[1],aux2,b,adb,aub,jq,irow,nzs)); 
     }
@@ -87,7 +87,7 @@ void calcresidual(ITG *nmethod, ITG *neq, double *b, double *fext, double *f,
 	}
       }
       if(*nasym==0){
-	FORTRAN(op,(&neq[1],aux2,cv,adc,auc,jq,irow));
+	opmain(&neq[1],aux2,cv,adc,auc,jq,irow);
       }else{
 	FORTRAN(opas,(&neq[1],aux2,cv,adc,auc,jq,irow,nzs)); 
       }
