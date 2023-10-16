@@ -144,8 +144,11 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
   NNEW(gapdisp,double,*neqtot);
   NNEW(qi_kbi,double,*neqtot);
   
-  FORTRAN(resforccont,(vold,nk,mi,aubi,irowbi,jqbi,neqtot,ktot,fext,gapdisp,
-		       auib,irowib,jqib,nactdof,volddof,neq,qi_kbi));
+  /*  FORTRAN(resforccont,(vold,nk,mi,aubi,irowbi,jqbi,neqtot,ktot,fext,gapdisp,
+      auib,irowib,jqib,nactdof,volddof,neq,qi_kbi));*/
+  
+  resforccont(vold,nk,mi,aubi,irowbi,jqbi,neqtot,ktot,fext,gapdisp,
+	       auib,irowib,jqib,nactdof,volddof,neq,qi_kbi);
 
   /* factorize Kbb and delete Kbb afterwards;
      only for a nonlinear calculation or the first increment
@@ -376,7 +379,7 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
 
     NNEW(eps_al,double,nacti);
     NNEW(alglob,double,*neqtot);
-    FORTRAN(auglag_inclusion,
+    FORTRAN(inclusion,
 	    (gmatrix,cvec,iacti,&nacti,fric,&atol,&rtol,
 	     alglob,&kitermax,auw,jqw,iroww,nslavs,al,
 	     alnew,eps_al,&omega));
@@ -476,9 +479,9 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
   /* calculate Kii*qi+Kib*qb */
 
   itranspose=0;
-  FORTRAN(mulmatvec_asym,(auib,jqib,irowib,neqtot,qb,rhs,&itranspose));
+  mulmatvec_asymmain(auib,jqib,irowib,neqtot,qb,rhs,&itranspose,&neq[0]);
   itranspose=1;
-  FORTRAN(mulmatvec_asym,(aubi,jqbi,irowbi,&neq[0],qb,rhs,&itranspose));
+  mulmatvec_asymmain(aubi,jqbi,irowbi,&neq[0],qb,rhs,&itranspose,&neq[0]);
 
   /* deleting the matrices Kbi and Kib only in the nonlinear case */
   

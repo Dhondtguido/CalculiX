@@ -141,7 +141,7 @@
  *  [in] cvtilini		C*v at start of the increment
  *  [in] cvtil		C*v
  *  [in] idamping		flag indicating whether damping is used
- *  [in] ilin		flag indicating wheter fist iteration is calculated 
+ *  [in] iforbou		flag indicating wheter fist iteration is calculated 
  linear geometrically 
  *  [in] iperturb_sav	saved iperturb values 
  *  [out] nodeforc2p	transformed point force, node
@@ -232,7 +232,7 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
 	       double *clearini,ITG *ielprop,double *prop,
 	       ITG *islavact,double *cdn,ITG *memmpc_,
 	       double *cvinitil,double *cvtil,ITG *idamping,
-	       ITG *ilin,ITG *iperturb_sav,double *adb,double *aub,
+	       ITG *iforbou,ITG *iperturb_sav,double *adb,double *aub,
 	       ITG **nodeforc2p,ITG **ndirforc2p,double **xforc2p,
 	       ITG *nforc2,
 	       ITG *itietri,double *cg,double *straight,ITG *koncont,
@@ -314,7 +314,7 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
   
   // fix for linear calculation in first iteration of first increment
   
-  if((*ilin==1)&&(*iit==1)&&(*iinc==1)){  
+  if((*iforbou==1)&&(*iit==1)&&(*iinc==1)){  
     *ielas=1;  
     iperturb[0]=-1;  
     iperturb[1]=0;	  

@@ -312,7 +312,7 @@ void FORTRAN(assigndomtonodes,(ITG *ne,char *lakon,ITG *ipkon,ITG *kon,
              ITG *ielmat,ITG *inomat,double *elcon,ITG *ncmat_,ITG *ntmat_,
              ITG *mi,ITG *ne2));
 
-void FORTRAN(auglag_inclusion,(double *gcontfull,double *cvec,ITG *nacti,
+void FORTRAN(inclusion,(double *gcontfull,double *cvec,ITG *nacti,
 			       ITG *iacti,double *mufric,double *atol,
 			       double *rtol,double *alglob,ITG *kitermax,
 			       double *auw,ITG *jqw,ITG *iroww,
@@ -3081,8 +3081,19 @@ void mtseed(ITG *iseed);
 
 void FORTRAN(mult,(double *matrix,double *trans,ITG *n));
 
-void FORTRAN(mulmatvec_asym,(double *aa,ITG *jjq,ITG *iidof,ITG *nrow, 
-			     double *x,double *y,ITG *type ));
+void FORTRAN(mulmatvec_asym,(double *au1,ITG *jq1,ITG *irow1,double *x1,
+			     double *yy,ITG *itranspose1,ITG *ncol1,
+			     ITG *ncolb));
+
+void FORTRAN(mulmatvec_asymmain,(double *au,ITG *jq,ITG *irow,ITG *ncol,
+				 double *x,double *y,ITG *transpose,
+				 ITG *n));
+
+void *mulmatvec_asymmt1(ITG *i);
+
+void *mulmatvec_asymmt2(ITG *i);
+
+void *mulmatvec_asymct1(ITG *i);
 
 void FORTRAN(near3d_se,(double *xo,double *yo,double *zo,double *x,
 			double *y,double *z,ITG *nx,ITG *ny,ITG *nz,
@@ -3383,6 +3394,8 @@ void FORTRAN(op_corio,(ITG *n,double *x,double *y,double *ad,double *au,
 
 void FORTRAN(opas,(ITG *n,double *x,double *y,double *ad,double *au,ITG *jq,
                    ITG *irow,ITG *nzs));
+
+void *opcollect(ITG *i);
 
 void FORTRAN(openfile,(char *jobname));
 
@@ -3948,6 +3961,13 @@ void res4parll(double *cv,double *alpham,double *adb,double *aux2,
 	       ITG *neq0,ITG *num_cpus);
 
 void *res4parllmt(ITG *i);
+
+void resforccont(double *vold,ITG *nk,ITG *mi,double *aubi,ITG *irowbi,
+		 ITG *jqbi,ITG *neqtot,ITG *ktot,double *fext,double *gapdisp,
+		 double *auib,ITG *irowib,ITG *jqib,ITG *nactdof,
+		 double *volddof,ITG *neq,double *qi_kbi);
+
+void *resforccontmt(ITG *i);
 
 void FORTRAN(restartshort,(ITG *nset,ITG *nload,ITG *nbody,ITG *nforc,
 			   ITG *nboun,ITG *nk,ITG *ne,ITG *nmpc,ITG *nalset,

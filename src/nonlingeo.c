@@ -95,7 +95,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
  
   ITG *inum=NULL,k,l,iout=0,icntrl,iinc=0,jprint=0,iit=-1,jnz=0,
     icutb=0,istab=0,uncoupled,n1,n2,itruecontact,iclean=0,
-    iperturb_sav[2],ilin,*icol=NULL,*irow=NULL,ielas=0,icmd=0,
+    iperturb_sav[2],iforbou,*icol=NULL,*irow=NULL,ielas=0,icmd=0,
     memmpc_,mpcfree,icascade,maxlenmpc,*nodempc=NULL,*iaux=NULL,
     *nodempcref=NULL,memmpcref_,mpcfreeref,*itg=NULL,*ineighe=NULL,
     *ieg=NULL,ntg=0,ntr,*kontri=NULL,*nloadtr=NULL,idamping=0,
@@ -811,7 +811,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   
   NNEW(ampli,double,*nam);
   
-  /* fini is also needed in static calculations if ilin=1
+  /* fini is also needed in static calculations if iforbou=1
      to get correct values of f after a divergent increment */
 
   NNEW(fini,double,neq[1]);
@@ -2036,7 +2036,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
        displacement field; otherwise huge (maybe nonelastic)
        stresses may occur, jeopardizing convergence */
       
-    ilin=0;
+    iforbou=0;
       
     /* only for iinc=1 a linearized calculation is performed, since
        for iinc>1 a reasonable displacement field is predicted by using the
@@ -2048,9 +2048,9 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	err=fabs(xbounact[k]-xbounini[k]);
 	if(err>dev){dev=err;}
       }
-      if(dev>1.e-5) ilin=1;
+      if(dev>1.e-5) iforbou=1;
     }
-    if((*mortar==-1)&&(ilin==1)){
+    if((*mortar==-1)&&(iforbou==1)){
       printf(" *ERROR in nonlingeo: nonzero boundary conditions are not allowed\n");
       printf("        in combination with massless contact\n\n");
       FORTRAN(stop,());
@@ -2107,7 +2107,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       
     /* first iteration in first increment: elastic tangent */
       
-    if((*nmethod!=4)&&(ilin==1)){
+    if((*nmethod!=4)&&(iforbou==1)){
 	  
       ielas=1;
 	  
@@ -2175,7 +2175,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,coefmpc2,
 		labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
 		&intscheme,physcon);
-	//		               for(k=0;k<neq[1];++k){printf("b=%" ITGFORMAT ",%f\n",k,f[k]);}
+	//	for(k=0;k<neq[1];++k){printf("f=%" ITGFORMAT ",%f\n",k,f[k]);}
 	//           FORTRAN(stop,());
 	if(ne1d2d==1)SFREE(inum);
 	  
@@ -2604,6 +2604,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	  	xbodyold,&reltime,veold,matname,mi,ikactmech,
 	  	&nactmech,ielprop,prop,sti,xstateini,xstate,nstate_,
 	        ntrans,inotr,trab,fnext);
+	//   for(k=0;k<neq[1];++k){printf("fext=%" ITGFORMAT ",%f\n",k,fext[k]);}
 
 	/* adding fextload due to distributed loading */
 
@@ -2667,7 +2668,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		     fini,islavnode,nslavnode,mortar,ntie,f_cm,f_cs,mi,
 		     nzs,&nasym,&idamping,veold,adc,auc,cvini,cv,&alpham,
 		     &num_cpus);
-	//                for(k=0;k<neq[1];++k){printf("b=%" ITGFORMAT ",%f\n",k,b[k]);}
+	//	                for(k=0;k<neq[1];++k){printf("b=%" ITGFORMAT ",%f\n",k,b[k]);}
       }else{
 	NNEW(volddof,double,neq[0]);
 	NNEW(qb,double,neqtot);
@@ -2722,7 +2723,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		  &intscheme,physcon,&coriolis,ibody,integerglob,
 		  doubleglob,&nasym,&alpham,&betam,auxtil2,pslavsurf,
 		  pmastsurf,clearini,ielprop,prop,islavact,cdn,&memmpc_,
-		  cvtilini,cvtil,&idamping,&ilin,iperturb_sav,
+		  cvtilini,cvtil,&idamping,&iforbou,iperturb_sav,
 		  adb,aub,&nodeforc2,&ndirforc2,&xforc2,&nforc2,
 		  itietri,cg,straight,koncont,energyini,energy,&kscale,
 		  iponoel,inoel,nener,orname,network,typeboun,&num_cpus,
@@ -3055,9 +3056,11 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       
       else{
 	if(((mscalmethod==0)||(mscalmethod==2))&&(*mortar!=-1)){
+	  //    for(k=0;k<neq[1];++k){printf("b=%" ITGFORMAT ",%f\n",k,b[k]);}
 	  if(*ithermal!=2){
 	    isiz=neq[0];divparll(b,adb,&isiz,&num_cpus);
 	  }
+	  //      for(k=0;k<neq[1];++k){printf("b=%" ITGFORMAT ",%f\n",k,b[k]);}
 	  if(*ithermal>1){
 	    for(k=neq[0];k<neq[1];++k){
 	      b[k]=b[k]*dtime/adb[k];
@@ -3177,13 +3180,13 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       NNEW(stx,double,6*mi[0]**ne);
       MNEW(fn,double,mt**nk);
 
-      /* for non-massless explicit dynamics without energy
-         calculation only the displacements have to be calculated */
+      /* for massless explicit dynamics without energy
+         calculation only the displacements have to be calculated
 
-      /* TO CHECK! Deviation in beamnldye2, changecontacttype1 and scheibejc */
+         this does not work for explicit dynamics without massless
+         contact since in that case f and fini have to be calculated  */
       
-      /*     if((*iexpl>1)&&(*mortar!=-1)&&(*nener==0)){*/
-	if((*mortar==-1)&&(masslesslinear>0)&&(*nener==0)){     
+      if((*mortar==-1)&&(masslesslinear>0)&&(*nener==0)){
 	resultsini(nk,v,ithermal,filab,iperturb,f,fn,
 		   nactdof,&iout,qa,vold,b,nodeboun,ndirboun,
 		   xboun,nboun,ipompc,nodempc,coefmpc,labmpc,nmpc,nmethod,cam,
@@ -3191,7 +3194,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		   &intpointvarm,&calcul_fn,&calcul_f,&calcul_qa,&calcul_cauchy,
 		   &ikin,&intpointvart,typeboun,&num_cpus,mortar,nener,iponoel,
 		   network);
-		   }else{
+      }else{
 	if(ne1d2d==1)NNEW(inum,ITG,*nk);
 	results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,
 		elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
@@ -3217,7 +3220,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
 		&intscheme,physcon);
 	if(ne1d2d==1)SFREE(inum);
-	    }
+      }
 
       /* implicit dynamics (Matteo Pacher) */
 

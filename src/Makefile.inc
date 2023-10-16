@@ -38,7 +38,6 @@ attach_1d.f \
 attach_2d.f \
 attach_3d.f \
 attachline.f \
-auglag_inclusion.f \
 autocovmatrix.f \
 basemotions.f \
 basis.f \
@@ -227,7 +226,6 @@ depvars.f \
 designresponses.f \
 designvariabless.f \
 desiperelem.f \
-resforccont.f \
 detectactivecont.f \
 determineextern.f \
 dflux.f \
@@ -426,6 +424,7 @@ ident.f \
 identifytiedface.f \
 identifytransform.f \
 includefilename.f \
+inclusion.f \
 incplas.f \
 incplas_lin.f \
 init_submodel.f \
@@ -1070,6 +1069,7 @@ matrixsort.c \
 matrixstorage.c \
 mortar_postfrd.c \
 mortar_prefrd.c \
+mulmatvec_asymmain.c \
 multimortar.c \
 multi_rect.c \
 multi_rectv.c \
@@ -1106,6 +1106,7 @@ res1parll.c \
 res2parll.c \
 res3parll.c \
 res4parll.c \
+resforccont.c \
 results.c \
 resultsforc.c \
 resultsinduction.c \

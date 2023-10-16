@@ -1,5 +1,5 @@
 /*     CalculiX - A 3-dimensional finite element program                 */
-/*              Copyright (C) 1998-2015 Guido Dhondt                          */
+/*              Copyright (C) 1998-2021 Guido Dhondt                     */
 
 /*     This program is free software; you can redistribute it and/or     */
 /*     modify it under the terms of the GNU General Public License as    */
@@ -15,20 +15,23 @@
 /*     along with this program; if not, write to the Free Software       */
 /*     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.         */
 
-#include <unistd.h>
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
-#include <pthread.h>
 #include "CalculiX.h"
 
-static ITG *jq1,*irow1,num_cpus,*n1;
+static ITG *nk1,*nactdof1,num_cpus,mt1;
 
-static double *x1,*yy=NULL,*ad1,*au1,*yy1;
+static double *vold1,*volddof1;
 
-void opmain(ITG *n,double *x,double *y,double *ad,double*au,ITG *jq,ITG *irow){
+void resforccont(double *vold,ITG *nk,ITG *mi,double *aubi,ITG *irowbi,
+		 ITG *jqbi,ITG *neqtot,ITG *ktot,double *fext,double *gapdisp,
+		 double *auib,ITG *irowib,ITG *jqib,ITG *nactdof,
+		 double *volddof,ITG *neq,double *qi_kbi){
 
-  ITG sys_cpus,*ithread=NULL,i;
+  /* calculate the residual contact force fext-Kbi*Ui */
+
+  ITG sys_cpus,*ithread=NULL,i,itranspose,mt=mi[1]+1;
   char *env,*envloc,*envsys;
 
   num_cpus = 0;
@@ -59,7 +62,6 @@ void opmain(ITG *n,double *x,double *y,double *ad,double*au,ITG *jq,ITG *irow){
     }else if(num_cpus>sys_cpus){
       num_cpus=sys_cpus;
     }
-
   }
 
   /* else global declaration, if any, applies */
@@ -77,83 +79,72 @@ void opmain(ITG *n,double *x,double *y,double *ad,double*au,ITG *jq,ITG *irow){
 
   // next line is to be inserted in a similar way for all other paralell parts
 
-  if(*n<num_cpus) num_cpus=*n;
+  if(*nk<num_cpus) num_cpus=*nk;
 
   pthread_t tid[num_cpus];
-  
-  /* calculating the product of the matrix given by ad,au with vector x */
 
-  /* allocating memory for the solution vector yy */
-
-  NNEW(yy,double,num_cpus**n);
-
-  x1=x;ad1=ad;au1=au;jq1=jq;irow1=irow;n1=n;
+  nk1=nk;nactdof1=nactdof;volddof1=volddof;vold1=vold;mt1=mt;
 
   /* create threads and wait */
 	
   NNEW(ithread,ITG,num_cpus);
   for(i=0; i<num_cpus; i++)  {
     ithread[i]=i;
-    pthread_create(&tid[i], NULL, (void *)opmt, (void *)&ithread[i]);
+    pthread_create(&tid[i], NULL, (void *)resforccontmt, (void *)&ithread[i]);
   }
   for(i=0; i<num_cpus; i++)  pthread_join(tid[i], NULL);
 
   SFREE(ithread);
 
-  yy1=y;n1=n;
-  
-  /* collecting results: create threads and wait */
-	
-  NNEW(ithread,ITG,num_cpus);
-  for(i=0; i<num_cpus; i++)  {
-    ithread[i]=i;
-    pthread_create(&tid[i], NULL, (void *)opcollect, (void *)&ithread[i]);
+  /* We compute g as volddof=(Kbi*volddof)+(Kib*volddof) in qi_kbi
+     to account for the missing terms due to the low triangle structure
+     of the matrices */
+
+  /* calculate Kbi*volddof */
+
+  itranspose=0;
+  mulmatvec_asymmain(aubi,jqbi,irowbi,&neq[0],volddof,qi_kbi,
+			  &itranspose,neqtot);
+
+  /* calculate Kib^T*volddof and add to g.
+     transposed multiplication */
+
+  itranspose=1;
+  mulmatvec_asymmain(auib,jqib,irowib,neqtot,volddof,qi_kbi,
+			  &itranspose,neqtot);
+
+  /* add external force of BOUNDARY DOF */
+
+  for(i=0;i<*neqtot;i++){
+    gapdisp[i]=fext[ktot[i]-1]-qi_kbi[i];
   }
-  for(i=0; i<num_cpus; i++)  pthread_join(tid[i], NULL);
-
-  SFREE(ithread);SFREE(yy);
-	
-}
-
-/* subroutine for multithreading of op */
-
-void *opmt(ITG *i){
-
-  ITG indexf,idelta,na,nb;
-
-  indexf=*i**n1;
-
-  idelta=(ITG)ceil(*n1/(double)num_cpus);
-  na=*i*idelta+1;
-  nb=(*i+1)*idelta;
-  if(nb>*n1) nb=*n1;
-
-  FORTRAN(op,(x1,&yy[indexf],ad1,au1,jq1,irow1,&na,&nb));
-
-  return NULL;
+  
+  return;
 }
 
 /* collecting the results */
 
-void *opcollect(ITG *i){
+void *resforccontmt(ITG *i){
 
-  ITG idelta,na,nb,j,k,index;
+  /* vold contains the displacements in the order of the nodes;
+     volddof contains the displacements in the order of the
+     degrees of freedom */
 
-  idelta=(ITG)ceil(*n1/(double)num_cpus);
-  na=*i*idelta;
-  nb=(*i+1)*idelta;
-  if(nb>*n1) nb=*n1;
+  ITG idelta,nka,nkb,j,k,index;
+  
+  idelta=(ITG)ceil(*nk1/(double)num_cpus);
+  nka=*i*idelta;
+  nkb=(*i+1)*idelta;
+  if(nkb>*nk1) nkb=*nk1;
 
-  for(j=na;j<nb;j++){
-    yy1[j]=yy[j];
-  }
-  for(k=1;k<num_cpus;k++){
-    index=k**n1;
-    for(j=na;j<nb;j++){
-      yy1[j]+=yy[j+index];
+  for(j=nka;j<nkb;j++){
+    for(k=1;k<4;k++){
+      index=j*mt1+k;
+      if(nactdof1[index]>0){
+	volddof1[nactdof1[index]-1]=vold1[index];
+      }
     }
   }
-
+  
   return NULL;
 }
-

@@ -10077,8 +10077,10 @@ iteration index. The relaxation factors are taken to
 be
 
 \begin{eqnarray}
-  r_{ii} &=& \frac{ \omega}{  G_{ii}} \quad \text{if} \quad G_{ii} > \sum_{j,j\ne i} G_{ij} \\
-  r_{ii} &=& \frac{\omega}{  \sum_{j,j\ne i} G_{ij}} \quad \text{if} \quad  G_{ii} \le \sum_{j,j\ne i} G_{ij},
+  r_{ii} &=& \frac{ \omega}{  G_{ii}} \quad \text{if} \quad G_{ii} >
+  \sum_{j,j\ne i} | G_{ij} | \\
+  r_{ii} &=& \frac{\omega}{  \sum_{j,j\ne i} | G_{ij} | } \quad \text{if}
+  \quad  G_{ii} \le \sum_{j,j\ne i} | G_{ij} | ,
 \end{eqnarray}
 
 where $0 \le \omega \le 2$ is a relaxation parameter.

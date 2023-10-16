@@ -200,7 +200,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
     fprintf(f1,"%5sUHOST                                                              \n",p1);
     fprintf(f1,"%5sUPGM               CalculiX                                        \n",p1);
     fprintf(f1,"%5sUVERSION           Version DEVELOPMENT                             \n",p1);
-    fprintf(f1,"%5sUCOMPILETIME       Tue Oct 10 18:27:47 CEST 2023                    \n",p1);
+    fprintf(f1,"%5sUCOMPILETIME       Mon Oct 16 19:47:37 CEST 2023                    \n",p1);
     fprintf(f1,"%5sUDIR                                                               \n",p1);
     fprintf(f1,"%5sUDBN                                                               \n",p1);
     
@@ -282,6 +282,11 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	}else if(strcmp1(&lakon[8*i],"DCOUP3D")==0){
 	  continue;
 
+	  /* gas element in a procedure other than heat transfer */
+
+	}else if((strcmp1(&lakon[8*i],"D")==0)&&(ithermal[1]<=1)){
+	  continue;
+
 	  /* mass element */
 
 	}else if(strcmp1(&lakon[8*i],"MASS")==0){
@@ -332,6 +337,8 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
                (strcmp1(&lakon[8*i+6],"1")==0)){
 	continue;
       }else if(strcmp1(&lakon[8*i],"DCOUP3D")==0){
+	continue;
+      }else if((strcmp1(&lakon[8*i],"D")==0)&&(ithermal[1]<=1)){
 	continue;
       }else if(strcmp1(&lakon[8*i],"MASS")==0){
 	continue;
