@@ -5282,3 +5282,5 @@ Dec 2002        - started to work on single crystal plasticity
 
  17 Oct 2023    - introduced globr for linear massless contact
                 - converted inclusion.f into inclusion.c
+                - parallellized the matrix-vector multiplication in
+		  inclusion.c

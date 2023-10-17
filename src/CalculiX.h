@@ -1988,6 +1988,8 @@ void FORTRAN(globalcrackresults,(ITG *nfront,ITG *ifront,double *wk1,
 				 ITG *iinc,ITG *iincglob,double *domstep,
 				 double *domstepglob,double *r,double *rglob));
 
+void *gmatrixtimesalmt(ITG *i);
+
 void FORTRAN(gradcoefficients,(ITG *nef,char *lakonf,ITG *ipkonf,ITG *konf,
 			       double *gradelsh,ITG *ipogradfa,double *gradfash,
 			       ITG *ngradfash,ITG *ipnei,double *co));

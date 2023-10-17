@@ -20,21 +20,9 @@
 #include <stdlib.h>
 #include "CalculiX.h"
 
-#ifdef SPOOLES
-#include "spooles.h"
-#endif
-#ifdef SGI
-#include "sgi.h"
-#endif
-#ifdef TAUCS
-#include "tau.h"
-#endif
-#ifdef PARDISO
-#include "pardiso.h"
-#endif
-#ifdef PASTIX
-#include "pastix.h"
-#endif
+static ITG *nacti1,num_cpus;
+
+static double *al1,*alnew1,*gmatrix1;
 
 void inclusion(double *gmatrix,double *cvec,ITG *iacti,ITG *nacti,double *fric,
 	      double *atol,double *rtol,double *alglob,ITG *kitermax,
@@ -43,12 +31,62 @@ void inclusion(double *gmatrix,double *cvec,ITG *iacti,ITG *nacti,double *fric,
 	      double *fullr){
 
   /* determining the RHS of the global system for massless contact */
-
-  char uplo='U';
   
-  ITG iscvg=0,incx=1,incy=1,icont=0,i,j,in,it1,it2,irow;
+  ITG iscvg=0,icont=0,i,j,in,it1,it2,irow;
 
-  double alpha=1.,beta=0.,err,alsize,altan,altanmax,ratio,value;
+  double err,alsize,altan,altanmax,ratio,value;
+
+  ITG sys_cpus,*ithread=NULL;
+  char *env,*envloc,*envsys;
+
+  num_cpus = 0;
+  sys_cpus=0;
+
+  /* explicit user declaration prevails */
+
+  envsys=getenv("NUMBER_OF_CPUS");
+  if(envsys){
+    sys_cpus=atoi(envsys);
+    if(sys_cpus<0) sys_cpus=0;
+  }
+
+  /* automatic detection of available number of processors */
+
+  if(sys_cpus==0){
+    sys_cpus = getSystemCPUs();
+    if(sys_cpus<1) sys_cpus=1;
+  }
+
+  /* local declaration prevails, if strictly positive */
+
+  envloc = getenv("CCX_NPROC_RESULTS");
+  if(envloc){
+    num_cpus=atoi(envloc);
+    if(num_cpus<0){
+      num_cpus=0;
+    }else if(num_cpus>sys_cpus){
+      num_cpus=sys_cpus;
+    }
+  }
+
+  /* else global declaration, if any, applies */
+
+  env = getenv("OMP_NUM_THREADS");
+  if(num_cpus==0){
+    if (env)
+      num_cpus = atoi(env);
+    if (num_cpus < 1) {
+      num_cpus=1;
+    }else if(num_cpus>sys_cpus){
+      num_cpus=sys_cpus;
+    }
+  }
+
+  // next line is to be inserted in a similar way for all other paralell parts
+
+  if(*nacti<num_cpus) num_cpus=*nacti;
+
+  pthread_t tid[num_cpus];
 
   /* determine the relaxation vector */
 
@@ -66,8 +104,21 @@ void inclusion(double *gmatrix,double *cvec,ITG *iacti,ITG *nacti,double *fric,
   
     /* alnew=G*al */
 
-    FORTRAN(dsymv,(&uplo,nacti,&alpha,gmatrix,nacti,al,&incx,&beta,alnew,&incy));
+    //   FORTRAN(dsymv,(&uplo,nacti,&alpha,gmatrix,nacti,al,&incx,&beta,alnew,&incy));
 
+    nacti1=nacti;alnew1=alnew;al1=al;gmatrix1=gmatrix;
+
+    /* create threads and wait */
+	
+    NNEW(ithread,ITG,num_cpus);
+    for(i=0; i<num_cpus; i++)  {
+      ithread[i]=i;
+      pthread_create(&tid[i], NULL, (void *)gmatrixtimesalmt, (void *)&ithread[i]);
+    }
+    for(i=0; i<num_cpus; i++)  pthread_join(tid[i], NULL);
+
+    SFREE(ithread);
+    
     /* alnew=al-omega*r*(alnew+c) */
 
     for(i=0;i<*nacti;i++){
@@ -156,4 +207,25 @@ void inclusion(double *gmatrix,double *cvec,ITG *iacti,ITG *nacti,double *fric,
   }
   
   return;
+}
+
+void *gmatrixtimesalmt(ITG *i){
+
+  /* full matrix times vector multiplication */
+
+  ITG idelta,ia,ib,j,k;
+  
+  idelta=(ITG)ceil(*nacti1/(double)num_cpus);
+  ia=*i*idelta;
+  ib=(*i+1)*idelta;
+  if(ib>*nacti1) ib=*nacti1;
+    
+  for(j=ia;j<ib;j++){
+    alnew1[j]=0.;
+    for(k=0;k<*nacti1;k++){
+      alnew1[j]+=gmatrix1[k**nacti1+j]*al1[k];
+    }
+  }
+  
+  return NULL;
 }
