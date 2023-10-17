@@ -718,6 +718,7 @@ regularization_slip_iwan.f \
 regularization_slip_lin.f \
 reinit_refine.f \
 relaxval_al.f \
+relaxval_alfull.f \
 removesliver.f \
 removetet_refine.f \
 removetet_sliver.f \

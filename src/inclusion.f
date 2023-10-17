@@ -17,8 +17,8 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
       subroutine inclusion(gmatrix,cvec,iacti,nacti,
-     &     fric,atol,rtol,alglob,kitermax,
-     &     auw,jqw,iroww,nslavs,al,alnew,r,omega)
+     &     fric,atol,rtol,alglob,kitermax,auw,jqw,iroww,nslavs,al,
+     &     alnew,r,omega,masslesslinear,fullr)
 !     
       implicit none
 !
@@ -28,13 +28,13 @@
 !
       character*1 uplo
 !     
-      integer i,j,nacti,kitermax,iacti(*),incx,incy,
+      integer i,j,nacti,kitermax,iacti(*),incx,incy,masslesslinear,
      &     icont,inorm,irow,jqw(*),iroww(*),nslavs
 !     
 !     al is in local contact coordinates!
 !     alglob is in global coordinates
 !     
-      real*8 fric(*),atol,rtol,alglob(*),alsize,al(*),err,
+      real*8 fric(*),atol,rtol,alglob(*),alsize,al(*),err,fullr(*),
      &     alnew(*),r(*),cvec(*),gmatrix(nacti,nacti),
      &     omega,value,auw(*),alpha,beta,altan,altanmax,ratio
 !
@@ -51,9 +51,17 @@
       err=1.d30
       icont=0
 !
-!     determine the relaxation parameter
+!     determine the relaxation vector
 !
-      call relaxval_al(r,gmatrix,nacti)
+      if(masslesslinear.gt.0) then
+        do i=1,3*nslavs
+          if(iacti(i).ne.0) then
+            r(iacti(i))=fullr(i)
+          endif
+        enddo
+      else
+        call relaxval_al(r,gmatrix,nacti)
+      endif
 !
       do while((icont.le.kitermax).and.(.not.(iscvg)))
 !        

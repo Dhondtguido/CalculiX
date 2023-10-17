@@ -313,11 +313,12 @@ void FORTRAN(assigndomtonodes,(ITG *ne,char *lakon,ITG *ipkon,ITG *kon,
              ITG *mi,ITG *ne2));
 
 void FORTRAN(inclusion,(double *gcontfull,double *cvec,ITG *nacti,
-			       ITG *iacti,double *mufric,double *atol,
-			       double *rtol,double *alglob,ITG *kitermax,
-			       double *auw,ITG *jqw,ITG *iroww,
-			       ITG *nslavs,double *al,double *alnew,
-			       double *eps_al,double *omega));
+			ITG *iacti,double *mufric,double *atol,
+			double *rtol,double *alglob,ITG *kitermax,
+			double *auw,ITG *jqw,ITG *iroww,
+			ITG *nslavs,double *al,double *alnew,
+			double *eps_al,double *omega,ITG *masslesslinear,
+			double *fullr));
 
 void FORTRAN(autocovmatrix,(double *co,double *ad,double *au,ITG *jqs,
 			    ITG *irows,ITG *ndesi,ITG *nodedesi,double *corrlen,
@@ -2929,7 +2930,7 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,
 	      double *aloc,double *fric,ITG *iexpl,ITG *nener,double *ener,
 	      ITG *ne,ITG **jqbip,double **aubip,ITG **irowbip,ITG **jqibp,
 	      double **auibp,ITG **irowibp,ITG *iclean,ITG *iinc,
-	      double *fullgmatrix);
+	      double *fullgmatrix,double *fullr);
 
 void mastruct(ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
               ITG *nodeboun,ITG *ndirboun,ITG *nboun,ITG *ipompc,
@@ -3844,8 +3845,10 @@ void FORTRAN(reinit_refine,(ITG *kontet,ITG *ifac,ITG *ieln,ITG *netet_,
                       ITG *newsize,ITG *ifatet,ITG *itetfa,ITG *iedg,
                       ITG *ieled));
 
-void FORTRAN(relaxval_al,(double *eps_al,double *gmatrix,ITG *gsize,
-			  ITG *ncdim));
+void FORTRAN(relaxval_al,(double *r,double *gmatrix,ITG *nacti));
+
+void FORTRAN(relaxval_alfull,(double *rfull,double *gmatrixfull,
+			  ITG *neqslavs));
 
 void remastruct(ITG *ipompc,double **coefmpcp,ITG **nodempcp,ITG *nmpc,
 		ITG *mpcfree,ITG *nodeboun,ITG *ndirboun,ITG *nboun,

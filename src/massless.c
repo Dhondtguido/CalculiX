@@ -47,7 +47,7 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
 	      double *b,double *dtime,double *aloc,double *fric,ITG *iexpl,
 	      ITG *nener,double *ener,ITG *ne,ITG **jqbip,double **aubip,
 	      ITG **irowbip,ITG **jqibp,double **auibp,ITG **irowibp,
-	      ITG *iclean,ITG *iinc,double *fullgmatrix){
+	      ITG *iclean,ITG *iinc,double *fullgmatrix,double *fullr){
 
   /* determining the RHS of the global system for massless contact */
 
@@ -59,7 +59,7 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
   double *auwnew=NULL,sigma=0.0,*gapdisp=NULL,*gapnorm=NULL,*cvec=NULL,sum,
     *adbbb=NULL,*aubbb=NULL,*gvec=NULL,*gmatrix=NULL,*qi_kbi=NULL,
     *veolddof=NULL,*alglob=NULL,atol,rtol,*aubb=NULL,*adbb=NULL,
-    *al=NULL,*alnew=NULL,*eps_al=NULL,*rhs=NULL,*aubi=NULL,
+    *al=NULL,*alnew=NULL,*r=NULL,*rhs=NULL,*aubi=NULL,
     *auib=NULL,omega,*alocold=NULL,*ddisp=NULL;
 
   jqbi=*jqbip;aubi=*aubip;irowbi=*irowbip;jqib=*jqibp;auib=*auibp;
@@ -233,6 +233,11 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
 	}
 	SFREE(gvec);
     }
+
+    /* calculate the relaxation values */
+    
+    FORTRAN(relaxval_alfull,(fullr,fullgmatrix,&neqslavs));
+    
   }
   
   /* premultiply gapdisp with Kbb^{-1} */
@@ -377,12 +382,11 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
       }
     }
 
-    NNEW(eps_al,double,nacti);
+    NNEW(r,double,nacti);
     NNEW(alglob,double,*neqtot);
-    FORTRAN(inclusion,
-	    (gmatrix,cvec,iacti,&nacti,fric,&atol,&rtol,
-	     alglob,&kitermax,auw,jqw,iroww,nslavs,al,
-	     alnew,eps_al,&omega));
+    FORTRAN(inclusion,(gmatrix,cvec,iacti,&nacti,fric,&atol,&rtol,
+		       alglob,&kitermax,auw,jqw,iroww,nslavs,al,
+		       alnew,r,&omega,masslesslinear,fullr));
 
     if(*nener==1){
       NNEW(alocold,double,neqslavs);
@@ -396,11 +400,7 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
 	aloc[i]=alnew[iacti[i]-1];
       }
     }
-    SFREE(al);
-    SFREE(alnew);
-    SFREE(eps_al);
-    SFREE(gmatrix);
-    SFREE(cvec);
+    SFREE(al);SFREE(alnew);SFREE(r);SFREE(gmatrix);SFREE(cvec);
     
   }else{
     NNEW(alglob,double,*neqtot);
