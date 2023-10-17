@@ -312,13 +312,13 @@ void FORTRAN(assigndomtonodes,(ITG *ne,char *lakon,ITG *ipkon,ITG *kon,
              ITG *ielmat,ITG *inomat,double *elcon,ITG *ncmat_,ITG *ntmat_,
              ITG *mi,ITG *ne2));
 
-void FORTRAN(inclusion,(double *gcontfull,double *cvec,ITG *nacti,
-			ITG *iacti,double *mufric,double *atol,
-			double *rtol,double *alglob,ITG *kitermax,
-			double *auw,ITG *jqw,ITG *iroww,
-			ITG *nslavs,double *al,double *alnew,
-			double *eps_al,double *omega,ITG *masslesslinear,
-			double *fullr));
+void inclusion(double *gcontfull,double *cvec,ITG *nacti,
+	       ITG *iacti,double *mufric,double *atol,
+	       double *rtol,double *alglob,ITG *kitermax,
+	       double *auw,ITG *jqw,ITG *iroww,
+	       ITG *nslavs,double *al,double *alnew,
+	       double *eps_al,double *omega,ITG *masslesslinear,
+	       double *fullr);
 
 void FORTRAN(autocovmatrix,(double *co,double *ad,double *au,ITG *jqs,
 			    ITG *irows,ITG *ndesi,ITG *nodedesi,double *corrlen,
@@ -3086,9 +3086,9 @@ void FORTRAN(mulmatvec_asym,(double *au1,ITG *jq1,ITG *irow1,double *x1,
 			     double *yy,ITG *itranspose1,ITG *ncol1,
 			     ITG *ncolb));
 
-void FORTRAN(mulmatvec_asymmain,(double *au,ITG *jq,ITG *irow,ITG *ncol,
+void mulmatvec_asymmain(double *au,ITG *jq,ITG *irow,ITG *ncol,
 				 double *x,double *y,ITG *transpose,
-				 ITG *n));
+				 ITG *n);
 
 void *mulmatvec_asymmt1(ITG *i);
 

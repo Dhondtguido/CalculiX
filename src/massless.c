@@ -52,7 +52,7 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
   /* determining the RHS of the global system for massless contact */
 
   ITG *jqwnew=NULL,*irowwnew=NULL,symmetryflag=0,mt=mi[1]+1,
-    inputformat=0,*iacti=NULL,nacti=0,itranspose,index,i,j,k,kitermax,
+    inputformat=0,*iacti=NULL,nacti=0,itranspose,i,j,k,kitermax,
     *jqbb=NULL,*irowbb=NULL,*icolbb=NULL,nzsbb,*jqbi=NULL,*irowbi=NULL,
     nzsbi,*jqib=NULL,*irowib=NULL,nzsib,nrhs=1,neqslavs;
 
@@ -384,9 +384,9 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
 
     NNEW(r,double,nacti);
     NNEW(alglob,double,*neqtot);
-    FORTRAN(inclusion,(gmatrix,cvec,iacti,&nacti,fric,&atol,&rtol,
-		       alglob,&kitermax,auw,jqw,iroww,nslavs,al,
-		       alnew,r,&omega,masslesslinear,fullr));
+    inclusion(gmatrix,cvec,iacti,&nacti,fric,&atol,&rtol,
+	      alglob,&kitermax,auw,jqw,iroww,nslavs,al,
+	      alnew,r,&omega,masslesslinear,fullr);
 
     if(*nener==1){
       NNEW(alocold,double,neqslavs);

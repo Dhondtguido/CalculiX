@@ -424,7 +424,6 @@ ident.f \
 identifytiedface.f \
 identifytransform.f \
 includefilename.f \
-inclusion.f \
 incplas.f \
 incplas_lin.f \
 init_submodel.f \
@@ -1032,6 +1031,7 @@ getlocalresults.c \
 getSystemCPUs.c \
 getuncrackedresults.c \
 gradientprojection.c \
+inclusion.c \
 ini_cal.c \
 inicont.c \
 inimortar.c \
