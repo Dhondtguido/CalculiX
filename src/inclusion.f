@@ -17,8 +17,8 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
       subroutine inclusion(gmatrix,cvec,iacti,nacti,
-     &     fric,atol,rtol,alglob,kitermax,auw,jqw,iroww,nslavs,al,
-     &     alnew,r,omega,masslesslinear,fullr)
+     &     fric,atol,rtol,alglob,kitermax,
+     &     auw,jqw,iroww,nslavs,al,alnew,r,omega,masslesslinear,fullr)
 !     
       implicit none
 !
@@ -51,7 +51,7 @@
       err=1.d30
       icont=0
 !
-!     determine the relaxation vector
+!     determine the relaxation parameter
 !
       if(masslesslinear.gt.0) then
         do i=1,3*nslavs
