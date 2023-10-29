@@ -433,7 +433,7 @@ c       ca=c0/(elconloc(10)*(ttime+time-dtime)**elconloc(12)*dtime)
             stiff(21)=c(9)
           endif
         endif
-!     
+!
         return
       endif
 !     
@@ -1057,7 +1057,11 @@ c     write(*,*)
 !     
 !     update the consistency parameter
 !     
-        dg=dg+ddg
+        if(dg+ddg.ge.0.d0) then
+          dg=dg+ddg
+        else
+          dg=dg/2.d0
+        endif
 !     
 !     end of major loop
 !     

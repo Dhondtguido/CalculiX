@@ -1276,7 +1276,6 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		&symmetryflag,&inputformat,&nzs[2]);
 #else
 	printf(" *ERROR in nonlingeo: the SPOOLES library is not linked\n\n");
-	FORTRAN(stop,());
 #endif
       }
       else if((*isolver==2)||(*isolver==3)){

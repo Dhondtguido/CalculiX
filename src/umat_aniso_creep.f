@@ -121,7 +121,7 @@
       integer ithermal(*),icmd,kode,ielas,iel,iint,nstate_,mi(*),iorien,
      &     i,j,ipiv(6),info,neq,lda,ldb,j1,j2,j3,j4,j5,j6,j7,j8,
      &     nrhs,iplas,kel(4,21),nmethod,iloop,leximp,lend,layer,kspt,
-     &     kstep,kinc,exitcriterion
+     &     kstep,kinc
 !     
       real*8 ep0(6),eeq,ep(6),b,Pn(6),ec(2),timeabq(2),dtemp,
      &     dg,ddg,c(21),x(21),cm1(21),svm,stri(6),htri,sg(6),r(6),
@@ -493,10 +493,10 @@ c     write(*,*)
 !        it will never leave it and the exit conditions are
 !        assumed to be satisfied.
 !
-         if(decra(1).gt.c0*dg) then
-            dg=decra(1)/c0
-            if(iloop.gt.1) exitcriterion=1
-         endif
+c         if(decra(1).gt.c0*dg) then
+c            dg=decra(1)/c0
+c            if(iloop.gt.1) exitcriterion=1
+c         endif
 !     
          htri=dsg-c0*svm
 !
@@ -511,10 +511,10 @@ c     write(*,*)
         enddo
 !     
 !     check convergence (for iloop=1 the remaining parts of the loop
-!     have not been executed: => P:n ... needed for the stiffness
+!     have not been executed: => P:n ..., needed for the stiffness
 !     matrix are not calculated)
 !
-        if(exitcriterion.eq.1) exit
+c         if(exitcriterion.eq.1) exit
 !
         if(iloop.gt.1) then
           if((dabs(htri).le.1.d-5).or.(dabs(ddg).lt.1.d-3*dabs(dg)))
@@ -712,8 +712,12 @@ c     write(*,*)
         endif
 !     
 !     update the consistency parameter
-!     
-        dg=dg+ddg
+!
+        if(dg+ddg.ge.0.d0) then
+          dg=dg+ddg
+        else
+          dg=dg/2.d0
+        endif
 !     
 !     end of major loop
 !     

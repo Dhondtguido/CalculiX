@@ -5284,3 +5284,6 @@ Dec 2002        - started to work on single crystal plasticity
                 - converted inclusion.f into inclusion.c
                 - parallellized the matrix-vector multiplication in
 		  inclusion.c
+
+ 27 Oct 2023    - checked for negative dg in "dg=dg+ddg" in ortho_plas.f
+                  and umat_aniso_creep.f; if negative, dg=dg/2.d0.

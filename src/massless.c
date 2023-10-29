@@ -406,8 +406,7 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
     NNEW(alglob,double,*neqtot);
   }
 
-  SFREE(gapdisp); // TODO CMT move this freeing, we need it still
-  SFREE(gapnorm);
+  SFREE(gapdisp);SFREE(gapnorm);
   
   /* compute  qb = Kbb^{-1}*(Wb*al-qi_kbi+fexb) */
 
