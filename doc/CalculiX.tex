@@ -7613,14 +7613,16 @@ $h_c=2h/3$ and $p=0$):
 \end{equation} 
 
 The following constants have to be specified on the
-line beneath the *FLUID SECTION,TYPE=CHANNEL WEIR card:
+line beneath the *FLUID SECTION,TYPE=CHANNEL WEIR card (the width, the
+trapezoid angle, the slope and the grain diameter should be the same as for the downstream
+element immediately next to the weir; they are needed for the
+calculation of the critical height and normal height):
 
 \begin{itemize}
 \item the width $b$
+\item the trapezoid angle $\theta$ 
 \item not used
-\item not used
-\item not used
-\item the grain diameter $k_s$ for the White-Colebrook law or the Manning
+\item the slope $S_0 = \sin \phi, -1<S_0<1 $ (for this element the slope must be\item the grain diameter $k_s$ for the White-Colebrook law or the Manning
   constant $n$ for the Manning law (in the latter case the user has to specify
   the parameter MANNING on the *FLUID SECTION card)
 \item the height of the weir $p$

@@ -269,8 +269,6 @@ c          if((hup.lt.0.d0).or.(hup.gt.ha)) then
             call hcrit(xflow,rho,b,theta,dg,sqrts0,hk)
             v(3,ndo)=hk
 !     
-c            if(ha.lt.hk) then
-!     
 !     A3 or B2 or B3
 !     
             area=(b+ha*tth)*ha
@@ -279,67 +277,6 @@ c            if(ha.lt.hk) then
             nstack=nstack+1
             istack(1,nstack)=nelem
             istack(2,nstack)=ndo
-c            else
-c!     
-c!             no disturbance of the flow
-c!     
-c              v(2,ndo)=v(2,nup)
-c              v(1,nmid)=inv*xflow
-c              nelup=nelem
-c              nelem=0
-c              nup=ndo
-c!     
-c!     depth underneath sluice gate exceeds critical depth
-c!     
-c!     calculate the normal depth
-c!     
-c              if(xks.gt.0.d0) then
-c                reynolds=xflow/(b*dvi)
-c                form_fact=1.d0
-c                hd=4.d0*hk
-c                call friction_coefficient(dl,hd,xks,reynolds,form_fact,
-c     &               friction)
-c              endif
-c              call hnorm(xflow,rho,b,theta,dg,s0,friction,xks,he)
-c!     
-c              if(he.lt.hk) then
-c!     
-c!     B2
-c!     
-c                area=(b+hk*tth)*hk
-c                v(2,ndo)=(hk-epsilon)*sqrts0
-c                mode='B'
-c                nstack=nstack+1
-c                istack(1,nstack)=nelem
-c                istack(2,nstack)=ndo
-c              else
-c!     
-c!     no frontwater solution
-c!     
-c                v(2,ndo)=-1.d0
-c                nelup=nelem
-c                nelem=0
-c                nup=ndo
-c              endif
-c!
-c!             calculate the depth in the upstream node;
-c!             for a gate element or wear in between other elements
-c!             the upstream velocity is not assumed to be zero,              
-c!             i.e. no big reservoir since this makes no sense for
-c!             steady state calculations
-c!
-c              if(mode.eq.'B') then
-c                if(v(2,ndo).ge.ha*sqrts0) then
-c                  call hns(xflow,rho,b,theta,dg,sqrts0,ha,h2)
-c                  v(2,nup)=h2/sqrts0
-cc                else
-cc                  v(2,nup)=v(2,ndo)+hw
-c                endif
-c                neldo=nelem
-c                ndo=nup
-c                nelem=0
-c              endif
-c            endif
           else
 !
 !           no disturbance of the flow

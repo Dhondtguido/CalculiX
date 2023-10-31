@@ -1181,7 +1181,7 @@ c     mortar end
         endif
 !     
 !     add hourglass control stiffnesses: C3D8R only. 
-        if(lakonl(1:5).eq.'C3D8R') then 
+        if((lakonl(1:5).eq.'C3D8R').and.(intscheme.eq.0)) then 
           call hgstiffness(s,stiff,a,gs)
         endif
 !     
