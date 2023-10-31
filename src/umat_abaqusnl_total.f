@@ -84,8 +84,7 @@
 !     
       d=(/1.d0,1.d0,1.d0,0.d0,0.d0,0.d0/)
 !     
-c      d2=reshape((/1.d0,0.d0,0.d0,0.d0,1.d0,0.d0,0.d0,0.d0,1.d0/),
-c     &       (/3,3/))
+!     fourth order identity tensor     
 !     
       d4=(/1.d0,0.d0,1.d0,0.d0,0.d0,1.d0,0.d0,0.d0,0.d0,0.5d0,0.d0,0.d0,
      &0.d0,0.d0,0.5d0,0.d0,0.d0,0.d0,0.d0,0.d0,0.5d0/)
@@ -117,9 +116,10 @@ c      write(*,*) 'umat_abaqusnl_total ',(emec(i),i=1,6)
         call exit(201)
       endif
 !     
-!     calculating the principal stretches square at the end of the increment
-!                     eigenvalues of the logarithmic strain
-!                     eigenvalues of the inverse right stretch tensor
+!     calculating the - principal stretches square at the end of the increment
+!                       = eigenvalues of the right Cauchy-Green tensor
+!                     - eigenvalues of the logarithmic strain
+!                     - eigenvalues of the inverse right stretch tensor
 !     
       do i=1,3
         if(w(i).lt.-0.5d0) then
@@ -132,14 +132,8 @@ c      write(*,*) 'umat_abaqusnl_total ',(emec(i),i=1,6)
           wum1(i)=1.d0/dsqrt(w(i))
         endif
       enddo
-c!     
-c!     calculating the invariants at the end of the increment
-c!     
-c      v1=w(1)+w(2)+w(3)
-c      v2=w(1)*w(2)+w(2)*w(3)+w(3)*w(1)
-c      v3=w(1)*w(2)*w(3)
 !     
-!     calculating the right Cauchy-Green tensor at the end of the
+!     calculating the mechanical right Cauchy-Green tensor at the end of the
 !     increment
 !     
       do i=1,3
@@ -175,8 +169,8 @@ c      v3=w(1)*w(2)*w(3)
       xm3(5)=z(1,3)*z(3,3)
       xm3(6)=z(2,3)*z(3,3)
 !     
-!     corotational logarithmic strain in global coordinates at the end of the
-!     increment = ln(lambda) N diadic N;
+!     corotational mechanical logarithmic strain in global coordinates at the
+!     end of the increment = ln(lambda) N diadic N;
 !     
 !     the true logarithmic strain is ln(lambda) n diadic n;
 !     the rotation tensor R = n diadic N;
@@ -191,7 +185,7 @@ c      v3=w(1)*w(2)*w(3)
       eln(5)=xm1(5)*weln(1)+xm2(5)*weln(2)+xm3(5)*weln(3)          
       eln(6)=xm1(6)*weln(1)+xm2(6)*weln(2)+xm3(6)*weln(3)  
 !     
-!     calculating the inverse right stretch tensor U^{-1}
+!     calculating the mechanical inverse right stretch tensor U^{-1}
 !     
       um1(1,1)=xm1(1)*wum1(1)+xm2(1)*wum1(2)+xm3(1)*wum1(3)          
       um1(2,2)=xm1(2)*wum1(1)+xm2(2)*wum1(2)+xm3(2)*wum1(3)          
@@ -202,13 +196,6 @@ c      v3=w(1)*w(2)*w(3)
       um1(2,1)=um1(1,2)
       um1(3,1)=um1(1,3)
       um1(3,2)=um1(2,3)
-c      write(*,*) 'umat_abaqusnl_total',um1(1,1),um1(1,1)
-c      write(*,*) 'umat_abaqusnl_total',um1(2,2),um1(2,2)
-c      write(*,*) 'umat_abaqusnl_total',um1(3,3),um1(3,3)
-c      write(*,*) 'umat_abaqusnl_total',um1(1,2),um1(1,2)
-c      write(*,*) 'umat_abaqusnl_total',um1(1,3),um1(1,3)
-c      write(*,*) 'umat_abaqusnl_total',um1(2,3),um1(2,3)
-c      write(*,*)
 !     
       do i=1,nstate_
         xstate(i,iint,iel)=xstateini(i,iint,iel)
@@ -358,16 +345,6 @@ c      write(*,*)
       expansion=dsqrt((ctot(1,1)/c(1,1)+ctot(2,2)/c(2,2)+
      &     ctot(3,3)/c(3,3))/3.d0)
 !     
-c!     calculate the inverse total right stretch tensor at the end
-c!     of the increment (= inverse mechanical right stretch tensor
-c!     divided by the expansion at the end of the increment)
-c!     
-c      do i=1,3
-c        do j=1,3
-c          um1(i,j)=um1(i,j)/expansion
-c        enddo
-c      enddo
-!     
       if(iorien.ne.0) then
         do i=1,3
           do j=1,3
@@ -444,7 +421,8 @@ c      enddo
           enddo
         enddo
 !     
-!       cm1=um1*um1 (symmetric)
+!       cm1=um1*um1 (symmetric): inverse mechanical right Cauchy-Green
+!       tensor
 !
         do i=1,3
           do j=i,3
@@ -534,30 +512,41 @@ c      enddo
 !       calculating A, B, dM_i/dC, dU^{-1}/dC and dln(e)/dC
 !       (all of them symmetric, i.e. 21 constants)
 !
-        do jj=1,21
-          j1=kel(1,jj)
-          j2=kel(2,jj)
-          j3=kel(3,jj)
-          j4=kel(4,jj)
-          aa(jj)=d4(jj)-ym1(j1,j2)*ym1(j3,j4)
-     &                 -ym2(j1,j2)*ym2(j3,j4)
-     &                 -ym3(j1,j2)*ym3(j3,j4)
-          bb(jj)=c4(jj)-2.d0*(w(1)*ym1(j1,j2)*ym1(j3,j4)
-     &                       +w(2)*ym2(j1,j2)*ym2(j3,j4)
-     &                       +w(3)*ym3(j1,j2)*ym3(j3,j4))
-          dxm1dc(jj)=(bb(jj)-(w(2)+w(3))*aa(jj))/
-     &         ((w(1)-w(2))*(w(1)-w(3)))
-          dxm2dc(jj)=(bb(jj)-(w(1)+w(3))*aa(jj))/
-     &         ((w(2)-w(1))*(w(2)-w(3)))
-          dxm3dc(jj)=(bb(jj)-(w(1)+w(2))*aa(jj))/
-     &         ((w(3)-w(1))*(w(3)-w(2)))
-          dum1dc(jj)=ym1(j1,j2)*ym1(j3,j4)*dwum1(1)+wum1(1)*dxm1dc(jj)
-     &              +ym2(j1,j2)*ym2(j3,j4)*dwum1(2)+wum1(2)*dxm2dc(jj)
-     &              +ym3(j1,j2)*ym3(j3,j4)*dwum1(3)+wum1(3)*dxm3dc(jj)
-          delndc(jj)=ym1(j1,j2)*ym1(j3,j4)*dweln(1)+weln(1)*dxm1dc(jj)
-     &              +ym2(j1,j2)*ym2(j3,j4)*dweln(2)+weln(2)*dxm2dc(jj)
-     &              +ym3(j1,j2)*ym3(j3,j4)*dweln(3)+weln(3)*dxm3dc(jj)
-         enddo
+        if((dabs(w(1)-w(2)).lt.1.d-10).and.
+     &       (dabs(w(2)-w(2)).lt.1.d-10)) then
+!
+!         three equal eigenvalues
+!
+          do jj=1,21
+            dum1dc(jj)=d4(jj)*dwum1(1)
+            delndc(jj)=d4(jj)*dweln(1)
+          enddo
+        else
+          do jj=1,21
+            j1=kel(1,jj)
+            j2=kel(2,jj)
+            j3=kel(3,jj)
+            j4=kel(4,jj)
+            aa(jj)=d4(jj)-ym1(j1,j2)*ym1(j3,j4)
+     &           -ym2(j1,j2)*ym2(j3,j4)
+     &           -ym3(j1,j2)*ym3(j3,j4)
+            bb(jj)=c4(jj)-2.d0*(w(1)*ym1(j1,j2)*ym1(j3,j4)
+     &           +w(2)*ym2(j1,j2)*ym2(j3,j4)
+     &           +w(3)*ym3(j1,j2)*ym3(j3,j4))
+            dxm1dc(jj)=(bb(jj)-(w(2)+w(3))*aa(jj))/
+     &           ((w(1)-w(2))*(w(1)-w(3)))
+            dxm2dc(jj)=(bb(jj)-(w(1)+w(3))*aa(jj))/
+     &           ((w(2)-w(1))*(w(2)-w(3)))
+            dxm3dc(jj)=(bb(jj)-(w(1)+w(2))*aa(jj))/
+     &           ((w(3)-w(1))*(w(3)-w(2)))
+            dum1dc(jj)=ym1(j1,j2)*ym1(j3,j4)*dwum1(1)+wum1(1)*dxm1dc(jj)
+     &           +ym2(j1,j2)*ym2(j3,j4)*dwum1(2)+wum1(2)*dxm2dc(jj)
+     &           +ym3(j1,j2)*ym3(j3,j4)*dwum1(3)+wum1(3)*dxm3dc(jj)
+            delndc(jj)=ym1(j1,j2)*ym1(j3,j4)*dweln(1)+weln(1)*dxm1dc(jj)
+     &           +ym2(j1,j2)*ym2(j3,j4)*dweln(2)+weln(2)*dxm2dc(jj)
+     &           +ym3(j1,j2)*ym3(j3,j4)*dweln(3)+weln(3)*dxm3dc(jj)
+          enddo
+        endif
 !     
 !        expanding dum1dc(21), delndc(21) and stiff(21) into     
 !        dum1dcexp(3,3,3,3), delndcexp(3,3,3,3) and stiffexp(3,3,3,3) 
@@ -598,7 +587,38 @@ c      enddo
 !
 !        symmetrizing stiffasym -> stiff
 !
-c        do jj=1,21
+         write(*,*) 'umat_abaqusnl_total'
+         do i=1,21
+c     write(*,*) i,stiff(i),stiffasym(i)
+           write(*,'(i5,4(1x,e11.4))') i,stiff(i),
+     &          vj*term1(i)/expansion**2,
+     &          vj*2.d0*term24(i)/expansion**2,
+     &          vj*2.d0*term3(i)/expansion**2
+         enddo
+!         
+c         stiff(1)=stiffasym(1)
+c         stiff(2)=(stiffasym(2)+stiffasym(22))/2.d0
+c         stiff(3)=stiffasym(3)
+c         stiff(4)=(stiffasym(4)+stiffasym(23))/2.d0
+c         stiff(5)=(stiffasym(5)+stiffasym(24))/2.d0
+c         stiff(6)=stiffasym(6)
+c         stiff(7)=(stiffasym(7)+stiffasym(25))/2.d0
+c         stiff(8)=(stiffasym(8)+stiffasym(26))/2.d0
+c         stiff(9)=(stiffasym(9)+stiffasym(27))/2.d0
+c         stiff(10)=stiffasym(10)
+c         stiff(11)=(stiffasym(11)+stiffasym(28))/2.d0
+c         stiff(12)=(stiffasym(12)+stiffasym(29))/2.d0
+c         stiff(13)=(stiffasym(13)+stiffasym(30))/2.d0
+c         stiff(14)=(stiffasym(14)+stiffasym(31))/2.d0
+c         stiff(15)=stiffasym(15)
+c         stiff(16)=(stiffasym(16)+stiffasym(32))/2.d0
+c         stiff(17)=(stiffasym(17)+stiffasym(33))/2.d0
+c         stiff(18)=(stiffasym(18)+stiffasym(34))/2.d0
+c         stiff(19)=(stiffasym(19)+stiffasym(35))/2.d0
+c         stiff(20)=(stiffasym(20)+stiffasym(36))/2.d0
+c         stiff(21)=stiffasym(21)
+c
+c         do jj=1,21
 c          k=kel(1,jj)
 c          l=kel(2,jj)
 c          p=kel(3,jj)

@@ -383,7 +383,8 @@ c       ca=c0/(elconloc(10)*(ttime+time-dtime)**elconloc(12)*dtime)
       if((iplas.eq.0).or.(ielas.eq.1).or.(ielastic.eq.1)) then
 !     
 !     elastic stress
-!     
+!
+c        write(*,*) 'ortho_plas elastic'
         do i=1,6
           stre(i)=stri(i)
         enddo
@@ -439,6 +440,7 @@ c       ca=c0/(elconloc(10)*(ttime+time-dtime)**elconloc(12)*dtime)
 !     
 !     plastic deformation
 !     
+c        write(*,*) 'ortho_plas plastic'
       neq=6
       nrhs=1
       lda=6

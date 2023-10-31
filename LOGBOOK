@@ -5287,3 +5287,7 @@ Dec 2002        - started to work on single crystal plasticity
 
  27 Oct 2023    - checked for negative dg in "dg=dg+ddg" in ortho_plas.f
                   and umat_aniso_creep.f; if negative, dg=dg/2.d0.
+
+ 31 Oct 2023    - modified e_c3d.f for C3D8R elements in implicit dynamic
+                  calculations (parameter intscheme)
+                - worked on umat_abaqusnl_total.f
