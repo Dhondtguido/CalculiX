@@ -522,6 +522,7 @@ c      write(*,*) 'umat_abaqusnl_total ',(emec(i),i=1,6)
             delndc(jj)=d4(jj)*dweln(1)
           enddo
         else
+          write(*,*) 'eigenvalues ',w(1),w(2),w(3)
           do jj=1,21
             j1=kel(1,jj)
             j2=kel(2,jj)
@@ -583,19 +584,12 @@ c      write(*,*) 'umat_abaqusnl_total ',(emec(i),i=1,6)
            enddo
            stiffasym(jj)=vj*(term1(jj)+2.d0*(term24(jj)+term3(jj)))/
      &          expansion**2
+c           stiffasym(jj)=vj*(term1(jj)+2.d0*(term3(jj)))/
+c     &          expansion**2
          enddo
 !
 !        symmetrizing stiffasym -> stiff
 !
-         write(*,*) 'umat_abaqusnl_total'
-         do i=1,21
-c     write(*,*) i,stiff(i),stiffasym(i)
-           write(*,'(i5,4(1x,e11.4))') i,stiff(i),
-     &          vj*term1(i)/expansion**2,
-     &          vj*2.d0*term24(i)/expansion**2,
-     &          vj*2.d0*term3(i)/expansion**2
-         enddo
-!         
 c         stiff(1)=stiffasym(1)
 c         stiff(2)=(stiffasym(2)+stiffasym(22))/2.d0
 c         stiff(3)=stiffasym(3)
@@ -618,6 +612,15 @@ c         stiff(19)=(stiffasym(19)+stiffasym(35))/2.d0
 c         stiff(20)=(stiffasym(20)+stiffasym(36))/2.d0
 c         stiff(21)=stiffasym(21)
 c
+         write(*,*) 'umat_abaqusnl_total'
+         do i=1,21
+c     write(*,*) i,stiff(i),stiffasym(i)
+           write(*,'(i5,5(1x,e11.4))') i,stiffasym(i),stiff(i),
+     &          vj*term1(i)/expansion**2,
+     &          vj*2.d0*term24(i)/expansion**2,
+     &          vj*2.d0*term3(i)/expansion**2
+         enddo
+!         
 c         do jj=1,21
 c          k=kel(1,jj)
 c          l=kel(2,jj)
@@ -630,7 +633,7 @@ c     &       '*c(',i1,',',i1,')+',
 c     &       f2.0,'*c(',i1,',',i1,')+',f2.0,'*c(',i1,',',i1,'))/2.d0')
 c        stop
 !     
-      endif
+       endif
 !     
       return
       end
