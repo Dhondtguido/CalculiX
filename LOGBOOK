@@ -5291,3 +5291,5 @@ Dec 2002        - started to work on single crystal plasticity
  31 Oct 2023    - modified e_c3d.f for C3D8R elements in implicit dynamic
                   calculations (parameter intscheme)
                 - worked on umat_abaqusnl_total.f
+
+ 3 Nov 2023     - worked on umat_abaqusnl_total.f and umat_abaqusnl.f
