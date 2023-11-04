@@ -140,7 +140,7 @@
       integer ithermal(*),icmd,kode,ielas,iel,iint,nstate_,mi(*),i,
      &     iorien,nmethod,iperturb(*),istep,
      &     ndi,nshr,ntens,nprops,layer,kspt,jstep(4),kinc,kal(2,6),
-     &     kel(4,21),j1,j2,j3,j4,jj,n,ier,j,matz,
+     &     kel(4,21),j1,j2,j3,j4,j5,j6,j7,j8,jj,n,ier,j,matz,
      &     jm,jn,js,jt,mel(4,36)
 !     
       real*8 elconloc(*),stiff(21),emec(6),emec0(6),beta(6),stre(6),
@@ -656,15 +656,17 @@
         enddo
       endif
 !     
-      xa(1,1)=stre(1)
-      xa(1,2)=stre(4)
-      xa(1,3)=stre(5)
-      xa(2,1)=stre(4)
-      xa(2,2)=stre(2)
-      xa(2,3)=stre(6)
-      xa(3,1)=stre(5)
-      xa(3,2)=stre(6)
-      xa(3,3)=stre(3)
+!     scc is the corotational Cauchy stress as matrix    
+!     
+      scc(1,1)=stre(1)
+      scc(1,2)=stre(4)
+      scc(1,3)=stre(5)
+      scc(2,1)=stre(4)
+      scc(2,2)=stre(2)
+      scc(2,3)=stre(6)
+      scc(3,1)=stre(5)
+      scc(3,2)=stre(6)
+      scc(3,3)=stre(3)
 !     
       do jj=1,6
         stre(jj)=0.d0
@@ -673,7 +675,7 @@
         do j3=1,3
           do j4=1,3
             stre(jj)=stre(jj)+
-     &           xa(j3,j4)*tkl(j1,j3)*tkl(j2,j4)
+     &           scc(j3,j4)*tkl(j1,j3)*tkl(j2,j4)
           enddo
         enddo
         stre(jj)=stre(jj)*vj/expansion**2
@@ -703,6 +705,31 @@
         stiff(19)=(ddsdde(4,6)+ddsdde(6,4))/2.d0
         stiff(20)=(ddsdde(5,6)+ddsdde(6,5))/2.d0
         stiff(21)=ddsdde(6,6)
+!     
+        if(iorien.ne.0) then
+!     
+!     rotating the stiffness coefficients into the global system
+!     
+          call anisotropic(stiff,ya)
+!     
+          do jj=1,21
+            j1=kel(1,jj)
+            j2=kel(2,jj)
+            j3=kel(3,jj)
+            j4=kel(4,jj)
+            stiff(jj)=0.d0
+            do j5=1,3
+              do j6=1,3
+                do j7=1,3
+                  do j8=1,3
+                    stiff(jj)=stiff(jj)+ya(j5,j6,j7,j8)*
+     &                   skl(j1,j5)*skl(j2,j6)*skl(j3,j7)*skl(j4,j8)
+                  enddo
+                enddo
+              enddo
+            enddo
+          enddo
+        endif
 c!     
 c!     rotating the stiffness coefficients into the global system
 c!     
@@ -803,15 +830,16 @@ c        enddo
 !       calculating A, B, dM_i/dC, dU^{-1}/dC and dln(e)/dC
 !       (all of them symmetric, i.e. 21 constants)
 !
-          write(*,*) 'eigenvalues ',w(1),w(2),w(3)
+c          write(*,*) 'eigenvalues ',w(1),w(2),w(3)
         if((dabs(w(1)-w(2)).lt.1.d-10).and.
      &       (dabs(w(2)-w(3)).lt.1.d-10)) then
-!
-!         three equal eigenvalues
 !     
-        do jj=1,21
+!     three equal eigenvalues
+!     
+          do jj=1,21
             dum1dc(jj)=d4(jj)*dwum1(1)
             delndc(jj)=d4(jj)*dweln(1)
+c            write(*,*) jj,dum1dc(jj),delndc(jj)
           enddo
         elseif(dabs(w(1)-w(2)).lt.1.d-10) then
           write(*,*) 'entering the new branch'
@@ -1055,7 +1083,7 @@ c          write(*,*) 'entering the new branch'
 c
 c         write(*,*) 'umat_abaqusnl_total'
 c         do i=1,21
-cc     write(*,*) i,stiff(i),stiffasym(i)
+c         write(*,*) i,stiff(i),stiffasym(i)
 c           write(*,'(i5,5(1x,e11.4))') i,stiff(i),
 c     &          dabs(stiff(i)-stiffasym(i))/dabs(stiff(i)),
 c     &          vj*term1(i)/expansion**2,

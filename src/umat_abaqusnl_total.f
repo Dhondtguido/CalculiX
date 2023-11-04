@@ -396,6 +396,31 @@ c      write(*,*) 'umat_abaqusnl_total ',(emec(i),i=1,6)
 !     calculate the stiffness matrix (the matrix is symmetrized)
 !     
       if(icmd.ne.3) then
+!
+         if(iorien.ne.0) then
+!
+!        rotating the stiffness coefficients into the global system
+!
+            call anisotropic(stiff,ya)
+!
+            do jj=1,21
+               j1=kel(1,jj)
+               j2=kel(2,jj)
+               j3=kel(3,jj)
+               j4=kel(4,jj)
+               stiff(jj)=0.d0
+               do j5=1,3
+                  do j6=1,3
+                     do j7=1,3
+                        do j8=1,3
+                           stiff(jj)=stiff(jj)+ya(j5,j6,j7,j8)*
+     &                       skl(j1,j5)*skl(j2,j6)*skl(j3,j7)*skl(j4,j8)
+                        enddo
+                     enddo
+                  enddo
+               enddo
+            enddo
+         endif
 c!     
 c!     rotating the stiffness coefficients into the global system
 c!     
@@ -496,7 +521,7 @@ c        enddo
 !       calculating A, B, dM_i/dC, dU^{-1}/dC and dln(e)/dC
 !       (all of them symmetric, i.e. 21 constants)
 !
-          write(*,*) 'eigenvalues ',w(1),w(2),w(3)
+c          write(*,*) 'eigenvalues ',w(1),w(2),w(3)
         if((dabs(w(1)-w(2)).lt.1.d-10).and.
      &       (dabs(w(2)-w(3)).lt.1.d-10)) then
 !
