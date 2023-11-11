@@ -195,12 +195,12 @@ c     &         (lakon(nelem)(6:7).eq.'DR')) then
 !       upstream and downstream depth
 !
         if(lakon(nelem)(6:7).ne.'SG') then
-          hup=v(2,nup)/sqrts0
+          hup=v(2,nup)
         else
           hup=v(2,nup)
         endif
         if(lakon(nelem)(6:7).ne.'WE') then
-          hdo=v(2,ndo)/sqrts0
+          hdo=v(2,ndo)
         else
           hdo=v(2,ndo)
         endif
@@ -300,7 +300,7 @@ c     &         (lakon(nelem)(6:7).eq.'DR')) then
 !     
         write(1,*) ''
         write(1,53)' Inlet node ',nup,':  T = ',v(0,nup),
-     &       ', fluid depth = ',hup*sqrts0
+     &       ', fluid depth = ',hup
         write(1,54)'                     b = ',bup,
      &       ', theta = ',thetaup
         write(1,54)'                     velocity = ',uup,
@@ -317,7 +317,7 @@ c     &         (lakon(nelem)(6:7).eq.'DR')) then
 !     
         write(1,*) ''
         write(1,53)' Outlet node ',ndo,': T = ',v(0,ndo),
-     &       ', fluid depth  = ',hdo*sqrts0
+     &       ', fluid depth  = ',hdo
         write(1,54)'                     b = ',bdo,
      &       ', theta = ',thetado
         write(1,54)'                     velocity = ',udo,

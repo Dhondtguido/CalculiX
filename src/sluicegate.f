@@ -123,7 +123,7 @@
 !           A3 or B2 or B3
 !
             area=(b+ha*tth)*ha
-            v(2,ndo)=ha*sqrts0
+            v(2,ndo)=ha
             v(2,nup)=(xflow/(area*rho))**2/(2.d0*dg)+ha
             nelup=nelem
             nelem=0
@@ -148,9 +148,8 @@
 !             B2
 !
               area=(b+hk*tth)*hk
-c              v(2,ndo)=(hk-epsilon)*sqrts0
-              v(2,ndo)=hk*sqrts0
-              v(2,nup)=(xflow/(cd*area*rho))**2/(2.d0*dg)+hk*sqrts0+hw
+              v(2,ndo)=hk
+              v(2,nup)=(xflow/(cd*area*rho))**2/(2.d0*dg)+hk+hw
               nelup=nelem
               nelem=0
               nup=ndo
@@ -197,7 +196,7 @@ c              v(2,ndo)=(hk-epsilon)*sqrts0
             else
               v(1,kon(ipkon(nelup)+2))=-xflow
             endif
-            v(2,ndo)=ha*sqrts0
+            v(2,ndo)=ha
             nelup=nelem
             nelem=0
             nup=ndo
@@ -223,8 +222,7 @@ c              v(2,ndo)=(hk-epsilon)*sqrts0
 !
 !             B2
 !
-c              v(2,ndo)=(hkmax-epsilon)*sqrts0
-              v(2,ndo)=hkmax*sqrts0
+              v(2,ndo)=hkmax
               v(1,nmid)=inv*xflow
               if(kon(ipkon(nelup)+1).eq.0) then
                 v(1,kon(ipkon(nelup)+2))=xflow
@@ -272,7 +270,7 @@ c          if((hup.lt.0.d0).or.(hup.gt.ha)) then
 !     A3 or B2 or B3
 !     
             area=(b+ha*tth)*ha
-            v(2,ndo)=ha*sqrts0
+            v(2,ndo)=ha
             mode='B'
             nstack=nstack+1
             istack(1,nstack)=nelem
@@ -292,7 +290,7 @@ c          if((hup.lt.0.d0).or.(hup.gt.ha)) then
 !
 !       mode = 'B': backwater curve
 !
-        hdo=v(2,ndo)/sqrts0
+        hdo=v(2,ndo)
 !
         idof=8*(nup-1)+2
         call nident(ikboun,idof,nboun,id)
@@ -306,7 +304,7 @@ c          if((hup.lt.0.d0).or.(hup.gt.ha)) then
             else
               area=(b+ha*tth)*ha
             endif
-            xflowcor=rho*area*dsqrt(2.d0*dg*(v(2,nup)-hdo*sqrts0))
+            xflowcor=rho*area*dsqrt(2.d0*dg*(v(2,nup)-hdo))
             if(dabs(xflow-xflowcor).le.1.d-3*xflow) then
 !
 !     corrected flow is sufficiently close to assumed flow:
@@ -338,7 +336,7 @@ c          if((hup.lt.0.d0).or.(hup.gt.ha)) then
         else
           area=(b+ha*tth)*ha
         endif
-        v(2,nup)=hdo*sqrts0+(xflow/(rho*area))**2/(2.d0*dg)
+        v(2,nup)=hdo+(xflow/(rho*area))**2/(2.d0*dg)
         ndo=nup
         neldo=nelem
         nelem=0
