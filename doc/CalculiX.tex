@@ -20955,8 +20955,10 @@ stiffness matrix $\left [ K \right ]$ and the mass matrix $\left [ M \right ]$:
 \noindent where $\lbrace v \rbrace$ is the velocity vector. For Rayleigh damping only one *DAMPING card can be used in the input deck. It
 applies to the whole model.
 
-For explicit dynamic calculations only mass proportional damping is allowed,
-i.e. $\beta$ must be zero. 
+For explicit dynamic calculations without massless contact (i.e. there is no
+card of the type *CONTACT PAIR,TYPE=MASSLESS in the input deck) only mass proportional damping is allowed,
+i.e. $\beta$ must be zero. For explicit dynamic calculations with massless
+contact both parameters $\alpha$ and $\beta$ can be used.
 
 For structural damping the damping is a material characteristic. Each material
 can have its own damping value. There is one required parameter STRUCTURAL,

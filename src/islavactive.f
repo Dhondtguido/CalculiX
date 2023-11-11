@@ -83,6 +83,7 @@
 !     
          nstart=itietri(1,i)-1
          n=itietri(2,i)-nstart
+!     
          if(n.lt.kneigh) kneigh=n
          do j=1,n
             xo(j)=cg(1,nstart+j)

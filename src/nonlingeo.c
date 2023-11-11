@@ -94,7 +94,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *sideloadf=NULL; 
  
   ITG *inum=NULL,k,l,iout=0,icntrl,iinc=0,jprint=0,iit=-1,jnz=0,
-    icutb=0,istab=0,uncoupled,n1,n2,itruecontact,iclean=0,
+    icutb=0,istab=0,uncoupled,n1,n2,itruecontact=1,iclean=0,
     iperturb_sav[2],iforbou,*icol=NULL,*irow=NULL,ielas=0,icmd=0,
     memmpc_,mpcfree,icascade,maxlenmpc,*nodempc=NULL,*iaux=NULL,
     *nodempcref=NULL,memmpcref_,mpcfreeref,*itg=NULL,*ineighe=NULL,
@@ -833,9 +833,11 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     NNEW(cv,double,neq[1]);
   }
 
-  if((*nstate_!=0)&&((*mortar!=1)||(ncont==0))){
+  //    if((*nstate_!=0)&&((*mortar!=1)||(ncont==0))){
+    if((*nstate_!=0)&&(*mortar!=1)){
     NNEW(xstateini,double,*nstate_*mi[0]*(*ne+*nslavs));
     isiz=*nstate_*mi[0]*(*ne+*nslavs);cpypardou(xstateini,xstate,&isiz,&num_cpus);
+    //    FORTRAN(stop,());
   }
 
   /* next lines: change on 8th of July 2023: initial state values
@@ -3696,7 +3698,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     
     /* face-to-face penalty */
 
-    if((*mortar==1)&&(icutb==0)){
+    if((*mortar==1)&&(icutb==0)&&(ncont!=0)){
 	
       ntrimax=0;
       for(i=0;i<*ntie;i++){	    

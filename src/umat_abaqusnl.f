@@ -594,14 +594,14 @@
      &       ntens,nstate_,elconloc,nprops,pgauss,drot,pnewdt,
      &       celent,xokl,xkl,iel,iint,layer,kspt,jstep,kinc)
 !     
-      elseif(amat(1:11).eq.'JOHNSONCOOK') then
-!     
-        call umat_johnson_cook(stre,xstate(1,iint,iel),ddsdde,sse,
-     &       spd,scd,rpl,ddsddt,
-     &       drplde,drpldt,stran,dstran,abqtime,dtime,temp,dtemp,
-     &       predef,dpred,amat,ndi,nshr,ntens,nstate_,elconloc,nprops,
-     &       pgauss,drot,pnewdt,celent,xokl,xkl,iel,iint,layer,kspt,
-     &       jstep,kinc)
+c      elseif(amat(1:11).eq.'JOHNSONCOOK') then
+c!     
+c        call umat_johnson_cook(stre,xstate(1,iint,iel),ddsdde,sse,
+c     &       spd,scd,rpl,ddsddt,
+c     &       drplde,drpldt,stran,dstran,abqtime,dtime,temp,dtemp,
+c     &       predef,dpred,amat,ndi,nshr,ntens,nstate_,elconloc,nprops,
+c     &       pgauss,drot,pnewdt,celent,xokl,xkl,iel,iint,layer,kspt,
+c     &       jstep,kinc)
 !     
       else
 !     

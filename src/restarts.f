@@ -37,7 +37,7 @@
      &  ipoinp,inp,fmpc,tieset,ntie,tietol,ipoinpc,nslavs,t0g,t1g,nprop,
      &  ielprop,prop,mortar,nintpoint,ifacecount,islavsurf,pslavsurf,
      &  clearini,ier,vel,nef,velo,veloo,ne2boun,heading,network,
-     &  irestartread,nfc,ndc,coeffc,ikdc,edc)
+     &  irestartread,nfc,ndc,coeffc,ikdc,edc,xmodal)
 !
       implicit none
 !
@@ -77,7 +77,8 @@
      &  xnor(*),thicke(*),offset(*),t0g(*),t1g(*),clearini(*),
      &  shcon(*),cocon(*),sti(*),ener(*),xstate(*),prop(*),edc(*),
      &  ttime,qaold(2),cs(17,*),physcon(*),pslavsurf(*),coeffc(*),
-     &  ctrl(*),fmpc(*),xbody(*),xbodyold(*),vel(*),velo(*),veloo(*)
+     &  ctrl(*),fmpc(*),xbody(*),xbodyold(*),vel(*),velo(*),veloo(*),
+     &  xmodal(*)
 !
       irestartstep=0
 !
@@ -134,7 +135,7 @@
      &  output,physcon,ctrl,typeboun,fmpc,tieset,ntie,tietol,nslavs,
      &  t0g,t1g,nprop,ielprop,prop,mortar,nintpoint,ifacecount,
      &  islavsurf,pslavsurf,clearini,irstrt,vel,nef,velo,veloo,
-     &  ne2boun,heading,network,nfc,ndc,coeffc,ikdc,edc)
+     &  ne2boun,heading,network,nfc,ndc,coeffc,ikdc,edc,xmodal)
       endif
 !
       call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,

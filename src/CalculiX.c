@@ -158,7 +158,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Sat Nov  4 22:58:09 CET 2023\n");
+  printf("You are using an executable made on Sat Nov 11 14:39:54 CET 2023\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -1851,7 +1851,7 @@ int main(int argc,char *argv[])
 			      &mortar,&nintpoint,&ifacecount,islavsurf,
 			      pslavsurf,clearini,irstrt,vel,&nef,velo,veloo,
 			      ne2boun,&memmpc_,heading,&nheading_,&network,
-			      &nfc,&ndc,coeffc,ikdc,edc));
+			      &nfc,&ndc,coeffc,ikdc,edc,xmodal));
       }
     } 
 	  

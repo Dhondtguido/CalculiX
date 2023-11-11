@@ -524,6 +524,7 @@ c        enddo
 c          write(*,*) 'eigenvalues ',w(1),w(2),w(3)
         if((dabs(w(1)-w(2)).lt.1.d-10).and.
      &       (dabs(w(2)-w(3)).lt.1.d-10)) then
+c          write(*,*) 'w(1)=w(2)=w(3) ',w(1),w(2),w(3)
 !
 !         three equal eigenvalues
 !     
@@ -532,7 +533,7 @@ c          write(*,*) 'eigenvalues ',w(1),w(2),w(3)
             delndc(jj)=d4(jj)*dweln(1)
           enddo
         elseif(dabs(w(1)-w(2)).lt.1.d-10) then
-          write(*,*) 'entering the new branch'
+c          write(*,*) 'w(1)=w(2)!=w(3) ',w(1),w(2),w(3)
 !
 !         first and second eigenvalue are equal    
 !         (M3 o I + I o M3)'    
@@ -574,7 +575,7 @@ c          write(*,*) 'eigenvalues ',w(1),w(2),w(3)
      &           dweln(1)*(d4(jj)+ym34(jj)-c4(jj))
           enddo
          elseif(dabs(w(2)-w(3)).lt.1.d-10) then
-c          write(*,*) 'entering the new branch'
+c           write(*,*) 'w(1)!=w(2)=w(3) ',w(1),w(2),w(3)
 !
 !         second and third eigenvalue are equal    
 !         (M1 o I + I o M1)'    
@@ -616,7 +617,7 @@ c          write(*,*) 'entering the new branch'
      &           dweln(2)*(d4(jj)+ym14(jj)-c4(jj))
           enddo
         elseif(dabs(w(3)-w(1)).lt.1.d-10) then
-c          write(*,*) 'entering the new branch'
+c           write(*,*) 'w(2)!=w(1)=w(3) ',w(1),w(2),w(3)
 !
 !         third and first eigenvalue are equal    
 !         (M2 o I + I o M2)'    
@@ -658,6 +659,7 @@ c          write(*,*) 'entering the new branch'
      &           dweln(3)*(d4(jj)+ym24(jj)-c4(jj))
           enddo
        else
+c           write(*,*) 'w(1)!=w(2)!=w(3)!=w(1) ',w(1),w(2),w(3)
 !
 !         derivative of c*c w.r.t. c (symmetric 4th order tensor)     
 !     

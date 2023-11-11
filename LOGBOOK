@@ -5293,3 +5293,6 @@ Dec 2002        - started to work on single crystal plasticity
                 - worked on umat_abaqusnl_total.f
 
  3 Nov 2023     - worked on umat_abaqusnl_total.f and umat_abaqusnl.f
+
+ 11 Nov 2023    - corrected contact if adjacent elements have been removed.
+                - included xmodal(*) in the restart file
