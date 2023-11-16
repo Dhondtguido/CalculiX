@@ -157,6 +157,7 @@
       ibasemotion=0
       iamplitudedefault=0
       ier=0
+      nprint=0
 !     
       maxsectors=1
       if(mcs.ne.0) then
