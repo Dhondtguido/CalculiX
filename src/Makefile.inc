@@ -342,6 +342,7 @@ forcadd.f \
 forcesolve.f \
 frdfluidfem.f \
 frditeration.f \
+frdnet.f \
 free_convection.f \
 free_disc_pumping.f \
 frequencys.f \

@@ -1677,7 +1677,8 @@ void FORTRAN (flowoutput,(ITG *itg,ITG *ieg,ITG *ntg,ITG *nteq,
                           ITG *iendset,ITG *ialset,ITG *nset,ITG *mi,
                           ITG *iaxial,ITG *istep,ITG *iit,ITG *ipobody,
 			  ITG *ibody,double *xbodyact,ITG *nbody,ITG *ndata,
-			  double *sfr,double *sba,ITG *jumpup,ITG *jumpdo));
+			  double *sfr,double *sba,ITG *jumpup,ITG *jumpdo,
+			  double *hfr,double *hba));
 
 void FORTRAN(flowbc,(ITG *ntg,ITG *itg,double *cam,double *vold,
               double *v,
