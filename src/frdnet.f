@@ -172,7 +172,7 @@
       write(text(13:24),fmat) time
       write(text(59:63),'(i5)') kode
       write(20,'(a132)') text
-      text=' -4  CHANN       1    1'
+      text=' -4  H           1    1'
       write(20,'(a132)') text
       text=' -5  H           1    1    0    0'
       write(20,'(a132)') text
@@ -200,7 +200,7 @@
       write(text(13:24),fmat) time
       write(text(59:63),'(i5)') kode
       write(20,'(a132)') text
-      text=' -4  CHANN       1    1'
+      text=' -4  Fr          1    1'
       write(20,'(a132)') text
       text=' -5  Fr          1    1    0    0'
       write(20,'(a132)') text
@@ -228,7 +228,7 @@
       write(text(13:24),fmat) time
       write(text(59:63),'(i5)') kode
       write(20,'(a132)') text
-      text=' -4  CHANN       1    1'
+      text=' -4  TS          1    1'
       write(20,'(a132)') text
       text=' -5  TS          1    1    0    0'
       write(20,'(a132)') text

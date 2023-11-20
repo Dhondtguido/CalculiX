@@ -211,16 +211,8 @@ c     &         (lakon(nelem)(6:7).eq.'DR')) then
 !
 !       upstream and downstream depth
 !
-        if(lakon(nelem)(6:7).ne.'SG') then
-          hup=v(2,nup)
-        else
-          hup=v(2,nup)
-        endif
-        if(lakon(nelem)(6:7).ne.'WE') then
-          hdo=v(2,ndo)
-        else
-          hdo=v(2,ndo)
-        endif
+        hup=v(2,nup)
+        hdo=v(2,ndo)
 !
 !       calculate the critical depth
 !
@@ -469,49 +461,96 @@ c        call nident(ieg,nelem,nflow,nel)
           konnet(indexe+4)=nknet
 !
           nknet=nknet+1
-          do k=1,3
-            conet(k,nknet)=co(k,nup)+e3up(k)*hup
-     &           -e2(k)*(bup/2.d0+dtan(thetaup)*hup)
-          enddo
-          vnet(1,nknet)=hup
-          vnet(2,nknet)=uup/dsqrt(dg*hup*sqrts0)
-          vnet(3,nknet)=v(0,nup)
-          konnet(indexe+5)=nknet
+          if(lakon(nelem)(6:7).eq.'RE') then
+            do k=1,3
+              conet(k,nknet)=co(k,nup)+e3up(k)*hdo
+     &             -e2(k)*(bup/2.d0+dtan(thetaup)*hdo)
+            enddo
+            vnet(1,nknet)=hdo
+            vnet(2,nknet)=uup/dsqrt(dg*hdo*sqrts0)
+            vnet(3,nknet)=v(0,nup)
+            konnet(indexe+5)=nknet
+          else
+            do k=1,3
+              conet(k,nknet)=co(k,nup)+e3up(k)*hup
+     &             -e2(k)*(bup/2.d0+dtan(thetaup)*hup)
+            enddo
+            vnet(1,nknet)=hup
+            vnet(2,nknet)=uup/dsqrt(dg*hup*sqrts0)
+            vnet(3,nknet)=v(0,nup)
+            konnet(indexe+5)=nknet
+          endif
 !
           nknet=nknet+1
-          do k=1,3
-            conet(k,nknet)=co(k,ndo)+e3do(k)*hdo
-     &           -e2(k)*(bdo/2.d0+dtan(thetado)*hdo)
-          enddo
-          vnet(1,nknet)=hdo
-          vnet(2,nknet)=udo/dsqrt(dg*hdo*sqrts0)
-          vnet(3,nknet)=v(0,ndo)
-          konnet(indexe+6)=nknet
+          if((lakon(nelem)(6:7).eq.'SG').and.(hdo.gt.ha)) then
+            do k=1,3
+              conet(k,nknet)=co(k,ndo)+e3do(k)*hup/sqrts0
+     &             -e2(k)*(bdo/2.d0+dtan(thetado)*hup/sqrts0)
+            enddo
+            vnet(1,nknet)=hup
+            vnet(2,nknet)=udo/dsqrt(dg*hdo*sqrts0)
+            vnet(3,nknet)=v(0,ndo)
+            konnet(indexe+6)=nknet
+          else
+            do k=1,3
+              conet(k,nknet)=co(k,ndo)+e3do(k)*hdo
+     &             -e2(k)*(bdo/2.d0+dtan(thetado)*hdo)
+            enddo
+            vnet(1,nknet)=hdo
+            vnet(2,nknet)=udo/dsqrt(dg*hdo*sqrts0)
+            vnet(3,nknet)=v(0,ndo)
+            konnet(indexe+6)=nknet
+          endif
 !
           nknet=nknet+1
-          do k=1,3
-            conet(k,nknet)=co(k,ndo)+e3do(k)*hdo
-     &           +e2(k)*(bdo/2.d0+dtan(thetado)*hdo)
-          enddo
-          vnet(1,nknet)=hdo
-          vnet(2,nknet)=udo/dsqrt(dg*hdo*sqrts0)
-          vnet(3,nknet)=v(0,ndo)
-          konnet(indexe+7)=nknet
+          if((lakon(nelem)(6:7).eq.'SG').and.(hdo.gt.ha)) then
+            do k=1,3
+              conet(k,nknet)=co(k,ndo)+e3do(k)*hup/sqrts0
+     &             +e2(k)*(bdo/2.d0+dtan(thetado)*hup/sqrts0)
+            enddo
+            vnet(1,nknet)=hup
+            vnet(2,nknet)=udo/dsqrt(dg*hdo*sqrts0)
+            vnet(3,nknet)=v(0,ndo)
+            konnet(indexe+7)=nknet
+          else
+            do k=1,3
+              conet(k,nknet)=co(k,ndo)+e3do(k)*hdo
+     &             +e2(k)*(bdo/2.d0+dtan(thetado)*hdo)
+            enddo
+            vnet(1,nknet)=hdo
+            vnet(2,nknet)=udo/dsqrt(dg*hdo*sqrts0)
+            vnet(3,nknet)=v(0,ndo)
+            konnet(indexe+7)=nknet
+          endif
 !
           nknet=nknet+1
-          do k=1,3
-            conet(k,nknet)=co(k,nup)+e3up(k)*hup
-     &           +e2(k)*(bup/2.d0+dtan(thetaup)*hup)
-          enddo
-          vnet(1,nknet)=hup
-          vnet(2,nknet)=uup/dsqrt(dg*hup*sqrts0)
-          vnet(3,nknet)=v(0,nup)
-          konnet(indexe+8)=nknet
+          if(lakon(nelem)(6:7).eq.'RE') then
+            do k=1,3
+              conet(k,nknet)=co(k,nup)+e3up(k)*hdo
+     &             +e2(k)*(bup/2.d0+dtan(thetaup)*hdo)
+            enddo
+            vnet(1,nknet)=hdo
+            vnet(2,nknet)=uup/dsqrt(dg*hdo*sqrts0)
+            vnet(3,nknet)=v(0,nup)
+            konnet(indexe+8)=nknet
+          else
+            do k=1,3
+              conet(k,nknet)=co(k,nup)+e3up(k)*hup
+     &             +e2(k)*(bup/2.d0+dtan(thetaup)*hup)
+            enddo
+            vnet(1,nknet)=hup
+            vnet(2,nknet)=uup/dsqrt(dg*hup*sqrts0)
+            vnet(3,nknet)=v(0,nup)
+            konnet(indexe+8)=nknet
+          endif
         else
 !
 !         straight channel
 !
           index=(i-1)*ndata
+!
+!         frontwater curve
+!
           do m=1,jumpup(i)-1
             indexe=8*nenet
             nenet=nenet+1
@@ -609,7 +648,205 @@ c        call nident(ieg,nelem,nflow,nel)
             vnet(3,nknet)=v(0,nup)
             konnet(indexe+8)=nknet
           enddo
+!
+!         jump
+!
+          if((jumpup(i).gt.0).and.(jumpdo(i).lt.ndata+1)) then
+            indexe=8*nenet
+            nenet=nenet+1
+            do k=1,3
+              coup(k)=(dl-sfr((i-1)*ndata+jumpup(i)))/dl*co(k,nup)
+     &             +sfr((i-1)*ndata+jumpup(i))/dl*co(k,ndo)
+            enddo
+            h1=hfr((i-1)*ndata+jumpup(i))
+            area1=(bup+h1*dtan(thetaup))*h1
+            u1=xflow/(rho*area1)
+            fr1=u1/dsqrt(dg*h1*sqrts0)
+!     
+            do k=1,3
+              codo(k)=(dl-sba((i-1)*ndata+jumpdo(i)))/dl*co(k,nup)
+     &             +sba((i-1)*ndata+jumpdo(i))/dl*co(k,ndo)
+            enddo
+            h2=hba((i-1)*ndata+jumpdo(i))
+            area2=(bup+h2*dtan(thetaup))*h2
+            u2=xflow/(rho*area2)
+            fr2=u2/dsqrt(dg*h2*sqrts0)
+!     
+            nknet=nknet+1
+            do k=1,3
+              conet(k,nknet)=coup(k)-e2(k)*bup/2.d0
+            enddo
+            vnet(1,nknet)=h1
+            vnet(2,nknet)=fr1
+            vnet(3,nknet)=v(0,nup)
+            konnet(indexe+1)=nknet
+!     
+            nknet=nknet+1
+            do k=1,3
+              conet(k,nknet)=codo(k)-e2(k)*bdo/2.d0
+            enddo
+            vnet(1,nknet)=h2
+            vnet(2,nknet)=fr2
+            vnet(3,nknet)=v(0,ndo)
+            konnet(indexe+2)=nknet
+!     
+            nknet=nknet+1
+            do k=1,3
+              conet(k,nknet)=codo(k)+e2(k)*bdo/2.d0
+            enddo
+            vnet(1,nknet)=h2
+            vnet(2,nknet)=fr2
+            vnet(3,nknet)=v(0,ndo)
+            konnet(indexe+3)=nknet
+!     
+            nknet=nknet+1
+            do k=1,3
+              conet(k,nknet)=coup(k)+e2(k)*bup/2.d0
+            enddo
+            vnet(1,nknet)=h1
+            vnet(2,nknet)=fr1
+            vnet(3,nknet)=v(0,nup)
+            konnet(indexe+4)=nknet
+!     
+            nknet=nknet+1
+            do k=1,3
+              conet(k,nknet)=coup(k)+e3up(k)*h1
+     &             -e2(k)*(bup/2.d0+dtan(thetaup)*h1)
+            enddo
+            vnet(1,nknet)=h1
+            vnet(2,nknet)=fr1
+            vnet(3,nknet)=v(0,nup)
+            konnet(indexe+5)=nknet
+!     
+            nknet=nknet+1
+            do k=1,3
+              conet(k,nknet)=codo(k)+e3do(k)*h2
+     &             -e2(k)*(bdo/2.d0+dtan(thetado)*h2)
+            enddo
+            vnet(1,nknet)=h2
+            vnet(2,nknet)=fr2
+            vnet(3,nknet)=v(0,ndo)
+            konnet(indexe+6)=nknet
+!     
+            nknet=nknet+1
+            do k=1,3
+              conet(k,nknet)=codo(k)+e3do(k)*h2
+     &             +e2(k)*(bdo/2.d0+dtan(thetado)*h2)
+            enddo
+            vnet(1,nknet)=h2
+            vnet(2,nknet)=fr2
+            vnet(3,nknet)=v(0,ndo)
+            konnet(indexe+7)=nknet
+!     
+            nknet=nknet+1
+            do k=1,3
+              conet(k,nknet)=coup(k)+e3up(k)*h1
+     &             +e2(k)*(bup/2.d0+dtan(thetaup)*h1)
+            enddo
+            vnet(1,nknet)=h1
+            vnet(2,nknet)=fr1
+            vnet(3,nknet)=v(0,nup)
+            konnet(indexe+8)=nknet
+          endif
+!
+!         backwater curve
+!
           do m=jumpdo(i),ndata-1
+            indexe=8*nenet
+            nenet=nenet+1
+            do k=1,3
+              coup(k)=(dl-sba(index+m))/dl*co(k,nup)
+     &             +sba(index+m)/dl*co(k,ndo)
+            enddo
+            h1=hba(index+m)
+            area1=(bup+h1*dtan(thetaup))*h1
+            u1=xflow/(rho*area1)
+            fr1=u1/dsqrt(dg*h1*sqrts0)
+!     
+            do k=1,3
+              codo(k)=(dl-sba(index+m+1))/dl*co(k,nup)
+     &             +sba(index+m+1)/dl*co(k,ndo)
+            enddo
+            h2=hba(index+m+1)
+            area2=(bup+h2*dtan(thetaup))*h2
+            u2=xflow/(rho*area2)
+            fr2=u2/dsqrt(dg*h2*sqrts0)
+!     
+            nknet=nknet+1
+            do k=1,3
+              conet(k,nknet)=coup(k)-e2(k)*bup/2.d0
+            enddo
+            vnet(1,nknet)=h1
+            vnet(2,nknet)=fr1
+            vnet(3,nknet)=v(0,nup)
+            konnet(indexe+1)=nknet
+!     
+            nknet=nknet+1
+            do k=1,3
+              conet(k,nknet)=codo(k)-e2(k)*bdo/2.d0
+            enddo
+            vnet(1,nknet)=h2
+            vnet(2,nknet)=fr2
+            vnet(3,nknet)=v(0,ndo)
+            konnet(indexe+2)=nknet
+!     
+            nknet=nknet+1
+            do k=1,3
+              conet(k,nknet)=codo(k)+e2(k)*bdo/2.d0
+            enddo
+            vnet(1,nknet)=h2
+            vnet(2,nknet)=fr2
+            vnet(3,nknet)=v(0,ndo)
+            konnet(indexe+3)=nknet
+!     
+            nknet=nknet+1
+            do k=1,3
+              conet(k,nknet)=coup(k)+e2(k)*bup/2.d0
+            enddo
+            vnet(1,nknet)=h1
+            vnet(2,nknet)=fr1
+            vnet(3,nknet)=v(0,nup)
+            konnet(indexe+4)=nknet
+!     
+            nknet=nknet+1
+            do k=1,3
+              conet(k,nknet)=coup(k)+e3up(k)*h1
+     &             -e2(k)*(bup/2.d0+dtan(thetaup)*h1)
+            enddo
+            vnet(1,nknet)=h1
+            vnet(2,nknet)=fr1
+            vnet(3,nknet)=v(0,nup)
+            konnet(indexe+5)=nknet
+!     
+            nknet=nknet+1
+            do k=1,3
+              conet(k,nknet)=codo(k)+e3do(k)*h2
+     &             -e2(k)*(bdo/2.d0+dtan(thetado)*h2)
+            enddo
+            vnet(1,nknet)=h2
+            vnet(2,nknet)=fr2
+            vnet(3,nknet)=v(0,ndo)
+            konnet(indexe+6)=nknet
+!     
+            nknet=nknet+1
+            do k=1,3
+              conet(k,nknet)=codo(k)+e3do(k)*h2
+     &             +e2(k)*(bdo/2.d0+dtan(thetado)*h2)
+            enddo
+            vnet(1,nknet)=h2
+            vnet(2,nknet)=fr2
+            vnet(3,nknet)=v(0,ndo)
+            konnet(indexe+7)=nknet
+!     
+            nknet=nknet+1
+            do k=1,3
+              conet(k,nknet)=coup(k)+e3up(k)*h1
+     &             +e2(k)*(bup/2.d0+dtan(thetaup)*h1)
+            enddo
+            vnet(1,nknet)=h1
+            vnet(2,nknet)=fr1
+            vnet(3,nknet)=v(0,nup)
+            konnet(indexe+8)=nknet
           enddo
         endif
       enddo
