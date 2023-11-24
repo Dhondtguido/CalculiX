@@ -211,7 +211,7 @@
 !     
       write(20,'(a3)') m3
 !     
-!     storing the fluid depth
+!     storing the total head
 !     
       do i=37,132
         text(i:i)=' '
@@ -228,9 +228,9 @@
       write(text(13:24),fmat) time
       write(text(59:63),'(i5)') kode
       write(20,'(a132)') text
-      text=' -4  TS          1    1'
+      text=' -4  THEAD       1    1'
       write(20,'(a132)') text
-      text=' -5  TS          1    1    0    0'
+      text=' -5  THEAD       1    1    0    0'
       write(20,'(a132)') text
 !     
       do i=1,nknet

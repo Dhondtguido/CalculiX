@@ -233,6 +233,7 @@ dfluxs.f \
 dgesv.f \
 dgmres1.f \
 dgmres.f \
+discontinuousslope.f \
 disp_sen_dv.f \
 distattach_1d.f \
 distattach_2d.f \

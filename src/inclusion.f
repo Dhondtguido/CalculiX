@@ -137,9 +137,6 @@
         write(*,*) '*WARNING!!: maximum iterations for massless'
         write(*,*) ' contact solution reached:' ,kitermax
         write(*,*) ' with error norm:', err
-        ! call exit(201) ! TODO CMT should it be error or not? 
-c      else
-c        write(*,*) 'AL converged! NactiveDOF,it,err:',nacti,icont,err
       endif
 !
 !     Expansion of pk to global cys: alglob = Wb*al

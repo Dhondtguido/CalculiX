@@ -7790,7 +7790,7 @@ line beneath the *FLUID SECTION,TYPE=CHANNEL CONTRACTION card:
 \item width of the channel at node 3 (third node in the topology of the element)
 \item trapezoidal angle of the channel at node 3
 \item not used
-\item the length of the contraction. This is used to calculated the
+\item the length of the contraction. This is used to calculate the
   contraction angle from $\tan \alpha=(b_2-b_1)/L$ (if $L \le 0$ the length is
   calculated from the coordinates of the end nodes belonging to the element).
 \item the slope $S_0 = \sin \phi, -1<S_0<1$ (for this element the slope must be given
@@ -7851,8 +7851,8 @@ line beneath the *FLUID SECTION,TYPE=CHANNEL ENLARGEMENT card:
 \item width of the channel at node 3 (third node in the topology of the element)
 \item trapezoidal angle of the channel at node 3
 \item not used
-\item the length of the contraction. This is used to calculated the
-  contraction angle from $\tan \alpha=(b_2-b_1)/L$ (if $L \le 0$ the length is
+\item the length of the enlargement. This is used to calculate the
+  enlargement angle from $\tan \alpha=(b_2-b_1)/L$ (if $L \le 0$ the length is
   calculated from the coordinates of the end nodes belonging to the element).
 \item the slope $S_0 = \sin \phi, -1<S_0<1$ (for this element the slope must be given
   explicitly and is not calculated from the
@@ -7884,6 +7884,41 @@ line beneath the *FLUID SECTION,TYPE=CHANNEL STEP card:
 
 \bigskip
 Example files: channel10, channel12.
+
+\subsubsection{Discontinuous slope\label{discontinuousslope}}
+
+Due to a change in slope the fluid depth changes. For small slope changes this
+effect is usually neglegible. For variations in $\varphi$ such that
+$\cos(\varphi)$ changes significantly, the fluid depth will change according
+to  
+
+\begin{equation}
+  Q=b h \sqrt{2 g (E-h \cos \varphi)},
+\end{equation}
+
+assuming the mass flow and specific energy remain constant (no loss). For
+instance, a significant decrease of slope will lead to a fluid depth increase
+if the flow is supercritical and a decrease if it is subcritical.
+
+The following constants have to be specified on the
+line beneath the *FLUID SECTION,TYPE=DISCONTINUOUS SLOPE card:
+
+\begin{itemize}
+\item width of the channel.
+\item trapezoidal angle of the channel.
+\item not used.
+\item the slope $S_0 = \sin \phi, -1<S_0<1$ at node 1 (first node in the
+  topology of the element; for this element the slope must be given
+  explicitly and is not calculated from the
+  coordinates of the end nodes belonging to the element).
+\item the slope $S_0 = \sin \phi, -1<S_0<1$ at node 2 (thrid node in the
+  topology of the element; for this element the slope must be given
+  explicitly and is not calculated from the
+  coordinates of the end nodes belonging to the element).
+\end{itemize}
+
+\bigskip
+Example files: channel7.
 
 \subsubsection{Channel joint}
 
@@ -12080,7 +12115,57 @@ after returning from the Abaqus material user subroutine:
 
 Now, $\partial \boldsymbol{S}/\partial \boldsymbol{E}^{\mathcal{M}}$ is needed
 in CalculiX (i.e. total Lagrangian approach), however, the Abaqus routine returns
-$\partial \hat{\boldsymbol{\sigma}} /\partial \hat{\boldsymbol{e}}_{\ln}^{\mathcal{M}}$. Performing an
+$\partial \hat{\boldsymbol{\sigma}} /\partial
+\hat{\boldsymbol{e}}_{\ln}^{\mathcal{M}}$. Now, taking into account the
+following considerations:
+
+\begin{itemize}
+\item 
+  $  \boldsymbol{U} = \boldsymbol{U} ^ {\mathcal{M}} (1+\alpha \Delta T)
+  $ from which $\boldsymbol{U}^{-1} = {\boldsymbol{U}^{ \mathcal{M}}}^{-1}
+  (1+\alpha \Delta T)^{-1}$.
+\item ${\boldsymbol{U}^{ \mathcal{M}}}^{-1} = 1/{\sqrt{\boldsymbol{C}^{
+      \mathcal{M}}} }$.
+\item $ \hat{\boldsymbol{e}}_{\ln}^{ \mathcal{M}} = \ln \sqrt{\boldsymbol{C}^{
+    \mathcal{M}}} $
+\item $\frac{\partial I_3}{\partial \boldsymbol{C} } = I_3
+  \boldsymbol{C}^{-1}$ and $I_3=J^2$, from which
+
+  \begin{equation}
+    \frac{\partial J^{
+        \mathcal{M}}}{\partial \boldsymbol{C}^{ \mathcal{M} }} = \frac{J^{
+        \mathcal{M}}}{2}  {\boldsymbol{C}^{ \mathcal{M} }}^{-1}
+  \end{equation}
+\item $J=J^{\mathcal{M}} (1+\alpha \Delta T)^3$.
+\end{itemize}
+
+and writing the expression for the Piola-Kirchhoff stress of the second kind in a rectangular
+coordinate system:
+
+\begin{equation}
+  \boldsymbol{S}_{KL}=J \boldsymbol{U}^{-1}_{KM} \hat{\boldsymbol{\sigma
+  }}_{MN}  \boldsymbol{U}^{-1}_{NL}
+\end{equation}
+
+straightforward differentation yields:
+
+\begin{align}
+  a &= b \nonumber \\
+  &= c
+\end{align}
+
+
+
+
+
+
+
+
+
+
+
+
+Performing an
 exact transformation is very tedious and nearly impossible. It would require
 an enormous computational effort and frequently results in an asymmetric
 $\partial \boldsymbol{S}/\partial \boldsymbol{E}^{\mathcal{M}}$ - matrix even

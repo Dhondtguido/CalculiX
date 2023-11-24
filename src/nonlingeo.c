@@ -174,7 +174,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *coefmpcf=NULL,*xbounf=NULL,*xloadf=NULL,*xbounoldf=NULL,
     *xbounactf=NULL,*xloadoldf=NULL,*xloadactf=NULL,*auw=NULL,*volddof=NULL,
     *qb=NULL,*aloc=NULL,dtmin,*fric=NULL,*aubi=NULL,*auib=NULL,
-    *fullgmatrix=NULL,*fullr=NULL;
+    *fullgmatrix=NULL,*fullr=NULL,*alglob=NULL;
 	 
   FILE *f1;
 
@@ -1242,6 +1242,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       // Storing contact force vector initial solution
 
       NNEW(aloc,double,3**nslavs);
+      NNEW(alglob,double,neqtot);
 
       /* no nlgeom and no nonlinear material for massless explicit dynamics */
       
@@ -2680,7 +2681,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		 ntie,nactdof,mi,vold,volddof,veold,nk,fext,isolver,
 		 &masslesslinear,co,springarea,&neqtot,qb,b,&dtime,aloc,fric,
 		 iexpl,nener,ener,ne,&jqbi,&aubi,&irowbi,&jqib,&auib,&irowib,
-		 &iclean,&iinc,fullgmatrix,fullr);
+		 &iclean,&iinc,fullgmatrix,fullr,alglob);
         if(masslesslinear==0){SFREE(ad);SFREE(au);} 
       }
 
@@ -4259,7 +4260,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     SFREE(springarea);SFREE(xmastnor);
 
     if(*mortar==-1){
-      SFREE(kslav);SFREE(lslav);SFREE(ktot);SFREE(ltot);SFREE(aloc);
+      SFREE(kslav);SFREE(lslav);SFREE(ktot);SFREE(ltot);
+      SFREE(aloc);SFREE(alglob);
       SFREE(adc);SFREE(auc);SFREE(areaslav);SFREE(fric);
       if(masslesslinear>0){
 	SFREE(ad);SFREE(au);SFREE(jqbi);SFREE(aubi);SFREE(irowbi);
@@ -4271,7 +4273,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		 ntie,nactdof,mi,vold,volddof,veold,nk,fext,isolver,
 		 &masslesslinear,co,springarea,&neqtot,qb,b,&dtime,aloc,fric,
 		 iexpl,nener,ener,ne,&jqbi,&aubi,&irowbi,&jqib,&auib,&irowib,
-		 &iclean,&iinc,fullgmatrix,fullr);
+		 &iclean,&iinc,fullgmatrix,fullr,alglob);
       }
       if(masslesslinear==2){SFREE(fextload);}
 
