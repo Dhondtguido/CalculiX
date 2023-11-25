@@ -5296,3 +5296,10 @@ Dec 2002        - started to work on single crystal plasticity
 
  11 Nov 2023    - corrected contact if adjacent elements have been removed.
                 - included xmodal(*) in the restart file
+
+ 24 Nov 2023    - worked on the definition of the active set in massless
+                  explicit dynamics
+		- changed the documentation on Abaqus umat-routines.
+
+ 25 Nov 2023    - coded a discontinuous slope channel element
+                - finished the documentation on Abaqus umat-routines.

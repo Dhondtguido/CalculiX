@@ -4406,7 +4406,7 @@ for the global z-axis). In addition, the matrix should
  similar keyword cards.
 
 A substructure is basically a linear construct. Right now, it can be used in
-a *STATIC, *DYNAMIC or *FREQUENCY procedure.
+a *STATIC, *DYNAMIC or *FREQUENCY procedure, including cyclic symmetry conditions.
 
 \subsection{\label{beamsectiontypes}Beam Section Types}
 
@@ -12150,176 +12150,55 @@ coordinate system:
 straightforward differentation yields:
 
 \begin{align}
-  a &= b \nonumber \\
-  &= c
+  \left ( \frac{\partial \boldsymbol{S}_{KL}}{\partial
+    \boldsymbol{E}_{PQ}^{\mathcal{M}}} \right ) &= J^{\mathcal{M}}
+        \left( {\boldsymbol{C}^{\mathcal{M}}}^{-1}_{PQ} \right)
+        \left( {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{KM} \right)
+        \hat{\boldsymbol{\sigma}}_{MN}
+        \left( {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{NL} \right)
+        (1+\alpha \Delta T) \nonumber
+        \\
+  &+ 2 J^{\mathcal{M}} \left( \frac{\partial{\boldsymbol{U}^{\mathcal{M}}}^{-1}_{KM}
+        }{\partial \boldsymbol{C}_{PQ}^{\mathcal{M}}} \right)
+        \hat{\boldsymbol{\sigma}}_{MN}
+        \left( {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{NL} \right)
+        (1+\alpha \Delta T) \nonumber
+        \\
+        &+2 J^{\mathcal{M}}\left( {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{KM} \right)
+        \left( \frac{\partial \hat{\sigma}_{MN}} {\partial
+          \hat{\boldsymbol{e}}_{\ln,ST} ^{\mathcal{M}}}  \right)
+        \left(  \frac{\partial
+    \hat{\boldsymbol{e}_{\ln,ST} ^{\mathcal{M}} }}{\partial
+    \boldsymbol{C}_{PQ} ^{\mathcal{M}}} \right)
+        \left( {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{NL} \right)
+        (1+\alpha \Delta T) \nonumber
+        \\
+        &+2 J^{\mathcal{M}}\left( {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{KM} \right)
+        \hat{\boldsymbol{\sigma}}_{MN}
+        \left( \frac{\partial{\boldsymbol{U}^{\mathcal{M}}}^{-1}_{NL}
+        }{\partial \boldsymbol{C}_{PQ}^{\mathcal{M}}} \right)
+        (1+\alpha \Delta T)
 \end{align}
 
+The first term in brackets on the second line, the third term in brackets on the third
+line and the second term in brackets on the fourth line are special cases of
+the derivative of a function of $\boldsymbol{C}$ w.r.t $\boldsymbol{C}
+$. Expressions for such a differentation based on the eigenvalues and
+structural tensors of $\boldsymbol{C}$ were derived by Itskov \cite{Itskov}
+and are summarized in the Appendix of \cite{DhondtHackenberg}. The second term
+in brackets on the third line is the tangent returned by the Abaqus UMAT routine. 
 
-
-
-
-
-
-
-
-
-
-
-Performing an
-exact transformation is very tedious and nearly impossible. It would require
-an enormous computational effort and frequently results in an asymmetric
-$\partial \boldsymbol{S}/\partial \boldsymbol{E}^{\mathcal{M}}$ - matrix even
-if  $\partial \hat{\boldsymbol{\sigma}} /\partial \hat{\boldsymbol{e}}_{\ln}^{\mathcal{M}}$ is
-symmetric. To avoid longer computational times due to the use of an asymmetric
-linear equation solver a symmetrization is usually performed leading to an
-approximation anyway. Therefore, a simplified approach is taken which reduces
-the computational effort to a minimum while leading to acceptable convergence
-rates despite the approximations involved.
-
-From the relationship between $\boldsymbol{S}$ and $\hat{\boldsymbol{\sigma
-}}$ one obtains (in Carthesian coordinates)
-
-\begin{equation}
-  \left ( \frac{\partial \boldsymbol{S}_{IJ}}{\partial
-    \boldsymbol{E}_{KL}^{\mathcal{M}}} \right ) \approx J
-  \boldsymbol{U}^{-1}_{IM}  \left( \frac{\partial \hat{\sigma}_{MN}} {\partial
-    \boldsymbol{E}_{KL} ^{\mathcal{M}}} \right)
-  \boldsymbol{U}^{-1}_{NJ}
-\end{equation}
-
-(recall that $\boldsymbol{U}$ is symmetric). In the above equation the
-dependence of $\boldsymbol{U}^{-1}$ on $\boldsymbol{E}  ^{\mathcal{M}}$ has been
-neglected (first approximation). One can further write:
-
-\begin{equation}
-   \left( \frac{\partial \boldsymbol{S}_{IJ}}{\partial
-     \boldsymbol{E}_{KL}^{\mathcal{M}}} \right )
-   \approx J
-  \boldsymbol{U}^{-1}_{IM}  \left( \frac{\partial \hat{\sigma}_{MN}} {\partial
-    \hat{\boldsymbol{e}}_{\ln,PQ} ^{\mathcal{M}}}  \right) \left(  \frac{\partial
-    \hat{\boldsymbol{e}_{\ln,PQ} ^{\mathcal{M}} }}{\partial
-    \boldsymbol{E}_{KL} ^{\mathcal{M}}} \right)
-   \boldsymbol{U}^{-1}_{NJ}
-\end{equation}
-
-or, approximating the corotational mechanical logarithmic strain $\hat{\boldsymbol{e}}_{\ln} ^{\mathcal{M}}$ by the
-corotational mechanical
-Eulerian strain $\hat{\boldsymbol{e}} ^{\mathcal{M}}$ (second approximation):
-
-\begin{equation}
-   \left(\frac{\partial \boldsymbol{S}_{IJ}}{\partial
-     \boldsymbol{E}_{KL}^{\mathcal{M}}} \right)
-   \approx J
-  \boldsymbol{U}^{-1}_ {IM}  \left(  \frac{\partial \hat{\sigma}_{MN}} {\partial
-    \hat{\boldsymbol{e}}_{\ln,PQ} ^{\mathcal{M}}} \right) \left(  \frac{\partial
-    \hat{\boldsymbol{e}}_{PQ} ^{\mathcal{M}} }{\partial
-    \boldsymbol{E}_{KL} ^{\mathcal{M}}} \right)
-   \boldsymbol{U}^{-1}_{NJ}.
-\end{equation}
-
-The Eulerian strain satisfies:
-
-\begin{equation}
-  2\boldsymbol{e}= \boldsymbol{F}^{-T} \cdot 2\boldsymbol{E} \cdot
-  \boldsymbol{F}^{-1}.
-\end{equation}
-
-which amounts to:
-
-\begin{equation}
-  \left( \boldsymbol{I} - \frac{{\boldsymbol{F}^{\mathcal{M}}}^{-T} \cdot
-    {\boldsymbol{F}^{\mathcal{M}}}^{-1} }{(1+\alpha \Delta T)^2 } \right ) =
-  \boldsymbol{F}^{-T} \cdot \left(    {\boldsymbol{F}^{\mathcal{M}}}^{T} \cdot
-  \boldsymbol{F}^{\mathcal{M}} (1+\alpha \Delta T)^2 -\boldsymbol{I} \right)
-  \cdot \boldsymbol{F}^{-1}.  
-\end{equation} 
-
-This can be written as:
-
-
-\begin{eqnarray}
-   \boldsymbol{I} &-& {\boldsymbol{F}^{\mathcal{M}}}^{-T} \cdot
-    {\boldsymbol{F}^{\mathcal{M}}}^{-1} + 2\xi \boldsymbol{I}    \nonumber \\
-   &=& \boldsymbol{F}^{-T}\cdot \left({\boldsymbol{F}^{\mathcal{M}}}^{T} \cdot
-  \boldsymbol{F}^{\mathcal{M}} - \boldsymbol{I} + 2\xi {\boldsymbol{F}^{\mathcal{M}}}^{T} \cdot
-  \boldsymbol{F}^{\mathcal{M}} \right) \cdot \boldsymbol{F}^{-1} (1+\alpha \Delta T)^2,
-\end{eqnarray}
-
-where
-
-\begin{equation}
-  2\xi :=2 \alpha \Delta T + \alpha^2 (\Delta T)^2.
-  \end{equation} 
-
-This leads to:
-
-\begin{equation}
-  \boldsymbol{e} ^{\mathcal{M}} + \xi  \boldsymbol{I} =
-             {\boldsymbol{F}^{\mathcal{M}}}^{-T} \cdot ( \boldsymbol{E}
-             ^{\mathcal{M}} + \xi   \boldsymbol{C} ^{\mathcal{M}} ) \cdot
-             {\boldsymbol{F}^{\mathcal{M}}}^{-1},
-\end{equation} 
-
-or
-
-\begin{equation}
-  \boldsymbol{e} ^{\mathcal{M}}  =
-             {\boldsymbol{F}^{\mathcal{M}}}^{-T} \cdot  \boldsymbol{E}
-             ^{\mathcal{M}}  \cdot{\boldsymbol{F}^{\mathcal{M}}}^{-1}.
-\end{equation} 
-
-Consequently, the
-corotational mechanical Eulerian strain amounts to:
-
-\begin{equation}
-  \hat{\boldsymbol{e}}^{\mathcal{M}}_{PQ} = \boldsymbol{R}^T_{PR}  \boldsymbol{e}^{\mathcal{M}}_{RS} 
-  \boldsymbol{R}_{SQ} = {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{PR}  \boldsymbol{E}^{\mathcal{M}}_{RS} 
-  {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{SQ},
-\end{equation} 
-
-leading to (again using the first approximation for the inverse mechanical
-right-stretch tensor)
-
-\begin{equation}
-  \label{dedepqkl}
-   \left( \frac{\partial \hat{\boldsymbol{e}}^{\mathcal{M}}_{PQ} }{\partial
-     \boldsymbol{E}^{\mathcal{M}}_{KL} }\right)  \approx
-  {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{PR}  (\mathbb{I}_I)_{RSKL}  {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{SQ},
-\end{equation} 
-
-where
-
-\begin{equation}
-  \label{iirskl}
-  (\mathbb{I}_I)_{RSKL} := (\delta_{RK} \delta_{SL}+\delta_{RL}\delta_{SK})/2.
-\end{equation}
-
-Due to the symmetry of the corotational mechanical Eulerian strain tensor and
-the symmetry of the inverse right-stretch tensor, one can write after
-substitution of Equation (\ref{iirskl}) into Equation (\ref{dedepqkl}):
-
-\begin{equation}
-\left( \frac{\partial \hat{\sigma}_{MN}} {\partial
-  \hat{\boldsymbol{e}}_{\ln,PQ} ^{\mathcal{M}}} \right) {\boldsymbol{U}^{-\mathcal{M}}}^{-1}_{PR}  (\mathbb{I}_I)_{RSKL}  {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{SQ}=\left(\frac{\partial \hat{\sigma}_{MN}} {\partial
-  \hat{\boldsymbol{e}}_{\ln,PQ} ^{\mathcal{M}}} \right) {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{PK}  {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{QL}.
-\end{equation}
-
-One finally obtains:
-
-\begin{equation}
-\left( \frac{\partial \boldsymbol{S}_{IJ}}{\partial
-  \boldsymbol{E}_{KL}^{\mathcal{M}}} \right)
-\approx J \left( \frac{\partial \hat{\sigma}_{MN}} {\partial
-  \hat{\boldsymbol{e}}_{\ln,PQ} ^{\mathcal{M}}} \right) \boldsymbol{U}^{-1}_{IM} \boldsymbol{U}^{-1}_{JN} {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{KP} {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{LQ}.
-\end{equation}
-
-This is the expression which is used for the material tangent. The
-approximations do not lead to a false result, they just slow down the
-convergence. Since the wish to avoid asymmetric matrices precludes quadratic
-convergence anyway the above approximations seem tolerable. This has been
-confirmed in practical numerical simulations of e.g. the deformation
-plasticity model and the Johnson-Cook model in implicit dynamic calculations
-(in explicit dynamic calculations the material tangent is not needed).
+Notice that the above equation is symmetric in (KL) and (PQ), i.e. switching K
+and L and/or P and Q. In particular,
+switching K and L in the second term leads to the fourth term. This symmetry
+is to be expected, since $\boldsymbol{S}$ and $\boldsymbol{E} ^{\mathcal{M}}$
+are symmetric tensors. However, it is not clear whether the symmetry obtained
+by replacing KL by PQ is preserved. Therefore, in CalculiX a symmetrization of
+the resulting tangent matrix is performed, leading to 21 constants instead of
+36 constants. The above procedure was implemented in umat\_abaqusnl.f and
+umat\_abaqusnl\_total.f. It is used for those material models, which were only
+formulated for small strains, such as isotropic plasticity for an elastically
+orthotropic material, Johnson\_Cook plasticity and Mohr\_Coulomb plasticity.
 
 \subsection{Types of analysis}
 
@@ -38963,6 +38842,11 @@ flow over a two-dimensional compression corner. \textit{NASA TR R-385 Report}
 \bibitem{Dhondt} Dhondt, G., \textit{The Finite Element Method for
   Three-Dimensional Thermomechanical Applications}. John Wiley \& Sons, (2004).
 
+\bibitem{DhondtHackenberg} Dhondt, G., and Hackenberg, H.-P., Use of a
+  rotation-invariant linear strain measure for linear elastic crack
+  propagation calculations. \textit{
+    Engng. Frac. Mech. } \textbf{247} , 107634 (2021).
+
 \bibitem{Egli} Egli, A., The Leakage of Steam Through Labyrinth
   Seals. \textit{Trans. ASME}. \textbf{57} , 115-122 (1935).
 
@@ -39013,6 +38897,9 @@ Comparative Study of Material Models. \textit{J. Elasticity}
 
 \bibitem{Incropera} Incropera, F.P. and DeWitt, D.P., \textit{Fundamentals of
   Heat and Mass Transfer}. John Wiley \& Sons, New York (2002). 
+
+\bibitem{Itskov} Itskov, M., A generalized orthotropic hyperelastic material
+  model with application to incompressible shells. \textit{Int. J. Num. Meth. Engng.} \textbf{50} , 1777-1799 (2001).
 
 \bibitem{Johnson} Johnson, G.R. and Cook, W.H.,
   A constitutive model and data for metals subjected to large strains, high

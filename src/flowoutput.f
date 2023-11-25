@@ -51,7 +51,8 @@
      &     dg,dl,cd,bup,bdo,b,b1,b2,areaup,areado,uup,udo,sfr(*),
      &     sba(*),e1(3),e2(3),e3(3),e3up(3),e3do(3),dd,al,aa,bb,
      &     cc,disc,d13,coup(3),codo(3),h1,h2,area1,area2,u1,u2,fr1,
-     &     fr2,hfr(*),hba(*)
+     &     fr2,hfr(*),hba(*),z1,z2,th1,th2,sqrts0up,sqrts0do,sqrts01,
+     &     sqrts02,s01,s02,s0up,s0do
 !
       integer,dimension(:),allocatable::konnet
       real*8,dimension(:,:),allocatable::conet,vnet
@@ -173,10 +174,11 @@
           bdo=b
           thetaup=theta
           thetado=theta
+          s0up=s0
+          s0do=s0
         elseif((lakon(nelem)(6:7).eq.'CO').or.
      &         (lakon(nelem)(6:7).eq.'EL').or.
      &         (lakon(nelem)(6:7).eq.'ST')) then
-c     &         (lakon(nelem)(6:7).eq.'DR')) then
           b1=prop(index+1)
           theta1=prop(index+2)
           b2=prop(index+3)
@@ -200,13 +202,55 @@ c     &         (lakon(nelem)(6:7).eq.'DR')) then
      &           (co(3,nup)-co(3,ndo))**2)
           endif
           s0=prop(index+7)
+          s0up=s0
+          s0do=s0
+        elseif(lakon(nelem)(6:7).eq.'DS') then
+          b=prop(index+1)
+          theta=prop(index+2)
+          dl=prop(index+3)
+!          
+          s01=prop(index+4)
+          sqrts01=1.d0-s01*s01
+          if(sqrts01.lt.0.d0) then
+            sqrts01=0.d0
+          else
+            sqrts01=dsqrt(sqrts01)
+          endif
+!          
+          s02=prop(index+5)
+          sqrts02=1.d0-s02*s02
+          if(sqrts02.lt.0.d0) then
+            sqrts02=0.d0
+          else
+            sqrts02=dsqrt(sqrts02)
+          endif
+!          
+          if(inv.eq.1) then
+            s0up=s01
+            s0do=s02
+            sqrts0up=sqrts01
+            sqrts0do=sqrts02
+          else
+            s0up=s02
+            s0do=s01
+            sqrts0up=sqrts02
+            sqrts0do=sqrts01
+          endif
+          bup=b
+          bdo=b
+          thetaup=theta
+          thetado=theta
         endif
 !        
-        sqrts0=1.d0-s0*s0
-        if(sqrts0.lt.0.d0) then
-          sqrts0=0.d0
-        else
-          sqrts0=dsqrt(sqrts0)
+        if(lakon(nelem)(6:7).ne.'DS') then
+          sqrts0=1.d0-s0*s0
+          if(sqrts0.lt.0.d0) then
+            sqrts0=0.d0
+          else
+            sqrts0=dsqrt(sqrts0)
+          endif
+          sqrts0up=sqrts0
+          sqrts0do=sqrts0
         endif
 !
 !       upstream and downstream depth
@@ -220,9 +264,9 @@ c     &         (lakon(nelem)(6:7).eq.'DR')) then
      &     (lakon(nelem)(6:7).eq.'WE')) then
           hkup=0.d0
         else
-          call hcrit(xflow,rho,bup,thetaup,dg,sqrts0,hkup)
+          call hcrit(xflow,rho,bup,thetaup,dg,sqrts0up,hkup)
         endif
-        call hcrit(xflow,rho,bdo,thetado,dg,sqrts0,hkdo)
+        call hcrit(xflow,rho,bdo,thetado,dg,sqrts0do,hkdo)
 !     
 !       calculate the normal depth
 !     
@@ -270,12 +314,12 @@ c     &         (lakon(nelem)(6:7).eq.'DR')) then
      &     (lakon(nelem)(6:7).eq.'WE')) then
           seup=hup
         else
-          seup=hup*sqrts0+uup**2/(2.d0*dg)
+          seup=hup*sqrts0up+uup**2/(2.d0*dg)
         endif
         if(lakon(nelem)(6:7).eq.'RE') then
           sedo=hdo
         else
-          sedo=hdo*sqrts0+udo**2/(2.d0*dg)
+          sedo=hdo*sqrts0do+udo**2/(2.d0*dg)
         endif
 !     
 !       calculate the total head
@@ -297,9 +341,7 @@ c     &         (lakon(nelem)(6:7).eq.'DR')) then
           write(1,57)'             dvi = ',dvi,', Re = '
      &         ,reynoldsup
         endif
-        write(1,57)'             S0 = ',s0,', Length = '
-     &       ,dl
-c        call nident(ieg,nelem,nflow,nel)
+        write(1,57)'             Length = ',dl
         if((jumpup(i).gt.0).and.(jumpdo(i).lt.ndata+1)) then
           write(1,57)'             jump between ',
      &         sfr((i-1)*ndata+jumpup(i)),
@@ -312,8 +354,9 @@ c        call nident(ieg,nelem,nflow,nel)
      &       ', fluid depth = ',hup
         write(1,54)'                     b = ',bup,
      &       ', theta = ',thetaup
+        write(1,54)'                     S0 = ',S0up
         write(1,54)'                     velocity = ',uup,
-     &       ', Froude = ',uup/dsqrt(dg*hup*sqrts0)
+     &       ', Froude = ',uup/dsqrt(dg*hup*sqrts0up)
         write(1,54)'                     critical depth = ',hkup,
      &       ', normal depth = ',heup
         if(xks.gt.0) then
@@ -329,8 +372,9 @@ c        call nident(ieg,nelem,nflow,nel)
      &       ', fluid depth  = ',hdo
         write(1,54)'                     b = ',bdo,
      &       ', theta = ',thetado
+        write(1,54)'                     S0 = ',S0do
         write(1,54)'                     velocity = ',udo,
-     &       ', Froude = ',udo/dsqrt(dg*hdo*sqrts0)
+     &       ', Froude = ',udo/dsqrt(dg*hdo*sqrts0do)
         write(1,54)'                     critical depth = ',hkdo,
      &       ', normal depth = ',hedo
         if(xks.gt.0) then
@@ -356,7 +400,9 @@ c        call nident(ieg,nelem,nflow,nel)
         enddo
 !
 !       unit vector e3 in the plane consisting of e1 and the gravity
-!       vector and orthogonal to the bottom
+!       vector and orthogonal to the bottom specified by s0 except for
+!       the downstream end of a sluice gate and weir and the upstream
+!       end of a reservoir
 !
         do k=1,3
           e3(k)=-g(k)/dg
@@ -371,7 +417,7 @@ c        call nident(ieg,nelem,nflow,nel)
         else
           aa=s0*s0
           bb=aa*d13
-          cc=d13*d13-sqrts0*sqrts0
+          cc=d13*d13-sqrts0up*sqrts0up
           disc=dsqrt(bb**2-aa*cc)
           al=(-bb+disc)/aa
           if(al.lt.0.d0) then
@@ -393,7 +439,7 @@ c        call nident(ieg,nelem,nflow,nel)
         else
           aa=s0*s0
           bb=aa*d13
-          cc=d13*d13-sqrts0*sqrts0
+          cc=d13*d13-sqrts0do*sqrts0do
           disc=dsqrt(bb**2-aa*cc)
           al=(-bb+disc)/aa
           if(al.lt.0.d0) then
@@ -427,13 +473,23 @@ c        call nident(ieg,nelem,nflow,nel)
 !         node 1
 !
           nknet=nknet+1
-          do k=1,3
-            conet(k,nknet)=co(k,nup)-e2(k)*bup/2.d0
-          enddo
-          vnet(1,nknet)=hup
-          vnet(2,nknet)=uup/dsqrt(dg*hup*sqrts0)
-          vnet(3,nknet)=thup
-          konnet(indexe+1)=nknet
+          if(lakon(nelem)(6:7).eq.'RE') then
+            do k=1,3
+              conet(k,nknet)=co(k,nup)-e2(k)*bup/2.d0
+            enddo
+            vnet(1,nknet)=hdo
+            vnet(2,nknet)=uup/dsqrt(dg*hup*sqrts0)
+            vnet(3,nknet)=thup
+            konnet(indexe+1)=nknet
+          else
+            do k=1,3
+              conet(k,nknet)=co(k,nup)-e2(k)*bup/2.d0
+            enddo
+            vnet(1,nknet)=hup
+            vnet(2,nknet)=uup/dsqrt(dg*hup*sqrts0up)
+            vnet(3,nknet)=thup
+            konnet(indexe+1)=nknet
+          endif
 !
 !         node 2
 !
@@ -442,7 +498,7 @@ c        call nident(ieg,nelem,nflow,nel)
             conet(k,nknet)=co(k,ndo)-e2(k)*bdo/2.d0
           enddo
           vnet(1,nknet)=hdo
-          vnet(2,nknet)=udo/dsqrt(dg*hdo*sqrts0)
+          vnet(2,nknet)=udo/dsqrt(dg*hdo*sqrts0do)
           vnet(3,nknet)=thdo
           konnet(indexe+2)=nknet
 !
@@ -453,20 +509,30 @@ c        call nident(ieg,nelem,nflow,nel)
             conet(k,nknet)=co(k,ndo)+e2(k)*bdo/2.d0
           enddo
           vnet(1,nknet)=hdo
-          vnet(2,nknet)=udo/dsqrt(dg*hdo*sqrts0)
+          vnet(2,nknet)=udo/dsqrt(dg*hdo*sqrts0do)
           vnet(3,nknet)=thdo
           konnet(indexe+3)=nknet
 !
 !         node 4
-!
+!     
           nknet=nknet+1
-          do k=1,3
-            conet(k,nknet)=co(k,nup)+e2(k)*bup/2.d0
-          enddo
-          vnet(1,nknet)=hup
-          vnet(2,nknet)=uup/dsqrt(dg*hup*sqrts0)
-          vnet(3,nknet)=thup
-          konnet(indexe+4)=nknet
+          if(lakon(nelem)(6:7).eq.'RE') then
+            do k=1,3
+              conet(k,nknet)=co(k,nup)+e2(k)*bup/2.d0
+            enddo
+            vnet(1,nknet)=hdo
+            vnet(2,nknet)=uup/dsqrt(dg*hup*sqrts0)
+            vnet(3,nknet)=thup
+            konnet(indexe+4)=nknet
+          else
+            do k=1,3
+              conet(k,nknet)=co(k,nup)+e2(k)*bup/2.d0
+            enddo
+            vnet(1,nknet)=hup
+            vnet(2,nknet)=uup/dsqrt(dg*hup*sqrts0up)
+            vnet(3,nknet)=thup
+            konnet(indexe+4)=nknet
+          endif
 !
 !         node 5
 !
@@ -477,7 +543,7 @@ c        call nident(ieg,nelem,nflow,nel)
      &             -e2(k)*(bup/2.d0+dtan(thetaup)*hdo)
             enddo
             vnet(1,nknet)=hdo
-            vnet(2,nknet)=uup/dsqrt(dg*hdo*sqrts0)
+            vnet(2,nknet)=uup/dsqrt(dg*hup*sqrts0)
             vnet(3,nknet)=thup
             konnet(indexe+5)=nknet
           else
@@ -486,7 +552,7 @@ c        call nident(ieg,nelem,nflow,nel)
      &             -e2(k)*(bup/2.d0+dtan(thetaup)*hup)
             enddo
             vnet(1,nknet)=hup
-            vnet(2,nknet)=uup/dsqrt(dg*hup*sqrts0)
+            vnet(2,nknet)=uup/dsqrt(dg*hup*sqrts0up)
             vnet(3,nknet)=thup
             konnet(indexe+5)=nknet
           endif
@@ -509,7 +575,7 @@ c        call nident(ieg,nelem,nflow,nel)
      &             -e2(k)*(bdo/2.d0+dtan(thetado)*hdo)
             enddo
             vnet(1,nknet)=hdo
-            vnet(2,nknet)=udo/dsqrt(dg*hdo*sqrts0)
+            vnet(2,nknet)=udo/dsqrt(dg*hdo*sqrts0do)
             vnet(3,nknet)=thdo
             konnet(indexe+6)=nknet
           endif
@@ -532,7 +598,7 @@ c        call nident(ieg,nelem,nflow,nel)
      &             +e2(k)*(bdo/2.d0+dtan(thetado)*hdo)
             enddo
             vnet(1,nknet)=hdo
-            vnet(2,nknet)=udo/dsqrt(dg*hdo*sqrts0)
+            vnet(2,nknet)=udo/dsqrt(dg*hdo*sqrts0do)
             vnet(3,nknet)=thdo
             konnet(indexe+7)=nknet
           endif
@@ -546,7 +612,7 @@ c        call nident(ieg,nelem,nflow,nel)
      &             +e2(k)*(bup/2.d0+dtan(thetaup)*hdo)
             enddo
             vnet(1,nknet)=hdo
-            vnet(2,nknet)=uup/dsqrt(dg*hdo*sqrts0)
+            vnet(2,nknet)=uup/dsqrt(dg*hup*sqrts0)
             vnet(3,nknet)=thup
             konnet(indexe+8)=nknet
           else
@@ -555,7 +621,7 @@ c        call nident(ieg,nelem,nflow,nel)
      &             +e2(k)*(bup/2.d0+dtan(thetaup)*hup)
             enddo
             vnet(1,nknet)=hup
-            vnet(2,nknet)=uup/dsqrt(dg*hup*sqrts0)
+            vnet(2,nknet)=uup/dsqrt(dg*hup*sqrts0up)
             vnet(3,nknet)=thup
             konnet(indexe+8)=nknet
           endif
@@ -578,6 +644,8 @@ c        call nident(ieg,nelem,nflow,nel)
             area1=(bup+h1*dtan(thetaup))*h1
             u1=xflow/(rho*area1)
             fr1=u1/dsqrt(dg*h1*sqrts0)
+            z1=(-g(1)*coup(1)-g(2)*coup(2)-g(3)*coup(3))/dg
+            th1=h1*sqrts0+u1**2/(2.d0*dg)+z1
 !     
             do k=1,3
               codo(k)=(dl-sfr(index+m+1))/dl*co(k,nup)
@@ -587,6 +655,8 @@ c        call nident(ieg,nelem,nflow,nel)
             area2=(bup+h2*dtan(thetaup))*h2
             u2=xflow/(rho*area2)
             fr2=u2/dsqrt(dg*h2*sqrts0)
+            z2=(-g(1)*codo(1)-g(2)*codo(2)-g(3)*codo(3))/dg
+            th2=h2*sqrts0+u2**2/(2.d0*dg)+z2
 !     
 !         node 1
 !
@@ -596,7 +666,7 @@ c        call nident(ieg,nelem,nflow,nel)
             enddo
             vnet(1,nknet)=h1
             vnet(2,nknet)=fr1
-            vnet(3,nknet)=thup
+            vnet(3,nknet)=th1
             konnet(indexe+1)=nknet
 !     
 !         node 2
@@ -607,7 +677,7 @@ c        call nident(ieg,nelem,nflow,nel)
             enddo
             vnet(1,nknet)=h2
             vnet(2,nknet)=fr2
-            vnet(3,nknet)=thdo
+            vnet(3,nknet)=th2
             konnet(indexe+2)=nknet
 !     
 !         node 3
@@ -618,7 +688,7 @@ c        call nident(ieg,nelem,nflow,nel)
             enddo
             vnet(1,nknet)=h2
             vnet(2,nknet)=fr2
-            vnet(3,nknet)=thdo
+            vnet(3,nknet)=th2
             konnet(indexe+3)=nknet
 !     
 !         node 4
@@ -629,7 +699,7 @@ c        call nident(ieg,nelem,nflow,nel)
             enddo
             vnet(1,nknet)=h1
             vnet(2,nknet)=fr1
-            vnet(3,nknet)=thup
+            vnet(3,nknet)=th1
             konnet(indexe+4)=nknet
 !     
 !         node 5
@@ -641,7 +711,7 @@ c        call nident(ieg,nelem,nflow,nel)
             enddo
             vnet(1,nknet)=h1
             vnet(2,nknet)=fr1
-            vnet(3,nknet)=thup
+            vnet(3,nknet)=th1
             konnet(indexe+5)=nknet
 !     
 !         node 6
@@ -653,7 +723,7 @@ c        call nident(ieg,nelem,nflow,nel)
             enddo
             vnet(1,nknet)=h2
             vnet(2,nknet)=fr2
-            vnet(3,nknet)=thdo
+            vnet(3,nknet)=th2
             konnet(indexe+6)=nknet
 !     
 !         node 7
@@ -665,7 +735,7 @@ c        call nident(ieg,nelem,nflow,nel)
             enddo
             vnet(1,nknet)=h2
             vnet(2,nknet)=fr2
-            vnet(3,nknet)=thdo
+            vnet(3,nknet)=th2
             konnet(indexe+7)=nknet
 !     
 !         node 8
@@ -677,7 +747,7 @@ c        call nident(ieg,nelem,nflow,nel)
             enddo
             vnet(1,nknet)=h1
             vnet(2,nknet)=fr1
-            vnet(3,nknet)=thup
+            vnet(3,nknet)=th1
             konnet(indexe+8)=nknet
           enddo
 !
@@ -694,6 +764,8 @@ c        call nident(ieg,nelem,nflow,nel)
             area1=(bup+h1*dtan(thetaup))*h1
             u1=xflow/(rho*area1)
             fr1=u1/dsqrt(dg*h1*sqrts0)
+            z1=(-g(1)*coup(1)-g(2)*coup(2)-g(3)*coup(3))/dg
+            th1=h1*sqrts0+u1**2/(2.d0*dg)+z1
 !     
             do k=1,3
               codo(k)=(dl-sba((i-1)*ndata+jumpdo(i)))/dl*co(k,nup)
@@ -703,6 +775,8 @@ c        call nident(ieg,nelem,nflow,nel)
             area2=(bup+h2*dtan(thetaup))*h2
             u2=xflow/(rho*area2)
             fr2=u2/dsqrt(dg*h2*sqrts0)
+            z2=(-g(1)*codo(1)-g(2)*codo(2)-g(3)*codo(3))/dg
+            th2=h2*sqrts0+u2**2/(2.d0*dg)+z2
 !     
 !         node 1
 !
@@ -712,7 +786,7 @@ c        call nident(ieg,nelem,nflow,nel)
             enddo
             vnet(1,nknet)=h1
             vnet(2,nknet)=fr1
-            vnet(3,nknet)=thup
+            vnet(3,nknet)=th1
             konnet(indexe+1)=nknet
 !     
 !         node 2
@@ -723,7 +797,7 @@ c        call nident(ieg,nelem,nflow,nel)
             enddo
             vnet(1,nknet)=h2
             vnet(2,nknet)=fr2
-            vnet(3,nknet)=thdo
+            vnet(3,nknet)=th2
             konnet(indexe+2)=nknet
 !     
 !         node 3
@@ -734,7 +808,7 @@ c        call nident(ieg,nelem,nflow,nel)
             enddo
             vnet(1,nknet)=h2
             vnet(2,nknet)=fr2
-            vnet(3,nknet)=thdo
+            vnet(3,nknet)=th2
             konnet(indexe+3)=nknet
 !     
 !         node 4
@@ -745,7 +819,7 @@ c        call nident(ieg,nelem,nflow,nel)
             enddo
             vnet(1,nknet)=h1
             vnet(2,nknet)=fr1
-            vnet(3,nknet)=thup
+            vnet(3,nknet)=th1
             konnet(indexe+4)=nknet
 !     
 !         node 5
@@ -757,7 +831,7 @@ c        call nident(ieg,nelem,nflow,nel)
             enddo
             vnet(1,nknet)=h1
             vnet(2,nknet)=fr1
-            vnet(3,nknet)=thup
+            vnet(3,nknet)=th1
             konnet(indexe+5)=nknet
 !     
 !         node 6
@@ -769,7 +843,7 @@ c        call nident(ieg,nelem,nflow,nel)
             enddo
             vnet(1,nknet)=h2
             vnet(2,nknet)=fr2
-            vnet(3,nknet)=thdo
+            vnet(3,nknet)=th2
             konnet(indexe+6)=nknet
 !     
 !         node 7
@@ -781,7 +855,7 @@ c        call nident(ieg,nelem,nflow,nel)
             enddo
             vnet(1,nknet)=h2
             vnet(2,nknet)=fr2
-            vnet(3,nknet)=thdo
+            vnet(3,nknet)=th2
             konnet(indexe+7)=nknet
 !     
 !         node 8
@@ -793,7 +867,7 @@ c        call nident(ieg,nelem,nflow,nel)
             enddo
             vnet(1,nknet)=h1
             vnet(2,nknet)=fr1
-            vnet(3,nknet)=thup
+            vnet(3,nknet)=th1
             konnet(indexe+8)=nknet
           endif
 !
@@ -810,6 +884,8 @@ c        call nident(ieg,nelem,nflow,nel)
             area1=(bup+h1*dtan(thetaup))*h1
             u1=xflow/(rho*area1)
             fr1=u1/dsqrt(dg*h1*sqrts0)
+            z1=(-g(1)*coup(1)-g(2)*coup(2)-g(3)*coup(3))/dg
+            th1=h1*sqrts0+u1**2/(2.d0*dg)+z1
 !     
             do k=1,3
               codo(k)=(dl-sba(index+m+1))/dl*co(k,nup)
@@ -819,6 +895,8 @@ c        call nident(ieg,nelem,nflow,nel)
             area2=(bup+h2*dtan(thetaup))*h2
             u2=xflow/(rho*area2)
             fr2=u2/dsqrt(dg*h2*sqrts0)
+            z2=(-g(1)*codo(1)-g(2)*codo(2)-g(3)*codo(3))/dg
+            th2=h2*sqrts0+u2**2/(2.d0*dg)+z2
 !     
 !         node 1
 !
@@ -828,7 +906,7 @@ c        call nident(ieg,nelem,nflow,nel)
             enddo
             vnet(1,nknet)=h1
             vnet(2,nknet)=fr1
-            vnet(3,nknet)=thup
+            vnet(3,nknet)=th1
             konnet(indexe+1)=nknet
 !     
 !         node 2
@@ -839,7 +917,7 @@ c        call nident(ieg,nelem,nflow,nel)
             enddo
             vnet(1,nknet)=h2
             vnet(2,nknet)=fr2
-            vnet(3,nknet)=thdo
+            vnet(3,nknet)=th2
             konnet(indexe+2)=nknet
 !     
 !         node 3
@@ -850,7 +928,7 @@ c        call nident(ieg,nelem,nflow,nel)
             enddo
             vnet(1,nknet)=h2
             vnet(2,nknet)=fr2
-            vnet(3,nknet)=thdo
+            vnet(3,nknet)=th2
             konnet(indexe+3)=nknet
 !     
 !         node 4
@@ -861,7 +939,7 @@ c        call nident(ieg,nelem,nflow,nel)
             enddo
             vnet(1,nknet)=h1
             vnet(2,nknet)=fr1
-            vnet(3,nknet)=thup
+            vnet(3,nknet)=th1
             konnet(indexe+4)=nknet
 !     
 !         node 5
@@ -873,7 +951,7 @@ c        call nident(ieg,nelem,nflow,nel)
             enddo
             vnet(1,nknet)=h1
             vnet(2,nknet)=fr1
-            vnet(3,nknet)=thup
+            vnet(3,nknet)=th1
             konnet(indexe+5)=nknet
 !     
 !         node 6
@@ -885,7 +963,7 @@ c        call nident(ieg,nelem,nflow,nel)
             enddo
             vnet(1,nknet)=h2
             vnet(2,nknet)=fr2
-            vnet(3,nknet)=thdo
+            vnet(3,nknet)=th2
             konnet(indexe+6)=nknet
 !     
 !         node 7
@@ -897,7 +975,7 @@ c        call nident(ieg,nelem,nflow,nel)
             enddo
             vnet(1,nknet)=h2
             vnet(2,nknet)=fr2
-            vnet(3,nknet)=thdo
+            vnet(3,nknet)=th2
             konnet(indexe+7)=nknet
 !     
 !         node 8
@@ -909,7 +987,7 @@ c        call nident(ieg,nelem,nflow,nel)
             enddo
             vnet(1,nknet)=h1
             vnet(2,nknet)=fr1
-            vnet(3,nknet)=thup
+            vnet(3,nknet)=th1
             konnet(indexe+8)=nknet
           enddo
         endif
