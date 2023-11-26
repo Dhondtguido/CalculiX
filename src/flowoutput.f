@@ -34,7 +34,7 @@
       character*132 jobnamef(*),fnnet,fnnetfrd
 !     
       integer mi(*),itg(*),ieg(*),ntg,nflow,ielmat(mi(3),*),i,j,k,m,
-     &     nrhcon(*),iaxial,ider,idirf(8),ieq,imat,kflag,
+     &     nrhcon(*),iaxial,ider,idirf(8),ieq,imat,kflag,ilen,
      &     ntmat_,nteq,nshcon(*),nelem,index,ipkon(*),kon(*),iin,
      &     nactdog(0:3,*),nacteq(0:3,*),ielprop(*),node1,nodem,node2,
      &     istartset(*),iendset(*),ialset(*),nset,nodef(8),numf,
@@ -59,12 +59,12 @@
 !
 !     output element per element in a dedicated file (jobname.net)      
 !     
-      do i=1,132
-         if(jobnamef(1)(i:i).eq.' ') exit
+      do ilen=1,132
+         if(jobnamef(1)(ilen:ilen).eq.' ') exit
       enddo
-      i=i-1
+      ilen=ilen-1
 !     
-      fnnet=jobnamef(1)(1:i)//'.net'
+      fnnet=jobnamef(1)(1:ilen)//'.net'
       open(1,file=fnnet,status='unknown')
 !     
 !     frd-file for three-dimensional output
@@ -1064,7 +1064,7 @@
 !     storing the three-dimensional expansion
 !
       if(nknet.gt.0) then
-        fnnetfrd=jobnamef(1)(1:i)//'.net.frd'
+        fnnetfrd=jobnamef(1)(1:ilen)//'.net.frd'
         open(20,file=fnnetfrd,status='unknown')
         call frdnet(conet,nknet,konnet,nenet,vnet,time)
         close(20)
