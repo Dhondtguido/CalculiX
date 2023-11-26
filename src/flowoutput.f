@@ -69,8 +69,6 @@
 !     
 !     frd-file for three-dimensional output
 !     
-      fnnetfrd=jobnamef(1)(1:i)//'.net.frd'
-      open(20,file=fnnetfrd,status='unknown')
       allocate(konnet(8*nflow*ndata))
       allocate(conet(3,8*nflow*ndata))
       allocate(vnet(3,8*nflow*ndata))
@@ -467,7 +465,8 @@
 !       generating nodes and elements
 !
         indexe=8*nenet
-        if(lakon(nelem)(6:7).ne.'  ') then
+        if((lakon(nelem)(6:7).ne.'  ').and.
+     &     (lakon(nelem)(6:7).ne.'DS')) then
           nenet=nenet+1
 !
 !         node 1
@@ -625,7 +624,7 @@
             vnet(3,nknet)=thup
             konnet(indexe+8)=nknet
           endif
-        else
+        elseif(lakon(nelem)(6:7).eq.'  ') then
 !
 !         straight channel
 !
@@ -1064,8 +1063,12 @@
 !
 !     storing the three-dimensional expansion
 !
-      call frdnet(conet,nknet,konnet,nenet,vnet,time)
-      close(20)
+      if(nknet.gt.0) then
+        fnnetfrd=jobnamef(1)(1:i)//'.net.frd'
+        open(20,file=fnnetfrd,status='unknown')
+        call frdnet(conet,nknet,konnet,nenet,vnet,time)
+        close(20)
+      endif
       deallocate(konnet)
       deallocate(conet)
       deallocate(vnet)
