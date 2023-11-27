@@ -17,13 +17,11 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine calcfeasibledirection_gd(ndesi,nodedesi,dgdxglob,
-     &   nactive,nobject,nk,gradproj,objectset)         
+     &   nactive,nobject,nk,gradproj)         
 !
 !     calculates the projected gradient
 !
       implicit none
-!
-      character*81 objectset(5,*)
 !
       integer ndesi,nodedesi(*),nactive,nobject,nk,node,i 
 !
