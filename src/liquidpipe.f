@@ -50,8 +50,6 @@
      &     xflow_vol,r1d,r2d,r1,r2,eta, K1, Kr, U1,Ui, ciu, c1u, 
      &     c2u, omega,cinput,un,T
 !
-!
-!
       data ncoel /11/
       data xcoel /0d0,0.1d0,0.2d0,0.3d0,0.4d0,0.5d0,0.6d0,0.7d0,0.8d0,
      &            0.9d0,1.0d0/

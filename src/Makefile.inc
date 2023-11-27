@@ -363,6 +363,7 @@ gasmechbc.f \
 gaspipe_fanno.f \
 gaspipe_rot.f \
 gen3dboun.f \
+gen3dchanoutput.f \
 gen3dconnect.f \
 gen3delem.f \
 gen3dforc.f \
