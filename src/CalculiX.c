@@ -102,7 +102,7 @@ int main(int argc,char *argv[])
     
   double ctrl[57];
 
-  double fei[3],*xmodal=NULL,timepar[5],alpha[2],ttime,qaold[2],physcon[14];
+  double fei[4],*xmodal=NULL,timepar[5],alpha[2],ttime,qaold[2],physcon[14];
 
   double totalCalculixTime;
 
@@ -158,7 +158,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Mon Nov 27 19:18:56 CET 2023\n");
+  printf("You are using an executable made on Fri Dec  1 15:52:28 CET 2023\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -1316,7 +1316,7 @@ int main(int argc,char *argv[])
 	       ibody,xbody,&nbody,thicke,&nslavs,tietol,&nkon,mpcinfo,
 	       &ntie,&istep,&mcs,ics,tieset,cs,&nintpoint,&mortar,&ifacecount,
 	       &islavsurf,&pslavsurf,&clearini,&nmat,typeboun,ielprop,prop,
-	       orname,&inewton,t0g,t1g);
+	       orname,&inewton,t0g,t1g,alpha);
 
 	memmpc_=mpcinfo[0];mpcfree=mpcinfo[1];icascade=mpcinfo[2];
 	maxlenmpc=mpcinfo[3];
@@ -1352,7 +1352,7 @@ int main(int argc,char *argv[])
 		 ibody,xbody,&nbody,&nevtot,thicke,&nslavs,tietol,mpcinfo,
 		 &ntie,&istep,tieset,&nintpoint,&mortar,&ifacecount,&islavsurf,
 		 &pslavsurf,&clearini,&nmat,typeboun,ielprop,prop,orname,
-		 &inewton,t0g,t1g);
+		 &inewton,t0g,t1g,alpha);
 
 	memmpc_=mpcinfo[0];mpcfree=mpcinfo[1];icascade=mpcinfo[2];
 	maxlenmpc=mpcinfo[3];

@@ -982,7 +982,6 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
     /* invert nactdof */
 
-    //   SFREE(nactdofinv);
     NNEW(nactdofinv,ITG,1);
       
     iout=-1;
@@ -3482,9 +3481,6 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	FORTRAN(writecvg,(istep,&iinc,&icutb,&iit,ne,&ne0,ram,qam,cam,uam,
 			  ithermal));
 
-	//      printf(" in nonlingeo.c a stop was inserted \n");
-	//      FORTRAN(stop,());
-
 	checkconvergence(co,nk,kon,ipkon,lakon,ne,stn,nmethod, 
 			 kode,filab,een,t1act,&time,epn,ielmat,matname,enern, 
 			 xstaten,nstate_,istep,&iinc,iperturb,ener,mi,output,
@@ -3563,69 +3559,6 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       printenergy(iexpl,ttime,&theta,tper,energy,ne,nslavs,ener,&energyref,
 		  &allwk,&dampwk,&ea,&energym,&energymold,&jnz,&mscalmethod,
 		  mortar,mi);
-      
-      /*      if(*iexpl>1){
-	printf(" actual total time=%e\n\n",*ttime+theta**tper);
-	if(*mortar==-1){
-	  energy[3]=0.;
-	  for(i=*ne;i<*ne+*nslavs;i++){
-	    energy[3]+=ener[2*mi[0]*i+1];
-	  }
-	}
-      }
-	
-      printf(" initial energy (at start of step) = %e\n\n",energyref);
-
-      printf(" since start of the step: \n");
-      printf(" external work = %e\n",allwk);
-      printf(" work performed by the damping forces = %e\n",dampwk);
-      printf(" netto work = %e\n\n",allwk+dampwk);
-
-      printf(" actual energy: \n");
-      printf(" internal energy = %e\n",energy[0]);
-      printf(" kinetic energy = %e\n",energy[1]);
-      printf(" elastic contact energy = %e\n",energy[2]);
-      printf(" energy lost due to friction = %e\n",energy[3]);
-      printf(" total energy  = %e\n\n",energy[0]+energy[1]+energy[2]+energy[3]);
-
-      printf(" energy increase = %e\n\n",energy[0]+energy[1]+energy[2]
-	     +energy[3]-energyref);
-
-      printf(" energy balance (absolute) = %e \n",energy[0]+energy[1]
-      +energy[2]+energy[3]-energyref-allwk-dampwk);*/
-
-      /* Belytschko criterion */
-
-      /*    denergymax=energy[0];
-      if(denergymax<energy[1]){
-	denergymax=energy[1];}
-      if(denergymax<fabs(allwk)) denergymax=fabs(allwk);
-
-      if(denergymax>ea*energym){
-	energym=(energymold*jnz+denergymax)/(jnz+1);}
-      else {
-	energym=energymold;}
-      energymold=energym;   
-
-      if(energym>1.e-30){
-	printf(" energy balance (relative) = %f %% \n\n",
-	       fabs((energy[0]+energy[1]+energy[2]+energy[3]-energyref-allwk
-		     -dampwk)/energym*100.));
-      }else{
-	printf(" energy balance (relative) =0 %% \n\n");
-	}*/
-	
-      /*Energy balance to evaluate mass scaling*/
-      
-      /*     if((mscalmethod==1)||(mscalmethod==3)){
-	printf(" artificial energy due to selective mass scaling = %e\n",
-	       energy[4]);
-	    
-	printf(" energy balance with mass scaling(relative) = %f %% \n\n",
-	       fabs((energy[0]+energy[1]+energy[2]+energy[3]+energy[4]
-		     -energyref-allwk-dampwk)/energym*100.));
-	    
-		     }*/
 
     }
 
@@ -3665,11 +3598,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	cpypardou(eme,emeini,&isiz,&num_cpus);
       }
       if(*nener==1){
-	/*	if(*mortar!=1){
-	  isiz=2*mi[0]*(ne0+*nslavs);
-	  }else{*/
-	  isiz=2*mi[0]*ne0;
-	  //	}
+	isiz=2*mi[0]*ne0;
 	cpypardou(ener,enerini,&isiz,&num_cpus);
       }
 
@@ -3749,7 +3678,6 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       /* the results in frd format  */
 	
       MNEW(v,double,mt**nk);
-      //      NNEW(v,double,mt**nk);
       MNEW(fn,double,mt**nk);
       NNEW(stn,double,6**nk);
       if(*ithermal>1) NNEW(qfn,double,3**nk);
@@ -3764,7 +3692,6 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       if(strcmp1(&filab[2697],"ME  ")==0) NNEW(emn,double,6**nk);
 
       isiz=mt**nk;cpypardou(v,vold,&isiz,&num_cpus);
-      //      memcpy(&v[0],&vold[0],sizeof(double)*mt**nk);
 
       iout=2;
       icmd=3;
@@ -4117,9 +4044,6 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
   qaold[0]=qa[0];
   qaold[1]=qa[1];
-
-  /*CC: DEBUG close energy.txt*/
- // TODO CMT also add for massless?
   
   if(*iexpl>1){
     SFREE(smscale);
@@ -4154,8 +4078,6 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   
   SFREE(f);SFREE(b);
   SFREE(xbounact);SFREE(xforcact);SFREE(xloadact);SFREE(xbodyact);
-  
-  //  if(*nbody>0) SFREE(ipobody);
 
   if(*inewton==1){SFREE(cgr);}
   SFREE(fext);SFREE(ampli);SFREE(xbounini);SFREE(xstiff);

@@ -5303,3 +5303,5 @@ Dec 2002        - started to work on single crystal plasticity
 
  25 Nov 2023    - coded a discontinuous slope channel element
                 - finished the documentation on Abaqus umat-routines.
+
+ 1 Dec 2023     - introduced selective mass scaling for frequency calculations

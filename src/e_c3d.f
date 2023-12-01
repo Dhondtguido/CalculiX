@@ -882,7 +882,9 @@ c     mortar end
 !     lumping purposes: only for explicit
 !     dynamic calculations
 !     
-            if((mass.eq.1).and.(iexpl.gt.1)) then
+            if((mass.eq.1).and.((iexpl.gt.1).or.
+     &           ((nmethod.eq.2).and.(mscalmethod.gt.0)))) then
+c            if((mass.eq.1).and.(iexpl.gt.1)) then
               summass=summass+rho*xsj*weight
             endif
 !     
@@ -1057,7 +1059,9 @@ c     mortar end
 !     lumping purposes: only for explicit
 !     dynamic calculations
 !     
-            if((mass.eq.1).and.(iexpl.gt.1)) then
+            if((mass.eq.1).and.((iexpl.gt.1).or.
+     &           ((nmethod.eq.2).and.(mscalmethod.gt.0)))) then
+c            if((mass.eq.1).and.(iexpl.gt.1)) then
               summass=summass+rho*xsj*weight
             endif
 !     
@@ -1953,22 +1957,20 @@ c     mortar end
           sm(i+2,i+2)=sm(i,i)
         enddo
 !     
-c        if((mscalmethod.ne.1).and.(mscalmethod.ne.3)) then
-!     
 !     setting all off-diagonal terms to zero     
 !     
-          do i=1,3*nope
-            do j=1,3*nope
-              if(i.eq.j) cycle
-              sm(i,j)=0.d0
-            enddo
+        do i=1,3*nope
+          do j=1,3*nope
+            if(i.eq.j) cycle
+            sm(i,j)=0.d0
           enddo
-c        endif
+        enddo
       endif
 !
 !     mscalmethod = 1 or 3: selective mass scaling SMS
 !     
-      if((mass.eq.1).and.(iexpl.gt.1)) then
+      if((mass.eq.1).and.((iexpl.gt.1).or.
+     &     ((nmethod.eq.2).and.(mscalmethod.gt.0)))) then
         if((mscalmethod.eq.1).or.(mscalmethod.eq.3)) then
 !     
 !     beta = smscalel
@@ -1976,48 +1978,23 @@ c        endif
           smfactor=smscalel*summass/((nope-1)*nope)
 !     
           do i=1,3*nope
-c            do j=1,3*nope
-c              if(i.ne.j) then
-c!     set non diagonals to zero           
-c                sm(i,j)=0.d0
-c!     diagonal terms of M for SMS
-c              else
-c                sm(i,j)=sm(i,j)+(nope-1)*smfactor
-                sm(i,i)=sm(i,i)+(nope-1)*smfactor
-c              endif
-c            enddo
+            sm(i,i)=sm(i,i)+(nope-1)*smfactor
           enddo
 !     
 !     nondiagonal terms of M for SMS
 !     
-!         no massless method: regular mass matrix was lumped     
+!     no massless method: regular mass matrix was lumped     
 !     
-c          if(mortar.ne.-1) then
-c            i=0
-c            do j=0,nope*3-1,3
-c              i=i+1
-c              do k=1,(nope-i)
-c                do l=1,3
-c                  sm(j+l+k*3,j+l)=-smfactor
-c                  sm(j+l,j+l+k*3)=-smfactor
-c                enddo
-c              enddo
-c            enddo
-c          else
-c!     
-c!          massless method: regular mass matrix was not lumped     
-c!     
-            i=0
-            do j=0,nope*3-1,3
-              i=i+1
-              do k=1,(nope-i)
-                do l=1,3
-                  sm(j+l+k*3,j+l)=sm(j+l+k*3,j+l)-smfactor
-                  sm(j+l,j+l+k*3)=sm(j+l,j+l+k*3)-smfactor
-                enddo
+          i=0
+          do j=0,nope*3-1,3
+            i=i+1
+            do k=1,(nope-i)
+              do l=1,3
+                sm(j+l+k*3,j+l)=sm(j+l+k*3,j+l)-smfactor
+                sm(j+l,j+l+k*3)=sm(j+l,j+l+k*3)-smfactor
               enddo
             enddo
-c          endif
+          enddo
 !     to calculate additional energy in resultsmech.f:
           smscalel=smfactor
         endif

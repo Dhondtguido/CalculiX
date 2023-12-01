@@ -100,12 +100,12 @@
 !     massless contact due to the different time scheme (the
 !     alpha method is not used for massless contact)
 !     
-      if(mortar.ne.-1) then
+c      if(mortar.ne.-1) then
 c        safefac=0.50d0
-        safefac=0.80d0
-      else
+c        safefac=0.80d0
+c      else
         safefac=0.80d0/1.3d0
-      endif
+c      endif
       quadfac=0.3d0
 !     
       damping=0
@@ -117,12 +117,6 @@ c        safefac=0.50d0
 !     Calculation of Omega Critical
 !     Om_cr=dt*freq_max
 !     
-c      critom=dsqrt(damping*damping*(1.d0+2.d0*alpha*(1.d0-gam))
-c     &     *(1.d0+2.d0*alpha*(1.d0-gam))
-c     &     +2.d0*(gam+2.d0*alpha*(gam-bet)))
-c      critom=0.98d0*(-damping*(1.d0+2.d0*alpha*(1.d0-gam))+critom)
-c     &     /(gam+2.d0*alpha*(gam-bet)) !eq 25 miranda
-!
 !     formula (2.477) with +sign from Dhondt, Wiley(2004), the Finite      
 !        Element Method for Three-Dimensional Thermomechanical Applications.
 !     factor 0.98 in critom from miranda?
@@ -185,7 +179,6 @@ c        write(*,*) 'calcstabletimeincvol ',nelem
             nopes=4
             nfaces=6
             elemfac=0.625d0
-c            elemfac=0.5d0
           elseif(lakon(nelem)(4:4).eq.'8') then
             nope=8
             nopes=4
@@ -309,6 +302,7 @@ c            elemfac=0.5d0
           kode=nelcon(1,imat)
 !     
 !     material data
+!     
           istiff=1
           call materialdata_me(elcon,nelcon,rhcon,nrhcon,alcon,nalcon,
      &         imat,amat,iorien,coords,orab,ntmat_,stiff,rho,
@@ -325,47 +319,16 @@ c            elemfac=0.5d0
      &           dsqrt((e*(1-un))/((1+un)*(1-2*un)*rho)))
           elseif(mattyp.eq.2) then
 !     
-!     single crystal
+!           single crystal
 !     
-c            if(((stiff(1).eq.stiff(3)).and.(stiff(1).eq.stiff(6)).and.
-c     &           (stiff(3).eq.stiff(6))).and.
-c     &           ((stiff(2).eq.stiff(4)).and.(stiff(2).eq.stiff(5)).and.
-c     &           (stiff(4).eq.stiff(5))).and.
-c     &           ((stiff(7).eq.stiff(8)).and.(stiff(7).eq.stiff(9)).and.
-c     &           (stiff(8).eq.stiff(9)))) then
-c              wavspd=max(wavspd,dsqrt((1/3.d0)*(stiff(1)+2.0*stiff(2)+
-c     &             4.0d0*stiff(7))/rho))
-c              wavspd=max(wavspd,dsqrt((1/2.d0)*
-c     &             (stiff(1)+stiff(2)+2.0*stiff(7))/rho))
-c              wavspd=max(wavspd,dsqrt(stiff(1)/rho))
-c            else
-              iorth=1
-              call anisomaxwavspd(stiff,rho,iorth,wavspd)
-c            endif
+            iorth=1
+            call anisomaxwavspd(stiff,rho,iorth,wavspd)
           elseif(mattyp.eq.3) then
             iorth=0
             call anisomaxwavspd(stiff,rho,iorth,wavspd)
           endif
 !     
           wavespeed(imat)=wavspd
-!     
-!     ------------Critical time step calculation-----------------------
-!     
-!     Divides volume accordingly per geometry of element
-!     Carlo MT proposal
-!     if HEX
-c          if((lakon(nelem)(4:5).eq.'20').or.
-c     &         (lakon(nelem)(4:4).eq.'8')) then
-c            volume=weight*xsj
-c!     if TET
-c          elseif((lakon(nelem)(4:5).eq.'10').or.
-c     &           (lakon(nelem)(4:4).eq.'4')) then
-c            volume=weight*xsj/3.d0
-c!     if WEDGES
-c          elseif ( (lakonl(4:5).eq.'15').or.
-c     &           (lakonl(4:4).eq.'6'))then
-c            volume=weight*xsj/2.d0
-c     endif
 !
 !         volume=area*h*volfac
 !
@@ -446,10 +409,6 @@ c     endif
 !     
 !     scaling of element: time increment required by element
 !
-c          write(*,*) 'calcstabletimeincvol ',critom
-c          write(*,*) 'calcstabletimeincvol ',hmin
-c          write(*,*) 'calcstabletimeincvol ',elemfac
-c          write(*,*) 'calcstabletimeincvol ',wavspd
           smscale(nelem)=critom*hmin*elemfac/(2.d0*wavspd)
 !     
 !     smallest dtvol
@@ -466,11 +425,7 @@ c          write(*,*) 'calcstabletimeincvol ',wavspd
 !     
 !     ------------Mass Scaling ----------------------------------------
 !     mscalmethod=1: selective mass scaling SMS
-!     not active for massless contact      
 !
-c       write(*,*) 'calcstabletimeincvol ',dtvol
-c      write(*,*) 'calcstabletimeincvol ',dtset
-c      write(*,*) 'calcstabletimeincvol ',safefac
       if((dtvol.lt.dtset/safefac))then
         dtset=dtset/safefac
         mscalmethod=1

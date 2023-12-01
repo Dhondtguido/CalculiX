@@ -310,7 +310,7 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 	
     /*add up additional kinetic energy through mass scaling*/
     
-    if((*mscalmethod==1)||(*mscalmethod==3)){
+    if(((*mscalmethod==1)||(*mscalmethod==3))&&(*nmethod==4)){
       energy[4]=energysms1[0];
       for(j=1;j<num_cpus;j++){
 	energy[4]+=energysms1[j];

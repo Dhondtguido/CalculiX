@@ -75,7 +75,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	    ITG *ifacecount,ITG **islavsurfp,double **pslavsurfp,
 	    double **clearinip,ITG *nmat,char *typeboun,
 	    ITG *ielprop,double *prop,char *orname,ITG *inewton,
-	    double *t0g,double *t1g){
+	    double *t0g,double *t1g,double *alpha){
 
   /* calls the Arnoldi Package (ARPACK) */
   
@@ -84,7 +84,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 
   ITG *inum=NULL,k,ido,ldz,iparam[11],ipntr[14],lworkl,ngraph=1,im,
     info,rvec=1,*select=NULL,lfin,j,lint,iout,ielas=1,icmd=0,mt=mi[1]+1,
-    iinc=1,nev,ncv,mxiter,jrow,ifreebody,kmax,
+    iinc=1,nev,ncv,mxiter,jrow,
     mass[2]={1,1}, stiffness=1, buckling=0, rhsi=0, intscheme=0,noddiam=-1,
     coriolis=0,symmetryflag=0,inputformat=0,*ipneigh=NULL,*neigh=NULL,ne0,
     *integerglob=NULL,nasym=0,zero=0,ncont=0,*itietri=NULL,kref,
@@ -93,7 +93,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     *imastop=NULL,*iponoels=NULL,*inoels=NULL,*ipe=NULL,*ime=NULL,
     mpcfree,memmpc_,icascade,maxlenmpc,iit=-1,*irow=NULL,nherm=1,
     icfd=0,*inomat=NULL,*ipkon=NULL,*kon=NULL,*ielmat=NULL,*ielorien=NULL,
-    *islavact=NULL,maxprevcontel,iex,nslavs_prev_step,icutb=0,
+    *islavact=NULL,maxprevcontel,nslavs_prev_step,icutb=0,
     iflagact=0,*islavsurfold=NULL,ialeatoric=0,kscale=1,network=0,
     *iponoel=NULL,*inoel=NULL,nrhs=1,igreen=0,node,idir,mscalmethod=0,
     *jqw=NULL,*iroww=NULL,nzsw,
@@ -101,7 +101,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     *ndirboun2=NULL,*nodeboun2=NULL,nmpc2,*ipompc2=NULL,*nodempc2=NULL,
     *ikboun2=NULL,*ilboun2=NULL,*ikmpc2=NULL,*ilmpc2=NULL,mortartrafoflag=0;
 
-  double *stn=NULL,*v=NULL,*resid=NULL,*z=NULL,*workd=NULL,
+  double *stn=NULL,*v=NULL,*resid=NULL,*z=NULL,*workd=NULL,dtset,
     *workl=NULL,*d=NULL,sigma=1,*temp_array=NULL,*pslavsurfold=NULL,
     *een=NULL,sum,cam[5],*f=NULL,*fn=NULL,qa[4],*fext=NULL,
     *epn=NULL,*fnr=NULL,*fni=NULL,*emn=NULL,*emeini=NULL,
@@ -115,8 +115,8 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     *di=NULL,sigmai=0,*workev=NULL,*ener=NULL,*xstate=NULL,*dc=NULL,
     *au=NULL,*ad=NULL,*b=NULL,*aub=NULL,*adb=NULL,*pslavsurf=NULL,
     *pmastsurf=NULL,*cdn=NULL,*energyini=NULL,*energy=NULL,
-    *cdnr=NULL,*cdni=NULL,*eme=NULL,alea=0.1,*smscale=NULL,zmax,*auw=NULL,
-    *autloc=NULL,*xboun2=NULL,*coefmpc2=NULL;
+    *cdnr=NULL,*cdni=NULL,*eme=NULL,alea=0.1,*smscale=NULL,*auw=NULL,
+    *autloc=NULL,*xboun2=NULL,*coefmpc2=NULL,dtvol,wavespeed[*nmat];
 
   FILE *f1;
 
@@ -305,7 +305,6 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	  }
 		  
 	  if((*nintpoint>0)&&(maxprevcontel>0)){
-	    iex=2;
 		      
 	    /* interpolation of xstate */
 		      
@@ -448,6 +447,40 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
   SFREE(f);SFREE(v);SFREE(fn);SFREE(stx);SFREE(eme);
   if(*ithermal>1)SFREE(qfx);SFREE(inum);
   iout=1;
+      
+  if(fei[3]>0.){
+
+    mscalmethod=0;
+	  
+    /* Explicit: Calculation of stable time increment according to
+       Courant's Law  Carlo Monjaraz Tec (CMT) and Selctive Mass Scaling CC*/
+
+    /*Mass Scaling
+      mscalmethod < 0: no explicit dynamics
+      mscalmethod = 0: no mass scaling
+      mscalmethod = 1: selective mass scaling for nonlinearity after 
+      Olovsson et. al 2005
+
+      mscalmethod=2 and mscalmethod=3 correspond to 0 and 1, 
+      respectively with in addition contact scaling active; contact
+      scaling is activated if the user time increment cannot be satisfied */
+
+    dtset=fei[3];
+    NNEW(smscale,double,*ne);
+	  
+    FORTRAN(calcstabletimeincvol,(&ne0,elcon,nelcon,rhcon,nrhcon,alcon,
+				  nalcon,orab,ntmat_,ithermal,alzero,plicon,
+				  nplicon,plkcon,nplkcon,npmat_,mi,&dtime,
+				  xstiff,ncmat_,vold,ielmat,t0,t1,matname,
+				  lakon,wavespeed,nmat,ipkon,co,kon,&dtvol,
+				  alpha,smscale,&dtset,&mscalmethod,mortar,
+				  jobnamef));
+
+      printf(" Explicit time integration: Volumetric COURANT initial stable time increment:%e\n\n",dtvol);
+      if(dtset<dtvol){dtset=dtvol;}
+      printf(" SELECTED explicit dynamics time increment:%e\n\n",dtset);
+      
+  }
 
   /* for the frequency analysis linear strain and elastic properties
      are used */
@@ -532,6 +565,11 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
   }
 
   SFREE(fext);
+      
+  /*for(k=0;k<neq[1];++k){printf("ad=%" ITGFORMAT ",%f\n",k,ad[k]);}
+  for(k=0;k<nzs[1];++k){printf("au=%" ITGFORMAT ",%f\n",k,au[k]);}
+  for(k=0;k<neq[1];++k){printf("adb=%" ITGFORMAT ",%f\n",k,adb[k]);}
+  for(k=0;k<nzs[1];++k){printf("aub=%" ITGFORMAT ",%f\n",k,aub[k]);}*/
 
   if(*nmethod==0){
 
@@ -842,48 +880,22 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     /* check the normalization of the eigenmodes */
     
     for(j=0;j<nev;j++){
-      zmax=0.;
-      kmax=-1;
       kref=j*neq[1];
       if(nasym==1){
 	FORTRAN(opas,(&neq[1],&z[kref],temp_array,
 		      adb,aub,jq,irow,nzs));
       }else{
-	opmain(neq,&z[kref],temp_array,
+	opmain(&neq[1],&z[kref],temp_array,
 		    adb,aub,jq,irow);
       }
       sum=0;
       for(k=0;k<neq[1];k++){sum+=z[kref+k]*temp_array[k];}
-      printf("U^T*M*U=%f for eigenmode %d\n",j+1,sum);
-
-      /* check for the maximum */
-
-      /*      for(k=0;k<neq[1];k++){
-	if(fabs(z[kref+k])>zmax){
-	  zmax=fabs(z[kref+k]);
-	  kmax=k;
-	}
-      }
-      zmax=z[kref+k];*/
-      
-      /* normalizing the eigenmode (if not yet normalized by ARPACK */
-      
-      /*      if((fabs(sum-1.)>1.e-5)&&(sum>0.)){
-	printf("sum=%e\n");
-	printf("normalizing the eigenmode \n");
-	if(zmax>0.){
-	  for(k=0;k<neq[1];k++){z[kref+k]/=sqrt(sum);}
-	}else{
-	  for(k=0;k<neq[1];k++){z[kref+k]/=-sqrt(sum);}
-	}
-      }else if(zmax<0.){
-	for(k=0;k<neq[1];k++){z[kref+k]*=-1.;}
-	}*/
+      printf("U^T*M*U=%f for eigenmode %d\n",sum,j+1);
       
       if(fabs(sum-1.)>1.e-5){
 	printf("sum=%e\n",sum);
 	printf("normalizing the eigenmode \n");
-	for(k=0;k<neq[1];k++){z[kref+k]/sqrt(sum);}
+	for(k=0;k<neq[1];k++){z[kref+k]/=sqrt(sum);}
       }
     }
     
@@ -1198,12 +1210,8 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     }
   }
   
-  /*--------------------------------------------------------------------*/
-  /*
-    -----------
-    free memory
-    -----------
-  */
+  /*  free memory */
+
   if(*isolver==0){
 #ifdef SPOOLES
     spooles_cleanup();
@@ -1238,9 +1246,8 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     }
   }
 
-  if(mei[3]==1){
-    fclose(f1);
-  }
+  if(mei[3]==1){fclose(f1);}
+  if(fei[3]>0.){SFREE(smscale);}
 
   if(*iperturb!=0){
     if(ncont!=0){
@@ -1271,12 +1278,9 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
   }
   
   SFREE(adb);SFREE(aub);
-  //SFREE(temp_array);
 
   SFREE(v);SFREE(fn);SFREE(stn);SFREE(inum);SFREE(stx);SFREE(eme);
   SFREE(z);SFREE(d);SFREE(xstiff);
-
-  //SFREE(ipobody);
 
   if(*ithermal>1){SFREE(qfn);SFREE(qfx);}
 

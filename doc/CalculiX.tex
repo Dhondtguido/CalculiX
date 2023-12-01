@@ -23907,7 +23907,7 @@ the upper value of the requested frequency range, there is no
 guarantee that all eigenfrequencies within the requested range were
 calculated. If the PERTURBATION parameter is used in the *STEP card, the load active in the last *STATIC step, if any, will be taken as preload. Otherwise, no preload will be active.
 
-There are four optional parameters SOLVER, STORAGE, GLOBAL and CYCMPC.
+There are five optional parameters SOLVER, STORAGE, GLOBAL, CYCMPC and ALPHA.
 SOLVER specifies which solver is used to perform a
 decomposition of the linear equation system. This decomposition is done only
 once. It is repeatedly used in the iterative procedure determining the eigenvalues. The following solvers
@@ -23974,6 +23974,22 @@ cyclic MPC's and any other MPC's containing dependent nodes belonging to
 cyclic MPC's are removed before assembling the matrices. The CYCMPC parameter
 only makes sense if GLOBAL=YES, since only then are MPC's allowed. 
 
+The parameter ALPHA is only needed if the user wants to check the effect of
+selective mass scaling in an explicit dynamics calculation for the same
+structure. The maximum time step in a explicit dynamics calculation is
+governed by the time a wave needs to travers the smallest element in the
+mesh. This time can be increased by applying selective mass scaling, which
+manipulates the element mass matrices by drawing the mass onto the diagonal
+without changing it global value \cite{Olovsson}, \cite{Czech}. Still, this procedure may change the
+eigenfrequencies and eigenmodes of the structure, which may not be
+desirable. To check this, the user can simulate the mass scaling by defining a
+value for the numerical damping $\alpha$ and the minimum desired time step in
+the explicit dynamics calculation as the fourth argument underneath
+*FREQUENCY. Specifying a strictly positive value of the time step
+automatically leads to selective mass scaling. ALPHA takes a value between -1/3 and 0. It controls the dissipation of the high frequency
+response: lower numbers lead to increased numerical damping
+(\cite{Miranda}, \cite{Dhondt}). The default value is -0.05.
+
 For the iterative eigenvalue procedure ARPACK \cite{Lehoucq} is
 used. The eigenfrequencies are always stored in file jobname.dat. 
 
@@ -23985,13 +24001,16 @@ which may be zero due to previous steps, are set to zero.
 First line:
 \begin{itemize}
 \item *FREQUENCY
+\item Specify the parameter ALPHA and its value, if needed.
 \end{itemize}
 Second line:
 \begin{itemize}
 \item Number of eigenfrequencies desired.
 \item Lower value of requested eigenfrequency range (in cycles/time; default:0).
 \item Upper value of requested eigenfrequency range (in cycles/time;
-default: $\infty$).
+  default: $\infty$).
+\item Minimum time step allowed in an explicit dynamic calculation for the
+  same model.
 \end{itemize}
 
 \begin{verbatim}
@@ -24004,7 +24023,7 @@ Example:
 requests the calculation of the 10 lowest eigenfrequencies and corresponding eigenmodes. 
 
 \bigskip
-Example files: beam8f, beamf.
+Example files: beam8f, beamf, beamfsms, segmenttetsms.
 
 \subsection{\label{friction}*FRICTION}
 
@@ -38359,6 +38378,8 @@ jmax(2) &              maximum number of CFD increments \\
       fei[0]      &     tolerance (accuracy) \\
       fei[1]      &     lower value of requested frequency range \\
       fei[2]      &     upper value of requested frequency range \\
+      fei[3]      &     minimum time increment in an eventually subsequent
+!     explicit dynamics step \\
 \hline
 \multicolumn{2}{|p{12cm}|}{CYCLIC SYMMETRY CALCULATIONS}  \\
 \hline
