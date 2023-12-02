@@ -1,0 +1,18 @@
+**
+**   Structure: cantilever beam.
+**   Test objective: restart capability (*DYNAMIC, reading part).
+**   Before running this example, please run example beamwrite3
+**   and copy beamwrite3.rout to beamread3.rin
+**
+*RESTART,READ,STEP=1
+*STEP,NLGEOM,INC=100
+*DYNAMIC
+1.E-6,1.E-5
+*EL FILE
+*END STEP
+
+
+
+
+
+

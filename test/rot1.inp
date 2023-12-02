@@ -1,0 +1,37 @@
+**
+**   Structure: cantilever beam.
+**   Test objective: New rotational constraints in second step
+**
+*NODE, NSET=NS_ALL
+10, 0.0, 0.0, 0.0
+20, 0.2, 0.0, 0.0
+30, 0.4, 0.0, 0.0
+4,  0.6, 0.0, 0.0
+5,  0.8, 0.0, 0.0
+*ELEMENT, TYPE=B32, ELSET=ES_ALL
+3, 10, 20, 30
+5, 30, 4,  5
+*MATERIAL, NAME=M_EL
+*ELASTIC
+210000.0, 0.3
+*DENSITY
+7850.0
+*BEAM SECTION, MATERIAL=M_EL, ELSET=ES_ALL, SECTION=RECT
+0.03, 0.015
+0.0, 0.0, 1.0
+*BOUNDARY
+10, 1, 6
+*STEP
+*STATIC
+*CLOAD
+5,6,1.e-3
+*NODE PRINT,NSET=NS_ALL
+U
+*END STEP
+*STEP
+*STATIC
+*BOUNDARY,OP=NEW
+30,1,6
+*NODE PRINT,NSET=NS_ALL
+U
+*END STEP

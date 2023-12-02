@@ -1,0 +1,83 @@
+
+                        S T E P       1
+
+
+     E I G E N V A L U E   O U T P U T
+
+ MODE NO    EIGENVALUE                       FREQUENCY   
+                                     REAL PART            IMAGINARY PART
+                           (RAD/TIME)      (CYCLES/TIME     (RAD/TIME)
+
+      1   0.3337849E+09   0.1826978E+05   0.2907726E+04   0.0000000E+00
+      2   0.3360057E+09   0.1833046E+05   0.2917383E+04   0.0000000E+00
+      3   0.1050316E+10   0.3240858E+05   0.5157985E+04   0.0000000E+00
+      4   0.3603524E+10   0.6002936E+05   0.9553969E+04   0.0000000E+00
+
+     P A R T I C I P A T I O N   F A C T O R S
+
+MODE NO.   X-COMPONENT     Y-COMPONENT     Z-COMPONENT     X-ROTATION      Y-ROTATION      Z-ROTATION
+
+      1   0.1734723E-17   0.9483779E-01   0.3452394E-14   0.4741890E+01  -0.5342046E-12   0.1467666E+02
+      2   0.1301043E-16  -0.3440185E-14   0.9488764E-01   0.4744382E+01  -0.1467841E+02  -0.5329129E-12
+      3  -0.1234013E-16   0.1908196E-16   0.2428613E-16  -0.4134371E+01  -0.3552714E-14   0.3108624E-14
+      4  -0.1005303E+00   0.1729302E-16  -0.1301043E-17   0.1665335E-14   0.5026516E+01   0.5026516E+01
+
+     E F F E C T I V E   M O D A L   M A S S
+
+MODE NO.   X-COMPONENT     Y-COMPONENT     Z-COMPONENT     X-ROTATION      Y-ROTATION      Z-ROTATION
+
+      1   0.3009266E-35   0.8994207E-02   0.1191903E-28   0.2248552E+02   0.2853746E-24   0.2154044E+03
+      2   0.1692712E-33   0.1183488E-28   0.9003664E-02   0.2250916E+02   0.2154556E+03   0.2839962E-24
+      3   0.1522788E-33   0.3641211E-33   0.5898160E-33   0.1709302E+02   0.1262177E-28   0.9663546E-29
+      4   0.1010635E-01   0.2990487E-33   0.1692712E-35   0.2773339E-29   0.2526586E+02   0.2526586E+02
+TOTAL     0.1010635E-01   0.8994207E-02   0.9003664E-02   0.6208770E+02   0.2407214E+03   0.2406703E+03
+
+     T O T A L   E F F E C T I V E   M A S S
+
+MODE NO.   X-COMPONENT     Y-COMPONENT     Z-COMPONENT     X-ROTATION      Y-ROTATION      Z-ROTATION
+
+          0.1040000E-01   0.1040000E-01   0.1040000E-01   0.6933333E+02   0.2426667E+03   0.2426667E+03
+
+
+                        S T E P       2
+
+
+     D E S I G N   V A R I A B L E S
+
+VARIABLE ORIENTATION                                                              ROTATION VECTOR
+
+    1    OR1                                                                              Rx   
+    2    OR1                                                                              Ry   
+    3    OR1                                                                              Rz   
+
+     E I G E N V A L U E   S E N S I T I V I T Y
+
+EIGENVALUE      1   0.3338E+09
+
+OR1                                                                                 Rx  0.1406E+04
+OR1                                                                                 Ry -0.1772E+04
+OR1                                                                                 Rz  0.8690E+04
+
+     E I G E N V A L U E   S E N S I T I V I T Y
+
+EIGENVALUE      2   0.3360E+09
+
+OR1                                                                                 Rx -0.9147E+03
+OR1                                                                                 Ry -0.8601E+04
+OR1                                                                                 Rz -0.7180E+04
+
+     E I G E N V A L U E   S E N S I T I V I T Y
+
+EIGENVALUE      3   0.1050E+10
+
+OR1                                                                                 Rx -0.3876E-02
+OR1                                                                                 Ry -0.1170E+05
+OR1                                                                                 Rz  0.4924E+05
+
+     E I G E N V A L U E   S E N S I T I V I T Y
+
+EIGENVALUE      4   0.3604E+10
+
+OR1                                                                                 Rx  0.5330E+05
+OR1                                                                                 Ry -0.1542E+06
+OR1                                                                                 Rz -0.3978E+06

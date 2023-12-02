@@ -1,0 +1,71 @@
+**
+**   Structure: 1 element under tension.
+**   Test objective: single crystal material user routine.
+**                   one of the axis is along <123>
+**
+*HEADING
+Model: beam     Date: 10-Mar-1998
+*NODE, NSET=Nall
+       2,  1.00000e+00,  0.00000e+00,  0.00000e+00 
+      10,  5.00000e-01,  0.00000e+00,  0.00000e+00 
+      11,  7.50000e-01,  0.00000e+00,  0.00000e+00 
+      12,  1.00000e+00,  2.50000e-01,  0.00000e+00 
+      13,  1.00000e+00,  5.00000e-01,  0.00000e+00 
+      33,  1.00000e+00,  0.00000e+00,  5.00000e-01 
+      34,  1.00000e+00,  0.00000e+00,  1.00000e+00 
+      93,  5.00000e-01,  2.50000e-01,  0.00000e+00 
+      95,  5.00000e-01,  5.00000e-01,  0.00000e+00 
+      96,  7.50000e-01,  5.00000e-01,  0.00000e+00 
+     103,  5.00000e-01,  0.00000e+00,  5.00000e-01 
+     105,  5.00000e-01,  0.00000e+00,  1.00000e+00 
+     106,  7.50000e-01,  0.00000e+00,  1.00000e+00 
+     132,  1.00000e+00,  5.00000e-01,  5.00000e-01 
+     133,  1.00000e+00,  2.50000e-01,  1.00000e+00 
+     134,  1.00000e+00,  5.00000e-01,  1.00000e+00 
+     219,  5.00000e-01,  5.00000e-01,  5.00000e-01 
+     220,  5.00000e-01,  2.50000e-01,  1.00000e+00 
+     222,  5.00000e-01,  5.00000e-01,  1.00000e+00 
+     223,  7.50000e-01,  5.00000e-01,  1.00000e+00 
+*ELEMENT, TYPE=C3D20, ELSET=Eall
+     1,    10,     2,    13,    95,   105,    34,   134,   222,    11,    12,
+          96,    93,   106,   133,   223,   220,   103,    33,   132,   219
+*NSET,NSET=Nfixz 
+2, 
+10, 
+11, 
+12, 
+13, 
+93, 
+95, 
+96, 
+*NSET,NSET=END
+34,105,106,133,134,220,222,223
+*BOUNDARY
+Nfixz,3,3
+2,1,2
+10,2,2
+*ORIENTATION,NAME=OR1
+-3.,0.,1.,-2.,10.,-6.
+*MATERIAL,NAME=SINGLE_CRYSTAL
+*USER MATERIAL,CONSTANTS=21
+135468.,68655.,201207.,1550.,3.89,18.E4,1500.,1.5,
+100.,80.,-80.,500.,980.,3.89,9.E4,1500.,
+2.,100.,70.,-50.,400.
+*DEPVAR
+60
+*SOLID SECTION,ELSET=Eall,MATERIAL=SINGLE_CRYSTAL,ORIENTATION=OR1
+*STEP,INC=100,NLGEOM
+*STATIC
+0.72,72.
+*BOUNDARY
+END,3,3,.012
+*NODE PRINT,NSET=NALL
+U,RF
+*EL PRINT,ELSET=EALL,GLOBAL=YES
+S
+*NODE FILE
+U
+*EL FILE,POSITION=AVERAGED AT NODES,GLOBAL=YES
+S,SDV,NOE
+*END STEP
+

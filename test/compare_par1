@@ -1,0 +1,41 @@
+#!/bin/sh
+
+for i in *.inp; do
+
+#
+#       removing the old .dat and .frd file, if any
+#
+
+	rm -f ${i%.inp}.dat
+	rm -f ${i%.inp}.frd
+	rm -f ${i%.inp}.lst
+
+done
+
+for i in *.inp; do
+
+#
+#       take out some .inp files created by running the examples
+#
+	if [ $i = circ10pcent.rfn.inp ]
+	then
+	    continue
+	fi
+	
+	if [ $i = circ10p.rfn.inp ]
+	then
+	    continue
+	fi
+	
+	if [ $i = segmentsmooth.rfn.inp ]
+	then
+	    continue
+	fi
+
+#
+#       executing CalculiX and generating the .dat and
+#       the .frd file
+#
+            ~/CalculiX/src/CalculiX  ${i%.inp} >> ${i%.inp}.lst 2>&1 &
+	
+done

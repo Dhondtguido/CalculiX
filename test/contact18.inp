@@ -1,0 +1,77 @@
+**
+**   Structure: two cubes on top of each other.
+**   Test objective: first: static normal contact
+**                   then: dynamic shear contact
+**                   check of energy balance without slip
+**
+*NODE, NSET=Nall
+       1,  1.00000e+00,  1.00000e+00, -1.49012e-08 
+       2,  1.00000e+00,  0.00000e+00, -1.49012e-08 
+       3,  1.00000e+00,  0.00000e+00,  1.00000e+00 
+       4,  1.00000e+00,  1.00000e+00,  1.00000e+00 
+       5, -7.45058e-09,  1.00000e+00, -1.49012e-08 
+       6, -7.45058e-09,  0.00000e+00, -1.49012e-08 
+       7, -7.45058e-09,  0.00000e+00,  1.00000e+00 
+       8, -7.45058e-09,  1.00000e+00,  1.00000e+00 
+       9,  5.00000e-01,  6.41421e-01,  1.00000e+00 
+      10,  6.41421e-01,  5.00000e-01,  1.00000e+00 
+      11,  6.41421e-01,  5.00000e-01,  1.20000e+00 
+      12,  5.00000e-01,  6.41421e-01,  1.20000e+00 
+      13,  3.58579e-01,  5.00000e-01,  1.00000e+00 
+      14,  5.00000e-01,  3.58579e-01,  1.00000e+00 
+      15,  5.00000e-01,  3.58579e-01,  1.20000e+00 
+      16,  3.58579e-01,  5.00000e-01,  1.20000e+00 
+*ELEMENT, TYPE=C3D8, ELSET=Eall
+     1,     1,     2,     3,     4,     5,     6,     7,     8
+     2,     9,    10,    11,    12,    13,    14,    15,    16
+*NSET,NSET=Nfix 
+1, 
+2, 
+5, 
+6,3,4,7,8 
+*NSET,NSET=Nfixxy
+11,12,15,16
+*BOUNDARY
+Nfix,1,3
+Nfixxy,1,2
+*MATERIAL,NAME=EL
+*ELASTIC
+210000.,.3
+*DENSITY
+7.8E-9
+*SOLID SECTION,ELSET=Eall,MATERIAL=EL
+*SURFACE,NAME=Smast
+1,S5
+*SURFACE,NAME=Sslav
+2,S3
+*CONTACT PAIR,INTERACTION=SI1,TYPE=NODE TO SURFACE
+Sslav,Smast
+*SURFACE INTERACTION,NAME=SI1
+*SURFACE BEHAVIOR,PRESSURE-OVERCLOSURE=LINEAR
+1.E7,0.1
+*FRICTION
+1.E10,1.E5
+*AMPLITUDE,NAME=A1
+0.,1.,1.,1.
+*STEP,NLGEOM
+*STATIC
+1.e-20,1.e-20
+*DLOAD
+2,P5,100.
+*NODE FILE
+U,RF
+*EL FILE
+S,ENER
+*CONTACT FILE
+CSTRESS
+*END STEP
+*STEP,NLGEOM,INC=10000
+*DYNAMIC,EXPLICIT
+1.e-8,2.e-6
+*CLOAD,AMPLITUDE=A1
+13,1,1.
+*EL PRINT,ELSET=Eall,FREQUENCY=1000
+ELSE,ELKE,ENER
+*CONTACT PRINT,FREQUENCY=1000
+CELS
+*END STEP

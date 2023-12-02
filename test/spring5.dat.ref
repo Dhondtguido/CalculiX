@@ -1,0 +1,1434 @@
+
+                        S T E P       1
+
+
+     E I G E N V A L U E   O U T P U T
+
+ MODE NO    EIGENVALUE                       FREQUENCY   
+                                     REAL PART            IMAGINARY PART
+                           (RAD/TIME)      (CYCLES/TIME     (RAD/TIME)
+
+      1   0.1602493E+12   0.4003115E+06   0.6371156E+05   0.0000000E+00
+
+     P A R T I C I P A T I O N   F A C T O R S
+
+MODE NO.   X-COMPONENT     Y-COMPONENT     Z-COMPONENT     X-ROTATION      Y-ROTATION      Z-ROTATION
+
+      1   0.7899367E-05   0.0000000E+00   0.0000000E+00   0.0000000E+00   0.0000000E+00   0.0000000E+00
+
+     E F F E C T I V E   M O D A L   M A S S
+
+MODE NO.   X-COMPONENT     Y-COMPONENT     Z-COMPONENT     X-ROTATION      Y-ROTATION      Z-ROTATION
+
+      1   0.6240000E-10   0.0000000E+00   0.0000000E+00   0.0000000E+00   0.0000000E+00   0.0000000E+00
+TOTAL     0.6240000E-10   0.0000000E+00   0.0000000E+00   0.0000000E+00   0.0000000E+00   0.0000000E+00
+
+     T O T A L   E F F E C T I V E   M A S S
+
+MODE NO.   X-COMPONENT     Y-COMPONENT     Z-COMPONENT     X-ROTATION      Y-ROTATION      Z-ROTATION
+
+          0.6240000E-10   0.0000000E+00   0.0000000E+00   0.0000000E+00   0.2080000E-12   0.2080000E-12
+
+
+                        S T E P       2
+
+
+                                INCREMENT     1
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1000000E-06
+
+         2  3.204700E-04  0.000000E+00  0.000000E+00
+
+                                INCREMENT     2
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.2000000E-06
+
+         2  1.281367E-03  0.000000E+00  0.000000E+00
+
+                                INCREMENT     3
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.3000000E-06
+
+         2  2.881150E-03  0.000000E+00  0.000000E+00
+
+                                INCREMENT     4
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.4000000E-06
+
+         2  5.117257E-03  0.000000E+00  0.000000E+00
+
+                                INCREMENT     5
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.5000000E-06
+
+         2  7.986105E-03  0.000000E+00  0.000000E+00
+
+                                INCREMENT     6
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.6000000E-06
+
+         2  1.148310E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT     7
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.7000000E-06
+
+         2  1.560263E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT     8
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.8000000E-06
+
+         2  2.033810E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT     9
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.9000000E-06
+
+         2  2.568193E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT    10
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1000000E-05
+
+         2  3.162555E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT    11
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1100000E-05
+
+         2  3.815943E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT    12
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1200000E-05
+
+         2  4.527311E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT    13
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1300000E-05
+
+         2  5.295519E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT    14
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1400000E-05
+
+         2  6.119336E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT    15
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1500000E-05
+
+         2  6.997443E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT    16
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1600000E-05
+
+         2  7.928431E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT    17
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1700000E-05
+
+         2  8.910810E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT    18
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1800000E-05
+
+         2  9.943005E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT    19
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1900000E-05
+
+         2  1.102336E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    20
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.2000000E-05
+
+         2  1.215015E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    21
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.2100000E-05
+
+         2  1.332157E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    22
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.2200000E-05
+
+         2  1.453573E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    23
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.2300000E-05
+
+         2  1.579070E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    24
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.2400000E-05
+
+         2  1.708446E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    25
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.2500000E-05
+
+         2  1.841494E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    26
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.2600000E-05
+
+         2  1.978001E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    27
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.2700000E-05
+
+         2  2.117748E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    28
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.2800000E-05
+
+         2  2.260511E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    29
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.2900000E-05
+
+         2  2.406062E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    30
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.3000000E-05
+
+         2  2.554167E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    31
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.3100000E-05
+
+         2  2.704589E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    32
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.3200000E-05
+
+         2  2.857086E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    33
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.3300000E-05
+
+         2  3.011415E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    34
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.3400000E-05
+
+         2  3.167329E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    35
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.3500000E-05
+
+         2  3.324577E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    36
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.3600000E-05
+
+         2  3.482907E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    37
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.3700000E-05
+
+         2  3.642066E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    38
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.3800000E-05
+
+         2  3.801800E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    39
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.3900000E-05
+
+         2  3.961850E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    40
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.4000000E-05
+
+         2  4.121963E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    41
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.4100000E-05
+
+         2  4.281880E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    42
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.4200000E-05
+
+         2  4.441346E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    43
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.4300000E-05
+
+         2  4.600105E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    44
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.4400000E-05
+
+         2  4.757902E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    45
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.4500000E-05
+
+         2  4.914486E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    46
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.4600000E-05
+
+         2  5.069604E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    47
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.4700000E-05
+
+         2  5.223009E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    48
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.4800000E-05
+
+         2  5.374455E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    49
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.4900000E-05
+
+         2  5.523699E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    50
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.5000000E-05
+
+         2  5.670502E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    51
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.5100000E-05
+
+         2  5.814628E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    52
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.5200000E-05
+
+         2  5.955847E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    53
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.5300000E-05
+
+         2  6.093933E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    54
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.5400000E-05
+
+         2  6.228663E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    55
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.5500000E-05
+
+         2  6.359823E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    56
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.5600000E-05
+
+         2  6.487203E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    57
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.5700000E-05
+
+         2  6.610597E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    58
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.5800000E-05
+
+         2  6.729809E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    59
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.5900000E-05
+
+         2  6.844647E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    60
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.6000000E-05
+
+         2  6.954928E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    61
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.6100000E-05
+
+         2  7.060474E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    62
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.6200000E-05
+
+         2  7.161116E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    63
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.6300000E-05
+
+         2  7.256694E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    64
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.6400000E-05
+
+         2  7.347055E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    65
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.6500000E-05
+
+         2  7.432052E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    66
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.6600000E-05
+
+         2  7.511551E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    67
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.6700000E-05
+
+         2  7.585423E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    68
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.6800000E-05
+
+         2  7.653551E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    69
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.6900000E-05
+
+         2  7.715825E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    70
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.7000000E-05
+
+         2  7.772146E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    71
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.7100000E-05
+
+         2  7.822423E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    72
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.7200000E-05
+
+         2  7.866576E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    73
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.7300000E-05
+
+         2  7.904533E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    74
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.7400000E-05
+
+         2  7.936235E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    75
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.7500000E-05
+
+         2  7.961630E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    76
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.7600000E-05
+
+         2  7.980678E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    77
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.7700000E-05
+
+         2  7.993348E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    78
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.7800000E-05
+
+         2  7.999619E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    79
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.7900000E-05
+
+         2  7.999483E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    80
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.8000000E-05
+
+         2  7.992938E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    81
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.8100000E-05
+
+         2  7.979996E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    82
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.8200000E-05
+
+         2  7.960677E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    83
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.8300000E-05
+
+         2  7.935013E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    84
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.8400000E-05
+
+         2  7.903043E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    85
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.8500000E-05
+
+         2  7.864820E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    86
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.8600000E-05
+
+         2  7.820405E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    87
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.8700000E-05
+
+         2  7.769869E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    88
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.8800000E-05
+
+         2  7.713293E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    89
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.8900000E-05
+
+         2  7.650767E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    90
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.9000000E-05
+
+         2  7.582392E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    91
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.9100000E-05
+
+         2  7.508277E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    92
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.9200000E-05
+
+         2  7.428541E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    93
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.9300000E-05
+
+         2  7.343313E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    94
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.9400000E-05
+
+         2  7.252727E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    95
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.9500000E-05
+
+         2  7.156930E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    96
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.9600000E-05
+
+         2  7.056075E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    97
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.9700000E-05
+
+         2  6.950324E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    98
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.9800000E-05
+
+         2  6.839845E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT    99
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.9900000E-05
+
+         2  6.724817E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   100
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1000000E-04
+
+         2  6.605423E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   101
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1010000E-04
+
+         2  6.481855E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   102
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1020000E-04
+
+         2  6.354310E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   103
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1030000E-04
+
+         2  6.222994E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   104
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1040000E-04
+
+         2  6.088115E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   105
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1050000E-04
+
+         2  5.949892E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   106
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1060000E-04
+
+         2  5.808544E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   107
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1070000E-04
+
+         2  5.664299E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   108
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1080000E-04
+
+         2  5.517388E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   109
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1090000E-04
+
+         2  5.368045E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   110
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1100000E-04
+
+         2  5.216511E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   111
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1110000E-04
+
+         2  5.063028E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   112
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1120000E-04
+
+         2  4.907842E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   113
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1130000E-04
+
+         2  4.751201E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   114
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1140000E-04
+
+         2  4.593357E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   115
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1150000E-04
+
+         2  4.434563E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   116
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1160000E-04
+
+         2  4.275073E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   117
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1170000E-04
+
+         2  4.115142E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   118
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1180000E-04
+
+         2  3.955027E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   119
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1190000E-04
+
+         2  3.794985E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   120
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1200000E-04
+
+         2  3.635271E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   121
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1210000E-04
+
+         2  3.476142E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   122
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1220000E-04
+
+         2  3.317852E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   123
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1230000E-04
+
+         2  3.160656E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   124
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1240000E-04
+
+         2  3.004805E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   125
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1250000E-04
+
+         2  2.850549E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   126
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1260000E-04
+
+         2  2.698135E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   127
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1270000E-04
+
+         2  2.547807E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   128
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1280000E-04
+
+         2  2.399806E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   129
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1290000E-04
+
+         2  2.254370E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   130
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1300000E-04
+
+         2  2.111730E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   131
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1310000E-04
+
+         2  1.972117E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   132
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1320000E-04
+
+         2  1.835753E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   133
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1330000E-04
+
+         2  1.702857E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   134
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1340000E-04
+
+         2  1.573642E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   135
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1350000E-04
+
+         2  1.448315E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   136
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1360000E-04
+
+         2  1.327077E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   137
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1370000E-04
+
+         2  1.210122E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   138
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1380000E-04
+
+         2  1.097637E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   139
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1390000E-04
+
+         2  9.898028E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT   140
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1400000E-04
+
+         2  8.867922E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT   141
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1410000E-04
+
+         2  7.887702E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT   142
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1420000E-04
+
+         2  6.958937E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT   143
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1430000E-04
+
+         2  6.083115E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT   144
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1440000E-04
+
+         2  5.261641E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT   145
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1450000E-04
+
+         2  4.495831E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT   146
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1460000E-04
+
+         2  3.786911E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT   147
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1470000E-04
+
+         2  3.136017E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT   148
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1480000E-04
+
+         2  2.544192E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT   149
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1490000E-04
+
+         2  2.012385E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT   150
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1500000E-04
+
+         2  1.541448E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT   151
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1510000E-04
+
+         2  1.132134E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT   152
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1520000E-04
+
+         2  7.851011E-03  0.000000E+00  0.000000E+00
+
+                                INCREMENT   153
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1530000E-04
+
+         2  5.009039E-03  0.000000E+00  0.000000E+00
+
+                                INCREMENT   154
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1540000E-04
+
+         2  2.799980E-03  0.000000E+00  0.000000E+00
+
+                                INCREMENT   155
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1550000E-04
+
+         2  1.227375E-03  0.000000E+00  0.000000E+00
+
+                                INCREMENT   156
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1560000E-04
+
+         2  2.937439E-04  0.000000E+00  0.000000E+00
+
+                                INCREMENT   157
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1570000E-04
+
+         2  5.819610E-07  0.000000E+00  0.000000E+00
+
+                                INCREMENT   158
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1580000E-04
+
+         2  3.483591E-04  0.000000E+00  0.000000E+00
+
+                                INCREMENT   159
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1590000E-04
+
+         2  1.336518E-03  0.000000E+00  0.000000E+00
+
+                                INCREMENT   160
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1600000E-04
+
+         2  2.963476E-03  0.000000E+00  0.000000E+00
+
+                                INCREMENT   161
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1610000E-04
+
+         2  5.226625E-03  0.000000E+00  0.000000E+00
+
+                                INCREMENT   162
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1620000E-04
+
+         2  8.122340E-03  0.000000E+00  0.000000E+00
+
+                                INCREMENT   163
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1630000E-04
+
+         2  1.164598E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT   164
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1640000E-04
+
+         2  1.579190E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT   165
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1650000E-04
+
+         2  2.055346E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT   166
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1660000E-04
+
+         2  2.592302E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT   167
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1670000E-04
+
+         2  3.189199E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT   168
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1680000E-04
+
+         2  3.845080E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT   169
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1690000E-04
+
+         2  4.558894E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT   170
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1700000E-04
+
+         2  5.329498E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT   171
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1710000E-04
+
+         2  6.155656E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT   172
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1720000E-04
+
+         2  7.036045E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT   173
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1730000E-04
+
+         2  7.969254E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT   174
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1740000E-04
+
+         2  8.953789E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT   175
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1750000E-04
+
+         2  9.988070E-02  0.000000E+00  0.000000E+00
+
+                                INCREMENT   176
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1760000E-04
+
+         2  1.107044E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   177
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1770000E-04
+
+         2  1.219917E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   178
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1780000E-04
+
+         2  1.337245E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   179
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1790000E-04
+
+         2  1.458839E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   180
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1800000E-04
+
+         2  1.584505E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   181
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1810000E-04
+
+         2  1.714042E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   182
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1820000E-04
+
+         2  1.847242E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   183
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1830000E-04
+
+         2  1.983892E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   184
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1840000E-04
+
+         2  2.123772E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   185
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1850000E-04
+
+         2  2.266658E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   186
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1860000E-04
+
+         2  2.412323E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   187
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1870000E-04
+
+         2  2.560531E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   188
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1880000E-04
+
+         2  2.711046E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   189
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1890000E-04
+
+         2  2.863627E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   190
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1900000E-04
+
+         2  3.018029E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   191
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1910000E-04
+
+         2  3.174004E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   192
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1920000E-04
+
+         2  3.331303E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   193
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1930000E-04
+
+         2  3.489674E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   194
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1940000E-04
+
+         2  3.648863E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   195
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1950000E-04
+
+         2  3.808615E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   196
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1960000E-04
+
+         2  3.968674E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   197
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1970000E-04
+
+         2  4.128783E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   198
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1980000E-04
+
+         2  4.288686E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   199
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.1990000E-04
+
+         2  4.448127E-01  0.000000E+00  0.000000E+00
+
+                                INCREMENT   200
+
+
+ displacements (vx,vy,vz) for set ENDOFSPRING and time  0.2000000E-04
+
+         2  4.606850E-01  0.000000E+00  0.000000E+00

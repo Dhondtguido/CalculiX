@@ -1,0 +1,619 @@
+
+                        S T E P       1
+
+
+     E I G E N V A L U E   O U T P U T
+
+ MODE NO    EIGENVALUE                       FREQUENCY   
+                                     REAL PART            IMAGINARY PART
+                           (RAD/TIME)      (CYCLES/TIME     (RAD/TIME)
+
+      1   0.1602493E+12   0.4003115E+06   0.6371156E+05   0.0000000E+00
+
+     P A R T I C I P A T I O N   F A C T O R S
+
+MODE NO.   X-COMPONENT     Y-COMPONENT     Z-COMPONENT     X-ROTATION      Y-ROTATION      Z-ROTATION
+
+      1   0.7899367E-05   0.0000000E+00   0.0000000E+00   0.0000000E+00   0.0000000E+00   0.0000000E+00
+
+     E F F E C T I V E   M O D A L   M A S S
+
+MODE NO.   X-COMPONENT     Y-COMPONENT     Z-COMPONENT     X-ROTATION      Y-ROTATION      Z-ROTATION
+
+      1   0.6240000E-10   0.0000000E+00   0.0000000E+00   0.0000000E+00   0.0000000E+00   0.0000000E+00
+TOTAL     0.6240000E-10   0.0000000E+00   0.0000000E+00   0.0000000E+00   0.0000000E+00   0.0000000E+00
+
+     T O T A L   E F F E C T I V E   M A S S
+
+MODE NO.   X-COMPONENT     Y-COMPONENT     Z-COMPONENT     X-ROTATION      Y-ROTATION      Z-ROTATION
+
+          0.6240000E-10   0.0000000E+00   0.0000000E+00   0.0000000E+00   0.2080000E-12   0.2080000E-12
+
+
+                        S T E P       2
+
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6300000000000E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05   0.3407100E-04  -0.6071488E-04
+
+ displacements (vx,vy,vz) for set N2 and time  0.6300000E+05
+
+         2  4.312939E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6300000E+05
+
+         2 -7.685704E+00  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6301294907991E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05   0.3459589E-04  -0.6177089E-04
+
+ displacements (vx,vy,vz) for set N2 and time  0.6301295E+05
+
+         2  4.379384E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6301295E+05
+
+         2 -7.819381E+00  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6302695806620E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05   0.3518236E-04  -0.6295576E-04
+
+ displacements (vx,vy,vz) for set N2 and time  0.6302696E+05
+
+         2  4.453623E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6302696E+05
+
+         2 -7.969370E+00  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6304227474216E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05   0.3584687E-04  -0.6430467E-04
+
+ displacements (vx,vy,vz) for set N2 and time  0.6304227E+05
+
+         2  4.537741E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6304227E+05
+
+         2 -8.140124E+00  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6305925501264E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05   0.3661362E-04  -0.6586967E-04
+
+ displacements (vx,vy,vz) for set N2 and time  0.6305926E+05
+
+         2  4.634802E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6305926E+05
+
+         2 -8.338233E+00  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6307844079469E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05   0.3752050E-04  -0.6773268E-04
+
+ displacements (vx,vy,vz) for set N2 and time  0.6307844E+05
+
+         2  4.749601E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6307844E+05
+
+         2 -8.574065E+00  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6310072736389E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05   0.3863209E-04  -0.7003424E-04
+
+ displacements (vx,vy,vz) for set N2 and time  0.6310073E+05
+
+         2  4.890314E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6310073E+05
+
+         2 -8.865412E+00  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6312778751626E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05   0.4007354E-04  -0.7304903E-04
+
+ displacements (vx,vy,vz) for set N2 and time  0.6312779E+05
+
+         2  5.072782E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6312779E+05
+
+         2 -9.247044E+00  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6316348364649E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05   0.4214750E-04  -0.7744845E-04
+
+ displacements (vx,vy,vz) for set N2 and time  0.6316348E+05
+
+         2  5.335318E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6316348E+05
+
+         2 -9.803953E+00  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6322244906660E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05   0.4608342E-04  -0.8600823E-04
+
+ displacements (vx,vy,vz) for set N2 and time  0.6322245E+05
+
+         2  5.833554E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6322245E+05
+
+         2 -1.088751E+01  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6348911035498E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05   0.7866937E-04  -0.1716791E-03
+
+ displacements (vx,vy,vz) for set N2 and time  0.6348911E+05
+
+         2  9.958506E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6348911E+05
+
+         2 -2.173231E+01  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6354807577509E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05   0.9186868E-04  -0.2195472E-03
+
+ displacements (vx,vy,vz) for set N2 and time  0.6354808E+05
+
+         2  1.162936E+01  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6354808E+05
+
+         2 -2.779179E+01  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6358377190531E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05   0.1010649E-03  -0.2635907E-03
+
+ displacements (vx,vy,vz) for set N2 and time  0.6358377E+05
+
+         2  1.279349E+01  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6358377E+05
+
+         2 -3.336712E+01  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6361083205769E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05   0.1078402E-03  -0.3102085E-03
+
+ displacements (vx,vy,vz) for set N2 and time  0.6361083E+05
+
+         2  1.365115E+01  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6361083E+05
+
+         2 -3.926831E+01  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6363311862689E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05   0.1119046E-03  -0.3621822E-03
+
+ displacements (vx,vy,vz) for set N2 and time  0.6363312E+05
+
+         2  1.416565E+01  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6363312E+05
+
+         2 -4.584749E+01  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6365230440894E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05   0.1121048E-03  -0.4218647E-03
+
+ displacements (vx,vy,vz) for set N2 and time  0.6365230E+05
+
+         2  1.419099E+01  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6365230E+05
+
+         2 -5.340251E+01  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6366928467942E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05   0.1062639E-03  -0.4917609E-03
+
+ displacements (vx,vy,vz) for set N2 and time  0.6366928E+05
+
+         2  1.345161E+01  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6366928E+05
+
+         2 -6.225046E+01  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6368460135538E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05   0.9061455E-04  -0.5746544E-03
+
+ displacements (vx,vy,vz) for set N2 and time  0.6368460E+05
+
+         2  1.147061E+01  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6368460E+05
+
+         2 -7.274368E+01  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6369861034167E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05   0.5875861E-04  -0.6733339E-03
+
+ displacements (vx,vy,vz) for set N2 and time  0.6369861E+05
+
+         2  7.438065E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6369861E+05
+
+         2 -8.523520E+01  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6371155942158E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05   0.0000000E+00  -0.7894209E-03
+
+ displacements (vx,vy,vz) for set N2 and time  0.6371156E+05
+
+         2  0.000000E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6371156E+05
+
+         2 -9.993028E+01  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6371680851250E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05  -0.2396078E-04  -0.6774347E-03
+
+ displacements (vx,vy,vz) for set N2 and time  0.6371681E+05
+
+         2 -3.033119E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6371681E+05
+
+         2 -8.575431E+01  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6372248725132E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05  -0.3746003E-04  -0.5862098E-03
+
+ displacements (vx,vy,vz) for set N2 and time  0.6372249E+05
+
+         2 -4.741947E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6372249E+05
+
+         2 -7.420643E+01  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6372869608046E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05  -0.4468278E-04  -0.5103393E-03
+
+ displacements (vx,vy,vz) for set N2 and time  0.6372870E+05
+
+         2 -5.656251E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6372870E+05
+
+         2 -6.460223E+01  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6373557927094E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05  -0.4800194E-04  -0.4459034E-03
+
+ displacements (vx,vy,vz) for set N2 and time  0.6373558E+05
+
+         2 -6.076413E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6373558E+05
+
+         2 -5.644549E+01  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6374335649643E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05  -0.4880063E-04  -0.3899691E-03
+
+ displacements (vx,vy,vz) for set N2 and time  0.6374336E+05
+
+         2 -6.177516E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6374336E+05
+
+         2 -4.936495E+01  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6375239066943E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05  -0.4788651E-04  -0.3401884E-03
+
+ displacements (vx,vy,vz) for set N2 and time  0.6375239E+05
+
+         2 -6.061801E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6375239E+05
+
+         2 -4.306337E+01  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6376335988123E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05  -0.4569239E-04  -0.2943998E-03
+
+ displacements (vx,vy,vz) for set N2 and time  0.6376336E+05
+
+         2 -5.784054E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6376336E+05
+
+         2 -3.726714E+01  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6377782980762E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05  -0.4231216E-04  -0.2498974E-03
+
+ displacements (vx,vy,vz) for set N2 and time  0.6377783E+05
+
+         2 -5.356162E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6377783E+05
+
+         2 -3.163371E+01  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6380173226659E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05  -0.3703149E-04  -0.1998494E-03
+
+ displacements (vx,vy,vz) for set N2 and time  0.6380173E+05
+
+         2 -4.687698E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6380173E+05
+
+         2 -2.529831E+01  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6390982715499E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05  -0.2260178E-04  -0.1046268E-03
+
+ displacements (vx,vy,vz) for set N2 and time  0.6390983E+05
+
+         2 -2.861087E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6390983E+05
+
+         2 -1.324438E+01  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6393372961396E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05  -0.2074827E-04  -0.9462645E-04
+
+ displacements (vx,vy,vz) for set N2 and time  0.6393373E+05
+
+         2 -2.626457E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6393373E+05
+
+         2 -1.197846E+01  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6394819954035E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05  -0.1976275E-04  -0.8944713E-04
+
+ displacements (vx,vy,vz) for set N2 and time  0.6394820E+05
+
+         2 -2.501704E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6394820E+05
+
+         2 -1.132283E+01  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6395916875215E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05  -0.1907423E-04  -0.8588206E-04
+
+ displacements (vx,vy,vz) for set N2 and time  0.6395917E+05
+
+         2 -2.414547E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6395917E+05
+
+         2 -1.087154E+01  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6396820292515E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05  -0.1854130E-04  -0.8315159E-04
+
+ displacements (vx,vy,vz) for set N2 and time  0.6396820E+05
+
+         2 -2.347084E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6396820E+05
+
+         2 -1.052590E+01  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6397598015063E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05  -0.1810523E-04  -0.8093575E-04
+
+ displacements (vx,vy,vz) for set N2 and time  0.6397598E+05
+
+         2 -2.291883E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6397598E+05
+
+         2 -1.024540E+01  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6398286334112E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05  -0.1773565E-04  -0.7907043E-04
+
+ displacements (vx,vy,vz) for set N2 and time  0.6398286E+05
+
+         2 -2.245099E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6398286E+05
+
+         2 -1.000927E+01  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6398907217026E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05  -0.1741469E-04  -0.7745976E-04
+
+ displacements (vx,vy,vz) for set N2 and time  0.6398907E+05
+
+         2 -2.204471E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6398907E+05
+
+         2 -9.805385E+00  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6399475090908E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05  -0.1713092E-04  -0.7604274E-04
+
+ displacements (vx,vy,vz) for set N2 and time  0.6399475E+05
+
+         2 -2.168549E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6399475E+05
+
+         2 -9.626008E+00  0.000000E+00  0.000000E+00
+
+P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.6400000000000E+05 (CYCLES/TIME)
+
+ MODE NO    FREQUENCY               FACTOR
+           (CYCLES/TIME)      REAL        IMAGINARY
+
+      1   0.6371156E+05  -0.1687654E-04  -0.7477804E-04
+
+ displacements (vx,vy,vz) for set N2 and time  0.6400000E+05
+
+         2 -2.136348E+00  0.000000E+00  0.000000E+00
+
+ displacements (vx,vy,vz) for set N2 and time  0.6400000E+05
+
+         2 -9.465914E+00  0.000000E+00  0.000000E+00

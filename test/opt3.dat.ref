@@ -1,0 +1,36 @@
+
+                        S T E P       2
+
+
+   ##############################################################################################################
+   D E S I G N   R E S P O N S E                    I N F O R M A T I O N
+
+   FUNCTION        FUNCTION VALUE    LENGTH GRADIENT   NAME                                                        
+   ##############################################################################################################
+
+   MISESSTRESS      0.1149448E+01      0.2332680E+01   STRESS_RESP                                                                     
+   MASS             0.6215406E-07      0.9909751E-07   MASS_RESP                                                                       
+
+                        S T E P       3
+
+
+
+   ##############################################################################################################
+   A S S E M B L Y   O F   A C T I V E   S E T
+
+   NUMBER OF    CONSTRAINT      LE/     FUNCTION         FUNCTION         FUNCTION        ACTIVE/    NAME OF
+   CONSTRAINT   FUNCTION        GE      VALUE            BOUND            VIOLATION       INACTIVE   CONSTRAINT
+   ##############################################################################################################
+
+    1           MASS            LE      0.6215406E-07    0.6215406E-07    0.0000000E+00   ACTIVE     MASS_RESP                                                                       
+
+
+   #######################################             #####################################
+   L A G R A N G E   M U L T I P L I E R S             1ST   I T E R A T I O N
+
+   NUMBER OF                                               CONSTRAINT      LE/     LAGRANGE        ACTIVE/       NAME OF
+   CONSTRAINT                                             FUNCTION        GE      MULTIPLIER      INACTIVE   CONSTRAINT
+   #######################################             #####################################
+
+    1           MASS            LE     -0.8933577E+00   INACTIVE   MASS_RESP                                                                       
+

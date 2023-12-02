@@ -5305,3 +5305,7 @@ Dec 2002        - started to work on single crystal plasticity
                 - finished the documentation on Abaqus umat-routines.
 
  1 Dec 2023     - introduced selective mass scaling for frequency calculations
+
+ 2 Dec 2023     - modified umat_aniso_creep.f
+                - modified calcstabletimeincvol.f
+		

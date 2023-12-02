@@ -101,7 +101,7 @@
 !     alpha method is not used for massless contact)
 !     
 c      if(mortar.ne.-1) then
-c        safefac=0.50d0
+cc        safefac=0.50d0
 c        safefac=0.80d0
 c      else
         safefac=0.80d0/1.3d0
@@ -183,7 +183,8 @@ c        write(*,*) 'calcstabletimeincvol ',nelem
             nope=8
             nopes=4
             nfaces=6
-            if(mortar.eq.-1) elemfac=0.9d0
+c            if(mortar.eq.-1) elemfac=0.9d0
+            elemfac=0.9d0
           elseif(lakon(nelem)(4:5).eq.'10')then
             nope=10
             nopes=6

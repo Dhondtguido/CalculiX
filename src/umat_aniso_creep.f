@@ -519,16 +519,26 @@ c         if(exitcriterion.eq.1) exit
         if(iloop.gt.1) then
           if((dabs(htri).le.1.d-5).or.(dabs(ddg).lt.1.d-3*dabs(dg)))
      &         then
-          dd=0.d0
-          do i=1,6
-            dd=dd+r(i)*r(i)
-          enddo
-          dd=sqrt(dd)
-          if(dd.le.1.d-10) then
+            dd=0.d0
+            do i=1,6
+              dd=dd+r(i)*r(i)
+            enddo
+            dd=sqrt(dd)
+            if(dd.le.1.d-10) then
+              exit
+            endif
+          endif
+          if(iloop.eq.99) then
+            if(dabs(ddg).gt.1.d-7) then
+              write(*,*) '*WARNING in umat_aniso_creep: convergence'
+              write(*,*) '         not satisfactory: change in'
+              write(*,*) '         consistency parameter exceeds'
+              write(*,*) '         1.d-7; value: ',ddg
+              write(*,*) '         in element:',iel
+            endif
             exit
           endif
         endif
-      endif
 !     
 !     determining b.x
 !     
