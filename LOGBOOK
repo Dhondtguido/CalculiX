@@ -5309,3 +5309,4 @@ Dec 2002        - started to work on single crystal plasticity
  2 Dec 2023     - modified umat_aniso_creep.f
                 - modified calcstabletimeincvol.f
 		
+ 3 Dec 2023     - modified the calculation of the crack length.

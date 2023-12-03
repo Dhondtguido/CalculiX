@@ -35,6 +35,7 @@ applybounp.f \
 approxplane.f \
 assigndomtonodes.f \
 attach_1d.f \
+attach_1d_cracklength.f \
 attach_2d.f \
 attach_3d.f \
 attachline.f \
@@ -236,6 +237,7 @@ dgmres.f \
 discontinuousslope.f \
 disp_sen_dv.f \
 distattach_1d.f \
+distattach_1d_cracklength.f \
 distattach_2d.f \
 distattach_3d.f \
 distattachline.f \

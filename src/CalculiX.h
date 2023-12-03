@@ -982,7 +982,8 @@ void FORTRAN(cracklength,(ITG *ncrack,ITG *istartcrackfro,ITG *iendcrackfro,
 			  ITG *nnfront,ITG *isubcrackfront,ITG *ifrontrel,
 			  ITG *ifront,double *posfront,
 			  double *doubleglob,ITG *integerglob,
-			  ITG *nproc,ITG *iinc,double *acrackglob,ITG *ier));
+			  ITG *nproc,ITG *iinc,double *acrackglob,ITG *ier,
+			  ITG *nbounnod));
 
 void FORTRAN(cracklength_smoothing,(ITG *nnfront,ITG *isubsurffront,
 				    ITG *istartfront,ITG *iendfront,

@@ -16,24 +16,28 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-      subroutine attach_1d(pneigh,pnode,nterms,ratio,dist,xil)
+      subroutine attach_1d_cracklength(pneigh,ratio,dist,xil,
+     &     xo,yo,zo,x,y,z,nx,ny,nz,n,pnode)
 !
-!     attaches node with coordinates in "pnode" to the line containing 
-!     "nterms" nodes with coordinates in field "pneigh" (nterms < 9).
+!     searches a position on the line containing 
+!     2 nodes with coordinates in field "pneigh" which
+!     maximizes the minimum distance from all front nodes
+!     of a crack
+!
 !     cave: the coordinates are stored in pneigh(1..3,*)
 !
       implicit none
 !
-      integer nterms,i,k,imin,im
+      integer i,k,imin,im,nx(*),ny(*),nz(*),n
 !
-      real*8 ratio(3),pneigh(3,3),pnode(3),a,xi(-1:1),
-     &  p(3),distmin,d1,dist,xil
+      real*8 ratio(3),pneigh(3,3),a,xi(-1:1),p(3),distmin,d1,dist,xil,
+     &     xo(*),yo(*),zo(*),x(*),y(*),z(*),pnode(*)
 !
       d1=1.d0
 !
       xi(0)=0.d0
-      call distattach_1d(xi(0),pneigh,pnode,a,p,
-     &     ratio,nterms)
+      call distattach_1d_cracklength(xi(0),pneigh,a,p,ratio,
+     &     xo,yo,zo,x,y,z,nx,ny,nz,n)
       distmin=a
       imin=0
 !
@@ -52,8 +56,8 @@
 !
             if((xi(i).le.1.d0).and.
      &           (xi(i).ge.-1.d0)) then
-               call distattach_1d(xi(i),pneigh,pnode,a,p,
-     &              ratio,nterms)
+               call distattach_1d_cracklength(xi(i),pneigh,a,p,ratio,
+     &     xo,yo,zo,x,y,z,nx,ny,nz,n)
 !     
 !                 checking for smallest initial distance
 !     
@@ -90,8 +94,8 @@
 !
                   if((xi(i).le.1.d0).and.
      &                 (xi(i).ge.-1.d0)) then
-                     call distattach_1d(xi(i),pneigh,
-     &                    pnode,a,p,ratio,nterms)
+                     call distattach_1d_cracklength(xi(i),pneigh,
+     &                    a,p,ratio,xo,yo,zo,x,y,z,nx,ny,nz,n)
 !
 !                       check for new minimum
 !
@@ -106,8 +110,8 @@
          enddo
       enddo
 !
-      call distattach_1d(xi(0),pneigh,pnode,a,p,
-     &     ratio,nterms)
+      call distattach_1d_cracklength(xi(0),pneigh,a,p,ratio,
+     &     xo,yo,zo,x,y,z,nx,ny,nz,n)
 !
       do i=1,3
         pnode(i)=p(i)
