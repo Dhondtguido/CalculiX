@@ -20,7 +20,7 @@
      &     co,istartcrackbou,iendcrackbou,costruc,ibounnod,xt,acrack,
      &     istartfront,iendfront,nnfront,isubsurffront,ifrontrel,
      &     ifront,posfront,doubleglob,integerglob,
-     &     nproc,iinc,acrackglob,ier,nbounnod)
+     &     nproc,iinc,acrackglob,ier,nbounnod,nfront)
 !     
 !     determine for each crack front node
 !     1. a crack length based on the previous crack length augmented
@@ -37,7 +37,7 @@
      &     nnfront,jrel,ifrontrel(*),integerglob(*),nterms,nselect,
      &     node,nktet,nkon,nfield,nfaces,netet,nelem,ne,loopa,
      &     konl(20),istartset(1),iendset(1),ialset(1),iselect(1),
-     &     imastset,nproc,iinc,ier,n,kflag,nbounnod,indexn
+     &     imastset,nproc,iinc,ier,n,kflag,nbounnod,indexn,nfront
 !
       integer,dimension(:),allocatable::nx,ny,nz
 !     
@@ -74,7 +74,7 @@ c        write(*,*) '(nproc=1 in all but first increment) '
 c        write(*,*)
 !        
         do i=1,nnfront
-          do j=istartfront(i),iendfront(i)-1
+          do j=istartfront(i)+1,iendfront(i)-1
             node=ifront(j)
             acrack(j)=acrackglob(node)
           enddo
@@ -85,26 +85,26 @@ c        write(*,*)
 !      
       if((nproc.ge.2).or.(iinc.eq.0)) then
 !     
-        allocate(nx(nbounnod))
-        allocate(ny(nbounnod))
-        allocate(nz(nbounnod))
-        allocate(xo(nbounnod))
-        allocate(yo(nbounnod))
-        allocate(zo(nbounnod))
-        allocate(x(nbounnod))
-        allocate(y(nbounnod))
-        allocate(z(nbounnod))
+        allocate(nx(nfront))
+        allocate(ny(nfront))
+        allocate(nz(nfront))
+        allocate(xo(nfront))
+        allocate(yo(nfront))
+        allocate(zo(nfront))
+        allocate(x(nfront))
+        allocate(y(nfront))
+        allocate(z(nfront))
 !     
         do i=1,ncrack
 !
 !         catalogueing all nodes belonging to the crack
 !
-          n=iendcrackbou(i)-istartcrackbou(i)+1
+          n=iendcrackfro(i)-istartcrackfro(i)+1
           do k=1,n
-            indexn=istartcrackbou(i)-1
-            xo(k)=costruc(1,indexn+k)
-            yo(k)=costruc(2,indexn+k)
-            zo(k)=costruc(3,indexn+k)
+            indexn=istartcrackfro(i)-1
+            xo(k)=costruc(1,ifrontrel(indexn+k))
+            yo(k)=costruc(2,ifrontrel(indexn+k))
+            zo(k)=costruc(3,ifrontrel(indexn+k))
             x(k)=xo(k)
             y(k)=yo(k)
             z(k)=zo(k)
@@ -119,7 +119,7 @@ c        write(*,*)
 !     
 !     loop over all nodes belonging to the crack front(s)
 !     
-          do j=istartcrackfro(i),iendcrackfro(i)          
+          do j=istartcrackfro(i)+1,iendcrackfro(i)-1          
 !     
 !     equation of plane through node and orthogonal to the local
 !     tangent
@@ -182,7 +182,8 @@ c            acrack(j)=a
             call attach_1d_cracklength(pneigh,ratio,dist,xil,
      &           xo,yo,zo,x,y,z,nx,ny,nz,n,pnode)
             acrack(j)=dist
-            acrack(j)=a
+            write(*,*) 'dist,a ',dist,a
+c            acrack(j)=a
           enddo
         enddo
         deallocate(nx)
@@ -249,7 +250,7 @@ c        else
 !
 !     check whether any crack length was not found
 !
-          do j=istartfront(i),iendfront(i)
+          do j=istartfront(i)+1,iendfront(i)-1
             if(acrack(j).eq.1.d30) then
               write(*,*) '*ERROR in cracklength: crack'
               write(*,*) '       length could not be determined'

@@ -2,7 +2,6 @@
 **   Structure: plate.
 **   Test objective: C3D8 elements
 **                   strain energy sensitivity
-**                   cf. planestresssens and planestressquadsens
 **
 *NODE, NSET=Nall
       22,-7.450579986301e-09,-7.450579986301e-09,-5.000000000000e-03

@@ -117,7 +117,7 @@
         pnode(i)=p(i)
       enddo
 !
-      dist=dsqrt(a)
+      dist=dsqrt(-a)
       xil=xi(0)
 !     
       return

@@ -5310,3 +5310,5 @@ Dec 2002        - started to work on single crystal plasticity
                 - modified calcstabletimeincvol.f
 		
  3 Dec 2023     - modified the calculation of the crack length.
+
+ 5 Dec 2023     - check crack length modification.

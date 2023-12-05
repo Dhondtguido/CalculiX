@@ -50,8 +50,8 @@
 !     calculating the negative distance (maximum is sought, not
 !     minimum)
 !
-      a=-((xo(neigh(1))-p(1))**2+(xo(neigh(2))-p(2))**2
-     &     +(xo(neigh(3))-p(3))**2)
+      a=-((xo(neigh(1))-p(1))**2+(yo(neigh(1))-p(2))**2
+     &     +(zo(neigh(1))-p(3))**2)
 !
       return
       end

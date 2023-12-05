@@ -1,7 +1,6 @@
 **
 **   Structure: one elements.
 **   Test objective: sensitivity: internal energy w.r.t. coordinates.
-**                   comparison with corresponding 2d-example (sens2d)
 **
 *NODE, NSET=NALL
          1,  100.0          ,  0.0            ,  100.0          
