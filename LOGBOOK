@@ -5314,3 +5314,5 @@ Dec 2002        - started to work on single crystal plasticity
  5 Dec 2023     - check crack length modification.
 
  8 Dec 2023     - finished crack length modification.
+                - provided a solution for zero coefficients in the
+		  cascade.c routine

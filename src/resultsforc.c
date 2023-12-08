@@ -39,7 +39,6 @@ void resultsforc(ITG *nk,double *f,double *fn,ITG *nactdof,ITG *ipompc,
     
     if(*calcul_fn==1){
 	for(i=0;i<*nmpc;i++){
-	    if(strcmp1(&labmpc[20*i],"FLUID")==0) continue;
 	    ist=ipompc[i]-1;
 	    node=nodempc[3*ist]-1;
 	    ndir=nodempc[3*ist+1];
@@ -76,7 +75,6 @@ void resultsforc(ITG *nk,double *f,double *fn,ITG *nactdof,ITG *ipompc,
 
     if(*calcul_fn==1){
 	for(i=0;i<*nmpc;i++){
-	    if(strcmp1(&labmpc[20*i],"FLUID")==0) continue;
 	    ist=ipompc[i]-1;
 	    node=nodempc[3*ist]-1;
 	    ndir=nodempc[3*ist+1];
