@@ -1038,7 +1038,6 @@
 !     
             Tt0=v(0,node0)
             xflow0=iaxial*v(1,nodem0)
-c            xflow0=v(1,nodem0)
             pt0=v(2,node0)
 !     
             Qred_0=dabs(xflow0)*dsqrt(Tt0)/(A0*pt0)
@@ -1054,7 +1053,6 @@ c            xflow0=v(1,nodem0)
 !     
             Tt1=v(0,node1)
             xflow1=iaxial*v(1,nodem1)
-c            xflow1=v(1,nodem1)
             pt1=v(2,node0)
 !     
             Qred_1=dabs(xflow1)*dsqrt(Tt1)/(A1*pt1)
@@ -1070,7 +1068,6 @@ c            xflow1=v(1,nodem1)
 !     
             Tt2=v(0,node2)
             xflow2=iaxial*v(1,nodem2)
-c            xflow2=v(1,nodem2)
             pt2=v(2,node0)
 !     
             Qred_2=dabs(xflow2)*dsqrt(Tt2)/(A2*pt2)
@@ -1089,6 +1086,9 @@ c            xflow2=v(1,nodem2)
             rho0=1.d0
             rho1=1.d0
             rho2=1.d0
+            xflow0=iaxial*v(1,nodem0)
+            xflow1=iaxial*v(1,nodem1)
+            xflow2=iaxial*v(1,nodem2)
          endif
 !     
 !     volumic flows (positive)

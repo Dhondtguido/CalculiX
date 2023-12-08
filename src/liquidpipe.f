@@ -742,7 +742,8 @@
             endif
             if(inv.ne.0) then
                call zeta_calc(nelem,prop,ielprop,lakon,reynolds,zeta,
-     &              isothermal,kon,ipkon,R,Kappa,v,mi,iaxial)
+     &             isothermal,kon,ipkon,R,Kappa,v,mi,iaxial)
+c               write(*,*) 'zeta= ',zeta
                xk=zeta/(a*a)
             else
 !

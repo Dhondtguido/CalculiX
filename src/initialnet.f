@@ -1014,10 +1014,10 @@ c     &         (lakon(nelem)(2:4).ne.'RTA')) then
         node=itg(i)
         if(v(2,node).eq.1.235711d-10) v(2,node)=0.d0
       enddo
-c     write(*,*) 'initialnet '
-c     do i=1,ntg
-c     write(*,'(i10,3(1x,e11.4))') itg(i),(v(j,itg(i)),j=0,2)
-c     enddo
+      write(*,*) 'initialnet '
+      do i=1,ntg
+        write(*,'(i10,3(1x,e11.4))') itg(i),(v(j,itg(i)),j=0,2)
+      enddo
 !     
       return
       end

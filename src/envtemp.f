@@ -746,15 +746,15 @@
           endif 
         enddo
       enddo
-c     
+!     
 c      open(30,file='dummy',status='unknown')
-c      write(30,*) 'nactdog'
+c      write(30,*) 'envtemp nactdog'
 c      do i=1,ntg
 c        write(30,*) itg(i),(nactdog(j,itg(i)),j=0,3)
 c      enddo
 c
 c      write(30,*) ''
-c      write(30,*) 'nacteq'
+c      write(30,*) 'envtemp nacteq'
 c      do i=1,ntg
 c        write(30,*) itg(i),(nacteq(j,itg(i)),j=0,3)
 c      enddo

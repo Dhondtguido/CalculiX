@@ -167,10 +167,6 @@
 !     
         enddo
       enddo
-c     write(*,*) 'resultnet'
-c     write(*,*) 'mass flow in node 3: ',v(1,3)
-c     write(*,*) 'pressure in node 4: ',v(2,4)
-c     write(*,*) 'mass flow in node 5: ',v(1,5)
 !     
 !     update geometry changes
 !     
@@ -215,11 +211,11 @@ c     write(*,*) 'mass flow in node 5: ',v(1,5)
         endif
       enddo
 !     
-c     write(*,*) 'resultnet'
-c     do i=1,ntg
-c     node=itg(i)
-c     write(*,'(i10,3(1x,e11.4))') node,(v(j,node),j=0,2)
-c     enddo
+      write(*,*) 'resultnet'
+      do i=1,ntg
+      node=itg(i)
+      write(*,'(i10,3(1x,e11.4))') node,(v(j,node),j=0,2)
+      enddo
 !     
 !     testing the validity of the pressures
 !     
@@ -1206,11 +1202,6 @@ c          call nident(itg,node,ntg,id)
           ramp=max(ramp,dabs(bc(nacteq(2,node))))
         endif
       enddo
-!     
-c     write(*,*) 'bc in resultnet'
-c     do i=1,3
-c     write(*,'(1x,e11.4)') bc(i)
-c     enddo
 !     
       return
       end

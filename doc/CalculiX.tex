@@ -17024,14 +17024,17 @@ In CalculiX, the following crack propagation law has been implemented:
          initial crack length. The initial length is determined using the
          LENGTH=INTERSECTION method.
        \item for LENGTH=INTERSECTION a plane locally orthogonal to the
-         crack front is constructed and subsequently a second intersection
-         of this plane with the crack front is sought. The distance in
-         between these intersection points is the crack length (except for
-         a subsurface crack for which this length is divided by two). Notice
-         that for intersection purposes the crack front for a surface
-         crack is artificially closed by the
-         intersection curve of the crack shape with the free surface in
-         between the intersection points of the crack front.
+         crack front e.g. at location $p_1$ of the crack front is constructed and subsequently a
+         second intersection $p_2$
+         of this plane with the crack boundary is sought. The crack boundary
+         is the outer line of that part of the shell mesh which is inside the
+         structure. It consists of one or more crack front(s) and for surface
+         cracks of intersection(s) of the shell mesh with the outer surface of
+         the structure. Then, a point $p_3$ on the
+         straight line between $p_1$ and $p_2$ is determined, which maximizes
+         the minimum distance between $p_3$ and any node along the crack
+         front(s) belonging to the crack at stake. The distance between $p_1$
+         and $p_3$ is the crack length
        \end{itemize}
 
        Subsequently, the crack length is smoothed along the crack front
@@ -36912,7 +36915,12 @@ Subsequently, in each iteration the following actions are taken:
     what other edge (but not immediately adjacent) along the closed crack
     front is cut by this plane (using fields such as ibounedg). An edge is
     cut by a plane if the substitution of the coordinates of its nodes into
-    the plane equation yields results with a different sign.
+    the plane equation yields results with a different sign. In between the
+    front node and the intersection point a position is determined which
+    maximizes the minimum distance from any front node belonging to the
+    crack (using attach\_1d\_cracklength.f, distattach\_1d\_cracklength.f and
+    near3d.f) . The distance between this position and the front node is defined as
+    the crack length.
 
   \begin{figure}
     \centering
