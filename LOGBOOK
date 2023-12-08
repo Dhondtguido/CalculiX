@@ -5312,3 +5312,5 @@ Dec 2002        - started to work on single crystal plasticity
  3 Dec 2023     - modified the calculation of the crack length.
 
  5 Dec 2023     - check crack length modification.
+
+ 8 Dec 2023     - finished crack length modification.
