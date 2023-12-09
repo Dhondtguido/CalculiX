@@ -49,7 +49,7 @@
      &     nodem2,nelemswirl,nmpc,nodempc(3,*),ipompc(*),
      &     iponoel(*),inoel(2,*),iplausi,indexe
 !     
-      real*8 bc(nteq),xloadact(2,*),cp,h(2),physcon(*),r,dvi,rho,
+      real*8 bc(*),xloadact(2,*),cp,h(2),physcon(*),r,dvi,rho,
      &     xl2(3,8),coords(3),dxsj2,temp,xi,et,weight,xsj2(3),
      &     gastemp,v(0:mi(2),*),shcon(0:3,ntmat_,*),co(3,*),shp2(7,8),
      &     field(1),prop(*),tg1,tg2,dtime,ttime,time,g(3),eta,
@@ -211,11 +211,11 @@
         endif
       enddo
 !     
-      write(*,*) 'resultnet'
-      do i=1,ntg
-      node=itg(i)
-      write(*,'(i10,3(1x,e11.4))') node,(v(j,node),j=0,2)
-      enddo
+c      write(*,*) 'resultnet'
+c      do i=1,ntg
+c      node=itg(i)
+c      write(*,'(i10,3(1x,e20.13))') node,(v(j,node),j=0,2)
+c      enddo
 !     
 !     testing the validity of the pressures
 !     
@@ -528,7 +528,7 @@ c     A=prop(index+1)
         endif
       enddo
 !     
-!     reinitialisation of the Bc matrix
+!     reinitialisation of the bc matrix
 !     
       do i=1,nteq
         bc(i)=0.d0
@@ -1186,11 +1186,12 @@ c          call nident(itg,node,ntg,id)
 !     
 !     max. residual energy flow, residual mass flow
 !     and residuals from the element equations
-!     
+!
       ramt=0.d0
       ramf=0.d0
       ramp=0.d0
       do i=1,ntg
+c        write(*,*) 'resultnet bc',i,bc(i)
         node=itg(i)
         if(nacteq(0,node).ne.0) then
           ramt=max(ramt,dabs(bc(nacteq(0,node))))
