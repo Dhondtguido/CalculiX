@@ -1136,12 +1136,23 @@
                zeta=lam20/64*(V2V0*a0a2)**2-zetlin+1d0
                zeta=zeta*(W0W2)**2
             endif
-            if(zeta.lt.0) then
+             if(zeta.lt.0.01d0) then
                write(*,*) '*WARNING in zeta_calc: in Element',nelem,
-     &               'TYPE= ',lakon(nelem)(2:5)
-               write(*,*) '         Zeta value negative is set to 0.01'
+     &              'TYPE= ',lakon(nelem)(2:5)
+               write(*,*) '         Zeta < 0.01 is set to 0.01'
                zeta=0.01d0
-            endif
+             elseif(zeta.gt.1000.d0) then
+               write(*,*) '*WARNING in zeta_calc: in Element',nelem,
+     &              'TYPE= ',lakon(nelem)(2:5)
+               write(*,*) '         Zeta > 1000 is set to 1000'
+               zeta=1000.d0
+             endif
+c            if(zeta.lt.0) then
+c               write(*,*) '*WARNING in zeta_calc: in Element',nelem,
+c     &               'TYPE= ',lakon(nelem)(2:5)
+c               write(*,*) '         Zeta value negative is set to 0.01'
+c               zeta=0.01d0
+c            endif
             return
 !     
          elseif((lakon(nelem)(2:8).eq.'REBRJI1').or.
@@ -1208,12 +1219,23 @@
                   zeta=zeta*(W0W2)**2
                endif
             endif
-            if(zeta.lt.0) then
+             if(zeta.lt.0.01d0) then
                write(*,*) '*WARNING in zeta_calc: in Element',nelem,
-     &               'TYPE= ',lakon(nelem)(2:5)
-               write(*,*) '         Zeta value negative is set to 0.01'
+     &              'TYPE= ',lakon(nelem)(2:5)
+               write(*,*) '         Zeta < 0.01 is set to 0.01'
                zeta=0.01d0
-            endif
+             elseif(zeta.gt.1000.d0) then
+               write(*,*) '*WARNING in zeta_calc: in Element',nelem,
+     &              'TYPE= ',lakon(nelem)(2:5)
+               write(*,*) '         Zeta > 1000 is set to 1000'
+               zeta=1000.d0
+             endif
+c            if(zeta.lt.0) then
+c               write(*,*) '*WARNING in zeta_calc: in Element',nelem,
+c     &               'TYPE= ',lakon(nelem)(2:5)
+c               write(*,*) '         Zeta value negative is set to 0.01'
+c               zeta=0.01d0
+c            endif
             return
 !     
          elseif((lakon(nelem)(2:8).eq.'REBRJI2').or.
@@ -1312,12 +1334,23 @@
                   endif
                endif
             endif
-            if(zeta.lt.0) then
+             if(zeta.lt.0.01d0) then
                write(*,*) '*WARNING in zeta_calc: in Element',nelem,
-     &               'TYPE= ',lakon(nelem)(2:5)
-               write(*,*) '         Zeta value negative is set to 0.01'
+     &              'TYPE= ',lakon(nelem)(2:5)
+               write(*,*) '         Zeta < 0.01 is set to 0.01'
                zeta=0.01d0
-            endif
+             elseif(zeta.gt.1000.d0) then
+               write(*,*) '*WARNING in zeta_calc: in Element',nelem,
+     &              'TYPE= ',lakon(nelem)(2:5)
+               write(*,*) '         Zeta > 1000 is set to 1000'
+               zeta=1000.d0
+             endif
+c            if(zeta.lt.0) then
+c               write(*,*) '*WARNING in zeta_calc: in Element',nelem,
+c     &               'TYPE= ',lakon(nelem)(2:5)
+c               write(*,*) '         Zeta value negative is set to 0.01'
+c               zeta=0.01d0
+c            endif
             return
 !
          elseif((lakon(nelem)(2:7).eq.'REBRSG').or.
@@ -1379,7 +1412,6 @@
             W1W0=V1V0*a0a1
             W2W0=V2V0*a0a2
 !
-            zeta=0.d0
             if(nelem.eq.nelem1) then
                zeta=0.4d0*(1-W1W0)**2
                zeta=zeta*(W0W1)**2
@@ -1411,6 +1443,17 @@
                   zeta=zeta*(W0W2)**2
                endif
              endif
+             if(zeta.lt.0.01d0) then
+               write(*,*) '*WARNING in zeta_calc: in Element',nelem,
+     &              'TYPE= ',lakon(nelem)(2:5)
+               write(*,*) '         Zeta < 0.01 is set to 0.01'
+               zeta=0.01d0
+             elseif(zeta.gt.1000.d0) then
+               write(*,*) '*WARNING in zeta_calc: in Element',nelem,
+     &              'TYPE= ',lakon(nelem)(2:5)
+               write(*,*) '         Zeta > 1000 is set to 1000'
+               zeta=1000.d0
+             endif
 !                 
             return
 !                 
@@ -1436,12 +1479,23 @@
             endif
             return
          endif
-         if(zeta.lt.0) then
-            write(*,*) '*WARNING in zeta_calc: in Element',nelem,
-     &           'TYPE= ',lakon(nelem)(2:5)
-            write(*,*) '         Zeta value negative is set to 0.01'
-            zeta=0.01d0
+         if(zeta.lt.0.01d0) then
+           write(*,*) '*WARNING in zeta_calc: in Element',nelem,
+     &          'TYPE= ',lakon(nelem)(2:5)
+           write(*,*) '         Zeta < 0.01 is set to 0.01'
+           zeta=0.01d0
+         elseif(zeta.gt.1000.d0) then
+           write(*,*) '*WARNING in zeta_calc: in Element',nelem,
+     &          'TYPE= ',lakon(nelem)(2:5)
+           write(*,*) '         Zeta > 1000 is set to 1000'
+           zeta=1000.d0
          endif
+c         if(zeta.lt.0) then
+c            write(*,*) '*WARNING in zeta_calc: in Element',nelem,
+c     &           'TYPE= ',lakon(nelem)(2:5)
+c            write(*,*) '         Zeta value negative is set to 0.01'
+c            zeta=0.01d0
+c         endif
       endif
 !   
       return

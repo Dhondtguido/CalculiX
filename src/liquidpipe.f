@@ -722,23 +722,21 @@
         elseif(lakon(nelem)(4:5).eq.'BR') then
 !     
 !     branches (joints and splits); values from Idelchik and GE
+!     nint(prop(index+1)) is not allowed to be an element of type     
+!     branch (cf. User's Manual)    
 !     
-c     if(nelem.eq.nint(prop(index+2))) then
-c     a=prop(index+5)
-c     else
-c     a=prop(index+6)
-c     endif
-c     a1=a
-c     a2=a
-          if(nelem.eq.nint(prop(index+1))) then
-            a=prop(index+4)
-          elseif(nelem.eq.nint(prop(index+2))) then
+          if(nelem.eq.nint(prop(index+2))) then
             a=prop(index+5)
           else
             a=prop(index+6)
           endif
           a1=a
           a2=a
+!
+!     calculating the reynolds number in the asumption of a circular
+!     cross section
+!
+          reynolds=2.d0*xflow/(dvi*dsqrt(pi*a))
 !     
 !     check for negative flow: in that case the loss
 !     coefficient is wrong

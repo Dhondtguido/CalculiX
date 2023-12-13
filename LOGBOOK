@@ -5316,3 +5316,6 @@ Dec 2002        - started to work on single crystal plasticity
  8 Dec 2023     - finished crack length modification.
                 - provided a solution for zero coefficients in the
 		  cascade.c routine
+
+ 13 Dec 2023    - worked on branch elements (type LPBR and REBR)
+                  
