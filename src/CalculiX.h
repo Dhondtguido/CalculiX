@@ -154,7 +154,7 @@ void FORTRAN(allocation,(ITG *nload_,ITG *nforc_,ITG *nboun_,
 			 ITG *iuel,ITG *iprestr,ITG *nstam,ITG *ndamp,ITG *nef,
 			 ITG *nbounold,ITG *nforcold,ITG *nloadold,
 			 ITG *nbodyold,ITG *mpcend,ITG *irobustdesign,
-			 ITG *nfc_,ITG *ndc_));
+			 ITG *nfc_,ITG *ndc_,ITG *maxsectors_));
 
 void FORTRAN(allocation_rfn,(ITG *nk_,ITG *ne_,ITG *nkon_,ITG *ipoinp,
 			    ITG *ipoinpc,char *inpc,ITG *inp));

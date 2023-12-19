@@ -78,7 +78,7 @@ int main(int argc,char *argv[])
     nprop,itpamp,iviewfile,nkold,nevdamp_,npt_,cyclicsymmetry,
     nmethodl,iaxial,inext,icontact,nobject,nobject_,iit,
     nzsprevstep[3],memmpcref_,mpcfreeref,maxlenmpcref,*nodempcref=NULL,
-    *ikmpcref=NULL,isens,namtot,nstam,ndamp,nef,inp_size,
+    *ikmpcref=NULL,isens,namtot,nstam,ndamp,nef,inp_size,maxsectors_,
     *ipoinp_sav=NULL,*inp_sav=NULL,irefineloop=0,icoordinate=0,
     *nodedesi=NULL,ndesi=0,nobjectstart=0,nfc_,ndc_,nfc,ndc,*ikdc=NULL;
 
@@ -158,7 +158,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Wed Dec 13 19:56:42 CET 2023\n");
+  printf("You are using an executable made on Tue Dec 19 19:23:28 CET 2023\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -205,7 +205,7 @@ int main(int argc,char *argv[])
 		      &mortar,&ifacecount,&nintpoint,infree,&nheading_,
 		      &nobject_,iuel,&iprestr,&nstam,&ndamp,&nef,&nbounold,
 		      &nforcold,&nloadold,&nbodyold,&mpcend,irobustdesign,
-		      &nfc_,&ndc_));
+		      &nfc_,&ndc_,&maxsectors_));
 
   SFREE(meminset);SFREE(rmeminset);mt=mi[1]+1;
   NNEW(heading,char,66*nheading_);
@@ -451,7 +451,7 @@ int main(int argc,char *argv[])
       if(ntie_>0){
 	NNEW(tieset,char,243*ntie_);
 	NNEW(tietol,double,4*ntie_);
-	NNEW(cs,double,17*ntie_);
+	NNEW(cs,double,17*ntie_*maxsectors_);
       }
 
       /* objectives for sensitivity analysis */
@@ -1701,7 +1701,7 @@ int main(int argc,char *argv[])
 			    &mortar,&ifacecount,&nintpoint,infree,&nheading_,
 			    &nobject_,iuel,&iprestr,&nstam,&ndamp,&nef,
 			    &nbounold,&nforcold,&nloadold,&nbodyold,&mpcend,
-			    irobustdesign,&nfc_,&ndc_));
+			    irobustdesign,&nfc_,&ndc_,&maxsectors_));
 
 	SFREE(meminset);SFREE(rmeminset);mt=mi[1]+1;
 	NNEW(heading,char,66*nheading_);

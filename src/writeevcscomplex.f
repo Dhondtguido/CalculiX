@@ -35,7 +35,7 @@
       write(5,*)
       write(5,*) ' NODAL   MODE NO                           FREQUENCY'
       write(5,*) 'DIAMETER                     REAL PART
-     &  IMAGINARY PART'
+     &           IMAGINARY PART'
       write(5,*) '                    (RAD/TIME)      (CYCLES/TIME)
      &   (RAD/TIME)'
       write(5,*)

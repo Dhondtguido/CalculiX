@@ -1344,7 +1344,7 @@ c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
      &     dcs(4*ncs_+1),dcs(6*ncs_+1),dcs(8*ncs_+1),dcs(10*ncs_+1),
      &     ics(3*ncs_+1),ics(5*ncs_+1),ics(7*ncs_+1),ics(8*ncs_+1),
      &     dcs(12*ncs_+1),ne,ipkon,kon,lakon,ics(14*ncs_+1),
-     &     ics(16*ncs_+1),ics(18*ncs_+1),jobnamec)
+     &     ics(16*ncs_+1),ics(18*ncs_+1),jobnamec,nmethod)
 !     
       infree(1)=ixfree
       infree(2)=ikfree
