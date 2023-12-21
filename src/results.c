@@ -165,18 +165,18 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
   /* 1. nodewise storage of the primary variables
      2. determination which derived variables have to be calculated */
 
-  if((*mortar>1)&&(*mortartrafoflag==1)){
+  //ccc  if((*mortar>1)&&(*mortartrafoflag==1)){
     
     /* fix for trafo U->Uhat for mortar contact */
     
-    resultsini(nk,v,ithermal,filab,iperturb,f,fn,nactdof,iout,qa,vold,b,
+  /*ccc resultsini(nk,v,ithermal,filab,iperturb,f,fn,nactdof,iout,qa,vold,b,
 	       nodeboun,ndirboun,xboun2,nboun2,ipompc2,nodempc2,coefmpc2,
 	       labmpc2,nmpc2,nmethod,cam,neq,
 	       veold,accold,bet,gam,dtime,mi,vini,nprint,prlab,
 	       &intpointvarm,&calcul_fn,&calcul_f,&calcul_qa,&calcul_cauchy,
 	       &ikin,&intpointvart,typeboun,&num_cpus,mortar,nener,iponoel,
 	       network);
-  }else{
+	       }else{*/
     resultsini(nk,v,ithermal,filab,iperturb,f,fn,
 	       nactdof,iout,qa,vold,b,nodeboun,ndirboun,
 	       xboun,nboun,ipompc,nodempc,coefmpc,labmpc,nmpc,nmethod,cam,neq,
@@ -184,7 +184,7 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 	       &intpointvarm,&calcul_fn,&calcul_f,&calcul_qa,&calcul_cauchy,
 	       &ikin,&intpointvart,typeboun,&num_cpus,mortar,nener,iponoel,
 	       network);
-  }
+    //ccc  }
 
   /* next statement allows for storing the displacements in each
      iteration: for debugging purposes */
@@ -400,18 +400,18 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 
   /* calculating the matrix system internal force vector */
 
-  if((*mortar>1)&&(*mortartrafoflag==1)){
+  //ccc  if((*mortar>1)&&(*mortartrafoflag==1)){
     
     /* fix for trafo U->Uhat for mortar contact */
     
-    resultsforc(nk,f,fn,nactdof,ipompc2,nodempc2,
+  /*ccc  resultsforc(nk,f,fn,nactdof,ipompc2,nodempc2,
 		coefmpc2,labmpc2,nmpc2,mi,fmpc,&calcul_fn,&calcul_f,
 		&num_cpus);
-  }else{
+		}else{*/
     resultsforc(nk,f,fn,nactdof,ipompc,nodempc,
 		coefmpc,labmpc,nmpc,mi,fmpc,&calcul_fn,&calcul_f,
 		&num_cpus);
-  }
+    //ccc }
 
   /* calculating the total energy if
      - iout<=0 (no result output)
