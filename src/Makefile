@@ -1,6 +1,5 @@
-
-CFLAGS = -Wall -g  -I ../../SPOOLES.2.2 -DARCH="Linux" -DSPOOLES -DARPACK -DMATRIXSTORAGE -DNETWORKOUT
-FFLAGS = -Wall -g
+CFLAGS = -Wall -O2 -I/usr/include/spooles -DARCH="Linux" -DSPOOLES -DARPACK -DMATRIXSTORAGE -DNETWORKOUT
+FFLAGS = -Wall -O2
 
 CC=cc
 FC=gfortran
@@ -12,21 +11,19 @@ FC=gfortran
 
 include Makefile.inc
 
-SCCXMAIN = CalculiX.c
+SCCXMAIN = ccx_2.21.c
 
 OCCXF = $(SCCXF:.f=.o)
 OCCXC = $(SCCXC:.c=.o)
 OCCXMAIN = $(SCCXMAIN:.c=.o)
 
-DIR=../../SPOOLES.2.2
-
 LIBS = \
-       $(DIR)/spooles.a \
-	../../ARPACK/libarpack_INTEL.a \
+       -lspooles \
+	   $(shell pkg-config --libs --static arpack) \
        -lpthread -lm -lc
 
-CalculiX: $(OCCXMAIN) CalculiX.a  $(LIBS)
-	./date.pl; $(CC) $(CFLAGS) -c CalculiX.c; $(FC)  -Wall -g -o $@ $(OCCXMAIN) CalculiX.a $(LIBS) -fopenmp
+ccx_2.21: $(OCCXMAIN) ccx_2.21.a  $(LIBS)
+	./date.pl; $(CC) $(CFLAGS) -c ccx_2.21.c; $(FC)  -Wall -O2 -o $@ $(OCCXMAIN) ccx_2.21.a $(LIBS) -fopenmp
 
-CalculiX.a: $(OCCXF) $(OCCXC)
+ccx_2.21.a: $(OCCXF) $(OCCXC)
 	ar vr $@ $?
