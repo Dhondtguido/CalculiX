@@ -1,6 +1,6 @@
 !     
 !     CalculiX - A 3-dimensional finite element program
-!     Copyright (C) 1998-2021 Guido Dhondt
+!     Copyright (C) 1998-2023 Guido Dhondt
 !     
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -64,7 +64,7 @@
      &     nfaces,ig,ifaceq(8,6),ifacet(6,4),ifacew(8,5),
      &     mscalmethod,icount,mortar
 !     
-      real*8 stiff(21),wavespeed(*),rhcon(0:1,ntmat_,*),volfac,
+      real*8 elas(21),wavespeed(*),rhcon(0:1,ntmat_,*),volfac,
      &     alcon(0:6,ntmat_,*),coords(3),orab(7,*),rho,alzero(*),
      &     t0l,t1l,elconloc(ncmat_),eth(6),plicon(0:2*npmat_,ntmat_,*),
      &     plkcon(0:2*npmat_,ntmat_,*),plconloc(802),dtime,
@@ -100,12 +100,12 @@
 !     massless contact due to the different time scheme (the
 !     alpha method is not used for massless contact)
 !     
-c      if(mortar.ne.-1) then
-cc        safefac=0.50d0
-c        safefac=0.80d0
-c      else
+      if(mortar.ne.-1) then
+c        safefac=0.50d0
+        safefac=0.80d0
+      else
         safefac=0.80d0/1.3d0
-c      endif
+      endif
       quadfac=0.3d0
 !     
       damping=0
@@ -117,6 +117,12 @@ c      endif
 !     Calculation of Omega Critical
 !     Om_cr=dt*freq_max
 !     
+c      critom=dsqrt(damping*damping*(1.d0+2.d0*alpha*(1.d0-gam))
+c     &     *(1.d0+2.d0*alpha*(1.d0-gam))
+c     &     +2.d0*(gam+2.d0*alpha*(gam-bet)))
+c      critom=0.98d0*(-damping*(1.d0+2.d0*alpha*(1.d0-gam))+critom)
+c     &     /(gam+2.d0*alpha*(gam-bet)) !eq 25 miranda
+!
 !     formula (2.477) with +sign from Dhondt, Wiley(2004), the Finite      
 !        Element Method for Three-Dimensional Thermomechanical Applications.
 !     factor 0.98 in critom from miranda?
@@ -179,12 +185,12 @@ c        write(*,*) 'calcstabletimeincvol ',nelem
             nopes=4
             nfaces=6
             elemfac=0.625d0
+c            elemfac=0.5d0
           elseif(lakon(nelem)(4:4).eq.'8') then
             nope=8
             nopes=4
             nfaces=6
-c            if(mortar.eq.-1) elemfac=0.9d0
-            elemfac=0.9d0
+            if(mortar.eq.-1) elemfac=0.9d0
           elseif(lakon(nelem)(4:5).eq.'10')then
             nope=10
             nopes=6
@@ -303,10 +309,9 @@ c            if(mortar.eq.-1) elemfac=0.9d0
           kode=nelcon(1,imat)
 !     
 !     material data
-!     
           istiff=1
           call materialdata_me(elcon,nelcon,rhcon,nrhcon,alcon,nalcon,
-     &         imat,amat,iorien,coords,orab,ntmat_,stiff,rho,
+     &         imat,amat,iorien,coords,orab,ntmat_,elas,rho,
      &         nelem,ithermal,alzero,mattyp,t0l,t1l,
      &         ihyper,istiff,elconloc,eth,kode,plicon,
      &         nplicon,plkcon,nplkcon,npmat_,
@@ -314,22 +319,53 @@ c            if(mortar.eq.-1) elemfac=0.9d0
      &         xstiff,ncmat_)
 !     
           if(mattyp.eq.1) then
-            e=stiff(1)
-            un=stiff(2)
+            e=elas(1)
+            un=elas(2)
             wavspd=max(wavspd,
      &           dsqrt((e*(1-un))/((1+un)*(1-2*un)*rho)))
           elseif(mattyp.eq.2) then
 !     
-!           single crystal
+!     single crystal
 !     
-            iorth=1
-            call anisomaxwavspd(stiff,rho,iorth,wavspd)
+c            if(((elas(1).eq.elas(3)).and.(elas(1).eq.elas(6)).and.
+c     &           (elas(3).eq.elas(6))).and.
+c     &           ((elas(2).eq.elas(4)).and.(elas(2).eq.elas(5)).and.
+c     &           (elas(4).eq.elas(5))).and.
+c     &           ((elas(7).eq.elas(8)).and.(elas(7).eq.elas(9)).and.
+c     &           (elas(8).eq.elas(9)))) then
+c              wavspd=max(wavspd,dsqrt((1/3.d0)*(elas(1)+2.0*elas(2)+
+c     &             4.0d0*elas(7))/rho))
+c              wavspd=max(wavspd,dsqrt((1/2.d0)*
+c     &             (elas(1)+elas(2)+2.0*elas(7))/rho))
+c              wavspd=max(wavspd,dsqrt(elas(1)/rho))
+c            else
+              iorth=1
+              call anisomaxwavspd(elas,rho,iorth,wavspd)
+c            endif
           elseif(mattyp.eq.3) then
             iorth=0
-            call anisomaxwavspd(stiff,rho,iorth,wavspd)
+            call anisomaxwavspd(elas,rho,iorth,wavspd)
           endif
 !     
           wavespeed(imat)=wavspd
+!     
+!     ------------Critical time step calculation-----------------------
+!     
+!     Divides volume accordingly per geometry of element
+!     Carlo MT proposal
+!     if HEX
+c          if((lakon(nelem)(4:5).eq.'20').or.
+c     &         (lakon(nelem)(4:4).eq.'8')) then
+c            volume=weight*xsj
+c!     if TET
+c          elseif((lakon(nelem)(4:5).eq.'10').or.
+c     &           (lakon(nelem)(4:4).eq.'4')) then
+c            volume=weight*xsj/3.d0
+c!     if WEDGES
+c          elseif ( (lakonl(4:5).eq.'15').or.
+c     &           (lakonl(4:4).eq.'6'))then
+c            volume=weight*xsj/2.d0
+c     endif
 !
 !         volume=area*h*volfac
 !
@@ -410,6 +446,10 @@ c            if(mortar.eq.-1) elemfac=0.9d0
 !     
 !     scaling of element: time increment required by element
 !
+c          write(*,*) 'calcstabletimeincvol ',critom
+c          write(*,*) 'calcstabletimeincvol ',hmin
+c          write(*,*) 'calcstabletimeincvol ',elemfac
+c          write(*,*) 'calcstabletimeincvol ',wavspd
           smscale(nelem)=critom*hmin*elemfac/(2.d0*wavspd)
 !     
 !     smallest dtvol
@@ -426,7 +466,11 @@ c            if(mortar.eq.-1) elemfac=0.9d0
 !     
 !     ------------Mass Scaling ----------------------------------------
 !     mscalmethod=1: selective mass scaling SMS
+!     not active for massless contact      
 !
+c       write(*,*) 'calcstabletimeincvol ',dtvol
+c      write(*,*) 'calcstabletimeincvol ',dtset
+c      write(*,*) 'calcstabletimeincvol ',safefac
       if((dtvol.lt.dtset/safefac))then
         dtset=dtset/safefac
         mscalmethod=1

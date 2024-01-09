@@ -1,6 +1,6 @@
 !
 !     CalculiX - A 3-dimensional finite element program
-!              Copyright (C) 1998-2015 Guido Dhondt
+!              Copyright (C) 1998-2023 Guido Dhondt
 !
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -37,7 +37,7 @@
      &  ipoinp,inp,fmpc,tieset,ntie,tietol,ipoinpc,nslavs,t0g,t1g,nprop,
      &  ielprop,prop,mortar,nintpoint,ifacecount,islavsurf,pslavsurf,
      &  clearini,ier,vel,nef,velo,veloo,ne2boun,heading,network,
-     &  irestartread,nfc,ndc,coeffc,ikdc,edc,xmodal)
+     &  irestartread,nfc,ndc,coeffc,ikdc,edc)
 !
       implicit none
 !
@@ -77,8 +77,7 @@
      &  xnor(*),thicke(*),offset(*),t0g(*),t1g(*),clearini(*),
      &  shcon(*),cocon(*),sti(*),ener(*),xstate(*),prop(*),edc(*),
      &  ttime,qaold(2),cs(17,*),physcon(*),pslavsurf(*),coeffc(*),
-     &  ctrl(*),fmpc(*),xbody(*),xbodyold(*),vel(*),velo(*),veloo(*),
-     &  xmodal(*)
+     &  ctrl(*),fmpc(*),xbody(*),xbodyold(*),vel(*),velo(*),veloo(*)
 !
       irestartstep=0
 !
@@ -135,7 +134,7 @@
      &  output,physcon,ctrl,typeboun,fmpc,tieset,ntie,tietol,nslavs,
      &  t0g,t1g,nprop,ielprop,prop,mortar,nintpoint,ifacecount,
      &  islavsurf,pslavsurf,clearini,irstrt,vel,nef,velo,veloo,
-     &  ne2boun,heading,network,nfc,ndc,coeffc,ikdc,edc,xmodal)
+     &  ne2boun,heading,network,nfc,ndc,coeffc,ikdc,edc)
       endif
 !
       call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,

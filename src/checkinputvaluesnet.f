@@ -1,6 +1,6 @@
 !     
 !     CalculiX - A 3-dimensional finite element program
-!     Copyright (C) 1998-2011 Guido Dhondt
+!     Copyright (C) 1998-2023 Guido Dhondt
 !     
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -536,14 +536,6 @@
               write(*,*) '       trying to define a branch '
               write(*,*) '       all three elements must be ',
      &             'different from 0'
-              write(*,*) '       element number: ',nelem
-              call exit(201)
-!     
-            elseif(prop(index+1).eq.nelem) then
-              write(*,*) '*ERROR in checkinputvaluesnet:'
-              write(*,*) '       element nelem0 in branch definition '
-              write(*,*) '       is not allowed to be of ',
-     &             'type branch'
               write(*,*) '       element number: ',nelem
               call exit(201)
 !     

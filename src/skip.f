@@ -1,6 +1,6 @@
 !     
 !     CalculiX - A 3-dimensional finite element program
-!     Copyright (C) 1998-2015 Guido Dhondt
+!     Copyright (C) 1998-2023 Guido Dhondt
 !     
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -31,7 +31,7 @@
      &     nprint,nlabel,ncs_,ne1d,ne2d,infree(4),i,mt,nprop,mortar,
      &     nmethod,iperturb(*),nener,ithermal(*),nstate_,iprestr,i4,
      &     maxamta,mcs,ntie,nbody,nslavs,nintpoint,ifacecount,nef,
-     &     nheading_,nfc,ndc,ir8
+     &     nheading_,nfc,ndc
 !     
       character*1 c1
       character*3 c3
@@ -162,12 +162,6 @@
 !     physical constants
 !     
       read(15)(r8,i=1,14)
-!     
-!     damping characteristics
-!
-      read(15)(r8,i=1,11)
-      ir8=int(r8)
-      if(ir8.gt.0) read(15)(r8,i=12,11+ir8)
 !     
 !     plastic data
 !     

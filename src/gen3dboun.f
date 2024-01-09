@@ -1,6 +1,6 @@
 !     
 !     CalculiX - A 3-dimensional finite element program
-!     Copyright (C) 1998-2017 Guido Dhondt
+!     Copyright (C) 1998-2023 Guido Dhondt
 !     
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -43,7 +43,7 @@
      &     idepnodes(80),l,iexpnode,indexx,irefnode,imax,isol,
      &     nod,impc,istep,nrhs,ipiv(3),info,m,mi(*),itr,idirref,nnode,
      &     ne2boun(2,*),ispc1,ispc2,node1,node2,ne,mpcfree,ndepnodes,
-     &     midfix(3,4),mpcfreeold,ialeatoric
+     &     midfix(3,4),mpcfreeold
 !     
       real*8 xboun(*),xnor(*),coefmpc(*),trab(7,*),val,co(3,*),
      &     xnoref(3),dmax,d(3,3),e(3,3,3),alpha,q(3),w(3),xn(3),
@@ -92,7 +92,12 @@
           index=inoel(3,index)
         enddo
 !          
+c        if(index.eq.0) then
+c          cycle
+c        endif
+c        ielem=inoel(1,index)
         j=inoel(2,index)
+c        indexe=ipkon(ielem)
         indexk=iponor(2,indexe+j)
         idir=ndirboun(i)
         val=xboun(i)
@@ -135,9 +140,9 @@
 !     
 !     knots (expandable rigid bodies) can take rotational
 !     values arbitrarily exceeding 90 degrees
-!
-          if((idir.gt.3).and.((nmethod.eq.4).and.(iperturb(1).gt.1))
-     &         ) then
+!     
+          if((idir.gt.3).and.((nmethod.eq.4).and.(iperturb(1).gt.1)))
+     &         then
 !     
 !     create a knot: determine the knot
 !     
@@ -592,13 +597,11 @@
               do j=1,3
                 xn(j)=xn(j)/dd
               enddo
-              ialeatoric=0
 !     
             elseif(lakon(ielem)(7:7).eq.'B') then
               lstart=4
               lend=1
               linc=-1
-              ialeatoric=1
             endif
 !     
 !     check for transformations
@@ -697,8 +700,7 @@
      &                   labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
      &                   nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
      &                   nboun,nboun_,nnodes,nodeact,co,label,
-     &                   typeboun,iperturb,node,idirref,xboun,
-     &                   ialeatoric)
+     &                   typeboun,iperturb,node,idirref,xboun)
                   enddo
                 enddo
 !     
@@ -713,8 +715,7 @@
      &               labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
      &               nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
      &               nboun,nboun_,nnodes,nodeact,co,label,
-     &               typeboun,iperturb,node,idirref,xboun,
-     &               ialeatoric)
+     &               typeboun,iperturb,node,idirref,xboun)
 !     
 !     inhomogeneous term
 !     
@@ -723,8 +724,7 @@
      &               labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
      &               nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
      &               nboun,nboun_,nnodes,nodeact,co,label,
-     &               typeboun,iperturb,node,idirref,xboun,
-     &               ialeatoric)
+     &               typeboun,iperturb,node,idirref,xboun)
 !     
 !     end meanrotationmpc
 !     
@@ -831,8 +831,7 @@
      &                     labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
      &                     nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
      &                     nboun,nboun_,nnodes,nodeact,co,label,
-     &                     typeboun,iperturb,node,idirref,xboun,
-     &                     ialeatoric)
+     &                     typeboun,iperturb,node,idirref,xboun)
                     enddo
                   enddo
 !     
@@ -847,8 +846,7 @@
      &                 labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
      &                 nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
      &                 nboun,nboun_,nnodes,nodeact,co,label,
-     &                 typeboun,iperturb,node,idirref,xboun,
-     &                 ialeatoric)
+     &                 typeboun,iperturb,node,idirref,xboun)
 !     
 !     inhomogeneous term
 !     
@@ -857,8 +855,7 @@
      &                 labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
      &                 nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
      &                 nboun,nboun_,nnodes,nodeact,co,label,
-     &                 typeboun,iperturb,node,idirref,xboun,
-     &                 ialeatoric)
+     &                 typeboun,iperturb,node,idirref,xboun)
 !     
 !     end meanrotationmpc
 !     
@@ -892,7 +889,7 @@ c     ne2boun(2,ispcref)=nboun
               cycle
             endif
 !     
-!     beams     
+!     beams             
 !     
 !     specific label for mean rotations for beams and
 !     shells
@@ -912,8 +909,7 @@ c     ne2boun(2,ispcref)=nboun
      &               labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
      &               nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
      &               nboun,nboun_,nnodes,nodeact,co,label,
-     &               typeboun,iperturb,node,idirref,xboun,
-     &               ialeatoric)
+     &               typeboun,iperturb,node,idirref,xboun)
               enddo
             enddo
 !     
@@ -928,8 +924,7 @@ c     ne2boun(2,ispcref)=nboun
      &           labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
      &           nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
      &           nboun,nboun_,nnodes,nodeact,co,label,
-     &           typeboun,iperturb,node,idirref,xboun,
-     &           ialeatoric)
+     &           typeboun,iperturb,node,idirref,xboun)
 !     
 !     inhomogeneous term
 !     
@@ -938,8 +933,7 @@ c     ne2boun(2,ispcref)=nboun
      &           labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
      &           nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
      &           nboun,nboun_,nnodes,nodeact,co,label,
-     &           typeboun,iperturb,node,idirref,xboun,
-     &           ialeatoric)
+     &           typeboun,iperturb,node,idirref,xboun)
 !     
 !     end meanrotationmpc
 !     

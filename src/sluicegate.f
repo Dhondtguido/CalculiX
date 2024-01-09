@@ -1,6 +1,6 @@
 !     
 !     CalculiX - A 3-dimensional finite element program
-!     Copyright (C) 1998-2015 Guido Dhondt
+!     Copyright (C) 1998-2023 Guido Dhondt
 !     
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -123,7 +123,7 @@
 !           A3 or B2 or B3
 !
             area=(b+ha*tth)*ha
-            v(2,ndo)=ha
+            v(2,ndo)=ha*sqrts0
             v(2,nup)=(xflow/(area*rho))**2/(2.d0*dg)+ha
             nelup=nelem
             nelem=0
@@ -148,8 +148,9 @@
 !             B2
 !
               area=(b+hk*tth)*hk
-              v(2,ndo)=hk
-              v(2,nup)=(xflow/(cd*area*rho))**2/(2.d0*dg)+hk+hw
+c              v(2,ndo)=(hk-epsilon)*sqrts0
+              v(2,ndo)=hk*sqrts0
+              v(2,nup)=(xflow/(cd*area*rho))**2/(2.d0*dg)+hk*sqrts0+hw
               nelup=nelem
               nelem=0
               nup=ndo
@@ -196,7 +197,7 @@
             else
               v(1,kon(ipkon(nelup)+2))=-xflow
             endif
-            v(2,ndo)=ha
+            v(2,ndo)=ha*sqrts0
             nelup=nelem
             nelem=0
             nup=ndo
@@ -222,7 +223,8 @@
 !
 !             B2
 !
-              v(2,ndo)=hkmax
+c              v(2,ndo)=(hkmax-epsilon)*sqrts0
+              v(2,ndo)=hkmax*sqrts0
               v(1,nmid)=inv*xflow
               if(kon(ipkon(nelup)+1).eq.0) then
                 v(1,kon(ipkon(nelup)+2))=xflow
@@ -267,14 +269,77 @@ c          if((hup.lt.0.d0).or.(hup.gt.ha)) then
             call hcrit(xflow,rho,b,theta,dg,sqrts0,hk)
             v(3,ndo)=hk
 !     
+c            if(ha.lt.hk) then
+!     
 !     A3 or B2 or B3
 !     
             area=(b+ha*tth)*ha
-            v(2,ndo)=ha
+            v(2,ndo)=ha*sqrts0
             mode='B'
             nstack=nstack+1
             istack(1,nstack)=nelem
             istack(2,nstack)=ndo
+c            else
+c!     
+c!             no disturbance of the flow
+c!     
+c              v(2,ndo)=v(2,nup)
+c              v(1,nmid)=inv*xflow
+c              nelup=nelem
+c              nelem=0
+c              nup=ndo
+c!     
+c!     depth underneath sluice gate exceeds critical depth
+c!     
+c!     calculate the normal depth
+c!     
+c              if(xks.gt.0.d0) then
+c                reynolds=xflow/(b*dvi)
+c                form_fact=1.d0
+c                hd=4.d0*hk
+c                call friction_coefficient(dl,hd,xks,reynolds,form_fact,
+c     &               friction)
+c              endif
+c              call hnorm(xflow,rho,b,theta,dg,s0,friction,xks,he)
+c!     
+c              if(he.lt.hk) then
+c!     
+c!     B2
+c!     
+c                area=(b+hk*tth)*hk
+c                v(2,ndo)=(hk-epsilon)*sqrts0
+c                mode='B'
+c                nstack=nstack+1
+c                istack(1,nstack)=nelem
+c                istack(2,nstack)=ndo
+c              else
+c!     
+c!     no frontwater solution
+c!     
+c                v(2,ndo)=-1.d0
+c                nelup=nelem
+c                nelem=0
+c                nup=ndo
+c              endif
+c!
+c!             calculate the depth in the upstream node;
+c!             for a gate element or wear in between other elements
+c!             the upstream velocity is not assumed to be zero,              
+c!             i.e. no big reservoir since this makes no sense for
+c!             steady state calculations
+c!
+c              if(mode.eq.'B') then
+c                if(v(2,ndo).ge.ha*sqrts0) then
+c                  call hns(xflow,rho,b,theta,dg,sqrts0,ha,h2)
+c                  v(2,nup)=h2/sqrts0
+cc                else
+cc                  v(2,nup)=v(2,ndo)+hw
+c                endif
+c                neldo=nelem
+c                ndo=nup
+c                nelem=0
+c              endif
+c            endif
           else
 !
 !           no disturbance of the flow
@@ -290,7 +355,7 @@ c          if((hup.lt.0.d0).or.(hup.gt.ha)) then
 !
 !       mode = 'B': backwater curve
 !
-        hdo=v(2,ndo)
+        hdo=v(2,ndo)/sqrts0
 !
         idof=8*(nup-1)+2
         call nident(ikboun,idof,nboun,id)
@@ -304,7 +369,7 @@ c          if((hup.lt.0.d0).or.(hup.gt.ha)) then
             else
               area=(b+ha*tth)*ha
             endif
-            xflowcor=rho*area*dsqrt(2.d0*dg*(v(2,nup)-hdo))
+            xflowcor=rho*area*dsqrt(2.d0*dg*(v(2,nup)-hdo*sqrts0))
             if(dabs(xflow-xflowcor).le.1.d-3*xflow) then
 !
 !     corrected flow is sufficiently close to assumed flow:
@@ -336,7 +401,7 @@ c          if((hup.lt.0.d0).or.(hup.gt.ha)) then
         else
           area=(b+ha*tth)*ha
         endif
-        v(2,nup)=hdo+(xflow/(rho*area))**2/(2.d0*dg)
+        v(2,nup)=hdo*sqrts0+(xflow/(rho*area))**2/(2.d0*dg)
         ndo=nup
         neldo=nelem
         nelem=0

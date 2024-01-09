@@ -1,5 +1,5 @@
 /*     CalculiX - A 3-dimensional finite element program                 */
-/*              Copyright (C) 1998-2015 Guido Dhondt                          */
+/*              Copyright (C) 1998-2023 Guido Dhondt                          */
 
 /*     This program is free software; you can redistribute it and/or     */
 /*     modify it under the terms of the GNU General Public License as    */
@@ -333,7 +333,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 			 iendcrackbou,costruc,ibounnod,xt,acrack,istartfront,
 			 iendfront,&nnfront,isubsurffront,ifrontrel,
 			 ifront,posfront,doubleglob,integerglob,
-			 &nproc,&iinc,acrackglob,&ier,&nbounnod,&nfront));
+			 &nproc,&iinc,acrackglob,&ier));
     if(ier==1){
       SFREE(kontri);SFREE(ipoed);SFREE(iedg);SFREE(ieled);SFREE(ibounedg);
       SFREE(ibounnod);SFREE(iedno);SFREE(temp);SFREE(stress);SFREE(ifront);

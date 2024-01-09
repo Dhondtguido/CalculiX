@@ -1,6 +1,6 @@
 !
 !     CalculiX - A 3-dimensional finite element program
-!              Copyright (C) 1998-2015 Guido Dhondt
+!              Copyright (C) 1998-2023 Guido Dhondt
 !
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -33,7 +33,7 @@
      &  nforc,nload,ithermal(*),iprestr,i,nk,iperturb(*),iline,ipol,inl,
      &  ipoinp(2,*),inp(3,*),nev,isolver,nbody,ipoinpc(0:*),ier
 !
-      real*8 fei(4),t0(*),t1(*),tol
+      real*8 fei(3),t0(*),t1(*),tol
 !
       if(istep.lt.1) then
          write(*,*) '*ERROR reading *BUCKLE: *BUCKLE can only be used'

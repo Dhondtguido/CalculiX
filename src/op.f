@@ -1,6 +1,6 @@
 !
 !     CalculiX - A 3-dimensional finite element program
-!              Copyright (C) 1998-2015 Guido Dhondt
+!              Copyright (C) 1998-2023 Guido Dhondt
 !
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -22,23 +22,23 @@
 !        au: first lower triangle
 !        ad: diagonal terms
 !
-      subroutine op(x,y,ad,au,jq,irow,na,nb)
+      subroutine op(n,x,y,ad,au,jq,irow)
 !
       implicit none
 !
-      integer irow(*),na,nb,j,l,i,jq(*)
+      integer irow(*),n,j,l,i,jq(*)
 !
       real*8 y(*),x(*),au(*),ad(*)
 !
 !     diagonal terms
 !
-      do i=na,nb
+      do i=1,n
         y(i)=ad(i)*x(i)
       enddo
 !
 !     off-diagonal terms
 !
-      do j=na,nb
+      do j=1,n
         do l=jq(j),jq(j+1)-1
           i=irow(l)
           y(i)=y(i)+au(l)*x(j)

@@ -1,0 +1,376 @@
+This is a short overview of the installation procedure of CalculiX CrunchiX
+Version 2.21
+
+***************************************************************************
+
+A. IF YOU WOULD LIKE TO GENERATE THE EXECUTABLE FROM SCRATCH:
+
+1. copy ccx_2.21.src.tar.bz2, ccx_2.21.doc.tar.bz2,
+   ccx_2.21.test.tar.bz2 and ccx_2.21.README.INSTALL to
+   directory /usr/local
+
+2. bunzip2 and untar ccx_2.21.src.tar.bz2, ccx_2.21.doc.tar.bz2 and
+ ccx_2.21.test.tar.bz2; the following directory tree is generated:
+ /usr/local/CalculiX/ccx_2.21/src
+ /usr/local/CalculiX/ccx_2.21/doc
+ /usr/local/CalculiX/ccx_2.21/test
+
+3. get SPOOLES.2.2 and ARPACK from the internet
+   (e.g.
+   http://www.netlib.org/linalg/spooles/spooles.2.2.html
+   and http://www.caam.rice.edu/software/ARPACK/) and install them in
+   /usr/local/SPOOLES.2.2 and /urs/local/ARPACK.
+
+   Note: makefile ~/SPOOLES.2.2/Tree/src/makeGlobalLib contains an
+         error: file drawTree.c does not exist and should be replaced
+         by draw.c
+
+   If you would like to experiment with TAUCS, or if you have
+   access to the SGI scientific library, or if you would like to use PARDISO, continue reading. Else, go to
+   item 4.
+
+   If you like to use TAUCS as solver, install TAUCS in /usr/local/taucs
+   (and lapack, blas and metis in /usr/local/taucs/external/lib/linux)
+   and change the Makefile in
+   /usr/local/CalculiX/ccx_2.21/src as follows:
+   a) add "-I ../../../taucs/src -I ../../../taucs/build/linux -DTAUCS" to
+      the CFLAGS (without double quotes)
+   b) add 
+       "../../../taucs/lib/linux/libtaucs.a \
+        ../../../taucs/external/lib/linux/liblapack.a \
+        ../../../taucs/external/lib/linux/libblas.a \
+        ../../../taucs/external/lib/linux/libmetis.a \"
+      to LIBS
+   Notice that you only need lapack, blas and metis if you want to
+   install TAUCS.
+   Look at file tau.c and the documentation of TAUCS for details. Right now,
+   only the LLT version of TAUCS is selected. It only applies to positive
+   definite systems. For more than 50,000 equations the out-of-core version
+   is selected with default in-core-memory of 500 MB. Defaults can be
+   changed in file tau.c (for instance the location of the scratch file).
+
+   If you have access to the SGI scientific library, change the Makefile in
+   /usr/local/CalculiX/ccx_2.21/src as follows:
+   a) add "-DSGI" to the CFLAGS (without double quotes)
+   b) add -lscs to 
+	g77 -Wall -O  -o $@ $(OCCXMAIN) ccx_2.21.a  $(LIBS)
+   The linear equation solver in the SGI library is about twice as
+   fast as SPOOLES and comes in an out-of-core version as well. For
+   details look at file sgi.c. The out-of-core is automatically
+   selected for more than 200,000 equations with in-core-memory
+   of 2 GB. You can change the in-core memory is overwritten by
+   the environment variable CCX_OOC_MEM, if defined.
+   If you prefer multiple threads, replace -lscs by -lscs_mp and set
+   the number of thread using the environment variable MP_SET_NUMTHREADS.
+   Default is all possible threads. There may be a problem combining
+   multiple threads with the out-of-core capability.
+
+   If you do not want to link SPOOLES and/or ARPACK, delete -DSPOOLES
+   and/or -DARPACK in the CFLAGS in the Makefile in
+   /usr/local/CalculiX/ccx_2.21/src.
+
+   If you would like to use PARDISO, add the flag -DPARDISO to the CFLAGS. You
+   can find more information on PARDISO and its license on
+   www.pardiso-project.org. PARDISO is about twice faster than SPOOLES and
+   seems to scale better.
+
+   Finally, CalculiX has recently been linked with PaStiX. PaStiX is a very
+   fast freeware solver able to use the Graphical Processing Unit
+   (GPU). Benchmark tests have revealed a speed-up of a factor up to 8 for
+   static calculations with contact. This, however, assumes that you have a
+   hight-end Graphical card with at least 32 GB of memory on it. Still, even
+   without using the GPU speed-ups of up to a factor of 4 were observed. This
+   applies to medium to big models in the range between 1 and 5 million
+   degrees of freedom. In order to use PaStiX you need:
+   1) BLAS (e.g. OpenBLAS)
+   2) hwloc (e.g. hwloc-2.1.0)
+   3) parsec (by Mathieu Faverge; can be cloned from
+   "https://bitbucket.org/mfaverge/parsec/src/master", or on the command line:
+   "git clone https://bitbucket.org/mfaverge/parsec.git")
+   4) scotch (e.g. scotch_6.0.8)
+   5) PaStiX modified for CalculiX (PaStiX4CalculiX)
+   You need to compile these libraries in version that supports 8-byte
+   integers in the above order (the requirement for 8-byte integers comes from
+   the fact that some of the above libraries automatically assume the use of 8
+   bytes for an integer). In the CalculiX source directory shell scripts *.sh
+   are provided to do the compiling and linking job. They assume a directory
+   tree in the form:
+   1) ~/OpenBLAS_i8
+   2) ~/PaStiX/hwloc-2.1.0
+   3) ~/PaStiX/parsec
+   4) ~/PaStiX/scotch_6.0.8
+   5) ~/PaStiX/pastix_src
+   So a possible way to proceed is:
+   0) download CUDA and compile (needed if you want to use the GPU; only works
+      if the Graphical card is a Nvidea card)
+   1) download BLAS and compile; BLAS can be obtained from different sources,
+      e.g. OpenBLAS, the Intel MKL-Library,..
+   2) download hwloc-2.1.0.tar.bz2, unpack in ~/PaStiX, copy
+      make_hwloc.sh in ~/PaStiX/hwloc-2.1.0, go to that directory and
+      run ./make_hwloc.sh
+   3) clone parsec in ~/PaStiX (i.e. type the clone command in that directory),
+      copy make_parsec.sh in ~/PaStiX/parsec, go to
+      that directory and run ./make_parsec.sh
+   4) download scotch_6.0.8.tar.bz2, unpack in ~/PaStiX, copy make_scotch.sh
+      in ~/PaStiX/scotch_6.0.8 and run ./make_scotch.sh
+   5) enter "git clone https://github.com/Dhondtguido/PaStiX4CalculiX" in
+   ~/PaStiX, rename PaStiX4CalculiX into pastix_src, copy make_pastix.sh in
+   ~/PaStiX/pastix_src and run make_pastix.sh
+   You may need to modify the paths in the *.sh-files, if you use other
+   paths. The same applies to the names of the packages, if you use other
+   versions.
+   Then, run "make -f Makefile_i8" in the CalculiX directory to get the
+   CalculiX executable. The resulting executable uses 8-byte integers by
+   default. The Makefile_i8 contains flags in the form -DPASTIX by default. If
+   you want to create a 8-byte integer executable without using PASTIX, remove
+   all references to PASTIX in Makefile_i8.
+
+   There is a small Perl script in the distribution in file date.pl. Its 
+   purpose is to insert the date you made CalculiX CrunchiX into the source
+   code (CalculiX.c) such that you get the message: "You are using an
+   executable made on (actual date)" on the screen each time you execute
+   CalculiX CrunchiX. If you do not want this, or if you do not have Perl,
+   delete "./date.pl; $(CC) $(CFLAGS) -c ccx_2.21.c; " near 
+   the end of the Makefile. Remember that the Makefile syntax requires 
+   this line to start with a TAB, no blanks, so be careful if you change 
+   that line.
+
+4. change to /usr/local/CalculiX/ccx_2.21/src and type make;
+   ccx_2.21 is made; put the executable in /usr/local/bin. 
+   Make sure the file access permissions are set by typing  
+   "chmod a+rx ccx_2.21" in directory
+   /usr/local bin. Make sure /usr/local/bin is in your $PATH variable
+   (check by typing "echo $PATH". If /usr/local/bin is not in the
+   path, add it in your start script (e.g. .bashrc) by adding a line
+   "PATH=$PATH:/usr/local/bin".
+
+For ATHLON users: replace the contents of the variables CFLAGS and
+FFLAGS in the Makefile by:
+CFLAGS =  -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer
+-fno-strict-aliasing -pipe -fno-strength-reduce -m486 -malign-loops=2
+-malign-jumps=2 -malign-functions=2 -DCPU=586   -DEXPORT_SYMTAB -DARCH="Linux"
+FFLAGS =  -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer
+-fno-strict-aliasing -pipe -fno-strength-reduce -m486 -malign-loops=2
+-malign-jumps=2 -malign-functions=2 -DCPU=586   -DEXPORT_SYMTAB
+
+For people not working on Linux (e.g. HP-UNIX): change the
+architecture flag in CFLAGS, e.g. for IRIX: -DARCH="IRIX". Look at
+file CalculiX.h in the src directory: the ARCH flag is used to
+determine how FORTRAN files are called from C files (with or without underscore).
+
+For peoples working on HP systems: use the following flags in the Makefile:
+CC = c89
+F77 = f77
+CFLAGS = -DARCH="HP"
+FFLAGS = +e +es -C +A3 -K +ppu -g
+LD = c89
+
+5. change to /usr/local/CalculiX/ccx_2.21/doc and type "latex
+   ccx.tex" at least three times, followed by "dvips ccx.dvi". A
+   postscript version of the documentation is made. Type "mv ccx.ps
+   ccx_2.21.ps" to get the version attached. If available, use
+   latex2html to create a html version by typing "latex2html ccx.tex".
+   A new directory is generated with the name
+   /usr/local/CalculiX/ccx_2.21/doc/ccx. This way it can be
+   called from CalculiX GraphiX. 
+
+6. change to /usr/local/CalculiX/ccx_2.21/test, and type
+   " ccx_2.21 beamp"; check whether a beamp.dat file has been
+   created and compare with beamp.dat.ref. Minor differences can occur
+   depending on the machine type you are using. Check whether a
+   beamp.frd file has been created and look at the results with
+   CalculiX Graphix, if already installed. Choose any other .inp file,
+   or try the script "compare" which executes all calculations. If large
+   differences occur, have a look at the comments at the start of the
+   corresponding input file (these comments are also included in the last
+   section of the user's manual): some examples need some preparation in order
+   to run smoothly.
+
+7. Ready!
+
+*****************************************************************************
+
+B. IF YOU WOULD LIKE TO RUN THE EXECUTABLE YOU COPIED FROM THE
+HOMEPAGE (ccx_2.21.tar.bz2):
+
+1. copy ccx_2.21.tar.bz2 to /usr/local. Bunzip2 and untar the
+   executable; the file ccx_2.21 is
+   generated and put into /usr/local/CalculiX/ccx_2.21/src. Move
+   the executable to /usr/local/bin. 
+
+2. to run examples, get ccx_2.21.test.tar.bz2 from the homepage
+   and follow the instructions under A.
+
+3. to get the documentation, get ccx_2.21.ps.tar.bz2 and
+   ccx_2.21.htm.tar.bz2, copy them to /usr/local and bunzip2 and
+   untar them. Alternatively, create the documentation from the tex
+   original ccx_2.21.doc.tar.bz2 and proceed as explained under A. 
+
+******************************************************************************
+
+If you like a slower pace, here some more information:
+
+You should have obtained four files: ccx_2.21.src.tar.bz2,
+ccx_2.21.doc.tar.bz2, ccx_2.21.htm.tar.bz2,
+ccx_2.21.test.tar.bz2 and the present file
+ccx_2.21.README.INSTALL. By typing "bunzip2 ccx_2.21.src.tar.bz2"
+and "tar -xvf ccx_2.21.src.tar" you extract the source code and some
+other useful files into a subdirectory ./CalculiX/ccx_2.21/src of
+the directory in which you copied ccx_2.21.src.tar.bz2, preferably /usr/local.
+
+The source files include .c, .f and .h files.
+
+The other useful files are:
+
+- Makefile: Makefile to make the executable; check the path names for
+  your  installation!
+- TODO: a file describing future work on the program.
+- BUGS: a synopsis of known bugs.
+- LOGBOOK: a description of the program history
+
+CalculiX has been written in FORTRAN and C. So you will need the g77 compiler.
+
+The program provides an ITERATIVE static solver of its own. However, 
+standard for static problems is
+SPOOLES and for frequency problems SPOOLES and ARPACK. The source code
+for these programs is freely available in the internet and can be
+easily localized using any web browser. Alternatively, you can try the
+following web-sites:
+
+for SPOOLES: http://www.netlib.org/linalg/spooles/spooles.2.2.html
+for ARPACK: http://www.caam.rice.edu/software/ARPACK/
+
+The current version of CalculiX assumes you install and use the serial
+version of  SPOOLES 2.2 and the serial double precision version of
+ARPACK. The Makefile of CalculiX assumes that, if CalculiX is
+installed in ./CalculiX/ccx_2.21/src, SPOOLES 2.2 is installed in
+./SPOOLES.2.2 and ARPACK in ./ARPACK (and their
+subdirectories). Change the Makefile if you wish not to comply with
+this  procedure, or if you want to use TAUCS or the SGI solver (see
+A). This also applies if you want to suppress the renumbering (see A).
+
+The file ccx_2.21.doc.tar.bz2 can be unzipped and untarred in a
+similar way as ccx_2.21.src.tar.bz2. The files are expanded in a
+subdirectory ./CalculiX/ccx_2.21/doc/, and contain a User's
+Manual in the form of the tex-file ccx_2.21.tex, in which several
+*.eps and *.ps pictures are included.
+
+The file ccx_2.21.test.tar.bz2 can be unzipped and untarred in a
+similar way as ccx_2.21.src.tar.bz2. The files are expanded in a
+subdirectory ./CalculiX/ccx_2.21/test/, and contain the input
+files (*.inp) and result files (*.dat.ref) of several small sample
+problems, each of them testing a specific property of
+CalculiX. Running the script "compare" runs all problems and compares
+the output (*.dat) with the reference (*.dat.ref) writing any
+differences exceeding a preset limit in an extra error file. Maybe the paths have to be
+adapted to your needs in the script file "compare". The examples are
+described in the file CalculiX.tex. Beware that differences between
+the output files and the reference files can be due to the accuracy of
+you  machine or other compile options.
+
+Summarizing, after unpacking the above .tar.bz2 files, you obtain the
+following directory structure:
+./CalculiX/ccx_2.21/src
+./CalculiX/ccx_2.21/doc
+./CalculiX/ccx_2.21/test
+SPOOLES.2.2 and ARPACK are assumed to be in
+./SPOOLES.2.2
+./ARPACK
+
+
+******************************************************************************
+USING CALCULIX IN MULTITHREADING MODE, i.e. using more than one processor
+on a multiprocessor machine for SPOOLES
+******************************************************************************
+
+This part was contributed by Manfred Spraul.
+
+Starting with CalculiX Version 2.0 an extra Makefile is included with name
+Makefile_MT, which takes care of some of the actions below.
+
+Support for multi-processor computers
+-------------------------------------
+
+CalculiX supports the multithreaded solve option of the spooles sparse
+solver. This option is disabled by default but can be enabled at compile
+time. The option should work on all platforms that have a pthread compatible
+threading library, it was tested on RedHat Linux and Debian Linux.
+
+
+Steps required to enable the multithread option
+-----------------------------------------------
+
+
+Four changes are required:
+1) The multithread option must be compiled into the spooles library.
+   The last line in the file 'makefile' in the top level directory of
+   the spooles build directory must be modified: From
+   "# cd misc/src           ; make -f makeGlobalLib"
+   to
+   "	cd misc/src           ; make -f makeGlobalLib"
+   (without the quotation marks)
+   Then the spooles library must be rebuilt.
+
+2) the "USE_MT" define must be set when compiling the CalculiX .c files.
+   The first line of the file 'Makefile' in the build directory of CalculiX
+   must be modified: "-DUSE_MT" must be added to the CFLAGS define. This is
+   taken care of if you use the Makefile_MT file.
+
+3) Depending on your platform it may be necessary to add additional flags to
+   CFLAGS and/or FFLAGS, please check your C library and compiler
+   documentation. Examples are -D_REENTRANT, -D_THREAD_SAFE and/or
+   -D_POSIX_PTHREAD_SEMANTICS.
+
+4) The pthread library must be linked into the CalculiX executable by adding
+   the correct library to the LIBS list. The exact name depends on the
+   platform, typically it's one of -lpthread, -lpthreads, -kthread, -Kthread,
+   -mt, -mthreads. Please check your system documentation.
+
+The resulting executable contains both the single-threaded solver and the
+multi-threaded solver. See below how to select the multi-threaded solver.
+
+
+How to use the multi-threaded SPOOLES solver
+--------------------------------------------
+
+By default, the single-threaded solver is used.
+
+This can be changed by setting the OMP_NUM_THREADS  environment variable. For
+more information the reader is referred to Section "How to perform CalculiX
+calculations in parallel" in the CalculiX CrunchiX USER'S MANUAL.
+
+The number of cpus that was used for the calculation can be checked by
+looking at the 'spooles.out' file: After a calculation it will contain a line
+like
+
+	Using 2 threads	
+
+The file is empty if the single threaded solver was used.
+
+For multithreading using PARDISO the user is referred to the PARDISO manuals.
+
+******************************************************************************
+USING CALCULIX with 8 byte per integer
+******************************************************************************
+
+This may be necessary for really big models. Right now, there is a file
+Makefile_i8 showing you how it works. The integers in the FORTRAN files must
+be compiled with the option -fdefault-integer-8 (for the GNU compiler). This
+tells the compiler to consider all integers in the FORTRAN files as
+8-byte integers. For the C-files, the flag -DINTSIZE64 must be added to the
+CFLAGS. Right now, the CalculiX distribution assumes that you also generate
+a integer*8 version of ARPACK (use the above FORTRAN flag) and an
+integer*8 version of PARDISO (of course only if you use any if these, i.e.
+if you have the flags -DPARDISO and -DARPACK in your Makefile). The 
+SPOOLES distribution, however, is assumed to be an integer *4, since it
+is not known that an integer*8 version of SPOOLES has already been made.
+
+******************************************************************************
+DEBUGGING INFORMATION
+******************************************************************************
+
+Starting with version 2.8 the environment variable
+CCX\_LOG\_ALLOC has been introduced. If set to 1 (default is zero) one gets
+detailed information on all allocated, reallocated and deallocated fields
+during the executation of CalculiX. This may be particularly important during
+debugging of segmentation faults.

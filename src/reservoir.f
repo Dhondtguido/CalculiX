@@ -1,6 +1,6 @@
 !     
 !     CalculiX - A 3-dimensional finite element program
-!     Copyright (C) 1998-2015 Guido Dhondt
+!     Copyright (C) 1998-2023 Guido Dhondt
 !     
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -78,7 +78,7 @@
 !
       hr=v(2,ndo)
 !
-      hup=v(2,nup)
+      hup=v(2,nup)/sqrts0
       v(1,nmid)=inv*xflow
 !
       if(hup.le.0.d0) then
@@ -129,14 +129,16 @@ c        hdo=0.d0
 !       backwater curve with raccordation
 !
           v(2,ndo)=hr
-          v(2,nup)=hr
+          v(2,nup)=hr*sqrts0
 !          
         elseif(hk.lt.he) then
 !
 !       backwater curve starting at hk (weak slope)
 !
           v(2,ndo)=hr
-          v(2,nup)=hk
+c          v(2,nup)=(hr+epsilon)*sqrts0
+c          v(2,nup)=hr*sqrts0
+          v(2,nup)=hk*sqrts0
 !
         else
           write(*,*) '*ERROR in reservoir: strong slope at element',

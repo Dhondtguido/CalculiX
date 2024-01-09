@@ -1,6 +1,6 @@
 !     
 !     CalculiX - A 3-dimensional finite element program
-!     Copyright (C) 1998-2015 Guido Dhondt
+!     Copyright (C) 1998-2023 Guido Dhondt
 !     
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -24,7 +24,7 @@
      &     ntie_,nbody_,nprop_,ipoinpc,nevdamp_,npt_,nslavs,nkon_,mcs,
      &     mortar,ifacecount,nintpoint,infree,nheading_,nobject_,
      &     iuel,iprestr,nstam,ndamp,nef,nbounold,nforcold,nloadold,
-     &     nbodyold,mpcend,irobustdesign,nfc_,ndc_,maxsectors_)
+     &     nbodyold,mpcend,irobustdesign,nfc_,ndc_)
 !     
 !     calculates a conservative estimate of the size of the 
 !     fields to be allocated
@@ -63,12 +63,12 @@
      &     iposs,iposm,nslavs,nlayer,nkon_,nopeexp,iremove,mcs,
      &     ifacecount,nintpoint,mortar,infree(4),nheading_,icfd,
      &     multslav,multmast,nobject_,numnodes,iorientation,id,
-     &     nuel,iuel(4,*),number,four,maxsectors_,
+     &     nuel,iuel(4,*),number,four,
      &     iprestr,nstam,ier,ndamp,nef,nbounold,nforcold,nloadold,
      &     nbodyold,mpcend,irobustdesign(3),iflag,network,
      &     nsubmodel,nfc_,ndc_
 !     
-      real*8 temperature,tempact,xfreq,tpinc,tpmin,tpmax,xsectors
+      real*8 temperature,tempact,xfreq,tpinc,tpmin,tpmax
 !     
       parameter(nentries=19)
 !     
@@ -84,7 +84,6 @@
       icfd=-1
 !     
       ier=0
-      maxsectors_=1
 !     
 !     in the presence of mechanical steps the highest number
 !     of DOF is at least 3
@@ -442,7 +441,7 @@
           ncmat_=max(9,ncmat_)
         else
 !     elastic anisotropic
-          ncmat_=max(16,ncmat_)
+          ncmat_=max(19,ncmat_)
         endif
         do
           call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
@@ -490,19 +489,6 @@
         nmpc_=nmpc_+(mi(2)+1)*ncs_
         memmpc_=memmpc_+25*(mi(2)+1)*ncs_
         ntrans_=ntrans_+1
-        do i=2,n
-          if(textpart(i)(1:2).eq.'N=') then
-            read(textpart(i)(3:22),'(f20.0)',iostat=istat) xsectors
-            if(istat.gt.0) then
-              call inputerror(inpc,ipoinpc,iline,
-     &             "*CYCLIC SYMMETRY MODEL%",ier)
-              xsectors=0
-              exit
-            endif
-          endif
-        enddo
-        maxsectors_=max(maxsectors_,int(xsectors)+1)
-!
         do
           call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &         ipoinp,inp,ipoinpc)
@@ -1839,7 +1825,7 @@ c     !
             npmatl=npmatl+1
             npmat_=max(npmatl,npmat_)
           enddo
-          if(ncmat_.ge.9) ncmat_=max(16,ncmat_)
+          if(ncmat_.ge.9) ncmat_=max(19,ncmat_)
         endif
       elseif(textpart(1)(1:19).eq.'*PRE-TENSIONSECTION') then
         surface(1:1)=' '

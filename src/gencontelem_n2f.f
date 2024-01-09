@@ -1,6 +1,6 @@
 !     
 !     CalculiX - A 3-dimensional finite element program
-!     Copyright (C) 1998-2007 Guido Dhondt
+!     Copyright (C) 1998-2023 Guido Dhondt
 !     
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -232,11 +232,10 @@ c     iteller=iteller+1
 !     
 !     determine the area of the slave surfaces
 !     
-        do l=itiefac(1,i), itiefac(2,i)
-          ifaces=islavsurf(1,l)
-          nelems=int(ifaces/10)
-          if(ipkon(nelems).lt.0) cycle
-          jfaces=ifaces-nelems*10
+        do l = itiefac(1,i), itiefac(2,i)
+          ifaces = islavsurf(1,l)
+          nelems = int(ifaces/10)
+          jfaces = ifaces - nelems*10
 !     
 !     Decide on the max integration points number, just consider 2D situation 
 !     

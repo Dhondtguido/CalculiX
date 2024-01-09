@@ -1,5 +1,5 @@
 /*     CalculiX - A 3-dimensional finite element program                 */
-/*              Copyright (C) 1998-2015 Guido Dhondt                          */
+/*              Copyright (C) 1998-2023 Guido Dhondt                          */
 
 /*     This program is free software; you can redistribute it and/or     */
 /*     modify it under the terms of the GNU General Public License as    */
@@ -537,7 +537,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		    
 	  /* bfix = M * eigenvector */
 		    
-	  opmain(&neq[1],&z[*iev*neq[1]],bfix,adb,aub,jq,irow);
+	  FORTRAN(op,(&neq[1],&z[*iev*neq[1]],bfix,adb,aub,jq,irow));
 
 	}else{		
 
@@ -2112,7 +2112,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		    
       /* bfix = M * eigenvector */
 		    
-      opmain(&neq[1],&z[*iev*neq[1]],bfix,adb,aub,jq,irow);
+      FORTRAN(op,(&neq[1],&z[*iev*neq[1]],bfix,adb,aub,jq,irow));
 
       /* calculate the modal stress sensitivity */
 

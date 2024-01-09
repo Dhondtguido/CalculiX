@@ -1,6 +1,6 @@
 !     
 !     CalculiX - A 3-dimensional finite element program
-!     Copyright (C) 1998-2015 Guido Dhondt
+!     Copyright (C) 1998-2023 Guido Dhondt
 !     
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -47,7 +47,7 @@
      &     nod,impc,istep,nodeboun(*),ndirboun(*),ikboun(*),ilboun(*),
      &     nboun,nboun_,iamboun(*),nmethod,iperturb(*),nrhs,ipiv(3),
      &     mi(*),idefforc(*),nedge,idirstart,idirend,idirl,ndepnodes,
-     &     mpcfreeold,info,m,ialeatoric
+     &     mpcfreeold,info,m
 !     
       real*8 xforc(*),trab(7,*),coefmpc(*),xnor(*),val,co(3,*),dot,
      &     thicke(mi(3),*),pi,xboun(*),xnoref(3),dmax,d(3,3),e(3,3,3),
@@ -599,13 +599,11 @@ c     vold(1,iexpnode)=alpha
               do j=1,3
                 xn(j)=xn(j)/dd
               enddo
-              ialeatoric=0
 !     
             elseif(lakon(ielem)(7:7).eq.'B') then
               lstart=4
               lend=1
               linc=-1
-              ialeatoric=1
             endif
 !     
 !     check for transformations
@@ -667,8 +665,7 @@ c     vold(1,iexpnode)=alpha
      &               labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
      &               nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
      &               nboun,nboun_,nnodes,nodeact,co,label,
-     &               typeboun,iperturb,node,idirref,xboun,
-     &               ialeatoric)
+     &               typeboun,iperturb,node,idirref,xboun)
               enddo
             enddo
 !     
@@ -683,8 +680,7 @@ c     vold(1,iexpnode)=alpha
      &           labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
      &           nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
      &           nboun,nboun_,nnodes,nodeact,co,label,
-     &           typeboun,iperturb,node,idirref,xboun,
-     &           ialeatoric)
+     &           typeboun,iperturb,node,idirref,xboun)
 !     
 !     inhomogeneous term
 !     
@@ -693,8 +689,7 @@ c     vold(1,iexpnode)=alpha
      &           labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
      &           nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
      &           nboun,nboun_,nnodes,nodeact,co,label,
-     &           typeboun,iperturb,node,idirref,xboun,
-     &           ialeatoric)
+     &           typeboun,iperturb,node,idirref,xboun)
 !     
 !     end meanrotationmpc
 !     

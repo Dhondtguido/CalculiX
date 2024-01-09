@@ -1,6 +1,6 @@
 !
 !     CalculiX - A 3-dimensional finite element program
-!              Copyright (C) 1998-2015 Guido Dhondt
+!              Copyright (C) 1998-2023 Guido Dhondt
 !
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -18,7 +18,7 @@
 !
       subroutine attach_1d(pneigh,pnode,nterms,ratio,dist,xil)
 !
-!     attaches node with coordinates in "pnode" to the line containing 
+!     ataches node with coordinates in "pnode" to the line containing 
 !     "nterms" nodes with coordinates in field "pneigh" (nterms < 9).
 !     cave: the coordinates are stored in pneigh(1..3,*)
 !
@@ -28,6 +28,8 @@
 !
       real*8 ratio(3),pneigh(3,3),pnode(3),a,xi(-1:1),
      &  p(3),distmin,d1,dist,xil
+!
+!
 !
       d1=1.d0
 !

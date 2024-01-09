@@ -1,6 +1,6 @@
 !
 !     CalculiX - A 3-dimensional finite element program
-!              Copyright (C) 1998-2015 Guido Dhondt
+!              Copyright (C) 1998-2023 Guido Dhondt
 !
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -112,11 +112,11 @@
          ier=1
          return
       endif
-      write(*,*) '*INFO reading *VISCO:'
-      write(*,*) '      although the specification of CETOL for a'
-      write(*,*) '      *VISCO procedure is mandatory, it is only'
-      write(*,*) '      used for creep in materials with a linear'
-      write(*,*) '      elastic behavior which is ISOTROPIC'
+      write(*,*) 'INFO reading *VISCO:'
+      write(*,*) '     although the specification of CETOL for a'
+      write(*,*) '     *VISCO procedure is mandatory, it is only'
+      write(*,*) '     used for creep in materials with a linear'
+      write(*,*) '     elastic behavior which is ISOTROPIC'
       write(*,*)
 !
       if(solver(1:7).eq.'SPOOLES') then

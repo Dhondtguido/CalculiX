@@ -1,6 +1,6 @@
 !
 !     CalculiX - A 3-dimensional finite element program
-!              Copyright (C) 1998-2015 Guido Dhondt
+!              Copyright (C) 1998-2023 Guido Dhondt
 !
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -16,7 +16,7 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-      subroutine rubber(elconloc,stiff,emec,kode,didc,
+      subroutine rubber(elconloc,elas,emec,kode,didc,
      &  d2idc2,dibdc,d2ibdc2,dudc,d2udc2,dldc,d2ldc2,dlbdc,d2lbdc2,
      &  ithermal,icmd,beta,stre,ncmat_)
 !
@@ -33,7 +33,7 @@
       integer nelconst,kode,kk(84),i,j,k,l,m,nt,icmd,istart,iend,
      &  nc,n,ithermal(*),ii,jj,mm,neig,ncmat_
 !
-      real*8 elconloc(*),stiff(*),emec(*),didc(3,3,3),
+      real*8 elconloc(*),elas(*),emec(*),didc(3,3,3),
      &  d2idc2(3,3,3,3,3),dibdc(3,3,3),d2ibdc2(3,3,3,3,3),dudc(3,3),
      &  d2udc2(3,3,3,3),dldc(3,3,3),d2ldc2(3,3,3,3,3),dlbdc(3,3,3),
      &  d2lbdc2(3,3,3,3,3),v1,v2,v3,c(3,3),cinv(3,3),d(3,3),djth,
@@ -828,7 +828,7 @@ c      if(icmd.eq.1) then
                m=kk(nt+3)
                n=kk(nt+4)
                nt=nt+4
-               stiff(i)=4.d0*d2udc2(k,l,m,n)
+               elas(i)=4.d0*d2udc2(k,l,m,n)
             enddo
          endif
 !

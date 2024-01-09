@@ -1,6 +1,6 @@
 !
 !     CalculiX - A 3-dimensional finite element program
-!              Copyright (C) 1998-2015 Guido Dhondt
+!              Copyright (C) 1998-2023 Guido Dhondt
 !
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -127,15 +127,14 @@ c            enddo
             do j=istartset(iright),iendset(iright)
 !     
                nelem=int(ialset(j)/10.d0)
-               indexe=ipkon(nelem)
-               if(indexe.lt.0) cycle
-!     
                jface=ialset(j)-10*nelem
 !
 !     for dynamic massless contact: store contact face number
 !     in element label
 !
 c               if(mortar.eq.-1) write(lakon(nelem)(7:7),'(i1)') jface
+!     
+               indexe=ipkon(nelem)
 !     
                if(lakon(nelem)(4:5).eq.'20') then
                   nnodelem=8

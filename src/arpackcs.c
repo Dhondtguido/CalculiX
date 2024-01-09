@@ -1,5 +1,5 @@
 /*     CalculiX - A 3-dimensional finite element program                   */
-/*              Copyright (C) 1998-2015 Guido Dhondt                          */
+/*              Copyright (C) 1998-2023 Guido Dhondt                          */
 
 /*     This program is free software; you can redistribute it and/or     */
 /*     modify it under the terms of the GNU General Public License as    */
@@ -58,7 +58,8 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	      double *t0, double *t1, double *t1old, 
 	      ITG *ithermal,double *prestr, ITG *iprestr, 
 	      double *vold,ITG *iperturb, double *sti, ITG *nzs,  
-	      ITG *kode, ITG *mei, double *fei,char *filab,
+	      ITG *kode, ITG *mei, double *fei,
+	      char *filab,
 	      ITG *iexpl, double *plicon, ITG *nplicon, double *plkcon,
 	      ITG *nplkcon,
 	      double **xstatep, ITG *npmat_, char *matname, ITG *mi,
@@ -75,8 +76,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	      char *tieset,ITG *nintpoint,ITG *mortar,ITG *ifacecount,
 	      ITG **islavsurfp,double **pslavsurfp,double **clearinip,
 	      ITG *nmat,char *typeboun,ITG *ielprop,double *prop,
-	      char *orname,ITG *inewton,double *t0g,double *t1g,
-	      double *alpha){
+	      char *orname,ITG *inewton,double *t0g,double *t1g){
 
   /* calls the Arnoldi Package (ARPACK) for cyclic symmetry calculations */
   
@@ -109,7 +109,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     *ikboun2=NULL,*ilboun2=NULL,*ikmpc2=NULL,*ilmpc2=NULL,mortartrafoflag=0;
 
   double *stn=NULL,*v=NULL,*resid=NULL,*z=NULL,*workd=NULL,*vr=NULL,
-    *workl=NULL,*d=NULL,sigma,*temp_array=NULL,*vini=NULL,dtset,
+    *workl=NULL,*d=NULL,sigma,*temp_array=NULL,*vini=NULL,
     *een=NULL,cam[5],*f=NULL,*fn=NULL,qa[4],*fext=NULL,*emn=NULL,
     *epn=NULL,*stiini=NULL,*fnr=NULL,*fni=NULL,fnreal,fnimag,*emeini=NULL,
     *xstateini=NULL,theta=0,pi,*coefmpcnew=NULL,*xstiff=NULL,*vi=NULL,
@@ -129,7 +129,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     *cdnt=NULL,*cdnr=NULL,*cdni=NULL,*eme=NULL,alea=0.1,sum,
     *pslavsurfold=NULL,*energyini=NULL,*energy=NULL,xn[3],e1[3],e2[3],
     *smscale=NULL,*auw=NULL,*autloc=NULL,*xboun2=NULL,*coefmpc2=NULL,
-    *dstorage=NULL,*distorage=NULL,*physcon=NULL,dtvol,wavespeed[*nmat];
+    *dstorage=NULL,*distorage=NULL,*physcon=NULL;
 
   FILE *f1;
 
@@ -450,40 +450,6 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
       
   SFREE(f);SFREE(v);SFREE(fn);SFREE(stx);SFREE(eme);SFREE(inum);
   iout=1;
-      
-  if(fei[3]>0.){
-
-    mscalmethod=0;
-	  
-    /* Explicit: Calculation of stable time increment according to
-       Courant's Law  Carlo Monjaraz Tec (CMT) and Selctive Mass Scaling CC*/
-
-    /*Mass Scaling
-      mscalmethod < 0: no explicit dynamics
-      mscalmethod = 0: no mass scaling
-      mscalmethod = 1: selective mass scaling for nonlinearity after 
-      Olovsson et. al 2005
-
-      mscalmethod=2 and mscalmethod=3 correspond to 0 and 1, 
-      respectively with in addition contact scaling active; contact
-      scaling is activated if the user time increment cannot be satisfied */
-
-    dtset=fei[3];
-    NNEW(smscale,double,*ne);
-	  
-    FORTRAN(calcstabletimeincvol,(&ne0,elcon,nelcon,rhcon,nrhcon,alcon,
-				  nalcon,orab,ntmat_,ithermal,alzero,plicon,
-				  nplicon,plkcon,nplkcon,npmat_,mi,&dtime,
-				  xstiff,ncmat_,vold,ielmat,t0,t1,matname,
-				  lakon,wavespeed,nmat,ipkon,co,kon,&dtvol,
-				  alpha,smscale,&dtset,&mscalmethod,mortar,
-				  jobnamef));
-
-      printf(" Explicit time integration: Volumetric COURANT initial stable time increment:%e\n\n",dtvol);
-      if(dtset<dtvol){dtset=dtvol;}
-      printf(" SELECTED explicit dynamics time increment:%e\n\n",dtset);
-      
-  }
   
   /* for the frequency analysis linear strain and elastic properties
      are used */
@@ -599,8 +565,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 			  springarea,thicke,integerglob,doubleglob,
 			  tieset,istartset,iendset,ialset,ntie,&nasym,pslavsurf,
 			  pmastsurf,mortar,clearini,ielprop,prop,&ne0,&kscale,
-			  xstateini,xstate,nstate_,set,nset,smscale,
-			  &mscalmethod));
+			  xstateini,xstate,nstate_,set,nset));
     }
     else{
       FORTRAN(mafillsmcs,(co,nk,kon,ipkon,lakon,ne,nodeboun,ndirboun,xboun,
@@ -622,8 +587,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 			  springarea,thicke,integerglob,doubleglob,
 			  tieset,istartset,iendset,ialset,ntie,&nasym,pslavsurf,
 			  pmastsurf,mortar,clearini,ielprop,prop,&ne0,&kscale,
-			  xstateini,xstate,nstate_,set,nset,smscale,
-			  &mscalmethod));
+			  xstateini,xstate,nstate_,set,nset));
 	  
       if(nasym==1){
 	RENEW(au,double,nzs[2]+nzs[1]);
@@ -797,8 +761,8 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	  if(nasym==1){
 	    FORTRAN(opas,(&neq[1],&workd[ipntr[0]-1],temp_array,adb,aub,jq,irow,nzs));
 	  }else{
-	    opmain(&neq[1],&workd[ipntr[0]-1],temp_array,adb,aub,
-			jq,irow);
+	    FORTRAN(op,(&neq[1],&workd[ipntr[0]-1],temp_array,adb,aub,
+			jq,irow));
 	  }
 	}
 	  
@@ -884,8 +848,8 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	    FORTRAN(opas,(&neq[1],&workd[ipntr[0]-1],&workd[ipntr[1]-1],
 			  adb,aub,jq,irow,nzs));
 	  }else{
-	    opmain(&neq[1],&workd[ipntr[0]-1],&workd[ipntr[1]-1],
-			adb,aub,jq,irow);
+	    FORTRAN(op,(neq,&workd[ipntr[0]-1],&workd[ipntr[1]-1],
+			adb,aub,jq,irow));
 	  }
 	}
 	  
@@ -993,8 +957,8 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	  FORTRAN(opas,(&neq[1],&z[kref],temp_array,
 			adb,aub,jq,irow,nzs));
 	}else{
-	  opmain(&neq[1],&z[kref],temp_array,
-		      adb,aub,jq,irow);
+	  FORTRAN(op,(neq,&z[kref],temp_array,
+		      adb,aub,jq,irow));
 	}
 	sum=0;
 	for(k=0;k<neq[1];k++){sum+=z[kref+k]*temp_array[k];}
@@ -2650,8 +2614,6 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     /* end loop over the nodal diameters */
 
   }
-  
-  if(fei[3]>0.){SFREE(smscale);}
 
   if(*iperturb!=0){
     if(ncont!=0){

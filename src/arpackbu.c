@@ -1,5 +1,5 @@
 /*     CalculiX - A 3-dimensional finite element program                   */
-/*              Copyright (C) 1998-2015 Guido Dhondt                          */
+/*              Copyright (C) 1998-2023 Guido Dhondt                          */
 
 /*     This program is free software; you can redistribute it and/or     */
 /*     modify it under the terms of the GNU General Public License as    */
@@ -597,7 +597,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 
     while((ido==-1)||(ido==1)||(ido==2)){
       if(ido==-1){
-	opmain(&neq[0],&workd[ipntr[0]-1],temp_array,ad,au,jq,irow);
+	FORTRAN(op,(&neq[0],&workd[ipntr[0]-1],temp_array,ad,au,jq,irow));
       }
       if((ido==-1)||(ido==1)){
 
@@ -681,7 +681,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
       }
 
       if(ido==2){
-	opmain(&neq[0],&workd[ipntr[0]-1],&workd[ipntr[1]-1],ad,au,jq,irow);
+	FORTRAN(op,(&neq[0],&workd[ipntr[0]-1],&workd[ipntr[1]-1],ad,au,jq,irow));
       }
 
       FORTRAN(dsaupd,(&ido,bmat,&neq[0],which,&nev,&tol,resid,&ncv,z,&dz,iparam,ipntr,workd,

@@ -1,6 +1,6 @@
 !     
 !     CalculiX - A 3-dimensional finite element program
-!     Copyright (C) 1998-2015 Guido Dhondt
+!     Copyright (C) 1998-2023 Guido Dhondt
 !     
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -56,7 +56,7 @@
      &     stx(6,mi(1),*),xl(3,20),vl(0:mi(2),20),stre(6),prop(*),
      &     elcon(0:ncmat_,ntmat_,*),rhcon(0:1,ntmat_,*),xs2(3,7),
      &     alcon(0:6,ntmat_,*),vini(0:mi(2),*),thickness,
-     &     alzero(*),orab(7,*),stiff(21),rho,qa(4),elineng(6),
+     &     alzero(*),orab(7,*),elas(21),rho,qa(4),elineng(6),
      &     fnl(3,10),beta(6),q(0:mi(2),20),xl2(3,8),
      &     vkl(0:3,3),t0(*),t1(*),prestr(6,mi(1),*),
      &     ckl(3,3),vold(0:mi(2),*),eloc(9),veold(0:mi(2),*),
@@ -447,7 +447,7 @@ c     Bernhardi end
                 venergy=enerini(2,1,nr)
               endif
               call springforc_n2f(xl,konl,vl,imat,elcon,nelcon,
-     &             stiff,fnl,ncmat_,ntmat_,nope,lakonl,t1l,kode,
+     &             elas,fnl,ncmat_,ntmat_,nope,lakonl,t1l,kode,
      &             elconloc,plicon,nplicon,npmat_,senergy,
      &             nener,stx(1,1,i),mi,springarea(1,konl(nope+1))
      &             ,nmethod,ne0,nstate_,xstateini,xstate,reltime,
@@ -463,7 +463,7 @@ c     Bernhardi end
               jfaces=kon(indexe+nope+2)
               igauss=kon(indexe+nope+1)
               if(nener.eq.1) venergy=enerini(2,1,ne0+igauss)
-              call springforc_f2f(xl,vl,imat,elcon,nelcon,stiff,
+              call springforc_f2f(xl,vl,imat,elcon,nelcon,elas,
      &             fnl,ncmat_,ntmat_,nope,lakonl,t1l,kode,
      &             elconloc,plicon,nplicon,npmat_,senergy,
      &             nener,stx(1,1,i),mi,springarea(1,igauss),
@@ -928,7 +928,7 @@ c     Bernhardi end
 !     
           call materialdata_me(elcon,nelcon,rhcon,nrhcon,alcon,
      &         nalcon,imat,amat,iorien,pgauss,orab,ntmat_,
-     &         stiff,rho,i,ithermal,alzero,mattyp,t0l,t1l,ihyper,
+     &         elas,rho,i,ithermal,alzero,mattyp,t0l,t1l,ihyper,
      &         istiff,elconloc,eth,kode,plicon,nplicon,
      &         plkcon,nplkcon,npmat_,plconloc,mi(1),dtime,jj,
      &         xstiff,ncmat_)
@@ -962,7 +962,7 @@ c     enddo
 !     calculating the local stiffness and stress
 !     
           nlgeom_undo=0
-          call mechmodel(elconloc,stiff,emec,kode,emec0,ithermal,
+          call mechmodel(elconloc,elas,emec,kode,emec0,ithermal,
      &         icmd,beta,stre,xkl,ckl,vj,xikl,vij,
      &         plconloc,xstate,xstateini,ielas,
      &         amat,t1l,dtime,time,ttime,i,jj,nstate_,mi(1),
@@ -973,7 +973,7 @@ c     enddo
           if(((nmethod.ne.4).or.(iperturb(1).ne.0)).and.
      &         (nmethod.ne.5)) then
             do m1=1,21
-              xstiff(m1,jj,i)=stiff(m1)
+              xstiff(m1,jj,i)=elas(m1)
             enddo
           endif
 !     
@@ -996,8 +996,8 @@ c     enddo
             eloc(6)=eyz-(vokl(2,3)+vokl(3,2))
 !     
             if(mattyp.eq.1) then
-              e=stiff(1)
-              un=stiff(2)
+              e=elas(1)
+              un=elas(2)
               um=e/(1.d0+un)
               al=un*um/(1.d0-2.d0*un)
               um=um/2.d0
@@ -1009,34 +1009,34 @@ c     enddo
               stre(5)=um*eloc(5)
               stre(6)=um*eloc(6)
             elseif(mattyp.eq.2) then
-              stre(1)=eloc(1)*stiff(1)+eloc(2)*stiff(2)
-     &             +eloc(3)*stiff(4)
-              stre(2)=eloc(1)*stiff(2)+eloc(2)*stiff(3)
-     &             +eloc(3)*stiff(5)
-              stre(3)=eloc(1)*stiff(4)+eloc(2)*stiff(5)
-     &             +eloc(3)*stiff(6)
-              stre(4)=eloc(4)*stiff(7)
-              stre(5)=eloc(5)*stiff(8)
-              stre(6)=eloc(6)*stiff(9)
+              stre(1)=eloc(1)*elas(1)+eloc(2)*elas(2)
+     &             +eloc(3)*elas(4)
+              stre(2)=eloc(1)*elas(2)+eloc(2)*elas(3)
+     &             +eloc(3)*elas(5)
+              stre(3)=eloc(1)*elas(4)+eloc(2)*elas(5)
+     &             +eloc(3)*elas(6)
+              stre(4)=eloc(4)*elas(7)
+              stre(5)=eloc(5)*elas(8)
+              stre(6)=eloc(6)*elas(9)
             elseif(mattyp.eq.3) then
-              stre(1)=eloc(1)*stiff(1)+eloc(2)*stiff(2)+
-     &             eloc(3)*stiff(4)+eloc(4)*stiff(7)+
-     &             eloc(5)*stiff(11)+eloc(6)*stiff(16)
-              stre(2)=eloc(1)*stiff(2)+eloc(2)*stiff(3)+
-     &             eloc(3)*stiff(5)+eloc(4)*stiff(8)+
-     &             eloc(5)*stiff(12)+eloc(6)*stiff(17)
-              stre(3)=eloc(1)*stiff(4)+eloc(2)*stiff(5)+
-     &             eloc(3)*stiff(6)+eloc(4)*stiff(9)+
-     &             eloc(5)*stiff(13)+eloc(6)*stiff(18)
-              stre(4)=eloc(1)*stiff(7)+eloc(2)*stiff(8)+
-     &             eloc(3)*stiff(9)+eloc(4)*stiff(10)+
-     &             eloc(5)*stiff(14)+eloc(6)*stiff(19)
-              stre(5)=eloc(1)*stiff(11)+eloc(2)*stiff(12)+
-     &             eloc(3)*stiff(13)+eloc(4)*stiff(14)+
-     &             eloc(5)*stiff(15)+eloc(6)*stiff(20)
-              stre(6)=eloc(1)*stiff(16)+eloc(2)*stiff(17)+
-     &             eloc(3)*stiff(18)+eloc(4)*stiff(19)+
-     &             eloc(5)*stiff(20)+eloc(6)*stiff(21)
+              stre(1)=eloc(1)*elas(1)+eloc(2)*elas(2)+
+     &             eloc(3)*elas(4)+eloc(4)*elas(7)+
+     &             eloc(5)*elas(11)+eloc(6)*elas(16)
+              stre(2)=eloc(1)*elas(2)+eloc(2)*elas(3)+
+     &             eloc(3)*elas(5)+eloc(4)*elas(8)+
+     &             eloc(5)*elas(12)+eloc(6)*elas(17)
+              stre(3)=eloc(1)*elas(4)+eloc(2)*elas(5)+
+     &             eloc(3)*elas(6)+eloc(4)*elas(9)+
+     &             eloc(5)*elas(13)+eloc(6)*elas(18)
+              stre(4)=eloc(1)*elas(7)+eloc(2)*elas(8)+
+     &             eloc(3)*elas(9)+eloc(4)*elas(10)+
+     &             eloc(5)*elas(14)+eloc(6)*elas(19)
+              stre(5)=eloc(1)*elas(11)+eloc(2)*elas(12)+
+     &             eloc(3)*elas(13)+eloc(4)*elas(14)+
+     &             eloc(5)*elas(15)+eloc(6)*elas(20)
+              stre(6)=eloc(1)*elas(16)+eloc(2)*elas(17)+
+     &             eloc(3)*elas(18)+eloc(4)*elas(19)+
+     &             eloc(5)*elas(20)+eloc(6)*elas(21)
             endif
           endif
 !     

@@ -1,5 +1,5 @@
 /*     CalculiX - A 3-dimensional finite element program                 */
-/*              Copyright (C) 1998-2015 Guido Dhondt                     */
+/*              Copyright (C) 1998-2023 Guido Dhondt                     */
 
 /*     This program is free software; you can redistribute it and/or     */
 /*     modify it under the terms of the GNU General Public License as    */
@@ -307,14 +307,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 			   kon,&iregion,ipoface,nodface,nk,jobnamef,
 			   ipkonfa,lakonfa,konfa,&nsurfs));  
   }
-
-  if(*ndesi==0){
-    printf(" *ERROR in sensi_coor: no design variables left.\n");
-    printf("         either none were defined, or all were removed\n");
-    printf("         because of conflicting constraints.\n");
-    FORTRAN(stop,());
-  }    
-  
+      
   SFREE(itmp);
   RENEW(nodedesi,ITG,*ndesi);
 
@@ -374,7 +367,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 			  iponexp,nmpc,labmpc,ipompc,nodempc,ipretinfo,
 			  kon,ipkon,lakon,iponoel,inoel,iponor2d,knor2d,
 			  ipoface,nodface,ne,x,y,z,xo,yo,zo,nx,ny,nz,nodes,
-			  dist,ne2d,nod1st,nod2nd3rd,extnor,nodedesi,ndesi));
+			  dist,ne2d,nod1st,nod2nd3rd,extnor));
                   
   SFREE(konfa);SFREE(ipkonfa);SFREE(lakonfa);SFREE(iponor);SFREE(xnor);
   SFREE(iponoelfa);SFREE(inoelfa);SFREE(iponexp);SFREE(ipretinfo);

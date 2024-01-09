@@ -1,6 +1,6 @@
 !
 !     CalculiX - A 3-dimensional finite element program
-!              Copyright (C) 1998-2007 Guido Dhondt
+!              Copyright (C) 1998-2023 Guido Dhondt
 !
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -16,7 +16,7 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-      subroutine springdamp_n2f(xl,stiff,voldl,s,imat,elcon,
+      subroutine springdamp_n2f(xl,elas,voldl,s,imat,elcon,
      &  ncmat_,ntmat_,nope,iperturb,springarea,nmethod,mi,
      &  reltime,nasym)
 !
@@ -29,7 +29,7 @@
       integer i,j,imat,ncmat_,ntmat_,k,l,nope,nterms,iflag,i1,
      &  iperturb(*),nmethod,mi(*),nasym
 !
-      real*8 xl(3,10),stiff(21),ratio(9),pproj(3),val,shp2(7,9),
+      real*8 xl(3,10),elas(21),ratio(9),pproj(3),val,shp2(7,9),
      &  al(3),s(60,60),voldl(0:mi(2),10),pl(3,10),xn(3),dm,
      &  c1,c2,c3,c4,elcon(0:ncmat_,ntmat_,*),xm(3),xmu(3,3,10),
      &  dxmu(3,10),dval(3,10),fpu(3,3,10),xi,et,xs2(3,7),xk,
@@ -186,13 +186,13 @@
          endif
       endif
 !
-      stiff(2)=-springarea(1)*elcon(5,1,imat)
-      stiff(1)=stiff(2)*clear
+      elas(2)=-springarea(1)*elcon(5,1,imat)
+      elas(1)=elas(2)*clear
 !
 !     contact force
 !
       do i=1,3
-         fnl(i)=-stiff(1)*xn(i)
+         fnl(i)=-elas(1)*xn(i)
       enddo
 !
 !     derivatives of the jacobian vector w.r.t. the displacement
@@ -250,8 +250,8 @@
 !
       c1=1.d0/dm
       c2=c1*c1
-      c3=stiff(2)*c2
-      c4=stiff(1)*c1
+      c3=elas(2)*c2
+      c4=elas(1)*c1
 !
 !     derivatives of the forces w.r.t. the displacement vectors
 !

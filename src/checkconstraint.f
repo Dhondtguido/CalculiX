@@ -1,6 +1,6 @@
 !     
 !     CalculiX - A 3-dimensional finite element program
-!     Copyright (C) 1998-2015 Guido Dhondt
+!     Copyright (C) 1998-2023 Guido Dhondt
 !     
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -29,17 +29,13 @@
       character*20 empty
 !     
       integer iobject,nobject,istat,nactive,nnlconst,inameacti(*),
-     &   ipoacti(*),ifree,i,ndesi,nk,node,nodedesi(*),
-     &   iconstacti(*),nconst
+     &     ipoacti(*),ifree,i,ndesi,nk,node,nodedesi(*),
+     &     iconstacti(*),nconst
 !     
       real*8 g0(*),bounds(nobject),scale,bound,objnorm(*),
-     &   dgdxglob(2,nk,*)
-!
+     &     dgdxglob(2,nk,*)
       empty='                    '
 !   
-!     
-!     header written in dat file
-!     
       write(5,*)
       write(5,*)
       write(5,'(a113)') '  ################################################
@@ -59,10 +55,19 @@
 !     determine bounds of constraints
 !     
       do iobject=2,nobject
+!
+!        determine bounds of geometric (linear) constraints
+!
          if(objectset(5,iobject)(81:81).eq.'G') then
-            read(objectset(1,iobject)(61:80),'(f20.0)',
-     &      iostat=istat) bound
-            bounds(iobject)=bound
+            do i=1,ndesi
+               node=nodedesi(i)
+               if(dgdxglob(2,node,iobject).gt.0) then
+                  g0(iobject)=1.d0+g0(iobject)
+               endif
+            enddo
+!
+!        determine bounds of nonlinear constraints
+!
          elseif(objectset(5,iobject)(81:81).eq.'C') then
             if(objectset(1,iobject)(61:80).ne.empty) then
                read(objectset(1,iobject)(61:80),'(f20.0)',
@@ -88,7 +93,7 @@
          endif
       enddo
 !     
-!     determine all active constraints
+!     determine active constraints
 !     
       nconst=0
       nactive=0
@@ -97,13 +102,13 @@
 !
       do iobject=2,nobject
 !     
-!        determine all active nonlinear constraints
+!        determine all nonlinear constraints
 !     
          if(objectset(5,iobject)(81:81).eq.'C') then
             nconst=nconst+1
             if(objectset(1,iobject)(19:20).eq.'LE') then
                objnorm(ifree)=g0(iobject)/bounds(iobject)-1
-               if(objnorm(ifree).ge.0.d0) then
+               if(objnorm(ifree).gt.-0.02) then
                   nactive=nactive+1
                   nnlconst=nnlconst+1
                   ipoacti(ifree)=iobject
@@ -120,7 +125,7 @@
                endif
             elseif(objectset(1,iobject)(19:20).eq.'GE') then
                objnorm(ifree)=-1*(g0(iobject)/bounds(iobject))+1
-               if(objnorm(ifree).ge.0.d0) then
+               if(objnorm(ifree).gt.-0.02) then
                   nactive=nactive+1
                   nnlconst=nnlconst+1
                   ipoacti(ifree)=iobject
@@ -137,21 +142,15 @@
                endif
             endif
 !     
-!        determine all active linear constraints
+!        determine all linear constraints
 !     
          elseif(objectset(5,iobject)(81:81).eq.'G') then
             nconst=nconst+1
             if(objectset(1,iobject)(19:20).eq.'LE') then
-               if(g0(iobject).gt.0d0) then
+               if(g0(iobject)>0) then
                   do i=1,ndesi
                      node=nodedesi(i)
-                     if(i.eq.1) then
-                        objnorm(iobject)=dgdxglob(2,node,iobject)
-                     else
-                        objnorm(iobject)=
-     &                  max(objnorm(iobject),dgdxglob(2,node,iobject))
-                     endif
-                     if(dgdxglob(2,node,iobject).ge.0.d0) then
+                     if(dgdxglob(2,node,iobject).eq.1) then
                         ipoacti(ifree)=i
                         inameacti(ifree)=iobject
                         iconstacti(ifree)=-1
@@ -160,33 +159,16 @@
                      endif
                   enddo
                   write(5,102) nconst,objectset(1,iobject),'LE  ',
-     &               g0(iobject),bounds(iobject),objnorm(iobject),
-     &               'ACTIVE  ',objectset(5,iobject)    
+     &               g0(iobject),0,0,'ACTIVE  ',objectset(5,iobject)    
                else
-                  do i=1,ndesi
-                     node=nodedesi(i)
-                     if(i.eq.1) then
-                        objnorm(iobject)=dgdxglob(2,node,iobject)
-                     else
-                        objnorm(iobject)=
-     &                  max(objnorm(iobject),dgdxglob(2,node,iobject))
-                     endif
-                  enddo
                   write(5,102) nconst,objectset(1,iobject),'LE  ',
-     &               g0(iobject),bounds(iobject),objnorm(iobject),
-     &               'INACTIVE',objectset(5,iobject)    
+     &               g0(iobject),0,0,'INACTIVE',objectset(5,iobject)                        
                endif
             elseif(objectset(1,iobject)(19:20).eq.'GE') then
-               if(g0(iobject).gt.0.d0) then
+               if(g0(iobject)>0) then
                   do i=1,ndesi
                      node=nodedesi(i)
-                     if(i.eq.1) then
-                        objnorm(iobject)=dgdxglob(2,node,iobject)
-                     else
-                        objnorm(iobject)=
-     &                  max(objnorm(iobject),dgdxglob(2,node,iobject))
-                     endif
-                     if(dgdxglob(2,node,iobject).ge.0.d0) then
+                     if(dgdxglob(2,node,iobject).eq.1) then
                         ipoacti(ifree)=i
                         inameacti(ifree)=iobject
                         iconstacti(ifree)=1
@@ -195,21 +177,10 @@
                      endif
                   enddo
                   write(5,102) nconst,objectset(1,iobject),'GE  ',
-     &               g0(iobject),bounds(iobject),objnorm(iobject),
-     &               'ACTIVE  ',objectset(5,iobject)    
+     &               g0(iobject),0,0,'ACTIVE  ',objectset(5,iobject)    
                else
-                  do i=1,ndesi
-                     node=nodedesi(i)
-                     if(i.eq.1) then
-                        objnorm(iobject)=dgdxglob(2,node,iobject)
-                     else
-                        objnorm(iobject)=
-     &                  max(objnorm(iobject),dgdxglob(2,node,iobject))
-                     endif
-                  enddo
                   write(5,102) nconst,objectset(1,iobject),'GE  ',
-     &               g0(iobject),bounds(iobject),objnorm(iobject),
-     &               'INACTIVE',objectset(5,iobject)    
+     &               g0(iobject),0,0,'INACTIVE',objectset(5,iobject)                        
                endif
             endif
          endif

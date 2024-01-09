@@ -1,6 +1,6 @@
 !
 !     CalculiX - A 3-dimensional finite element program
-!              Copyright (C) 1998-2015 Guido Dhondt
+!              Copyright (C) 1998-2023 Guido Dhondt
 !
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -60,11 +60,10 @@
                write(*,*) '*ERROR in checktemp: no initial temperature'
                write(*,*) '       defined in node ',node
                call exit(201)
-             elseif(dabs(t1(node)-1.2357111319d0).lt.1.d-10) then
-               t1(node)=t0(node)
-c               write(*,*) '*ERROR in checktemp: no final temperature'
-c               write(*,*) '       defined in node ',node
-c               call exit(201)
+            elseif(dabs(t1(node)-1.2357111319d0).lt.1.d-10) then
+               write(*,*) '*ERROR in checktemp: no final temperature'
+               write(*,*) '       defined in node ',node
+               call exit(201)
             endif
          enddo
       enddo

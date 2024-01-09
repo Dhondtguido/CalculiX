@@ -1,6 +1,6 @@
 !     
 !     CalculiX - A 3-dimensional finite element program
-!     Copyright (C) 1998-2021 Guido Dhondt
+!     Copyright (C) 1998-2023 Guido Dhondt
 !     
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -16,14 +16,14 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !      
-      subroutine mulmatvec_asym(au,jq,irow,x,y,itranspose,ncola,ncolb)
+      subroutine mulmatvec_asym(au,jq,irow,ncol,x,y,itranspose)
 !     
 !     asymmetric sparse matrix vector multiplication in
 !     Compressed Sparse Column (CSC) format: y = a*x
 !      
       implicit none
 !     
-      integer i,j,itranspose,jq(*),irow(*),ncola,ncolb
+      integer i,j,itranspose,jq(*),irow(*),ncol
 !     
       real*8 au(*),x(*),y(*)
 !     
@@ -34,7 +34,7 @@
 !     
 !     NONtransposed multiplication
 !     
-        do i=ncola,ncolb
+        do i=1,ncol
           do j=jq(i),jq(i+1)-1
             y(irow(j))=y(irow(j))+au(j)*x(i)
           enddo
@@ -44,7 +44,7 @@
 !     
 !     transposed multiplication 
 !     
-        do i=ncola,ncolb
+        do i=1,ncol
           do j=jq(i),jq(i+1)-1
             y(i)=y(i)+au(j)*x(irow(j))
           enddo
