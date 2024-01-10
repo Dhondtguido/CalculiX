@@ -489,6 +489,20 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 			  veold,ne0,nmpc,ipompc,nodempc,labmpc,energyini,energy,
 			  orname,xload,itiefac,pmastsurf,springarea,tieset,
 			  ipobody,ibody,xbody,nbody,iinc));
+    
+    FORTRAN(resultsprintcsv,(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,ielorien,
+			  norien,orab,t1,ithermal,filab,een,iperturb,fn,nactdof,
+			  iout,vold,nodeboun,ndirboun,nboun,nmethod,ttime,
+			  xstate,
+			  epn,mi,nstate_,ener,enern,xstaten,eei,set,nset,
+			  istartset,iendset,ialset,nprint,prlab,prset,qfx,qfn,
+			  trab,inotr,ntrans,nelemload,nload,&ikin,ielmat,thicke,
+			  eme,emn,rhcon,nrhcon,shcon,nshcon,cocon,ncocon,ntmat_,
+			  sideload,icfd,inomat,pslavsurf,islavact,cdn,mortar,
+			  islavnode,nslavnode,ntie,islavsurf,time,ielprop,prop,
+			  veold,ne0,nmpc,ipompc,nodempc,labmpc,energyini,energy,
+			  orname,xload,itiefac,pmastsurf,springarea,tieset,
+			  ipobody,ibody,xbody,nbody,iinc));
   }
   
   return;
