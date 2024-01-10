@@ -88,7 +88,7 @@
      &     om,omx,e,un,al,um,xi,et,ze,tt,const,xsj,xsjj,sm(60,60),
      &     sti(6,mi(1),*),stx(6,mi(1),*),s11,s22,s33,s12,s13,s23,s11b,
      &     s22b,s33b,s12b,s13b,s23b,t0l,t1l,coefmpc(*),xlayer(mi(3),4),
-     &     senergy,senergyb,rho,elas(21),summass,summ,thicke(mi(3),*),
+     &     senergy,senergyb,rho,stiff(21),summass,summ,thicke(mi(3),*),
      &     sume,factorm,factore,alp,elconloc(ncmat_),eth(6),
      &     weight,coords(3),dmass,xl1(3,9),term,clearini(3,9,*),
      &     plicon(0:2*npmat_,ntmat_,*),plkcon(0:2*npmat_,ntmat_,*),
@@ -409,7 +409,7 @@ c     Bernhardi end
 !     
           if((lakonl(7:7).eq.'A').or.(lakonl(7:7).eq.'1').or.
      &         (lakonl(7:7).eq.'2').or.(mortar.eq.0)) then
-            call springstiff_n2f(xl,elas,konl,voldl,s,imat,elcon,
+            call springstiff_n2f(xl,stiff,konl,voldl,s,imat,elcon,
      &           nelcon,ncmat_,ntmat_,nope,lakonl,t1l,kode,elconloc,
      &           plicon,nplicon,npmat_,iperturb,
      &           springarea(1,konl(nope+1)),nmethod,mi,ne0,nstate_,
@@ -419,7 +419,7 @@ c     Bernhardi end
             jfaces=kon(indexe+nope+2)
             igauss=kon(indexe+nope+1)
 c     write(*,*) 'e_c3d ',nelem
-            call springstiff_f2f(xl,elas,voldl,s,imat,elcon,nelcon,
+            call springstiff_f2f(xl,stiff,voldl,s,imat,elcon,nelcon,
      &           ncmat_,ntmat_,nope,lakonl,t1l,kode,elconloc,plicon,
      &           nplicon,npmat_,iperturb,springarea(1,igauss),
      &           nmethod,mi,ne0,nstate_,xstateini,xstate,reltime,
@@ -796,7 +796,7 @@ c     mortar end
 !     
         istiff=1
         call materialdata_me(elcon,nelcon,rhcon,nrhcon,alcon,nalcon,
-     &       imat,amat,iorien,coords,orab,ntmat_,elas,rho,
+     &       imat,amat,iorien,coords,orab,ntmat_,stiff,rho,
      &       nelem,ithermal,alzero,mattyp,t0l,t1l,
      &       ihyper,istiff,elconloc,eth,kode,plicon,
      &       nplicon,plkcon,nplkcon,npmat_,
@@ -804,16 +804,16 @@ c     mortar end
      &       xstiff,ncmat_)
 !     
         if(mattyp.eq.1) then
-c     write(*,*) 'elastic co', elas(1),elas(2)
-          e=elas(1)
-          un=elas(2)
+c     write(*,*) 'elastic co', stiff(1),stiff(2)
+          e=stiff(1)
+          un=stiff(2)
           um=e/(1.d0+un)
           al=un*um/(1.d0-2.d0*un)
           um=um/2.d0
         elseif(mattyp.eq.2) then
-c     call orthotropic(elas,anisox)
+c     call orthotropic(stiff,anisox)
         else
-          call anisotropic(elas,anisox)
+          call anisotropic(stiff,anisox)
         endif
 !     
 !     initialisation for the body forces
@@ -882,7 +882,9 @@ c     mortar end
 !     lumping purposes: only for explicit
 !     dynamic calculations
 !     
-            if((mass.eq.1).and.(iexpl.gt.1)) then
+            if((mass.eq.1).and.((iexpl.gt.1).or.
+     &           ((nmethod.eq.2).and.(mscalmethod.gt.0)))) then
+c            if((mass.eq.1).and.(iexpl.gt.1)) then
               summass=summass+rho*xsj*weight
             endif
 !     
@@ -932,29 +934,29 @@ c     mortar end
 !     
                   elseif(mattyp.eq.2) then
 !     
-                    s(ii1,jj1)=s(ii1,jj1)+(elas(1)*w(1,1)+
-     &                   elas(7)*w(2,2)+elas(8)*w(3,3))*weight
-                    s(ii1,jj1+1)=s(ii1,jj1+1)+(elas(2)*w(1,2)+
-     &                   elas(7)*w(2,1))*weight
-                    s(ii1,jj1+2)=s(ii1,jj1+2)+(elas(4)*w(1,3)+
-     &                   elas(8)*w(3,1))*weight
-                    s(ii1+1,jj1)=s(ii1+1,jj1)+(elas(7)*w(1,2)+
-     &                   elas(2)*w(2,1))*weight
+                    s(ii1,jj1)=s(ii1,jj1)+(stiff(1)*w(1,1)+
+     &                   stiff(7)*w(2,2)+stiff(8)*w(3,3))*weight
+                    s(ii1,jj1+1)=s(ii1,jj1+1)+(stiff(2)*w(1,2)+
+     &                   stiff(7)*w(2,1))*weight
+                    s(ii1,jj1+2)=s(ii1,jj1+2)+(stiff(4)*w(1,3)+
+     &                   stiff(8)*w(3,1))*weight
+                    s(ii1+1,jj1)=s(ii1+1,jj1)+(stiff(7)*w(1,2)+
+     &                   stiff(2)*w(2,1))*weight
                     s(ii1+1,jj1+1)=s(ii1+1,jj1+1)+
-     &                   (elas(7)*w(1,1)+
-     &                   elas(3)*w(2,2)+elas(9)*w(3,3))*weight
+     &                   (stiff(7)*w(1,1)+
+     &                   stiff(3)*w(2,2)+stiff(9)*w(3,3))*weight
                     s(ii1+1,jj1+2)=s(ii1+1,jj1+2)+
-     &                   (elas(5)*w(2,3)+
-     &                   elas(9)*w(3,2))*weight
+     &                   (stiff(5)*w(2,3)+
+     &                   stiff(9)*w(3,2))*weight
                     s(ii1+2,jj1)=s(ii1+2,jj1)+
-     &                   (elas(8)*w(1,3)+
-     &                   elas(4)*w(3,1))*weight
+     &                   (stiff(8)*w(1,3)+
+     &                   stiff(4)*w(3,1))*weight
                     s(ii1+2,jj1+1)=s(ii1+2,jj1+1)+
-     &                   (elas(9)*w(2,3)+
-     &                   elas(5)*w(3,2))*weight
+     &                   (stiff(9)*w(2,3)+
+     &                   stiff(5)*w(3,2))*weight
                     s(ii1+2,jj1+2)=s(ii1+2,jj1+2)+
-     &                   (elas(8)*w(1,1)+
-     &                   elas(9)*w(2,2)+elas(6)*w(3,3))*weight
+     &                   (stiff(8)*w(1,1)+
+     &                   stiff(9)*w(2,2)+stiff(6)*w(3,3))*weight
 !     
                   else
 !     
@@ -1057,7 +1059,9 @@ c     mortar end
 !     lumping purposes: only for explicit
 !     dynamic calculations
 !     
-            if((mass.eq.1).and.(iexpl.gt.1)) then
+            if((mass.eq.1).and.((iexpl.gt.1).or.
+     &           ((nmethod.eq.2).and.(mscalmethod.gt.0)))) then
+c            if((mass.eq.1).and.(iexpl.gt.1)) then
               summass=summass+rho*xsj*weight
             endif
 !     
@@ -1092,11 +1096,11 @@ c     mortar end
 !     
                 elseif(mattyp.eq.2) then
 !     
-                  call orthonl(w,vo,elas,s,ii1,jj1,weight)
+                  call orthonl(w,vo,stiff,s,ii1,jj1,weight)
 !     
                 else
 !     
-                  call anisonl(w,vo,elas,s,ii1,jj1,weight)
+                  call anisonl(w,vo,stiff,s,ii1,jj1,weight)
 !     
                 endif
 !     
@@ -1181,8 +1185,8 @@ c     mortar end
         endif
 !     
 !     add hourglass control stiffnesses: C3D8R only. 
-        if(lakonl(1:5).eq.'C3D8R') then 
-          call hgstiffness(s,elas,a,gs)
+        if((lakonl(1:5).eq.'C3D8R').and.(intscheme.eq.0)) then 
+          call hgstiffness(s,stiff,a,gs)
         endif
 !     
 !     computation of the right hand side
@@ -1953,22 +1957,20 @@ c     mortar end
           sm(i+2,i+2)=sm(i,i)
         enddo
 !     
-c        if((mscalmethod.ne.1).and.(mscalmethod.ne.3)) then
-!     
 !     setting all off-diagonal terms to zero     
 !     
-          do i=1,3*nope
-            do j=1,3*nope
-              if(i.eq.j) cycle
-              sm(i,j)=0.d0
-            enddo
+        do i=1,3*nope
+          do j=1,3*nope
+            if(i.eq.j) cycle
+            sm(i,j)=0.d0
           enddo
-c        endif
+        enddo
       endif
 !
 !     mscalmethod = 1 or 3: selective mass scaling SMS
 !     
-      if((mass.eq.1).and.(iexpl.gt.1)) then
+      if((mass.eq.1).and.((iexpl.gt.1).or.
+     &     ((nmethod.eq.2).and.(mscalmethod.gt.0)))) then
         if((mscalmethod.eq.1).or.(mscalmethod.eq.3)) then
 !     
 !     beta = smscalel
@@ -1976,48 +1978,23 @@ c        endif
           smfactor=smscalel*summass/((nope-1)*nope)
 !     
           do i=1,3*nope
-c            do j=1,3*nope
-c              if(i.ne.j) then
-c!     set non diagonals to zero           
-c                sm(i,j)=0.d0
-c!     diagonal terms of M for SMS
-c              else
-c                sm(i,j)=sm(i,j)+(nope-1)*smfactor
-                sm(i,i)=sm(i,i)+(nope-1)*smfactor
-c              endif
-c            enddo
+            sm(i,i)=sm(i,i)+(nope-1)*smfactor
           enddo
 !     
 !     nondiagonal terms of M for SMS
 !     
-!         no massless method: regular mass matrix was lumped     
+!     no massless method: regular mass matrix was lumped     
 !     
-c          if(mortar.ne.-1) then
-c            i=0
-c            do j=0,nope*3-1,3
-c              i=i+1
-c              do k=1,(nope-i)
-c                do l=1,3
-c                  sm(j+l+k*3,j+l)=-smfactor
-c                  sm(j+l,j+l+k*3)=-smfactor
-c                enddo
-c              enddo
-c            enddo
-c          else
-c!     
-c!          massless method: regular mass matrix was not lumped     
-c!     
-            i=0
-            do j=0,nope*3-1,3
-              i=i+1
-              do k=1,(nope-i)
-                do l=1,3
-                  sm(j+l+k*3,j+l)=sm(j+l+k*3,j+l)-smfactor
-                  sm(j+l,j+l+k*3)=sm(j+l,j+l+k*3)-smfactor
-                enddo
+          i=0
+          do j=0,nope*3-1,3
+            i=i+1
+            do k=1,(nope-i)
+              do l=1,3
+                sm(j+l+k*3,j+l)=sm(j+l+k*3,j+l)-smfactor
+                sm(j+l,j+l+k*3)=sm(j+l,j+l+k*3)-smfactor
               enddo
             enddo
-c          endif
+          enddo
 !     to calculate additional energy in resultsmech.f:
           smscalel=smfactor
         endif

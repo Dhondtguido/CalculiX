@@ -814,8 +814,8 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 
     NNEW(zc,double,neq[1]*nev);
     for(i=0;i<nev;i++){
-      FORTRAN(op,(&neq[1],&z[i*neq[1]],&zc[i*neq[1]],adc,auc,
-		  jq,irow));
+      opmain(&neq[1],&z[i*neq[1]],&zc[i*neq[1]],adc,auc,
+		  jq,irow);
     }
 
     /* cc is the reduced damping matrix (damping matrix mapped onto
@@ -923,7 +923,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 
     SFREE(vini);
     
-    FORTRAN(op,(&neq[1],temp_array1,temp_array2,adb,aub,jq,irow));
+    opmain(&neq[1],temp_array1,temp_array2,adb,aub,jq,irow);
     
     for(i=0;i<neq[1];i++){
       for(k=0;k<nev;k++){
@@ -943,7 +943,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
       }
     }
     
-    FORTRAN(op,(&neq[1],temp_array1,temp_array2,adb,aub,jq,irow));
+    opmain(&neq[1],temp_array1,temp_array2,adb,aub,jq,irow);
     
     for(i=0;i<neq[1];i++){
       for(k=0;k<nev;k++){
@@ -1059,11 +1059,15 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 			namta,nam,ampli,&time,&reltime,ttime,&dtime,ithermal,
 			nmethod,xbounold,xboun,xbounact,iamboun,nboun,nodeboun,
 			ndirboun,nodeforc,
-			ndirforc,istep,&iinc,co,vold,itg,&ntg,amname,ikboun,ilboun,
+			ndirforc,istep,&iinc,co,vold,itg,&ntg,amname,ikboun,
+			ilboun,
 			nelemload,sideload,mi,
-			xforcdiff,xloaddiff,xbodydiff,t1diff,xboundiff,&iabsload,
-			&iprescribedboundary,ntrans,trab,inotr,veold,nactdof,bcont,
-			fn,ipobody,iponoel,inoel,ipkon,kon,lakon,ielprop,prop,ielmat,
+			xforcdiff,xloaddiff,xbodydiff,t1diff,xboundiff,
+			&iabsload,
+			&iprescribedboundary,ntrans,trab,inotr,veold,nactdof,
+			bcont,
+			fn,ipobody,iponoel,inoel,ipkon,kon,lakon,ielprop,prop,
+			ielmat,
 			shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon));
 
   if(iabsload==2) NNEW(fextold,double,neq[1]);

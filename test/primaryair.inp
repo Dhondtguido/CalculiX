@@ -1,0 +1,91 @@
+*node
+1,0.5,0.,0.
+2,1.,0.,0.
+3,1.5,0.,0.
+4,2.,0.,0.
+5,2.5,0.,0.
+6,3.,0.,0.
+7,3.5,0.,0.
+8,4.,0.,0.
+9,4.5,0.,0.
+10,5.,0.,0.
+11,5.5,0.,0.
+12,6.,0.,0.
+13,6.5,0.,0.
+*element,type=d,elset=inlet1
+1,0,1,2
+*element,type=d,elset=orifice1
+2,2,3,4
+*element,type=d,elset=vortex1
+3,4,5,6
+*element,type=d,elset=characteristic1
+4,6,7,8
+*element,type=d,elset=vortex2
+5,8,9,10
+*element,type=d,elset=restrictor2
+6,10,11,12
+*element,type=d,elset=outlet1
+7,12,13,0
+*material,name=gas
+*specific gas constant
+287.
+*fluid constants
+ 0.1002353938D+4, 0.1711000000D-04, 0.27315D+03
+ 0.1002353938D+4, 0.1949281697D-04, 0.32315D+03
+ 0.1002353938D+4, 0.2169996934D-04, 0.37315D+03
+ 0.1002353938D+4, 0.2376071192D-04, 0.42315D+03
+ 0.1002353938D+4, 0.2569766947D-04, 0.47315D+03
+ 0.1002353938D+4, 0.2752859550D-04, 0.52315D+03
+ 0.1002353938D+4, 0.2926763423D-04, 0.57315D+03
+ 0.1002353938D+4, 0.3092621879D-04, 0.62315D+03
+ 0.1002353938D+4, 0.3251371525D-04, 0.67315D+03
+ 0.1002353938D+4, 0.3403789021D-04, 0.72315D+03
+ 0.1002353938D+4, 0.3550525531D-04, 0.77315D+03
+ 0.1002353938D+4, 0.3692132461D-04, 0.82315D+03
+ 0.1002353938D+4, 0.3829080968D-04, 0.87315D+03
+ 0.1002353938D+4, 0.3961776952D-04, 0.92315D+03
+ 0.1002353938D+4, 0.4090572698D-04, 0.97315D+03
+ 0.1002353938D+4, 0.4215776043D-04, 0.10231D+04
+ 0.1002353938D+4, 0.4337657658D-04, 0.10732D+04
+ 0.1002353938D+4, 0.4456456897D-04, 0.11232D+04
+ 0.1002353938D+4, 0.4572386531D-04, 0.11732D+04
+ 0.1002353938D+4, 0.4685636617D-04, 0.12232D+04
+**1002.353938
+*initial conditions,type=temperature
+2,293.
+4,293.
+6,293.
+8,1198.
+10,1198.
+12,1198.
+*initial conditions,type=total pressure
+2,100000.
+4,9.971387e4
+6,5.573126e6
+12,100000.
+*initial conditions,type=massflow
+5,2.604687
+*fluid sections,material=gas,elset=inlet1,type=inout
+*fluid sections,material=gas,elset=orifice1,type=orifice
+1.e-1,3.5682e-1,0
+*fluid sections,material=gas,elset=vortex1,type=vortex forced
+4.34e-2,2.17e-2,1.,1.,1.1519e4,0.
+*fluid sections,material=gas,elset=characteristic1,type=characteristic
+1.,,,,1.e-2,8.e-6,1.,1.e-4
+*fluid sections,material=gas,elset=vortex2,type=vortex forced
+2.566e-2,4.04e-2,1.,1.,1.1519e4,0.
+*fluid sections,material=gas,elset=restrictor2,type=restrictor user
+2.463e-3,1.e-2,7.34e-2,1.,0.,0
+*fluid sections,material=gas,elset=outlet1,type=inout
+*boundary,pressure
+2,2,2,100000.
+12,2,2,100000.
+*boundary,temperature
+2,0,0,293.
+8,0,0,1198.
+*step,inc=100
+*heat transfer,steady state
+1.,1.
+*node file
+mf,pt,tt
+*end step

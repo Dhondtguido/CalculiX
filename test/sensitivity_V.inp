@@ -1,0 +1,50 @@
+**
+**   Structure: two elements.
+**   Test objective: sensitivity: internal energy w.r.t. coordinates.
+**
+*NODE, NSET=NALL
+         1,  100.0          ,  0.0            ,  100.0          
+         2,  0.0            ,  0.0            ,  100.0          
+         3,  0.0            ,  100.0          ,  100.0          
+         4,  100.0          ,  100.0          ,  100.0          
+         5,  100.0          ,  0.0            ,  0.0            
+         6,  100.0          ,  100.0          ,  0.0            
+         7,  0.0            ,  100.0          ,  0.0            
+         8,  0.0            ,  0.0            ,  0.0            
+*ELEMENT,TYPE=C3D8,ELSET=EALL
+         1,         1,         2,         3,         4,         5,         8,         7,
+         6
+*NSET, NSET=DESIGNNODES
+      1,
+*DESIGNVARIABLES,TYPE=COORDINATE
+DESIGNNODES
+*MATERIAL,NAME=EL
+*ELASTIC
+210000.,.3
+*DENSITY
+7.8E-9
+*SOLID SECTION, ELSET=EALL, MATERIAL=EL
+*INITIAL CONDITIONS, TYPE=TEMPERATURE
+NALL, 293.15
+*BOUNDARY
+        2,1,3,0.0
+        3,1,3,0.0
+        7,1,3,0.0
+        8,1,3,0.0
+	4,2,3,0.0
+	5,2,3,0.0
+	6,2,3,0.0       
+*STEP
+*STATIC
+*TEMPERATURE
+NALL, 293.15
+*DLOAD
+1,   P6,-1000.0    
+*END STEP
+*STEP
+*SENSITIVITY
+*DESIGN RESPONSE, NAME=ENER_OBJ
+STRAIN ENERGY,EALL
+*NODE FILE
+SEN
+*END STEP

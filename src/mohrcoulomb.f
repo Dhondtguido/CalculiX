@@ -17,7 +17,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine mohrcoulomb(elconloc,plconloc,xstate,xstateini,
-     &  elas,emec,icmd,beta,stre,
+     &  stiff,emec,icmd,beta,stre,
      &  ielas,dtime,time,ttime,iel,iint,nstate_,mi,pnewdt)
 !
 !     calculates stiffness and stresses for the Mohr-Coulomb
@@ -38,11 +38,11 @@
      &     kstep,kinc,iloop,ier,iregion,matz,j1,j2,j3,j4,jj,kal(2,6),
      &     kel(4,21),j5,j6,j7,j8
 !     
-      real*8 elconloc(*),elas(21),emec(6),beta(6),stre(6),sc(6),
-     &     plconloc(802),xk,xm,sa,stiff(6,6),ttime,ee,un,um,al,epl(6),
+      real*8 elconloc(*),stiff(21),emec(6),beta(6),stre(6),sc(6),
+     &     plconloc(802),xk,xm,sa,dsde(6,6),ttime,ee,un,um,al,epl(6),
      &     ftrial,xiso(200),yiso(200),da6(3),fiso,dfiso,ep,dtime,denom,
      &     epini,el(6),tracee,a2(3),a6(3),time,xstate(nstate_,mi(1),*),
-     &     xstateini(nstate_,mi(1),*),tracea,da1(3),delas(21),
+     &     xstateini(nstate_,mi(1),*),tracea,da1(3),
      &     pnewdt,um2,fv1(3),fv2(3),ps1r1,ps1r6,
      &     ps1s2,ps6s1,traceb,z(3,3),s(3,3),b1(3),b2(3),b6(3),
      &     r6(3),s1xr1(3),sb(3),s1xr6(3),r1(3),s1(3),s2(3),s6(3),
@@ -156,27 +156,27 @@
         xstate(1,iint,iel)=ep
 !     
         if(icmd.ne.3) then
-          elas(1)=al+um2
-          elas(2)=al
-          elas(3)=al+um2
-          elas(4)=al
-          elas(5)=al
-          elas(6)=al+um2
-          elas(7)=0.d0
-          elas(8)=0.d0
-          elas(9)=0.d0
-          elas(10)=um
-          elas(11)=0.d0
-          elas(12)=0.d0
-          elas(13)=0.d0
-          elas(14)=0.d0
-          elas(15)=um
-          elas(16)=0.d0
-          elas(17)=0.d0
-          elas(18)=0.d0
-          elas(19)=0.d0
-          elas(20)=0.d0
-          elas(21)=um
+          stiff(1)=al+um2
+          stiff(2)=al
+          stiff(3)=al+um2
+          stiff(4)=al
+          stiff(5)=al
+          stiff(6)=al+um2
+          stiff(7)=0.d0
+          stiff(8)=0.d0
+          stiff(9)=0.d0
+          stiff(10)=um
+          stiff(11)=0.d0
+          stiff(12)=0.d0
+          stiff(13)=0.d0
+          stiff(14)=0.d0
+          stiff(15)=um
+          stiff(16)=0.d0
+          stiff(17)=0.d0
+          stiff(18)=0.d0
+          stiff(19)=0.d0
+          stiff(20)=0.d0
+          stiff(21)=um
         endif
 !     
         return
@@ -353,25 +353,25 @@ c      write(*,*) 'mohrcoulomb ',iel,iint,iregion
           denom=a1(1)*s1(1)+a1(2)*s1(2)+a1(3)*s1(3)+dk*dm*dfiso
           do i=1,3
             do j=1,3
-              stiff(i,j)=al-s1(i)*da1(j)/denom
+              dsde(i,j)=al-s1(i)*da1(j)/denom
             enddo
-            stiff(i,i)=stiff(i,i)+um2
+            dsde(i,i)=dsde(i,i)+um2
           enddo
           do i=1,3
             do j=4,6
-              stiff(i,j)=0.d0
-              stiff(j,i)=0.d0
+              dsde(i,j)=0.d0
+              dsde(j,i)=0.d0
             enddo
           enddo
           do i=4,6
             do j=4,6
-              stiff(i,j)=0.d0
+              dsde(i,j)=0.d0
             enddo
           enddo
         endif
-        stiff(4,4)=(sc(1)-sc(2))/(sb(1)-sb(2))*um
-        stiff(5,5)=(sc(1)-sc(3))/(sb(1)-sb(3))*um
-        stiff(6,6)=(sc(2)-sc(3))/(sb(2)-sb(3))*um
+        dsde(4,4)=(sc(1)-sc(2))/(sb(1)-sb(2))*um
+        dsde(5,5)=(sc(1)-sc(3))/(sb(1)-sb(3))*um
+        dsde(6,6)=(sc(2)-sc(3))/(sb(2)-sb(3))*um
 !     
       elseif(iregion.eq.2) then
         iloop=0
@@ -473,27 +473,27 @@ c      write(*,*) 'mohrcoulomb ',iel,iint,iregion
           b(2,2)=a(1,1)/det
           do i=1,3
             do j=1,3
-              stiff(i,j)=al-b(1,1)*s1(i)*da1(j)
+              dsde(i,j)=al-b(1,1)*s1(i)*da1(j)
      &             -b(1,2)*s1(i)*da2(j)
      &             -b(2,1)*s2(i)*da1(j)
      &             -b(2,2)*s2(i)*da2(j)
             enddo
-            stiff(i,i)=stiff(i,i)+um2
+            dsde(i,i)=dsde(i,i)+um2
           enddo
           do i=1,3
             do j=4,6
-              stiff(i,j)=0.d0
-              stiff(j,i)=0.d0
+              dsde(i,j)=0.d0
+              dsde(j,i)=0.d0
             enddo
           enddo
           do i=4,6
             do j=4,6
-              stiff(i,j)=0.d0
+              dsde(i,j)=0.d0
             enddo
           enddo
-          stiff(4,4)=(sc(1)-sc(2))/(sb(1)-sb(2))*um
-          stiff(5,5)=(sc(1)-sc(3))/(sb(1)-sb(3))*um
-          stiff(6,6)=(sc(2)-sc(3))/(sb(2)-sb(3))*um
+          dsde(4,4)=(sc(1)-sc(2))/(sb(1)-sb(2))*um
+          dsde(5,5)=(sc(1)-sc(3))/(sb(1)-sb(3))*um
+          dsde(6,6)=(sc(2)-sc(3))/(sb(2)-sb(3))*um
         endif
       elseif(iregion.eq.3) then
         iloop=0
@@ -595,27 +595,27 @@ c      write(*,*) 'mohrcoulomb ',iel,iint,iregion
           b(2,2)=a(1,1)/det
           do i=1,3
             do j=1,3
-              stiff(i,j)=al-b(1,1)*s1(i)*da1(j)
+              dsde(i,j)=al-b(1,1)*s1(i)*da1(j)
      &             -b(1,2)*s1(i)*da6(j)
      &             -b(2,1)*s6(i)*da1(j)
      &             -b(2,2)*s6(i)*da6(j)
             enddo
-            stiff(i,i)=stiff(i,i)+um2
+            dsde(i,i)=dsde(i,i)+um2
           enddo
           do i=1,3
             do j=4,6
-              stiff(i,j)=0.d0
-              stiff(j,i)=0.d0
+              dsde(i,j)=0.d0
+              dsde(j,i)=0.d0
             enddo
           enddo
           do i=4,6
             do j=4,6
-              stiff(i,j)=0.d0
+              dsde(i,j)=0.d0
             enddo
           enddo
-          stiff(4,4)=(sc(1)-sc(2))/(sb(1)-sb(2))*um
-          stiff(5,5)=(sc(1)-sc(3))/(sb(1)-sb(3))*um
-          stiff(6,6)=(sc(2)-sc(3))/(sb(2)-sb(3))*um
+          dsde(4,4)=(sc(1)-sc(2))/(sb(1)-sb(2))*um
+          dsde(5,5)=(sc(1)-sc(3))/(sb(1)-sb(3))*um
+          dsde(6,6)=(sc(2)-sc(3))/(sb(2)-sb(3))*um
         endif
       else
 !     
@@ -766,7 +766,7 @@ c      write(*,*) 'mohrcoulomb ',iel,iint,iregion
 !     
           do i=1,3
             do j=1,3
-              stiff(i,j)=al-b(1,1)*s1(i)*da1(j)
+              dsde(i,j)=al-b(1,1)*s1(i)*da1(j)
      &             -b(1,2)*s1(i)*da2(j)
      &             -b(1,3)*s1(i)*da6(j)
      &             -b(2,1)*s2(i)*da1(j)
@@ -776,22 +776,22 @@ c      write(*,*) 'mohrcoulomb ',iel,iint,iregion
      &             -b(3,2)*s6(i)*da2(j)
      &             -b(3,3)*s6(i)*da6(j)
             enddo
-            stiff(i,i)=stiff(i,i)+um2
+            dsde(i,i)=dsde(i,i)+um2
           enddo
           do i=1,3
             do j=4,6
-              stiff(i,j)=0.d0
-              stiff(j,i)=0.d0
+              dsde(i,j)=0.d0
+              dsde(j,i)=0.d0
             enddo
           enddo
           do i=4,6
             do j=4,6
-              stiff(i,j)=0.d0
+              dsde(i,j)=0.d0
             enddo
           enddo
-          stiff(4,4)=(sc(1)-sc(2))/(sb(1)-sb(2))*um
-          stiff(5,5)=(sc(1)-sc(3))/(sb(1)-sb(3))*um
-          stiff(6,6)=(sc(2)-sc(3))/(sb(2)-sb(3))*um
+          dsde(4,4)=(sc(1)-sc(2))/(sb(1)-sb(2))*um
+          dsde(5,5)=(sc(1)-sc(3))/(sb(1)-sb(3))*um
+          dsde(6,6)=(sc(2)-sc(3))/(sb(2)-sb(3))*um
         endif
       endif
 !     
@@ -875,24 +875,24 @@ c      write(*,*) (stre(i),i=1,6)
 !     
 !     transforming the stiffness matrix into the global system
 !
-c        stiff(2,1)=(stiff(1,2)+stiff(2,1))/2.d0
-c        stiff(3,1)=(stiff(1,3)+stiff(3,1))/2.d0
-c        stiff(3,2)=(stiff(2,3)+stiff(3,2))/2.d0
-c        stiff(4,1)=(stiff(1,4)+stiff(4,1))/2.d0
-c        stiff(4,2)=(stiff(2,4)+stiff(4,2))/2.d0
-c        stiff(4,3)=(stiff(3,4)+stiff(4,3))/2.d0
-c        stiff(5,1)=(stiff(1,5)+stiff(5,1))/2.d0
-c        stiff(5,2)=(stiff(2,5)+stiff(5,2))/2.d0
-c        stiff(5,3)=(stiff(3,5)+stiff(5,3))/2.d0
-c        stiff(5,4)=(stiff(4,5)+stiff(5,4))/2.d0
-c        stiff(6,1)=(stiff(1,6)+stiff(6,1))/2.d0
-c        stiff(6,2)=(stiff(2,6)+stiff(6,2))/2.d0
-c        stiff(6,3)=(stiff(3,6)+stiff(6,3))/2.d0
-c        stiff(6,4)=(stiff(4,6)+stiff(6,4))/2.d0
-c        stiff(6,5)=(stiff(5,6)+stiff(6,5))/2.d0
+c        dsde(2,1)=(dsde(1,2)+dsde(2,1))/2.d0
+c        dsde(3,1)=(dsde(1,3)+dsde(3,1))/2.d0
+c        dsde(3,2)=(dsde(2,3)+dsde(3,2))/2.d0
+c        dsde(4,1)=(dsde(1,4)+dsde(4,1))/2.d0
+c        dsde(4,2)=(dsde(2,4)+dsde(4,2))/2.d0
+c        dsde(4,3)=(dsde(3,4)+dsde(4,3))/2.d0
+c        dsde(5,1)=(dsde(1,5)+dsde(5,1))/2.d0
+c        dsde(5,2)=(dsde(2,5)+dsde(5,2))/2.d0
+c        dsde(5,3)=(dsde(3,5)+dsde(5,3))/2.d0
+c        dsde(5,4)=(dsde(4,5)+dsde(5,4))/2.d0
+c        dsde(6,1)=(dsde(1,6)+dsde(6,1))/2.d0
+c        dsde(6,2)=(dsde(2,6)+dsde(6,2))/2.d0
+c        dsde(6,3)=(dsde(3,6)+dsde(6,3))/2.d0
+c        dsde(6,4)=(dsde(4,6)+dsde(6,4))/2.d0
+c        dsde(6,5)=(dsde(5,6)+dsde(6,5))/2.d0
 c        do j=2,6
 c          do i=1,j-1
-c            stiff(i,j)=stiff(j,i)
+c            dsde(i,j)=dsde(j,i)
 c          enddo
 c        enddo
 !        
@@ -902,76 +902,45 @@ c        enddo
             do k=1,6
 c     ERROR in Appendix A of Ph.D by Johan Clausen, p 1058
 c      it should be C'=A^T.C.A               
-c              dum(i,j)=dum(i,j)+stiff(i,k)*t(j,k)
-              dum(i,j)=dum(i,j)+stiff(i,k)*t(k,j)
+c              dum(i,j)=dum(i,j)+dsde(i,k)*t(j,k)
+              dum(i,j)=dum(i,j)+dsde(i,k)*t(k,j)
             enddo
           enddo
         enddo
 !     
         do i=1,6
           do j=1,6
-            stiff(i,j)=0.d0
+            dsde(i,j)=0.d0
             do k=1,6
-              stiff(i,j)=stiff(i,j)+t(k,i)*dum(k,j)
-c              stiff(i,j)=stiff(i,j)+t(i,k)*dum(k,j)
+              dsde(i,j)=dsde(i,j)+t(k,i)*dum(k,j)
+c              dsde(i,j)=dsde(i,j)+t(i,k)*dum(k,j)
             enddo
           enddo
         enddo
 !     
 !     symmetrizing the matrix
 !     
-        elas(1)=stiff(1,1)
-        elas(2)=(stiff(1,2)+stiff(2,1))/2.d0
-        elas(3)=stiff(2,2)
-        elas(4)=(stiff(1,3)+stiff(3,1))/2.d0
-        elas(5)=(stiff(2,3)+stiff(3,2))/2.d0
-        elas(6)=stiff(3,3)
-        elas(7)=(stiff(1,4)+stiff(4,1))/2.d0
-        elas(8)=(stiff(2,4)+stiff(4,2))/2.d0
-        elas(9)=(stiff(3,4)+stiff(4,3))/2.d0
-        elas(10)=stiff(4,4)
-        elas(11)=(stiff(1,5)+stiff(5,1))/2.d0
-        elas(12)=(stiff(2,5)+stiff(5,2))/2.d0
-        elas(13)=(stiff(3,5)+stiff(5,3))/2.d0
-        elas(14)=(stiff(4,5)+stiff(5,4))/2.d0
-        elas(15)=stiff(5,5)
-        elas(16)=(stiff(1,6)+stiff(6,1))/2.d0
-        elas(17)=(stiff(2,6)+stiff(6,2))/2.d0
-        elas(18)=(stiff(3,6)+stiff(6,3))/2.d0
-        elas(19)=(stiff(4,6)+stiff(6,4))/2.d0
-        elas(20)=(stiff(5,6)+stiff(6,5))/2.d0
-        elas(21)=stiff(6,6)
-ccccc
-c        call anisotropic(elas,ya)
-c!     
-c        do jj=1,21
-c          j1=kel(1,jj)
-c          j2=kel(2,jj)
-c          j3=kel(3,jj)
-c          j4=kel(4,jj)
-c          delas(jj)=0.d0
-c          do j5=1,3
-c            do j6=1,3
-c              do j7=1,3
-c                do j8=1,3
-c                  delas(jj)=delas(jj)+ya(j5,j6,j7,j8)*
-c     &                 z(j1,j5)*z(j2,j6)*z(j3,j7)*z(j4,j8)
-c                enddo
-c              enddo
-c            enddo
-c          enddo
-c        enddo
-c        do jj=1,21
-c          elas(jj)=delas(jj)
-c        enddo
-ccccc
-c        write(*,*) 'mohrcoulomb stiff'
-c          write(*,*) (elas(i),i=1,1)
-c          write(*,*) (elas(i),i=2,3)
-c          write(*,*) (elas(i),i=4,6)
-c          write(*,*) (elas(i),i=7,10)
-c          write(*,*) (elas(i),i=11,15)
-c          write(*,*) (elas(i),i=16,21)
+        stiff(1)=dsde(1,1)
+        stiff(2)=(dsde(1,2)+dsde(2,1))/2.d0
+        stiff(3)=dsde(2,2)
+        stiff(4)=(dsde(1,3)+dsde(3,1))/2.d0
+        stiff(5)=(dsde(2,3)+dsde(3,2))/2.d0
+        stiff(6)=dsde(3,3)
+        stiff(7)=(dsde(1,4)+dsde(4,1))/2.d0
+        stiff(8)=(dsde(2,4)+dsde(4,2))/2.d0
+        stiff(9)=(dsde(3,4)+dsde(4,3))/2.d0
+        stiff(10)=dsde(4,4)
+        stiff(11)=(dsde(1,5)+dsde(5,1))/2.d0
+        stiff(12)=(dsde(2,5)+dsde(5,2))/2.d0
+        stiff(13)=(dsde(3,5)+dsde(5,3))/2.d0
+        stiff(14)=(dsde(4,5)+dsde(5,4))/2.d0
+        stiff(15)=dsde(5,5)
+        stiff(16)=(dsde(1,6)+dsde(6,1))/2.d0
+        stiff(17)=(dsde(2,6)+dsde(6,2))/2.d0
+        stiff(18)=(dsde(3,6)+dsde(6,3))/2.d0
+        stiff(19)=(dsde(4,6)+dsde(6,4))/2.d0
+        stiff(20)=(dsde(5,6)+dsde(6,5))/2.d0
+        stiff(21)=dsde(6,6)
       endif
 !     
 !     updating the plastic fields

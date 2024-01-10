@@ -1,0 +1,723 @@
+
+                        S T E P       1
+
+
+     E I G E N V A L U E   O U T P U T
+
+ MODE NO    EIGENVALUE                       FREQUENCY   
+                                     REAL PART            IMAGINARY PART
+                           (RAD/TIME)      (CYCLES/TIME     (RAD/TIME)
+
+      1   0.4456771E+04   0.6675905E+02   0.1062503E+02   0.0000000E+00
+      2   0.4012393E+05   0.2003096E+03   0.3188026E+02   0.0000000E+00
+      3   0.1116917E+06   0.3342031E+03   0.5319007E+02   0.0000000E+00
+      4   0.2203516E+06   0.4694163E+03   0.7470992E+02   0.0000000E+00
+      5   0.3695099E+06   0.6078732E+03   0.9674603E+02   0.0000000E+00
+      6   0.5664986E+06   0.7526610E+03   0.1197897E+03   0.0000000E+00
+      7   0.8250930E+06   0.9083463E+03   0.1445678E+03   0.0000000E+00
+      8   0.1162561E+07   0.1078221E+04   0.1716043E+03   0.0000000E+00
+      9   0.1163005E+07   0.1078427E+04   0.1716370E+03   0.0000000E+00
+     10   0.1169883E+07   0.1081611E+04   0.1721438E+03   0.0000000E+00
+
+                        S T E P       2
+
+
+                                INCREMENT     1
+
+
+ temperatures for set MID and time  0.1000000E-02
+
+       117  8.400137E-01
+
+                                INCREMENT     2
+
+
+ temperatures for set MID and time  0.2000000E-02
+
+       117  1.150433E+00
+
+                                INCREMENT     3
+
+
+ temperatures for set MID and time  0.3000000E-02
+
+       117  1.639502E+00
+
+                                INCREMENT     4
+
+
+ temperatures for set MID and time  0.4000000E-02
+
+       117  2.163724E+00
+
+                                INCREMENT     5
+
+
+ temperatures for set MID and time  0.5000000E-02
+
+       117  2.696394E+00
+
+                                INCREMENT     6
+
+
+ temperatures for set MID and time  0.6000000E-02
+
+       117  3.196159E+00
+
+                                INCREMENT     7
+
+
+ temperatures for set MID and time  0.7000000E-02
+
+       117  3.654214E+00
+
+                                INCREMENT     8
+
+
+ temperatures for set MID and time  0.8000000E-02
+
+       117  4.111187E+00
+
+                                INCREMENT     9
+
+
+ temperatures for set MID and time  0.9000000E-02
+
+       117  4.622116E+00
+
+                                INCREMENT    10
+
+
+ temperatures for set MID and time  0.1000000E-01
+
+       117  5.199446E+00
+
+                                INCREMENT    11
+
+
+ temperatures for set MID and time  0.1100000E-01
+
+       117  5.787140E+00
+
+                                INCREMENT    12
+
+
+ temperatures for set MID and time  0.1200000E-01
+
+       117  6.291106E+00
+
+                                INCREMENT    13
+
+
+ temperatures for set MID and time  0.1300000E-01
+
+       117  6.639962E+00
+
+                                INCREMENT    14
+
+
+ temperatures for set MID and time  0.1400000E-01
+
+       117  6.825284E+00
+
+                                INCREMENT    15
+
+
+ temperatures for set MID and time  0.1500000E-01
+
+       117  6.893141E+00
+
+                                INCREMENT    16
+
+
+ temperatures for set MID and time  0.1600000E-01
+
+       117  6.903427E+00
+
+                                INCREMENT    17
+
+
+ temperatures for set MID and time  0.1700000E-01
+
+       117  6.896100E+00
+
+                                INCREMENT    18
+
+
+ temperatures for set MID and time  0.1800000E-01
+
+       117  6.886712E+00
+
+                                INCREMENT    19
+
+
+ temperatures for set MID and time  0.1900000E-01
+
+       117  6.880653E+00
+
+                                INCREMENT    20
+
+
+ temperatures for set MID and time  0.2000000E-01
+
+       117  6.882206E+00
+
+                                INCREMENT    21
+
+
+ temperatures for set MID and time  0.2100000E-01
+
+       117  6.890324E+00
+
+                                INCREMENT    22
+
+
+ temperatures for set MID and time  0.2200000E-01
+
+       117  6.894511E+00
+
+                                INCREMENT    23
+
+
+ temperatures for set MID and time  0.2300000E-01
+
+       117  6.884187E+00
+
+                                INCREMENT    24
+
+
+ temperatures for set MID and time  0.2400000E-01
+
+       117  6.864441E+00
+
+                                INCREMENT    25
+
+
+ temperatures for set MID and time  0.2500000E-01
+
+       117  6.857089E+00
+
+                                INCREMENT    26
+
+
+ temperatures for set MID and time  0.2600000E-01
+
+       117  6.878965E+00
+
+                                INCREMENT    27
+
+
+ temperatures for set MID and time  0.2700000E-01
+
+       117  6.917437E+00
+
+                                INCREMENT    28
+
+
+ temperatures for set MID and time  0.2800000E-01
+
+       117  6.933272E+00
+
+                                INCREMENT    29
+
+
+ temperatures for set MID and time  0.2900000E-01
+
+       117  6.896521E+00
+
+                                INCREMENT    30
+
+
+ temperatures for set MID and time  0.3000000E-01
+
+       117  6.824048E+00
+
+                                INCREMENT    31
+
+
+ temperatures for set MID and time  0.3100000E-01
+
+       117  6.777649E+00
+
+                                INCREMENT    32
+
+
+ temperatures for set MID and time  0.3200000E-01
+
+       117  6.815063E+00
+
+                                INCREMENT    33
+
+
+ temperatures for set MID and time  0.3300000E-01
+
+       117  6.933033E+00
+
+                                INCREMENT    34
+
+
+ temperatures for set MID and time  0.3400000E-01
+
+       117  7.054821E+00
+
+                                INCREMENT    35
+
+
+ temperatures for set MID and time  0.3500000E-01
+
+       117  7.077492E+00
+
+                                INCREMENT    36
+
+
+ temperatures for set MID and time  0.3600000E-01
+
+       117  6.940172E+00
+
+                                INCREMENT    37
+
+
+ temperatures for set MID and time  0.3700000E-01
+
+       117  6.655472E+00
+
+                                INCREMENT    38
+
+
+ temperatures for set MID and time  0.3800000E-01
+
+       117  6.281259E+00
+
+                                INCREMENT    39
+
+
+ temperatures for set MID and time  0.3900000E-01
+
+       117  5.864918E+00
+
+                                INCREMENT    40
+
+
+ temperatures for set MID and time  0.4000000E-01
+
+       117  5.413873E+00
+
+                                INCREMENT    41
+
+
+ temperatures for set MID and time  0.4100000E-01
+
+       117  4.914915E+00
+
+                                INCREMENT    42
+
+
+ temperatures for set MID and time  0.4200000E-01
+
+       117  4.374100E+00
+
+                                INCREMENT    43
+
+
+ temperatures for set MID and time  0.4300000E-01
+
+       117  3.830300E+00
+
+                                INCREMENT    44
+
+
+ temperatures for set MID and time  0.4400000E-01
+
+       117  3.326177E+00
+
+                                INCREMENT    45
+
+
+ temperatures for set MID and time  0.4500000E-01
+
+       117  2.867261E+00
+
+                                INCREMENT    46
+
+
+ temperatures for set MID and time  0.4600000E-01
+
+       117  2.413804E+00
+
+                                INCREMENT    47
+
+
+ temperatures for set MID and time  0.4700000E-01
+
+       117  1.917174E+00
+
+                                INCREMENT    48
+
+
+ temperatures for set MID and time  0.4800000E-01
+
+       117  1.366929E+00
+
+                                INCREMENT    49
+
+
+ temperatures for set MID and time  0.4900000E-01
+
+       117  8.030933E-01
+
+                                INCREMENT    50
+
+
+ temperatures for set MID and time  0.5000000E-01
+
+       117  2.816703E-01
+
+                                INCREMENT    51
+
+
+ temperatures for set MID and time  0.5100000E-01
+
+       117 -1.741632E-01
+
+                                INCREMENT    52
+
+
+ temperatures for set MID and time  0.5200000E-01
+
+       117 -5.931834E-01
+
+                                INCREMENT    53
+
+
+ temperatures for set MID and time  0.5300000E-01
+
+       117 -1.031754E+00
+
+                                INCREMENT    54
+
+
+ temperatures for set MID and time  0.5400000E-01
+
+       117 -1.531604E+00
+
+                                INCREMENT    55
+
+
+ temperatures for set MID and time  0.5500000E-01
+
+       117 -2.095780E+00
+
+                                INCREMENT    56
+
+
+ temperatures for set MID and time  0.5600000E-01
+
+       117 -2.694768E+00
+
+                                INCREMENT    57
+
+
+ temperatures for set MID and time  0.5700000E-01
+
+       117 -3.285813E+00
+
+                                INCREMENT    58
+
+
+ temperatures for set MID and time  0.5800000E-01
+
+       117 -3.824483E+00
+
+                                INCREMENT    59
+
+
+ temperatures for set MID and time  0.5900000E-01
+
+       117 -4.267279E+00
+
+                                INCREMENT    60
+
+
+ temperatures for set MID and time  0.6000000E-01
+
+       117 -4.579615E+00
+
+                                INCREMENT    61
+
+
+ temperatures for set MID and time  0.6100000E-01
+
+       117 -4.754623E+00
+
+                                INCREMENT    62
+
+
+ temperatures for set MID and time  0.6200000E-01
+
+       117 -4.826355E+00
+
+                                INCREMENT    63
+
+
+ temperatures for set MID and time  0.6300000E-01
+
+       117 -4.855745E+00
+
+                                INCREMENT    64
+
+
+ temperatures for set MID and time  0.6400000E-01
+
+       117 -4.891338E+00
+
+                                INCREMENT    65
+
+
+ temperatures for set MID and time  0.6500000E-01
+
+       117 -4.936555E+00
+
+                                INCREMENT    66
+
+
+ temperatures for set MID and time  0.6600000E-01
+
+       117 -4.956417E+00
+
+                                INCREMENT    67
+
+
+ temperatures for set MID and time  0.6700000E-01
+
+       117 -4.921672E+00
+
+                                INCREMENT    68
+
+
+ temperatures for set MID and time  0.6800000E-01
+
+       117 -4.849546E+00
+
+                                INCREMENT    69
+
+
+ temperatures for set MID and time  0.6900000E-01
+
+       117 -4.798977E+00
+
+                                INCREMENT    70
+
+
+ temperatures for set MID and time  0.7000000E-01
+
+       117 -4.820192E+00
+
+                                INCREMENT    71
+
+
+ temperatures for set MID and time  0.7100000E-01
+
+       117 -4.904723E+00
+
+                                INCREMENT    72
+
+
+ temperatures for set MID and time  0.7200000E-01
+
+       117 -4.985609E+00
+
+                                INCREMENT    73
+
+
+ temperatures for set MID and time  0.7300000E-01
+
+       117 -4.992023E+00
+
+                                INCREMENT    74
+
+
+ temperatures for set MID and time  0.7400000E-01
+
+       117 -4.910629E+00
+
+                                INCREMENT    75
+
+
+ temperatures for set MID and time  0.7500000E-01
+
+       117 -4.798266E+00
+
+                                INCREMENT    76
+
+
+ temperatures for set MID and time  0.7600000E-01
+
+       117 -4.735220E+00
+
+                                INCREMENT    77
+
+
+ temperatures for set MID and time  0.7700000E-01
+
+       117 -4.762267E+00
+
+                                INCREMENT    78
+
+
+ temperatures for set MID and time  0.7800000E-01
+
+       117 -4.856311E+00
+
+                                INCREMENT    79
+
+
+ temperatures for set MID and time  0.7900000E-01
+
+       117 -4.959578E+00
+
+                                INCREMENT    80
+
+
+ temperatures for set MID and time  0.8000000E-01
+
+       117 -5.027090E+00
+
+                                INCREMENT    81
+
+
+ temperatures for set MID and time  0.8100000E-01
+
+       117 -5.045725E+00
+
+                                INCREMENT    82
+
+
+ temperatures for set MID and time  0.8200000E-01
+
+       117 -5.013319E+00
+
+                                INCREMENT    83
+
+
+ temperatures for set MID and time  0.8300000E-01
+
+       117 -4.909291E+00
+
+                                INCREMENT    84
+
+
+ temperatures for set MID and time  0.8400000E-01
+
+       117 -4.694667E+00
+
+                                INCREMENT    85
+
+
+ temperatures for set MID and time  0.8500000E-01
+
+       117 -4.344830E+00
+
+                                INCREMENT    86
+
+
+ temperatures for set MID and time  0.8600000E-01
+
+       117 -3.880970E+00
+
+                                INCREMENT    87
+
+
+ temperatures for set MID and time  0.8700000E-01
+
+       117 -3.365272E+00
+
+                                INCREMENT    88
+
+
+ temperatures for set MID and time  0.8800000E-01
+
+       117 -2.860758E+00
+
+                                INCREMENT    89
+
+
+ temperatures for set MID and time  0.8900000E-01
+
+       117 -2.391388E+00
+
+                                INCREMENT    90
+
+
+ temperatures for set MID and time  0.9000000E-01
+
+       117 -1.936712E+00
+
+                                INCREMENT    91
+
+
+ temperatures for set MID and time  0.9100000E-01
+
+       117 -1.461167E+00
+
+                                INCREMENT    92
+
+
+ temperatures for set MID and time  0.9200000E-01
+
+       117 -9.474231E-01
+
+                                INCREMENT    93
+
+
+ temperatures for set MID and time  0.9300000E-01
+
+       117 -4.055241E-01
+
+                                INCREMENT    94
+
+
+ temperatures for set MID and time  0.9400000E-01
+
+       117  1.418326E-01
+
+                                INCREMENT    95
+
+
+ temperatures for set MID and time  0.9500000E-01
+
+       117  6.756557E-01
+
+                                INCREMENT    96
+
+
+ temperatures for set MID and time  0.9600000E-01
+
+       117  1.183143E+00
+
+                                INCREMENT    97
+
+
+ temperatures for set MID and time  0.9700000E-01
+
+       117  1.653705E+00
+
+                                INCREMENT    98
+
+
+ temperatures for set MID and time  0.9800000E-01
+
+       117  2.085054E+00
+
+                                INCREMENT    99
+
+
+ temperatures for set MID and time  0.9900000E-01
+
+       117  2.499175E+00
+
+                                INCREMENT   100
+
+
+ temperatures for set MID and time  0.1000000E+00
+
+       117  2.946358E+00

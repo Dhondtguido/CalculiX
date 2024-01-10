@@ -224,7 +224,7 @@
      &  alcon(0:6,ntmat_,*),alzero(*),orab(7,*),t0(*),t1(*),
      &  xloadold(2,*),vold(0:mi(2),*),xload(2,*),omx,e,un,um,tt,
      &  sm(60,60),sti(6,mi(1),*),stx(6,mi(1),*),t0l,t1l,coefmpc(*),
-     &  elas(21),thicke(mi(3),*),doubleglob(*),dl,e2(3),e3(3),
+     &  stiff(21),thicke(mi(3),*),doubleglob(*),dl,e2(3),e3(3),
      &  plicon(0:2*npmat_,ntmat_,*),plkcon(0:2*npmat_,ntmat_,*),
      &  xstiff(27,mi(1),*),plconloc(802),dtime,ttime,time,tmg(24,24),
      &  a,xi11,xi12,xi22,xk,e1(3),offset1,offset2,y1,y2,y3,z1,z2,z3,
@@ -376,7 +376,7 @@
       istiff=0
       do jjj = 1,3  ! workaround for thermals
         call materialdata_me(elcon,nelcon,rhcon,nrhcon,alcon,nalcon,
-     &     imat,amat,iorien,coords,orab,ntmat_,elas,rho,
+     &     imat,amat,iorien,coords,orab,ntmat_,stiff,rho,
      &     nelem,ithermal,alzero,mattyp,t0l,t1l,
      &     ihyper,istiff,elconloc,eth,kode,plicon,
      &     nplicon,plkcon,nplkcon,npmat_,

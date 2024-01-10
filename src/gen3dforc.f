@@ -47,7 +47,7 @@
      &     nod,impc,istep,nodeboun(*),ndirboun(*),ikboun(*),ilboun(*),
      &     nboun,nboun_,iamboun(*),nmethod,iperturb(*),nrhs,ipiv(3),
      &     mi(*),idefforc(*),nedge,idirstart,idirend,idirl,ndepnodes,
-     &     mpcfreeold,info,m
+     &     mpcfreeold,info,m,ialeatoric
 !     
       real*8 xforc(*),trab(7,*),coefmpc(*),xnor(*),val,co(3,*),dot,
      &     thicke(mi(3),*),pi,xboun(*),xnoref(3),dmax,d(3,3),e(3,3,3),
@@ -599,11 +599,13 @@ c     vold(1,iexpnode)=alpha
               do j=1,3
                 xn(j)=xn(j)/dd
               enddo
+              ialeatoric=0
 !     
             elseif(lakon(ielem)(7:7).eq.'B') then
               lstart=4
               lend=1
               linc=-1
+              ialeatoric=1
             endif
 !     
 !     check for transformations
@@ -665,7 +667,8 @@ c     vold(1,iexpnode)=alpha
      &               labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
      &               nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
      &               nboun,nboun_,nnodes,nodeact,co,label,
-     &               typeboun,iperturb,node,idirref,xboun)
+     &               typeboun,iperturb,node,idirref,xboun,
+     &               ialeatoric)
               enddo
             enddo
 !     
@@ -680,7 +683,8 @@ c     vold(1,iexpnode)=alpha
      &           labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
      &           nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
      &           nboun,nboun_,nnodes,nodeact,co,label,
-     &           typeboun,iperturb,node,idirref,xboun)
+     &           typeboun,iperturb,node,idirref,xboun,
+     &           ialeatoric)
 !     
 !     inhomogeneous term
 !     
@@ -689,7 +693,8 @@ c     vold(1,iexpnode)=alpha
      &           labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
      &           nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
      &           nboun,nboun_,nnodes,nodeact,co,label,
-     &           typeboun,iperturb,node,idirref,xboun)
+     &           typeboun,iperturb,node,idirref,xboun,
+     &           ialeatoric)
 !     
 !     end meanrotationmpc
 !     

@@ -206,12 +206,14 @@
 !     the pressure ratio can be such that the section is critical;
 !     then, the mass flow is limited by the critical value; if,
 !     however, the user has specified a mass flow v(1,nodem)*iaxial
-!     which is smaller than the critical value xflow, the former 
-!     should be taken
+!     which is smaller than the critical value xflow, and in the
+!     same direction, the former should be taken
 !     
-c        if((v(1,nodem)*iaxial.lt.xflow).and.(v(1,nodem).ne.0.d0)) then
-c          xflow=v(1,nodem)*iaxial
-c        endif
+        if((dabs(v(1,nodem)*iaxial).lt.dabs(xflow)).and.
+     &     (v(1,nodem).ne.0.d0).and.
+     &     (v(1,nodem)*xflow.gt.0.d0)) then
+          xflow=v(1,nodem)*iaxial
+        endif
 !     
       elseif(kflag.eq.2)then
 !     

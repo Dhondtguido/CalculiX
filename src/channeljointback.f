@@ -308,7 +308,7 @@
 !
 !     depth in ndo and velocity in neldo
 !
-      h=v(2,ndo)/sqrts0
+      h=v(2,ndo)
       area=h*(b+h*dtan(theta))
       u=xflow/(rho*area)
       up2=u*u
@@ -356,8 +356,8 @@
         endif
       enddo
 !
-      v(2,nup1)=h1*sqrts01
-      v(2,nup2)=h2*sqrts02
+      v(2,nup1)=h1
+      v(2,nup2)=h2
       neldo=nel2
       ndo=nup2
 !

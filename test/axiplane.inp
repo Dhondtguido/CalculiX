@@ -1,0 +1,41 @@
+**
+**   Structure: disk with plate.
+**   Test objective: combination of axisymmetric elements with
+**                   plane stress elements.
+**
+*NODE, NSET=Nall
+       1,  2.00000e+00, -7.45058e-09,  0.00000e+00 
+       2,  2.00000e+00,  1.00000e+00,  0.00000e+00 
+       3,  1.00000e+00,  1.00000e+00,  0.00000e+00 
+       4,  1.00000e+00, -7.45058e-09,  0.00000e+00 
+       5,  2.00000e+00,  5.00000e-01,  0.00000e+00 
+       6,  1.50000e+00,  1.00000e+00,  0.00000e+00 
+       7,  1.00000e+00,  5.00000e-01,  0.00000e+00 
+       8,  1.50000e+00, -7.45058e-09,  0.00000e+00 
+       9,  3.00000e+00, -7.45058e-09,  0.00000e+00 
+      10,  3.00000e+00,  1.00000e+00,  0.00000e+00 
+      11,  3.00000e+00,  5.00000e-01,  0.00000e+00 
+      12,  2.50000e+00,  1.00000e+00,  0.00000e+00 
+      13,  2.50000e+00, -7.45058e-09,  0.00000e+00 
+*ELEMENT, TYPE=CAX8, ELSET=Eaxi
+     1,      1,      2,      3,      4,      5,      6,      7,      8
+*ELEMENT, TYPE=CPS8, ELSET=Eplanestress
+     2,      9,     10,      2,      1,     11,     12,      5,     13
+*ELSET,ELSET=Eall
+Eaxi,Eplanestress
+*MATERIAL,NAME=EL
+*ELASTIC
+210000.,.3
+*SOLID SECTION,ELSET=Eaxi,MATERIAL=EL
+0.1
+*SOLID SECTION,ELSET=Eplanestress,MATERIAL=EL
+0.00174533
+*BOUNDARY
+7,2
+*STEP,NLGEOM
+*STATIC
+*DLOAD
+2,P1,-100.
+*EL PRINT,ELSET=Eall
+S,E
+*END STEP

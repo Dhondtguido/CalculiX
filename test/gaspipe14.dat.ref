@@ -1,0 +1,38 @@
+
+                        S T E P       1
+
+
+                                INCREMENT     1
+
+
+ displacements (vx,vy,vz) for set NALL and time  0.1000000E+01
+
+         1  5.303717E-01  0.000000E+00  0.000000E+00
+         2  5.303717E-01  5.443000E+05  8.190000E+02
+         3  5.303717E-01  0.000000E+00  0.000000E+00
+         4  5.303717E-01  5.400000E+01  8.190000E+02
+         5  5.303717E-01  0.000000E+00  0.000000E+00
+
+ temperatures for set NALL and time  0.1000000E+01
+
+         1  0.000000E+00
+         2  8.190000E+02
+         3  0.000000E+00
+         4  8.190000E+02
+         5  0.000000E+00
+
+ mass flows for set NALL and time  0.1000000E+01
+
+         1  5.303717E-01
+         2  5.303717E-01
+         3  5.303717E-01
+         4  5.303717E-01
+         5  5.303717E-01
+
+ network pressures (total pressure for gases, static pressure for liquids and fluid depth for channels) for set NALL and time  0.1000000E+01
+
+         1  0.000000E+00
+         2  5.443000E+05
+         3  0.000000E+00
+         4  5.400000E+01
+         5  0.000000E+00

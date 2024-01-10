@@ -78,7 +78,7 @@
 !
       hr=v(2,ndo)
 !
-      hup=v(2,nup)/sqrts0
+      hup=v(2,nup)
       v(1,nmid)=inv*xflow
 !
       if(hup.le.0.d0) then
@@ -129,16 +129,14 @@ c        hdo=0.d0
 !       backwater curve with raccordation
 !
           v(2,ndo)=hr
-          v(2,nup)=hr*sqrts0
+          v(2,nup)=hr
 !          
         elseif(hk.lt.he) then
 !
 !       backwater curve starting at hk (weak slope)
 !
           v(2,ndo)=hr
-c          v(2,nup)=(hr+epsilon)*sqrts0
-c          v(2,nup)=hr*sqrts0
-          v(2,nup)=hk*sqrts0
+          v(2,nup)=hk
 !
         else
           write(*,*) '*ERROR in reservoir: strong slope at element',

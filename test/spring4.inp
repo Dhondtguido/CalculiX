@@ -1,0 +1,51 @@
+**
+**   Structure: spring + mass.
+**   Test objective: static and frequency calculation of
+**                   a spring - plane strain element
+**                   combination
+**
+*NODE,NSET=NALL
+1,0.,0.,0.
+2,1.,0.,0.
+3,1.,-.1,0.
+4,1.2,-.1,0.
+5,1.2,.1,0.
+6,1.,.1,0.
+7,1.1,-.1,0.
+8,1.2,0.,0.
+9,1.1,.1,0.
+*ELEMENT,TYPE=SPRINGA,ELSET=ESPRING
+1,1,2
+*ELEMENT,TYPE=CPE8,ELSET=EMASSA
+2,3,4,5,6,7,8,9,2
+*BOUNDARY
+1,1,3
+2,2,3
+*NSET,NSET=NMASSA,GENERATE
+3,9
+*BOUNDARY
+NMASSA,2,2
+*SPRING,ELSET=ESPRING
+
+10.
+*MATERIAL,NAME=EL
+*ELASTIC
+210000.,.3
+*DENSITY
+7.8E-9
+*SOLID SECTION,ELSET=EMASSA,MATERIAL=EL
+.2
+*STEP
+*STATIC
+*CLOAD
+4,1,0.333
+5,1,0.333
+8,1,1.333
+*NODE PRINT,NSET=NALL
+U
+*END STEP
+*STEP
+*FREQUENCY
+1
+*NODE PRINT,NSET=NALL
+*END STEP

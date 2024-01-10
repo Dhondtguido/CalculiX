@@ -1,5 +1,5 @@
 
-CFLAGS = -Wall -O2 -fopenmp -fpic -I ../SPOOLES.2.2 -I$(PASTIX_INCLUDE) -DARCH="Linux" -DSPOOLES -DARPACK -DMATRIXSTORAGE -DINTSIZE64 -DPASTIX -DPASTIX_FP32 -DPASTIX_GPU
+CFLAGS = -Wall -O2 -fopenmp -fpic -I ../../SPOOLES.2.2 -I$(PASTIX_INCLUDE) -DARCH="Linux" -DSPOOLES -DARPACK -DMATRIXSTORAGE -DINTSIZE64 -DPASTIX -DPASTIX_FP32 -DPASTIX_GPU
 FFLAGS = -Wall -O2 -fopenmp -fpic -fdefault-integer-8
 
 CC=cc
@@ -18,20 +18,20 @@ OCCXF = $(SCCXF:.f=.o)
 OCCXC = $(SCCXC:.c=.o)
 OCCXMAIN = $(SCCXMAIN:.c=.o)
 
-DIR=../SPOOLES.2.2
+DIR=../../SPOOLES.2.2
 
-PASTIX_INCLUDE = ../PaStiX/pastix_i8/include
-PASTIX_LIBS = ../PaStiX/hwloc_i8/lib64/libhwloc.so ../OpenBLAS_i8/lib/libopenblas.a \
-  ../PaStiX/pastix_i8/lib/libpastix.a ../OpenBLAS_i8/lib/libopenblas.a -lpthread -lm ../PaStiX/pastix_i8/lib/libspm.a \
-  ../PaStiX/pastix_i8/lib/libpastix_parsec.a ../PaStiX/pastix_i8/lib/libpastix_kernels.a ../OpenBLAS_i8/lib/libopenblas.a -lrt \
-  ../PaStiX/pastix_i8/lib/libpastix_kernels_cuda.a ../PaStiX/parsec_i8/lib/libparsec.so \
+PASTIX_INCLUDE = ../../PaStiX/pastix_i8/include
+PASTIX_LIBS = ../../PaStiX/hwloc_i8/lib64/libhwloc.so ../../OpenBLAS_i8/lib/libopenblas.a \
+  ../../PaStiX/pastix_i8/lib/libpastix.a ../../OpenBLAS_i8/lib/libopenblas.a -lpthread -lm ../../PaStiX/pastix_i8/lib/libspm.a \
+  ../../PaStiX/pastix_i8/lib/libpastix_parsec.a ../../PaStiX/pastix_i8/lib/libpastix_kernels.a ../../OpenBLAS_i8/lib/libopenblas.a -lrt \
+  ../../PaStiX/pastix_i8/lib/libpastix_kernels_cuda.a ../../PaStiX/parsec_i8/lib/libparsec.so \
   /usr/local/cuda-10.2/lib64/libcudart_static.a -lpthread -ldl -lrt /usr/lib64/libcublas_static.a \
   /usr/local/cuda-10.2/lib64/libculibos.a /usr/lib64/libcublasLt_static.a -lrt \
-  ../PaStiX/scotch_i8/lib/libscotch.a ../PaStiX/scotch_i8/lib/libscotcherrexit.a -lpthread -lz -lm /usr/lib64/libstdc++.so.6 /usr/lib64/libgomp.so.1
+  ../../PaStiX/scotch_i8/lib/libscotch.a ../../PaStiX/scotch_i8/lib/libscotcherrexit.a -lpthread -lz -lm /usr/lib64/libstdc++.so.6 /usr/lib64/libgomp.so.1
 
 LIBS = \
      $(DIR)/spooles.a \
-     ../ARPACK_i8/libarpack_INTEL_i8.a \
+     ../../ARPACK_i8/libarpack_INTEL_i8.a \
      $(PASTIX_LIBS) \
      -lpthread -lm -lc
 

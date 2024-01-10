@@ -1,0 +1,72 @@
+**
+**   Structure: hollow tube.
+**   Test objective: network pressure MPC; the dependent node
+**                   also belongs to a convective film condition
+**                   dependent node has a lower node number
+**                   than the node in the network (cf. artery4.inp)
+**
+*NODE,NSET=Nall
+1,2.,10.,0.
+2,2.,0.,0.
+3,2.3,0.,0.
+4,2.3,10.,0.
+5,2.,5.,0.
+6,2.15,0.,0.
+7,2.3,5.,0.
+8,2.15,10.,0.
+9,0.,11.,0.
+10,0.,10.,0.
+11,0.,5.,0.
+14,0.,0.,0.
+13,0.,-1.,0.
+12,3.,5.,0.
+*ELEMENT,TYPE=CAX8,ELSET=Etube
+1,1,2,3,4,5,6,7,8
+*ELEMENT,TYPE=D,ELSET=Ewater
+3,10,11,14
+*ELEMENT,TYPE=D,ELSET=EIO
+2,0,9,10
+4,14,13,0
+*MATERIAL,NAME=EL
+*ELASTIC
+210000.,.3
+*DENSITY
+7.8E-9
+*CONDUCTIVITY
+50.
+*SOLID SECTION,ELSET=Etube,MATERIAL=EL
+*MATERIAL,NAME=WATER
+*DENSITY
+1.E-9
+*FLUID CONSTANTS
+4217.E6,1750.E-12
+*FLUID SECTION,ELSET=Ewater,MATERIAL=WATER,TYPE=PIPE MANNING
+12.566e-1,.3162,0.015
+*FLUID SECTION,ELSET=EIO,MATERIAL=WATER,TYPE=PIPE INOUT
+*BOUNDARY
+1,2,2
+*EQUATION
+2
+12,2,1.,14,2,-1.
+*INITIAL CONDITIONS,TYPE=TOTAL PRESSURE
+14,0.1287
+*STEP,NLGEOM
+*HEAT TRANSFER,STEADY STATE
+1.,1.
+*BOUNDARY
+1,11,11,273.
+10,2,2,0.13
+10,11,11,1000.
+*FILM
+1,F1FC,14,10.
+1,F3FC,12,10.
+*BOUNDARY,MASS FLOW
+9,1,1,5.e-7
+*DLOAD
+Ewater,GRAV,9.81E3,-1.,0.,0.
+*NODE FILE
+PT,TT,MF,NT
+*END STEP
+
+
+

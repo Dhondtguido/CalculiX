@@ -1,0 +1,55 @@
+**
+**   Structure: spring + mass.
+**   Test objective: static calculation of a spring-mass system
+**                   frequency calculation of a spring-mass
+**                   system
+**
+*NODE,NSET=NALL
+1,0.,0.,0.
+2,1.,0.,0.
+3,1.,-.1,.1
+4,1.2,-.1,.1
+5,1.2,-.1,-.1
+6,1.,-.1,-.1
+7,1.,.1,.1
+8,1.2,.1,.1
+9,1.2,.1,-.1
+10,1.,.1,-.1
+*ELEMENT,TYPE=SPRINGA,ELSET=ESPRING
+1,1,2
+*ELEMENT,TYPE=C3D8,ELSET=EMASSA
+2,3,4,5,6,7,8,9,10
+*BOUNDARY
+1,1,3
+2,2,3
+*NSET,NSET=NMASSA,GENERATE
+3,10
+*BOUNDARY
+NMASSA,2,3
+*SPRING,ELSET=ESPRING
+
+10.
+*MATERIAL,NAME=EL
+*ELASTIC
+210000.,.3
+*DENSITY
+7.8E-9
+*SOLID SECTION,ELSET=EMASSA,MATERIAL=EL
+*EQUATION
+5
+2,1,1.,3,1,-.25,6,1,-.25,7,1,-.25,
+10,1,-.25
+*STEP,NLGEOM
+*STATIC
+*CLOAD
+4,1,1.
+5,1,1.
+8,1,1.
+9,1,1.
+*NODE PRINT,NSET=NALL
+U
+*END STEP
+*STEP
+*FREQUENCY
+1
+*END STEP

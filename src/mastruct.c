@@ -221,7 +221,6 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
     /* determining the active degrees of freedom due to mpc's */
       
     for(i=0;i<*nmpc;++i){
-      if (strcmp1(&labmpc[20*i],"FLUID")==0) continue;
 
       iatleastonenonzero=0;
 
@@ -266,7 +265,6 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
     }
       
     for(i=0;i<*nmpc;++i){
-      if(strcmp1(&labmpc[20*i],"FLUID")==0) continue;
       index=ipompc[i]-1;
       if(nodempc[3*index+1]>mi[1]) continue;
       nactdof[mt*(nodempc[3*index]-1)+nodempc[3*index+1]]=-2*i-1;

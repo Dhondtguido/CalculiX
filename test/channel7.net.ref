@@ -1,0 +1,72 @@
+ 
+  from node      2 to node      4: massflow rate =  0.6000E+05
+              Element            2 DLICHWE 
+              dvi =  0.1750E-02, Re =  0.3429E+07, Manning =  0.1000E-01
+              S0 =  0.7070E+00, Length =  0.1414E+01
+ 
+  Inlet node      2:  T = -0.1000E+01, fluid depth =  0.3259E+01
+                      b =  0.1000E+02, theta =  0.0000E+00
+                      velocity =  0.0000E+00, Froude =  0.0000E+00
+                      critical depth =  0.0000E+00, normal depth =  0.2085E+00
+                      total head =  0.3259E+01, specific energy =  0.3259E+01
+ 
+  Outlet node      4: T = -0.1000E+01, fluid depth  =  0.1731E+01
+                      b =  0.1000E+02, theta =  0.0000E+00
+                      velocity =  0.3466E+01, Froude =  0.1000E+01
+                      critical depth =  0.1731E+01, normal depth =  0.2085E+00
+                      total head =  0.1837E+01, specific energy =  0.1837E+01
+ ******************************************************************************
+ 
+  from node      4 to node      6: massflow rate =  0.6000E+05
+              Element            3 DLICH   
+              dvi =  0.1750E-02, Re =  0.3429E+07, Manning =  0.1000E-01
+              S0 =  0.7070E+00, Length =  0.1414E+01
+ 
+  Inlet node      4:  T = -0.1000E+01, fluid depth =  0.1731E+01
+                      b =  0.1000E+02, theta =  0.0000E+00
+                      velocity =  0.3466E+01, Froude =  0.1000E+01
+                      critical depth =  0.1731E+01, normal depth =  0.2085E+00
+                      total head =  0.1837E+01, specific energy =  0.1837E+01
+ 
+  Outlet node      6: T = -0.1000E+01, fluid depth  =  0.9166E+00
+                      b =  0.1000E+02, theta =  0.0000E+00
+                      velocity =  0.6546E+01, Froude =  0.2596E+01
+                      critical depth =  0.1731E+01, normal depth =  0.2085E+00
+                      total head =  0.1832E+01, specific energy =  0.2832E+01
+ ******************************************************************************
+ 
+  from node      6 to node      8: massflow rate =  0.6000E+05
+              Element            4 DLICH   
+              dvi =  0.1750E-02, Re =  0.3429E+07, Manning =  0.1000E-01
+              S0 =  0.5000E-02, Length =  0.4980E+02
+ 
+  Inlet node      6:  T = -0.1000E+01, fluid depth =  0.9166E+00
+                      b =  0.1000E+02, theta =  0.0000E+00
+                      velocity =  0.6546E+01, Froude =  0.2183E+01
+                      critical depth =  0.1542E+01, normal depth =  0.9727E+00
+                      total head =  0.2100E+01, specific energy =  0.3100E+01
+ 
+  Outlet node      8: T = -0.1000E+01, fluid depth  =  0.9288E+00
+                      b =  0.1000E+02, theta =  0.0000E+00
+                      velocity =  0.6460E+01, Froude =  0.2140E+01
+                      critical depth =  0.1542E+01, normal depth =  0.9727E+00
+                      total head =  0.1807E+01, specific energy =  0.3056E+01
+ ******************************************************************************
+ 
+  from node      8 to node     10: massflow rate =  0.6000E+05
+              Element            5 DLICHRE 
+              dvi =  0.1750E-02, Re =  0.3429E+07, Manning =  0.1000E-01
+              S0 =  0.5000E-02, Length =  0.1000E+00
+ 
+  Inlet node      8:  T = -0.1000E+01, fluid depth =  0.9288E+00
+                      b =  0.1000E+02, theta =  0.0000E+00
+                      velocity =  0.6460E+01, Froude =  0.2140E+01
+                      critical depth =  0.1542E+01, normal depth =  0.9727E+00
+                      total head =  0.1807E+01, specific energy =  0.3056E+01
+ 
+  Outlet node     10: T = -0.1000E+01, fluid depth  =  0.5000E+00
+                      b =  0.1000E+02, theta =  0.0000E+00
+                      velocity =  0.0000E+00, Froude =  0.0000E+00
+                      critical depth =  0.1542E+01, normal depth =  0.0000E+00
+                      total head = -0.7490E+00, specific energy =  0.5000E+00
+ ******************************************************************************

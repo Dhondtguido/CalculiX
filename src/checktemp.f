@@ -60,10 +60,11 @@
                write(*,*) '*ERROR in checktemp: no initial temperature'
                write(*,*) '       defined in node ',node
                call exit(201)
-            elseif(dabs(t1(node)-1.2357111319d0).lt.1.d-10) then
-               write(*,*) '*ERROR in checktemp: no final temperature'
-               write(*,*) '       defined in node ',node
-               call exit(201)
+             elseif(dabs(t1(node)-1.2357111319d0).lt.1.d-10) then
+               t1(node)=t0(node)
+c               write(*,*) '*ERROR in checktemp: no final temperature'
+c               write(*,*) '       defined in node ',node
+c               call exit(201)
             endif
          enddo
       enddo

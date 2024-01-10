@@ -39,7 +39,7 @@
      &     ielmat(mi(3),*),irstrt(*),nset,nmat,ndprop,npropstart,id,
      &     istep,istat,n,key,i,j,k,imaterial,ipos,lprop,ipoinpc(0:*),
      &     iline,ipol,inl,ipoinp(2,*),inp(3,*),ielprop(*),nprop,nprop_,
-     &     nodea,nodeb,noil _mat,npu,nfix,nstart,iset,ier,ndpropread
+     &     noil _mat,npu,nfix,iset,ier
 !     
       real*8 prop(*)
 
@@ -203,9 +203,9 @@
         elseif(typename(8:11).eq.'STEP') then
           elname='LICHST '
           ndprop=7
-c        elseif(typename(8:11).eq.'DROP') then
-c          elname='LICHDR '
-c          ndprop=7
+        elseif(typename(8:25).eq.'DISCONTINUOUSSLOPE') then
+          elname='LICHDS '
+          ndprop=5
         else
           write(*,*) '*ERROR reading *FLUID SECTION:'
           write(*,*) '       unknown channel section'

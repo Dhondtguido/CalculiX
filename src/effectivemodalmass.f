@@ -42,7 +42,7 @@
 !
 !        {y}=[M].{x}
 !
-         call op(neq(2),x,y,adb,aub,jq,irow)
+         call opfortran(neq(2),x,y,adb,aub,jq,irow)
 !
 !        participation factors {phi_k}^T.{y}
 !
@@ -96,7 +96,7 @@
 !
 !        {y}=[M].{x}
 !
-         call op(neq(2),x,y,adb,aub,jq,irow)
+         call opfortran(neq(2),x,y,adb,aub,jq,irow)
 !
 !        participation factors {phi_k}^T.{y}
 !

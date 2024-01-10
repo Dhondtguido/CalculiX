@@ -151,7 +151,7 @@
                   funcvalabs=obj
                else
                   funcvalnorm=max(funcvalnorm,objnorm)
-                  funcvalabs=min(funcvalabs,obj)
+                  funcvalabs=max(funcvalabs,obj)
                endif          
             enddo
             write(5,102) i-1,objectset(1,i),objectset(1,i)(19:22),

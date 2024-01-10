@@ -1,0 +1,36 @@
+
+                        S T E P       2
+
+
+   ##############################################################################################################
+   D E S I G N   R E S P O N S E                    I N F O R M A T I O N
+
+   FUNCTION        FUNCTION VALUE    LENGTH GRADIENT   NAME                                                        
+   ##############################################################################################################
+
+   EQPLASTICSTRAIN  0.6453641E+01      0.4529044E+03   PEEQ_RESP                                                                       
+   MASS             0.3120000E-08      0.3488266E-07   MASS_RESP                                                                       
+
+                        S T E P       3
+
+
+
+   ##############################################################################################################
+   A S S E M B L Y   O F   B A R R I E R   F U N C T I O N
+
+   NUMBER OF    CONSTRAINT      LE/     FUNCTION         FUNCTION         FUNCTION        ACTIVE/    NAME OF
+   CONSTRAINT   FUNCTION        GE      VALUE            BOUND            VALUE NORM.     INACTIVE   CONSTRAINT
+   ##############################################################################################################
+
+    1           MASS            LE      0.3120000E-08    0.3120000E-08   -0.1000000E-09   ACTIVE     MASS_RESP                                                                       
+ 
+ 
+   #######################################             #########################
+   S I N G U L A R   V A L U E                         D E C O M P O S I T I O N
+ 
+   PRIMAL EIGENVALUE: 0.5053810E+00
+   DUAL EIGENVALUE:   0.1320829E+01
+   COS ALPHA1:        0.3573583E+00
+   COS ALPHA2:        0.9339674E+00
+ 
+   #######################################             #########################

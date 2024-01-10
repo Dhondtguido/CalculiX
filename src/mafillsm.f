@@ -331,7 +331,7 @@ c              write(*,*) 'mafillsm ',node1,k,node2,m,jj,ll
  2              close(20)
               endif
             endif
-            return
+            cycle
           endif
 !     
           do jj=1,ndof*nope

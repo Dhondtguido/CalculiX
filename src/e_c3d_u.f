@@ -69,7 +69,7 @@
      &     alcon(0:6,ntmat_,*),alzero(*),orab(7,*),t0(*),t1(*),
      &     xloadold(2,*),vold(0:mi(2),*),xload(2,*),omx,e,un,um,tt,
      &     sm(60,60),sti(6,mi(1),*),stx(6,mi(1),*),t0l,t1l,coefmpc(*),
-     &     elas(21),thicke(mi(3),*),doubleglob(*),dl,
+     &     thicke(mi(3),*),doubleglob(*),dl,
      &     plicon(0:2*npmat_,ntmat_,*),plkcon(0:2*npmat_,ntmat_,*),
      &     xstiff(27,mi(1),*),plconloc(802),dtime,ttime,time,
      &     a,xi11,xi12,xi22,xk,e1(3),offset1,offset2,y1,y2,y3,z1,z2,z3,

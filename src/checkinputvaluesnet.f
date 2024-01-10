@@ -539,6 +539,14 @@
               write(*,*) '       element number: ',nelem
               call exit(201)
 !     
+            elseif(prop(index+1).eq.nelem) then
+              write(*,*) '*ERROR in checkinputvaluesnet:'
+              write(*,*) '       element nelem0 in branch definition '
+              write(*,*) '       is not allowed to be of ',
+     &             'type branch'
+              write(*,*) '       element number: ',nelem
+              call exit(201)
+!     
             elseif((prop(index+4).le.0.d0)
      &             .or.(prop(index+5).le.0.d0)
      &             .or.(prop(index+6).le.0.d0)) then

@@ -227,7 +227,7 @@
      &     stx(6,mi(1),*),xl(3,20),vl(0:mi(2),20),stre(6),prop(*),
      &     elcon(0:ncmat_,ntmat_,*),rhcon(0:1,ntmat_,*),
      &     alcon(0:6,ntmat_,*),vini(0:mi(2),*),
-     &     alzero(*),orab(7,*),elas(21),rho,fn(0:mi(2),*),
+     &     alzero(*),orab(7,*),stiff(21),rho,fn(0:mi(2),*),
      &     q(0:mi(2),20),t0(*),t1(*),prestr(6,mi(1),*),eme(6,mi(1),*),
      &     vold(0:mi(2),*),eloc(9),elconloc(ncmat_),eth(6),coords(3),
      &     ener(mi(1),*),emec(6),eei(6,mi(1),*),enerini(mi(1),*),
@@ -381,7 +381,7 @@ c      write(*,*) 'u1 element ',i
 !     
       istiff=0
       call materialdata_me(elcon,nelcon,rhcon,nrhcon,alcon,nalcon,
-     &     imat,amat,iorien,coords,orab,ntmat_,elas,rho,
+     &     imat,amat,iorien,coords,orab,ntmat_,stiff,rho,
      &     i,ithermal,alzero,mattyp,t0l,t1l,
      &     ihyper,istiff,elconloc,eth,kode,plicon,
      &     nplicon,plkcon,nplkcon,npmat_,

@@ -1,0 +1,40 @@
+**
+**   Structure: 1 CPE8 element und 2 T2D2 elements.
+**   Test objective: truss in combination with a plane
+**                   structure
+**
+*NODE,NSET=NALL
+1,0.,0.,0.
+2,1.,0.,0.
+3,1.,1.,0.
+4,0.,1.,0.
+5,.5,0.,0.
+6,1.,.5,0.
+7,.5,1.,0.
+8,0.,.5,0.
+9,.5,1.5,0.
+*ELEMENT,TYPE=CPE8,ELSET=ECPE8
+1,1,2,3,4,5,6,7,8
+*ELEMENT,TYPE=T2D2,ELSET=ET2D2
+3,3,9
+4,4,9
+*MATERIAL,NAME=EL
+*ELASTIC
+210000.,.3
+*SOLID SECTION,ELSET=ECPE8,MATERIAL=EL
+*SOLID SECTION,ELSET=ET2D2,MATERIAL=EL
+.01
+*BOUNDARY
+1,2
+2,2
+5,2
+1,1
+*STEP
+*STATIC
+*CLOAD
+9,2,1.
+*NODE FILE,OUTPUT=3D
+U,RF
+*EL FILE
+S,NOE
+*END STEP

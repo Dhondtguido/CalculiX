@@ -1,0 +1,38 @@
+**
+**   Structure: cube with radiation boundary condition;
+**   Test objective: *RADIATE
+**
+*NODE, NSET=Nall
+       1,  1.00000e+00,  1.00000e+00,  0.00000e+00 
+       2,  1.00000e+00,  0.00000e+00,  0.00000e+00 
+       3,  1.00000e+00,  0.00000e+00,  1.00000e+00 
+       4,  1.00000e+00,  1.00000e+00,  1.00000e+00 
+       5,  0.00000e+00,  1.00000e+00,  0.00000e+00 
+       6,  0.00000e+00,  0.00000e+00,  0.00000e+00 
+       7,  0.00000e+00,  0.00000e+00,  1.00000e+00 
+       8,  0.00000e+00,  1.00000e+00,  1.00000e+00 
+*ELEMENT, TYPE=C3D8, ELSET=Eall
+     1,     1,     2,     3,     4,     5,     6,     7,     8
+*NSET,NSET=FIX
+5,6,7,8
+*INITIAL CONDITIONS,TYPE=TEMPERATURE
+Nall,0.
+*MATERIAL,NAME=EL
+*CONDUCTIVITY
+50.,0.
+*PHYSICAL CONSTANTS,ABSOLUTE ZERO=-273.15,STEFAN BOLTZMANN=5.669E-8
+*SOLID SECTION,ELSET=Eall,MATERIAL=EL
+**
+*STEP,INC=100
+*HEAT TRANSFER,STEADY STATE
+1.,1.
+*BOUNDARY
+FIX,11,11,0.
+*RADIATE
+1,R1,-12.,1.
+*NODE PRINT,NSET=Nall
+NT,RFL
+*EL PRINT,ELSET=Eall
+HFL
+*END STEP
+

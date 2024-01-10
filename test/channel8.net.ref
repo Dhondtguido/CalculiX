@@ -1,0 +1,126 @@
+ 
+  from node      2 to node      6: massflow rate =  0.6000E+05
+              Element            2 DLICHSG 
+              dvi =  0.1750E-02, Re =  0.3429E+07, Manning =  0.1000E-01
+              S0 =  0.5000E-02, Length =  0.1000E+00
+ 
+  Inlet node      2:  T =  0.0000E+00, fluid depth =  0.6264E+01
+                      b =  0.1000E+02, theta =  0.0000E+00
+                      velocity =  0.0000E+00, Froude =  0.0000E+00
+                      critical depth =  0.0000E+00, normal depth =  0.9727E+00
+                      total head =  0.6264E+01, specific energy =  0.6264E+01
+ 
+  Outlet node      6: T =  0.0000E+00, fluid depth  =  0.3397E+01
+                      b =  0.1000E+02, theta =  0.0000E+00
+                      velocity =  0.1766E+01, Froude =  0.3060E+00
+                      critical depth =  0.1542E+01, normal depth =  0.9727E+00
+                      total head =  0.3556E+01, specific energy =  0.3556E+01
+ ******************************************************************************
+ 
+  from node      6 to node      8: massflow rate =  0.6000E+05
+              Element            4 DLICH   
+              dvi =  0.1750E-02, Re =  0.3429E+07, Manning =  0.1000E-01
+              S0 =  0.5000E-02, Length =  0.2390E+02
+ 
+  Inlet node      6:  T =  0.0000E+00, fluid depth =  0.3397E+01
+                      b =  0.1000E+02, theta =  0.0000E+00
+                      velocity =  0.1766E+01, Froude =  0.3060E+00
+                      critical depth =  0.1542E+01, normal depth =  0.9727E+00
+                      total head =  0.3556E+01, specific energy =  0.3556E+01
+ 
+  Outlet node      8: T =  0.0000E+00, fluid depth  =  0.3525E+01
+                      b =  0.1000E+02, theta =  0.0000E+00
+                      velocity =  0.1702E+01, Froude =  0.2894E+00
+                      critical depth =  0.1542E+01, normal depth =  0.9727E+00
+                      total head =  0.3553E+01, specific energy =  0.3673E+01
+ ******************************************************************************
+ 
+  from node      8 to node     10: massflow rate =  0.6000E+05
+              Element            5 DLICHCO 
+              dvi =  0.1750E-02, Re =  0.3429E+07, Manning =  0.1000E-01
+              S0 =  0.0000E+00, Length =  0.5000E+01
+ 
+  Inlet node      8:  T =  0.0000E+00, fluid depth =  0.3525E+01
+                      b =  0.1000E+02, theta =  0.0000E+00
+                      velocity =  0.1702E+01, Froude =  0.2894E+00
+                      critical depth =  0.1542E+01, normal depth =  0.1000E+31
+                      total head =  0.3553E+01, specific energy =  0.3673E+01
+ 
+  Outlet node     10: T =  0.0000E+00, fluid depth  =  0.2448E+01
+                      b =  0.5000E+01, theta =  0.0000E+00
+                      velocity =  0.4901E+01, Froude =  0.1000E+01
+                      critical depth =  0.2448E+01, normal depth =  0.1000E+31
+                      total head =  0.3553E+01, specific energy =  0.3673E+01
+ ******************************************************************************
+ 
+  from node     10 to node     12: massflow rate =  0.6000E+05
+              Element            6 DLICH   
+              dvi =  0.1750E-02, Re =  0.6857E+07, Manning =  0.1000E-01
+              S0 =  0.5000E-02, Length =  0.4000E+01
+ 
+  Inlet node     10:  T =  0.0000E+00, fluid depth =  0.2448E+01
+                      b =  0.5000E+01, theta =  0.0000E+00
+                      velocity =  0.4901E+01, Froude =  0.1000E+01
+                      critical depth =  0.2448E+01, normal depth =  0.1687E+01
+                      total head =  0.3553E+01, specific energy =  0.3673E+01
+ 
+  Outlet node     12: T =  0.0000E+00, fluid depth  =  0.2313E+01
+                      b =  0.5000E+01, theta =  0.0000E+00
+                      velocity =  0.5187E+01, Froude =  0.1089E+01
+                      critical depth =  0.2448E+01, normal depth =  0.1687E+01
+                      total head =  0.3545E+01, specific energy =  0.3685E+01
+ ******************************************************************************
+ 
+  from node     12 to node     14: massflow rate =  0.6000E+05
+              Element            7 DLICHEL 
+              dvi =  0.1750E-02, Re =  0.6857E+07, Manning =  0.1000E-01
+              S0 =  0.0000E+00, Length =  0.5000E+01
+ 
+  Inlet node     12:  T =  0.0000E+00, fluid depth =  0.2313E+01
+                      b =  0.5000E+01, theta =  0.0000E+00
+                      velocity =  0.5187E+01, Froude =  0.1089E+01
+                      critical depth =  0.2448E+01, normal depth =  0.1000E+31
+                      total head =  0.3545E+01, specific energy =  0.3685E+01
+ 
+  Outlet node     14: T =  0.0000E+00, fluid depth  =  0.7971E+00
+                      b =  0.1000E+02, theta =  0.0000E+00
+                      velocity =  0.7527E+01, Froude =  0.2692E+01
+                      critical depth =  0.1542E+01, normal depth =  0.1000E+31
+                      total head =  0.3545E+01, specific energy =  0.3685E+01
+ ******************************************************************************
+ 
+  from node     14 to node     16: massflow rate =  0.6000E+05
+              Element            8 DLICH   
+              dvi =  0.1750E-02, Re =  0.3429E+07, Manning =  0.1000E-01
+              S0 =  0.5000E-02, Length =  0.2390E+02
+ 
+  Inlet node     14:  T =  0.0000E+00, fluid depth =  0.7971E+00
+                      b =  0.1000E+02, theta =  0.0000E+00
+                      velocity =  0.7527E+01, Froude =  0.2692E+01
+                      critical depth =  0.1542E+01, normal depth =  0.9727E+00
+                      total head =  0.3545E+01, specific energy =  0.3685E+01
+ 
+  Outlet node     16: T =  0.0000E+00, fluid depth  =  0.8132E+00
+                      b =  0.1000E+02, theta =  0.0000E+00
+                      velocity =  0.7379E+01, Froude =  0.2612E+01
+                      critical depth =  0.1542E+01, normal depth =  0.9727E+00
+                      total head =  0.3329E+01, specific energy =  0.3588E+01
+ ******************************************************************************
+ 
+  from node     16 to node     18: massflow rate =  0.6000E+05
+              Element            9 DLICHRE 
+              dvi =  0.1750E-02, Re =  0.3429E+07, Manning =  0.1000E-01
+              S0 =  0.5000E-02, Length =  0.1000E+00
+ 
+  Inlet node     16:  T =  0.0000E+00, fluid depth =  0.8132E+00
+                      b =  0.1000E+02, theta =  0.0000E+00
+                      velocity =  0.7379E+01, Froude =  0.2612E+01
+                      critical depth =  0.1542E+01, normal depth =  0.9727E+00
+                      total head =  0.3329E+01, specific energy =  0.3588E+01
+ 
+  Outlet node     18: T =  0.0000E+00, fluid depth  =  0.5000E+00
+                      b =  0.1000E+02, theta =  0.0000E+00
+                      velocity =  0.0000E+00, Froude =  0.0000E+00
+                      critical depth =  0.1542E+01, normal depth =  0.0000E+00
+                      total head =  0.2410E+00, specific energy =  0.5000E+00
+ ******************************************************************************

@@ -81,14 +81,14 @@ C     .. Intrinsic Functions ..
 C***FIRST EXECUTABLE STATEMENT  DSORT
       nn = n
       if (nn .lt. 1) then
-         write(*,*) '*error in dsort: the number of values to be'
+         write(*,*) '*ERROR in dsort: the number of values to be'
          write(*,*) '       sorted is not positive: ',nn
          call exit(201)
       endif
 C
       kk = abs(kflag)
       if (kk.ne.1 .and. kk.ne.2) then
-         write(*,*) '*error in dsort: the sort control parameter is'
+         write(*,*) '*ERROR in dsort: the sort control parameter is'
          write(*,*) '       not 2, 1, -1 or -2'
          call exit(201)
       endif

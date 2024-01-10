@@ -1,0 +1,30 @@
+**
+**   Structure: cantilever beam.
+**   Test objective: user beam element U1
+**
+*NODE, NSET=Nall
+1,0.,0.,0.
+2,10.,0.,0.
+*ELEMENT, TYPE=U1, ELSET=Eall
+     1,      1,      2,
+*USER ELEMENT,TYPE=U1,NODES=2,INTEGRATION POINTS=2,MAXDOF=6
+*BOUNDARY
+1,1,6
+*MATERIAL,NAME=EL
+*ELASTIC
+1.e7,.3
+*BEAM SECTION,ELSET=Eall,MATERIAL=EL,SECTION=GENERAL
+0.0625,3.2552e-4,0.,3.2552e-4,0.8333
+0.,1.,0.
+*STEP
+*STATIC
+*CLOAD
+2,2,1.
+*NODE PRINT,NSET=Nall
+U
+*EL PRINT,ELSET=Eall
+S
+*END STEP
+
+
+

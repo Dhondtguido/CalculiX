@@ -36,7 +36,8 @@
      &     physcon,ctrl,typeboun,fmpc,tieset,ntie,tietol,nslavs,t0g,t1g,
      &     nprop,ielprop,prop,mortar,nintpoint,ifacecount,islavsurf,
      &     pslavsurf,clearini,irstrt,vel,nef,velo,veloo,ne2boun,
-     &     memmpc_,heading,nheading_,network,nfc,ndc,coeffc,ikdc,edc)
+     &     memmpc_,heading,nheading_,network,nfc,ndc,coeffc,ikdc,edc,
+     &     xmodal)
 !     
 !     writes all information needed for a restart to file
 !     
@@ -73,7 +74,7 @@
      &     nshcon(*),ncocon(*),ics(*),infree(*),i,ipos,nfc,ndc,
      &     nener,iprestr,istepnew,maxlenmpc,mcs,ntie,ikdc(*),
      &     ibody(*),nbody,mt,nslavs,namtot,nef,ne2boun(*),
-     &     memmpc_,nheading_,network
+     &     memmpc_,nheading_,network,nevdamp_
 !     
       real*8 co(*),xboun(*),coefmpc(*),xforc(*),xload(*),elcon(*),
      &     rhcon(*),alcon(*),alzero(*),plicon(*),plkcon(*),orab(*),
@@ -83,7 +84,7 @@
      &     shcon(*),cocon(*),sti(*),ener(*),xstate(*),pslavsurf(*),
      &     qaold(2),cs(*),physcon(*),ctrl(*),prop(*),coeffc(*),
      &     ttime,fmpc(*),xbody(*),xbodyold(*),vel(*),velo(*),veloo(*),
-     &     edc(*)
+     &     edc(*),xmodal(*)
 !     
       mt=mi(2)+1
 !     
@@ -342,6 +343,12 @@
 !     physical constants
 !     
       write(15)(physcon(i),i=1,14)
+!     
+!     damping characteristics
+!     
+      nevdamp_=int(xmodal(11))
+      write(15)(xmodal(i),i=1,11)
+      if(nevdamp_.gt.0) write(15)(xmodal(i),i=12,11+nevdamp_)
 !     
 !     plastic data
 !     

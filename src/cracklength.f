@@ -20,7 +20,7 @@
      &     co,istartcrackbou,iendcrackbou,costruc,ibounnod,xt,acrack,
      &     istartfront,iendfront,nnfront,isubsurffront,ifrontrel,
      &     ifront,posfront,doubleglob,integerglob,
-     &     nproc,iinc,acrackglob,ier)
+     &     nproc,iinc,acrackglob,ier,nbounnod,nfront)
 !     
 !     determine for each crack front node
 !     1. a crack length based on the previous crack length augmented
@@ -31,18 +31,22 @@
 !     
       implicit none
 !     
-      integer i,j,k,istartcrackfro(*),iendcrackfro(*),m,n1,n2,
+      integer i,j,k,istartcrackfro(*),iendcrackfro(*),m,n1,n2,jf,
      &     ncrack,istartcrackbou(*),iendcrackbou(*),ibounnod(*),
      &     istartfront(*),iendfront(*),isubsurffront(*),ifront(*),
      &     nnfront,jrel,ifrontrel(*),integerglob(*),nterms,nselect,
      &     node,nktet,nkon,nfield,nfaces,netet,nelem,ne,loopa,
      &     konl(20),istartset(1),iendset(1),ialset(1),iselect(1),
-     &     imastset,nproc,iinc,ier
+     &     imastset,nproc,iinc,ier,n,kflag,nbounnod,indexn,nfront
+!
+      integer,dimension(:),allocatable::nx,ny,nz
 !     
       real*8 co(3,*),costruc(3,*),xt(3,*),xsec(3),x1,x2,ca,cb,cc,cd,a,
-     &     acrack(*),p(3),q(3),r(3),coords(3),posfront(*),
-     &     acrackglob(*),dlength,alambda,
-     &     doubleglob(*),dummy(1),ratio(20),dist,cosang        
+     &     acrack(*),p(3),q(3),r(3),coords(3),posfront(*),dd,ratio(2),
+     &     acrackglob(*),dlength,alambda,pneigh(3,2),xil,pnode(3),
+     &     doubleglob(*),dummy(1),dist,cosang        
+!     
+      real*8,dimension(:),allocatable::xo,yo,zo,x,y,z
 !     
       nktet=integerglob(1)
       netet=integerglob(2)
@@ -70,7 +74,7 @@ c        write(*,*) '(nproc=1 in all but first increment) '
 c        write(*,*)
 !        
         do i=1,nnfront
-          do j=istartfront(i),iendfront(i)-1
+          do j=istartfront(i)+1,iendfront(i)-1
             node=ifront(j)
             acrack(j)=acrackglob(node)
           enddo
@@ -81,66 +85,127 @@ c        write(*,*)
 !      
       if((nproc.ge.2).or.(iinc.eq.0)) then
 !     
-c        write(*,*)
-c        write(*,*) 'cracklength based on intersection of crack boundary'
-c        write(*,*) 'with plane orthogonal to tangent vector'
-c        write(*,*) '(nproc=1 in the first increment or '
-c        write(*,*) 'nproc=2 or first guess for nproc=3)'
-c        write(*,*)
+        allocate(nx(nfront))
+        allocate(ny(nfront))
+        allocate(nz(nfront))
+        allocate(xo(nfront))
+        allocate(yo(nfront))
+        allocate(zo(nfront))
+        allocate(x(nfront))
+        allocate(y(nfront))
+        allocate(z(nfront))
 !     
         do i=1,ncrack
+!
+!         catalogueing all nodes belonging to the crack
+!
+          n=iendcrackfro(i)-istartcrackfro(i)+1
+          do k=1,n
+            indexn=istartcrackfro(i)-1
+            xo(k)=costruc(1,ifrontrel(indexn+k))
+            yo(k)=costruc(2,ifrontrel(indexn+k))
+            zo(k)=costruc(3,ifrontrel(indexn+k))
+            x(k)=xo(k)
+            y(k)=yo(k)
+            z(k)=zo(k)
+            nx(k)=k
+            ny(k)=k
+            nz(k)=k
+          enddo
+          kflag=2
+          call dsort(x,nx,n,kflag)
+          call dsort(y,ny,n,kflag)
+          call dsort(z,nz,n,kflag)
+!
+!         check which is the first front belonging to crack i
+!
+          do jf=1,nnfront
+            if(istartfront(jf).eq.istartcrackfro(i)) exit
+          enddo
 !     
 !     loop over all nodes belonging to the crack front(s)
 !     
-          do j=istartcrackfro(i),iendcrackfro(i)          
+c     do j=istartcrackfro(i)+1,iendcrackfro(i)-1
+          do
+            do j=istartfront(jf)+1,iendfront(jf)-1         
 !     
 !     equation of plane through node and orthogonal to the local
 !     tangent
 !     
-            ca=xt(1,j)
-            cb=xt(2,j)
-            cc=xt(3,j)
+              ca=xt(1,j)
+              cb=xt(2,j)
+              cc=xt(3,j)
 !     
 !     position of front node j in ibounnod
 !     
-            jrel=ifrontrel(j)
-            cd=-ca*costruc(1,jrel)-cb*costruc(2,jrel)-cc*costruc(3,jrel)
+              jrel=ifrontrel(j)
+              pneigh(1,1)=costruc(1,jrel)
+              pneigh(2,1)=costruc(2,jrel)
+              pneigh(3,1)=costruc(3,jrel)
+              cd=-ca*costruc(1,jrel)-cb*costruc(2,jrel)
+     &             -cc*costruc(3,jrel)
 !     
 !     loop over all nodes belonging to the crack boundary
 !     
-            a=1.d30
-            do k=istartcrackbou(i),iendcrackbou(i)
-              n1=k
-              if(k.eq.iendcrackbou(i)) then
-                n2=istartcrackbou(i)
-              else
-                n2=k+1
-              endif
+              a=1.d30
+              do k=istartcrackbou(i),iendcrackbou(i)
+                n1=k
+                if(k.eq.iendcrackbou(i)) then
+                  n2=istartcrackbou(i)
+                else
+                  n2=k+1
+                endif
 !     
 !     segments adjacent to the node should not be considered
 !     
-              if((n1.eq.jrel).or.(n2.eq.jrel)) cycle
-              x1=ca*costruc(1,n1)+cb*costruc(2,n1)+cc*costruc(3,n1)+cd
-              x2=ca*costruc(1,n2)+cb*costruc(2,n2)+cc*costruc(3,n2)+cd
-              if((x1*x2.le.0.d0).and.(dabs(x2-x1).gt.0)) then
+                if((n1.eq.jrel).or.(n2.eq.jrel)) cycle
+                x1=ca*costruc(1,n1)+cb*costruc(2,n1)+cc*costruc(3,n1)+cd
+                x2=ca*costruc(1,n2)+cb*costruc(2,n2)+cc*costruc(3,n2)+cd
+                if((x1*x2.le.0.d0).and.(dabs(x2-x1).gt.0)) then
 !     
 !     line segment is cut by plane
 !     
-                do m=1,3
-                  xsec(m)=(x2*costruc(m,n1)-x1*costruc(m,n2))/(x2-x1)
-                enddo
+                  do m=1,3
+                    xsec(m)=(x2*costruc(m,n1)-x1*costruc(m,n2))/(x2-x1)
+                  enddo
 !     
 !     calculate the crack length
 !     
-                a=min(a,dsqrt((xsec(1)-costruc(1,jrel))**2+
-     &               (xsec(2)-costruc(2,jrel))**2+
-     &               (xsec(3)-costruc(3,jrel))**2))
-              endif
+                  dd=dsqrt((xsec(1)-costruc(1,jrel))**2+
+     &                 (xsec(2)-costruc(2,jrel))**2+
+     &                 (xsec(3)-costruc(3,jrel))**2)
+                  if(dd.lt.a) then
+                    a=dd
+                    pneigh(1,2)=xsec(1)
+                    pneigh(2,2)=xsec(2)
+                    pneigh(3,2)=xsec(3)
+                  endif
+                endif
+              enddo
+c     acrack(j)=a
+!     
+!     search along the line between pneigh(*,1) and pneigh(*,2)
+!     for the maximum of the minimum distance from all nodes
+!     on the fronts belonging to the crack            
+!     
+              call attach_1d_cracklength(pneigh,ratio,dist,xil,
+     &             xo,yo,zo,x,y,z,nx,ny,nz,n,pnode)
+              acrack(j)=dist
+c              write(*,*) 'dist,a ',dist,a
             enddo
-            acrack(j)=a
-c     write(*,*) 'cracklength ',j,acrack(j)
+            if(iendfront(jf).eq.iendcrackfro(i)) exit
+            jf=jf+1
           enddo
         enddo
+        deallocate(nx)
+        deallocate(ny)
+        deallocate(nz)
+        deallocate(xo)
+        deallocate(yo)
+        deallocate(zo)
+        deallocate(x)
+        deallocate(y)
+        deallocate(z)
       endif
 !     
 !     calculate the relative length along the front
@@ -169,11 +234,12 @@ c     write(*,*) 'cracklength ',j,acrack(j)
 !     take the neighboring value inside the structure
 !     
       do i=1,nnfront
-        if(isubsurffront(i).eq.1) then
-          do j=istartfront(i),iendfront(i)
-            acrack(j)=acrack(j)/2.d0
-          enddo
-        else
+        if(isubsurffront(i).eq.0) then
+c        if(isubsurffront(i).eq.1) then
+c          do j=istartfront(i),iendfront(i)
+c            acrack(j)=acrack(j)/2.d0
+c          enddo
+c        else
 !
 !     if the crack length for the node on or just inside the
 !     structure was not found this may be due to the fact that
@@ -195,7 +261,7 @@ c     write(*,*) 'cracklength ',j,acrack(j)
 !
 !     check whether any crack length was not found
 !
-          do j=istartfront(i),iendfront(i)
+          do j=istartfront(i)+1,iendfront(i)-1
             if(acrack(j).eq.1.d30) then
               write(*,*) '*ERROR in cracklength: crack'
               write(*,*) '       length could not be determined'

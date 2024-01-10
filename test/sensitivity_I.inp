@@ -1,0 +1,56 @@
+**
+**   Structure: two elements.
+**   Test objective: sensitivity: mass w.r.t. coordinates.
+**
+*NODE, NSET=NALL
+         1,  100.0          ,  0.0            ,  0.0            
+         2,  0              ,  0.0            ,  0.0            
+         3,  0.0            ,  100.0          ,  0.0            
+         4,  100.0          ,  100.0          ,  0.0            
+         5,  200.0          ,  100.0          ,  0.0            
+         6,  200.0          ,  0.0            ,  0.0     
+	 7,  100.0          ,  0.0            ,  -100.0         
+         8,  100.0          ,  100.0          ,  -100.0         
+         9,  0.0            ,  100.0          ,  -100.0         
+        10,  0.0            ,  0.0            ,  -100.0  
+        11,  200.0          ,  0.0            ,  -100.0         
+        12,  200.0          ,  100.0          ,  -100.0 
+*ELEMENT,TYPE=C3D8,ELSET=EALL
+         1,         6,         1,         4,         5,        11,         7,         8,
+        12
+	 2,         1,         2,         3,         4,         7,        10,         9,
+         8
+*NSET, NSET=DESIGNNODES
+      6,
+*DESIGNVARIABLES, TYPE=COORDINATE
+DESIGNNODES
+*MATERIAL,NAME=EL
+*ELASTIC
+210000.,.3
+*DENSITY
+7.8E-9
+*SOLID SECTION, ELSET=EALL, MATERIAL=EL
+*INITIAL CONDITIONS, TYPE=TEMPERATURE
+NALL, 293.15
+*BOUNDARY
+        2,1,3,0.0
+        3,1,3,0.0
+        9,1,3,0.0
+       10,1,3,0.0      
+*STEP
+*STATIC
+*TEMPERATURE
+NALL, 293.15
+*CLOAD
+        5,1,1000000.0            
+        6,1,1000000.0            
+       11,1,1000000.0            
+       12,1,1000000.0 
+*END STEP
+*STEP
+*SENSITIVITY
+*DESIGN RESPONSE, NAME=MASS_OBJ
+MASS,EALL
+*NODE FILE
+SEN
+*END STEP

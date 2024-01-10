@@ -16,7 +16,7 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-      subroutine springdamp_f2f(xl,elas,voldl,s,imat,elcon,
+      subroutine springdamp_f2f(xl,stiff,voldl,s,imat,elcon,
      &  ncmat_,ntmat_,nope,lakonl,iperturb,springarea,nmethod,mi,
      &  reltime,nasym,jfaces,igauss,pslavsurf,pmastsurf,clearini)
 !
@@ -29,7 +29,7 @@
       integer i,j,imat,ncmat_,ntmat_,k,l,nope,iflag,iperturb(*),
      &  nmethod,mi(*),nasym,jfaces,igauss,nopem,nopes,nopep
 !
-      real*8 xl(3,19),elas(21),pproj(3),shp2m(7,9),al(3),s(60,60),
+      real*8 xl(3,19),stiff(21),pproj(3),shp2m(7,9),al(3),s(60,60),
      &  voldl(0:mi(2),19),pl(3,19),xn(3),c3,elcon(0:ncmat_,ntmat_,*),
      &  xm(3),dval(3,19),fpu(3,3,19),xi,et,dal(3,3,19),xs2(3,7),xk,
      &  stickslope,springarea(2),tu(3,3,19),clear,reltime,
@@ -169,8 +169,8 @@
          clear=clear-springarea(2)*(1.d0-reltime)
       endif
 !
-      elas(2)=-springarea(1)*elcon(5,1,imat)
-      elas(1)=elas(2)*clear
+      stiff(2)=-springarea(1)*elcon(5,1,imat)
+      stiff(1)=stiff(2)*clear
 !     
 !     derivatives of the size of the jacobian vector w.r.t. the
 !     displacement vectors (d ||m||/d u_k)
@@ -189,7 +189,7 @@
      &        xn(3)*dal(3,i,nopep)
       enddo
 !
-      c3=elas(2)
+      c3=stiff(2)
 !
 !     derivatives of the forces w.r.t. the displacement vectors
 !
