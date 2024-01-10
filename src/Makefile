@@ -27,3 +27,12 @@ ccx_2.21: $(OCCXMAIN) ccx_2.21.a  $(LIBS)
 
 ccx_2.21.a: $(OCCXF) $(OCCXC)
 	ar vr $@ $?
+
+clean:
+	rm -f *.o
+	rm -f ccx_2.21
+	rm -f ccx_2.21.a
+	# make proccess edit this files, with build date
+	# but if you change it manually commit the change
+	# before any make clean
+	git restore ccx_2.21* frd.c
