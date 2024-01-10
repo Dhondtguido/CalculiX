@@ -1,0 +1,26 @@
+**
+**   Structure: beam.
+**   Test objective: velocity for OUTPUT=2D.
+**                   example provided by Victor Kemp
+**
+*NODE
+1,0,0,0
+2,0.1,0,0
+*ELEMENT,TYPE=B31,ELSET=Default
+1,2,1
+*MATERIAL,NAME=Material
+*ELASTIC,TYPE=ISOTROPIC
+10000000000,0
+*DENSITY
+1000
+*BEAM SECTION,ELSET=Default,MATERIAL=Material,SECTION=RECT
+0.01,0.01
+0,-1,0
+*STEP
+*DYNAMIC
+0.01,0.1,0,0
+*CLOAD
+1,1,0.01
+*NODE FILE,GLOBAL=YES,OUTPUT=2D,FREQUENCY=10
+U,V
+*END STEP

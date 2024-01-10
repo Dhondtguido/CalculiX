@@ -1,0 +1,33 @@
+
+                        S T E P       1
+
+
+                                INCREMENT     1
+
+
+ total force (fx,fy,fz) for set NFIX2 and time  0.1000000E+01
+
+        6.973057E-01  1.394591E+00 -2.500000E+01
+
+ total force (fx,fy,fz) for set NFIX and time  0.1000000E+01
+
+        3.026943E-01  6.054093E-01  2.500000E+01
+
+
+ statistics for slave set SSLAV, master set SMAST and time  0.1000000E+01
+
+   total surface force (fx,fy,fz) and moment about the origin (mx,my,mz)
+
+    3.026943E-01  6.054093E-01  2.500000E+01  1.209191E+01 -1.229596E+01  1.513575E-01
+
+   center of gravity and mean normal
+
+    4.999820E-01  4.999640E-01  9.998468E-01  1.477360E-18  1.230919E-17 -1.000000E+00
+
+   moment about the center of gravity(mx,my,mz)
+
+    1.981246E-01 -9.905948E-02  1.115592E-10
+
+   area,  normal force (+ = tension) and shear force (size)
+
+    2.500000E-01 -2.500000E+01  6.768635E-01

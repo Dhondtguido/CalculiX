@@ -17,7 +17,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine incplas_lin(elconloc,plconloc,xstate,xstateini,
-     &  elas,emec,ithermal,icmd,beta,stre,vj,kode,
+     &  stiff,emec,ithermal,icmd,beta,stre,vj,kode,
      &  ielas,amat,t1l,dtime,time,ttime,iel,iint,nstate_,mi,
      &  eloc,pgauss,nmethod,pnewdt,depvisc)
 !
@@ -40,7 +40,7 @@
      &  niso,nkin,ielas,iel,iint,nstate_,mi(*),id,leximp,lend,layer,
      &  kspt,kstep,kinc,iloop,nmethod,user_hardening,user_creep
 !
-      real*8 elconloc(*),elas(21),emec(6),beta(6),stre(6),
+      real*8 elconloc(*),stiff(21),emec(6),beta(6),stre(6),
      &  vj,plconloc(802),stbl(6),stril(6),xitril(6),
      &  ee,un,um,al,cop,dxitril,xn(3,3),epl(6),c1,c2,c3,c4,c7,
      &  c8,ftrial,xiso(200),yiso(200),xkin(200),ykin(200),
@@ -151,9 +151,7 @@
       dxitril=dsqrt(dxitril)
 !
 !        restoring the hardening curves for the actual temperature
-!        plconloc contains the true stresses. By multiplying by
-!        the Jacobian, yiso and ykin are Kirchhoff stresses, as
-!        required by the hyperelastic theory (cf. Simo, 1988).
+!        plconloc contains the true stresses.
 !
       niso=int(plconloc(801))
       nkin=int(plconloc(802))
@@ -222,27 +220,27 @@
          xstate(1,iint,iel)=ep
 !
          if(icmd.ne.3) then
-            elas(1)=al+um2
-            elas(2)=al
-            elas(3)=al+um2
-            elas(4)=al
-            elas(5)=al
-            elas(6)=al+um2
-            elas(7)=0.d0
-            elas(8)=0.d0
-            elas(9)=0.d0
-            elas(10)=um
-            elas(11)=0.d0
-            elas(12)=0.d0
-            elas(13)=0.d0
-            elas(14)=0.d0
-            elas(15)=um
-            elas(16)=0.d0
-            elas(17)=0.d0
-            elas(18)=0.d0
-            elas(19)=0.d0
-            elas(20)=0.d0
-            elas(21)=um
+            stiff(1)=al+um2
+            stiff(2)=al
+            stiff(3)=al+um2
+            stiff(4)=al
+            stiff(5)=al
+            stiff(6)=al+um2
+            stiff(7)=0.d0
+            stiff(8)=0.d0
+            stiff(9)=0.d0
+            stiff(10)=um
+            stiff(11)=0.d0
+            stiff(12)=0.d0
+            stiff(13)=0.d0
+            stiff(14)=0.d0
+            stiff(15)=um
+            stiff(16)=0.d0
+            stiff(17)=0.d0
+            stiff(18)=0.d0
+            stiff(19)=0.d0
+            stiff(20)=0.d0
+            stiff(21)=um
          endif
 !
          return
@@ -428,7 +426,7 @@
             l=kel(2,i)
             m=kel(3,i)
             n=kel(4,i)
-            elas(i)=c1*(dkl(k,m)*dkl(l,n)+dkl(k,n)*dkl(l,m))
+            stiff(i)=c1*(dkl(k,m)*dkl(l,n)+dkl(k,n)*dkl(l,m))
      &             +c2*dkl(k,l)*dkl(m,n)
      &             +c3*xn(k,l)*xn(m,n)
          enddo

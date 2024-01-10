@@ -193,6 +193,7 @@
           do jj=itiefac(1,i), itiefac(2,i)
             ifaces=islavsurf(1,jj)
             nelems=int(ifaces/10)
+            if(ipkon(nelems).lt.0) cycle
             jfaces=ifaces-nelems*10            
 !     
             if(lakon(nelems)(4:5).eq.'8R') then

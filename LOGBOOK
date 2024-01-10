@@ -5224,3 +5224,100 @@ Dec 2002        - started to work on single crystal plasticity
 		  and trusses.
 
  31 July 2023   - posted version 2.21.
+
+ 1 Aug 2023     - solved problem with normal on truss axis
+
+ 2 Aug 2023     - applied an aleatoric variation of the MEANROTBS coefficients
+                  for beam elements: seems to solve the zero coefficient
+		  issue of the dependent term
+		- corrected an error in changekon.f
+
+ 7 Sept 2023    - made some corrections in umat_aniso_plas.f
+                - added test examples for anisotropic elasticity with
+		  isotropic plasticity (isotropic and kinematic hardening)
+                - increased the number of state variables for
+		  umat_aniso_plas from 14 to 20 (included q2)
+
+ 8 Sept 2023    - allowed arbitrary hardening curves for orthotropic
+                  elasticity with isotropic plasticity
+
+ 11 Sept 2023   - worked on ortho_plas.f in Abaqus umat-form (for
+                  nlgeom calculations)
+
+ 12 Sept 2023   - continued to work on ortho_plas with NLGEOM
+
+ 13 Sept 2023   - extended the Mohr-Coulomb and Anisotropic Creep model
+                  to large strains and/or rotations by using the Abaqus
+		  interface routines
+
+ 15 Sept 2023   - reworked umat_aniso_creep.f based on ortho_plas.f
+
+ 16 Sept 2023   - updated the documentation on anisotropic elasticity
+                  combined with isotropic viscoplasticity
+ 
+ 17 Sept 2023   - worked on writeinputdeck.f
+
+ 26 Sept 2023   - corrected an error in writeinputdeck.f
+                - corrected an error in the documentation (RF).
+		- worked on the consistent tangent in umat_abaqusnl_total.f
+
+ 28 Sept 2023   - continued work on the consistent tangent
+                - reenabled output for the optimizer vamos in
+		  calcfeasibledirection_gd.f
+
+ 30 Sept 2023   - removed some calls of results.c for massless contact
+
+ 6 Oct 2023     - for linear massless contact calculations non-changing
+                  distributed loading is taken into account at the start of
+		  a new step
+
+ 10 Oct 2023    - parallellized op.f (matrix-vector-multiplication)
+
+ 13 Oct 2023    - corrected an error in frd.c for static calculations with
+                  gas elements
+                - parallellized the collection of results in opmain.c
+
+ 16 Oct 2023    - moved resforccont from FORTRAN to C
+                - parallallized resforcont.c and mulmatvec_asym.f
+
+ 17 Oct 2023    - introduced globr for linear massless contact
+                - converted inclusion.f into inclusion.c
+                - parallellized the matrix-vector multiplication in
+		  inclusion.c
+
+ 27 Oct 2023    - checked for negative dg in "dg=dg+ddg" in ortho_plas.f
+                  and umat_aniso_creep.f; if negative, dg=dg/2.d0.
+
+ 31 Oct 2023    - modified e_c3d.f for C3D8R elements in implicit dynamic
+                  calculations (parameter intscheme)
+                - worked on umat_abaqusnl_total.f
+
+ 3 Nov 2023     - worked on umat_abaqusnl_total.f and umat_abaqusnl.f
+
+ 11 Nov 2023    - corrected contact if adjacent elements have been removed.
+                - included xmodal(*) in the restart file
+
+ 24 Nov 2023    - worked on the definition of the active set in massless
+                  explicit dynamics
+		- changed the documentation on Abaqus umat-routines.
+
+ 25 Nov 2023    - coded a discontinuous slope channel element
+                - finished the documentation on Abaqus umat-routines.
+
+ 1 Dec 2023     - introduced selective mass scaling for frequency calculations
+
+ 2 Dec 2023     - modified umat_aniso_creep.f
+                - modified calcstabletimeincvol.f
+		
+ 3 Dec 2023     - modified the calculation of the crack length.
+
+ 5 Dec 2023     - check crack length modification.
+
+ 8 Dec 2023     - finished crack length modification.
+                - provided a solution for zero coefficients in the
+		  cascade.c routine
+
+ 13 Dec 2023    - worked on branch elements (type LPBR and REBR)
+                  
+ 19 Dec 2023    - expanded the use of multistages.f (difference of
+                  adjacent sector sizes can be arbitrary now)

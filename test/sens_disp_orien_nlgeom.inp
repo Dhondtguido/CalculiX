@@ -1,0 +1,61 @@
+**
+**   Structure: two elements.
+**   Test objective: sensitivity: displacement w.r.t. orientation.
+**                   activation of nlgeom
+**
+*NODE, NSET=NALL
+         1,  100.0          ,  0.0            ,  0.0            
+         2,  0              ,  0.0            ,  0.0            
+         3,  0.0            ,  100.0          ,  0.0            
+         4,  100.0          ,  100.0          ,  0.0            
+         5,  200.0          ,  100.0          ,  0.0            
+         6,  200.0          ,  0.0            ,  0.0     
+	 7,  100.0          ,  0.0            ,  -100.0         
+         8,  100.0          ,  100.0          ,  -100.0         
+         9,  0.0            ,  100.0          ,  -100.0         
+        10,  0.0            ,  0.0            ,  -100.0  
+        11,  200.0          ,  0.0            ,  -100.0         
+        12,  200.0          ,  100.0          ,  -100.0 
+*ELEMENT,TYPE=C3D8,ELSET=EALL
+         1,         6,         1,         4,         5,        11,         7,         8,
+        12
+	 2,         1,         2,         3,         4,         7,        10,         9,
+         8
+*DESIGNVARIABLES, TYPE=ORIENTATION
+*MATERIAL,NAME=EL
+*ELASTIC,TYPE=ORTHOTROPIC
+500000.,157200.,400000.,157200.,157200.,300000.,126200.,126200.,
+126200.,294.
+*ELSET,ELSET=E1
+1
+*ELSET,ELSET=E2
+2
+*ORIENTATION,NAME=OR1
+1.,0.,0.,0.,1.,0.
+*SOLID SECTION, ELSET=E1, MATERIAL=EL,ORIENTATION=OR1
+*SOLID SECTION, ELSET=E2, MATERIAL=EL
+*INITIAL CONDITIONS, TYPE=TEMPERATURE
+NALL, 293.15
+*BOUNDARY
+        2,1,3,0.0
+        3,1,3,0.0
+        9,1,3,0.0
+       10,1,3,0.0      
+*STEP,NLGEOM
+*STATIC
+*TEMPERATURE
+NALL, 293.15
+*CLOAD
+        5,1,1000000.0            
+        6,1,1000000.0            
+       11,1,1000000.0            
+       12,1,1000000.0 
+*END STEP
+*STEP
+*SENSITIVITY
+*DESIGN RESPONSE
+ALL-DISP
+MISESSTRESS
+*NODE FILE
+SEN
+*END STEP

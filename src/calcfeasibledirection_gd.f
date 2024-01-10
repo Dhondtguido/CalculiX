@@ -17,13 +17,11 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine calcfeasibledirection_gd(ndesi,nodedesi,dgdxglob,
-     &   nactive,nobject,nk,gradproj,objectset)         
+     &   nactive,nobject,nk,gradproj)         
 !
 !     calculates the projected gradient
 !
       implicit none
-!
-      character*81 objectset(5,*)
 !
       integer ndesi,nodedesi(*),nactive,nobject,nk,node,i 
 !
@@ -67,41 +65,42 @@
             gradproj(3,node)=gradproj(3,node)/dd
         enddo
       endif
-c!
-c!     calculation of coefficients alpha1 and alpha2
-c!
-c      cosphi=0
-c      do i=1,ndesi    
-c         node=nodedesi(i)
-c         cosphi=cosphi+gradproj(1,node)*gradproj(2,node)
-c      enddo
-c      lambda1=1-cosphi
-c      lambda2=1+cosphi
-c      if(lambda1.lt.1.0e-10) then
-c         lambda1=0.d0
-c      endif
-c      if(lambda2.lt.1.0e-10) then
-c         lambda2=0.d0
-c      endif
-c      primaleig=dsqrt(lambda1)
-c      dualeig=dsqrt(lambda2)
-c      cosalpha1=primaleig/sqrt(2.0)
-c      cosalpha2=dualeig/sqrt(2.0)
-c!      
-c      write(5,*) ''
-c      write(5,*) ''
-c      write(5,*) '  #######################################
-c     &#########################'
-c      write(5,*) '  S I N G U L A R   V A L U E   
-c     &D E C O M P O S I T I O N'
-c      write(5,*) ''
-c      write(5,'(3x,a18,e14.7)') 'PRIMAL EIGENVALUE: ', primaleig
-c      write(5,'(3x,a18,e14.7)') 'DUAL EIGENVALUE:   ', dualeig
-c      write(5,'(3x,a18,e14.7)') 'COS ALPHA1:        ', cosalpha1
-c      write(5,'(3x,a18,e14.7)') 'COS ALPHA2:        ', cosalpha2
-c      write(5,*) ''
-c      write(5,*) '  #######################################
-c     &#########################'
+!
+!     calculation of coefficients alpha1 and alpha2
+!     output needed for the optimizing program vamos
+!
+      cosphi=0
+      do i=1,ndesi    
+         node=nodedesi(i)
+         cosphi=cosphi+gradproj(1,node)*gradproj(2,node)
+      enddo
+      lambda1=1-cosphi
+      lambda2=1+cosphi
+      if(lambda1.lt.1.0e-10) then
+         lambda1=0.d0
+      endif
+      if(lambda2.lt.1.0e-10) then
+         lambda2=0.d0
+      endif
+      primaleig=dsqrt(lambda1)
+      dualeig=dsqrt(lambda2)
+      cosalpha1=primaleig/sqrt(2.0)
+      cosalpha2=dualeig/sqrt(2.0)
+!      
+      write(5,*) ''
+      write(5,*) ''
+      write(5,*) '  #######################################
+     &#########################'
+      write(5,*) '  S I N G U L A R   V A L U E   
+     &D E C O M P O S I T I O N'
+      write(5,*) ''
+      write(5,'(3x,a18,e14.7)') 'PRIMAL EIGENVALUE: ', primaleig
+      write(5,'(3x,a18,e14.7)') 'DUAL EIGENVALUE:   ', dualeig
+      write(5,'(3x,a18,e14.7)') 'COS ALPHA1:        ', cosalpha1
+      write(5,'(3x,a18,e14.7)') 'COS ALPHA2:        ', cosalpha2
+      write(5,*) ''
+      write(5,*) '  #######################################
+     &#########################'
 !
       return        
       end

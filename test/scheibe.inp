@@ -1,0 +1,39 @@
+**
+**   Structure: rectangular plate.
+**   Test objective: rigid body motion of plane strain elements.
+**
+*NODE, nset=nall
+1, 0.0, 0.0, 0.0
+2, 1.0, 0.0, 0.0
+3, 1.0, 1.0, 0.0
+4, 0.0, 1.0, 0.0
+5, 0.5, 0.0, 0.0
+6, 1.0, 0.5, 0.0
+7, 0.5, 1.0, 0.0
+8, 0.0, 0.5, 0.0
+*node, nset=center
+9, 0.0, 0.0, 0.0
+10, 0.0, 0.0, 0.0
+*ELEMENT, TYPE=cpe8r, ELSET=Eall
+1, 1, 2, 3, 4, 5, 6, 7, 8
+*MATERIAL, NAME=EL
+*ELASTIC
+210000.0, .3
+*DENSITY
+7.8E-9
+*SOLIDSECTION, ELSET=Eall, MATERIAL=EL
+0.1
+*RIGIDBODY, NSET=nall, REFNODE=9, ROTNODE=10
+*NSET,NSET=N1
+4,29,10
+*STEP, nlgeom
+*STATIC, DIRECT
+0.01,1.
+*BOUNDARY
+9, 1, 3
+10, 3, 3, 3.1415927
+10, 1, 2
+*NODE PRINT,NSET=N1
+U
+*END STEP
+

@@ -486,7 +486,7 @@ void randomfieldmain(ITG *kon,ITG *ipkon,char *lakon,ITG *ne,ITG *nmpc,
 
     while((ido==-1)||(ido==1)||(ido==2)){
       if(ido==-1){
-	FORTRAN(op,(ndesi,&workd[ipntr[0]-1],temp_array,adb,aub,jqs,irows));
+	opmain(ndesi,&workd[ipntr[0]-1],temp_array,adb,aub,jqs,irows);
       }
       if((ido==-1)||(ido==1)){
 
@@ -566,8 +566,8 @@ void randomfieldmain(ITG *kon,ITG *ipkon,char *lakon,ITG *ne,ITG *nmpc,
       }
 
       if(ido==2){
-	FORTRAN(op,(ndesi,&workd[ipntr[0]-1],&workd[ipntr[1]-1],
-		    adb,aub,jqs,irows));
+	opmain(ndesi,&workd[ipntr[0]-1],&workd[ipntr[1]-1],
+		    adb,aub,jqs,irows);
       }
 
       FORTRAN(dsaupd,(&ido,bmat,ndesi,which,&nev,&tol,resid,&ncv,zz,&ldz,

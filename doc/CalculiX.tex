@@ -2961,8 +2961,15 @@ the initial specimen length.
 Notice that the same approach is taken in CalculiX for the calculation of the
 corotational logarithmic strain needed for an Abaqus User Material
 Routine. First, the thermal strain is subtracted from the total stretch to
-obtain the mechanical stretch and then the corational logarithmic strain is
+obtain the mechanical stretch and then the corational logarithmic mechanical strain is
 built:
+
+\begin{equation}
+  \hat{E}_{\text{ln,mech}} = \sum_{i} \ln \lambda_{\text{mech},i}
+  \boldsymbol{N}_i \otimes \boldsymbol{N}_i,
+\end{equation}
+
+In Abaqus, however, it is obtained according to:
 
 \begin{equation}
   \hat{E}_{\text{ln,mech}} = \sum_{i} (\ln \lambda_i - \overline{\alpha} \Delta T)
@@ -4399,7 +4406,7 @@ for the global z-axis). In addition, the matrix should
  similar keyword cards.
 
 A substructure is basically a linear construct. Right now, it can be used in
-a *STATIC, *DYNAMIC or *FREQUENCY procedure.
+a *STATIC, *DYNAMIC or *FREQUENCY procedure, including cyclic symmetry conditions.
 
 \subsection{\label{beamsectiontypes}Beam Section Types}
 
@@ -7606,14 +7613,16 @@ $h_c=2h/3$ and $p=0$):
 \end{equation} 
 
 The following constants have to be specified on the
-line beneath the *FLUID SECTION,TYPE=CHANNEL WEIR card:
+line beneath the *FLUID SECTION,TYPE=CHANNEL WEIR card (the width, the
+trapezoid angle, the slope and the grain diameter should be the same as for the downstream
+element immediately next to the weir; they are needed for the
+calculation of the critical height and normal height):
 
 \begin{itemize}
 \item the width $b$
+\item the trapezoid angle $\theta$ 
 \item not used
-\item not used
-\item not used
-\item the grain diameter $k_s$ for the White-Colebrook law or the Manning
+\item the slope $S_0 = \sin \phi, -1<S_0<1 $ (for this element the slope must be\item the grain diameter $k_s$ for the White-Colebrook law or the Manning
   constant $n$ for the Manning law (in the latter case the user has to specify
   the parameter MANNING on the *FLUID SECTION card)
 \item the height of the weir $p$
@@ -7781,7 +7790,7 @@ line beneath the *FLUID SECTION,TYPE=CHANNEL CONTRACTION card:
 \item width of the channel at node 3 (third node in the topology of the element)
 \item trapezoidal angle of the channel at node 3
 \item not used
-\item the length of the contraction. This is used to calculated the
+\item the length of the contraction. This is used to calculate the
   contraction angle from $\tan \alpha=(b_2-b_1)/L$ (if $L \le 0$ the length is
   calculated from the coordinates of the end nodes belonging to the element).
 \item the slope $S_0 = \sin \phi, -1<S_0<1$ (for this element the slope must be given
@@ -7842,8 +7851,8 @@ line beneath the *FLUID SECTION,TYPE=CHANNEL ENLARGEMENT card:
 \item width of the channel at node 3 (third node in the topology of the element)
 \item trapezoidal angle of the channel at node 3
 \item not used
-\item the length of the contraction. This is used to calculated the
-  contraction angle from $\tan \alpha=(b_2-b_1)/L$ (if $L \le 0$ the length is
+\item the length of the enlargement. This is used to calculate the
+  enlargement angle from $\tan \alpha=(b_2-b_1)/L$ (if $L \le 0$ the length is
   calculated from the coordinates of the end nodes belonging to the element).
 \item the slope $S_0 = \sin \phi, -1<S_0<1$ (for this element the slope must be given
   explicitly and is not calculated from the
@@ -7875,6 +7884,41 @@ line beneath the *FLUID SECTION,TYPE=CHANNEL STEP card:
 
 \bigskip
 Example files: channel10, channel12.
+
+\subsubsection{Discontinuous slope\label{discontinuousslope}}
+
+Due to a change in slope the fluid depth changes. For small slope changes this
+effect is usually neglegible. For variations in $\varphi$ such that
+$\cos(\varphi)$ changes significantly, the fluid depth will change according
+to  
+
+\begin{equation}
+  Q=b h \sqrt{2 g (E-h \cos \varphi)},
+\end{equation}
+
+assuming the mass flow and specific energy remain constant (no loss). For
+instance, a significant decrease of slope will lead to a fluid depth increase
+if the flow is supercritical and a decrease if it is subcritical.
+
+The following constants have to be specified on the
+line beneath the *FLUID SECTION,TYPE=DISCONTINUOUS SLOPE card:
+
+\begin{itemize}
+\item width of the channel.
+\item trapezoidal angle of the channel.
+\item not used.
+\item the slope $S_0 = \sin \phi, -1<S_0<1$ at node 1 (first node in the
+  topology of the element; for this element the slope must be given
+  explicitly and is not calculated from the
+  coordinates of the end nodes belonging to the element).
+\item the slope $S_0 = \sin \phi, -1<S_0<1$ at node 2 (thrid node in the
+  topology of the element; for this element the slope must be given
+  explicitly and is not calculated from the
+  coordinates of the end nodes belonging to the element).
+\end{itemize}
+
+\bigskip
+Example files: channel7.
 
 \subsubsection{Channel joint}
 
@@ -10070,8 +10114,10 @@ iteration index. The relaxation factors are taken to
 be
 
 \begin{eqnarray}
-  r_{ii} &=& \frac{ \omega}{  G_{ii}} \quad \text{if} \quad G_{ii} > \sum_{j,j\ne i} G_{ij} \\
-  r_{ii} &=& \frac{\omega}{  \sum_{j,j\ne i} G_{ij}} \quad \text{if} \quad  G_{ii} \le \sum_{j,j\ne i} G_{ij},
+  r_{ii} &=& \frac{ \omega}{  G_{ii}} \quad \text{if} \quad G_{ii} >
+  \sum_{j,j\ne i} | G_{ij} | \\
+  r_{ii} &=& \frac{\omega}{  \sum_{j,j\ne i} | G_{ij} | } \quad \text{if}
+  \quad  G_{ii} \le \sum_{j,j\ne i} | G_{ij} | ,
 \end{eqnarray}
 
 where $0 \le \omega \le 2$ is a relaxation parameter.
@@ -10596,7 +10642,8 @@ dynamical phenomena such as explosions, bird strike in a jet engine etc.
 
 For $\dot{\epsilon}_p < \dot{\epsilon}_0$ the logarithm becomes negative and
 also for small $\epsilon_p$ convergence seems more difficult. Therefore,
-  Bernhardi and co-workers \cite{Mazza} have modified the above law to:
+  Bernhardi and co-workers \cite{Mazza} have modified the above law for the
+  following special ranges of $\epsilon_p$ and $\dot{\epsilon}_p$ to:
 
 \begin{eqnarray}
   \sigma_{\text{vm}} &=& \left [A+B \epsilon_p \delta ^{n-1} \right ] \left [1+C \ln \left(
@@ -10615,11 +10662,14 @@ $\delta=10^{-4}$ was taken.
 
 In the input deck the Johnson-Cook model is activated by the HARDENING=JOHNSON
 COOK parameter on the \htmlref{*PLASTIC}{plastic} card. Underneath this card
-the rate-independent terms are defined, i.e. the parameters $A,B,n,m,T_m and
-T_0$. If $T_m=T_0$ no temperature dependence is taken into account. The rate
+the rate-independent terms are defined, i.e. the parameters $A,B,n,m,T_m$ and
+$T_0$. If $T_m=T_0$ no temperature dependence is taken into account. The rate
 dependence has to be defined using a \htmlref{*RATE DEPENDENT}{ratedependent}
 card with the parameter TYPE=JOHNSON COOK, listing underneath the parameters
 $C$ and $\dot{\epsilon}_0$.
+
+The name of a material with Johnson-Cook hardening is not allowed to contain
+more than 69 characters.
 
 \subsubsection{\label{mohrcoulombplasticity}Mohr-Coulomb plasticity.}
 
@@ -11656,15 +11706,16 @@ defines a single crystal with elastic constants
 $\{135468.,68655.,201207.\}$, octaeder parameters $\{1550.,3.89\}$ and cubic
 parameters $\{980.,3.89\}$ for a temperature of 400.
 
-\subsubsection{Elastic anisotropy with isotropic
+\subsubsection{\label{s533}Elastic anisotropy with isotropic
 viscoplasticity.}
 
-\label{s533}
-
 This model describes small deformations for elastically anisotropic materials with a von
-Mises type yield surface. Often, this model is used as a compromise
+Mises type yield surface (\cite{Dhondt}, Section 5.5). Often, this model is used as a compromise
 for anisotropic materials with lack of data or detailed knowledge
 about the anisotropic behavior in the viscoplastic range.
+
+It is activated as soon as a *ELASTIC,TYPE=ORTHO card is followed by a
+*PLASTIC card and/or *CREEP card (the latter without the LAW=USER parameter).
 
 The total strain is supposed to be the sum of the elastic strain and
 the plastic strain:
@@ -11679,22 +11730,22 @@ isotropic and kinematic change of the yield surface,
 respectively. The yield surface takes the form:
 
 \begin{equation}
-f := \left\| \mbox{\boldmath{$dev({\sigma})$}} + \mathbf{q_2} \right\| +
-\sqrt{\frac{2}{3}}(q_1-r_0) = 0
+f := \left\| \mbox{\boldmath${\text{dev}(\sigma)}$} + \mathbf{q_2} \right\| +
+\sqrt{\frac{2}{3}}q_1 = 0
 \end{equation}
 
-where $\mbox{\boldmath${dev(\sigma)}$}$ is the deviatoric stress tensor, and $r_0$ is the
-size of the elastic range at zero yield. The constitutive equations for the
+where $\mbox{\boldmath${\text{dev}(\sigma)}$}$ is the deviatoric stress tensor. The constitutive equations for the
 hardening variables satisfy:
 
 \begin{equation}
-q_1 = -d_1 \alpha_1
+q_1 = -h_1 (\alpha_1)
 \end{equation}
 
 and
 
 \begin{equation}
-\mathbf{q_2} = - \frac{2}{3} d_2 \mbox{\boldmath${\alpha_2}$}
+\mathbf{\dot{q_2}} = - \frac{2}{3} d_2 \frac{\partial h_2^{eq}}{\partial
+  \alpha_2^{eq}} \mathbf{\dot{\alpha_2}}
 \end{equation}
 
 where $\alpha_1$ and $\mbox{\boldmath${\alpha_2}$}$ are the hardening variables
@@ -11712,36 +11763,14 @@ where ${\epsilon}^{peq}$ is the equivalent plastic strain
 defined by
 
 \begin{equation}
-{\epsilon}^{peq} = \sqrt{\frac{2}{3}} \left \| \mbox{\boldmath${{\epsilon}^p}$} \right
+\dot{{\epsilon}^{peq}} = \sqrt{\frac{2}{3}} \left \| \mbox{\boldmath${\dot{\epsilon^p}}$} \right
 \|.
 \end{equation}
 
 and ${\alpha_2}^{eq}$ is the equivalent value of the tensor
-$\mbox{\boldmath${\alpha_2}$}$ defined in a similar way. Thus, the
-constitutive equations amount to
-
-
-\begin{equation}
-q_1 = -d_1 {\epsilon}^{peq}
-\end{equation}
-
-and 
-
-\begin{equation}
-{q_2}^{eq} = d_2 {\epsilon}^{peq},
-\end{equation}
-
-where
-
-\begin{equation}
-{q_2}^{eq} = \sqrt{\frac{3}{2}} \left \| \mathbf{q_2} \right
-\|
-\end{equation}
-
-has the meaning of an equivalent stress value or von Mises value. The
-same applies to $q_1$. Consequently, the constitutive equations assume a
-linear relationship between the hardening stress and the equivalent
-plastic strain.
+$\mbox{\boldmath${\alpha_2}$}$ defined in a similar way. The isotropic
+hardening curve to be defined by the user is $h_1(\epsilon^{peq})$, the
+kinematic one is $h_2^{eq}(\epsilon^{peq})$.
 
 The constitutive equation for the stress is
  Hooke's law:
@@ -11774,8 +11803,8 @@ where
 
 \begin{equation}
 \mathbf{n}  = 
- \frac {\mbox{\boldmath${dev(\sigma)}$} + \mathbf{q_2}}
-{\left \| \mbox{\boldmath${dev(\sigma)}$} + \mathbf{q_2} \right \| }.
+ \frac {\mbox{\boldmath${\text{dev}(\sigma)}$} + \mathbf{q_2}}
+{\left \| \mbox{\boldmath${\text{dev}(\sigma)}$} + \mathbf{q_2} \right \| }.
 \end{equation}
 
 The variable $\dot{\gamma}$ is the consistency coefficient known
@@ -11799,97 +11828,96 @@ while leaving positive values unchanged, i.e. $\langle x \rangle =0$
 if $x <0 $ and $\langle x \rangle =x$ if $x \ge 0$.
 
 In the present implementation orthotropic elastic behavior is
-assumed. Consequently, for each temperature 15
-constants need to be defined: the elastic constants $C_{1111}$,
+assumed. Consequently, for each temperature 9
+constants need to be defined: $C_{1111}$,
 $C_{1122}$, $C_{2222}$,$C_{1133}$,
 $C_{2233}$, $C_{3333}$,$C_{1212}$,
-$C_{1313}$, $C_{2323}$, and the viscoplastic constants 
-$r_0,d_1,d_2,A,n,m$. 
+$C_{1313}$, $C_{2323}$.
 
- The material
-definition consists of a *MATERIAL card defining the name of
-the material. This name HAS TO START WITH ''ANISO\_PLAS'' but can be
-up to 80 characters long. Thus, the last 70 characters can be freely
-chosen by the user. Within the material definition a \htmlref{*USER
-MATERIAL}{usermaterial} card has to be used satisfying:
-
-First line:
-\begin{itemize}
-\item *USER MATERIAL
-\item Enter the CONSTANTS parameter and its value, i.e. 15.
-\end{itemize}
-
-Following lines, in sets of 2:
-
-\bigskip
-First line of set:
-\begin{itemize}
-\item $C_{1111}$.
-\item $C_{1122}$.
-\item $C_{2222}$.
-\item $C_{1133}$.
-\item $C_{2233}$.
-\item $C_{3333}$.
-\item $C_{1212}$.
-\item $C_{1313}$.
-\end{itemize}
-Second line of set:
-\begin{itemize}
-\item $C_{2323}$.
-\item $r_0$.
-\item $d_1$.
-\item $d_2$.
-\item $A$.
-\item $n$.
-\item $m$.
-\item Temperature.
-\end{itemize}
-
-Repeat this set if needed to define complete temperature dependence.
+With isotropic hardening only, the user has to define  $h_1(\epsilon^{peq})$
+underneath the \htmlref{*PLASTIC}{plastic} card, with kinematic hardening only
+$h_2^{eq}(\epsilon^{peq})$ has to be defined underneath a
+*PLASTIC, HARDENING=KINEMATIC card. For combined hardening the
+$h_2^{eq}(\epsilon^{peq})$ curve must be defined underneath a *PLASTIC,
+HARDENING=KINEMATIC card and $h_1(\epsilon^{peq})$ underneath a
+\htmlref{*CYCLIC HARDENING}{cyclichardening} card. For the viscous constants
+the \htmlref{*CREEP}{creep} card is to be used. So the viscoplastic input deck
+format is essentially the same as for an elastically isotropic material with
+isotropic plasticity.
 
 The principal axes of the material are assumed to coincide with the global
 coordinate system. If this is not the case, use an
 \htmlref{*ORIENTATION}{orientation} card to define a local system.
 
-For this model, there are 14 internal state variables: 
+For this model, there are 20 internal state variables: 
 \begin{itemize}
 \item the equivalent plastic strain ${\epsilon}^{peq}$ (1)
 \item the plastic strain tensor \mbox{\boldmath${\epsilon^p}$} (6) 
 \item the isotropic hardening variable $\alpha_1$ (1)
 \item the kinematic hardening tensor $\mathbf{\alpha_2}$ (6)
+\item the back stress tensor $\mathbf{q_2}$ (6)
 \end{itemize}
 
 These variables are accessible through the \htmlref{*EL
 PRINT}{elprint} (.dat file) and \htmlref{*EL FILE}{elfile} (.frd file)
-keywords in exactly this order (label SDV). The
-\htmlref{*DEPVAR}{depvar} card must be included in the material
-definition with a value of 14.
+keywords in exactly this order (label SDV).
+
+This model is for small deformations (small strains and small
+rotations). However, if NLGEOM is activated on the \htmlref{*STEP}{step} card
+this model is considered to be an Abaqus umat routine linking the corotational
+Cauchy stress to the corotational mechanical logarithmic strain. In this way, the routine
+can also be used for large deformations.
 
 \begin{verbatim}
 Example:
 
-*MATERIAL,NAME=ANISO_PLAS
-*USER MATERIAL,CONSTANTS=15
+*MATERIAL,NAME=MAT1
+*ELASTIC,TYPE=ORTHO
 500000.,157200.,500000.,157200.,157200.,500000.,126200.,126200.,
-126200.,0.,0.,0.,1.E-10,5,0.
-*DEPVAR
-14
+126200.
+*CREEP
+1.E-10,5,0.
 \end{verbatim}
 
 defines a single crystal with elastic constants
 500000., 157200., 500000., 157200., 157200., 500000., 126200., 126200.,
-126200., and viscoplastic parameters $r_0=0.$, $d_1=0.$, $d_2=0.$,
-$A={10}^{-10}$, $n=5$ and $m=0$. Thus, the yield surface has a zero radius
-and there is no hardening. Only creep is activated.
+126200., and viscoplastic parameters 
+$A={10}^{-10}$, $n=5$ and $m=0$. The yield surface has a zero radius
+and there is no hardening (since neither the *PLASTIC or the *CYCLIC HARDENING
+card was used). Only creep is activated.
+
+\begin{verbatim}
+Example:
+
+*MATERIAL,NAME=EL
+*ELASTIC,TYPE=ORTHO
+500000.,157200.,500000.,157200.,157200.,500000.,126200.,126200.,
+126200.
+*PLASTIC
+100.,0.
+110.,0.01
+2110.,1.01
+\end{verbatim}
+
+defines a single crystal with the same elastic constants as in the previous
+example. Now, a bilinear isotropic hardening curve is defined. No time
+dependent behavior was defined.
+
+\bigskip
+Example files: anipla, anipla2, anipla3, anipla4, anipla\_nl\_st,
+anipla\_nl\_dy\_imp, anipla\_nl\_dy\_exp.
 
 \subsubsection{Elastic anisotropy with user defined isotropic creep.}
 
 This material model is similar to the previous one, except that 
 
 \begin{itemize}
-\item no plasticity is assumed (yield surface coincides with the origine)
+\item no plasticity is assumed (yield surface coincides with the origin)
 \item the creep model is to be provided by a creep user subroutine
 \end{itemize}
+
+It is activated as soon as a *ELASTIC, TYPE=ORTHO card is followed by a *CREEP,
+LAW=USER card.
 
 In the present implementation orthotropic elastic behavior is
 assumed. Consequently, for each temperature 9
@@ -11900,38 +11928,9 @@ $C_{1313}$ and  $C_{2323}$.
 
  The material
 definition consists of a *MATERIAL card defining the name of
-the material. This name HAS TO START WITH ''ANISO\_CREEP'' but can be
-up to 80 characters long. Thus, the last 69 characters can be freely
-chosen by the user. Within the material definition a \htmlref{*USER
-MATERIAL}{usermaterial} card has to be used satisfying:
-
-First line:
-\begin{itemize}
-\item *USER MATERIAL
-\item Enter the CONSTANTS parameter and its value, i.e. 9.
-\end{itemize}
-
-Following lines, in sets of 2:
-
-\bigskip
-First line of set:
-\begin{itemize}
-\item $C_{1111}$.
-\item $C_{1122}$.
-\item $C_{2222}$.
-\item $C_{1133}$.
-\item $C_{2233}$.
-\item $C_{3333}$.
-\item $C_{1212}$.
-\item $C_{1313}$.
-\end{itemize}
-Second line of set:
-\begin{itemize}
-\item $C_{2323}$.
-\item Temperature.
-\end{itemize}
-
-Repeat this set if needed to define complete temperature dependence.
+the material. The elastic constants are to be defined underneath a *ELASTIC,
+TYPE=ORTHO card. The creep user subroutine (creep.f) is activated by a *CREEP,
+LAW=USER card.
 
 The principal axes of the material are assumed to coincide with the global
 coordinate system. If this is not the case, use an
@@ -11939,7 +11938,7 @@ coordinate system. If this is not the case, use an
 
 For this model, there are 7 internal state variables (recall that CalculiX
 does not make a distinction between plastic strain and creep strain: the field
-${\epsilon^p}$ contains the sum of both): 
+\mbox{\boldmath${\epsilon^p}$} contains the sum of both): 
 \begin{itemize}
 \item the equivalent plastic strain ${\epsilon}^{peq}$ (1)
 \item the plastic strain tensor \mbox{\boldmath${\epsilon^p}$} (6) 
@@ -11947,9 +11946,7 @@ ${\epsilon^p}$ contains the sum of both):
 
 These variables are accessible through the \htmlref{*EL
 PRINT}{elprint} (.dat file) and \htmlref{*EL FILE}{elfile} (.frd file)
-keywords in exactly this order (label SDV). The
-\htmlref{*DEPVAR}{depvar} card must be included in the material
-definition with a value of 7.
+keywords in exactly this order (label SDV).
 
 The creep subroutine has to be provided by the user (cf. Section
 \ref{creepf}). Since the material is anisotropic the input to the creep
@@ -11957,20 +11954,28 @@ routine is the equivalent deviatoric creep strain, the output is the von Mises
 stress and the derivative of the equivalent deviatoric creep strain increment
 w.r.t. the von Mises stress.
 
+This model is for small deformations (small strains and small
+rotations). However, if NLGEOM is activated on the \htmlref{*STEP}{step} card
+this model is considered to be an Abaqus umat routine linking the corotational
+Cauchy stress to the corotational mechanical logarithmic strain. In this way, the routine
+can also be used for large deformations.
+
 \begin{verbatim}
 Example:
 
-*MATERIAL,NAME=ANISO_CREEP
-*USER MATERIAL,CONSTANTS=9
+*MATERIAL,NAME=MAT
+*ELASTIC,TYPE=ORTHO
 500000.,157200.,500000.,157200.,157200.,500000.,126200.,126200.,
 126200.
-*DEPVAR
-7
+*CREEP,LAW=USER
 \end{verbatim}
 
 defines a single crystal with elastic constants
 500000., 157200., 500000., 157200., 157200., 500000., 126200., 126200. and
 126200.. The creep law has to be provide by the user in the form of a creep.f subroutine.
+
+\bigskip
+Example files: beamcr4.
 
 \subsubsection{User materials}
 
@@ -12004,18 +12009,20 @@ umat.f, for limitations on the use of the Abaqus interface fields section
 Here, some information is given on how the fields used in CalculiX (mechanical
 Lagrange strain and Piola-Kirchhoff stress of the second kind) are converted
 into the fields required by Abaqus (corotational mechanical logarithmic strain and
-corotational Cauchy stress) and vice versa. The conversions is coded in
-umat\_abaqusnl.f.
+corotational Cauchy stress) and vice versa. The conversions are coded in
+umat\_abaqusnl.f. The fields $\boldsymbol{F}$, $\boldsymbol{E} ^{\mathcal{M}}$
+and $\boldsymbol{S}$ are available at the start of the routine (the meaning of
+these variables is explained in the following paragraphs). 
 
 The mechanical logarithmic strain satisfies
 
 \begin{equation}
-  e_{\ln}^{\mathcal{M}} = \sum_{i} \lambda_i^{\mathcal{M}}
+  e_{\ln}^{\mathcal{M}} = \sum_{i} \ln{\lambda_i^{\mathcal{M}}}
   \boldsymbol{n}_i \otimes \boldsymbol{n}_i,
 \end{equation}
 
 where $\lambda_i^{\mathcal{M}}$ are the eigenvalues of the mechanical
-deformation gradient $\boldsymbol{F} ^{\mathcal{M}}$. In calculiX, the
+deformation gradient $\boldsymbol{F} ^{\mathcal{M}}$. In CalculiX, the
 mechanical deformation gradient is obtained by subtracting the thermal
 expansion from the total deformation gradient, i.e.
 
@@ -12024,9 +12031,13 @@ expansion from the total deformation gradient, i.e.
   \boldsymbol{I}
 \end{equation}
 
-for isotropic expansion. The rotation tensor $\boldsymbol{R}= \boldsymbol{n}_{\underline{i}}
+for isotropic expansion. This is a first order approximation of a
+multiplicative decomposition of the total deformation gradient into a
+mechanical and thermal component in the form $\boldsymbol{F}=
+\boldsymbol{F}^{\mathcal{M}}  (1 + \alpha \Delta T)$, recall also
+$\boldsymbol{F}=\boldsymbol{I} + (\nabla_0 \boldsymbol{u})^T$.  The rotation tensor $\boldsymbol{R}= \boldsymbol{n}_{\underline{i}}
 \otimes \boldsymbol{N}_{\underline{i}}$   rotates the principal vectors
-$\boldsymbol{N}_i$ of the motion in material coordinates in spatial
+$\boldsymbol{N}_i$ of the motion in material coordinates into spatial
 coordinates $\boldsymbol{n}_i$:
 
 \begin{equation}
@@ -12040,7 +12051,7 @@ orthogonal, i.e. $\boldsymbol{R}^{-1} = \boldsymbol{R}^T$)   :
 
 \begin{equation}
   \hat{\boldsymbol{e}}_{\ln}^ {\mathcal{M}} = \boldsymbol{R}^T \cdot
-  e_{\ln}^{\mathcal{M}} \cdot \boldsymbol{R} = \sum_{i} \lambda_i^{\mathcal{M}}
+  e_{\ln}^{\mathcal{M}} \cdot \boldsymbol{R} = \sum_{i} \ln{\lambda_i^{\mathcal{M}}}
   \boldsymbol{N}_i \otimes \boldsymbol{N}_i.
 \end{equation}
 
@@ -12069,7 +12080,7 @@ stress of the second kind and $\boldsymbol{U}$ is the right-stretch
 tensor. The latter is the square root of the Cauchy-Green tensor
 $\boldsymbol{C}$ and therefore it can also be derived from the Lagrange
 tensor. However, in routine umat\_abaqusnl.f the mechanical Lagrange tensor is
-available and not the total one. So a relationships is needed between the
+available and not the total one. So a relationship is needed between the
 total right-stretch tensor and the mechanical right-stretch tensor. Since
 $\boldsymbol{U}$ has the same eigenvalues as $\boldsymbol{F}$ and the
 multiplicative decomposition of the deformation gradient in a mechanical and
@@ -12104,161 +12115,90 @@ after returning from the Abaqus material user subroutine:
 
 Now, $\partial \boldsymbol{S}/\partial \boldsymbol{E}^{\mathcal{M}}$ is needed
 in CalculiX (i.e. total Lagrangian approach), however, the Abaqus routine returns
-$\partial \hat{\boldsymbol{\sigma}} /\partial \hat{\boldsymbol{e}}_{\ln}^{\mathcal{M}}$. Performing an
-exact transformation is very tedious and nearly impossible. It would require
-an enormous computational effort and frequently results in an asymmetric
-$\partial \boldsymbol{S}/\partial \boldsymbol{E}^{\mathcal{M}}$ - matrix even
-if  $\partial \hat{\boldsymbol{\sigma}} /\partial \hat{\boldsymbol{e}}_{\ln}^{\mathcal{M}}$ is
-symmetric. To avoid longer computational times due to the use of an asymmetric
-linear equation solver a symmetrization is usually performed leading to an
-approximation anyway. Therefore, a simplified approach is taken which reduced
-the computational effort to a minimum while leading to acceptable convergence
-rates despite the approximations involved.
+$\partial \hat{\boldsymbol{\sigma}} /\partial
+\hat{\boldsymbol{e}}_{\ln}^{\mathcal{M}}$. Now, taking into account the
+following considerations:
 
-From the relationship between $\boldsymbol{S}$ and $\hat{\boldsymbol{\sigma
-}}$ one obtains (in Carthesian coordinates)
+\begin{itemize}
+\item 
+  $  \boldsymbol{U} = \boldsymbol{U} ^ {\mathcal{M}} (1+\alpha \Delta T)
+  $ from which $\boldsymbol{U}^{-1} = {\boldsymbol{U}^{ \mathcal{M}}}^{-1}
+  (1+\alpha \Delta T)^{-1}$.
+\item ${\boldsymbol{U}^{ \mathcal{M}}}^{-1} = 1/{\sqrt{\boldsymbol{C}^{
+      \mathcal{M}}} }$.
+\item $ \hat{\boldsymbol{e}}_{\ln}^{ \mathcal{M}} = \ln \sqrt{\boldsymbol{C}^{
+    \mathcal{M}}} $
+\item $\frac{\partial I_3}{\partial \boldsymbol{C} } = I_3
+  \boldsymbol{C}^{-1}$ and $I_3=J^2$, from which
+
+  \begin{equation}
+    \frac{\partial J^{
+        \mathcal{M}}}{\partial \boldsymbol{C}^{ \mathcal{M} }} = \frac{J^{
+        \mathcal{M}}}{2}  {\boldsymbol{C}^{ \mathcal{M} }}^{-1}
+  \end{equation}
+\item $J=J^{\mathcal{M}} (1+\alpha \Delta T)^3$.
+\end{itemize}
+
+and writing the expression for the Piola-Kirchhoff stress of the second kind in a rectangular
+coordinate system:
 
 \begin{equation}
-  \left ( \frac{\partial \boldsymbol{S}_{IJ}}{\partial
-    \boldsymbol{E}_{KL}^{\mathcal{M}}} \right ) \approx J
-  \boldsymbol{U}^{-1}_{IM}  \left( \frac{\partial \hat{\sigma}_{MN}} {\partial
-    \boldsymbol{E}_{KL} ^{\mathcal{M}}} \right)
-  \boldsymbol{U}^{-1}_{NJ}
+  \boldsymbol{S}_{KL}=J \boldsymbol{U}^{-1}_{KM} \hat{\boldsymbol{\sigma
+  }}_{MN}  \boldsymbol{U}^{-1}_{NL}
 \end{equation}
 
-(recall that $\boldsymbol{U}$ is symmetric). In the above equation the
-dependence of $\boldsymbol{U}^{-1}$ on $\boldsymbol{E}  ^{\mathcal{M}}$ has been
-neglected (first approximation). One can further write:
+straightforward differentation yields:
 
-\begin{equation}
-   \left( \frac{\partial \boldsymbol{S}_{IJ}}{\partial
-     \boldsymbol{E}_{KL}^{\mathcal{M}}} \right )
-   \approx J
-  \boldsymbol{U}^{-1}_{IM}  \left( \frac{\partial \hat{\sigma}_{MN}} {\partial
-    \hat{\boldsymbol{e}}_{\ln,PQ} ^{\mathcal{M}}}  \right) \left(  \frac{\partial
-    \hat{\boldsymbol{e}_{\ln,PQ} ^{\mathcal{M}} }}{\partial
-    \boldsymbol{E}_{KL} ^{\mathcal{M}}} \right)
-   \boldsymbol{U}^{-1}_{NJ}
-\end{equation}
+\begin{align}
+  \left ( \frac{\partial \boldsymbol{S}_{KL}}{\partial
+    \boldsymbol{E}_{PQ}^{\mathcal{M}}} \right ) &= J^{\mathcal{M}}
+        \left( {\boldsymbol{C}^{\mathcal{M}}}^{-1}_{PQ} \right)
+        \left( {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{KM} \right)
+        \hat{\boldsymbol{\sigma}}_{MN}
+        \left( {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{NL} \right)
+        (1+\alpha \Delta T) \nonumber
+        \\
+  &+ 2 J^{\mathcal{M}} \left( \frac{\partial{\boldsymbol{U}^{\mathcal{M}}}^{-1}_{KM}
+        }{\partial \boldsymbol{C}_{PQ}^{\mathcal{M}}} \right)
+        \hat{\boldsymbol{\sigma}}_{MN}
+        \left( {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{NL} \right)
+        (1+\alpha \Delta T) \nonumber
+        \\
+        &+2 J^{\mathcal{M}}\left( {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{KM} \right)
+        \left( \frac{\partial \hat{\sigma}_{MN}} {\partial
+          \hat{\boldsymbol{e}}_{\ln,ST} ^{\mathcal{M}}}  \right)
+        \left(  \frac{\partial
+    \hat{\boldsymbol{e}_{\ln,ST} ^{\mathcal{M}} }}{\partial
+    \boldsymbol{C}_{PQ} ^{\mathcal{M}}} \right)
+        \left( {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{NL} \right)
+        (1+\alpha \Delta T) \nonumber
+        \\
+        &+2 J^{\mathcal{M}}\left( {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{KM} \right)
+        \hat{\boldsymbol{\sigma}}_{MN}
+        \left( \frac{\partial{\boldsymbol{U}^{\mathcal{M}}}^{-1}_{NL}
+        }{\partial \boldsymbol{C}_{PQ}^{\mathcal{M}}} \right)
+        (1+\alpha \Delta T)
+\end{align}
 
-or, approximating the corotational mechanical logarithmic strain $\hat{\boldsymbol{e}}_{\ln} ^{\mathcal{M}}$ by the
-corotational mechanical
-Eulerian strain $\hat{\boldsymbol{e}} ^{\mathcal{M}}$ (second approximation):
+The first term in brackets on the second line, the third term in brackets on the third
+line and the second term in brackets on the fourth line are special cases of
+the derivative of a function of $\boldsymbol{C}$ w.r.t $\boldsymbol{C}
+$. Expressions for such a differentation based on the eigenvalues and
+structural tensors of $\boldsymbol{C}$ were derived by Itskov \cite{Itskov}
+and are summarized in the Appendix of \cite{DhondtHackenberg}. The second term
+in brackets on the third line is the tangent returned by the Abaqus UMAT routine. 
 
-\begin{equation}
-   \left(\frac{\partial \boldsymbol{S}_{IJ}}{\partial
-     \boldsymbol{E}_{KL}^{\mathcal{M}}} \right)
-   \approx J
-  \boldsymbol{U}^{-1}_ {IM}  \left(  \frac{\partial \hat{\sigma}_{MN}} {\partial
-    \hat{\boldsymbol{e}}_{\ln,PQ} ^{\mathcal{M}}} \right) \left(  \frac{\partial
-    \hat{\boldsymbol{e}}_{PQ} ^{\mathcal{M}} }{\partial
-    \boldsymbol{E}_{KL} ^{\mathcal{M}}} \right)
-   \boldsymbol{U}^{-1}_{NJ}.
-\end{equation}
-
-The Eulerian strain satisfies:
-
-\begin{equation}
-  2\boldsymbol{e}= \boldsymbol{F}^{-T} \cdot 2\boldsymbol{E} \cdot
-  \boldsymbol{F}^{-1}.
-\end{equation}
-
-which amounts to:
-
-\begin{equation}
-  \left( \boldsymbol{I} - \frac{{\boldsymbol{F}^{\mathcal{M}}}^{-T} \cdot
-    {\boldsymbol{F}^{\mathcal{M}}}^{-1} }{(1+\alpha \Delta T)^2 } \right ) =
-  \boldsymbol{F}^{-T} \cdot \left(    {\boldsymbol{F}^{\mathcal{M}}}^{T} \cdot
-  \boldsymbol{F}^{\mathcal{M}} (1+\alpha \Delta T)^2 -\boldsymbol{I} \right)
-  \cdot \boldsymbol{F}^{-1}.  
-\end{equation} 
-
-This can be written as:
-
-
-\begin{eqnarray}
-   \boldsymbol{I} &-& {\boldsymbol{F}^{\mathcal{M}}}^{-T} \cdot
-    {\boldsymbol{F}^{\mathcal{M}}}^{-1} + 2\xi \boldsymbol{I}    \nonumber \\
-   &=& \boldsymbol{F}^{-T}\cdot \left({\boldsymbol{F}^{\mathcal{M}}}^{T} \cdot
-  \boldsymbol{F}^{\mathcal{M}} - \boldsymbol{I} + 2\xi {\boldsymbol{F}^{\mathcal{M}}}^{T} \cdot
-  \boldsymbol{F}^{\mathcal{M}} \right) \cdot \boldsymbol{F}^{-1} (1+\alpha \Delta T)^2,
-\end{eqnarray}
-
-where
-
-\begin{equation}
-  2\xi :=2 \alpha \Delta T + \alpha^2 (\Delta T)^2.
-  \end{equation} 
-
-This leads to:
-
-\begin{equation}
-  \boldsymbol{e} ^{\mathcal{M}} + \xi  \boldsymbol{I} =
-             {\boldsymbol{F}^{\mathcal{M}}}^{-T} \cdot ( \boldsymbol{E}
-             ^{\mathcal{M}} + \xi   \boldsymbol{C} ^{\mathcal{M}} ) \cdot
-             {\boldsymbol{F}^{\mathcal{M}}}^{-1},
-\end{equation} 
-
-or
-
-\begin{equation}
-  \boldsymbol{e} ^{\mathcal{M}}  =
-             {\boldsymbol{F}^{\mathcal{M}}}^{-T} \cdot  \boldsymbol{E}
-             ^{\mathcal{M}}  \cdot{\boldsymbol{F}^{\mathcal{M}}}^{-1}.
-\end{equation} 
-
-Consequently, the
-corotational mechanical Eulerian strain amounts to:
-
-\begin{equation}
-  \hat{\boldsymbol{e}}^{\mathcal{M}}_{PQ} = \boldsymbol{R}^T_{PR}  \boldsymbol{e}^{\mathcal{M}}_{RS} 
-  \boldsymbol{R}_{SQ} = {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{PR}  \boldsymbol{E}^{\mathcal{M}}_{RS} 
-  {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{SQ},
-\end{equation} 
-
-leading to (again using the first approximation for the inverse mechanical
-right-stretch tensor)
-
-\begin{equation}
-  \label{dedepqkl}
-   \left( \frac{\partial \hat{\boldsymbol{e}}^{\mathcal{M}}_{PQ} }{\partial
-     \boldsymbol{E}^{\mathcal{M}}_{KL} }\right)  \approx
-  {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{PR}  (\mathbb{I}_I)_{RSKL}  {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{SQ},
-\end{equation} 
-
-where
-
-\begin{equation}
-  \label{iirskl}
-  (\mathbb{I}_I)_{RSKL} := (\delta_{RK} \delta_{SL}+\delta_{RL}\delta_{SK})/2.
-\end{equation}
-
-Due to the symmetry of the corotational mechanical Eulerian strain tensor and
-the symmetry of the inverse right-stretch tensor, one can write after
-substitution of Equation (\ref{iirskl}) into Equation (\ref{dedepqkl}):
-
-\begin{equation}
-\left( \frac{\partial \hat{\sigma}_{MN}} {\partial
-  \hat{\boldsymbol{e}}_{\ln,PQ} ^{\mathcal{M}}} \right) {\boldsymbol{U}^{-\mathcal{M}}}^{-1}_{PR}  (\mathbb{I}_I)_{RSKL}  {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{SQ}=\left(\frac{\partial \hat{\sigma}_{MN}} {\partial
-  \hat{\boldsymbol{e}}_{\ln,PQ} ^{\mathcal{M}}} \right) {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{PK}  {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{QL}.
-\end{equation}
-
-One finally obtains:
-
-\begin{equation}
-\left( \frac{\partial \boldsymbol{S}_{IJ}}{\partial
-  \boldsymbol{E}_{KL}^{\mathcal{M}}} \right)
-\approx J \left( \frac{\partial \hat{\sigma}_{MN}} {\partial
-  \hat{\boldsymbol{e}}_{\ln,PQ} ^{\mathcal{M}}} \right) \boldsymbol{U}^{-1}_{IM} \boldsymbol{U}^{-1}_{JN} {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{KP} {\boldsymbol{U}^{\mathcal{M}}}^{-1}_{LQ}.
-\end{equation}
-
-This is the expresson which is used for the material tangent. The
-approximations do not lead to a false result, they just slow down the
-convergence. Since the wish to avoid asymmetric matrices precludes quadratic
-convergence anyway the above approximations seem tolerable. This has been
-confirmed in practical numerical simulations of e.g. the deformation
-plasticity model and the Johnson-Cook model in implicit dynamic calculations
-(in explicit dynamic calculations the material tangent is not needed).
+Notice that the above equation is symmetric in (KL) and (PQ), i.e. switching K
+and L and/or P and Q. In particular,
+switching K and L in the second term leads to the fourth term. This symmetry
+is to be expected, since $\boldsymbol{S}$ and $\boldsymbol{E} ^{\mathcal{M}}$
+are symmetric tensors. However, it is not clear whether the symmetry obtained
+by replacing KL by PQ is preserved. Therefore, in CalculiX a symmetrization of
+the resulting tangent matrix is performed, leading to 21 constants instead of
+36 constants. The above procedure was implemented in umat\_abaqusnl.f and
+umat\_abaqusnl\_total.f. It is used for those material models, which were only
+formulated for small strains, such as isotropic plasticity for an elastically
+orthotropic material, Johnson\_Cook plasticity and Mohr\_Coulomb plasticity.
 
 \subsection{Types of analysis}
 
@@ -14505,8 +14445,8 @@ experiments) one can apply the discrete form of the Bernoulli equation in the
 form:
 
 \begin{equation}
-z_1 + h_1 + \frac{\dot{m}^2}{2 \rho^2 A_1^2 g} = 
-z_2 + h_2 + \frac{\dot{m}^2}{2 \rho^2 A_2^2 g} + \Delta
+z_1 + h_1 \cos \varphi  + \frac{\dot{m}^2}{2 \rho^2 A_1^2 g} = 
+z_2 + h_2  \cos \varphi + \frac{\dot{m}^2}{2 \rho^2 A_2^2 g} + \Delta
 F.
 \end{equation} 
 
@@ -14518,7 +14458,7 @@ F.
 Defining the specific energy $E$ by:
 
 \begin{equation}
-  E := h +  \frac{Q^2}{2 A^2 g},
+  E := h  \cos \varphi +  \frac{Q^2}{2 A^2 g},
 \end{equation}
 
 one can write the above equation as $z_1 + E_1 = z_2 + E_2 + \Delta F$, from
@@ -17084,14 +17024,17 @@ In CalculiX, the following crack propagation law has been implemented:
          initial crack length. The initial length is determined using the
          LENGTH=INTERSECTION method.
        \item for LENGTH=INTERSECTION a plane locally orthogonal to the
-         crack front is constructed and subsequently a second intersection
-         of this plane with the crack front is sought. The distance in
-         between these intersection points is the crack length (except for
-         a subsurface crack for which this length is divided by two). Notice
-         that for intersection purposes the crack front for a surface
-         crack is artificially closed by the
-         intersection curve of the crack shape with the free surface in
-         between the intersection points of the crack front.
+         crack front e.g. at location $p_1$ of the crack front is constructed and subsequently a
+         second intersection $p_2$
+         of this plane with the crack boundary is sought. The crack boundary
+         is the outer line of that part of the shell mesh which is inside the
+         structure. It consists of one or more crack front(s) and for surface
+         cracks of intersection(s) of the shell mesh with the outer surface of
+         the structure. Then, a point $p_3$ on the
+         straight line between $p_1$ and $p_2$ is determined, which maximizes
+         the minimum distance between $p_3$ and any node along the crack
+         front(s) belonging to the crack at stake. The distance between $p_1$
+         and $p_3$ is the crack length
        \end{itemize}
 
        Subsequently, the crack length is smoothed along the crack front
@@ -18184,7 +18127,8 @@ CSTR & contact stress & nodal & CONTACT & x \\
  &  &  & CONTACTI & x \\ 
 \hline
 DEPF & fluid depth in 3D shallow water calculations & nodal & DISP & \\
-DEPT & fluid depth (in direction of the gravity vector) in a channel network & nodal & DEPTH & \\
+DEPT & fluid depth (in direction of the gravity vector) & nodal & DEPTH & \\
+ &  in a channel network &  &  & \\
 DTF & fluid time increment in 3D fluids & nodal & DTIMF & \\
 DRAG & stress on surface & surface & & x \\
 \hline
@@ -20978,8 +20922,10 @@ stiffness matrix $\left [ K \right ]$ and the mass matrix $\left [ M \right ]$:
 \noindent where $\lbrace v \rbrace$ is the velocity vector. For Rayleigh damping only one *DAMPING card can be used in the input deck. It
 applies to the whole model.
 
-For explicit dynamic calculations only mass proportional damping is allowed,
-i.e. $\beta$ must be zero. 
+For explicit dynamic calculations without massless contact (i.e. there is no
+card of the type *CONTACT PAIR,TYPE=MASSLESS in the input deck) only mass proportional damping is allowed,
+i.e. $\beta$ must be zero. For explicit dynamic calculations with massless
+contact both parameters $\alpha$ and $\beta$ can be used.
 
 For structural damping the damping is a material characteristic. Each material
 can have its own damping value. There is one required parameter STRUCTURAL,
@@ -23964,7 +23910,7 @@ the upper value of the requested frequency range, there is no
 guarantee that all eigenfrequencies within the requested range were
 calculated. If the PERTURBATION parameter is used in the *STEP card, the load active in the last *STATIC step, if any, will be taken as preload. Otherwise, no preload will be active.
 
-There are four optional parameters SOLVER, STORAGE, GLOBAL and CYCMPC.
+There are five optional parameters SOLVER, STORAGE, GLOBAL, CYCMPC and ALPHA.
 SOLVER specifies which solver is used to perform a
 decomposition of the linear equation system. This decomposition is done only
 once. It is repeatedly used in the iterative procedure determining the eigenvalues. The following solvers
@@ -24031,6 +23977,22 @@ cyclic MPC's and any other MPC's containing dependent nodes belonging to
 cyclic MPC's are removed before assembling the matrices. The CYCMPC parameter
 only makes sense if GLOBAL=YES, since only then are MPC's allowed. 
 
+The parameter ALPHA is only needed if the user wants to check the effect of
+selective mass scaling in an explicit dynamics calculation for the same
+structure. The maximum time step in a explicit dynamics calculation is
+governed by the time a wave needs to travers the smallest element in the
+mesh. This time can be increased by applying selective mass scaling, which
+manipulates the element mass matrices by drawing the mass onto the diagonal
+without changing it global value \cite{Olovsson}, \cite{Czech}. Still, this procedure may change the
+eigenfrequencies and eigenmodes of the structure, which may not be
+desirable. To check this, the user can simulate the mass scaling by defining a
+value for the numerical damping $\alpha$ and the minimum desired time step in
+the explicit dynamics calculation as the fourth argument underneath
+*FREQUENCY. Specifying a strictly positive value of the time step
+automatically leads to selective mass scaling. ALPHA takes a value between -1/3 and 0. It controls the dissipation of the high frequency
+response: lower numbers lead to increased numerical damping
+(\cite{Miranda}, \cite{Dhondt}). The default value is -0.05.
+
 For the iterative eigenvalue procedure ARPACK \cite{Lehoucq} is
 used. The eigenfrequencies are always stored in file jobname.dat. 
 
@@ -24042,13 +24004,16 @@ which may be zero due to previous steps, are set to zero.
 First line:
 \begin{itemize}
 \item *FREQUENCY
+\item Specify the parameter ALPHA and its value, if needed.
 \end{itemize}
 Second line:
 \begin{itemize}
 \item Number of eigenfrequencies desired.
 \item Lower value of requested eigenfrequency range (in cycles/time; default:0).
 \item Upper value of requested eigenfrequency range (in cycles/time;
-default: $\infty$).
+  default: $\infty$).
+\item Minimum time step allowed in an explicit dynamic calculation for the
+  same model.
 \end{itemize}
 
 \begin{verbatim}
@@ -24061,7 +24026,7 @@ Example:
 requests the calculation of the 10 lowest eigenfrequencies and corresponding eigenmodes. 
 
 \bigskip
-Example files: beam8f, beamf.
+Example files: beam8f, beamf, beamfsms, segmenttetsms.
 
 \subsection{\label{friction}*FRICTION}
 
@@ -26371,12 +26336,7 @@ The external forces (key RF) are the sum of
 the reaction forces, concentrated loads (*CLOAD) and distributed loads
 (*DLOAD) in the node at stake. Only in the absence of concentrated loads in
 the node and distributed loads in any element to which the node belongs, the
-external forces reduce to the reaction forces. Forces induced by multiple
-point constraints are not calculated. Since single point constraints defined
-in transformed coordinates are converted into multiple point constraints in
-the global rectangular system, the force in a node in which a SPC is defined
-in local coordinates are not correctly delivered upon using the RF key in
-combination with the *NODE PRINT keyword card.
+external forces reduce to the reaction forces.
 
 For frequency calculations with cyclic symmetry the eigenmodes are generated
 in pairs (different by a phase shift of 90 degrees). Only the first one of
@@ -26579,12 +26539,7 @@ The external forces are the sum of
 the reaction forces, concentrated loads (*CLOAD) and distributed loads
 (*DLOAD) in the node at stake. Only in the absence of concentrated loads in
 the node and distributed loads in any element to which the node belongs, the
-external forces reduce to the reaction forces. Forces induced by multiple
-point constraints are not calculated. Since single point constraints defined
-in transformed coordinates are converted into multiple point constraints in
-the global rectangular system, the force in a node in which a SPC is defined
-in local coordinates are not correctly delivered upon using the RF key in
-combination with the *NODE PRINT keyword card.
+external forces reduce to the reaction forces.
 
 There are six parameters,
 FREQUENCY, FREQUENCYF, NSET, TOTALS, GLOBAL and TIME POINTS. The parameter NSET is
@@ -36960,7 +36915,12 @@ Subsequently, in each iteration the following actions are taken:
     what other edge (but not immediately adjacent) along the closed crack
     front is cut by this plane (using fields such as ibounedg). An edge is
     cut by a plane if the substitution of the coordinates of its nodes into
-    the plane equation yields results with a different sign.
+    the plane equation yields results with a different sign. In between the
+    front node and the intersection point a position is determined which
+    maximizes the minimum distance from any front node belonging to the
+    crack (using attach\_1d\_cracklength.f, distattach\_1d\_cracklength.f and
+    near3d.f) . The distance between this position and the front node is defined as
+    the crack length.
 
   \begin{figure}
     \centering
@@ -38426,6 +38386,8 @@ jmax(2) &              maximum number of CFD increments \\
       fei[0]      &     tolerance (accuracy) \\
       fei[1]      &     lower value of requested frequency range \\
       fei[2]      &     upper value of requested frequency range \\
+      fei[3]      &     minimum time increment in an eventually subsequent
+!     explicit dynamics step \\
 \hline
 \multicolumn{2}{|p{12cm}|}{CYCLIC SYMMETRY CALCULATIONS}  \\
 \hline
@@ -38909,6 +38871,11 @@ flow over a two-dimensional compression corner. \textit{NASA TR R-385 Report}
 \bibitem{Dhondt} Dhondt, G., \textit{The Finite Element Method for
   Three-Dimensional Thermomechanical Applications}. John Wiley \& Sons, (2004).
 
+\bibitem{DhondtHackenberg} Dhondt, G., and Hackenberg, H.-P., Use of a
+  rotation-invariant linear strain measure for linear elastic crack
+  propagation calculations. \textit{
+    Engng. Frac. Mech. } \textbf{247} , 107634 (2021).
+
 \bibitem{Egli} Egli, A., The Leakage of Steam Through Labyrinth
   Seals. \textit{Trans. ASME}. \textbf{57} , 115-122 (1935).
 
@@ -38959,6 +38926,9 @@ Comparative Study of Material Models. \textit{J. Elasticity}
 
 \bibitem{Incropera} Incropera, F.P. and DeWitt, D.P., \textit{Fundamentals of
   Heat and Mass Transfer}. John Wiley \& Sons, New York (2002). 
+
+\bibitem{Itskov} Itskov, M., A generalized orthotropic hyperelastic material
+  model with application to incompressible shells. \textit{Int. J. Num. Meth. Engng.} \textbf{50} , 1777-1799 (2001).
 
 \bibitem{Johnson} Johnson, G.R. and Cook, W.H.,
   A constitutive model and data for metals subjected to large strains, high

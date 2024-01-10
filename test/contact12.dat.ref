@@ -1,0 +1,710 @@
+
+                        S T E P       1
+
+
+                                INCREMENT     1
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.1000000E-07
+
+        24  0.000000E+00  0.000000E+00  3.462392E-06
+
+                                INCREMENT     2
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.2000000E-07
+
+        24  0.000000E+00  0.000000E+00  1.157397E-05
+
+                                INCREMENT     3
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.3000000E-07
+
+        24  0.000000E+00  0.000000E+00  1.817621E-05
+
+                                INCREMENT     4
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.4000000E-07
+
+        24  0.000000E+00  0.000000E+00  1.620492E-05
+
+                                INCREMENT     5
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.5000000E-07
+
+        24  0.000000E+00  0.000000E+00  1.485782E-06
+
+                                INCREMENT     6
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.6000000E-07
+
+        24  0.000000E+00  0.000000E+00 -2.565001E-05
+
+                                INCREMENT     7
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.7000000E-07
+
+        24  0.000000E+00  0.000000E+00 -6.128665E-05
+
+                                INCREMENT     8
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.8000000E-07
+
+        24  0.000000E+00  0.000000E+00 -1.004791E-04
+
+                                INCREMENT     9
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.9000000E-07
+
+        24  0.000000E+00  0.000000E+00 -1.397557E-04
+
+                                INCREMENT    10
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.1000000E-06
+
+        24  0.000000E+00  0.000000E+00 -1.782123E-04
+
+                                INCREMENT    11
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.1100000E-06
+
+        24  0.000000E+00  0.000000E+00 -2.169264E-04
+
+                                INCREMENT    12
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.1200000E-06
+
+        24  0.000000E+00  0.000000E+00 -2.574624E-04
+
+                                INCREMENT    13
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.1300000E-06
+
+        24  0.000000E+00  0.000000E+00 -3.005588E-04
+
+                                INCREMENT    14
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.1400000E-06
+
+        24  0.000000E+00  0.000000E+00 -3.456410E-04
+
+                                INCREMENT    15
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.1500000E-06
+
+        24  0.000000E+00  0.000000E+00 -3.910900E-04
+
+                                INCREMENT    16
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.1600000E-06
+
+        24  0.000000E+00  0.000000E+00 -4.347999E-04
+
+                                INCREMENT    17
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.1700000E-06
+
+        24  0.000000E+00  0.000000E+00 -4.746819E-04
+
+                                INCREMENT    18
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.1800000E-06
+
+        24  0.000000E+00  0.000000E+00 -5.091362E-04
+
+                                INCREMENT    19
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.1900000E-06
+
+        24  0.000000E+00  0.000000E+00 -5.376618E-04
+
+                                INCREMENT    20
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.2000000E-06
+
+        24  0.000000E+00  0.000000E+00 -5.615067E-04
+
+                                INCREMENT    21
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.2100000E-06
+
+        24  0.000000E+00  0.000000E+00 -5.838621E-04
+
+                                INCREMENT    22
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.2200000E-06
+
+        24  0.000000E+00  0.000000E+00 -6.090409E-04
+
+                                INCREMENT    23
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.2300000E-06
+
+        24  0.000000E+00  0.000000E+00 -6.406060E-04
+
+                                INCREMENT    24
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.2400000E-06
+
+        24  0.000000E+00  0.000000E+00 -6.792463E-04
+
+                                INCREMENT    25
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.2500000E-06
+
+        24  0.000000E+00  0.000000E+00 -7.216990E-04
+
+                                INCREMENT    26
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.2600000E-06
+
+        24  0.000000E+00  0.000000E+00 -7.591825E-04
+
+                                INCREMENT    27
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.2700000E-06
+
+        24  0.000000E+00  0.000000E+00 -7.813389E-04
+
+                                INCREMENT    28
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.2800000E-06
+
+        24  0.000000E+00  0.000000E+00 -7.884415E-04
+
+                                INCREMENT    29
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.2900000E-06
+
+        24  0.000000E+00  0.000000E+00 -7.940872E-04
+
+                                INCREMENT    30
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.3000000E-06
+
+        24  0.000000E+00  0.000000E+00 -8.116283E-04
+
+                                INCREMENT    31
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.3100000E-06
+
+        24  0.000000E+00  0.000000E+00 -8.395445E-04
+
+                                INCREMENT    32
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.3200000E-06
+
+        24  0.000000E+00  0.000000E+00 -8.596043E-04
+
+                                INCREMENT    33
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.3300000E-06
+
+        24  0.000000E+00  0.000000E+00 -8.501912E-04
+
+                                INCREMENT    34
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.3400000E-06
+
+        24  0.000000E+00  0.000000E+00 -8.050969E-04
+
+                                INCREMENT    35
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.3500000E-06
+
+        24  0.000000E+00  0.000000E+00 -7.426858E-04
+
+                                INCREMENT    36
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.3600000E-06
+
+        24  0.000000E+00  0.000000E+00 -6.952099E-04
+
+                                INCREMENT    37
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.3700000E-06
+
+        24  0.000000E+00  0.000000E+00 -6.873843E-04
+
+                                INCREMENT    38
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.3800000E-06
+
+        24  0.000000E+00  0.000000E+00 -7.236300E-04
+
+                                INCREMENT    39
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.3900000E-06
+
+        24  0.000000E+00  0.000000E+00 -7.871004E-04
+
+                                INCREMENT    40
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.4000000E-06
+
+        24  0.000000E+00  0.000000E+00 -8.466517E-04
+
+                                INCREMENT    41
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.4100000E-06
+
+        24  0.000000E+00  0.000000E+00 -8.715813E-04
+
+                                INCREMENT    42
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.4200000E-06
+
+        24  0.000000E+00  0.000000E+00 -8.469626E-04
+
+                                INCREMENT    43
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.4300000E-06
+
+        24  0.000000E+00  0.000000E+00 -7.798618E-04
+
+                                INCREMENT    44
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.4400000E-06
+
+        24  0.000000E+00  0.000000E+00 -6.940724E-04
+
+                                INCREMENT    45
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.4500000E-06
+
+        24  0.000000E+00  0.000000E+00 -6.176196E-04
+
+                                INCREMENT    46
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.4600000E-06
+
+        24  0.000000E+00  0.000000E+00 -5.701507E-04
+
+                                INCREMENT    47
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.4700000E-06
+
+        24  0.000000E+00  0.000000E+00 -5.559891E-04
+
+                                INCREMENT    48
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.4800000E-06
+
+        24  0.000000E+00  0.000000E+00 -5.648842E-04
+
+                                INCREMENT    49
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.4900000E-06
+
+        24  0.000000E+00  0.000000E+00 -5.788030E-04
+
+                                INCREMENT    50
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.5000000E-06
+
+        24  0.000000E+00  0.000000E+00 -5.814917E-04
+
+                                INCREMENT    51
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.5100000E-06
+
+        24  0.000000E+00  0.000000E+00 -5.652426E-04
+
+                                INCREMENT    52
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.5200000E-06
+
+        24  0.000000E+00  0.000000E+00 -5.305497E-04
+
+                                INCREMENT    53
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.5300000E-06
+
+        24  0.000000E+00  0.000000E+00 -4.837489E-04
+
+                                INCREMENT    54
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.5400000E-06
+
+        24  0.000000E+00  0.000000E+00 -4.357325E-04
+
+                                INCREMENT    55
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.5500000E-06
+
+        24  0.000000E+00  0.000000E+00 -3.977386E-04
+
+                                INCREMENT    56
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.5600000E-06
+
+        24  0.000000E+00  0.000000E+00 -3.756421E-04
+
+                                INCREMENT    57
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.5700000E-06
+
+        24  0.000000E+00  0.000000E+00 -3.674226E-04
+
+                                INCREMENT    58
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.5800000E-06
+
+        24  0.000000E+00  0.000000E+00 -3.649075E-04
+
+                                INCREMENT    59
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.5900000E-06
+
+        24  0.000000E+00  0.000000E+00 -3.577563E-04
+
+                                INCREMENT    60
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.6000000E-06
+
+        24  0.000000E+00  0.000000E+00 -3.375711E-04
+
+                                INCREMENT    61
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.6100000E-06
+
+        24  0.000000E+00  0.000000E+00 -3.015638E-04
+
+                                INCREMENT    62
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.6200000E-06
+
+        24  0.000000E+00  0.000000E+00 -2.549318E-04
+
+                                INCREMENT    63
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.6300000E-06
+
+        24  0.000000E+00  0.000000E+00 -2.103755E-04
+
+                                INCREMENT    64
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.6400000E-06
+
+        24  0.000000E+00  0.000000E+00 -1.844242E-04
+
+                                INCREMENT    65
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.6500000E-06
+
+        24  0.000000E+00  0.000000E+00 -1.894704E-04
+
+                                INCREMENT    66
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.6600000E-06
+
+        24  0.000000E+00  0.000000E+00 -2.245640E-04
+
+                                INCREMENT    67
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.6700000E-06
+
+        24  0.000000E+00  0.000000E+00 -2.737711E-04
+
+                                INCREMENT    68
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.6800000E-06
+
+        24  0.000000E+00  0.000000E+00 -3.143009E-04
+
+                                INCREMENT    69
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.6900000E-06
+
+        24  0.000000E+00  0.000000E+00 -3.289576E-04
+
+                                INCREMENT    70
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.7000000E-06
+
+        24  0.000000E+00  0.000000E+00 -3.156401E-04
+
+                                INCREMENT    71
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.7100000E-06
+
+        24  0.000000E+00  0.000000E+00 -2.880099E-04
+
+                                INCREMENT    72
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.7200000E-06
+
+        24  0.000000E+00  0.000000E+00 -2.668802E-04
+
+                                INCREMENT    73
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.7300000E-06
+
+        24  0.000000E+00  0.000000E+00 -2.678104E-04
+
+                                INCREMENT    74
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.7400000E-06
+
+        24  0.000000E+00  0.000000E+00 -2.925793E-04
+
+                                INCREMENT    75
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.7500000E-06
+
+        24  0.000000E+00  0.000000E+00 -3.292918E-04
+
+                                INCREMENT    76
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.7600000E-06
+
+        24  0.000000E+00  0.000000E+00 -3.602600E-04
+
+                                INCREMENT    77
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.7700000E-06
+
+        24  0.000000E+00  0.000000E+00 -3.727100E-04
+
+                                INCREMENT    78
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.7800000E-06
+
+        24  0.000000E+00  0.000000E+00 -3.657698E-04
+
+                                INCREMENT    79
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.7900000E-06
+
+        24  0.000000E+00  0.000000E+00 -3.494327E-04
+
+                                INCREMENT    80
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.8000000E-06
+
+        24  0.000000E+00  0.000000E+00 -3.372950E-04
+
+                                INCREMENT    81
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.8100000E-06
+
+        24  0.000000E+00  0.000000E+00 -3.388319E-04
+
+                                INCREMENT    82
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.8200000E-06
+
+        24  0.000000E+00  0.000000E+00 -3.559080E-04
+
+                                INCREMENT    83
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.8300000E-06
+
+        24  0.000000E+00  0.000000E+00 -3.842886E-04
+
+                                INCREMENT    84
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.8400000E-06
+
+        24  0.000000E+00  0.000000E+00 -4.173330E-04
+
+                                INCREMENT    85
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.8500000E-06
+
+        24  0.000000E+00  0.000000E+00 -4.484810E-04
+
+                                INCREMENT    86
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.8600000E-06
+
+        24  0.000000E+00  0.000000E+00 -4.715110E-04
+
+                                INCREMENT    87
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.8700000E-06
+
+        24  0.000000E+00  0.000000E+00 -4.803021E-04
+
+                                INCREMENT    88
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.8800000E-06
+
+        24  0.000000E+00  0.000000E+00 -4.703947E-04
+
+                                INCREMENT    89
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.8900000E-06
+
+        24  0.000000E+00  0.000000E+00 -4.423291E-04
+
+                                INCREMENT    90
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.9000000E-06
+
+        24  0.000000E+00  0.000000E+00 -4.046884E-04
+
+                                INCREMENT    91
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.9100000E-06
+
+        24  0.000000E+00  0.000000E+00 -3.730356E-04
+
+                                INCREMENT    92
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.9200000E-06
+
+        24  0.000000E+00  0.000000E+00 -3.629367E-04
+
+                                INCREMENT    93
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.9300000E-06
+
+        24  0.000000E+00  0.000000E+00 -3.809128E-04
+
+                                INCREMENT    94
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.9400000E-06
+
+        24  0.000000E+00  0.000000E+00 -4.192239E-04
+
+                                INCREMENT    95
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.9500000E-06
+
+        24  0.000000E+00  0.000000E+00 -4.589023E-04
+
+                                INCREMENT    96
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.9600000E-06
+
+        24  0.000000E+00  0.000000E+00 -4.804109E-04
+
+                                INCREMENT    97
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.9700000E-06
+
+        24  0.000000E+00  0.000000E+00 -4.753784E-04
+
+                                INCREMENT    98
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.9800000E-06
+
+        24  0.000000E+00  0.000000E+00 -4.515642E-04
+
+                                INCREMENT    99
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.9900000E-06
+
+        24  0.000000E+00  0.000000E+00 -4.274102E-04
+
+                                INCREMENT   100
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.1000000E-05
+
+        24  0.000000E+00  0.000000E+00 -4.195647E-04
+
+                                INCREMENT   101
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.1000000E-05
+
+        24  0.000000E+00  0.000000E+00 -4.195650E-04

@@ -188,7 +188,7 @@ c      dgmod=dg
 !        frontwater curve
 !
         tthup=dtan(thetaup)
-        hup=v(2,nup)/sqrts0
+        hup=v(2,nup)
         if(hup.le.0.d0)then
 !
 !         take the critical depth upstream
@@ -210,7 +210,7 @@ c      dgmod=dg
 !         first calculate the backwater curve starting in nup
 !
           if(hup.le.0.d0) then
-            v(2,nup)=hk*sqrts0
+            v(2,nup)=hk
             ndo=nup
             nelem=nelup
             mode='B'
@@ -220,7 +220,7 @@ c      dgmod=dg
             return
           endif
 !
-          v(2,ndo)=hdo*sqrts0
+          v(2,ndo)=hdo
 !     
 !         calculate the critical depth for output purposes
 !     
@@ -238,7 +238,7 @@ c      dgmod=dg
           call hcrit(xflow,rho,bdo,thetado,dg,sqrts0,hk)
           v(3,ndo)=hk
 !
-          v(2,ndo)=hk*sqrts0
+          v(2,ndo)=hk
 !
 !         store the actual element and downstream node as start of a
 !         frontwater curve          
@@ -256,7 +256,7 @@ c      dgmod=dg
 !
 !       backwater curve
 !
-        hdo=v(2,ndo)/sqrts0
+        hdo=v(2,ndo)
         tthdo=dtan(thetado)
         areado=(bdo+hdo*tthdo)*hdo
         e=(xflow/(areado*rho))**2/(2.d0*dgmod)+(hdo+d)*sqrts0
@@ -266,7 +266,7 @@ c      dgmod=dg
         call henergy(xflow,rho,bup,thetaup,dgmod,sqrts0,e,mode,hup)
 !
         if(hup.gt.0.d0) then
-          v(2,nup)=hup*sqrts0
+          v(2,nup)=hup
 !     
 !         calculate the critical depth for output purposes
 !     
@@ -284,7 +284,7 @@ c      dgmod=dg
           call hcrit(xflow,rho,bup,thetaup,dg,sqrts0,hk)
           v(3,nup)=hk
 !          
-          v(2,nup)=hk*sqrts0
+          v(2,nup)=hk
 !          
           nstack=nstack+1
           istack(1,nstack)=nelup

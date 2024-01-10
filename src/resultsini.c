@@ -228,7 +228,6 @@ void resultsini(ITG *nk,double *v,ITG *ithermal,char *filab,ITG *iperturb,
        displacements (incrementalmpc=0) */
 	
     for(i=0;i<*nmpc;i++){
-      if(strcmp1(&labmpc[20*i],"FLUID")==0) continue;
 
       if((strcmp1(&labmpc[20*i],"                    ")==0)||
 	 (strcmp1(&labmpc[20*i],"CYCLIC")==0)||

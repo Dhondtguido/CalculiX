@@ -138,21 +138,27 @@
       character*80 amat
 !     
       integer ithermal(*),icmd,kode,ielas,iel,iint,nstate_,mi(*),i,
-     &     iorien,nmethod,iperturb(*),istep,keltot(4,36),
+     &     iorien,nmethod,iperturb(*),istep,
      &     ndi,nshr,ntens,nprops,layer,kspt,jstep(4),kinc,kal(2,6),
-     &     kel(4,21),j1,j2,j3,j4,j5,j6,j7,j8,jj,n,ier,j,matz
+     &     kel(4,21),j1,j2,j3,j4,j5,j6,j7,j8,jj,n,ier,j,matz,
+     &     jm,jn,js,jt,mel(4,36)
 !     
       real*8 elconloc(*),stiff(21),emec(6),emec0(6),beta(6),stre(6),
      &     vj,t1l,dtime,xkl(3,3),xokl(3,3),voj,pgauss(3),orab(7,*),
-     &     time,ttime,skl(3,3),xa(3,3),ya(3,3,3,3),
-     &     xstateini(nstate_,mi(1),*),w(3),fv1(3),fv2(3),d(6),c(6),
-     &     v1,v2,v3,c0(6),r(3,3),r0(3,3),eln0(6),eln(6),e(3,3),tkl(3,3),
-     &     u(6),c2(6),dd,um1(3,3),z(3,3),u0(3,3),ctot(3,3),expansion,
-     &     c0tot(3,3),xm1(6),xm2(6),xm3(6),xstate(nstate_,mi(1),*)
-!     
-      real*8 ddsdde(6,6),sse,spd,scd,rpl,ddsddt(6),drplde(6),
+     &     time,ttime,skl(3,3),xa(3,3),ya(3,3,3,3),c0(3,3),
+     &     xstateini(nstate_,mi(1),*),w(3),fv1(3),fv2(3),d(6),c(3,3),
+     &     r(3,3),r0(3,3),eln0(6),eln(6),e(3,3),tkl(3,3),
+     &     um1(3,3),z(3,3),u0(3,3),ctot(3,3),expansion,
+     &     c0tot(3,3),xm1(6),xm2(6),xm3(6),xstate(nstate_,mi(1),*),
+     &     ddsdde(6,6),sse,spd,scd,rpl,ddsddt(6),drplde(6),
      &     drpldt,stran(6),dstran(6),abqtime(2),predef,temp,dtemp,
-     &     dpred,drot(3,3),celent,pnewdt
+     &     dpred,drot(3,3),celent,pnewdt,c4(21),ym1(3,3),ym2(3,3),
+     &     ym3(3,3),sccum1(3,3),cm1(3,3),um1sccum1(3,3),scc(3,3),
+     &     d4(21),dxm1dc(21),dxm2dc(21),dxm3dc(21),
+     &     dum1dc(21),delndc(21),dum1dcexp(3,3,3,3),delndcexp(3,3,3,3),
+     &     stiffexp(3,3,3,3),term1(36),term24(36),term3(36),
+     &     stiffasym(36),aa(21),bb(21),dwum1(3),dweln(3),ym14(21),
+     &     ym24(21),ym34(21),weln(3),wum1(3)
 !     
       kal=reshape((/1,1,2,2,3,3,1,2,1,3,2,3/),(/2,6/))
 !     
@@ -161,7 +167,19 @@
      &     3,3,1,3,1,2,1,3,1,3,1,3,1,1,2,3,2,2,2,3,3,3,2,3,
      &     1,2,2,3,1,3,2,3,2,3,2,3/),(/4,21/))
 !     
+      mel=reshape((/1,1,1,1,1,1,2,2,2,2,2,2,1,1,3,3,2,2,3,3,3,3,3,3,
+     &     1,1,1,2,2,2,1,2,3,3,1,2,1,2,1,2,1,1,1,3,2,2,1,3,
+     &     3,3,1,3,1,2,1,3,1,3,1,3,1,1,2,3,2,2,2,3,3,3,2,3,
+     &     1,2,2,3,1,3,2,3,2,3,2,3,2,2,1,1,3,3,1,1,3,3,2,2,
+     &     1,2,1,1,1,2,2,2,1,2,3,3,1,3,1,1,1,3,2,2,1,3,3,3,
+     &     1,3,1,2,2,3,1,1,2,3,2,2,2,3,3,3,2,3,1,2,2,3,1,3/),(/4,36/))
+!     
       d=(/1.d0,1.d0,1.d0,0.d0,0.d0,0.d0/)
+!     
+!     fourth order identity tensor     
+!     
+      d4=(/1.d0,0.d0,1.d0,0.d0,0.d0,1.d0,0.d0,0.d0,0.d0,0.5d0,0.d0,0.d0,
+     &0.d0,0.d0,0.5d0,0.d0,0.d0,0.d0,0.d0,0.d0,0.5d0/)
 !     
 !     filling field jstep
 !     
@@ -200,74 +218,78 @@
         call exit(201)
       endif
 !     
-!     calculating the principal stretches at the start of the increment
+!     calculating the - principal stretches square 
+!                       = eigenvalues of the right Cauchy-Green tensor
+!                     - eigenvalues of the logarithmic strain
+!                     - eigenvalues of the inverse right stretch tensor
+!     all of them at the start of the increment     
 !     
       do i=1,3
         if(w(i).lt.-0.5d0) then
           write(*,*) '*ERROR in umat_abaqusnl: negative eigenvalue'
-          write(*,*) '       of the Cauchy-Green tensor;'
+          write(*,*) '         of the Cauchy-Green tensor;'
           call exit(201)
         else
-          w(i)=dsqrt(2.d0*w(i)+1.d0)
+          w(i)=2.d0*w(i)+1.d0
+          weln(i)=dlog(w(i))/2.d0
+          wum1(i)=1.d0/dsqrt(w(i))
         endif
       enddo
 !     
-!     calculating the invariants at the start of the increment
-!     
-      v1=w(1)+w(2)+w(3)
-      v2=w(1)*w(2)+w(2)*w(3)+w(3)*w(1)
-      v3=w(1)*w(2)*w(3)
-!     
-!     calculating the right Cauchy-Green tensor at the start of the
+!     calculating the mechanical right Cauchy-Green tensor at the start of the
 !     increment
 !     
       do i=1,3
-        c0(i)=2.d0*emec0(i)+1.d0
-      enddo
-      do i=4,6
-        c0(i)=2.d0*emec0(i)
+        c0(i,i)=2.d0*e(i,i)+1.d0
       enddo
 !     
-!     calculating the square of the right Cauchy-Green tensor at the
-!     start of the increment
+!     calculating the structural tensors    
 !     
-      c2(1)=c0(1)*c0(1)+c0(4)*c0(4)+c0(5)*c0(5)
-      c2(2)=c0(4)*c0(4)+c0(2)*c0(2)+c0(6)*c0(6)
-      c2(3)=c0(5)*c0(5)+c0(6)*c0(6)+c0(3)*c0(3)
-      c2(4)=c0(1)*c0(4)+c0(4)*c0(2)+c0(5)*c0(6)
-      c2(5)=c0(1)*c0(5)+c0(4)*c0(6)+c0(5)*c0(3)
-      c2(6)=c0(4)*c0(5)+c0(2)*c0(6)+c0(6)*c0(3)
+      xm1(1)=z(1,1)*z(1,1)
+      xm1(2)=z(2,1)*z(2,1)
+      xm1(3)=z(3,1)*z(3,1)
+      xm1(4)=z(1,1)*z(2,1)
+      xm1(5)=z(1,1)*z(3,1)
+      xm1(6)=z(2,1)*z(3,1)
 !     
-!     calculating the right stretch tensor at the start of the increment
-!     (cf. Simo and Hughes, Computational Inelasticity)
+      xm2(1)=z(1,2)*z(1,2)
+      xm2(2)=z(2,2)*z(2,2)
+      xm2(3)=z(3,2)*z(3,2)
+      xm2(4)=z(1,2)*z(2,2)
+      xm2(5)=z(1,2)*z(3,2)
+      xm2(6)=z(2,2)*z(3,2)
 !     
-!     This is the mechanical right stretch tensor, i.e. without
-!     thermal expansion (since it is based on emec0)
+      xm3(1)=z(1,3)*z(1,3)
+      xm3(2)=z(2,3)*z(2,3)
+      xm3(3)=z(3,3)*z(3,3)
+      xm3(4)=z(1,3)*z(2,3)
+      xm3(5)=z(1,3)*z(3,3)
+      xm3(6)=z(2,3)*z(3,3)
 !     
-      dd=v1*v2-v3
-      do i=1,6
-        u(i)=(-c2(i)+(v1*v1-v2)*c0(i)+v1*v3*d(i))/dd
-      enddo
+!     corotational mechanical logarithmic strain in global coordinates at the
+!     start of the increment = ln(lambda) N diadic N;
 !     
-      u0(1,1)=u(1)
-      u0(2,2)=u(2)
-      u0(3,3)=u(3)
-      u0(1,2)=u(4)
-      u0(1,3)=u(5)
-      u0(2,3)=u(6)
-      u0(2,1)=u(4)
-      u0(3,1)=u(5)
-      u0(3,2)=u(6)
+!     the true logarithmic strain is ln(lambda) n diadic n;
+!     the rotation tensor R = n diadic N;
+!     therefore, ln(lambda) N diadic N is R^T true logarithmic strain R, 
+!     in other words the corotational true logarithmic strain (required
+!     by the abaqus routine)
 !     
-!     calculating the inverse of the right stretch tensor at the start
-!     of the increment
+      eln0(1)=xm1(1)*weln(1)+xm2(1)*weln(2)+xm3(1)*weln(3)          
+      eln0(2)=xm1(2)*weln(1)+xm2(2)*weln(2)+xm3(2)*weln(3)          
+      eln0(3)=xm1(3)*weln(1)+xm2(3)*weln(2)+xm3(3)*weln(3)          
+      eln0(4)=xm1(4)*weln(1)+xm2(4)*weln(2)+xm3(4)*weln(3)          
+      eln0(5)=xm1(5)*weln(1)+xm2(5)*weln(2)+xm3(5)*weln(3)          
+      eln0(6)=xm1(6)*weln(1)+xm2(6)*weln(2)+xm3(6)*weln(3)  
 !     
-      um1(1,1)=(c0(1)-v1*u(1)+v2)/v3
-      um1(2,2)=(c0(2)-v1*u(2)+v2)/v3
-      um1(3,3)=(c0(3)-v1*u(3)+v2)/v3
-      um1(1,2)=(c0(4)-v1*u(4))/v3
-      um1(1,3)=(c0(5)-v1*u(5))/v3
-      um1(2,3)=(c0(6)-v1*u(6))/v3
+!     calculating the mechanical inverse right stretch tensor U^{-1}
+!     
+      um1(1,1)=xm1(1)*wum1(1)+xm2(1)*wum1(2)+xm3(1)*wum1(3)          
+      um1(2,2)=xm1(2)*wum1(1)+xm2(2)*wum1(2)+xm3(2)*wum1(3)          
+      um1(3,3)=xm1(3)*wum1(1)+xm2(3)*wum1(2)+xm3(3)*wum1(3)          
+      um1(1,2)=xm1(4)*wum1(1)+xm2(4)*wum1(2)+xm3(4)*wum1(3)          
+      um1(1,3)=xm1(5)*wum1(1)+xm2(5)*wum1(2)+xm3(5)*wum1(3)          
+      um1(2,3)=xm1(6)*wum1(1)+xm2(6)*wum1(2)+xm3(6)*wum1(3)
       um1(2,1)=um1(1,2)
       um1(3,1)=um1(1,3)
       um1(3,2)=um1(2,3)
@@ -281,34 +303,6 @@
      &         xokl(i,3)*um1(3,j)
         enddo
       enddo
-!     
-!     calculating the logarithmic strain at the start of the increment
-!     
-      do i=1,3
-        w(i)=dlog(w(i))
-      enddo
-!     
-!     logarithmic strain in global coordinates at the start of the
-!     increment = ln(lambda) N diadic N;
-!     
-!     the true logarithmic strain is ln(lambda) n diadic n;
-!     the rotation tensor R = n diadic N;
-!     therefore, ln(lambda) N diadic N is R^T true logarithmic strain R, 
-!     in other words the corotational true logarithmic strain (required
-!     by the abaqus routine)
-!     
-      eln0(1)=z(1,1)*z(1,1)*w(1)+z(1,2)*z(1,2)*w(2)+
-     &     z(1,3)*z(1,3)*w(3)          
-      eln0(2)=z(2,1)*z(2,1)*w(1)+z(2,2)*z(2,2)*w(2)+
-     &     z(2,3)*z(2,3)*w(3)          
-      eln0(3)=z(3,1)*z(3,1)*w(1)+z(3,2)*z(3,2)*w(2)+
-     &     z(3,3)*z(3,3)*w(3)          
-      eln0(4)=z(1,1)*z(2,1)*w(1)+z(1,2)*z(2,2)*w(2)+
-     &     z(1,3)*z(2,3)*w(3)          
-      eln0(5)=z(1,1)*z(3,1)*w(1)+z(1,2)*z(3,2)*w(2)+
-     &     z(1,3)*z(3,3)*w(3)          
-      eln0(6)=z(2,1)*z(3,1)*w(1)+z(2,2)*z(3,2)*w(2)+
-     &     z(2,3)*z(3,3)*w(3)          
 !     
 !     calculating the logarithmic mechanical strain at the
 !     end of the increment
@@ -341,85 +335,26 @@
           write(*,*) '         of the Cauchy-Green tensor;'
           call exit(201)
         else
-          w(i)=dsqrt(2.d0*w(i)+1.d0)
+          w(i)=2.d0*w(i)+1.d0
+          weln(i)=dlog(w(i))/2.d0
+          wum1(i)=1.d0/dsqrt(w(i))
         endif
       enddo
 !     
-!     calculating the invariants at the end of the increment
-!     
-      v1=w(1)+w(2)+w(3)
-      v2=w(1)*w(2)+w(2)*w(3)+w(3)*w(1)
-      v3=w(1)*w(2)*w(3)
-!     
-!     calculating the right Cauchy-Green tensor at the end of the
+!     calculating the mechanical right Cauchy-Green tensor at the end of the
 !     increment
 !     
       do i=1,3
-        c(i)=2.d0*emec(i)+1.d0
+        c(i,i)=2.d0*e(i,i)+1.d0
       enddo
-      do i=4,6
-        c(i)=2.d0*emec(i)
-      enddo
+      c(1,2)=2.d0*e(1,2)
+      c(1,3)=2.d0*e(1,3)
+      c(2,3)=2.d0*e(2,3)
+      c(2,1)=c(1,2)
+      c(3,1)=c(1,3)
+      c(3,2)=c(2,3)
 !     
-!     calculating the square of the right Cauchy-Green tensor at the
-!     end of the increment
-!     
-      c2(1)=c(1)*c(1)+c(4)*c(4)+c(5)*c(5)
-      c2(2)=c(4)*c(4)+c(2)*c(2)+c(6)*c(6)
-      c2(3)=c(5)*c(5)+c(6)*c(6)+c(3)*c(3)
-      c2(4)=c(1)*c(4)+c(4)*c(2)+c(5)*c(6)
-      c2(5)=c(1)*c(5)+c(4)*c(6)+c(5)*c(3)
-      c2(6)=c(4)*c(5)+c(2)*c(6)+c(6)*c(3)
-!     
-!     calculating the right stretch tensor at the end of the increment
-!     (cf. Simo and Hughes, Computational Inelasticity)
-!     
-!     This is the mechanical right stretch tensor, i.e. without
-!     thermal expansion (since it is based on emec)
-!     
-      dd=v1*v2-v3
-      do i=1,6
-        u(i)=(-c2(i)+(v1*v1-v2)*c(i)+v1*v3*d(i))/dd
-      enddo
-!     
-!     calculating the inverse of the right stretch tensor at the end
-!     of the increment
-!     
-      um1(1,1)=(c(1)-v1*u(1)+v2)/v3
-      um1(2,2)=(c(2)-v1*u(2)+v2)/v3
-      um1(3,3)=(c(3)-v1*u(3)+v2)/v3
-      um1(1,2)=(c(4)-v1*u(4))/v3
-      um1(1,3)=(c(5)-v1*u(5))/v3
-      um1(2,3)=(c(6)-v1*u(6))/v3
-      um1(2,1)=um1(1,2)
-      um1(3,1)=um1(1,3)
-      um1(3,2)=um1(2,3)
-!     
-!     calculation of the local rotation tensor at the end of the
-!     increment
-!     
-      do i=1,3
-        do j=1,3
-          r(i,j)=xkl(i,1)*um1(1,j)+xkl(i,2)*um1(2,j)+
-     &         xkl(i,3)*um1(3,j)
-        enddo
-      enddo
-!     
-!     calculating the logarithmic strain at the end of the increment
-!     Elog=Z.ln(w).Z^T
-!     
-      do i=1,3
-        w(i)=dlog(w(i))
-      enddo
-!     
-!     logarithmic strain in global coordinates at the end of the
-!     increment = ln(lambda) N diadic N;
-!     
-!     the true logarithmic strain is ln(lambda) n diadic n;
-!     the rotation tensor R = n diadic N;
-!     therefore, ln(lambda) N diadic N is R^T true logarithmic strain R, 
-!     in other words the corotational true logarithmic strain (required
-!     by the abaqus routine)
+!     calculating the structural tensors    
 !     
       xm1(1)=z(1,1)*z(1,1)
       xm1(2)=z(2,1)*z(2,1)
@@ -442,17 +377,43 @@
       xm3(5)=z(1,3)*z(3,3)
       xm3(6)=z(2,3)*z(3,3)
 !     
-      eln(1)=xm1(1)*w(1)+xm2(1)*w(2)+xm3(1)*w(3)          
-      eln(2)=xm1(2)*w(1)+xm2(2)*w(2)+xm3(2)*w(3)          
-      eln(3)=xm1(3)*w(1)+xm2(3)*w(2)+xm3(3)*w(3)          
-      eln(4)=xm1(4)*w(1)+xm2(4)*w(2)+xm3(4)*w(3)          
-      eln(5)=xm1(5)*w(1)+xm2(5)*w(2)+xm3(5)*w(3)          
-      eln(6)=xm1(6)*w(1)+xm2(6)*w(2)+xm3(6)*w(3)  
-c     write(*,*) 'iel', iel
-c     write(*,*) 'emec',(emec(i),i=1,6)
-c     write(*,*) 'eln',(eln(i),i=1,6)
-c     write(*,*) 'r0',((r0(i,j),j=1,3),i=1,3)
-c     write(*,*) 'r',((r(i,j),j=1,3),i=1,3)
+!     corotational mechanical logarithmic strain in global coordinates at the
+!     end of the increment = ln(lambda) N diadic N;
+!     
+!     the true logarithmic strain is ln(lambda) n diadic n;
+!     the rotation tensor R = n diadic N;
+!     therefore, ln(lambda) N diadic N is R^T true logarithmic strain R, 
+!     in other words the corotational true logarithmic strain (required
+!     by the abaqus routine)
+!     
+      eln(1)=xm1(1)*weln(1)+xm2(1)*weln(2)+xm3(1)*weln(3)          
+      eln(2)=xm1(2)*weln(1)+xm2(2)*weln(2)+xm3(2)*weln(3)          
+      eln(3)=xm1(3)*weln(1)+xm2(3)*weln(2)+xm3(3)*weln(3)          
+      eln(4)=xm1(4)*weln(1)+xm2(4)*weln(2)+xm3(4)*weln(3)          
+      eln(5)=xm1(5)*weln(1)+xm2(5)*weln(2)+xm3(5)*weln(3)          
+      eln(6)=xm1(6)*weln(1)+xm2(6)*weln(2)+xm3(6)*weln(3)  
+!     
+!     calculating the mechanical inverse right stretch tensor U^{-1}
+!     
+      um1(1,1)=xm1(1)*wum1(1)+xm2(1)*wum1(2)+xm3(1)*wum1(3)          
+      um1(2,2)=xm1(2)*wum1(1)+xm2(2)*wum1(2)+xm3(2)*wum1(3)          
+      um1(3,3)=xm1(3)*wum1(1)+xm2(3)*wum1(2)+xm3(3)*wum1(3)          
+      um1(1,2)=xm1(4)*wum1(1)+xm2(4)*wum1(2)+xm3(4)*wum1(3)          
+      um1(1,3)=xm1(5)*wum1(1)+xm2(5)*wum1(2)+xm3(5)*wum1(3)          
+      um1(2,3)=xm1(6)*wum1(1)+xm2(6)*wum1(2)+xm3(6)*wum1(3)
+      um1(2,1)=um1(1,2)
+      um1(3,1)=um1(1,3)
+      um1(3,2)=um1(2,3)
+!     
+!     calculation of the local rotation tensor at the end of the
+!     increment
+!     
+      do i=1,3
+        do j=1,3
+          r(i,j)=xkl(i,1)*um1(1,j)+xkl(i,2)*um1(2,j)+
+     &         xkl(i,3)*um1(3,j)
+        enddo
+      enddo
 !     
 !     calculating the incremental rotation tensor
 !     drot=r.r0^T
@@ -566,8 +527,8 @@ c     write(*,*) 'r',((r(i,j),j=1,3),i=1,3)
 !     C0tot=C0*(1+alpha*Delta T)**2
 !     expansion:=1+alpha*Delta T
 !     
-      expansion=dsqrt((c0tot(1,1)/c0(1)+c0tot(2,2)/c0(2)+
-     &     c0tot(3,3)/c0(3))/3.d0)
+      expansion=dsqrt((c0tot(1,1)/c0(1,1)+c0tot(2,2)/c0(2,2)+
+     &     c0tot(3,3)/c0(3,3))/3.d0)
 !     
 !     calculate the total right stretch tensor at the start
 !     of the increment (= mechanical right stretch tensor
@@ -633,14 +594,14 @@ c     write(*,*) 'r',((r(i,j),j=1,3),i=1,3)
      &       ntens,nstate_,elconloc,nprops,pgauss,drot,pnewdt,
      &       celent,xokl,xkl,iel,iint,layer,kspt,jstep,kinc)
 !     
-      elseif(amat(1:11).eq.'JOHNSONCOOK') then
-!     
-        call umat_johnson_cook(stre,xstate(1,iint,iel),ddsdde,sse,
-     &       spd,scd,rpl,ddsddt,
-     &       drplde,drpldt,stran,dstran,abqtime,dtime,temp,dtemp,
-     &       predef,dpred,amat,ndi,nshr,ntens,nstate_,elconloc,nprops,
-     &       pgauss,drot,pnewdt,celent,xokl,xkl,iel,iint,layer,kspt,
-     &       jstep,kinc)
+c      elseif(amat(1:11).eq.'JOHNSONCOOK') then
+c!     
+c        call umat_johnson_cook(stre,xstate(1,iint,iel),ddsdde,sse,
+c     &       spd,scd,rpl,ddsddt,
+c     &       drplde,drpldt,stran,dstran,abqtime,dtime,temp,dtemp,
+c     &       predef,dpred,amat,ndi,nshr,ntens,nstate_,elconloc,nprops,
+c     &       pgauss,drot,pnewdt,celent,xokl,xkl,iel,iint,layer,kspt,
+c     &       jstep,kinc)
 !     
       else
 !     
@@ -677,18 +638,8 @@ c     write(*,*) 'r',((r(i,j),j=1,3),i=1,3)
 !     Ctot=C*(1+alpha*Delta T)**2
 !     expansion:=1+alpha*Delta T
 !     
-      expansion=dsqrt((ctot(1,1)/c(1)+ctot(2,2)/c(2)+
-     &     ctot(3,3)/c(3))/3.d0)
-!     
-c!     calculate the inverse total right stretch tensor at the end
-c!     of the increment (= inverse mechanical right stretch tensor
-c!     divided by the expansion at the end of the increment)
-c!     
-c      do i=1,3
-c        do j=1,3
-c          um1(i,j)=um1(i,j)/expansion
-c        enddo
-c      enddo
+      expansion=dsqrt((ctot(1,1)/c(1,1)+ctot(2,2)/c(2,2)+
+     &     ctot(3,3)/c(3,3))/3.d0)
 !     
       if(iorien.ne.0) then
         do i=1,3
@@ -705,15 +656,17 @@ c      enddo
         enddo
       endif
 !     
-      xa(1,1)=stre(1)
-      xa(1,2)=stre(4)
-      xa(1,3)=stre(5)
-      xa(2,1)=stre(4)
-      xa(2,2)=stre(2)
-      xa(2,3)=stre(6)
-      xa(3,1)=stre(5)
-      xa(3,2)=stre(6)
-      xa(3,3)=stre(3)
+!     scc is the corotational Cauchy stress as matrix    
+!     
+      scc(1,1)=stre(1)
+      scc(1,2)=stre(4)
+      scc(1,3)=stre(5)
+      scc(2,1)=stre(4)
+      scc(2,2)=stre(2)
+      scc(2,3)=stre(6)
+      scc(3,1)=stre(5)
+      scc(3,2)=stre(6)
+      scc(3,3)=stre(3)
 !     
       do jj=1,6
         stre(jj)=0.d0
@@ -722,7 +675,7 @@ c      enddo
         do j3=1,3
           do j4=1,3
             stre(jj)=stre(jj)+
-     &           xa(j3,j4)*tkl(j1,j3)*tkl(j2,j4)
+     &           scc(j3,j4)*tkl(j1,j3)*tkl(j2,j4)
           enddo
         enddo
         stre(jj)=stre(jj)*vj/expansion**2
@@ -753,28 +706,390 @@ c      enddo
         stiff(20)=(ddsdde(5,6)+ddsdde(6,5))/2.d0
         stiff(21)=ddsdde(6,6)
 !     
+        if(iorien.ne.0) then
+!     
 !     rotating the stiffness coefficients into the global system
 !     
-        call anisotropic(stiff,ya)
+          call anisotropic(stiff,ya)
 !     
-        do jj=1,21
-          j1=kel(1,jj)
-          j2=kel(2,jj)
-          j3=kel(3,jj)
-          j4=kel(4,jj)
-          stiff(jj)=0.d0
-          do j5=1,3
-            do j6=1,3
-              do j7=1,3
-                do j8=1,3
-                  stiff(jj)=stiff(jj)+ya(j5,j6,j7,j8)*
-     &                 tkl(j1,j5)*tkl(j2,j6)*tkl(j3,j7)*tkl(j4,j8)
+          do jj=1,21
+            j1=kel(1,jj)
+            j2=kel(2,jj)
+            j3=kel(3,jj)
+            j4=kel(4,jj)
+            stiff(jj)=0.d0
+            do j5=1,3
+              do j6=1,3
+                do j7=1,3
+                  do j8=1,3
+                    stiff(jj)=stiff(jj)+ya(j5,j6,j7,j8)*
+     &                   skl(j1,j5)*skl(j2,j6)*skl(j3,j7)*skl(j4,j8)
+                  enddo
                 enddo
               enddo
             enddo
           enddo
-          stiff(jj)=stiff(jj)*vj/expansion**2
+        endif
+c!     
+c!     rotating the stiffness coefficients into the global system
+c!     
+c        call anisotropic(stiff,ya)
+c!     
+c        do jj=1,21
+c          j1=kel(1,jj)
+c          j2=kel(2,jj)
+c          j3=kel(3,jj)
+c          j4=kel(4,jj)
+c          stiff(jj)=0.d0
+c          do j5=1,3
+c            do j6=1,3
+c              do j7=1,3
+c                do j8=1,3
+c                  stiff(jj)=stiff(jj)+ya(j5,j6,j7,j8)*
+c     &                 tkl(j1,j5)*tkl(j2,j6)*tkl(j3,j7)*tkl(j4,j8)
+c                enddo
+c              enddo
+c            enddo
+c          enddo
+c          stiff(jj)=stiff(jj)*vj/expansion**2
+c        enddo
+!     
+!       sccum1=scc*um1
+!        
+        do i=1,3
+          do j=1,3
+            sccum1(i,j)=scc(i,1)*um1(1,j)+scc(i,2)*um1(2,j)+
+     &           scc(i,3)*um1(3,j)
+          enddo
         enddo
+!     
+!       cm1=um1*um1 (symmetric): inverse mechanical right Cauchy-Green
+!       tensor
+!
+        do i=1,3
+          do j=i,3
+            cm1(i,j)=um1(i,1)*um1(1,j)+um1(i,2)*um1(2,j)+
+     &           um1(i,3)*um1(3,j)
+          enddo
+        enddo
+        cm1(2,1)=cm1(1,2)
+        cm1(3,1)=cm1(1,3)
+        cm1(3,2)=cm1(2,3)
+!     
+!       um1sccum1=um1*sccum1 (symmetric)
+!
+        do i=1,3
+          do j=i,3
+            um1sccum1(i,j)=um1(i,1)*sccum1(1,j)+um1(i,2)*sccum1(2,j)+
+     &           um1(i,3)*sccum1(3,j)
+          enddo
+        enddo
+        um1sccum1(2,1)=um1sccum1(1,2)
+        um1sccum1(3,1)=um1sccum1(1,3)
+        um1sccum1(3,2)=um1sccum1(2,3)
+!     
+!       ym1, ym2 and ym3 are the structural tensors as matrices
+!     
+        ym1(1,1)=xm1(1)
+        ym1(1,2)=xm1(4)
+        ym1(1,3)=xm1(5)
+        ym1(2,1)=xm1(4)
+        ym1(2,2)=xm1(2)
+        ym1(2,3)=xm1(6)
+        ym1(3,1)=xm1(5)
+        ym1(3,2)=xm1(6)
+        ym1(3,3)=xm1(3)
+!     
+        ym2(1,1)=xm2(1)
+        ym2(1,2)=xm2(4)
+        ym2(1,3)=xm2(5)
+        ym2(2,1)=xm2(4)
+        ym2(2,2)=xm2(2)
+        ym2(2,3)=xm2(6)
+        ym2(3,1)=xm2(5)
+        ym2(3,2)=xm2(6)
+        ym2(3,3)=xm2(3)
+!     
+        ym3(1,1)=xm3(1)
+        ym3(1,2)=xm3(4)
+        ym3(1,3)=xm3(5)
+        ym3(2,1)=xm3(4)
+        ym3(2,2)=xm3(2)
+        ym3(2,3)=xm3(6)
+        ym3(3,1)=xm3(5)
+        ym3(3,2)=xm3(6)
+        ym3(3,3)=xm3(3)
+!
+!       calculating the derivative of the eigenvalue functions
+!
+        do i=1,3
+          dweln(i)=1.d0/(2.d0*w(i))
+          dwum1(i)=-wum1(i)/(2.d0*w(i))
+        enddo
+!
+!       calculating A, B, dM_i/dC, dU^{-1}/dC and dln(e)/dC
+!       (all of them symmetric, i.e. 21 constants)
+!
+c          write(*,*) 'eigenvalues ',w(1),w(2),w(3)
+        if((dabs(w(1)-w(2)).lt.1.d-10).and.
+     &       (dabs(w(2)-w(3)).lt.1.d-10)) then
+!     
+!     three equal eigenvalues
+!     
+          do jj=1,21
+            dum1dc(jj)=d4(jj)*dwum1(1)
+            delndc(jj)=d4(jj)*dweln(1)
+c            write(*,*) jj,dum1dc(jj),delndc(jj)
+          enddo
+        elseif(dabs(w(1)-w(2)).lt.1.d-10) then
+          write(*,*) 'entering the new branch'
+!
+!         first and second eigenvalue are equal    
+!         (M3 o I + I o M3)'    
+!         note: o is the dyadic product     
+!     
+          c4(1)=2.d0*ym3(1,1)
+          c4(2)=0.d0
+          c4(3)=2.d0*ym3(2,2)
+          c4(4)=0.d0
+          c4(5)=0.d0
+          c4(6)=2.d0*ym3(3,3)
+          c4(7)=ym3(2,1)
+          c4(8)=ym3(1,2)
+          c4(9)=0.d0
+          c4(10)=(ym3(2,2)+ym3(1,1))/2.d0
+          c4(11)=ym3(3,1)
+          c4(12)=0.d0
+          c4(13)=ym3(1,3)
+          c4(14)=ym3(3,2)/2.d0
+          c4(15)=(ym3(3,3)+ym3(1,1))/2.d0
+          c4(16)=0.d0
+          c4(17)=ym3(3,2)
+          c4(18)=ym3(2,3)
+          c4(19)=ym3(3,1)/2.d0
+          c4(20)=ym3(2,1)/2.d0
+          c4(21)=(ym3(3,3)+ym3(2,2))/2.d0
+!
+          do jj=1,21
+            j1=kel(1,jj)
+            j2=kel(2,jj)
+            j3=kel(3,jj)
+            j4=kel(4,jj)
+            ym34(jj)=ym3(j1,j2)*ym3(j3,j4)
+            dum1dc(jj)=dwum1(3)*ym34(jj)+
+     &           (wum1(3)-wum1(1))/(w(3)-w(1))*(c4(jj)-2.d0*ym34(jj))+
+     &           dwum1(1)*(d4(jj)+ym34(jj)-c4(jj))
+            delndc(jj)=dweln(3)*ym34(jj)+
+     &           (weln(3)-weln(1))/(w(3)-w(1))*(c4(jj)-2.d0*ym34(jj))+
+     &           dweln(1)*(d4(jj)+ym34(jj)-c4(jj))
+          enddo
+         elseif(dabs(w(2)-w(3)).lt.1.d-10) then
+c          write(*,*) 'entering the new branch'
+!
+!         second and third eigenvalue are equal    
+!         (M1 o I + I o M1)'    
+!         note: o is the dyadic product     
+!     
+          c4(1)=2.d0*ym1(1,1)
+          c4(2)=0.d0
+          c4(3)=2.d0*ym1(2,2)
+          c4(4)=0.d0
+          c4(5)=0.d0
+          c4(6)=2.d0*ym1(3,3)
+          c4(7)=ym1(2,1)
+          c4(8)=ym1(1,2)
+          c4(9)=0.d0
+          c4(10)=(ym1(2,2)+ym1(1,1))/2.d0
+          c4(11)=ym1(3,1)
+          c4(12)=0.d0
+          c4(13)=ym1(1,3)
+          c4(14)=ym1(3,2)/2.d0
+          c4(15)=(ym1(3,3)+ym1(1,1))/2.d0
+          c4(16)=0.d0
+          c4(17)=ym1(3,2)
+          c4(18)=ym1(2,3)
+          c4(19)=ym1(3,1)/2.d0
+          c4(20)=ym1(2,1)/2.d0
+          c4(21)=(ym1(3,3)+ym1(2,2))/2.d0
+!
+          do jj=1,21
+            j1=kel(1,jj)
+            j2=kel(2,jj)
+            j3=kel(3,jj)
+            j4=kel(4,jj)
+            ym14(jj)=ym1(j1,j2)*ym1(j3,j4)
+            dum1dc(jj)=dwum1(1)*ym14(jj)+
+     &           (wum1(1)-wum1(2))/(w(1)-w(2))*(c4(jj)-2.d0*ym14(jj))+
+     &           dwum1(2)*(d4(jj)+ym14(jj)-c4(jj))
+            delndc(jj)=dweln(1)*ym14(jj)+
+     &           (weln(1)-weln(2))/(w(1)-w(2))*(c4(jj)-2.d0*ym14(jj))+
+     &           dweln(2)*(d4(jj)+ym14(jj)-c4(jj))
+          enddo
+        elseif(dabs(w(3)-w(1)).lt.1.d-10) then
+c          write(*,*) 'entering the new branch'
+!
+!         third and first eigenvalue are equal    
+!         (M2 o I + I o M2)'    
+!         note: o is the dyadic product     
+!     
+          c4(1)=2.d0*ym2(1,1)
+          c4(2)=0.d0
+          c4(3)=2.d0*ym2(2,2)
+          c4(4)=0.d0
+          c4(5)=0.d0
+          c4(6)=2.d0*ym2(3,3)
+          c4(7)=ym2(2,1)
+          c4(8)=ym2(1,2)
+          c4(9)=0.d0
+          c4(10)=(ym2(2,2)+ym2(1,1))/2.d0
+          c4(11)=ym2(3,1)
+          c4(12)=0.d0
+          c4(13)=ym2(1,3)
+          c4(14)=ym2(3,2)/2.d0
+          c4(15)=(ym2(3,3)+ym2(1,1))/2.d0
+          c4(16)=0.d0
+          c4(17)=ym2(3,2)
+          c4(18)=ym2(2,3)
+          c4(19)=ym2(3,1)/2.d0
+          c4(20)=ym2(2,1)/2.d0
+          c4(21)=(ym2(3,3)+ym2(2,2))/2.d0
+!
+          do jj=1,21
+            j1=kel(1,jj)
+            j2=kel(2,jj)
+            j3=kel(3,jj)
+            j4=kel(4,jj)
+            ym24(jj)=ym2(j1,j2)*ym2(j3,j4)
+            dum1dc(jj)=dwum1(2)*ym24(jj)+
+     &           (wum1(2)-wum1(3))/(w(2)-w(3))*(c4(jj)-2.d0*ym24(jj))+
+     &           dwum1(3)*(d4(jj)+ym24(jj)-c4(jj))
+            delndc(jj)=dweln(2)*ym24(jj)+
+     &           (weln(2)-weln(3))/(w(2)-w(3))*(c4(jj)-2.d0*ym24(jj))+
+     &           dweln(3)*(d4(jj)+ym24(jj)-c4(jj))
+          enddo
+       else
+!
+!         derivative of c*c w.r.t. c (symmetric 4th order tensor)     
+!     
+          c4(1)=2.d0*c(1,1)
+          c4(2)=0.d0
+          c4(3)=2.d0*c(2,2)
+          c4(4)=0.d0
+          c4(5)=0.d0
+          c4(6)=2.d0*c(3,3)
+          c4(7)=c(2,1)
+          c4(8)=c(1,2)
+          c4(9)=0.d0
+          c4(10)=(c(2,2)+c(1,1))/2.d0
+          c4(11)=c(3,1)
+          c4(12)=0.d0
+          c4(13)=c(1,3)
+          c4(14)=c(3,2)/2.d0
+          c4(15)=(c(3,3)+c(1,1))/2.d0
+          c4(16)=0.d0
+          c4(17)=c(3,2)
+          c4(18)=c(2,3)
+          c4(19)=c(3,1)/2.d0
+          c4(20)=c(2,1)/2.d0
+          c4(21)=(c(3,3)+c(2,2))/2.d0
+!
+          do jj=1,21
+            j1=kel(1,jj)
+            j2=kel(2,jj)
+            j3=kel(3,jj)
+            j4=kel(4,jj)
+            ym14(jj)=ym1(j1,j2)*ym1(j3,j4)
+            ym24(jj)=ym2(j1,j2)*ym2(j3,j4)
+            ym34(jj)=ym3(j1,j2)*ym3(j3,j4)
+            aa(jj)=d4(jj)-ym14(jj)-ym24(jj)-ym34(jj)
+            bb(jj)=c4(jj)-2.d0*(w(1)*ym14(jj)
+     &           +w(2)*ym24(jj)
+     &           +w(3)*ym34(jj))
+            dxm1dc(jj)=(bb(jj)-(w(2)+w(3))*aa(jj))/
+     &           ((w(1)-w(2))*(w(1)-w(3)))
+            dxm2dc(jj)=(bb(jj)-(w(1)+w(3))*aa(jj))/
+     &           ((w(2)-w(1))*(w(2)-w(3)))
+            dxm3dc(jj)=(bb(jj)-(w(1)+w(2))*aa(jj))/
+     &           ((w(3)-w(1))*(w(3)-w(2)))
+            dum1dc(jj)=ym14(jj)*dwum1(1)+wum1(1)*dxm1dc(jj)
+     &           +ym24(jj)*dwum1(2)+wum1(2)*dxm2dc(jj)
+     &           +ym34(jj)*dwum1(3)+wum1(3)*dxm3dc(jj)
+            delndc(jj)=ym14(jj)*dweln(1)+weln(1)*dxm1dc(jj)
+     &           +ym24(jj)*dweln(2)+weln(2)*dxm2dc(jj)
+     &           +ym34(jj)*dweln(3)+weln(3)*dxm3dc(jj)
+          enddo
+        endif
+!     
+!        expanding dum1dc(21), delndc(21) and stiff(21) into     
+!        dum1dcexp(3,3,3,3), delndcexp(3,3,3,3) and stiffexp(3,3,3,3) 
+!     
+         call anisotropic(dum1dc,dum1dcexp)
+         call anisotropic(delndc,delndcexp)
+         call anisotropic(stiff,stiffexp)
+!     
+!        collecting all terms in the final expression (possibly     
+!        asymmetric, i.e. 36 terms)
+!
+         do jj=1,36
+           j1=mel(1,jj)
+           j2=mel(2,jj)
+           j3=mel(3,jj)
+           j4=mel(4,jj)
+           term1(jj)=um1sccum1(j1,j2)*cm1(j3,j4)
+           term24(jj)=dum1dcexp(j1,1,j3,j4)*sccum1(1,j2)+
+     &                dum1dcexp(j1,2,j3,j4)*sccum1(2,j2)+
+     &                dum1dcexp(j1,3,j3,j4)*sccum1(3,j2)+
+     &                dum1dcexp(j2,1,j3,j4)*sccum1(1,j1)+
+     &                dum1dcexp(j2,2,j3,j4)*sccum1(2,j1)+
+     &                dum1dcexp(j2,3,j3,j4)*sccum1(3,j1)
+           term3(jj)=0.d0
+           do jm=1,3
+             do jn=1,3
+               do js=1,3
+                 do jt=1,3
+                   term3(jj)=term3(jj)+um1(j1,jm)*stiffexp(jm,jn,js,jt)*
+     &                       delndcexp(js,jt,j3,j4)*um1(jn,j2)
+                 enddo
+               enddo
+             enddo
+           enddo
+           stiffasym(jj)=vj*(term1(jj)+2.d0*(term24(jj)+term3(jj)))/
+     &          expansion**2
+         enddo
+!
+!        symmetrizing stiffasym -> stiff
+!
+         stiff(1)=stiffasym(1)
+         stiff(2)=(stiffasym(2)+stiffasym(22))/2.d0
+         stiff(3)=stiffasym(3)
+         stiff(4)=(stiffasym(4)+stiffasym(23))/2.d0
+         stiff(5)=(stiffasym(5)+stiffasym(24))/2.d0
+         stiff(6)=stiffasym(6)
+         stiff(7)=(stiffasym(7)+stiffasym(25))/2.d0
+         stiff(8)=(stiffasym(8)+stiffasym(26))/2.d0
+         stiff(9)=(stiffasym(9)+stiffasym(27))/2.d0
+         stiff(10)=stiffasym(10)
+         stiff(11)=(stiffasym(11)+stiffasym(28))/2.d0
+         stiff(12)=(stiffasym(12)+stiffasym(29))/2.d0
+         stiff(13)=(stiffasym(13)+stiffasym(30))/2.d0
+         stiff(14)=(stiffasym(14)+stiffasym(31))/2.d0
+         stiff(15)=stiffasym(15)
+         stiff(16)=(stiffasym(16)+stiffasym(32))/2.d0
+         stiff(17)=(stiffasym(17)+stiffasym(33))/2.d0
+         stiff(18)=(stiffasym(18)+stiffasym(34))/2.d0
+         stiff(19)=(stiffasym(19)+stiffasym(35))/2.d0
+         stiff(20)=(stiffasym(20)+stiffasym(36))/2.d0
+         stiff(21)=stiffasym(21)
+c
+c         write(*,*) 'umat_abaqusnl_total'
+c         do i=1,21
+c         write(*,*) i,stiff(i),stiffasym(i)
+c           write(*,'(i5,5(1x,e11.4))') i,stiff(i),
+c     &          dabs(stiff(i)-stiffasym(i))/dabs(stiff(i)),
+c     &          vj*term1(i)/expansion**2,
+c     &          vj*2.d0*term24(i)/expansion**2,
+c     &          vj*2.d0*term3(i)/expansion**2
+c         enddo
       endif
 !     
       return

@@ -127,14 +127,15 @@ c            enddo
             do j=istartset(iright),iendset(iright)
 !     
                nelem=int(ialset(j)/10.d0)
+               indexe=ipkon(nelem)
+               if(indexe.lt.0) cycle
+!     
                jface=ialset(j)-10*nelem
 !
 !     for dynamic massless contact: store contact face number
 !     in element label
 !
 c               if(mortar.eq.-1) write(lakon(nelem)(7:7),'(i1)') jface
-!     
-               indexe=ipkon(nelem)
 !     
                if(lakon(nelem)(4:5).eq.'20') then
                   nnodelem=8

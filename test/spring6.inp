@@ -1,0 +1,22 @@
+**
+**   Structure: spring.
+**   Test objective: SPRING1-element.
+**
+*NODE,NSET=NALL
+1,0.,0.,0.
+2,1.,0.,0.
+*ELEMENT,TYPE=SPRING1,ELSET=EALL
+1,2
+*BOUNDARY
+1,1,3
+2,2,3
+*SPRING,ELSET=EALL
+1
+10.
+*STEP,NLGEOM
+*STATIC
+*CLOAD
+2,1,1.
+*NODE PRINT,NSET=NALL
+U
+*END STEP

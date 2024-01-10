@@ -1,0 +1,24 @@
+**
+**   Structure: cantilever beam.
+**   Test objective: restart capability (reading part).
+**   Before running this example, please run example beamwrite
+**   and copy beamwrite.rout to beamread.rin
+**
+*RESTART,READ
+*STEP,NLGEOM
+*STATIC
+1.,1.
+*DLOAD,AMPLITUDE=A1
+29, P2, -200.000000 
+30, P2, -200.000000 
+31, P2, -200.000000 
+32, P2, -200.000000
+*NODE FILE
+*EL FILE 
+*END STEP
+
+
+
+
+
+

@@ -1,0 +1,30 @@
+
+                        S T E P       1
+
+
+                                INCREMENT     1
+
+
+ displacements (vx,vy,vz) for set N1 and time  0.1000000E+01
+
+       100  9.058159E-04  9.058159E-04  3.774682E-05
+
+
+
+ statistics for surface set S1 and time  0.1000000E+01
+
+   total surface force (fx,fy,fz) and moment about the origin(mx,my,mz)
+
+    2.211061E-13  6.054809E-13  9.999600E-01 -4.354637E-06  4.354644E-06  4.502544E-13
+
+   center of gravity and mean normal
+
+    5.000000E-01  5.000000E-01  8.000000E+00  8.881784E-16  8.881784E-16  1.000000E+00
+
+   moment about the center of gravity(mx,my,mz)
+
+   -4.999844E-01  4.999844E-01  2.580670E-13
+
+   area, normal force (+ = tension), shear force (size), torque and bending moment (size)
+
+    1.000000E+00  9.999600E-01  6.434504E-13  2.580670E-13  7.070847E-01

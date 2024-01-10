@@ -187,7 +187,7 @@ void radflowload(ITG *itg,ITG *ieg,ITG *ntg,ITG *ntr,double *adrad,
 				  nelemload,ixnode,iyload,nload,sideload,
 				  xloadact,cocon,ncocon,iinc,nforc,ikforc,
 				  ilforc,xforcact));
-	  SFREE(itreated);SFREE(istack);SFREE(hfr);SFREE(hba);SFREE(istackb);
+	  SFREE(itreated);SFREE(istack);SFREE(istackb);
 	  SFREE(ixnode);SFREE(iyload);
 	  break;
 	}
@@ -397,9 +397,9 @@ void radflowload(ITG *itg,ITG *ieg,ITG *ntg,ITG *ntr,double *adrad,
 			  camt,camf,camp,rhcon,nrhcon,
 			  vold,jobnamef,set,istartset,iendset,ialset,nset,
 			  mi,iaxial,istep,iit,ipobody,ibody,xbodyact,nbody,
-			  &ndata,sfr,sba,jumpup,jumpdo));
+			  &ndata,sfr,sba,jumpup,jumpdo,hfr,hba));
       if(ichannel==1){
-	SFREE(sfr);SFREE(sba);SFREE(jumpup);SFREE(jumpdo);
+	SFREE(sfr);SFREE(sba);SFREE(jumpup);SFREE(jumpdo);SFREE(hfr);SFREE(hba);
       }
       
     }

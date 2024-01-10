@@ -75,14 +75,10 @@
                   dispvector(2)=0.d0
                   dispvector(3)=0.d0
                endif
+               dgdxglob(1,node,iobject)=actmove
                scalprod=dispvector(1)*xdesi(1,nodedesipos(node))+
      &                  dispvector(2)*xdesi(2,nodedesipos(node))+
      &                  dispvector(3)*xdesi(3,nodedesipos(node))
-               if(scalprod.le.0.d0) then
-                  dgdxglob(1,node,iobject)=-actmove
-               else
-                  dgdxglob(1,node,iobject)=actmove
-               endif
                if((objectset(1,iobject)(1:9).eq.'MAXGROWTH').and.
      &            (scalprod.ge.0d0)) then
                   dgdxglob(2,node,iobject)=actmove-bound
@@ -124,14 +120,10 @@
                    dispvector(2)=0.d0
                    dispvector(3)=0.d0
                 endif
+                dgdxglob(1,node,iobject)=actmove
                 scalprod=dispvector(1)*xdesi(1,nodedesipos(node))+
      &                   dispvector(2)*xdesi(2,nodedesipos(node))+
      &                   dispvector(3)*xdesi(3,nodedesipos(node))
-                if(scalprod.le.0.d0) then
-                   dgdxglob(1,node,iobject)=-actmove
-                else
-                   dgdxglob(1,node,iobject)=actmove
-                endif
                 if((objectset(1,iobject)(1:9).eq.'MAXGROWTH').and.
      &             (scalprod.ge.0d0)) then
                    dgdxglob(2,node,iobject)=actmove-bound

@@ -1,0 +1,24 @@
+**
+**   Structure: spring.
+**   Test objective: static calculation of a nonlinear spring.
+**
+*NODE,NSET=NALL
+1,0.,0.,0.
+2,1.,0.,0.
+*ELEMENT,TYPE=SPRINGA,ELSET=EALL
+1,1,2
+*BOUNDARY
+1,1,3
+2,2,3
+*SPRING,ELSET=EALL,NONLINEAR
+
+0.,0.
+10.,1.
+100.,20.
+*STEP,NLGEOM
+*STATIC
+*CLOAD
+2,1,11.
+*NODE PRINT,NSET=NALL
+U
+*END STEP

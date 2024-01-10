@@ -307,7 +307,14 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 			   kon,&iregion,ipoface,nodface,nk,jobnamef,
 			   ipkonfa,lakonfa,konfa,&nsurfs));  
   }
-      
+
+  if(*ndesi==0){
+    printf(" *ERROR in sensi_coor: no design variables left.\n");
+    printf("         either none were defined, or all were removed\n");
+    printf("         because of conflicting constraints.\n");
+    FORTRAN(stop,());
+  }    
+  
   SFREE(itmp);
   RENEW(nodedesi,ITG,*ndesi);
 
@@ -367,7 +374,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 			  iponexp,nmpc,labmpc,ipompc,nodempc,ipretinfo,
 			  kon,ipkon,lakon,iponoel,inoel,iponor2d,knor2d,
 			  ipoface,nodface,ne,x,y,z,xo,yo,zo,nx,ny,nz,nodes,
-			  dist,ne2d,nod1st,nod2nd3rd,extnor));
+			  dist,ne2d,nod1st,nod2nd3rd,extnor,nodedesi,ndesi));
                   
   SFREE(konfa);SFREE(ipkonfa);SFREE(lakonfa);SFREE(iponor);SFREE(xnor);
   SFREE(iponoelfa);SFREE(inoelfa);SFREE(iponexp);SFREE(ipretinfo);

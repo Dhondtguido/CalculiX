@@ -16,7 +16,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine materialdata_me(elcon,nelcon,rhcon,nrhcon,alcon,nalcon,
-     &     imat,amat,iorien,pgauss,orab,ntmat_,elas,rho,iel,ithermal,
+     &     imat,amat,iorien,pgauss,orab,ntmat_,stiff,rho,iel,ithermal,
      &     alzero,mattyp,t0l,t1l,ihyper,istiff,elconloc,eth,kode,plicon,
      &     nplicon,plkcon,nplkcon,npmat_,plconloc,mi,dtime,iint,
      &     xstiff,ncmat_)
@@ -39,7 +39,7 @@
 !     
       real*8 elcon(0:ncmat_,ntmat_,*),rhcon(0:1,ntmat_,*),
      &     alcon(0:6,ntmat_,*),eth(6),xstiff(27,mi(1),*),
-     &     orab(7,*),elas(21),alph(6),alzero(*),rho,t0l,t1l,
+     &     orab(7,*),stiff(21),alph(6),alzero(*),rho,t0l,t1l,
      &     skl(3,3),xa(3,3),elconloc(*),emax,pgauss(3),
      &     plicon(0:2*npmat_,ntmat_,*),plkcon(0:2*npmat_,ntmat_,*),
      &     plconloc(802),dtime
@@ -85,7 +85,7 @@
 !     from the last stress calculation
 !     
         do j=1,21
-          elas(j)=xstiff(j,iint,iel)
+          stiff(j)=xstiff(j,iint,iel)
 c          write(*,*) 'materialdata_me ',j
 c          write(*,*) 'materialdata_me ',iint
 c          write(*,*) 'materialdata_me ',iel
@@ -99,10 +99,10 @@ c        if(j.gt.0) stop
         if(nelas.eq.21) then
           emax=0.d0
           do j=1,9
-            emax=max(emax,dabs(elas(j)))
+            emax=max(emax,dabs(stiff(j)))
           enddo
           do j=10,21
-            if(dabs(elas(j)).gt.emax*1.d-10) then
+            if(dabs(stiff(j)).gt.emax*1.d-10) then
               emax=-1.d0
               exit
             endif
@@ -170,6 +170,8 @@ c        if(j.gt.0) stop
             nelconst=5
           elseif(nelconst.eq.-53) then
             nelconst=4
+          elseif(nelconst.eq.-54) then
+            nelconst=12
           elseif(nelconst.le.-100) then
             nelconst=-nelconst-100
           endif

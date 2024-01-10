@@ -42,7 +42,7 @@
      &  ithermal(*),iline,ipol,inl,ipoinp(2,*),inp(3,*),mei(4),ncv,
      &  mxiter,ipoinpc(0:*),idirect,ier
 !
-      real*8 tinc,tper,tmin,tmax,alpha(*),fei(3),tol,fmin,fmax,ctrl(*),
+      real*8 tinc,tper,tmin,tmax,alpha(*),fei(4),tol,fmin,fmax,ctrl(*),
      &  ttime
 !
       tmin=0.d0
@@ -237,8 +237,6 @@
          endif
 !      
          if(idrct.ne.1) then
-c            if(dabs(tmin).lt.1.d-10) then
-c               tmin=min(tinc,1.d-5*tper)
             if(dabs(tmin).lt.1.d-6*tper) then
                tmin=min(tinc,1.d-6*tper)
             endif
@@ -301,6 +299,7 @@ c               tmin=min(tinc,1.d-5*tper)
          fei(1)=tol
          fei(2)=fmin
          fei(3)=fmax
+         fei(4)=0.d0
       else
 !
 !        modal dynamic analysis for variables which satisfy the

@@ -31,7 +31,7 @@
      &     veold,springarea,thicke,integerglob,doubleglob,tieset,
      &     istartset,iendset,ialset,ntie,nasym,pslavsurf,pmastsurf,
      &     mortar,clearini,ielprop,prop,ne0,kscale,xstateini,xstate,
-     &     nstate_,set,nset)
+     &     nstate_,set,nset,smscale,mscalmethod)
 !     
 !     filling the stiffness matrix in spare matrix format (sm)
 !     for cyclic symmetry calculations
@@ -69,7 +69,7 @@
      &     sti(6,mi(1),*),sm(60,60),stx(6,mi(1),*),adb(*),aub(*),
      &     elcon(0:ncmat_,ntmat_,*),rhcon(0:1,ntmat_,*),xloadold(2,*),
      &     alcon(0:6,ntmat_,*),cs(17,*),alzero(*),orab(7,*),reltime,
-     &     springarea(2,*),plicon(0:2*npmat_,ntmat_,*),smscale(1),
+     &     springarea(2,*),plicon(0:2*npmat_,ntmat_,*),smscale(*),
      &     plkcon(0:2*npmat_,ntmat_,*),thicke(mi(3),*),doubleglob(*),
      &     xstiff(27,mi(1),*),pi,theta,ti,tr,veold(0:mi(2),*),om,valu2,
      &     value,dtime,walue,walu2,time,ttime,clearini(3,9,*),val,
@@ -126,7 +126,6 @@
 !     
 !     initialisation of the error parameter
 !     
-c     ne0=0
       do i=1,ne
 !     
         if(ipkon(i).lt.0) cycle
@@ -223,7 +222,7 @@ c     write(*,*) 'nope after= ',nope
      &         springarea,nstate_,xstateini,xstate,ne0,ipkon,thicke,
      &         integerglob,doubleglob,tieset,istartset,
      &         iendset,ialset,ntie,nasym,pslavsurf,pmastsurf,mortar,
-     &         clearini,ielprop,prop,kscale,smscale(1),mscalmethod,
+     &         clearini,ielprop,prop,kscale,smscale(i),mscalmethod,
      &         set,nset,islavelinv,autloc,
      &         irowtloc,jqtloc,mortartrafoflag)
         else
@@ -266,7 +265,7 @@ c     write(*,*) 'mafillsm ',node1,k,node2,m,jj,ll
             enddo
  2          close(20)
           endif
-          return
+          cycle
         endif
 !     
         do jj=1,3*nope

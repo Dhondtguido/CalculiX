@@ -1,0 +1,149 @@
+#!/bin/sh
+
+export OMP_NUM_THREADS=1
+
+rm -f error.*
+
+tempfile=temp.$$
+errorfile=error.$$
+
+for i in *.inp; do
+
+        echo " "
+        echo "example ${i%.inp}"
+        echo " "
+
+#
+#       take out some .inp files created by running the examples
+#
+	if [ $i = circ10pcent.rfn.inp ]
+	then
+	    continue
+	fi
+	
+	if [ $i = circ10p.rfn.inp ]
+	then
+	    continue
+	fi
+	
+	if [ $i = segmentsmooth.rfn.inp ]
+	then
+	    continue
+	fi
+	
+	if [ $i = segmentsmooth2.rfn.inp ]
+	then
+	    continue
+	fi
+	
+#
+#       removing the old .dat and .frd file, if any
+#
+
+	rm -f ${i%.inp}.dat
+	rm -f ${i%.inp}.frd
+
+#
+#       executing CalculiX and generating the .dat and
+#       the .frd file
+#
+
+        ~/CalculiX/src/CalculiX  ${i%.inp} >> $tempfile 2>&1
+
+#
+#       moving the .mtx file to the .dat file in order to compare
+#
+	
+	if [ $i = substructure.inp ]
+	then
+	    rm -f substructure.dat
+	    mv substructure.mtx substructure.dat
+	fi
+	
+	if [ $i = substructure2.inp ]
+	then
+	    rm -f substructure2.dat
+	    mv substructure2.mtx substructure2.dat
+	fi
+
+#
+#       check whether the .dat and .dat.ref files exist
+#
+	if [ ! -f ${i%.inp}.dat ]; then
+	   echo "${i%.inp}.dat does not exist" >> $errorfile
+	   continue
+        fi
+	if [ ! -f ${i%.inp}.dat.ref ]; then
+	   echo "${i%.inp}.dat.ref does not exist" >> $errorfile
+	   continue
+        fi
+#
+#       check whether the .dat and .dat.ref files have the same length
+#
+
+	export sum1=`wc -l ${i%.inp}.dat | awk '{print$1}'`
+	export sum2=`wc -l ${i%.inp}.dat.ref | awk '{print$1}'`
+	if [ $sum1 != $sum2 ]; then
+	   echo "${i%.inp}.dat and ${i%.inp}.dat.ref do not have the same size !!!!!!!!!!" >> $errorfile
+	   echo " ">> $errorfile
+	   continue
+        fi
+#
+#       check whether the .dat file contains NaN
+#
+
+	if grep "NaN" ${i%.inp}.dat ; then
+	   echo "${i%.inp}.dat contains NaN !!!!!!!!!!" >> $errorfile
+	   echo " " >> $errorfile
+	   continue
+        fi
+
+#
+#       check whether the numbers in the .dat and .dat.ref files
+#       do not differ by more than a given amount (defined in file
+#       datcheck.pl)
+#
+	./datcheck.pl ${i%.inp} >> $errorfile
+#
+#       check whether the .frd or the .frd.ref file exists
+#
+	if grep "^ -5" ${i%.inp}.frd >| abc  ||[ -f ${i%.inp}.frd.ref ] ; then
+#
+#           check that both files exist
+#
+	    if [ ! -f ${i%.inp}.frd ]; then
+		echo "${i%.inp}.frd does not exist" >> $errorfile
+		continue
+            fi
+	    if [ ! -f ${i%.inp}.frd.ref ]; then
+		echo "${i%.inp}.frd.ref does not exist" >> $errorfile
+		continue
+            fi
+#
+#           check whether the .frd and .frd.ref files have the same length
+#
+	    
+	    export sum1=`wc -l ${i%.inp}.frd | awk '{print$1}'`
+	    export sum2=`wc -l ${i%.inp}.frd.ref | awk '{print$1}'`
+	    if [ $sum1 != $sum2 ]; then
+		echo "${i%.inp}.frd and ${i%.inp}.frd.ref do not have the same size !!!!!!!!!!!!!!!!!!!!!!" >> $errorfile
+		echo " ">> $errorfile
+		continue
+            fi
+#
+#           check whether the numbers in the .frd and .frd.ref files
+#           do not differ by more than a given amount (defined in file
+#           frdcheck.pl)
+#
+	    ./frdcheck.pl ${i%.inp} >> $errorfile
+            
+        fi
+
+done
+
+rm -f *.rfn.inp
+rm -f $tempfile
+echo "check the existence of file $errorfile"
+echo "if this file does not exist, the present results"
+echo "agree with the reference results"
+echo " "

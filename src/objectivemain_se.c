@@ -537,7 +537,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		    
 	  /* bfix = M * eigenvector */
 		    
-	  FORTRAN(op,(&neq[1],&z[*iev*neq[1]],bfix,adb,aub,jq,irow));
+	  opmain(&neq[1],&z[*iev*neq[1]],bfix,adb,aub,jq,irow);
 
 	}else{		
 
@@ -2112,7 +2112,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		    
       /* bfix = M * eigenvector */
 		    
-      FORTRAN(op,(&neq[1],&z[*iev*neq[1]],bfix,adb,aub,jq,irow));
+      opmain(&neq[1],&z[*iev*neq[1]],bfix,adb,aub,jq,irow);
 
       /* calculate the modal stress sensitivity */
 

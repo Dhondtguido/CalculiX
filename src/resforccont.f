@@ -17,14 +17,14 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
       subroutine resforccont(vold,nk,mi,aubi,irowbi,jqbi,neqtot,ktot,
-     &     fext,gapdisp,auib,irowib,jqib,nactdof,volddof,neq,qik_kbi)
+     &     fext,gapdisp,auib,irowib,jqib,nactdof,volddof,neq,qi_kbi)
 !     
       implicit none
 !     
       integer irowbi(*),jqbi(*),nk,neqtot,irowib(*),jqib(*),itranspose,
      &     mi(*),nactdof(0:mi(2),*),i,j,neq(*),ktot(*)
 !     
-      real*8 vold(0:mi(2),*),fext(*),qik_kbi(*),
+      real*8 vold(0:mi(2),*),fext(*),qi_kbi(*),
      &     auib(*),aubi(*),gapdisp(*),volddof(*)
 !     
 !     create field volddof, from vold (displacements)
@@ -38,27 +38,27 @@
         enddo
       enddo
 !     
-!     We compute g as volddof=(Kbi*volddof)+(Kib*volddof) in qik_kbi
+!     We compute g as volddof=(Kbi*volddof)+(Kib*volddof) in qi_kbi
 !     to account for the missing terms due to the low triangle structure
 !     of the matrices
 !     
 !     calculate Kbi*volddof
 !     
       itranspose=0
-      call mulmatvec_asym(aubi,jqbi,irowbi,neq(1),volddof,qik_kbi,
+      call mulmatvec_asym(aubi,jqbi,irowbi,neq(1),volddof,qi_kbi,
      &     itranspose)
 !     
 !     calculate Kib^T*volddof and add to g.
 !     transposed multiplication
 !     
       itranspose=1
-      call mulmatvec_asym(auib,jqib,irowib,neqtot,volddof,qik_kbi,
+      call mulmatvec_asym(auib,jqib,irowib,neqtot,volddof,qi_kbi,
      &     itranspose)
 !     
 !     add external force of BOUNDARY DOF
 !     
       do i=1,neqtot
-        gapdisp(i)=fext(ktot(i))-qik_kbi(i)
+        gapdisp(i)=fext(ktot(i))-qi_kbi(i)
       enddo
 !     
       return

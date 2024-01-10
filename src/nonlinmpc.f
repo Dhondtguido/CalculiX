@@ -823,9 +823,7 @@ c     endif
       elseif((labmpc(ii)(1:20).ne.'                    ').and.
      &        (labmpc(ii)(1:10).ne.'PRETENSION').and.
      &        (labmpc(ii)(1:11).ne.'THERMALPRET').and.
-c     &          (labmpc(ii)(1:7).ne.'CONTACT').and.
      &        (labmpc(ii)(1:7).ne.'NETWORK').and.
-     &        (labmpc(ii)(1:5).ne.'FLUID').and.
      &        (labmpc(ii)(1:6).ne.'CYCLIC').and.
      &        (labmpc(ii)(1:2).ne.'RM').and.
      &        (labmpc(ii)(1:14).ne.'ROTTRACOUPLING').and.

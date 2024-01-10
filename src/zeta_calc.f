@@ -535,20 +535,20 @@
      &        form_fact,lambda)
 !
          call onedint(XLZD,YTOR,n10,lzd,thau,n1,n1,n0,ier)
-         zeta0=((0.5d0+thau*dsqrt(fa2za1))+fa2za1) * fa2za1
+         zeta0=((0.5d0+thau*dsqrt(fa2za1))+fa2za1)*fa2za1
 !
          if(reynolds.gt.1.d+05 ) then
-            zeta=zeta0 + lambda * dabs(lzd)
+            zeta=zeta0+lambda*dabs(lzd)
          else
             call onedint(XRE,YERE,n14,reynolds,ereo,n1,n1,n0,ier)
 !
             call twodint(zzeta,n15,n11,reynolds,
      &           a2za1,zetap,n1,IEXP,IER)
-            zeta=zetap + ereo * zeta0 + lambda * dabs(lzd)
+            zeta=zetap+ereo*zeta0+lambda*dabs(lzd)
             IF( a2za1.gt.0.95 ) IWRIT1=1
          endif
 !     
-         if(dabs(lzd) .le. 0.015d0 )then 
+         if(dabs(lzd).le.0.015d0 )then 
             write(*,*) '*WARNING in zeta_calc: L/DH outside valid' 
             write(*,*) '         range ie less than 0.015 !'
          endif
@@ -686,8 +686,8 @@
          elseif(dl.gt.0.d0) then
             call twodint(ZZETA42,n10,n0,alpha,lzd,zeta0,n1,IEXP,IER)
             zeta=zeta0*(1.-a2za1)
-            if(lzd.lt.0.025d0 .or. lzd.gt.0.6d0) iwrit1=1
-            if(reynolds  .le. 1.d+04) then
+            if((lzd.lt.0.025d0).or.(lzd.gt.0.6d0)) iwrit1=1
+            if(reynolds .le.1.d+04) then
                write(*,*) '*WARNING in zeta_calc: reynolds outside valid
      & range i.e. < 10 000 !'
             endif   
@@ -844,14 +844,14 @@
          rzdh=Rad/DH
 !     
          iwrit1=0
-         if( delta.lt.10.d0 .or. delta.gt.180.d0  .or.
-     &        rzdh .lt.0.5d0 .or. rzdh.  gt. 10.d0        ) iwrit1=1
+         if((delta.lt.10.d0).or.(delta.gt.180.d0).or.
+     &        (rzdh.lt.0.5d0).or.(rzdh.gt.10.d0)) iwrit1=1
 !     
          call twodint(ZZETAO,n14,n11,rzdh,delta,zeta0,n1,IEXP6,IER)
          call twodint(KRE, n22,n11,reynolds,rzdh, k,n1,IEXP6,IER)
-         zeta=zeta0 * k
+         zeta=zeta0*k
 !     
-         if( reynolds.lt.1.d+3 .or. reynolds.gt.1.d+6 ) then 
+         if((reynolds.lt.1.d+3).or.(reynolds.gt.1.d+6)) then 
             write (*,*)'Reynolds outside valid range <1.E+3 or >1.0E+6'
          endif
 !     
@@ -904,7 +904,7 @@
 !     Length of the previous pipe element
          dl=abs(prop(ielprop(nelem_ref)+3))
 !    
-         if(reynolds .le. 2300.) then
+         if(reynolds.le.2300.) then
 !     (LAMINAR FLOW)
             ldre=dl/dh/reynolds
             call onedint (XDRE,ZETAEX,n12,ldre,zeta,n1,n1,n0,IER)
@@ -1023,7 +1023,7 @@
            elseif(node21.eq.node22) then
                node2=node12
             endif
-         endif
+          endif
 !     
 !     density
 !     
@@ -1038,7 +1038,6 @@
 !     
             Tt0=v(0,node0)
             xflow0=iaxial*v(1,nodem0)
-c            xflow0=v(1,nodem0)
             pt0=v(2,node0)
 !     
             Qred_0=dabs(xflow0)*dsqrt(Tt0)/(A0*pt0)
@@ -1054,7 +1053,6 @@ c            xflow0=v(1,nodem0)
 !     
             Tt1=v(0,node1)
             xflow1=iaxial*v(1,nodem1)
-c            xflow1=v(1,nodem1)
             pt1=v(2,node0)
 !     
             Qred_1=dabs(xflow1)*dsqrt(Tt1)/(A1*pt1)
@@ -1070,7 +1068,6 @@ c            xflow1=v(1,nodem1)
 !     
             Tt2=v(0,node2)
             xflow2=iaxial*v(1,nodem2)
-c            xflow2=v(1,nodem2)
             pt2=v(2,node0)
 !     
             Qred_2=dabs(xflow2)*dsqrt(Tt2)/(A2*pt2)
@@ -1089,6 +1086,9 @@ c            xflow2=v(1,nodem2)
             rho0=1.d0
             rho1=1.d0
             rho2=1.d0
+            xflow0=iaxial*v(1,nodem0)
+            xflow1=iaxial*v(1,nodem1)
+            xflow2=iaxial*v(1,nodem2)
          endif
 !     
 !     volumic flows (positive)
@@ -1136,12 +1136,23 @@ c            xflow2=v(1,nodem2)
                zeta=lam20/64*(V2V0*a0a2)**2-zetlin+1d0
                zeta=zeta*(W0W2)**2
             endif
-            if(zeta.lt.0) then
+             if(zeta.lt.0.01d0) then
                write(*,*) '*WARNING in zeta_calc: in Element',nelem,
-     &               'TYPE= ',lakon(nelem)(2:5)
-               write(*,*) '         Zeta value negative is set to 0.01'
+     &              'TYPE= ',lakon(nelem)(2:5)
+               write(*,*) '         Zeta < 0.01 is set to 0.01'
                zeta=0.01d0
-            endif
+             elseif(zeta.gt.1000.d0) then
+               write(*,*) '*WARNING in zeta_calc: in Element',nelem,
+     &              'TYPE= ',lakon(nelem)(2:5)
+               write(*,*) '         Zeta > 1000 is set to 1000'
+               zeta=1000.d0
+             endif
+c            if(zeta.lt.0) then
+c               write(*,*) '*WARNING in zeta_calc: in Element',nelem,
+c     &               'TYPE= ',lakon(nelem)(2:5)
+c               write(*,*) '         Zeta value negative is set to 0.01'
+c               zeta=0.01d0
+c            endif
             return
 !     
          elseif((lakon(nelem)(2:8).eq.'REBRJI1').or.
@@ -1208,12 +1219,23 @@ c            xflow2=v(1,nodem2)
                   zeta=zeta*(W0W2)**2
                endif
             endif
-            if(zeta.lt.0) then
+             if(zeta.lt.0.01d0) then
                write(*,*) '*WARNING in zeta_calc: in Element',nelem,
-     &               'TYPE= ',lakon(nelem)(2:5)
-               write(*,*) '         Zeta value negative is set to 0.01'
+     &              'TYPE= ',lakon(nelem)(2:5)
+               write(*,*) '         Zeta < 0.01 is set to 0.01'
                zeta=0.01d0
-            endif
+             elseif(zeta.gt.1000.d0) then
+               write(*,*) '*WARNING in zeta_calc: in Element',nelem,
+     &              'TYPE= ',lakon(nelem)(2:5)
+               write(*,*) '         Zeta > 1000 is set to 1000'
+               zeta=1000.d0
+             endif
+c            if(zeta.lt.0) then
+c               write(*,*) '*WARNING in zeta_calc: in Element',nelem,
+c     &               'TYPE= ',lakon(nelem)(2:5)
+c               write(*,*) '         Zeta value negative is set to 0.01'
+c               zeta=0.01d0
+c            endif
             return
 !     
          elseif((lakon(nelem)(2:8).eq.'REBRJI2').or.
@@ -1312,12 +1334,23 @@ c            xflow2=v(1,nodem2)
                   endif
                endif
             endif
-            if(zeta.lt.0) then
+             if(zeta.lt.0.01d0) then
                write(*,*) '*WARNING in zeta_calc: in Element',nelem,
-     &               'TYPE= ',lakon(nelem)(2:5)
-               write(*,*) '         Zeta value negative is set to 0.01'
+     &              'TYPE= ',lakon(nelem)(2:5)
+               write(*,*) '         Zeta < 0.01 is set to 0.01'
                zeta=0.01d0
-            endif
+             elseif(zeta.gt.1000.d0) then
+               write(*,*) '*WARNING in zeta_calc: in Element',nelem,
+     &              'TYPE= ',lakon(nelem)(2:5)
+               write(*,*) '         Zeta > 1000 is set to 1000'
+               zeta=1000.d0
+             endif
+c            if(zeta.lt.0) then
+c               write(*,*) '*WARNING in zeta_calc: in Element',nelem,
+c     &               'TYPE= ',lakon(nelem)(2:5)
+c               write(*,*) '         Zeta value negative is set to 0.01'
+c               zeta=0.01d0
+c            endif
             return
 !
          elseif((lakon(nelem)(2:7).eq.'REBRSG').or.
@@ -1378,7 +1411,7 @@ c            xflow2=v(1,nodem2)
 !          
             W1W0=V1V0*a0a1
             W2W0=V2V0*a0a2
-!     
+!
             if(nelem.eq.nelem1) then
                zeta=0.4d0*(1-W1W0)**2
                zeta=zeta*(W0W1)**2
@@ -1395,7 +1428,7 @@ c            xflow2=v(1,nodem2)
                endif
 !
                hq=dh2/dh0
-               if(alpha2.le.60.or.hq.le.2.d0/3.d0) then
+               if((alpha2.le.60).or.(hq.le.2.d0/3.d0)) then
                   zeta=0.95d0*((W2W0-2d0*dcos(alpha2*pi/180))
      &                 *W2W0+1.d0)
                   zeta=zeta*(W0W2)**2
@@ -1409,7 +1442,19 @@ c            xflow2=v(1,nodem2)
                   zeta=z60+(alpha2/30.d0-2.d0)*(z90-z60)
                   zeta=zeta*(W0W2)**2
                endif
-            endif
+             endif
+             if(zeta.lt.0.01d0) then
+               write(*,*) '*WARNING in zeta_calc: in Element',nelem,
+     &              'TYPE= ',lakon(nelem)(2:5)
+               write(*,*) '         Zeta < 0.01 is set to 0.01'
+               zeta=0.01d0
+             elseif(zeta.gt.1000.d0) then
+               write(*,*) '*WARNING in zeta_calc: in Element',nelem,
+     &              'TYPE= ',lakon(nelem)(2:5)
+               write(*,*) '         Zeta > 1000 is set to 1000'
+               zeta=1000.d0
+             endif
+!                 
             return
 !                 
          elseif((lakon(nelem)(2:8).eq.'REBRSI2').or.
@@ -1434,12 +1479,23 @@ c            xflow2=v(1,nodem2)
             endif
             return
          endif
-         if(zeta.lt.0) then
-            write(*,*) '*WARNING in zeta_calc: in Element',nelem,
-     &           'TYPE= ',lakon(nelem)(2:5)
-            write(*,*) '         Zeta value negative is set to 0.01'
-            zeta=0.01d0
+         if(zeta.lt.0.01d0) then
+           write(*,*) '*WARNING in zeta_calc: in Element',nelem,
+     &          'TYPE= ',lakon(nelem)(2:5)
+           write(*,*) '         Zeta < 0.01 is set to 0.01'
+           zeta=0.01d0
+         elseif(zeta.gt.1000.d0) then
+           write(*,*) '*WARNING in zeta_calc: in Element',nelem,
+     &          'TYPE= ',lakon(nelem)(2:5)
+           write(*,*) '         Zeta > 1000 is set to 1000'
+           zeta=1000.d0
          endif
+c         if(zeta.lt.0) then
+c            write(*,*) '*WARNING in zeta_calc: in Element',nelem,
+c     &           'TYPE= ',lakon(nelem)(2:5)
+c            write(*,*) '         Zeta value negative is set to 0.01'
+c            zeta=0.01d0
+c         endif
       endif
 !   
       return

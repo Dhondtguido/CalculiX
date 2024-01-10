@@ -38,12 +38,12 @@
      &  ithermal(*),jstart,jend,nodeboun(*),ndirboun(*),ikboun(*),
      &  ilboun(*),nboun,nboun_,jact,knor(*),ntrans,inotr(2,*),
      &  nnodes,nodeact,nmethod,nk_,k,iperturb(*),nam,indexk,
-     &  iamplitude,idirref,iamboun(*),iflagpl
+     &  iamplitude,idirref,iamboun(*),iflagpl,ialeatoric
 !
       real*8 coefmpc(*),xboun(*),xta(3,100),co(3,*),trab(7,*),
      &     vold(0:mi(2)),val
 !
-!
+      ialeatoric=0
 !
 !     generating a hinge at a node of a truss element                
 !
@@ -140,7 +140,8 @@
      &           labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
      &           nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
      &           nboun,nboun_,nnodes,nodeact,co,label,
-     &           typeboun,iperturb,i,idirref,xboun)
+     &           typeboun,iperturb,i,idirref,xboun,
+     &           ialeatoric)
          enddo
       enddo
 !     
@@ -155,7 +156,8 @@
      &     labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
      &     nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
      &     nboun,nboun_,nnodes,nodeact,co,label,
-     &     typeboun,iperturb,i,idirref,xboun)
+     &     typeboun,iperturb,i,idirref,xboun,
+     &     ialeatoric)
 !     
 !     inhomogeneous term
 !     
@@ -164,7 +166,8 @@
      &     labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
      &     nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
      &     nboun,nboun_,nnodes,nodeact,co,label,
-     &     typeboun,iperturb,i,idirref,xboun)
+     &     typeboun,iperturb,i,idirref,xboun,
+     &     ialeatoric)
 !     
 !     end meanrotationmpc
 !     

@@ -282,7 +282,7 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
     printf(" Computation of feasible direction\n\n");
     
     FORTRAN(calcfeasibledirection_gd,(ndesi,nodedesi,dgdxglob,&nactive,nobject,
-				      nk,gradproj,objectset));
+				      nk,gradproj));
 
     if(addout==1){
       if(strcmp1(&filab[4],"I")==0){

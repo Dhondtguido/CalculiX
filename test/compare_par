@@ -1,0 +1,34 @@
+#!/bin/sh
+
+#
+#   calculating the error for each example separately
+#   parallel computation
+#
+
+./compare_par1
+
+while : ; do
+    ps -ef >| dummy
+    output=$(grep 'CalculiX' dummy)
+    if [ $? -eq 1 ]; then
+	break
+    else
+	echo "sleeping 20 seconds "
+	sleep 20
+    fi
+       
+done
+
+sync
+
+# copying substructure output so that it can be compared
+
+rm -f substructure.dat
+mv substructure.mtx substructure.dat
+rm -f substructure2.dat
+mv substructure2.mtx substructure2.dat
+
+./compare_par2
+
+rm -f test.*
+rm -f vgcore.*

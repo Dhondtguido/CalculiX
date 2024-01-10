@@ -22,23 +22,23 @@
 !        au: first lower triangle
 !        ad: diagonal terms
 !
-      subroutine op(n,x,y,ad,au,jq,irow)
+      subroutine op(x,y,ad,au,jq,irow,na,nb)
 !
       implicit none
 !
-      integer irow(*),n,j,l,i,jq(*)
+      integer irow(*),na,nb,j,l,i,jq(*)
 !
       real*8 y(*),x(*),au(*),ad(*)
 !
 !     diagonal terms
 !
-      do i=1,n
+      do i=na,nb
         y(i)=ad(i)*x(i)
       enddo
 !
 !     off-diagonal terms
 !
-      do j=1,n
+      do j=na,nb
         do l=jq(j),jq(j+1)-1
           i=irow(l)
           y(i)=y(i)+au(l)*x(j)

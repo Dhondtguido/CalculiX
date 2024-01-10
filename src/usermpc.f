@@ -19,7 +19,7 @@
       subroutine usermpc(ipompc,nodempc,coefmpc,
      &  labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,nk,nk_,nodeboun,ndirboun,
      &  ikboun,ilboun,nboun,nboun_,nnodes,node,co,label,typeboun,
-     &  iperturb,noderef,idirref,xboun)
+     &  iperturb,noderef,idirref,xboun,ialeatoric)
 !
 !     initializes mpc fields for a user MPC
 !
@@ -33,10 +33,10 @@
      &  ilmpc(*),node,id,mpcfreeold,idof,l,nodeboun(*),iperturb(*),
      &  ndirboun(*),ikboun(*),ilboun(*),nboun,nboun_,nnodes,nodevector,
      &  index,index1,node1,i,j,nkn,idirold,idirmax,noderef,idirref,
-     &  nendnode
+     &  nendnode,ialeatoric
 !
       real*8 coefmpc(*),co(3,*),aa(3),dd,cgx(3),pi(3),c1,c4,c9,
-     &  c10,amax,xcoef,transcoef(3),xboun(*),stdev
+     &  c10,amax,xcoef,transcoef(3),xboun(*),stdev,harvest
 !
       save nodevector
 !
@@ -212,7 +212,7 @@
                enddo
                index=nodempc(3,nodempc(3,nodempc(3,index)))
             enddo
-            stdev=stdev/nkn
+            stdev=dsqrt(stdev/nkn)
 !
 !           calculating the derivatives
 !
@@ -330,10 +330,19 @@ c               if(c1.lt.1.d-20) then
 !           loop over all nodes - angle node - last regular node
 !
             if(label(8:9).eq.'BS') then
-               nendnode=nnodes-4
+              nendnode=nnodes-4
             else
-               nendnode=nnodes-1
+              nendnode=nnodes-1
             endif
+c            if(ialeatoric.eq.1) then
+c              call random_seed()
+c              do i=1,nendnode
+c                call random_number(harvest)
+c                coefmpc(index)=coefmpc(index)*(1.d0+harvest*1.d-5)
+c                index=nodempc(3,index)
+c              enddo
+c              index=ipompc(nmpc)
+c            endif
             do i=1,nendnode
                if(dabs(coefmpc(index)).gt.amax) then
                   idir=nodempc(2,index)
@@ -518,12 +527,6 @@ c               if(c1.lt.1.d-20) then
             write(*,*) '      effects are turned on'
             write(*,*)
             if(iperturb(1).eq.0) iperturb(1)=2
-c         elseif(labmpc(nmpc)(1:3).eq.'GAP') then
-c            iperturb(2)=1
-c            write(*,*) '*INFO in usermpc: nonlinear geometric'
-c            write(*,*) '      effects are turned on'
-c            write(*,*)
-c            if(iperturb(1).eq.0) iperturb(1)=2
          elseif(labmpc(nmpc)(1:4).eq.'USER') then
             iperturb(2)=1
             write(*,*) '*INFO in usermpc: nonlinear geometric'

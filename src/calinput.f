@@ -139,7 +139,7 @@
      &     xloadold(*),t1old(*),eme(*),sti(*),ener(*),
      &     xstate(nstate_,mi(1),*),ttime,qaold(2),cs(17,*),tietol(4,*),
      &     xbody(7,*),xbodyold(7,*),t0g(2,*),t1g(2,*),
-     &     fei(3),tinc,tper,xmodal(*),tmin,tmax,tincf,
+     &     fei(4),tinc,tper,xmodal(*),tmin,tmax,tincf,
      &     alpha(*),physcon(*),coefmpcref(*),vel(nef,*),velo(*),
      &     veloo(*),randomval(2,*),coeffc(0:6,*),edc(12,*),coini(3,*)
 !     
@@ -733,7 +733,7 @@ c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
         call frequencys(inpc,textpart,nmethod,
      &       mei,fei,iperturb,istep,istat,n,iline,ipol,
      &       inl,ipoinp,inp,ithermal,isolver,xboun,nboun,ipoinpc,
-     &       ipompc,labmpc,fmpc,ikmpc,ilmpc,nmpc,ier)
+     &       ipompc,labmpc,fmpc,ikmpc,ilmpc,nmpc,ier,alpha)
 !     
       elseif(textpart(1)(1:9).eq.'*FRICTION') then
         call frictions(inpc,textpart,elcon,nelcon,
@@ -1023,7 +1023,7 @@ c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
      &       t0g,t1g,nprop,ielprop,prop,mortar,nintpoint,ifacecount,
      &       islavsurf,pslavsurf,clearini,ier,vel,nef,velo,veloo,
      &       ne2boun,heading,network,irestartread,nfc,ndc,coeffc,
-     &       ikdc,edc)
+     &       ikdc,edc,xmodal)
 !     
       elseif(textpart(1)(1:18).eq.'*RETAINEDNODALDOFS') then
         call retainednodaldofss(inpc,textpart,set,istartset,
@@ -1344,7 +1344,7 @@ c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
      &     dcs(4*ncs_+1),dcs(6*ncs_+1),dcs(8*ncs_+1),dcs(10*ncs_+1),
      &     ics(3*ncs_+1),ics(5*ncs_+1),ics(7*ncs_+1),ics(8*ncs_+1),
      &     dcs(12*ncs_+1),ne,ipkon,kon,lakon,ics(14*ncs_+1),
-     &     ics(16*ncs_+1),ics(18*ncs_+1),jobnamec)
+     &     ics(16*ncs_+1),ics(18*ncs_+1),jobnamec,nmethod)
 !     
       infree(1)=ixfree
       infree(2)=ikfree

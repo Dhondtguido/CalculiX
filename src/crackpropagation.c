@@ -333,7 +333,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 			 iendcrackbou,costruc,ibounnod,xt,acrack,istartfront,
 			 iendfront,&nnfront,isubsurffront,ifrontrel,
 			 ifront,posfront,doubleglob,integerglob,
-			 &nproc,&iinc,acrackglob,&ier));
+			 &nproc,&iinc,acrackglob,&ier,&nbounnod,&nfront));
     if(ier==1){
       SFREE(kontri);SFREE(ipoed);SFREE(iedg);SFREE(ieled);SFREE(ibounedg);
       SFREE(ibounnod);SFREE(iedno);SFREE(temp);SFREE(stress);SFREE(ifront);

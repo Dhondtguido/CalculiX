@@ -1,0 +1,13 @@
+**
+**   Structure: cantilever beam.
+**   Test objective: forced convection
+**                   generic gas network elements
+**                   simultaneous temperature solution
+**   Before running this example, please run example beamhtfc
+**   and copy beamhtfc.rout to beamhtfc2.rin
+**
+*RESTART,READ
+*STEP,INC=100
+*HEAT TRANSFER,STEADY STATE
+1.,1.
+*END STEP

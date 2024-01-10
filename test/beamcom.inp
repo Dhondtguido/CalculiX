@@ -1,0 +1,45 @@
+**
+**   Structure: cantilever beam.
+**   Test objective: B32 elements, composite beam.
+**
+*NODE, NSET=Nall
+       1, -1.49012e-08,  0.00000e+00,  0.00000e+00 
+       2,  1.00000e+00,  0.00000e+00,  0.00000e+00 
+       3,  5.00000e-01,  0.00000e+00,  0.00000e+00 
+       4,  2.00000e+00,  0.00000e+00,  0.00000e+00 
+       5,  1.50000e+00,  0.00000e+00,  0.00000e+00 
+*ELEMENT, TYPE=B32, ELSET=Eall
+     1,      1,      3,      2
+     2,      2,      5,      4
+     3,      1,      3,      2
+     4,      2,      5,      4
+*BOUNDARY
+1,1,6
+*MATERIAL,NAME=EL1
+*ELASTIC
+210000.,.3
+*MATERIAL,NAME=EL2
+*ELASTIC
+110000.,.3
+*ELSET,ELSET=SET1
+1,2
+*ELSET,ELSET=SET2
+3,4
+*BEAM SECTION,ELSET=SET1,MATERIAL=EL1,SECTION=RECT,OFFSET2=-.5
+0.05, 0.08
+0.d0,1.d0,0.d0
+*BEAM SECTION,ELSET=SET2,MATERIAL=EL2,SECTION=RECT,OFFSET2=.5
+0.05, 0.08
+0.d0,1.d0,0.d0
+*STEP,NLGEOM
+*STATIC
+*CLOAD
+4,1,0.1
+*NODE PRINT,NSET=Nall
+U
+*EL PRINT,ELSET=Eall
+S
+*END STEP
+
+
+
