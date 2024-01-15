@@ -1,6 +1,6 @@
 !
 !     CalculiX - A 3-dimensional finite element program
-!              Copyright (C) 1998-2015 Guido Dhondt
+!              Copyright (C) 1998-2023 Guido Dhondt
 !
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -84,8 +84,8 @@
          do i=1,nmat
             if(matname(i)(1:11).eq.'ANISO_CREEP') then
                if(matname(i)(12:20).eq.material(1:9)) exit
-            elseif(matname(i)(1:11).eq.'JOHNSONCOOK') then
-               if(matname(i)(12:20).eq.material(1:9)) exit
+            elseif(matname(i)(1:10).eq.'ANISO_PLAS') then
+               if(matname(i)(11:20).eq.material(1:10)) exit
             endif
          enddo
       endif

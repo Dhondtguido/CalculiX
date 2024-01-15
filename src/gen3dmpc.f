@@ -1,6 +1,6 @@
 !     
 !     CalculiX - A 3-dimensional finite element program
-!     Copyright (C) 1998-2015 Guido Dhondt
+!     Copyright (C) 1998-2023 Guido Dhondt
 !     
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -102,6 +102,18 @@
                 if(indexe.ge.0) exit
                 index2=inoel(3,index2)
               enddo
+c     !
+c     !                 check for nodes not belonging to 1d or 2d elements
+c     !
+c     if(index2.eq.0) then
+c     index1=nodempc(3,index1)
+c     dependent=.false.
+c     if(index1.eq.0) exit
+c     cycle
+c     endif
+c     
+c     ielem=inoel(1,index2)
+c     indexe=ipkon(ielem)
               j=inoel(2,index2)
               indexk=iponor(2,indexe+j)
 !     
@@ -157,49 +169,6 @@
                   nodempc(3,mpcfree)=0
                   mpcfree=mpcfreenew
                 endif
-!     
-!               u(n_2)=u(n) (proposed by victor kemp; causes problems in
-!               shellf.inp)    
-!     
-c                newnode=knor(indexk+2)
-c                idof=8*(newnode-1)+idir
-c                call nident(ikmpc,idof,nmpc,id)
-c                if((id.le.0).or.(ikmpc(id).ne.idof)) then
-c                  nmpc=nmpc+1
-c                  if(nmpc.gt.nmpc_) then
-c                    write(*,*) 
-c     &                   '*ERROR in gen3dboun: increase nmpc_'
-c                    call exit(201)
-c                  endif
-c                  labmpc(nmpc)='                    '
-c                  ipompc(nmpc)=mpcfree
-c                  do j=nmpc,id+2,-1
-c                    ikmpc(j)=ikmpc(j-1)
-c                    ilmpc(j)=ilmpc(j-1)
-c                  enddo
-c                  ikmpc(id+1)=idof
-c                  ilmpc(id+1)=nmpc
-c                  nodempc(1,mpcfree)=newnode
-c                  nodempc(2,mpcfree)=idir
-c                  coefmpc(mpcfree)=1.d0
-c                  mpcfree=nodempc(3,mpcfree)
-c                  if(mpcfree.eq.0) then
-c                    write(*,*) 
-c     &                   '*ERROR in gen3dboun: increase memmpc_'
-c                    call exit(201)
-c                  endif
-c                  nodempc(1,mpcfree)=node
-c                  nodempc(2,mpcfree)=idir
-c                  coefmpc(mpcfree)=-1.d0
-c                  mpcfreenew=nodempc(3,mpcfree)
-c                  if(mpcfreenew.eq.0) then
-c                    write(*,*) 
-c     &                   '*ERROR in gen3dboun: increase memmpc_'
-c                    call exit(201)
-c                  endif
-c                  nodempc(3,mpcfree)=0
-c                  mpcfree=mpcfreenew
-c                endif
 !     
 !     fixing the temperature degrees of freedom
 !     

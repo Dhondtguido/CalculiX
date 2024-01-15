@@ -1,6 +1,6 @@
 !     
 !     CalculiX - A 3-dimensional finite element program
-!     Copyright (C) 1998-2007 Guido Dhondt
+!     Copyright (C) 1998-2023 Guido Dhondt
 !     
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -142,6 +142,7 @@ c          enddo
           islav=j
 !     
           if((mortar.le.0).and.(nodeslavsurf)) then
+c          if((mortar.eq.0).and.(nodeslavsurf)) then
 !     
 !     nodal slave surface and node-to-surface contact
 !     
@@ -410,8 +411,7 @@ c          enddo
 !     
                 ifaces=ialset(j)
                 nelems=int(ifaces/10)
-                if(ipkon(nelems).lt.0) cycle
-                jfaces=ifaces-nelems*10
+                jfaces=ifaces - nelems*10
                 indexe=ipkon(nelems)
 !     
                 if(lakon(nelems)(4:5).eq.'20') then
@@ -551,8 +551,7 @@ c          enddo
 !     
             ifacem=ialset(j)
             nelemm=int(ifacem/10)
-            if(ipkon(nelemm).lt.0) cycle
-            jfacem=ifacem-nelemm*10
+            jfacem=ifacem - nelemm*10
             indexe=ipkon(nelemm)
 !     
             if(lakon(nelemm)(4:5).eq.'20') then

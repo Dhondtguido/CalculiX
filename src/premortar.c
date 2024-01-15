@@ -1,5 +1,5 @@
 /*     CalculiX - A 3-dimensional finite element program                 */
-/*              Copyright (C) 1998-2011 Guido Dhondt                          */
+/*              Copyright (C) 1998-2023 Guido Dhondt                          */
 
 /*     This program is free software; you can redistribute it and/or     */
 /*     modify it under the terms of the GNU General Public License as    */
@@ -141,7 +141,7 @@
  *  [in] cvtilini		C*v at start of the increment
  *  [in] cvtil		C*v
  *  [in] idamping		flag indicating whether damping is used
- *  [in] iforbou		flag indicating wheter fist iteration is calculated 
+ *  [in] ilin		flag indicating wheter fist iteration is calculated 
  linear geometrically 
  *  [in] iperturb_sav	saved iperturb values 
  *  [out] nodeforc2p	transformed point force, node
@@ -232,7 +232,7 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
 	       double *clearini,ITG *ielprop,double *prop,
 	       ITG *islavact,double *cdn,ITG *memmpc_,
 	       double *cvinitil,double *cvtil,ITG *idamping,
-	       ITG *iforbou,ITG *iperturb_sav,double *adb,double *aub,
+	       ITG *ilin,ITG *iperturb_sav,double *adb,double *aub,
 	       ITG **nodeforc2p,ITG **ndirforc2p,double **xforc2p,
 	       ITG *nforc2,
 	       ITG *itietri,double *cg,double *straight,ITG *koncont,
@@ -314,7 +314,7 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
   
   // fix for linear calculation in first iteration of first increment
   
-  if((*iforbou==1)&&(*iit==1)&&(*iinc==1)){  
+  if((*ilin==1)&&(*iit==1)&&(*iinc==1)){  
     *ielas=1;  
     iperturb[0]=-1;  
     iperturb[1]=0;	  
@@ -578,33 +578,12 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
   /* calculating the external forces fext and stiffness matrix au/ad using
      modified shape functions for quadratic elements */
   
-  /*ccc  mafillsmmain(co,nk,kon,ipkon,lakon,ne,nodeboun2,ndirboun2,xboun2,nboun2,
+  mafillsmmain(co,nk,kon,ipkon,lakon,ne,nodeboun2,ndirboun2,xboun2,nboun2,
 	       ipompc2,nodempc2,coefmpc2,nmpc2,nodeforc2,ndirforc2,xforc2,
 	       nforc2,nelemload,sideload,xloadact,nload,xbodyact,ipobody,
 	       nbody,cgr,adtil,autil,fexttil,nactdof,icol,jqtil,irowtil,
 	       neq,nzl,
 	       nmethod,ikmpc2,ilmpc2,ikboun2,ilboun2,
-	       elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,
-	       ielmat,ielorien,norien,orab,ntmat_,
-	       t0,t1act,ithermal,prestr,iprestr,vold,iperturb,sti,
-	       nzs,stx,adb,aub,iexpl,plicon,nplicon,plkcon,nplkcon,
-	       xstiff,npmat_,dtime,matname,mi,
-	       ncmat_,mass,stiffness,buckling,rhsi,intscheme,
-	       physcon,shcon,nshcon,cocon,ncocon,ttime,time,istep,iinc,
-	       coriolis,ibody,xloadold,reltime,veold,springarea,nstate_,
-	       xstateini,xstate,thicke,integerglob,doubleglob,
-	       tieset,istartset,iendset,ialset,ntie,nasym,pslavsurf,
-	       pmastsurf,mortar,clearini,ielprop,prop,ne0,fnext,kscale,
-	       iponoel,inoel,network,ntrans,inotr,trab,smscale,
-	       mscalmethod,set,nset,islavelinv,autloc,irowtloc,jqtloc,
-	       &mortartrafoflag);*/
-  
-  mafillsmmain(co,nk,kon,ipkon,lakon,ne,nodeboun,ndirboun,xboun,nboun,
-	       ipompc,nodempc,coefmpc,nmpc,nodeforc,ndirforc,xforc,
-	       nforc,nelemload,sideload,xloadact,nload,xbodyact,ipobody,
-	       nbody,cgr,adtil,autil,fexttil,nactdof,icol,jqtil,irowtil,
-	       neq,nzl,
-	       nmethod,ikmpc,ilmpc,ikboun,ilboun,
 	       elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,
 	       ielmat,ielorien,norien,orab,ntmat_,
 	       t0,t1act,ithermal,prestr,iprestr,vold,iperturb,sti,

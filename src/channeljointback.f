@@ -1,6 +1,6 @@
 !     
 !     CalculiX - A 3-dimensional finite element program
-!     Copyright (C) 1998-2015 Guido Dhondt
+!     Copyright (C) 1998-2023 Guido Dhondt
 !     
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -308,7 +308,7 @@
 !
 !     depth in ndo and velocity in neldo
 !
-      h=v(2,ndo)
+      h=v(2,ndo)/sqrts0
       area=h*(b+h*dtan(theta))
       u=xflow/(rho*area)
       up2=u*u
@@ -356,8 +356,8 @@
         endif
       enddo
 !
-      v(2,nup1)=h1
-      v(2,nup2)=h2
+      v(2,nup1)=h1*sqrts01
+      v(2,nup2)=h2*sqrts02
       neldo=nel2
       ndo=nup2
 !

@@ -1,6 +1,6 @@
 !     
 !     CalculiX - A 3-dimensional finite element program
-!     Copyright (C) 1998-2015 Guido Dhondt
+!     Copyright (C) 1998-2023 Guido Dhondt
 !     
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -1014,10 +1014,10 @@ c     &         (lakon(nelem)(2:4).ne.'RTA')) then
         node=itg(i)
         if(v(2,node).eq.1.235711d-10) v(2,node)=0.d0
       enddo
-c      write(*,*) 'initialnet '
-c      do i=1,ntg
-c        write(*,'(i10,3(1x,e11.4))') itg(i),(v(j,itg(i)),j=0,2)
-c      enddo
+c     write(*,*) 'initialnet '
+c     do i=1,ntg
+c     write(*,'(i10,3(1x,e11.4))') itg(i),(v(j,itg(i)),j=0,2)
+c     enddo
 !     
       return
       end

@@ -2,18 +2,18 @@
 
 chomp($date=`date`);
 
-# inserting the date into CalculiX.c
+# inserting the date into ccx_2.21.c
 
-@ARGV="CalculiX.c";
+@ARGV="ccx_2.21.c";
 $^I=".old";
 while(<>){
     s/You are using an executable made on.*/You are using an executable made on $date\\n");/g;
     print;
 }
 
-# inserting the date into CalculiXstep.c
+# inserting the date into ccx_2.21step.c
 
-@ARGV="CalculiXstep.c";
+@ARGV="ccx_2.21step.c";
 $^I=".old";
 while(<>){
     s/You are using an executable made on.*/You are using an executable made on $date\\n");/g;
@@ -29,6 +29,6 @@ while(<>){
     print;
 }
 
-system "rm -f CalculiX.c.old";
-system "rm -f CalculiXstep.c.old";
+system "rm -f ccx_2.21.c.old";
+system "rm -f ccx_2.21step.c.old";
 system "rm -f frd.c.old";

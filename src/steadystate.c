@@ -1,5 +1,5 @@
 /*     CalculiX - A 3-dimensional finite element program                   */
-/*              Copyright (C) 1998-2015 Guido Dhondt                          */
+/*              Copyright (C) 1998-2023 Guido Dhondt                          */
 
 /*     This program is free software; you can redistribute it and/or     */
 /*     modify it under the terms of the GNU General Public License as    */
@@ -1241,8 +1241,8 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		  
 	  NNEW(zc,double,neq[1]*nev);
 	  for(i=0;i<nev;i++){
-	    opmain(&neq[1],&z[(long long)i*neq[1]],&zc[i*neq[1]],adc,auc,
-			jq,irow);
+	    FORTRAN(op,(&neq[1],&z[(long long)i*neq[1]],&zc[i*neq[1]],adc,auc,
+			jq,irow));
 	  }
 	  SFREE(adc);SFREE(auc);
 	      
@@ -1287,8 +1287,8 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	      
 	  NNEW(zc,double,neq[1]*nev);
 	  for(i=0;i<nev;i++){
-	    opmain(&neq[1],&z[(long long)i*neq[1]],&zc[i*neq[1]],adc,auc,
-			jq,irow);
+	    FORTRAN(op,(&neq[1],&z[(long long)i*neq[1]],&zc[i*neq[1]],adc,auc,
+			jq,irow));
 	  }
 	  SFREE(adc);SFREE(auc);
 	      
@@ -1517,7 +1517,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	  }
 	}
 		
-	opmain(&neq[1],ubr,mubr,adb,aub,jq,irow);
+	FORTRAN(op,(&neq[1],ubr,mubr,adb,aub,jq,irow));
       }
 	  
       /* imaginary part of forces */
@@ -1690,7 +1690,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	  }
 	}
 	      
-	opmain(&neq[1],ubi,mubi,adb,aub,jq,irow);
+	FORTRAN(op,(&neq[1],ubi,mubi,adb,aub,jq,irow));
 
 	/* calculating the eigenmodes x mass x particular solution */
 
@@ -2068,6 +2068,14 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	  thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
 	  ielprop,prop,sti);
+      csv(co,&nkg,kon,ipkon,lakon,&neg,vr,stnr,inum,nmethod,
+	  kode,filab,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
+	  nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
+	  ntrans,orab,ielorien,norien,description,ipneigh,neigh,
+	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&neg,
+	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
+	  thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
+	  ielprop,prop,sti);
 
       if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
 
@@ -2284,6 +2292,14 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
       }
 
       frd(co,&nkg,kon,ipkon,lakon,&neg,vi,stni,inum,nmethod,
+	  kode,filab,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
+	  nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
+	  ntrans,orab,ielorien,norien,description,ipneigh,neigh,
+	  mi,stx,va,vp,stna,stnp,vmax,stnmax,&ngraph,veold,ener,&neg,
+	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
+	  thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
+	  ielprop,prop,sti);
+      csv(co,&nkg,kon,ipkon,lakon,&neg,vi,stni,inum,nmethod,
 	  kode,filab,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
 	  nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
 	  ntrans,orab,ielorien,norien,description,ipneigh,neigh,
@@ -2751,8 +2767,8 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		      
 	    NNEW(zc,double,neq[1]*nev);
 	    for(i=0;i<nev;i++){
-	      opmain(&neq[1],&z[(long long)i*neq[1]],&zc[i*neq[1]],
-			  adc,auc,jq,irow);
+	      FORTRAN(op,(&neq[1],&z[(long long)i*neq[1]],&zc[i*neq[1]],
+			  adc,auc,jq,irow));
 	    }
 	    SFREE(adc);SFREE(auc);
 		      
@@ -2798,8 +2814,8 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		      
 	    NNEW(zc,double,neq[1]*nev);
 	    for(i=0;i<nev;i++){
-	      opmain(&neq[1],&z[(long long)i*neq[1]],&zc[i*neq[1]],adc,auc,
-			  jq,irow);
+	      FORTRAN(op,(&neq[1],&z[(long long)i*neq[1]],&zc[i*neq[1]],adc,auc,
+			  jq,irow));
 	    }
 	    SFREE(adc);SFREE(auc);
 		      
@@ -2979,7 +2995,28 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	    }
 	  }
 		  
-	  opmain(&neq[1],ubr,mubr,adb,aub,jq,irow);
+	  FORTRAN(op,(&neq[1],ubr,mubr,adb,aub,jq,irow));
+		  
+	  /*	  for(i=0;i<neq[1];i++){
+	    br[i]+=freq[l]*(freq[l]*mubr[i]);
+	    bi[i]+=freq[l]*(-alpham*mubr[i]-betam*fr[i]);
+	    }*/
+	      
+	  /* real and imaginary modal coefficients */
+		  
+	  /*	  for(i=0;i<nev;i++){
+	    aa[i]=0.;
+	    for(j=0;j<neq[1];j++){
+	      aa[i]+=z[(long long)i*neq[1]+j]*br[j];
+	    }
+	  }
+		  
+	  for(i=0;i<nev;i++){
+	    bb[i]=0.;
+	    for(j=0;j<neq[1];j++){
+	      bb[i]+=z[(long long)i*neq[1]+j]*bi[j];
+	    }
+	    }*/
 
 	  /* calculating the eigenmodes x mass x particular solution */
 
@@ -3331,6 +3368,14 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	}
 
 	frd(co,&nkg,kon,ipkon,lakon,&neg,vr,stn,inum,nmethod,
+	    kode,filab,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
+	    nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
+	    ntrans,orab,ielorien,norien,description,ipneigh,neigh,
+	    mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&neg,
+	    cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
+	    thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
+	    ielprop,prop,sti);
+	csv(co,&nkg,kon,ipkon,lakon,&neg,vr,stn,inum,nmethod,
 	    kode,filab,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
 	    nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
 	    ntrans,orab,ielorien,norien,description,ipneigh,neigh,

@@ -1,6 +1,6 @@
 !
 !     CalculiX - A 3-dimensional finite element program
-!              Copyright (C) 1998-2015 Guido Dhondt
+!              Copyright (C) 1998-2023 Guido Dhondt
 !
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -404,13 +404,11 @@
                   write(*,*) '         frequency or bucking calculation'
                else
                   write(*,*) 
-     &                '*WARNING reading *NODE/EL/CONTACT FILE:'
-                  write(*,*) '         selection of CEEQ or CE or PE'
+     &            '*WARNING in elprints: selection of CEEQ or CE or PE'
                   write(*,*) '         is converted into PEEQ; no distin
      &ction'
                   write(*,*) 
-     &                 '         is made between PEEQ, CEEQ, CE and PE'
-                  write(*,*)
+     &             '        is made between PEEQ, CEEQ, CE and PE'
                   filab(6)(1:4)='PEEQ'
                   filab(6)(6:6)=elemsys
                   filab(6)(7:87)=noset

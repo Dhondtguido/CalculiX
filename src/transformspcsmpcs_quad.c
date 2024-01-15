@@ -1,5 +1,5 @@
 /*     CalculiX - A 3-dimensional finite element program                 */
-/*              Copyright (C) 1998-2011 Guido Dhondt                     */
+/*              Copyright (C) 1998-2023 Guido Dhondt                     */
 
 /*     This program is free software; you can redistribute it and/or     */
 /*     modify it under the terms of the GNU General Public License as    */
@@ -69,8 +69,8 @@ void transformspcsmpcs_quad(ITG *nboun,ITG *ndirboun,ITG *nodeboun,
   char *labmpc2=NULL;
 
   ITG i,j,jj,ndimboun2,ndimmpc2a,ndimmpc2b,node,nodedep,nodeind,
-    ndir,ndirdep,ndirind,ist,index,ifree,idof,id,debug,
-    mpcfree2,memmpc_2,newnode,
+    ndir,ndirdep,ndirind,ist,index,ifree,idof,id,nhelp,debug,
+    mpcfree2,memmpc_2,nodevdep,nodewdep,nodevind,nodewind,newnode,
     *ndirboun2=NULL, *nodeboun2=NULL, *ipompc2=NULL, *nodempc2=NULL,
     ndimforc2,*ikboun2=NULL, *ilboun2=NULL, *ikmpc2=NULL, *ilmpc2=NULL,
     *nodeforc2=NULL,*ndirforc2=NULL;
@@ -133,29 +133,125 @@ void transformspcsmpcs_quad(ITG *nboun,ITG *ndirboun,ITG *nodeboun,
     ndir=ndirboun[i];
     node=nodeboun[i];
     idof=8*(node-1)+ndir;
+    nhelp=0;
+    nodevdep=0;
+    nodewdep=0;
+    
+    if(nhelp==3 && ndirboun[i]<4){
 
-    /* no slave node or corner slave node
-       nothing to do*/
+      /* slave node & mid node for quadratic elements
+	 spc is transformed to mpc
+	 create new node */
 	
-    xboun2[*nboun2]=fixed_disp;
-    ndirboun2[*nboun2]=ndir;
-    nodeboun2[*nboun2]=node;
-    FORTRAN(nident,(ikboun2,&idof,nboun2,&id));
-    for( j=*nboun2;j>id;j--){
-      ikboun2[j]=ikboun2[j-1];
-      ilboun2[j]=ilboun2[j-1];
-    }
-    ikboun2[id]=idof;
-    ilboun2[id]=*nboun2+1;    
-    *nboun2=*nboun2+1;
-    if(*nboun2+1>ndimboun2){
-      ndimboun2=ndimboun2*1.5+1;
-      RENEW(xboun2,double,ndimboun2);
-      RENEW(ndirboun2,ITG, ndimboun2);
-      RENEW(nodeboun2,ITG, ndimboun2);
-      RENEW(ikboun2,ITG, ndimboun2);
-      RENEW(ilboun2,ITG, ndimboun2);
-    }
+      *nk2=*nk2+1;
+      newnode=*nk+*nk2;
+      
+      // add spc's
+      
+      for(jj=0;jj<4;jj++){
+	if(jj==ndir){
+	  xboun2[*nboun2]=fixed_disp;
+	}else{
+	  xboun2[*nboun2]=0.0;   
+	}
+	ndirboun2[*nboun2]=jj;
+	nodeboun2[*nboun2]=newnode;
+	idof=8*(newnode-1)+jj;
+	FORTRAN(nident,(ikboun2,&idof,nboun2,&id));
+	
+	for( j=*nboun2;j>id;j--){
+	  ikboun2[j]=ikboun2[j-1];
+	  ilboun2[j]=ilboun2[j-1];
+	}
+	ikboun2[id]=idof;
+	ilboun2[id]=*nboun2+1;    
+	*nboun2=*nboun2+1;
+	if(*nboun2+1>ndimboun2){
+	  ndimboun2=ndimboun2*1.5+1;
+	  RENEW(xboun2,double,ndimboun2);
+	  RENEW(ndirboun2,ITG, ndimboun2);
+	  RENEW(nodeboun2,ITG, ndimboun2);
+	  RENEW(ikboun2,ITG, ndimboun2);
+	  RENEW(ilboun2,ITG, ndimboun2);
+	}
+      }
+      
+      // add mpc
+      
+      if(*nmpc2+1>ndimmpc2a){
+	ndimmpc2a=ndimmpc2a*1.5+1;
+	RENEW(ipompc2,ITG, ndimmpc2a);
+	RENEW(ikmpc2,ITG, ndimmpc2a);
+	RENEW(ilmpc2,ITG, ndimmpc2a);
+	RENEW(labmpc2,char,20*ndimmpc2a+1);
+      } 
+      if(ifree+4>ndimmpc2b){
+	ndimmpc2b=ndimmpc2b*1.5+4;
+	RENEW(coefmpc2,double,ndimmpc2b);
+	RENEW(nodempc2,ITG, 3*ndimmpc2b);
+      }	
+      for(jj=0;jj<20;jj++){
+	labmpc2[20*(*nmpc2)+jj]=' ';}
+      ipompc2[*nmpc2]=ifree;
+      
+      nodempc2[0+(ifree-1)*3]=node;
+      nodempc2[1+(ifree-1)*3]=ndir;
+      nodempc2[2+(ifree-1)*3]=ifree+1;
+      coefmpc2[ifree-1]=(b1);
+      
+      ifree++;
+      nodempc2[0+(ifree-1)*3]=nodevdep;
+      nodempc2[1+(ifree-1)*3]=ndir;
+      nodempc2[2+(ifree-1)*3]=ifree+1;
+      coefmpc2[ifree-1]=(a1);
+      
+      ifree++;
+      nodempc2[0+(ifree-1)*3]=nodewdep;
+      nodempc2[1+(ifree-1)*3]=ndir;
+      nodempc2[2+(ifree-1)*3]=ifree+1;
+      coefmpc2[ifree-1]=(a1);
+      
+      ifree++;
+      nodempc2[0+(ifree-1)*3]=newnode;
+      nodempc2[1+(ifree-1)*3]=ndir;
+      nodempc2[2+(ifree-1)*3]=0;
+      coefmpc2[ifree-1]=-1.0;
+      
+      ifree++;
+      idof=8*(node-1)+ndir;
+      FORTRAN(nident,(ikmpc2,&idof,nmpc2,&id));
+      for( j=*nmpc2;j>id;j--){
+	ikmpc2[j]=ikmpc2[j-1];
+	ilmpc2[j]=ilmpc2[j-1];
+      }
+      ikmpc2[id]=idof;
+      ilmpc2[id]=*nmpc2+1;    
+      *nmpc2=*nmpc2+1; 
+    }else{
+
+      /* no slave node or corner slave node
+	 nothing to do*/
+	
+      xboun2[*nboun2]=fixed_disp;
+      ndirboun2[*nboun2]=ndir;
+      nodeboun2[*nboun2]=node;
+      FORTRAN(nident,(ikboun2,&idof,nboun2,&id));
+      for( j=*nboun2;j>id;j--){
+	ikboun2[j]=ikboun2[j-1];
+	ilboun2[j]=ilboun2[j-1];
+      }
+      ikboun2[id]=idof;
+      ilboun2[id]=*nboun2+1;    
+      *nboun2=*nboun2+1;
+      if(*nboun2+1>ndimboun2){
+	ndimboun2=ndimboun2*1.5+1;
+	RENEW(xboun2,double,ndimboun2);
+	RENEW(ndirboun2,ITG, ndimboun2);
+	RENEW(nodeboun2,ITG, ndimboun2);
+	RENEW(ikboun2,ITG, ndimboun2);
+	RENEW(ilboun2,ITG, ndimboun2);
+      }
+    }  
   }
   if(debug==1)printf("nboun2 %" ITGFORMAT "\n",*nboun2);
   RENEW(xboun2,double,*nboun2);
@@ -170,6 +266,7 @@ void transformspcsmpcs_quad(ITG *nboun,ITG *ndirboun,ITG *nodeboun,
     nodedep=nodempc[0+(ist-1)*3];
     ndirdep=nodempc[1+(ist-1)*3];
     coeffdep=coefmpc[ist-1];
+    nhelp=0;
 
     if(*nmpc2+1>ndimmpc2a){
       ndimmpc2a=ndimmpc2a*1.5+1;
@@ -180,17 +277,47 @@ void transformspcsmpcs_quad(ITG *nboun,ITG *ndirboun,ITG *nodeboun,
     }    
     for(jj=0;jj<20;jj++){
       labmpc2[20*(*nmpc2)+jj]=labmpc[20*i+jj];}
-    ipompc2[*nmpc2]=ifree;
-    nodempc2[0+(ifree-1)*3]=nodedep;
-    nodempc2[1+(ifree-1)*3]=ndirdep;
-    nodempc2[2+(ifree-1)*3]=ifree+1;
-    coefmpc2[ifree-1]=coeffdep;
+    if(nhelp==3 && ndirdep<4){// slave node & mid node for quadratic elements
 
-    ifree++;
-    if(ifree>ndimmpc2b){
-      ndimmpc2b=ndimmpc2b*1.5+1;
-      RENEW(coefmpc2,double,ndimmpc2b);
-      RENEW(nodempc2,ITG, 3*ndimmpc2b);
+      // find adjacent nodes
+	
+      if(ifree+3>ndimmpc2b){
+	ndimmpc2b=ndimmpc2b*1.5+3;
+	RENEW(coefmpc2,double,ndimmpc2b);
+	RENEW(nodempc2,ITG, 3*ndimmpc2b);
+      }	
+      ipompc2[*nmpc2]=ifree;
+      nodempc2[0+(ifree-1)*3]=nodedep;
+      nodempc2[1+(ifree-1)*3]=ndirdep;
+      nodempc2[2+(ifree-1)*3]=ifree+1;
+      coefmpc2[ifree-1]=coeffdep*(b1);
+      
+      ifree++;
+      nodempc2[0+(ifree-1)*3]=nodevdep;
+      nodempc2[1+(ifree-1)*3]=ndirdep;
+      nodempc2[2+(ifree-1)*3]=ifree+1;
+      coefmpc2[ifree-1]=coeffdep*(a1);
+      
+      ifree++;
+      nodempc2[0+(ifree-1)*3]=nodewdep;
+      nodempc2[1+(ifree-1)*3]=ndirdep;
+      nodempc2[2+(ifree-1)*3]=ifree+1;
+      coefmpc2[ifree-1]=coeffdep*(a1);
+
+      ifree++;
+    }else{ // no slave node or corner slave node or mpc not for displacements 
+      ipompc2[*nmpc2]=ifree;
+      nodempc2[0+(ifree-1)*3]=nodedep;
+      nodempc2[1+(ifree-1)*3]=ndirdep;
+      nodempc2[2+(ifree-1)*3]=ifree+1;
+      coefmpc2[ifree-1]=coeffdep;
+
+      ifree++;
+      if(ifree>ndimmpc2b){
+	ndimmpc2b=ndimmpc2b*1.5+1;
+	RENEW(coefmpc2,double,ndimmpc2b);
+	RENEW(nodempc2,ITG, 3*ndimmpc2b);
+      }
     }
     index=nodempc[2+(ist-1)*3];
     if(index!=0){
@@ -198,17 +325,44 @@ void transformspcsmpcs_quad(ITG *nboun,ITG *ndirboun,ITG *nodeboun,
 	nodeind=nodempc[0+(index-1)*3];
 	ndirind=nodempc[1+(index-1)*3];
 	coeffind=coefmpc[index-1];
-   
-	nodempc2[0+(ifree-1)*3]=nodeind;
-	nodempc2[1+(ifree-1)*3]=ndirind;
-	coefmpc2[ifree-1]=coeffind;
-	ifree++;
-	if(ifree>ndimmpc2b){
-	  ndimmpc2b=ndimmpc2b*1.5+1;
-	  RENEW(coefmpc2,double,ndimmpc2b);
-	  RENEW(nodempc2,ITG, 3*ndimmpc2b);
-	}	    
+	nhelp=0;
+	
+	if(nhelp==3 && ndirdep<4){// slave node & mid node for quadratic elements
+	  // find adjacent nodes
+	    
+	  if(ifree+3>ndimmpc2b){
+	    ndimmpc2b=ndimmpc2b*1.5+3;
+	    RENEW(coefmpc2,double,ndimmpc2b);
+	    RENEW(nodempc2,ITG, 3*ndimmpc2b);
+	  }
+	  nodempc2[0+(ifree-1)*3]=nodeind;
+	  nodempc2[1+(ifree-1)*3]=ndirind;
+	  nodempc2[2+(ifree-1)*3]=ifree+1;   
+	  coefmpc2[ifree-1]=coeffind*(b1);
+	  ifree++;
+
+	  nodempc2[0+(ifree-1)*3]=nodevind;
+	  nodempc2[1+(ifree-1)*3]=ndirind;
+	  nodempc2[2+(ifree-1)*3]=ifree+1;
+	  coefmpc2[ifree-1]=coeffind*(a1);
+	  ifree++;
+
+	  nodempc2[0+(ifree-1)*3]=nodewind;
+	  nodempc2[1+(ifree-1)*3]=ndirind;
+	  coefmpc2[ifree-1]=coeffind*(a1);
+	  ifree++;	    	    
+	}else{// no slave node or corner slave node or mpc not for displacements   
+	  nodempc2[0+(ifree-1)*3]=nodeind;
+	  nodempc2[1+(ifree-1)*3]=ndirind;
+	  coefmpc2[ifree-1]=coeffind;
+	  ifree++;
+	  if(ifree>ndimmpc2b){
+	    ndimmpc2b=ndimmpc2b*1.5+1;
+	    RENEW(coefmpc2,double,ndimmpc2b);
+	    RENEW(nodempc2,ITG, 3*ndimmpc2b);
+	  }	    
 	  
+	}	
 	index=nodempc[2+(index-1)*3];
 	if(index==0){
 	  nodempc2[2+(ifree-2)*3]=0;
@@ -252,19 +406,54 @@ void transformspcsmpcs_quad(ITG *nboun,ITG *ndirboun,ITG *nodeboun,
     ndir=ndirforc[i];
     node=nodeforc[2*i];
     idof=8*(node-1)+ndir;
+    nhelp=0;
+    nodevdep=0;
+    nodewdep=0;
+
+    if(nhelp==3){
+      if(*nforc2+4>ndimforc2){
+	ndimforc2=ndimforc2*1.5+3;
+	RENEW(xforc2,double,ndimforc2);
+	RENEW(ndirforc2,ITG, ndimforc2);
+	RENEW(nodeforc2,ITG, 2*ndimforc2);
+      }
+      
+      //mid node
+      
+      xforc2[*nforc2]=fixed_forc*b1;
+      ndirforc2[*nforc2]=ndir;
+      nodeforc2[2**nforc2]=node;
+      *nforc2=*nforc2+1;
+      
+      //corner node 1
+      
+      xforc2[*nforc2]=fixed_forc*a1;
+      ndirforc2[*nforc2]=ndir;
+      nodeforc2[2**nforc2]=nodevdep;
+      *nforc2=*nforc2+1;
+      
+      //corner node 2
+      
+      xforc2[*nforc2]=fixed_forc*a1;
+      ndirforc2[*nforc2]=ndir;
+      nodeforc2[2**nforc2]=nodewdep;
+      *nforc2=*nforc2+1;      
+      
+    }else{
 	
-    //nothing to do
+      //nothing to do
 	
-    xforc2[*nforc2]=fixed_forc;
-    ndirforc2[*nforc2]=ndir;
-    nodeforc2[2**nforc2]=node;
-    *nforc2=*nforc2+1;
-    if(*nforc2+1>ndimforc2){
-      ndimforc2=ndimforc2*1.5+1;
-      RENEW(xforc2,double,ndimforc2);
-      RENEW(ndirforc2,ITG, ndimforc2);
-      RENEW(nodeforc2,ITG, 2*ndimforc2);
-    }      
+      xforc2[*nforc2]=fixed_forc;
+      ndirforc2[*nforc2]=ndir;
+      nodeforc2[2**nforc2]=node;
+      *nforc2=*nforc2+1;
+      if(*nforc2+1>ndimforc2){
+	ndimforc2=ndimforc2*1.5+1;
+	RENEW(xforc2,double,ndimforc2);
+	RENEW(ndirforc2,ITG, ndimforc2);
+	RENEW(nodeforc2,ITG, 2*ndimforc2);
+      }      
+    }
   }
   if(debug==1)printf("nforc2 %" ITGFORMAT "\n\n",*nforc2); 
   

@@ -1,5 +1,5 @@
 /*     CalculiX - A 3-dimensional finite element program                   */
-/*              Copyright (C) 1998-2015 Guido Dhondt                          */
+/*              Copyright (C) 1998-2023 Guido Dhondt                          */
 
 /*     This program is free software; you can redistribute it and/or     */
 /*     modify it under the terms of the GNU General Public License as    */
@@ -381,6 +381,14 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
   }
 
   frd(cot,&nkt,kont,ipkont,lakont,&net0,vt,stnt,inumt,nmethod,
+      kode,filab,eent,t1t,fnt,time,epnt,ielmatt,matname,enernt,xstatent,
+      nstate_,istep,iinc,ithermal,qfnt,&mode,noddiam,trab,inotrt,
+      ntrans,orab,ielorien,norien,description,ipneigh,neigh,
+      mi,stit,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&net,
+      cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emnt,
+      thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,ielprop,
+      prop,sti);
+  csv(cot,&nkt,kont,ipkont,lakont,&net0,vt,stnt,inumt,nmethod,
       kode,filab,eent,t1t,fnt,time,epnt,ielmatt,matname,enernt,xstatent,
       nstate_,istep,iinc,ithermal,qfnt,&mode,noddiam,trab,inotrt,
       ntrans,orab,ielorien,norien,description,ipneigh,neigh,

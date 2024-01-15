@@ -1,6 +1,6 @@
 !
 !     CalculiX - A 3-dimensional finite element program
-!              Copyright (C) 1998-2007 Guido Dhondt
+!              Copyright (C) 1998-2023 Guido Dhondt
 !
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -16,8 +16,8 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-      subroutine springstiff_n2f(xl,stiff,konl,voldl,s,imat,elcon,
-     &  nelcon,ncmat_,ntmat_,nope,lakonl,t1l,kode,elconloc,plicon,
+      subroutine springstiff_n2f(xl,elas,konl,voldl,s,imat,elcon,nelcon,
+     &  ncmat_,ntmat_,nope,lakonl,t1l,kode,elconloc,plicon,
      &  nplicon,npmat_,iperturb,springarea,nmethod,mi,ne0,
      &  nstate_,xstateini,xstate,reltime,nasym,ielorien,orab,
      &  norien,nelem)
@@ -35,7 +35,7 @@
      &  iperturb(*),nmethod,mi(*),ne0,nstate_,nasym,ielorien(mi(3),*),
      &  norien,nelem,idof,idof1,idof2,iorien
 !
-      real*8 xl(3,10),stiff(21),ratio(9),pproj(3),val,shp2(7,9),
+      real*8 xl(3,10),elas(21),ratio(9),pproj(3),val,shp2(7,9),
      &  al(3),s(60,60),voldl(0:mi(2),10),pl(3,10),xn(3),dm,
      &  c1,c2,c3,c4,alpha,beta,elcon(0:ncmat_,ntmat_,*),xm(3),
      &  xmu(3,3,10),dxmu(3,10),dval(3,10),fpu(3,3,10),xi,et,
@@ -430,16 +430,16 @@
 !        exponential overclosure
 !
          if(dabs(elcon(2,1,imat)).lt.1.d-30) then
-            stiff(1)=0.d0
-            stiff(2)=0.d0
+            elas(1)=0.d0
+            elas(2)=0.d0
          else
             alpha=elcon(2,1,imat)*springarea(1)
             beta=elcon(1,1,imat)
             if(-beta*clear.gt.23.d0-dlog(alpha)) then
                beta=(dlog(alpha)-23.d0)/clear
             endif
-            stiff(1)=dexp(-beta*clear+dlog(alpha))
-            stiff(2)=-beta*stiff(1)
+            elas(1)=dexp(-beta*clear+dlog(alpha))
+            elas(2)=-beta*elas(1)
          endif
       elseif(int(elcon(3,1,imat)).eq.2) then
 !     
@@ -447,9 +447,9 @@
 !
          pi=4.d0*datan(1.d0)
          eps=elcon(1,1,imat)*pi/elcon(2,1,imat)
-         stiff(1)=(-springarea(1)*elcon(2,1,imat)*clear*
+         elas(1)=(-springarea(1)*elcon(2,1,imat)*clear*
      &            (0.5d0+datan(-clear/eps)/pi))
-         stiff(2)=-springarea(1)*elcon(2,1,imat)*
+         elas(2)=-springarea(1)*elcon(2,1,imat)*
      &            ((0.5d0+datan(-clear/eps)/pi)-
      &             clear/(pi*eps*(1.d0+(clear/eps)**2)))
       elseif(int(elcon(3,1,imat)).eq.3) then
@@ -477,14 +477,14 @@
             dpresdoverlap=(yiso(id+1)-yiso(id))/(xiso(id+1)-xiso(id))
             pres=yiso(id)+dpresdoverlap*(overlap-xiso(id))
          endif
-         stiff(1)=springarea(1)*pres
-         stiff(2)=-springarea(1)*dpresdoverlap
+         elas(1)=springarea(1)*pres
+         elas(2)=-springarea(1)*dpresdoverlap
       endif
 !
 !     contact force
 !
       do i=1,3
-         fnl(i)=-stiff(1)*xn(i)
+         fnl(i)=-elas(1)*xn(i)
       enddo
 !
 !     derivatives of the jacobian vector w.r.t. the displacement
@@ -542,8 +542,8 @@
 !
       c1=1.d0/dm
       c2=c1*c1
-      c3=stiff(2)*c2
-      c4=stiff(1)*c1
+      c3=elas(2)*c2
+      c4=elas(1)*c1
 !
 !     derivatives of the forces w.r.t. the displacement vectors
 !

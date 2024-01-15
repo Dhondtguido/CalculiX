@@ -1,6 +1,6 @@
 !
 !     CalculiX - A 3-dimensional finite element program
-!              Copyright (C) 1998-2015 Guido Dhondt
+!              Copyright (C) 1998-2023 Guido Dhondt
 !
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -16,8 +16,7 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-      subroutine changekon(ne,ipkon,lakon,mi,nkon,thicke,ielmat,kon,
-     &     iponor)
+      subroutine changekon(ne,ipkon,lakon,mi,nkon,thicke,ielmat,kon)
 !
 !     for composites the connectivity has to be changed to 
 !     allow for the multiple expansions of the composite elements.
@@ -41,12 +40,11 @@
       character*8 lakon(*)
 !     
       integer ne,ipkon(*),mi(*),nkon,ielmat(mi(3),*),nkondiff,i,j,k,
-     &     kon(*),nexp,nopeexp,nlayer,ipointer,iponor(2,*)
+     &     kon(*),nexp,nopeexp,nlayer,ipointer
 !     
       real*8 thicke(mi(3),*)
 !     
       integer,dimension(:),allocatable::koncp
-      integer,dimension(:,:),allocatable::iponorcp
       real*8,dimension(:,:),allocatable::thickecp
 !     
 !     calculate the extra space needed in kon
@@ -73,7 +71,6 @@
       ipointer=nkon
 !     
       allocate(koncp(nkon))
-      allocate(iponorcp(2,nkon))
       allocate(thickecp(mi(3),nkon))
 !     
       do i=ne,1,-1
@@ -188,9 +185,6 @@
           do k=1,mi(3)
             thickecp(k,ipointer+j)=thicke(k,ipkon(i)+j)
           enddo
-          do k=1,2
-            iponorcp(k,ipointer+j)=iponor(k,ipkon(i)+j)
-          enddo
         enddo
         ipkon(i)=ipointer
       enddo
@@ -200,13 +194,9 @@
         do j=1,mi(3)
           thicke(j,i)=thickecp(j,i)
         enddo
-        do j=1,2
-          iponor(j,i)=iponorcp(j,i)
-        enddo
       enddo
 !     
       deallocate(koncp)
-      deallocate(iponorcp)
       deallocate(thickecp)
 !     
       return

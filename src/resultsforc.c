@@ -1,5 +1,5 @@
 /*     CalculiX - A 3-dimensional finite element program                 */
-/*              Copyright (C) 1998-2015 Guido Dhondt                          */
+/*              Copyright (C) 1998-2023 Guido Dhondt                          */
 
 /*     This program is free software; you can redistribute it and/or     */
 /*     modify it under the terms of the GNU General Public License as    */
@@ -39,6 +39,7 @@ void resultsforc(ITG *nk,double *f,double *fn,ITG *nactdof,ITG *ipompc,
     
     if(*calcul_fn==1){
 	for(i=0;i<*nmpc;i++){
+	    if(strcmp1(&labmpc[20*i],"FLUID")==0) continue;
 	    ist=ipompc[i]-1;
 	    node=nodempc[3*ist]-1;
 	    ndir=nodempc[3*ist+1];
@@ -75,6 +76,7 @@ void resultsforc(ITG *nk,double *f,double *fn,ITG *nactdof,ITG *ipompc,
 
     if(*calcul_fn==1){
 	for(i=0;i<*nmpc;i++){
+	    if(strcmp1(&labmpc[20*i],"FLUID")==0) continue;
 	    ist=ipompc[i]-1;
 	    node=nodempc[3*ist]-1;
 	    ndir=nodempc[3*ist+1];
@@ -136,7 +138,7 @@ void resultsforc(ITG *nk,double *f,double *fn,ITG *nactdof,ITG *ipompc,
 }
 /*c!
 c!     CalculiX - A 3-dimensional finite element program
-c!              Copyright (C) 1998-2015 Guido Dhondt
+c!              Copyright (C) 1998-2023 Guido Dhondt
 c!
 c!     This program is free software; you can redistribute it and/or
 c!     modify it under the terms of the GNU General Public License as

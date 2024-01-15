@@ -1,5 +1,5 @@
 /*     CalculiX - A 3-dimensional finite element program                   */
-/*              Copyright (C) 1998-2015 Guido Dhondt                          */
+/*              Copyright (C) 1998-2023 Guido Dhondt                          */
 
 /*     This program is free software; you can redistribute it and/or     */
 /*     modify it under the terms of the GNU General Public License as    */
@@ -254,9 +254,9 @@ void dynboun(double *amta,ITG *namta,ITG *nam,double *ampli, double *time,
       bact[i]=bplus[i];
     }
     NNEW(bnew,double,neq[1]);
-    opmain(&neq[1],b1,bplus,adb,aub,jq,irow);
+    FORTRAN(op,(&neq[1],b1,bplus,adb,aub,jq,irow));
     for(i=0;i<neq[1];i++){bnew[i]=-bplus[i];}
-    opmain(&neq[1],b2,bplus,ad,au,jq,irow);
+    FORTRAN(op,(&neq[1],b2,bplus,ad,au,jq,irow));
     if(*icorrect==2){
       for(i=0;i<neq[1];i++){
 	bnew[i]-=bplus[i];

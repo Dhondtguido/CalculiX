@@ -1,5 +1,5 @@
 /*     CalculiX - A 3-dimensional finite element program                 */
-/*              Copyright (C) 1998-2015 Guido Dhondt                          */
+/*              Copyright (C) 1998-2023 Guido Dhondt                          */
 
 /*     This program is free software; you can redistribute it and/or     */
 /*     modify it under the terms of the GNU General Public License as    */
@@ -71,7 +71,7 @@ void solveeq(double *adb,double *aub,double *adl,double *b,double *sol,
     /* multiplying the difference of the original matrix
        with the lumped matrix with the actual solution */
 
-    opmain(neq,sol,aux,adb,aub,jq,irow);
+    FORTRAN(op,(neq,sol,aux,adb,aub,jq,irow));
 
     for(i=0;i<*neq;i++){
       sol[i]=(b[i]-aux[i])*adl[i];

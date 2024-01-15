@@ -1,5 +1,5 @@
 /*     CalculiX - A 3-dimensional finite element program                 */
-/*              Copyright (C) 1998-2015 Guido Dhondt                     */
+/*              Copyright (C) 1998-2023 Guido Dhondt                     */
 
 /*     This program is free software; you can redistribute it and/or     */
 /*     modify it under the terms of the GNU General Public License as    */
@@ -273,7 +273,7 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 			  iponexp,nmpc,labmpc,ipompc,nodempc,ipretinfo,
 			  kon,ipkon,lakon,iponoel,inoel,iponor2d,knor2d,
 			  ipoface,nodface,ne,x,y,z,xo,yo,zo,nx,ny,nz,nodes,
-			  dist,ne2d,nod1st,nod2nd3rd,extnor,nodedesi,&ndesi));
+			  dist,ne2d,nod1st,nod2nd3rd,extnor));
     	  
   SFREE(konfa);SFREE(ipkonfa);SFREE(lakonfa);SFREE(iponor);SFREE(xnor);
   SFREE(iponoelfa);SFREE(inoelfa);SFREE(iponexp);SFREE(ipretinfo);
@@ -305,6 +305,14 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   /* storing the coordinates and topology (if not already done so) */
 
   frd(co,nk,kon,ipkon,lakon,&ne0,v,stn,inum,&nmethodnew,
+      kode,filabnew,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
+      nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
+      ntrans,orab,ielorien,norien,description,ipneigh,neigh,
+      mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
+      cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
+      thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
+      ielprop,prop,sti);
+  csv(co,nk,kon,ipkon,lakon,&ne0,v,stn,inum,&nmethodnew,
       kode,filabnew,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
       nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
       ntrans,orab,ielorien,norien,description,ipneigh,neigh,

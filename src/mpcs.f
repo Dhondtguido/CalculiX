@@ -1,6 +1,6 @@
 !
 !     CalculiX - A 3-dimensional finite element program
-!              Copyright (C) 1998-2015 Guido Dhondt
+!              Copyright (C) 1998-2023 Guido Dhondt
 !
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -34,7 +34,7 @@
       character*132 textpart(16)
 !
       integer istartset(*),iendset(*),ialset(*),ipompc(*),
-     &  nodempc(3,*),idirref,ier,ialeatoric,
+     &  nodempc(3,*),idirref,ier,
      &  nset,nset_,nalset,nalset_,nmpc,nmpc_,mpcfree,nk,nk_,ikmpc(*),
      &  ilmpc(*),ipkon(*),kon(*),i,node,ipos,istep,istat,n,ne_,
      &  j,k,nodeboun(*),ndirboun(*),ikboun(*),ilboun(*),ipoinpc(0:*),
@@ -43,7 +43,6 @@
 !
       real*8 coefmpc(3,*),co(3,*),xboun(*),ctrl(*)
 !
-      ialeatoric=0
       idirref=0
 !
       if(istep.gt.0) then
@@ -123,8 +122,7 @@ c                  if(noset.eq.set(j)) then
      &                      labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
      &                      nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
      &                      nboun,nboun_,inode,node,co,label,
-     &                      typeboun,iperturb,node,idirref,xboun,
-     &                      ialeatoric)
+     &                      typeboun,iperturb,node,idirref,xboun)
                      endif
                    enddo
 c     exit
@@ -167,8 +165,7 @@ c     enddo
      &                 labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
      &                 nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
      &                 nboun,nboun_,inode,node,co,label,
-     &                 typeboun,iperturb,node,idirref,xboun,
-     &                ialeatoric)
+     &                 typeboun,iperturb,node,idirref,xboun)
                endif
             endif
          enddo
@@ -185,8 +182,7 @@ c     enddo
      &        labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
      &        nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
      &        nboun,nboun_,inode,node,co,label,typeboun,
-     &        iperturb,node,idirref,xboun,
-     &        ialeatoric)
+     &        iperturb,node,idirref,xboun)
       else
 !
 !     the *MPC option implies a nonlinear geometric 

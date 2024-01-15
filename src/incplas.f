@@ -1,6 +1,6 @@
 !
 !     CalculiX - A 3-dimensional finite element program
-!              Copyright (C) 1998-2015 Guido Dhondt
+!              Copyright (C) 1998-2023 Guido Dhondt
 !
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -17,7 +17,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine incplas(elconloc,plconloc,xstate,xstateini,
-     &  stiff,emec,ithermal,icmd,beta,stre,vj,kode,
+     &  elas,emec,ithermal,icmd,beta,stre,vj,kode,
      &  ielas,amat,t1l,dtime,time,ttime,iel,iint,nstate_,mi,
      &  eloc,pgauss,nmethod,pnewdt,depvisc)
 !
@@ -43,7 +43,7 @@
      &  niso,nkin,ielas,iel,iint,nstate_,mi(*),id,leximp,lend,layer,
      &  kspt,kstep,kinc,iloop,nmethod,user_hardening,user_creep
 !
-      real*8 elconloc(*),stiff(21),emec(6),beta(6),stre(6),
+      real*8 elconloc(*),elas(21),emec(6),beta(6),stre(6),
      &  vj,plconloc(802),stbl(6),stril(6),xitril(6),
      &  ee,un,um,al,xk,cop,umb,umbb,dxitril,f0,d0,f1,d1,d2,xg(3,3),
      &  xs(3,3),xx(3,3),xn(3,3),xd(3,3),cpl(6),c(6),ci(6),
@@ -253,7 +253,9 @@ ccc         write(*,*) '*WARNING in incplas: dxitril < 0'
       endif
 !
 !        restoring the hardening curves for the actual temperature
-!        plconloc contains the true stresses.
+!        plconloc contains the true stresses. By multiplying by
+!        the Jacobian, yiso and ykin are Kirchhoff stresses, as
+!        required by the hyperelastic theory (cf. Simo, 1988).
 !
       niso=int(plconloc(801))
       nkin=int(plconloc(802))
@@ -364,127 +366,127 @@ c         write(*,*) 'no plastic deformation'
             xs(2,3)=stril(6)
             xs(3,2)=stril(6)
 !
-            stiff(1)=umb*(xg(1,1)*xg(1,1)+xg(1,1)*xg(1,1)-
+            elas(1)=umb*(xg(1,1)*xg(1,1)+xg(1,1)*xg(1,1)-
      &           2.d0*xg(1,1)*xg(1,1)/3.d0)
      &           -2.d0*(xs(1,1)*xg(1,1)+xg(1,1)*xs(1,1))/3.d0
      &           +xk*vj2*xg(1,1)*xg(1,1)
      &           -xk*(vj2-1.d0)*(xg(1,1)*xg(1,1)
      &           +xg(1,1)*xg(1,1))/2.d0
-            stiff(2)=umb*(xg(1,2)*xg(1,2)+xg(1,2)*xg(1,2)-
+            elas(2)=umb*(xg(1,2)*xg(1,2)+xg(1,2)*xg(1,2)-
      &           2.d0*xg(1,1)*xg(2,2)/3.d0)
      &           -2.d0*(xs(1,1)*xg(2,2)+xg(1,1)*xs(2,2))/3.d0
      &           +xk*vj2*xg(1,1)*xg(2,2)
      &           -xk*(vj2-1.d0)*(xg(1,2)*xg(1,2)
      &           +xg(1,2)*xg(1,2))/2.d0
-            stiff(3)=umb*(xg(2,2)*xg(2,2)+xg(2,2)*xg(2,2)-
+            elas(3)=umb*(xg(2,2)*xg(2,2)+xg(2,2)*xg(2,2)-
      &           2.d0*xg(2,2)*xg(2,2)/3.d0)
      &           -2.d0*(xs(2,2)*xg(2,2)+xg(2,2)*xs(2,2))/3.d0
      &           +xk*vj2*xg(2,2)*xg(2,2)
      &           -xk*(vj2-1.d0)*(xg(2,2)*xg(2,2)
      &           +xg(2,2)*xg(2,2))/2.d0
-            stiff(4)=umb*(xg(1,3)*xg(1,3)+xg(1,3)*xg(1,3)-
+            elas(4)=umb*(xg(1,3)*xg(1,3)+xg(1,3)*xg(1,3)-
      &           2.d0*xg(1,1)*xg(3,3)/3.d0)
      &           -2.d0*(xs(1,1)*xg(3,3)+xg(1,1)*xs(3,3))/3.d0
      &           +xk*vj2*xg(1,1)*xg(3,3)
      &           -xk*(vj2-1.d0)*(xg(1,3)*xg(1,3)
      &           +xg(1,3)*xg(1,3))/2.d0
-            stiff(5)=umb*(xg(2,3)*xg(2,3)+xg(2,3)*xg(2,3)-
+            elas(5)=umb*(xg(2,3)*xg(2,3)+xg(2,3)*xg(2,3)-
      &           2.d0*xg(2,2)*xg(3,3)/3.d0)
      &           -2.d0*(xs(2,2)*xg(3,3)+xg(2,2)*xs(3,3))/3.d0
      &           +xk*vj2*xg(2,2)*xg(3,3)
      &           -xk*(vj2-1.d0)*(xg(2,3)*xg(2,3)
      &           +xg(2,3)*xg(2,3))/2.d0
-            stiff(6)=umb*(xg(3,3)*xg(3,3)+xg(3,3)*xg(3,3)-
+            elas(6)=umb*(xg(3,3)*xg(3,3)+xg(3,3)*xg(3,3)-
      &           2.d0*xg(3,3)*xg(3,3)/3.d0)
      &           -2.d0*(xs(3,3)*xg(3,3)+xg(3,3)*xs(3,3))/3.d0
      &           +xk*vj2*xg(3,3)*xg(3,3)
      &           -xk*(vj2-1.d0)*(xg(3,3)*xg(3,3)
      &           +xg(3,3)*xg(3,3))/2.d0
-            stiff(7)=umb*(xg(1,1)*xg(1,2)+xg(1,2)*xg(1,1)-
+            elas(7)=umb*(xg(1,1)*xg(1,2)+xg(1,2)*xg(1,1)-
      &           2.d0*xg(1,1)*xg(1,2)/3.d0)
      &           -2.d0*(xs(1,1)*xg(1,2)+xg(1,1)*xs(1,2))/3.d0
      &           +xk*vj2*xg(1,1)*xg(1,2)
      &           -xk*(vj2-1.d0)*(xg(1,1)*xg(1,2)
      &           +xg(1,2)*xg(1,1))/2.d0
-            stiff(8)=umb*(xg(2,1)*xg(2,2)+xg(2,2)*xg(2,1)-
+            elas(8)=umb*(xg(2,1)*xg(2,2)+xg(2,2)*xg(2,1)-
      &           2.d0*xg(2,2)*xg(1,2)/3.d0)
      &           -2.d0*(xs(2,2)*xg(1,2)+xg(2,2)*xs(1,2))/3.d0
      &           +xk*vj2*xg(2,2)*xg(1,2)
      &           -xk*(vj2-1.d0)*(xg(2,1)*xg(2,2)
      &           +xg(2,2)*xg(2,1))/2.d0
-            stiff(9)=umb*(xg(3,1)*xg(3,2)+xg(3,2)*xg(3,1)-
+            elas(9)=umb*(xg(3,1)*xg(3,2)+xg(3,2)*xg(3,1)-
      &           2.d0*xg(3,3)*xg(1,2)/3.d0)
      &           -2.d0*(xs(3,3)*xg(1,2)+xg(3,3)*xs(1,2))/3.d0
      &           +xk*vj2*xg(3,3)*xg(1,2)
      &           -xk*(vj2-1.d0)*(xg(3,1)*xg(3,2)
      &           +xg(3,2)*xg(3,1))/2.d0
-            stiff(10)=umb*(xg(1,1)*xg(2,2)+xg(1,2)*xg(2,1)-
+            elas(10)=umb*(xg(1,1)*xg(2,2)+xg(1,2)*xg(2,1)-
      &           2.d0*xg(1,2)*xg(1,2)/3.d0)
      &           -2.d0*(xs(1,2)*xg(1,2)+xg(1,2)*xs(1,2))/3.d0
      &           +xk*vj2*xg(1,2)*xg(1,2)
      &           -xk*(vj2-1.d0)*(xg(1,1)*xg(2,2)
      &           +xg(1,2)*xg(2,1))/2.d0
-            stiff(11)=umb*(xg(1,1)*xg(1,3)+xg(1,3)*xg(1,1)-
+            elas(11)=umb*(xg(1,1)*xg(1,3)+xg(1,3)*xg(1,1)-
      &           2.d0*xg(1,1)*xg(1,3)/3.d0)
      &           -2.d0*(xs(1,1)*xg(1,3)+xg(1,1)*xs(1,3))/3.d0
      &           +xk*vj2*xg(1,1)*xg(1,3)
      &           -xk*(vj2-1.d0)*(xg(1,1)*xg(1,3)
      &           +xg(1,3)*xg(1,1))/2.d0
-            stiff(12)=umb*(xg(2,1)*xg(2,3)+xg(2,3)*xg(2,1)-
+            elas(12)=umb*(xg(2,1)*xg(2,3)+xg(2,3)*xg(2,1)-
      &           2.d0*xg(2,2)*xg(1,3)/3.d0)
      &           -2.d0*(xs(2,2)*xg(1,3)+xg(2,2)*xs(1,3))/3.d0
      &           +xk*vj2*xg(2,2)*xg(1,3)
      &           -xk*(vj2-1.d0)*(xg(2,1)*xg(2,3)
      &           +xg(2,3)*xg(2,1))/2.d0
-            stiff(13)=umb*(xg(3,1)*xg(3,3)+xg(3,3)*xg(3,1)-
+            elas(13)=umb*(xg(3,1)*xg(3,3)+xg(3,3)*xg(3,1)-
      &           2.d0*xg(3,3)*xg(1,3)/3.d0)
      &           -2.d0*(xs(3,3)*xg(1,3)+xg(3,3)*xs(1,3))/3.d0
      &           +xk*vj2*xg(3,3)*xg(1,3)
      &           -xk*(vj2-1.d0)*(xg(3,1)*xg(3,3)
      &           +xg(3,3)*xg(3,1))/2.d0
-            stiff(14)=umb*(xg(1,1)*xg(2,3)+xg(1,3)*xg(2,1)-
+            elas(14)=umb*(xg(1,1)*xg(2,3)+xg(1,3)*xg(2,1)-
      &           2.d0*xg(1,2)*xg(1,3)/3.d0)
      &           -2.d0*(xs(1,2)*xg(1,3)+xg(1,2)*xs(1,3))/3.d0
      &           +xk*vj2*xg(1,2)*xg(1,3)
      &           -xk*(vj2-1.d0)*(xg(1,1)*xg(2,3)
      &           +xg(1,3)*xg(2,1))/2.d0
-            stiff(15)=umb*(xg(1,1)*xg(3,3)+xg(1,3)*xg(3,1)-
+            elas(15)=umb*(xg(1,1)*xg(3,3)+xg(1,3)*xg(3,1)-
      &           2.d0*xg(1,3)*xg(1,3)/3.d0)
      &           -2.d0*(xs(1,3)*xg(1,3)+xg(1,3)*xs(1,3))/3.d0
      &           +xk*vj2*xg(1,3)*xg(1,3)
      &           -xk*(vj2-1.d0)*(xg(1,1)*xg(3,3)
      &           +xg(1,3)*xg(3,1))/2.d0
-            stiff(16)=umb*(xg(1,2)*xg(1,3)+xg(1,3)*xg(1,2)-
+            elas(16)=umb*(xg(1,2)*xg(1,3)+xg(1,3)*xg(1,2)-
      &           2.d0*xg(1,1)*xg(2,3)/3.d0)
      &           -2.d0*(xs(1,1)*xg(2,3)+xg(1,1)*xs(2,3))/3.d0
      &           +xk*vj2*xg(1,1)*xg(2,3)
      &           -xk*(vj2-1.d0)*(xg(1,2)*xg(1,3)
      &           +xg(1,3)*xg(1,2))/2.d0
-            stiff(17)=umb*(xg(2,2)*xg(2,3)+xg(2,3)*xg(2,2)-
+            elas(17)=umb*(xg(2,2)*xg(2,3)+xg(2,3)*xg(2,2)-
      &           2.d0*xg(2,2)*xg(2,3)/3.d0)
      &           -2.d0*(xs(2,2)*xg(2,3)+xg(2,2)*xs(2,3))/3.d0
      &           +xk*vj2*xg(2,2)*xg(2,3)
      &           -xk*(vj2-1.d0)*(xg(2,2)*xg(2,3)
      &           +xg(2,3)*xg(2,2))/2.d0
-            stiff(18)=umb*(xg(3,2)*xg(3,3)+xg(3,3)*xg(3,2)-
+            elas(18)=umb*(xg(3,2)*xg(3,3)+xg(3,3)*xg(3,2)-
      &           2.d0*xg(3,3)*xg(2,3)/3.d0)
      &           -2.d0*(xs(3,3)*xg(2,3)+xg(3,3)*xs(2,3))/3.d0
      &           +xk*vj2*xg(3,3)*xg(2,3)
      &           -xk*(vj2-1.d0)*(xg(3,2)*xg(3,3)
      &           +xg(3,3)*xg(3,2))/2.d0
-            stiff(19)=umb*(xg(1,2)*xg(2,3)+xg(1,3)*xg(2,2)-
+            elas(19)=umb*(xg(1,2)*xg(2,3)+xg(1,3)*xg(2,2)-
      &           2.d0*xg(1,2)*xg(2,3)/3.d0)
      &           -2.d0*(xs(1,2)*xg(2,3)+xg(1,2)*xs(2,3))/3.d0
      &           +xk*vj2*xg(1,2)*xg(2,3)
      &           -xk*(vj2-1.d0)*(xg(1,2)*xg(2,3)
      &           +xg(1,3)*xg(2,2))/2.d0
-            stiff(20)=umb*(xg(1,2)*xg(3,3)+xg(1,3)*xg(3,2)-
+            elas(20)=umb*(xg(1,2)*xg(3,3)+xg(1,3)*xg(3,2)-
      &           2.d0*xg(1,3)*xg(2,3)/3.d0)
      &           -2.d0*(xs(1,3)*xg(2,3)+xg(1,3)*xs(2,3))/3.d0
      &           +xk*vj2*xg(1,3)*xg(2,3)
      &           -xk*(vj2-1.d0)*(xg(1,2)*xg(3,3)
      &           +xg(1,3)*xg(3,2))/2.d0
-            stiff(21)=umb*(xg(2,2)*xg(3,3)+xg(2,3)*xg(3,2)-
+            elas(21)=umb*(xg(2,2)*xg(3,3)+xg(2,3)*xg(3,2)-
      &           2.d0*xg(2,3)*xg(2,3)/3.d0)
      &           -2.d0*(xs(2,3)*xg(2,3)+xg(2,3)*xs(2,3))/3.d0
      &           +xk*vj2*xg(2,3)*xg(2,3)
@@ -870,147 +872,147 @@ c                     write(*,*) cop,fu
          xd(3,1)=xd(1,3)
          xd(3,2)=xd(2,3)
 !
-         stiff(1)=(umb-f0*umbb)*(xg(1,1)*xg(1,1)+xg(1,1)*xg(1,1)-
+         elas(1)=(umb-f0*umbb)*(xg(1,1)*xg(1,1)+xg(1,1)*xg(1,1)-
      &        2.d0*xg(1,1)*xg(1,1)/3.d0)
      &        -2.d0*(xs(1,1)*xg(1,1)+xg(1,1)*xs(1,1))/3.d0
      &        +f0*2.d0*(xx(1,1)*xg(1,1)+xg(1,1)*xx(1,1))/3.d0
      &        -d1*xn(1,1)*xn(1,1)-d2*(xn(1,1)*xd(1,1)+
      &        xd(1,1)*xn(1,1))/2.d0+xk*vj2*xg(1,1)*xg(1,1)
      &        -xk*(vj2-1.d0)*(xg(1,1)*xg(1,1)+xg(1,1)*xg(1,1))/2.d0
-         stiff(2)=(umb-f0*umbb)*(xg(1,2)*xg(1,2)+xg(1,2)*xg(1,2)-
+         elas(2)=(umb-f0*umbb)*(xg(1,2)*xg(1,2)+xg(1,2)*xg(1,2)-
      &        2.d0*xg(1,1)*xg(2,2)/3.d0)
      &        -2.d0*(xs(1,1)*xg(2,2)+xg(1,1)*xs(2,2))/3.d0
      &        +f0*2.d0*(xx(1,1)*xg(2,2)+xg(1,1)*xx(2,2))/3.d0
      &        -d1*xn(1,1)*xn(2,2)-d2*(xn(1,1)*xd(2,2)+
      &        xd(1,1)*xn(2,2))/2.d0+xk*vj2*xg(1,1)*xg(2,2)
      &        -xk*(vj2-1.d0)*(xg(1,2)*xg(1,2)+xg(1,2)*xg(1,2))/2.d0
-         stiff(3)=(umb-f0*umbb)*(xg(2,2)*xg(2,2)+xg(2,2)*xg(2,2)-
+         elas(3)=(umb-f0*umbb)*(xg(2,2)*xg(2,2)+xg(2,2)*xg(2,2)-
      &        2.d0*xg(2,2)*xg(2,2)/3.d0)
      &        -2.d0*(xs(2,2)*xg(2,2)+xg(2,2)*xs(2,2))/3.d0
      &        +f0*2.d0*(xx(2,2)*xg(2,2)+xg(2,2)*xx(2,2))/3.d0
      &        -d1*xn(2,2)*xn(2,2)-d2*(xn(2,2)*xd(2,2)+
      &        xd(2,2)*xn(2,2))/2.d0+xk*vj2*xg(2,2)*xg(2,2)
      &        -xk*(vj2-1.d0)*(xg(2,2)*xg(2,2)+xg(2,2)*xg(2,2))/2.d0
-         stiff(4)=(umb-f0*umbb)*(xg(1,3)*xg(1,3)+xg(1,3)*xg(1,3)-
+         elas(4)=(umb-f0*umbb)*(xg(1,3)*xg(1,3)+xg(1,3)*xg(1,3)-
      &        2.d0*xg(1,1)*xg(3,3)/3.d0)
      &        -2.d0*(xs(1,1)*xg(3,3)+xg(1,1)*xs(3,3))/3.d0
      &        +f0*2.d0*(xx(1,1)*xg(3,3)+xg(1,1)*xx(3,3))/3.d0
      &        -d1*xn(1,1)*xn(3,3)-d2*(xn(1,1)*xd(3,3)+
      &        xd(1,1)*xn(3,3))/2.d0+xk*vj2*xg(1,1)*xg(3,3)
      &        -xk*(vj2-1.d0)*(xg(1,3)*xg(1,3)+xg(1,3)*xg(1,3))/2.d0
-         stiff(5)=(umb-f0*umbb)*(xg(2,3)*xg(2,3)+xg(2,3)*xg(2,3)-
+         elas(5)=(umb-f0*umbb)*(xg(2,3)*xg(2,3)+xg(2,3)*xg(2,3)-
      &        2.d0*xg(2,2)*xg(3,3)/3.d0)
      &        -2.d0*(xs(2,2)*xg(3,3)+xg(2,2)*xs(3,3))/3.d0
      &        +f0*2.d0*(xx(2,2)*xg(3,3)+xg(2,2)*xx(3,3))/3.d0
      &        -d1*xn(2,2)*xn(3,3)-d2*(xn(2,2)*xd(3,3)+
      &        xd(2,2)*xn(3,3))/2.d0+xk*vj2*xg(2,2)*xg(3,3)
      &        -xk*(vj2-1.d0)*(xg(2,3)*xg(2,3)+xg(2,3)*xg(2,3))/2.d0
-         stiff(6)=(umb-f0*umbb)*(xg(3,3)*xg(3,3)+xg(3,3)*xg(3,3)-
+         elas(6)=(umb-f0*umbb)*(xg(3,3)*xg(3,3)+xg(3,3)*xg(3,3)-
      &        2.d0*xg(3,3)*xg(3,3)/3.d0)
      &        -2.d0*(xs(3,3)*xg(3,3)+xg(3,3)*xs(3,3))/3.d0
      &        +f0*2.d0*(xx(3,3)*xg(3,3)+xg(3,3)*xx(3,3))/3.d0
      &        -d1*xn(3,3)*xn(3,3)-d2*(xn(3,3)*xd(3,3)+
      &        xd(3,3)*xn(3,3))/2.d0+xk*vj2*xg(3,3)*xg(3,3)
      &        -xk*(vj2-1.d0)*(xg(3,3)*xg(3,3)+xg(3,3)*xg(3,3))/2.d0
-         stiff(7)=(umb-f0*umbb)*(xg(1,1)*xg(1,2)+xg(1,2)*xg(1,1)-
+         elas(7)=(umb-f0*umbb)*(xg(1,1)*xg(1,2)+xg(1,2)*xg(1,1)-
      &        2.d0*xg(1,1)*xg(1,2)/3.d0)
      &        -2.d0*(xs(1,1)*xg(1,2)+xg(1,1)*xs(1,2))/3.d0
      &        +f0*2.d0*(xx(1,1)*xg(1,2)+xg(1,1)*xx(1,2))/3.d0
      &        -d1*xn(1,1)*xn(1,2)-d2*(xn(1,1)*xd(1,2)+
      &        xd(1,1)*xn(1,2))/2.d0+xk*vj2*xg(1,1)*xg(1,2)
      &        -xk*(vj2-1.d0)*(xg(1,1)*xg(1,2)+xg(1,2)*xg(1,1))/2.d0
-         stiff(8)=(umb-f0*umbb)*(xg(2,1)*xg(2,2)+xg(2,2)*xg(2,1)-
+         elas(8)=(umb-f0*umbb)*(xg(2,1)*xg(2,2)+xg(2,2)*xg(2,1)-
      &        2.d0*xg(2,2)*xg(1,2)/3.d0)
      &        -2.d0*(xs(2,2)*xg(1,2)+xg(2,2)*xs(1,2))/3.d0
      &        +f0*2.d0*(xx(2,2)*xg(1,2)+xg(2,2)*xx(1,2))/3.d0
      &        -d1*xn(2,2)*xn(1,2)-d2*(xn(2,2)*xd(1,2)+
      &        xd(2,2)*xn(1,2))/2.d0+xk*vj2*xg(2,2)*xg(1,2)
      &        -xk*(vj2-1.d0)*(xg(2,1)*xg(2,2)+xg(2,2)*xg(2,1))/2.d0
-         stiff(9)=(umb-f0*umbb)*(xg(3,1)*xg(3,2)+xg(3,2)*xg(3,1)-
+         elas(9)=(umb-f0*umbb)*(xg(3,1)*xg(3,2)+xg(3,2)*xg(3,1)-
      &        2.d0*xg(3,3)*xg(1,2)/3.d0)
      &        -2.d0*(xs(3,3)*xg(1,2)+xg(3,3)*xs(1,2))/3.d0
      &        +f0*2.d0*(xx(3,3)*xg(1,2)+xg(3,3)*xx(1,2))/3.d0
      &        -d1*xn(3,3)*xn(1,2)-d2*(xn(3,3)*xd(1,2)+
      &        xd(3,3)*xn(1,2))/2.d0+xk*vj2*xg(3,3)*xg(1,2)
      &        -xk*(vj2-1.d0)*(xg(3,1)*xg(3,2)+xg(3,2)*xg(3,1))/2.d0
-         stiff(10)=(umb-f0*umbb)*(xg(1,1)*xg(2,2)+xg(1,2)*xg(2,1)-
+         elas(10)=(umb-f0*umbb)*(xg(1,1)*xg(2,2)+xg(1,2)*xg(2,1)-
      &        2.d0*xg(1,2)*xg(1,2)/3.d0)
      &        -2.d0*(xs(1,2)*xg(1,2)+xg(1,2)*xs(1,2))/3.d0
      &        +f0*2.d0*(xx(1,2)*xg(1,2)+xg(1,2)*xx(1,2))/3.d0
      &        -d1*xn(1,2)*xn(1,2)-d2*(xn(1,2)*xd(1,2)+
      &        xd(1,2)*xn(1,2))/2.d0+xk*vj2*xg(1,2)*xg(1,2)
      &        -xk*(vj2-1.d0)*(xg(1,1)*xg(2,2)+xg(1,2)*xg(2,1))/2.d0
-         stiff(11)=(umb-f0*umbb)*(xg(1,1)*xg(1,3)+xg(1,3)*xg(1,1)-
+         elas(11)=(umb-f0*umbb)*(xg(1,1)*xg(1,3)+xg(1,3)*xg(1,1)-
      &        2.d0*xg(1,1)*xg(1,3)/3.d0)
      &        -2.d0*(xs(1,1)*xg(1,3)+xg(1,1)*xs(1,3))/3.d0
      &        +f0*2.d0*(xx(1,1)*xg(1,3)+xg(1,1)*xx(1,3))/3.d0
      &        -d1*xn(1,1)*xn(1,3)-d2*(xn(1,1)*xd(1,3)+
      &        xd(1,1)*xn(1,3))/2.d0+xk*vj2*xg(1,1)*xg(1,3)
      &        -xk*(vj2-1.d0)*(xg(1,1)*xg(1,3)+xg(1,3)*xg(1,1))/2.d0
-         stiff(12)=(umb-f0*umbb)*(xg(2,1)*xg(2,3)+xg(2,3)*xg(2,1)-
+         elas(12)=(umb-f0*umbb)*(xg(2,1)*xg(2,3)+xg(2,3)*xg(2,1)-
      &        2.d0*xg(2,2)*xg(1,3)/3.d0)
      &        -2.d0*(xs(2,2)*xg(1,3)+xg(2,2)*xs(1,3))/3.d0
      &        +f0*2.d0*(xx(2,2)*xg(1,3)+xg(2,2)*xx(1,3))/3.d0
      &        -d1*xn(2,2)*xn(1,3)-d2*(xn(2,2)*xd(1,3)+
      &        xd(2,2)*xn(1,3))/2.d0+xk*vj2*xg(2,2)*xg(1,3)
      &        -xk*(vj2-1.d0)*(xg(2,1)*xg(2,3)+xg(2,3)*xg(2,1))/2.d0
-         stiff(13)=(umb-f0*umbb)*(xg(3,1)*xg(3,3)+xg(3,3)*xg(3,1)-
+         elas(13)=(umb-f0*umbb)*(xg(3,1)*xg(3,3)+xg(3,3)*xg(3,1)-
      &        2.d0*xg(3,3)*xg(1,3)/3.d0)
      &        -2.d0*(xs(3,3)*xg(1,3)+xg(3,3)*xs(1,3))/3.d0
      &        +f0*2.d0*(xx(3,3)*xg(1,3)+xg(3,3)*xx(1,3))/3.d0
      &        -d1*xn(3,3)*xn(1,3)-d2*(xn(3,3)*xd(1,3)+
      &        xd(3,3)*xn(1,3))/2.d0+xk*vj2*xg(3,3)*xg(1,3)
      &        -xk*(vj2-1.d0)*(xg(3,1)*xg(3,3)+xg(3,3)*xg(3,1))/2.d0
-         stiff(14)=(umb-f0*umbb)*(xg(1,1)*xg(2,3)+xg(1,3)*xg(2,1)-
+         elas(14)=(umb-f0*umbb)*(xg(1,1)*xg(2,3)+xg(1,3)*xg(2,1)-
      &        2.d0*xg(1,2)*xg(1,3)/3.d0)
      &        -2.d0*(xs(1,2)*xg(1,3)+xg(1,2)*xs(1,3))/3.d0
      &        +f0*2.d0*(xx(1,2)*xg(1,3)+xg(1,2)*xx(1,3))/3.d0
      &        -d1*xn(1,2)*xn(1,3)-d2*(xn(1,2)*xd(1,3)+
      &        xd(1,2)*xn(1,3))/2.d0+xk*vj2*xg(1,2)*xg(1,3)
      &        -xk*(vj2-1.d0)*(xg(1,1)*xg(2,3)+xg(1,3)*xg(2,1))/2.d0
-         stiff(15)=(umb-f0*umbb)*(xg(1,1)*xg(3,3)+xg(1,3)*xg(3,1)-
+         elas(15)=(umb-f0*umbb)*(xg(1,1)*xg(3,3)+xg(1,3)*xg(3,1)-
      &        2.d0*xg(1,3)*xg(1,3)/3.d0)
      &        -2.d0*(xs(1,3)*xg(1,3)+xg(1,3)*xs(1,3))/3.d0
      &        +f0*2.d0*(xx(1,3)*xg(1,3)+xg(1,3)*xx(1,3))/3.d0
      &        -d1*xn(1,3)*xn(1,3)-d2*(xn(1,3)*xd(1,3)+
      &        xd(1,3)*xn(1,3))/2.d0+xk*vj2*xg(1,3)*xg(1,3)
      &        -xk*(vj2-1.d0)*(xg(1,1)*xg(3,3)+xg(1,3)*xg(3,1))/2.d0
-         stiff(16)=(umb-f0*umbb)*(xg(1,2)*xg(1,3)+xg(1,3)*xg(1,2)-
+         elas(16)=(umb-f0*umbb)*(xg(1,2)*xg(1,3)+xg(1,3)*xg(1,2)-
      &        2.d0*xg(1,1)*xg(2,3)/3.d0)
      &        -2.d0*(xs(1,1)*xg(2,3)+xg(1,1)*xs(2,3))/3.d0
      &        +f0*2.d0*(xx(1,1)*xg(2,3)+xg(1,1)*xx(2,3))/3.d0
      &        -d1*xn(1,1)*xn(2,3)-d2*(xn(1,1)*xd(2,3)+
      &        xd(1,1)*xn(2,3))/2.d0+xk*vj2*xg(1,1)*xg(2,3)
      &        -xk*(vj2-1.d0)*(xg(1,2)*xg(1,3)+xg(1,3)*xg(1,2))/2.d0
-         stiff(17)=(umb-f0*umbb)*(xg(2,2)*xg(2,3)+xg(2,3)*xg(2,2)-
+         elas(17)=(umb-f0*umbb)*(xg(2,2)*xg(2,3)+xg(2,3)*xg(2,2)-
      &        2.d0*xg(2,2)*xg(2,3)/3.d0)
      &        -2.d0*(xs(2,2)*xg(2,3)+xg(2,2)*xs(2,3))/3.d0
      &        +f0*2.d0*(xx(2,2)*xg(2,3)+xg(2,2)*xx(2,3))/3.d0
      &        -d1*xn(2,2)*xn(2,3)-d2*(xn(2,2)*xd(2,3)+
      &        xd(2,2)*xn(2,3))/2.d0+xk*vj2*xg(2,2)*xg(2,3)
      &        -xk*(vj2-1.d0)*(xg(2,2)*xg(2,3)+xg(2,3)*xg(2,2))/2.d0
-         stiff(18)=(umb-f0*umbb)*(xg(3,2)*xg(3,3)+xg(3,3)*xg(3,2)-
+         elas(18)=(umb-f0*umbb)*(xg(3,2)*xg(3,3)+xg(3,3)*xg(3,2)-
      &        2.d0*xg(3,3)*xg(2,3)/3.d0)
      &        -2.d0*(xs(3,3)*xg(2,3)+xg(3,3)*xs(2,3))/3.d0
      &        +f0*2.d0*(xx(3,3)*xg(2,3)+xg(3,3)*xx(2,3))/3.d0
      &        -d1*xn(3,3)*xn(2,3)-d2*(xn(3,3)*xd(2,3)+
      &        xd(3,3)*xn(2,3))/2.d0+xk*vj2*xg(3,3)*xg(2,3)
      &        -xk*(vj2-1.d0)*(xg(3,2)*xg(3,3)+xg(3,3)*xg(3,2))/2.d0
-         stiff(19)=(umb-f0*umbb)*(xg(1,2)*xg(2,3)+xg(1,3)*xg(2,2)-
+         elas(19)=(umb-f0*umbb)*(xg(1,2)*xg(2,3)+xg(1,3)*xg(2,2)-
      &        2.d0*xg(1,2)*xg(2,3)/3.d0)
      &        -2.d0*(xs(1,2)*xg(2,3)+xg(1,2)*xs(2,3))/3.d0
      &        +f0*2.d0*(xx(1,2)*xg(2,3)+xg(1,2)*xx(2,3))/3.d0
      &        -d1*xn(1,2)*xn(2,3)-d2*(xn(1,2)*xd(2,3)+
      &        xd(1,2)*xn(2,3))/2.d0+xk*vj2*xg(1,2)*xg(2,3)
      &        -xk*(vj2-1.d0)*(xg(1,2)*xg(2,3)+xg(1,3)*xg(2,2))/2.d0
-         stiff(20)=(umb-f0*umbb)*(xg(1,2)*xg(3,3)+xg(1,3)*xg(3,2)-
+         elas(20)=(umb-f0*umbb)*(xg(1,2)*xg(3,3)+xg(1,3)*xg(3,2)-
      &        2.d0*xg(1,3)*xg(2,3)/3.d0)
      &        -2.d0*(xs(1,3)*xg(2,3)+xg(1,3)*xs(2,3))/3.d0
      &        +f0*2.d0*(xx(1,3)*xg(2,3)+xg(1,3)*xx(2,3))/3.d0
      &        -d1*xn(1,3)*xn(2,3)-d2*(xn(1,3)*xd(2,3)+
      &        xd(1,3)*xn(2,3))/2.d0+xk*vj2*xg(1,3)*xg(2,3)
      &        -xk*(vj2-1.d0)*(xg(1,2)*xg(3,3)+xg(1,3)*xg(3,2))/2.d0
-         stiff(21)=(umb-f0*umbb)*(xg(2,2)*xg(3,3)+xg(2,3)*xg(3,2)-
+         elas(21)=(umb-f0*umbb)*(xg(2,2)*xg(3,3)+xg(2,3)*xg(3,2)-
      &        2.d0*xg(2,3)*xg(2,3)/3.d0)
      &        -2.d0*(xs(2,3)*xg(2,3)+xg(2,3)*xs(2,3))/3.d0
      &        +f0*2.d0*(xx(2,3)*xg(2,3)+xg(2,3)*xx(2,3))/3.d0

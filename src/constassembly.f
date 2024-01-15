@@ -1,6 +1,6 @@
 !     
 !     CalculiX - A 3-dimensional finite element program
-!     Copyright (C) 1998-2015 Guido Dhondt
+!     Copyright (C) 1998-2023 Guido Dhondt
 !     
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -151,7 +151,7 @@
                   funcvalabs=obj
                else
                   funcvalnorm=max(funcvalnorm,objnorm)
-                  funcvalabs=max(funcvalabs,obj)
+                  funcvalabs=min(funcvalabs,obj)
                endif          
             enddo
             write(5,102) i-1,objectset(1,i),objectset(1,i)(19:22),

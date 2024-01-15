@@ -1,5 +1,5 @@
 /*     CalculiX - A 3-dimensional finite element program                 */
-/*              Copyright (C) 1998-2015 Guido Dhondt                          */
+/*              Copyright (C) 1998-2023 Guido Dhondt                          */
 
 /*     This program is free software; you can redistribute it and/or     */
 /*     modify it under the terms of the GNU General Public License as    */
@@ -57,18 +57,18 @@ void cascade(ITG *ipompc, double **coefmpcp, ITG **nodempcp, ITG *nmpc,
        error message is generated and the program stops. */
 
   ITG i,j,index,id,idof,nterm,idepend,*nodempc=NULL,
-    iexpand,ichange,indexold,
+    ispooles,iexpand,ichange,indexold,ifluidmpc,
     mpc,indexnew,index1,index2,index1old,index2old,*jmpc=NULL,nl;
 
-  double coef,*coefmpc=NULL,coefmin;
+  double coef,*coefmpc=NULL;
 
   nodempc=*nodempcp;
   coefmpc=*coefmpcp;
     
   /*   for(i=0;i<*nmpc;i++){
-       j=i+1;
-       FORTRAN(writempc,(ipompc,nodempc,coefmpc,labmpc,&j));
-       }*/
+	  j=i+1;
+	  FORTRAN(writempc,(ipompc,nodempc,coefmpc,labmpc,&j));
+	  }*/
 
   NNEW(jmpc,ITG,*nmpc);
   idepend=0;
@@ -82,8 +82,13 @@ void cascade(ITG *ipompc, double **coefmpcp, ITG **nodempcp, ITG *nmpc,
     else{id=0;}
     if(id>0){
       if(ikboun[id-1]==ikmpc[i]){
-	printf(" *ERROR in cascade: the DOF corresponding to \n node %" ITGFORMAT " in direction %" ITGFORMAT " is detected on the \n dependent side of a MPC and a SPC\n\n",
-	       (ikmpc[i])/8+1,ikmpc[i]-8*((ikmpc[i])/8));
+	if(strcmp1(&labmpc[20*i],"FLUID")!=0){
+	  printf(" *ERROR in cascade: the DOF corresponding to \n node %" ITGFORMAT " in direction %" ITGFORMAT " is detected on the \n dependent side of a MPC and a SPC\n\n",
+		 (ikmpc[i])/8+1,ikmpc[i]-8*((ikmpc[i])/8));
+	}else{
+	  printf(" *ERROR in cascade: the DOF corresponding to \n face %" ITGFORMAT " in direction %" ITGFORMAT " is detected on the \n dependent side of a MPC and a SPC\n\n",
+		 (-ikmpc[i])/8+1,-ikmpc[i]-8*((-ikmpc[i])/8));
+	}
 	FORTRAN(stop,());
       }
     }
@@ -106,6 +111,8 @@ void cascade(ITG *ipompc, double **coefmpcp, ITG **nodempcp, ITG *nmpc,
        (strcmp1(&labmpc[20*i],"SUBCYCLIC")==0)||
        (strcmp1(&labmpc[20*i],"PRETENSION")==0)||
        (strcmp1(&labmpc[20*i],"THERMALPRET")==0)||
+       //	   (strcmp1(&labmpc[20*i],"CONTACT")==0)||
+       (strcmp1(&labmpc[20*i],"FLUID")==0)||
        (*iperturb<2)) jmpc[i]=0;
 
     /* nonlinear mpc */
@@ -123,40 +130,53 @@ void cascade(ITG *ipompc, double **coefmpcp, ITG **nodempcp, ITG *nmpc,
       if(*icascade==0) *icascade=1;
     }
   }
+    
+  /*     decascading */
+
+  ispooles=0;
 
   /* decascading using simple substitution */
 
   do{
     ichange=0;
     for(i=0;i<*nmpc;i++){
-      
-      /* label nl for nonlinear mpc */
 
-      if(jmpc[i]==1){
-	nl=1;
+      if(strcmp1(&labmpc[20*i],"FLUID")!=0){
+	ifluidmpc=0;
       }else{
-	nl=0;
+	ifluidmpc=1;
       }
-      
-      /* initialization of iexpand */
-      
+
+      if(jmpc[i]==1) nl=1;
+      else nl=0;
       iexpand=0;
-      
       index=nodempc[3*ipompc[i]-1];
       if(index==0) continue;
-
-      /* loop over the independent nodes of MPC i */
-      
       do{
-	  
-	idof=(nodempc[3*index-3]-1)*8+nodempc[3*index-2];
+	if(ifluidmpc==0){
+	  /* MPC on node */
+	  idof=(nodempc[3*index-3]-1)*8+nodempc[3*index-2];
+	}else{
+	  if(nodempc[3*index-3]>0){
+	    /* MPC on face */
+	    idof=-((nodempc[3*index-3]-1)*8+nodempc[3*index-2]);
+	  }else{
+	    /* MPC on node 
+	       SPC number: -nodempc[3*index-3]
+	       node: nodeboun[-nodempc[3*index-3]-1] */
+
+	    idof=(nodeboun[-nodempc[3*index-3]-1]-1)*8+nodempc[3*index-2];
+	  }
+	}
 		
 	FORTRAN(nident,(ikmpc,&idof,nmpc,&id));
 	if((id>0)&&(ikmpc[id-1]==idof)){
 		    
-	  /* a term on the independent side of MPC i is
-	     detected as dependent node in MPC "mpc" */
+	  /* a term on the independent side of the MPC is
+	     detected as dependent node in another MPC */
 
+	  //		    indexold=nodempc[3*index-1];
+	  //		    coef=coefmpc[index-1];
 	  mpc=ilmpc[id-1];
 
 	  /* no expansion if there is a dependence of a
@@ -171,24 +191,15 @@ void cascade(ITG *ipompc, double **coefmpcp, ITG **nodempcp, ITG *nmpc,
 	      printf("       common node: %" ITGFORMAT " in direction %" ITGFORMAT "\n\n",nodempc[3*index-3],nodempc[3*index-2]);
 	      idepend=1;}
 	    if(*callfrommain==1){
-
-	      /* check next independent term in MPC i */
-	      
 	      index=nodempc[3*index-1];
 	      if(index!=0) continue;
 	      else break;}
 	  }
 
-	  /* preliminary action (before substitution of MPC "mpc": 
-	     collecting terms corresponding to the same DOF in MPC i */
+	  /* collecting terms corresponding to the same DOF */
 		    
 	  index1=ipompc[i];
-	  coefmin=1.e30;
 	  do{
-	    if(fabs(coefmpc[index1-1])>0.){
-	      //	      printf("coefmpc=%e,coefmin=%e\n",coefmpc[index1-1],coefmin);
-	      if(fabs(coefmpc[index1-1])<coefmin) coefmin=fabs(coefmpc[index1-1]);
-	    }
 	    index2old=index1;
 	    index2=nodempc[3*index1-1];
 	    if(index2==0) break;
@@ -212,7 +223,7 @@ void cascade(ITG *ipompc, double **coefmpcp, ITG **nodempcp, ITG *nmpc,
 	    if(index1==0) break;
 	  }while(1);
 		    
-	  /* check for zero coefficients on the dependent side in MPC i*/
+	  /* check for zero coefficients on the dependent side */
 		    
 	  index1=ipompc[i];
 	  if(fabs(coefmpc[index1-1])<1.e-10){
@@ -220,10 +231,7 @@ void cascade(ITG *ipompc, double **coefmpcp, ITG **nodempcp, ITG *nmpc,
 	    printf("        dependent side of an equation\n");
 	    printf("        dependent node: %" ITGFORMAT "",nodempc[3*index1-3]);
 	    printf("        direction: %" ITGFORMAT "\n\n",nodempc[3*index1-2]);
-	    coefmpc[index1-1]=1.e-5*coefmin;
-	    printf(" new coefficient = %e\n",1.e-5*coefmin);
-	    //	    FORTRAN(stop,());
-	    
+	    FORTRAN(stop,());
 	  }
 
 	  /* a term in MPC i is being replaced; 
@@ -286,12 +294,7 @@ void cascade(ITG *ipompc, double **coefmpcp, ITG **nodempcp, ITG *nmpc,
 	 collecting terms corresponding to the same DOF */
 	    
       index1=ipompc[i];
-      coefmin=1.e30;
       do{
-	if(fabs(coefmpc[index1-1])>0.){
-	  //	      printf("coefmpc=%e,coefmin=%e\n",coefmpc[index1-1],coefmin);
-	  if(fabs(coefmpc[index1-1])<coefmin) coefmin=fabs(coefmpc[index1-1]);
-	}
 	index2old=index1;
 	index2=nodempc[3*index1-1];
 	if(index2==0) break;
@@ -321,6 +324,8 @@ void cascade(ITG *ipompc, double **coefmpcp, ITG **nodempcp, ITG *nmpc,
       index1=ipompc[i];
       index1old=0;
       do {
+	//		printf("index1=%d\n",index1);
+	//		printf("coefmpc=%e\n",coefmpc[index1-1]);
 
 	if(fabs(coefmpc[index1-1])<1.e-10){
 	  if(index1old==0){
@@ -328,9 +333,7 @@ void cascade(ITG *ipompc, double **coefmpcp, ITG **nodempcp, ITG *nmpc,
 	    printf("        dependent side of an equation\n");
 	    printf("        dependent node: %" ITGFORMAT "",nodempc[3*index1-3]);
 	    printf("        direction: %" ITGFORMAT "\n\n",nodempc[3*index1-2]);
-	    coefmpc[index1-1]=1.e-5*coefmin;
-	    printf(" new coefficient = %e\n",1.e-5*coefmin);
-	    //	    FORTRAN(stop,());
+	    FORTRAN(stop,());
 	  }
 	  else{
 	    nodempc[3*index1old-1]=nodempc[3*index1-1];
@@ -375,9 +378,9 @@ void cascade(ITG *ipompc, double **coefmpcp, ITG **nodempcp, ITG *nmpc,
   *coefmpcp=coefmpc;
     
   /* for(i=0;i<*nmpc;i++){
-     j=i+1;
-     FORTRAN(writempc,(ipompc,nodempc,coefmpc,labmpc,&j));
-     }*/
+    j=i+1;
+    FORTRAN(writempc,(ipompc,nodempc,coefmpc,labmpc,&j));
+    }*/
     
   return;
 }

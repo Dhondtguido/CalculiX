@@ -1,6 +1,6 @@
 !
 !     CalculiX - A 3-dimensional finite element program
-!              Copyright (C) 1998-2015 Guido Dhondt
+!              Copyright (C) 1998-2023 Guido Dhondt
 !
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -38,12 +38,12 @@
      &  ithermal(*),jstart,jend,nodeboun(*),ndirboun(*),ikboun(*),
      &  ilboun(*),nboun,nboun_,jact,knor(*),ntrans,inotr(2,*),
      &  nnodes,nodeact,nmethod,nk_,k,iperturb(*),nam,indexk,
-     &  iamplitude,idirref,iamboun(*),iflagpl,ialeatoric
+     &  iamplitude,idirref,iamboun(*),iflagpl
 !
       real*8 coefmpc(*),xboun(*),xta(3,100),co(3,*),trab(7,*),
      &     vold(0:mi(2)),val
 !
-      ialeatoric=0
+!
 !
 !     generating a hinge at a node of a truss element                
 !
@@ -140,8 +140,7 @@
      &           labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
      &           nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
      &           nboun,nboun_,nnodes,nodeact,co,label,
-     &           typeboun,iperturb,i,idirref,xboun,
-     &           ialeatoric)
+     &           typeboun,iperturb,i,idirref,xboun)
          enddo
       enddo
 !     
@@ -156,8 +155,7 @@
      &     labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
      &     nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
      &     nboun,nboun_,nnodes,nodeact,co,label,
-     &     typeboun,iperturb,i,idirref,xboun,
-     &     ialeatoric)
+     &     typeboun,iperturb,i,idirref,xboun)
 !     
 !     inhomogeneous term
 !     
@@ -166,8 +164,7 @@
      &     labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
      &     nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
      &     nboun,nboun_,nnodes,nodeact,co,label,
-     &     typeboun,iperturb,i,idirref,xboun,
-     &     ialeatoric)
+     &     typeboun,iperturb,i,idirref,xboun)
 !     
 !     end meanrotationmpc
 !     

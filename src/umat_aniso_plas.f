@@ -1,6 +1,6 @@
 !
 !     CalculiX - A 3-dimensional finite element program
-!              Copyright (C) 1998-2015 Guido Dhondt
+!              Copyright (C) 1998-2023 Guido Dhondt
 !
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -124,7 +124,7 @@
 !
       real*8 ep0(6),al10,al20(6),eeq,ep(6),al1,b,Pn(6),QSn(6),
      &  al2(6),dg,ddg,ca,cn,c(21),r0,x(21),cm1(21),h1,h2,
-     &  q1,q20(6),q2(6),stri(6),htri,sg(6),r(13),au1(21),au2(21),
+     &  q1,q2(6),stri(6),htri,sg(6),r(13),au1(21),au2(21),
      &  ee(6),dd,gl(6,6),gr(6,6),c0,c1,c2,c3,c4,c5,c6,pnewdt,
      &  skl(3,3),gcreep,gm1,ya(3,3,3,3),d1,d2,dsg,detc,strinv,
      &  elconloc(*),stiff(21),emec(6),emec0(6),beta(6),stre(6),
@@ -196,12 +196,6 @@
          al20(i)=xstateini(8+i,iint,iel)
       enddo
 !
-!     backstress
-!
-      do i=1,6
-         q20(i)=xstateini(14+i,iint,iel)
-      enddo
-!
 !     elastic strains
 !
       do i=1,6
@@ -240,7 +234,7 @@
 !
       q1=-d1*al10
       do i=1,6
-        q2(i)=-h2*al20(i)
+         q2(i)=-d2*al20(i)
       enddo
 !
 !     global trial stress tensor
@@ -488,7 +482,7 @@ c            write(*,*)
 !
          q1=-d1*al1
          do i=1,6
-            q2(i)=-h2*al2(i)
+            q2(i)=-d2*al2(i)
          enddo
 !     
 !        global trial stress tensor
@@ -557,7 +551,7 @@ c            write(*,*)
 !     
 !           check convergence
 !     
-         if((dabs(htri).le.1.d-5).or.(dabs(ddg).lt.1.d-3*dabs(dg))) then
+         if((htri.le.1.d-5).or.(dabs(ddg).lt.1.d-3*dabs(dg))) then
             dd=0.d0
             do i=1,13
                dd=dd+r(i)*r(i)
@@ -989,9 +983,6 @@ c            write(*,*)
       xstate(8,iint,iel)=al1
       do i=1,6
          xstate(8+i,iint,iel)=al2(i)
-      enddo
-      do i=1,6
-         xstate(14+i,iint,iel)=q2(i)
       enddo
 !
       return

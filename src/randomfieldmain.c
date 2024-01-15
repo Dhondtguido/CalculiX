@@ -1,5 +1,5 @@
 /*     CalculiX - A 3-dimensional finite element program                 */
-/*              Copyright (C) 1998-2015 Guido Dhondt                     */
+/*              Copyright (C) 1998-2023 Guido Dhondt                     */
 
 /*     This program is free software; you can redistribute it and/or     */
 /*     modify it under the terms of the GNU General Public License as    */
@@ -486,7 +486,7 @@ void randomfieldmain(ITG *kon,ITG *ipkon,char *lakon,ITG *ne,ITG *nmpc,
 
     while((ido==-1)||(ido==1)||(ido==2)){
       if(ido==-1){
-	opmain(ndesi,&workd[ipntr[0]-1],temp_array,adb,aub,jqs,irows);
+	FORTRAN(op,(ndesi,&workd[ipntr[0]-1],temp_array,adb,aub,jqs,irows));
       }
       if((ido==-1)||(ido==1)){
 
@@ -566,8 +566,8 @@ void randomfieldmain(ITG *kon,ITG *ipkon,char *lakon,ITG *ne,ITG *nmpc,
       }
 
       if(ido==2){
-	opmain(ndesi,&workd[ipntr[0]-1],&workd[ipntr[1]-1],
-		    adb,aub,jqs,irows);
+	FORTRAN(op,(ndesi,&workd[ipntr[0]-1],&workd[ipntr[1]-1],
+		    adb,aub,jqs,irows));
       }
 
       FORTRAN(dsaupd,(&ido,bmat,ndesi,which,&nev,&tol,resid,&ncv,zz,&ldz,

@@ -1,5 +1,5 @@
 /*     CalculiX - A 3-dimensional finite element program                 */
-/*              Copyright (C) 1998-2015 Guido Dhondt                          */
+/*              Copyright (C) 1998-2023 Guido Dhondt                          */
 
 /*     This program is free software; you can redistribute it and/or     */
 /*     modify it under the terms of the GNU General Public License as    */
@@ -64,6 +64,14 @@ void writeoldmesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,
   /* creating the tetrahedral mesh in frd format*/
    
   frd(co,nk,kon,ipkon,lakon,ne,v,stn,inum,&nmethod,
+      &kode,filabtmp,een,t1,fn,&time,epn,ielmatold,matname,enern,xstaten,
+      &nstate_,&istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
+      &ntrans,orab,ielorien,&norien,description,ipneigh,neigh,
+      mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
+      cs,set,&nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
+      thicke,foldmesh,output,qfx,cdn,&mortar,cdnr,cdni,nmat,ielprop,
+      prop,sti);
+  csv(co,nk,kon,ipkon,lakon,ne,v,stn,inum,&nmethod,
       &kode,filabtmp,een,t1,fn,&time,epn,ielmatold,matname,enern,xstaten,
       &nstate_,&istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
       &ntrans,orab,ielorien,&norien,description,ipneigh,neigh,

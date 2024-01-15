@@ -1,5 +1,5 @@
 /*     CalculiX - A 3-dimensional finite element program                 */
-/*              Copyright (C) 1998-2015 Guido Dhondt                          */
+/*              Copyright (C) 1998-2023 Guido Dhondt                          */
 
 /*     This program is free software; you can redistribute it and/or     */
 /*     modify it under the terms of the GNU General Public License as    */
@@ -81,7 +81,7 @@ void calcresidual_em(ITG *nmethod, ITG *neq, double *b, double *fext, double *f,
         /* calculating "capacity"-matrix times pseudo-velocity */
 
 	if(*nasym==0){
-	    opmain(&neq[1],aux2,b,adb,aub,jq,irow); 
+	    FORTRAN(op,(&neq[1],aux2,b,adb,aub,jq,irow)); 
 	}else{
 	    FORTRAN(opas,(&neq[1],aux2,b,adb,aub,jq,irow,nzs)); 
 	}

@@ -1,5 +1,5 @@
 /*     CalculiX - A 3-dimensional finite element program                 */
-/*              Copyright (C) 1998-2015 Guido Dhondt                     */
+/*              Copyright (C) 1998-2023 Guido Dhondt                     */
 
 /*     This program is free software; you can redistribute it and/or     */
 /*     modify it under the terms of the GNU General Public License as    */
@@ -282,7 +282,7 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
     printf(" Computation of feasible direction\n\n");
     
     FORTRAN(calcfeasibledirection_gd,(ndesi,nodedesi,dgdxglob,&nactive,nobject,
-				      nk,gradproj));
+				      nk,gradproj,objectset));
 
     if(addout==1){
       if(strcmp1(&filab[4],"I")==0){

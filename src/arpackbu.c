@@ -1,5 +1,5 @@
 /*     CalculiX - A 3-dimensional finite element program                   */
-/*              Copyright (C) 1998-2015 Guido Dhondt                          */
+/*              Copyright (C) 1998-2023 Guido Dhondt                          */
 
 /*     This program is free software; you can redistribute it and/or     */
 /*     modify it under the terms of the GNU General Public License as    */
@@ -281,6 +281,14 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
 	ielprop,prop,sti);
+    csv(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,
+	kode,filab,een,t1,fn,&time,epn,ielmat,matname,enern,xstaten,
+	nstate_,istep,&iinc,ithermal,qfn,&j,&noddiam,trab,inotr,
+	ntrans,orab,ielorien,norien,description,ipneigh,neigh,
+	mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
+	cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
+	thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
+	ielprop,prop,sti);
     
     if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
     SFREE(inum);FORTRAN(stop,());
@@ -421,6 +429,15 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
   }
 
   frd(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,
+      kode,filab,een,t1,fn,&time,epn,ielmat,matname,enern,xstaten,
+      nstate_,istep,&iinc,ithermal,qfn,&j,&noddiam,trab,inotr,
+      ntrans,orab,ielorien,norien,description,ipneigh,neigh,
+      mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
+      cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
+      thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
+      ielprop,prop,sti);
+
+  csv(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,
       kode,filab,een,t1,fn,&time,epn,ielmat,matname,enern,xstaten,
       nstate_,istep,&iinc,ithermal,qfn,&j,&noddiam,trab,inotr,
       ntrans,orab,ielorien,norien,description,ipneigh,neigh,
@@ -597,7 +614,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 
     while((ido==-1)||(ido==1)||(ido==2)){
       if(ido==-1){
-	opmain(&neq[0],&workd[ipntr[0]-1],temp_array,ad,au,jq,irow);
+	FORTRAN(op,(&neq[0],&workd[ipntr[0]-1],temp_array,ad,au,jq,irow));
       }
       if((ido==-1)||(ido==1)){
 
@@ -681,7 +698,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
       }
 
       if(ido==2){
-	opmain(&neq[0],&workd[ipntr[0]-1],&workd[ipntr[1]-1],ad,au,jq,irow);
+	FORTRAN(op,(&neq[0],&workd[ipntr[0]-1],&workd[ipntr[1]-1],ad,au,jq,irow));
       }
 
       FORTRAN(dsaupd,(&ido,bmat,&neq[0],which,&nev,&tol,resid,&ncv,z,&dz,iparam,ipntr,workd,
@@ -840,6 +857,15 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
     }
 
     frd(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,
+	kode,filab,een,t1,fn,&d[j],epn,ielmat,matname,enern,xstaten,
+	nstate_,istep,&iinc,ithermal,qfn,&j,&noddiam,trab,inotr,
+	ntrans,orab,ielorien,norien,description,ipneigh,neigh,
+	mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
+	cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
+	thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
+	ielprop,prop,sti);
+
+    csv(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,
 	kode,filab,een,t1,fn,&d[j],epn,ielmat,matname,enern,xstaten,
 	nstate_,istep,&iinc,ithermal,qfn,&j,&noddiam,trab,inotr,
 	ntrans,orab,ielorien,norien,description,ipneigh,neigh,

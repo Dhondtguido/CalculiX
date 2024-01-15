@@ -1,6 +1,6 @@
 !     
 !     CalculiX - A 3-dimensional finite element program
-!     Copyright (C) 1998-2015 Guido Dhondt
+!     Copyright (C) 1998-2023 Guido Dhondt
 !     
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -36,7 +36,7 @@
      &     output,physcon,ctrl,typeboun,fmpc,tieset,ntie,tietol,nslavs,
      &     t0g,t1g,nprop,ielprop,prop,mortar,nintpoint,ifacecount,
      &     islavsurf,pslavsurf,clearini,irstrt,vel,nef,velo,veloo,
-     &     ne2boun,heading,network,nfc,ndc,coeffc,ikdc,edc,xmodal)
+     &     ne2boun,heading,network,nfc,ndc,coeffc,ikdc,edc)
 !     
       implicit none
 !     
@@ -66,7 +66,7 @@
      &     nshcon(*),ncocon(*),ics(*),infree(*),i,ipos,ikdc(*),
      &     nener,irestartstep,istat,iprestr,irstrt(*),
      &     maxlenmpc,mcs,mpcend,ntie,ibody(*),nbody,nslavs,nef,
-     &     ne2boun(*),memmpc_,network,nevdamp_
+     &     ne2boun(*),memmpc_,network
 !     
       real*8 co(*),xboun(*),coefmpc(*),xforc(*),xload(*),elcon(*),
      &     rhcon(*),alcon(*),alzero(*),plicon(*),plkcon(*),orab(*),
@@ -75,7 +75,7 @@
      &     xnor(*),thicke(*),offset(*),t0g(*),t1g(*),clearini(*),
      &     shcon(*),cocon(*),sti(*),ener(*),xstate(*),prestr(*),ttime,
      &     qaold(2),physcon(*),ctrl(*),cs(*),fmpc(*),xbody(*),coeffc(*),
-     &     xbodyold(*),prop(*),vel(*),velo(*),veloo(*),edc(*),xmodal(*)
+     &     xbodyold(*),prop(*),vel(*),velo(*),veloo(*),edc(*)
 !     
       ipos=index(jobnamec(1),char(0))
       fnrstrt(1:ipos-1)=jobnamec(1)(1:ipos-1)
@@ -328,12 +328,6 @@
 !     physical constants
 !     
       read(15)(physcon(i),i=1,14)
-!     
-!     damping characteristics
-!
-      read(15)(xmodal(i),i=1,11)
-      nevdamp_=int(xmodal(11))
-      if(nevdamp_.gt.0) read(15)(xmodal(i),i=12,11+nevdamp_)
 !     
 !     plastic data
 !     

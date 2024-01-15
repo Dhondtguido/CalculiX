@@ -1,6 +1,6 @@
 !
 !     CalculiX - A 3-dimensional finite element program
-!              Copyright (C) 1998-2007 Guido Dhondt
+!              Copyright (C) 1998-2023 Guido Dhondt
 !
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -16,7 +16,7 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-      subroutine anisomaxwavspd(stiff,rho,iorth,wavspd)
+      subroutine anisomaxwavspd(elas,rho,iorth,wavspd)
 !
 !     Calculates the propagation wave speed in a material, up to its 21 
 !     constants. Subroutine for calcmatwavsps.f
@@ -30,7 +30,7 @@
 !
 !       INPUT:
 !       
-!       stiff: double(21) - The elasticity vector, containing 21 entries. 
+!       elas: double(21) - The elasticity vector, containing 21 entries. 
 !             Non used are zero. If material is orthotropic, values are
 !             rearranged to match indexes from anisotropic
 !             material card.
@@ -48,25 +48,25 @@
 !     
       integer i,j,k,im,imin,jm,jmin,iorth
 !
-      real*8 stiff(21),c(3,3,3,3),rho,xi(-1:1,-1:1),et(-1:1,-1:1),
+      real*8 elas(21),c(3,3,3,3),rho,xi(-1:1,-1:1),et(-1:1,-1:1),
      &       wavspd,d1,distmin,a
 !     
 !     if orthotropic
 !      
       if(iorth.eq.1)then
 !     
-         stiff(10)=stiff(9)
-         stiff(15)=stiff(8)
-         stiff(21)=stiff(7)
-         stiff(9)=0.d0
-         stiff(8)=0.d0
-         stiff(7)=0.d0
+         elas(10)=elas(9)
+         elas(15)=elas(8)
+         elas(21)=elas(7)
+         elas(9)=0.d0
+         elas(8)=0.d0
+         elas(7)=0.d0
 !     
       endif
 !     
 !     filling matrix c
 !       
-      call anisotropic(stiff,c)
+      call anisotropic(elas,c)
 !
       d1=1.d0
 !

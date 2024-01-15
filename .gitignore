@@ -1,0 +1,4 @@
+src/*.o
+src/*.a
+src/ccx
+src/ccx_2.21

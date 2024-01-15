@@ -1,6 +1,6 @@
 !
 !     CalculiX - A 3-dimensional finite element program
-!              Copyright (C) 1998-2015 Guido Dhondt
+!              Copyright (C) 1998-2023 Guido Dhondt
 !
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -213,195 +213,195 @@
 !                        for the other value: cf. above
 !
       implicit none
-!     
+!
       integer mass,stiffness,buckling,rhsi,coriolis
-!     
+!
       character*8 lakonl
       character*20 sideload(*)
       character*80 matname(*),amat
       character*81 tieset(3,*)
-!     
+!
       integer konl(26),nelemload(2,*),nbody,nelem,mi(*),kon(*),
-     &     ielprop(*),index,mattyp,ithermal(*),iperturb(*),nload,idist,
-     &     i,j,k,i1,nmethod,kk,nelcon(2,*),nrhcon(*),nalcon(2,*),
-     &     ielmat(mi(3),*),ielorien(mi(3),*),ipkon(*),indexe,
-     &     ntmat_,nope,norien,ihyper,iexpl,kode,imat,iorien,istiff,
-     &     ncmat_,intscheme,istep,iinc,ipompc(*),nodempc(3,*),
-     &     nmpc,ikmpc(*),ilmpc(*),ne0,ndof,istartset(*),iendset(*),
-     &     ialset(*),ntie,integerglob(*),nasym,nplicon(0:ntmat_,*),
-     &     nplkcon(0:ntmat_,*),npmat_,jjj,id,ig
-!     
+     &  ielprop(*),index,mattyp,ithermal(*),iperturb(*),nload,idist,
+     &  i,j,k,i1,nmethod,kk,nelcon(2,*),nrhcon(*),nalcon(2,*),
+     &  ielmat(mi(3),*),ielorien(mi(3),*),ipkon(*),indexe,
+     &  ntmat_,nope,norien,ihyper,iexpl,kode,imat,iorien,istiff,
+     &  ncmat_,intscheme,istep,iinc,ipompc(*),nodempc(3,*),
+     &  nmpc,ikmpc(*),ilmpc(*),ne0,ndof,istartset(*),iendset(*),
+     &  ialset(*),ntie,integerglob(*),nasym,nplicon(0:ntmat_,*),
+     &  nplkcon(0:ntmat_,*),npmat_,jjj,id,ig
+!
       real*8 co(3,*),xl(3,20),veold(0:mi(2),*),rho,s(60,60),bodyfx(3),
-     &     ff(60),elconloc(ncmat_),coords(3),p1(3),
-     &     p2(3),eth(6),rhcon(0:1,ntmat_,*),reltime,prop(*),tm(3,3),
-     &     alcon(0:6,ntmat_,*),alzero(*),orab(7,*),t0(*),t1(*),
-     &     xloadold(2,*),vold(0:mi(2),*),xload(2,*),omx,e,un,um,tt,
-     &     sm(60,60),sti(6,mi(1),*),stx(6,mi(1),*),t0l,t1l,coefmpc(*),
-     &     stiff(21),thicke(mi(3),*),doubleglob(*),dl,e2(3),e3(3),h,
-     &     plicon(0:2*npmat_,ntmat_,*),plkcon(0:2*npmat_,ntmat_,*),
-     &     xstiff(27,mi(1),*),plconloc(802),dtime,ttime,time,xg(3,3),
-     &     x(3,3),Ds(2,2),Qs(2,2),Qin(3,3),Dm(3,3),Db(3,3),Dc(3,3),
-     &     Kp(18,18),Km(18,18),tmg(18,18),Kshell(18,18),dett,dettt,
-     &     Mshell(18,18),Dmi(3,3),Dbi(3,3),Dsi(2,2),di,gpthick(3,2),
-     &     pres,fpres(18),Ae,elcon(0:ncmat_,ntmat_,*)
-!      
-      gpthick(1,1)=+1.d0
-      gpthick(2,1)= 0.d0
-      gpthick(3,1)=-1.d0
-      gpthick(1,2)=2.d0/6.d0
-      gpthick(2,2)=8.d0/6.d0
-      gpthick(3,2)=2.d0/6.d0 
-!
-      di=1.d0/3.d0
-!
-      indexe=ipkon(nelem)
+     &  ff(60),elconloc(ncmat_),coords(3),p1(3),
+     &  p2(3),eth(6),rhcon(0:1,ntmat_,*),reltime,prop(*),tm(3,3),
+     &  alcon(0:6,ntmat_,*),alzero(*),orab(7,*),t0(*),t1(*),
+     &  xloadold(2,*),vold(0:mi(2),*),xload(2,*),omx,e,un,um,tt,
+     &  sm(60,60),sti(6,mi(1),*),stx(6,mi(1),*),t0l,t1l,coefmpc(*),
+     &  elas(21),thicke(mi(3),*),doubleglob(*),dl,e2(3),e3(3),h,
+     &  plicon(0:2*npmat_,ntmat_,*),plkcon(0:2*npmat_,ntmat_,*),
+     &  xstiff(27,mi(1),*),plconloc(802),dtime,ttime,time,xg(3,3),
+     &  x(3,3),Ds(2,2),Qs(2,2),Qin(3,3),Dm(3,3),Db(3,3),Dc(3,3),
+     &  Kp(18,18),Km(18,18),tmg(18,18),Kshell(18,18),dett,dettt,
+     &  Mshell(18,18),Dmi(3,3),Dbi(3,3),Dsi(2,2),di,gpthick(3,2),
+     &  pres,fpres(18),Ae,elcon(0:ncmat_,ntmat_,*)
+      !      
+      gpthick(1,1) = +1.d0
+      gpthick(2,1) =  0.d0
+      gpthick(3,1) = -1.d0
+      gpthick(1,2) = 2.d0/6.d0
+      gpthick(2,2) = 8.d0/6.d0
+      gpthick(3,2) = 2.d0/6.d0 
+      !
+      di = 1.d0/3.d0
+      !
+      indexe = ipkon(nelem)
       index=ielprop(nelem)
-!
-      nope=3
-!     
-!     properties of the cross section
-!     
-      h    =prop(index+1)       ! user section porp.
-      dett =h/2.d0
-      dettt=h**3/8.d0
-!
-!   coordinates
-!
-      do i=1,nope
-        konl(i)=kon(indexe+i)
-        do j=1,3
-          xl(i,j)=co(j,konl(i))
-          xg(i,j)=co(j,konl(i)) ! xg(node,xi)
-        enddo
+      !
+      nope = 3
+      !
+      !   properties of the cross section
+      !
+      h     = prop(index+1)	  ! user section porp.
+      dett  = h/2.d0
+      dettt = h**3/8.d0
+      !
+      !   coordinates
+      !
+      do i = 1,nope
+         konl(i) = kon(indexe+i)
+         do j = 1,3
+            xl(i,j) = co(j,konl(i))
+            xg(i,j) = co(j,konl(i)) ! xg(node,xi)
+         enddo
       enddo  
-!
-      call us3_csys(xg,tm,tmg)  ! e0-frame
-!call us3_csys_cr(xg,tm,tmg) !e0-frame
-!
-! nodal coordinates in e0-frame
-!
-      x(:,:)=0.d0
-      x(1,:)=matmul(tm,xg(1,:))
-      x(2,:)=matmul(tm,xg(2,:))
-      x(3,:)=matmul(tm,xg(3,:))
-!
-!     displacements for 2nd order static and modal theory
-!
+      !
+      call us3_csys(xg,tm,tmg) ! e0-frame
+      !call us3_csys_cr(xg,tm,tmg) !e0-frame
+      !
+      ! nodal coordinates in e0-frame
+      !
+      x(:,:) = 0.d0
+      x(1,:) = matmul(tm,xg(1,:))
+      x(2,:) = matmul(tm,xg(2,:))
+      x(3,:) = matmul(tm,xg(3,:))
+      !
+      !     displacements for 2nd order static and modal theory
+      !
       if(((iperturb(1).eq.1).or.(iperturb(2).eq.1)).and.
-     &     (stiffness.eq.1).and.(buckling.eq.0)) then
-        write(*,*) '*ERROR in e_c3d_US3: no second order'
-        write(*,*) '       calculation for this type of element'
-        call exit(201)
+     &          (stiffness.eq.1).and.(buckling.eq.0)) then
+         write(*,*) '*ERROR in e_c3d_US3: no second order'
+         write(*,*) '       calculation for this type of element'
+         call exit(201)
       endif
-!
+      !
       if((buckling.eq.1).or.(coriolis.eq.1)) then
-        write(*,*) '*ERROR in e_c3d_US3: no buckling'
-        write(*,*) '       calculation for this type of element'
-        call exit(201)
+         write(*,*) '*ERROR in e_c3d_US3: no buckling'
+         write(*,*) '       calculation for this type of element'
+         call exit(201)
       endif      
-!
-!     material and orientation
-!
-      imat=ielmat(1,nelem)
-      amat=matname(imat)
+      !
+      !     material and orientation
+      !
+      imat = ielmat(1,nelem)
+      amat = matname(imat)
       if(norien.gt.0) then
-        iorien=max(0,ielorien(1,nelem))
+         iorien=max(0,ielorien(1,nelem))
       else
-        iorien=0
+         iorien=0
       endif
-!      
+      !      
       if(nelcon(1,imat).lt.0) then
-        ihyper=1
+         ihyper=1
       else
-        ihyper=0
+         ihyper=0
       endif
-!
-      kode=nelcon(1,imat)
-!
+      !
+      kode = nelcon(1,imat)
+      !
       if(kode.eq.2) then
-        mattyp=1
+         mattyp=1
       else
-        mattyp=0
+         mattyp=0
       endif
+      !
+      Dm(:,:) = 0.d0
+      Db(:,:) = 0.d0
+      Ds(:,:) = 0.d0
+      do jjj = 1,3  ! workaround for thermals
+        istiff = 1
 !
-      Dm(:,:)=0.d0
-      Db(:,:)=0.d0
-      Ds(:,:)=0.d0
-      do jjj=1,3                ! workaround for thermals
-        istiff=1
-!     
 !     in materialdata_me the following data are calculated:
 !     - the tangent stiffness, taken from resultsmech.f
 !     - the density. For solid calculations this is the density in the undeformed
-!     state. Any temperature effect due to loading is taken into account by
-!     the Jacobian, and not by temperature interpolation. Therefore, the
-!     temperature can be set to zero here.        
+!       state. Any temperature effect due to loading is taken into account by
+!       the Jacobian, and not by temperature interpolation. Therefore, the
+!       temperature can be set to zero here.        
 !     
         t0l=0.d0
         t1l=0.d0
         call materialdata_me(elcon,nelcon,rhcon,nrhcon,alcon,nalcon,
-     &       imat,amat,iorien,coords,orab,ntmat_,stiff,rho,
-     &       nelem,ithermal,alzero,mattyp,t0l,t1l,
-     &       ihyper,istiff,elconloc,eth,kode,plicon,
-     &       nplicon,plkcon,nplkcon,npmat_,
-     &       plconloc,mi(1),dtime,jjj,
-     &       xstiff,ncmat_)
-!
-        e=stiff(1)
-        un=stiff(2)
-!
+     &     imat,amat,iorien,coords,orab,ntmat_,elas,rho,
+     &     nelem,ithermal,alzero,mattyp,t0l,t1l,
+     &     ihyper,istiff,elconloc,eth,kode,plicon,
+     &     nplicon,plkcon,nplkcon,npmat_,
+     &     plconloc,mi(1),dtime,jjj,
+     &     xstiff,ncmat_)
+        !
+        e   = elas(1)
+        un  = elas(2)
+        !
         call us3_linel_Qi(e,un,Qin,Qs) 
-        Dm=Dm+Qin*gpthick(jjj,2)*dett
-        Db=Db+Qin*((gpthick(jjj,1))**2)*gpthick(jjj,2)*dettt 
-        Ds=Ds+Qs*gpthick(jjj,2)*dett 
+        Dm = Dm+Qin*gpthick(jjj,2)*dett
+        Db = Db+Qin*((gpthick(jjj,1))**2)*gpthick(jjj,2)*dettt 
+        Ds = Ds+Qs*gpthick(jjj,2)*dett 
       enddo   
-!
-!   stiffness matirx (6 dofs 3 nodes -> 18x18)  
-!
-      call us3_Kp(x,Db,Ds,Kp)   ! plate part (CS-DSG)   - in e0-frame
-      call us3_Km(x,Km,Qin,h)   ! membrane part (ANDES) - in e0-frame
-      Kshell=Km + Kp
-!
+      !
+      !   stiffness matirx (6 dofs 3 nodes -> 18x18)  
+      !
+      call us3_Kp(x,Db,Ds,Kp) ! plate part (CS-DSG)   - in e0-frame
+      call us3_Km(x,Km,Qin,h) ! membrane part (ANDES) - in e0-frame
+      Kshell = Km + Kp
+      !
       call us3_M(x,h,rho,Mshell)
-!
-      Kshell=matmul(matmul(transpose(tmg),Kshell),tmg)
-      Mshell=matmul(matmul(transpose(tmg),Mshell),tmg)
-!
+      !
+      Kshell = matmul(matmul(transpose(tmg),Kshell),tmg)
+      Mshell = matmul(matmul(transpose(tmg),Mshell),tmg)
+      !
       do i=1,18
         do j=1,18
-          sm(i,j)=Mshell(i,j) 
-          s(i,j)=Kshell(i,j)
+            sm(i,j) = Mshell(i,j) 
+            s(i,j)  = Kshell(i,j)
         enddo
       enddo 
-!     
-!     pressure loads defined y/n
-!     
+!
+! pressure loads defined y/n
+!
       if(rhsi.eq.1) then
         if(idist.ne.0) then
           ff(:)=0.d0
         endif
       endif
-!     
-      if(nload.gt.0) then       ! idlist=1 distributed loads defined
-!
+!      
+      if(nload.gt.0) then ! idlist=1 distributed loads defined
+        !
         call nident2(nelemload,nelem,nload,id)
-! 
-! *SURFACE arg (sideload 1 NEG, 2 POS):
-!
-c     ff(:)=0.d0
+        ! 
+        ! *SURFACE arg (sideload 1 NEG, 2 POS):
+        !
+c        ff(:) = 0.d0
         if(sideload(id)(1:2).eq.'P2') then
-          pres=-xload(1,id)
+          pres = -xload(1,id)
         elseif(sideload(id)(1:2).eq.'P1') then
-          pres=+xload(1,id) 
+          pres = +xload(1,id) 
         endif
-!
-        call us3_ae(x,Ae)       ! element area
-        ff(3)=di*Ae*pres
-        ff(9)=di*Ae*pres
-        ff(15)=di*Ae*pres
-!
+        !
+        call us3_ae(x,Ae) ! element area
+        ff(3)  = di*Ae*pres
+        ff(9)  = di*Ae*pres
+        ff(15) = di*Ae*pres
+        !
       endif
-!
+      !
       return
       end
 

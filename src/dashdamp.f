@@ -1,6 +1,6 @@
 !
 !     CalculiX - A 3-dimensional finite element program
-!              Copyright (C) 1998-2015 Guido Dhondt
+!              Copyright (C) 1998-2023 Guido Dhondt
 !
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -16,7 +16,7 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-      subroutine dashdamp(xl,konl,voldl,s,imat,elcon,nelcon,
+      subroutine dashdamp(xl,elas,konl,voldl,s,imat,elcon,nelcon,
      &  ncmat_,ntmat_,nope,lakonl,t0l,t1l,kode,elconloc,plicon,
      &  nplicon,npmat_,iperturb,time,nmethod)
 !
@@ -29,7 +29,7 @@
       integer konl(20),i,j,imat,ncmat_,ntmat_,nope,iperturb(*),niso,
      &  kode,npmat_,nelcon(2,*),nplicon(0:ntmat_,*),nmethod,id
 !
-      real*8 xl(3,9),s(60,60),voldl(3,9),xn(3),dd,
+      real*8 xl(3,9),elas(21),s(60,60),voldl(3,9),xn(3),dd,
      &  elcon(0:ncmat_,ntmat_,*),t0l,t1l,elconloc(*),damp,
      &  plicon(0:2*npmat_,ntmat_,*),plconloc(802),pl(3,9),time,
      &  xiso(200),yiso(200)

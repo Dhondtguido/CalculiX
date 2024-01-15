@@ -1,6 +1,6 @@
 !
 !     CalculiX - A 3-dimensional finite element program
-!              Copyright (C) 1998-2015 Guido Dhondt
+!              Copyright (C) 1998-2023 Guido Dhondt
 !
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -24,39 +24,22 @@
 !     be negative
 !
       implicit none
-!     
+!
       integer ne0,ne,mi(*),i
-!     
+!
       real*8 stx(6,mi(1),*),presmin,presmax,pressureratio
-!     
+!
       presmax=0.d0
       presmin=0.d0
-!     
+!
       do i=ne0+1,ne
-        if(stx(4,1,i).gt.presmax) then
-          presmax=stx(4,1,i)
-        elseif(stx(4,1,i).lt.presmin) then
-          presmin=stx(4,1,i)
-        endif
+         if(stx(4,1,i).gt.presmax) then
+            presmax=stx(4,1,i)
+         elseif(stx(4,1,i).lt.presmin) then
+            presmin=stx(4,1,i)
+         endif
       enddo
-!     
-!     check for near zero maximum pressure
-!     
-      if(dabs(presmax).lt.1.d-30) then
-        if(dabs(presmin).lt.1.d-30) then
-!     
-!         maximum and minimum pressure near 0.
-!     
-          pressureratio=0.d0
-        else
-!     
-!         only maximum pressure near 0.
-!     
-          pressureratio=-1.d30
-        endif
-      endif
-!      
       pressureratio=presmin/presmax
-!     
+!
       return
       end

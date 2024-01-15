@@ -1,6 +1,6 @@
 !     
 !     CalculiX - A 3-dimensional finite element program
-!     Copyright (C) 1998-2015 Guido Dhondt
+!     Copyright (C) 1998-2023 Guido Dhondt
 !     
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -39,7 +39,7 @@
      &     ielmat(mi(3),*),irstrt(*),nset,nmat,ndprop,npropstart,id,
      &     istep,istat,n,key,i,j,k,imaterial,ipos,lprop,ipoinpc(0:*),
      &     iline,ipol,inl,ipoinp(2,*),inp(3,*),ielprop(*),nprop,nprop_,
-     &     noil _mat,npu,nfix,iset,ier
+     &     nodea,nodeb,noil _mat,npu,nfix,nstart,iset,ier,ndpropread
 !     
       real*8 prop(*)
 
@@ -203,9 +203,9 @@
         elseif(typename(8:11).eq.'STEP') then
           elname='LICHST '
           ndprop=7
-        elseif(typename(8:25).eq.'DISCONTINUOUSSLOPE') then
-          elname='LICHDS '
-          ndprop=5
+c        elseif(typename(8:11).eq.'DROP') then
+c          elname='LICHDR '
+c          ndprop=7
         else
           write(*,*) '*ERROR reading *FLUID SECTION:'
           write(*,*) '       unknown channel section'

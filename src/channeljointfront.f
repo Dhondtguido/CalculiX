@@ -1,6 +1,6 @@
 !     
 !     CalculiX - A 3-dimensional finite element program
-!     Copyright (C) 1998-2015 Guido Dhondt
+!     Copyright (C) 1998-2023 Guido Dhondt
 !     
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -100,7 +100,7 @@ c      nel=0
 !
 !         height at the joint as calculated from branch 2
 !
-          h2=v(2,nup)
+          h2=v(2,nup)/sqrts02
 !
           index=inoel(2,index)
           if(index.eq.0) exit
@@ -185,9 +185,9 @@ c      nel=0
 !     the depth in nup is the same as in nup1
 !
         if(kon(indexe+1).eq.nup) then
-          h1=v(2,kon(indexe+3))
+          h1=v(2,kon(indexe+3))/sqrts01
         else
-          h1=v(2,kon(indexe+1))
+          h1=v(2,kon(indexe+1))/sqrts01
         endif
         index=inoel(2,index)
         if(index.eq.0) exit
@@ -216,7 +216,7 @@ c      nel=0
 !
           if(h2.lt.0.d0) then
             call hcrit(xflow2,rho,b2,theta2,dg,sqrts02,hk)
-            v(2,nup2)=hk
+            v(2,nup2)=hk*sqrts02
 !     
 !     stackb stores the node from which to start the backwater
 !     curve (in istackb(2,*) and the element downstream of this
@@ -234,7 +234,7 @@ c      nel=0
 !           if hns(h2)<=h1: backwater curve starting at h1 in branch2
 !
             if(hnsj.le.h1) then
-              v(2,nup2)=h1
+              v(2,nup2)=h1*sqrts02
               nstackb=nstackb+1
               istackb(1,nstackb)=nelup
               istackb(2,nstackb)=nup2
@@ -246,7 +246,7 @@ c      nel=0
 !
 !         starting point of forward curve in downstream branch of joint
 !
-          v(2,nup)=h1
+          v(2,nup)=h1*sqrts01
         else
 !
 !     if h1<=h2: branch 2 is continued in forward direction
@@ -257,7 +257,7 @@ c      nel=0
 !
           if(h1.lt.0.d0) then
             call hcrit(xflow1,rho,b1,theta1,dg,sqrts01,hk)
-            v(2,nup1)=hk
+            v(2,nup1)=hk*sqrts01
 !     
 !     stackb stores the node from which to start the backwater
 !     curve (in istackb(2,*) and the element downstream of this
@@ -275,7 +275,7 @@ c      nel=0
 !           if hns(h1)<=h2: backwater curve starting at h2 in branch 1
 !
             if(hnsj.le.h2) then
-              v(2,nup1)=h2
+              v(2,nup1)=h2*sqrts01
               nstackb=nstackb+1
               istackb(1,nstackb)=nel1
               istackb(2,nstackb)=nup1

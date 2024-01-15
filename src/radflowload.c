@@ -1,5 +1,5 @@
 /*     CalculiX - A 3-dimensional finite element program                 */
-/*              Copyright (C) 1998-2015 Guido Dhondt                     */
+/*              Copyright (C) 1998-2023 Guido Dhondt                     */
 
 /*     This program is free software; you can redistribute it and/or     */
 /*     modify it under the terms of the GNU General Public License as    */
@@ -187,7 +187,7 @@ void radflowload(ITG *itg,ITG *ieg,ITG *ntg,ITG *ntr,double *adrad,
 				  nelemload,ixnode,iyload,nload,sideload,
 				  xloadact,cocon,ncocon,iinc,nforc,ikforc,
 				  ilforc,xforcact));
-	  SFREE(itreated);SFREE(istack);SFREE(istackb);
+	  SFREE(itreated);SFREE(istack);SFREE(hfr);SFREE(hba);SFREE(istackb);
 	  SFREE(ixnode);SFREE(iyload);
 	  break;
 	}
@@ -397,9 +397,9 @@ void radflowload(ITG *itg,ITG *ieg,ITG *ntg,ITG *ntr,double *adrad,
 			  camt,camf,camp,rhcon,nrhcon,
 			  vold,jobnamef,set,istartset,iendset,ialset,nset,
 			  mi,iaxial,istep,iit,ipobody,ibody,xbodyact,nbody,
-			  &ndata,sfr,sba,jumpup,jumpdo,hfr,hba));
+			  &ndata,sfr,sba,jumpup,jumpdo));
       if(ichannel==1){
-	SFREE(sfr);SFREE(sba);SFREE(jumpup);SFREE(jumpdo);SFREE(hfr);SFREE(hba);
+	SFREE(sfr);SFREE(sba);SFREE(jumpup);SFREE(jumpdo);
       }
       
     }

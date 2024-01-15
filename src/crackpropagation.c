@@ -1,5 +1,5 @@
 /*     CalculiX - A 3-dimensional finite element program                 */
-/*              Copyright (C) 1998-2015 Guido Dhondt                          */
+/*              Copyright (C) 1998-2023 Guido Dhondt                          */
 
 /*     This program is free software; you can redistribute it and/or     */
 /*     modify it under the terms of the GNU General Public License as    */
@@ -333,7 +333,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 			 iendcrackbou,costruc,ibounnod,xt,acrack,istartfront,
 			 iendfront,&nnfront,isubsurffront,ifrontrel,
 			 ifront,posfront,doubleglob,integerglob,
-			 &nproc,&iinc,acrackglob,&ier,&nbounnod,&nfront));
+			 &nproc,&iinc,acrackglob,&ier));
     if(ier==1){
       SFREE(kontri);SFREE(ipoed);SFREE(iedg);SFREE(ieled);SFREE(ibounedg);
       SFREE(ibounnod);SFREE(iedno);SFREE(temp);SFREE(stress);SFREE(ifront);
@@ -860,6 +860,14 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 
   filab[4]='I';
   frd(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,
+      &kode,filab,een,t1,fn,&time,epn,ielmat,matname,enern,xstaten,
+      nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
+      ntrans,orab,ielorien,norien,description,ipneigh,neigh,
+      mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
+      cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
+      thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
+      ielprop,prop,sti);
+  csv(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,
       &kode,filab,een,t1,fn,&time,epn,ielmat,matname,enern,xstaten,
       nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
       ntrans,orab,ielorien,norien,description,ipneigh,neigh,
