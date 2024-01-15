@@ -1123,6 +1123,15 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	  thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
 	  ielprop,prop,sti);
 	  
+      csv(co,nk,kon,ipkon,lakon,&ne0,v,stn,inum,nmethod,
+	  kode,filab,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
+	  nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
+	  ntrans,orab,ielorien,norien,description,ipneigh,neigh,
+	  mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
+	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
+	  thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
+	  ielprop,prop,sti);
+	  
       if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}      
 #ifdef COMPANY
       FORTRAN(uout,(v,mi,ithermal,filab,kode,output,jobnamec));
@@ -2747,6 +2756,14 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	    cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	    thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
 	    ielprop,prop,sti);
+	csv(co,nk,kon,ipkon,lakon,&ne0,v,stn,inum,nmethod,
+	    kode,filab,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
+	    nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
+	    ntrans,orab,ielorien,norien,description,ipneigh,neigh,
+	    mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
+	    cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
+	    thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
+	    ielprop,prop,sti);
 
 	if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);} 
 #ifdef COMPANY
@@ -3777,6 +3794,14 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	    cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	    thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,ielprop,
 	    prop,sti);
+	csv(co,nk,kon,ipkon,lakon,&ne0,v,stn,inum,nmethod,
+	    kode,filab,een,t1act,fn,&ptime,epn,ielmat,matname,enern,xstaten,
+	    nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
+	    ntrans,orab,ielorien,norien,description,ipneigh,neigh,
+	    mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
+	    cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
+	    thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,ielprop,
+	    prop,sti);
 	if(*mortar>1){
 	  mortar_postfrd(ne,nslavs,mi,nk,nkon,fn,cfs,cfm);      
 	}
@@ -3898,6 +3923,14 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	mortar_prefrd(ne,nslavs,mi,nk,nkon, &stx,cdisp,fn,cfs,cfm);       
       }
       frd(co,nk,kon,ipkon,lakon,&ne0,v,stn,inum,nmethod,
+	  kode,filab,een,t1act,fn,&ptime,epn,ielmat,matname,enern,xstaten,
+	  nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
+	  ntrans,orab,ielorien,norien,description,ipneigh,neigh,
+	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
+	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
+	  thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,ielprop,
+	  prop,sti);
+      csv(co,nk,kon,ipkon,lakon,&ne0,v,stn,inum,nmethod,
 	  kode,filab,een,t1act,fn,&ptime,epn,ielmat,matname,enern,xstaten,
 	  nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
 	  ntrans,orab,ielorien,norien,description,ipneigh,neigh,

@@ -115,6 +115,14 @@ void writenewmesh(ITG *nktet,ITG *netet_,double *cotet,ITG *iquad,
       cs,set,&nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
       thicke,fnewmesh,outputnew,qfx,cdn,&mortar,cdnr,cdni,nmat,ielprop,
       prop,sti);
+  csv(conew,&nknew,konnew,ipkonnew,lakonnew,&nenew,v,stn,inum,&nmethod,
+      &kode,filabnew,een,t1,fn,&time,epn,ielmatnew,matname,enern,xstaten,
+      &nstate_,&istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
+      &ntrans,orab,ielorien,&norien,description,ipneigh,neigh,
+      mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&nenew,
+      cs,set,&nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
+      thicke,fnewmesh,outputnew,qfx,cdn,&mortar,cdnr,cdni,nmat,ielprop,
+      prop,sti);
   
   strcat(fnewmesh,".frd");
   if((f1=fopen(fnewmesh,"ab"))==NULL){

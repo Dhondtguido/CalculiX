@@ -2068,6 +2068,14 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	  thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
 	  ielprop,prop,sti);
+      csv(co,&nkg,kon,ipkon,lakon,&neg,vr,stnr,inum,nmethod,
+	  kode,filab,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
+	  nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
+	  ntrans,orab,ielorien,norien,description,ipneigh,neigh,
+	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&neg,
+	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
+	  thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
+	  ielprop,prop,sti);
 
       if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
 
@@ -2284,6 +2292,14 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
       }
 
       frd(co,&nkg,kon,ipkon,lakon,&neg,vi,stni,inum,nmethod,
+	  kode,filab,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
+	  nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
+	  ntrans,orab,ielorien,norien,description,ipneigh,neigh,
+	  mi,stx,va,vp,stna,stnp,vmax,stnmax,&ngraph,veold,ener,&neg,
+	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
+	  thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
+	  ielprop,prop,sti);
+      csv(co,&nkg,kon,ipkon,lakon,&neg,vi,stni,inum,nmethod,
 	  kode,filab,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
 	  nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
 	  ntrans,orab,ielorien,norien,description,ipneigh,neigh,
@@ -3352,6 +3368,14 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	}
 
 	frd(co,&nkg,kon,ipkon,lakon,&neg,vr,stn,inum,nmethod,
+	    kode,filab,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
+	    nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
+	    ntrans,orab,ielorien,norien,description,ipneigh,neigh,
+	    mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&neg,
+	    cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
+	    thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
+	    ielprop,prop,sti);
+	csv(co,&nkg,kon,ipkon,lakon,&neg,vr,stn,inum,nmethod,
 	    kode,filab,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
 	    nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
 	    ntrans,orab,ielorien,norien,description,ipneigh,neigh,

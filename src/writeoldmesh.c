@@ -71,6 +71,14 @@ void writeoldmesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,
       cs,set,&nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
       thicke,foldmesh,output,qfx,cdn,&mortar,cdnr,cdni,nmat,ielprop,
       prop,sti);
+  csv(co,nk,kon,ipkon,lakon,ne,v,stn,inum,&nmethod,
+      &kode,filabtmp,een,t1,fn,&time,epn,ielmatold,matname,enern,xstaten,
+      &nstate_,&istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
+      &ntrans,orab,ielorien,&norien,description,ipneigh,neigh,
+      mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
+      cs,set,&nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
+      thicke,foldmesh,output,qfx,cdn,&mortar,cdnr,cdni,nmat,ielprop,
+      prop,sti);
   
   strcat(foldmesh,".frd");
   if((f1=fopen(foldmesh,"ab"))==NULL){

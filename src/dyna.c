@@ -1822,6 +1822,14 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	  thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,ielprop,
 	  prop,sti);
+      csv(co,&nkg,kon,ipkon,lakon,&neg,v,stn,inum,nmethod,
+	  kode,filab,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
+	  nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
+	  ntrans,orab,ielorien,norien,description,ipneigh,neigh,
+	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
+	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
+	  thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,ielprop,
+	  prop,sti);
 	
       if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
     }

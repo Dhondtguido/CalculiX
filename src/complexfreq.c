@@ -1922,6 +1922,13 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	mi,stxt,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&net,
 	cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emnt,
 	thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,ielprop,prop,sti);
+    csv(cot,&nkt,kont,ipkont,lakont,&net,vt,stnt,inumt,nmethod,
+	kode,filab,eent,t1t,fnt,&freq,epn,ielmatt,matname,enernt,xstaten,
+	nstate_,istep,&iinc,ithermal,qfn,&j,&nm[j],trab,inotrt,
+	ntrans,orab,ielorien,norien,description,ipneigh,neigh,
+	mi,stxt,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&net,
+	cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emnt,
+	thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,ielprop,prop,sti);
     if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
     
   }   // end loop over the eigenfrequencies

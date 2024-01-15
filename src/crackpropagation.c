@@ -867,6 +867,14 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
       cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
       thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
       ielprop,prop,sti);
+  csv(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,
+      &kode,filab,een,t1,fn,&time,epn,ielmat,matname,enern,xstaten,
+      nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
+      ntrans,orab,ielorien,norien,description,ipneigh,neigh,
+      mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
+      cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
+      thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
+      ielprop,prop,sti);
 
   /* storing the crack propagation fields in frd-format */
 

@@ -384,6 +384,14 @@ void checkconvergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
                         &ngraph,veold,ener,ne,cs,set,nset,istartset,iendset,
                         ialset,eenmax,fnr,fni,emn,thicke,jobnamec,output,qfx,
                         cdn,mortar,cdnr,cdni,nmat,ielprop,prop,sti);
+		    csv(co,nk,kon,ipkon,lakon,ne,vold,stn,inum,nmethod,
+			kode,filab,een,t1act,fn,ttime,epn,ielmat,matname,enern,
+                        xstaten,nstate_,istep,iinc,ithermal,qfn,mode,noddiam,
+                        trab,inotr,ntrans,orab,ielorien,norien,description,
+                        ipneigh,neigh,mi,sti,vr,vi,stnr,stni,vmax,stnmax,
+                        &ngraph,veold,ener,ne,cs,set,nset,istartset,iendset,
+                        ialset,eenmax,fnr,fni,emn,thicke,jobnamec,output,qfx,
+                        cdn,mortar,cdnr,cdni,nmat,ielprop,prop,sti);
 
 		    FORTRAN(stop,());
 		}
@@ -505,6 +513,14 @@ void checkconvergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		&ngraph,veold,ener,ne,cs,set,nset,istartset,iendset,
 		ialset,eenmax,fnr,fni,emn,thicke,jobnamec,output,qfx,cdn,
 		mortar,cdnr,cdni,nmat,ielprop,prop,sti);
+	    csv(co,nk,kon,ipkon,lakon,ne,vold,stn,inum,nmethod,
+		kode,filab,een,t1act,fn,ttime,epn,ielmat,matname,enern,
+		xstaten,nstate_,istep,iinc,ithermal,qfn,mode,noddiam,
+		trab,inotr,ntrans,orab,ielorien,norien,description,
+		ipneigh,neigh,mi,sti,vr,vi,stnr,stni,vmax,stnmax,
+		&ngraph,veold,ener,ne,cs,set,nset,istartset,iendset,
+		ialset,eenmax,fnr,fni,emn,thicke,jobnamec,output,qfx,cdn,
+		mortar,cdnr,cdni,nmat,ielprop,prop,sti);
 
 	    FORTRAN(stop,());
 	}	
@@ -607,6 +623,14 @@ void checkconvergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 			    &ngraph,veold,ener,ne,cs,set,nset,istartset,iendset,
 			    ialset,eenmax,fnr,fni,emn,thicke,jobnamec,output,qfx,cdn,
 			    mortar,cdnr,cdni,nmat,ielprop,prop,sti);
+			csv(co,nk,kon,ipkon,lakon,ne,vold,stn,inum,nmethod,
+			    kode,filab,een,t1act,fn,ttime,epn,ielmat,matname,enern,
+			    xstaten,nstate_,istep,iinc,ithermal,qfn,mode,noddiam,
+			    trab,inotr,ntrans,orab,ielorien,norien,description,
+			    ipneigh,neigh,mi,sti,vr,vi,stnr,stni,vmax,stnmax,
+			    &ngraph,veold,ener,ne,cs,set,nset,istartset,iendset,
+			    ialset,eenmax,fnr,fni,emn,thicke,jobnamec,output,qfx,cdn,
+			    mortar,cdnr,cdni,nmat,ielprop,prop,sti);
 			
 			FORTRAN(stop,());
 		    }
@@ -669,6 +693,14 @@ void checkconvergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
                         &ngraph,veold,ener,ne,cs,set,nset,istartset,iendset,
                         ialset,eenmax,fnr,fni,emn,thicke,jobnamec,output,qfx,cdn,
 			mortar,cdnr,cdni,nmat,ielprop,prop,sti);
+			csv(co,nk,kon,ipkon,lakon,ne,vold,stn,inum,nmethod,
+			kode,filab,een,t1act,fn,ttime,epn,ielmat,matname,enern,
+                        xstaten,nstate_,istep,iinc,ithermal,qfn,mode,noddiam,
+                        trab,inotr,ntrans,orab,ielorien,norien,description,
+                        ipneigh,neigh,mi,sti,vr,vi,stnr,stni,vmax,stnmax,
+                        &ngraph,veold,ener,ne,cs,set,nset,istartset,iendset,
+                        ialset,eenmax,fnr,fni,emn,thicke,jobnamec,output,qfx,cdn,
+			mortar,cdnr,cdni,nmat,ielprop,prop,sti);
 
 			FORTRAN(stop,());
 		    }
@@ -693,6 +725,14 @@ void checkconvergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 
 			(*ttime)+=(*time);
 			frd(co,nk,kon,ipkon,lakon,ne,vold,stn,inum,nmethod,
+			kode,filab,een,t1act,fn,ttime,epn,ielmat,matname,enern,
+                        xstaten,nstate_,istep,iinc,ithermal,qfn,mode,noddiam,
+                        trab,inotr,ntrans,orab,ielorien,norien,description,
+                        ipneigh,neigh,mi,sti,vr,vi,stnr,stni,vmax,stnmax,
+                        &ngraph,veold,ener,ne,cs,set,nset,istartset,iendset,
+                        ialset,eenmax,fnr,fni,emn,thicke,jobnamec,output,qfx,cdn,
+			mortar,cdnr,cdni,nmat,ielprop,prop,sti);
+			csv(co,nk,kon,ipkon,lakon,ne,vold,stn,inum,nmethod,
 			kode,filab,een,t1act,fn,ttime,epn,ielmat,matname,enern,
                         xstaten,nstate_,istep,iinc,ithermal,qfn,mode,noddiam,
                         trab,inotr,ntrans,orab,ielorien,norien,description,
@@ -779,6 +819,14 @@ void checkconvergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
                         &ngraph,veold,ener,ne,cs,set,nset,istartset,iendset,
                         ialset,eenmax,fnr,fni,emn,thicke,jobnamec,output,qfx,cdn,
 			mortar,cdnr,cdni,nmat,ielprop,prop,sti);
+			csv(co,nk,kon,ipkon,lakon,ne,vold,stn,inum,nmethod,
+			kode,filab,een,t1act,fn,ttime,epn,ielmat,matname,enern,
+                        xstaten,nstate_,istep,iinc,ithermal,qfn,mode,noddiam,
+                        trab,inotr,ntrans,orab,ielorien,norien,description,
+                        ipneigh,neigh,mi,sti,vr,vi,stnr,stni,vmax,stnmax,
+                        &ngraph,veold,ener,ne,cs,set,nset,istartset,iendset,
+                        ialset,eenmax,fnr,fni,emn,thicke,jobnamec,output,qfx,cdn,
+			mortar,cdnr,cdni,nmat,ielprop,prop,sti);
 
 			FORTRAN(stop,());
 		    }
@@ -802,6 +850,14 @@ void checkconvergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 
 			(*ttime)+=(*time);
 			frd(co,nk,kon,ipkon,lakon,ne,vold,stn,inum,nmethod,
+			kode,filab,een,t1act,fn,ttime,epn,ielmat,matname,enern,
+                        xstaten,nstate_,istep,iinc,ithermal,qfn,mode,noddiam,
+                        trab,inotr,ntrans,orab,ielorien,norien,description,
+                        ipneigh,neigh,mi,sti,vr,vi,stnr,stni,vmax,stnmax,
+                        &ngraph,veold,ener,ne,cs,set,nset,istartset,iendset,
+                        ialset,eenmax,fnr,fni,emn,thicke,jobnamec,output,qfx,cdn,
+			mortar,cdnr,cdni,nmat,ielprop,prop,sti);
+			csv(co,nk,kon,ipkon,lakon,ne,vold,stn,inum,nmethod,
 			kode,filab,een,t1act,fn,ttime,epn,ielmat,matname,enern,
                         xstaten,nstate_,istep,iinc,ithermal,qfn,mode,noddiam,
                         trab,inotr,ntrans,orab,ielorien,norien,description,
