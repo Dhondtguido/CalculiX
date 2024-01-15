@@ -1711,6 +1711,23 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
          double *cdn,ITG *mortar,double *cdnr,double *cdni,ITG *nmat,
          ITG *ielprop,double *prop,double *sti);
 
+void csv(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
+         double *v,double *stn,ITG *inum,ITG *nmethod,ITG *kode,
+         char *filab,double *een,double *t1,double *fn,double *time,
+         double *epn,ITG *ielmat,char *matname,double *enern,
+         double *xstaten,ITG *nstate_,ITG *istep,ITG *iinc,
+         ITG *ithermal,double *qfn,ITG *mode,ITG *noddiam,
+         double *trab,ITG *inotr,ITG *ntrans,double *orab,
+         ITG *ielorien,ITG *norien,char *description,ITG *ipneigh,
+         ITG *neigh,ITG *mi,double *stx,double *vr,double *vi,
+         double *stnr,double *stni,double *vmax,double *stnmax,
+         ITG *ngraph,double *veold,double *ener,ITG *ne,double *cs,
+         char *set,ITG *nset,ITG *istartset,ITG *iendset,ITG *ialset,
+         double *eenmax,double *fnr,double *fni,double *emn,
+         double *thicke,char *jobnamec,char *output,double *qfx,
+         double *cdn,ITG *mortar,double *cdnr,double *cdni,ITG *nmat,
+         ITG *ielprop,double *prop,double *sti);
+
 void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v,
             double *stn,ITG *inum,ITG *nmethod,ITG *kode,char *filab,
             double *een,double *t1,double *fn,double *time,double *epn,
@@ -1778,6 +1795,12 @@ void frdgeneralvector(double *v,ITG *iset,ITG *ntrans,char * filabl,
                ITG *istartset,ITG *iendset,ITG *ialset,ITG *mi,ITG *ngraph,
                FILE *f1,char *output,char *m3);
 
+void csvgeneralvector(double *v, ITG *iset, ITG *ntrans, char *filabl,
+                     ITG *nkcoords, ITG *inum, ITG *inotr, double *trab,
+                     double *co, ITG *istartset, ITG *iendset, ITG *ialset,
+                     ITG *mi, ITG *ngraph, char *output,char *header,
+                     char *set, char *variable, char *time_step);
+                     
 void frdheader(ITG *icounter,double *oner,double *time,double *pi,
                ITG *noddiam,double *cs,ITG *null,ITG *mode,
                ITG *noutloc,char *description,ITG *kode,ITG *nmethod,
@@ -1792,6 +1815,11 @@ void frdselect(double *field1,double *field2,ITG *iset,ITG *nkcoords,ITG *inum,
      ITG *ifield,ITG *icomp,ITG *nfield,ITG *iselect,char *m2,FILE *f1,
      char *output,char *m3);
 
+void csvselect(double *field1,double *field2,ITG *iset,ITG *nkcoords,ITG *inum,
+     ITG *istartset,ITG *iendset,ITG *ialset,ITG *ngraph,ITG *ncomp,
+     ITG *ifield,ITG *icomp,ITG *nfield,ITG *iselect,char *output,char *header,
+     char *set, char *variable, char *time_step);
+
 void frdset(char *filabl,char *set,ITG *iset,ITG *istartset,ITG *iendset,
             ITG *ialset,ITG *inum,ITG *noutloc,ITG *nout,ITG *nset,
             ITG *noutmin,ITG *noutplus,ITG *iselect,ITG *ngraph);
@@ -1800,6 +1828,11 @@ void frdvector(double *v,ITG *iset,ITG *ntrans,char * filabl,ITG *nkcoords,
                ITG *inum,char *m1,ITG *inotr,double *trab,double *co,
                ITG *istartset,ITG *iendset,ITG *ialset,ITG *mi,ITG *ngraph,
                FILE *f1,char *output,char *m3);
+void csvvector(double *v,ITG *iset,ITG *ntrans,char * filabl,ITG *nkcoords,
+               ITG *inum,ITG *inotr,double *trab,double *co,
+               ITG *istartset,ITG *iendset,ITG *ialset,ITG *mi,ITG *ngraph,
+               char *output,double *time, char *header, char *set, char *variable, 
+               char *time_step);
 
 void FORTRAN(frictionheating,(ITG *ne0,ITG *ne,ITG *ipkon,char *lakon,ITG *ielmat,
                      ITG *mi,double *elcon,ITG *ncmat_,ITG *ntmat_,

@@ -1020,13 +1020,17 @@ filtermain_backward.c \
 filtermain_forward.c \
 forparll.c \
 frd.c \
+csv.c \
 frdcyc.c \
 frdgeneralvector.c \
+csvgeneralvector.c \
 frdheader.c \
 frdselect.c \
+csvselect.c \
 frd_sen.c \
 frdset.c \
 frdvector.c \
+csvvector.c \
 frecord.c \
 genrandmain.c \
 getglobalresults.c \
