@@ -110,16 +110,16 @@ void csvselect(double *field1, double *field2, ITG *iset, ITG *nkcoords, ITG *in
 			{
 				if (n == 1)
 				{
-					fprintf(f1, "%" ITGFORMAT ",", i + 1);
+					fprintf(f1, "%" ITGFORMAT, i + 1);
 					for (j = 0; j < min(6, *ncomp); j++)
 					{
 						if (ifield[j] == 1)
 						{
-							fprintf(f1, "%12.5E,", (float)field1[i * nfield[0] + icomp[j]]);
+							fprintf(f1, ",%12.5E", (float)field1[i * nfield[0] + icomp[j]]);
 						}
 						else
 						{
-							fprintf(f1, "%12.5E,", (float)field2[i * nfield[1] + icomp[j]]);
+							fprintf(f1, ",%12.5E", (float)field2[i * nfield[1] + icomp[j]]);
 						}
 					}
 					if (strcmp1(output, "asc") == 0)
@@ -133,11 +133,11 @@ void csvselect(double *field1, double *field2, ITG *iset, ITG *nkcoords, ITG *in
 					{
 						if (ifield[j] == 1)
 						{
-							fprintf(f1, "%12.5E,", (float)field1[i * nfield[0] + icomp[j]]);
+							fprintf(f1, ",%12.5E", (float)field1[i * nfield[0] + icomp[j]]);
 						}
 						else
 						{
-							fprintf(f1, "%12.5E,", (float)field2[i * nfield[1] + icomp[j]]);
+							fprintf(f1, ",%12.5E", (float)field2[i * nfield[1] + icomp[j]]);
 						}
 					}
 					if (strcmp1(output, "asc") == 0)
@@ -182,16 +182,16 @@ void csvselect(double *field1, double *field2, ITG *iset, ITG *nkcoords, ITG *in
 					{
 						if (n == 1)
 						{
-							fprintf(f1, "%" ITGFORMAT ",", i + 1);
+							fprintf(f1, "%" ITGFORMAT, i + 1);
 							for (j = 0; j < min(6, *ncomp); j++)
 							{
 								if (ifield[j] == 1)
 								{
-									fprintf(f1, "%12.5E,", (float)field1[i * nfield[0] + icomp[j]]);
+									fprintf(f1, ",%12.5E", (float)field1[i * nfield[0] + icomp[j]]);
 								}
 								else
 								{
-									fprintf(f1, "%12.5E,", (float)field2[i * nfield[1] + icomp[j]]);
+									fprintf(f1, ",%12.5E", (float)field2[i * nfield[1] + icomp[j]]);
 								}
 							}
 							if (strcmp1(output, "asc") == 0)
@@ -205,11 +205,11 @@ void csvselect(double *field1, double *field2, ITG *iset, ITG *nkcoords, ITG *in
 							{
 								if (ifield[j] == 1)
 								{
-									fprintf(f1, "%12.5E,", (float)field1[i * nfield[0] + icomp[j]]);
+									fprintf(f1, ",%12.5E", (float)field1[i * nfield[0] + icomp[j]]);
 								}
 								else
 								{
-									fprintf(f1, "%12.5E,", (float)field2[i * nfield[1] + icomp[j]]);
+									fprintf(f1, ",%12.5E", (float)field2[i * nfield[1] + icomp[j]]);
 								}
 							}
 							if (strcmp1(output, "asc") == 0)
@@ -255,16 +255,16 @@ void csvselect(double *field1, double *field2, ITG *iset, ITG *nkcoords, ITG *in
 						{
 							if (n == 1)
 							{
-								fprintf(f1, "%" ITGFORMAT ",", i + 1);
+								fprintf(f1, "%" ITGFORMAT, i + 1);
 								for (j = 0; j < min(6, *ncomp); j++)
 								{
 									if (ifield[j] == 1)
 									{
-										fprintf(f1, "%12.5E,", (float)field1[i * nfield[0] + icomp[j]]);
+										fprintf(f1, ",%12.5E", (float)field1[i * nfield[0] + icomp[j]]);
 									}
 									else
 									{
-										fprintf(f1, "%12.5E,", (float)field2[i * nfield[1] + icomp[j]]);
+										fprintf(f1, ",%12.5E", (float)field2[i * nfield[1] + icomp[j]]);
 									}
 								}
 								if (strcmp1(output, "asc") == 0)
@@ -278,11 +278,11 @@ void csvselect(double *field1, double *field2, ITG *iset, ITG *nkcoords, ITG *in
 								{
 									if (ifield[j] == 1)
 									{
-										fprintf(f1, "%12.5E,", (float)field1[i * nfield[0] + icomp[j]]);
+										fprintf(f1, ",%12.5E", (float)field1[i * nfield[0] + icomp[j]]);
 									}
 									else
 									{
-										fprintf(f1, "%12.5E,", (float)field2[i * nfield[1] + icomp[j]]);
+										fprintf(f1, ",%12.5E", (float)field2[i * nfield[1] + icomp[j]]);
 									}
 								}
 								if (strcmp1(output, "asc") == 0)
