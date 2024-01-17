@@ -40,7 +40,8 @@ void frdselect(double *field1,double *field2,ITG *iset,ITG *nkcoords,ITG *inum,
          - ifield[i]: 1=field1,2=field2
          - icomp[i]: component: 0...,(nfield[0]-1 or nfield[1]-1) */
  
-  ITG i,j,k,l,m,n,nksegment,ioutall=0;
+  ITG i,j,k,l,n,nksegment,ioutall=0,*inodeset=NULL,nnodeset,nnodeset_,
+    *iy=NULL,kflag;
       
   int iw;
 
@@ -130,167 +131,128 @@ void frdselect(double *field1,double *field2,ITG *iset,ITG *nkcoords,ITG *inum,
 
     }
   }else{
-    nksegment=(*nkcoords)/(*ngraph);
+
+    /* output for a node set */
+
+    nnodeset_=100;
+    nnodeset=0;
+    NNEW(inodeset,ITG,nnodeset_);
+
+    /* collecting all nodes from the set */
+    
     for(k=istartset[*iset-1]-1;k<iendset[*iset-1];k++){
       if(ialset[k]>0){
-	for(l=0;l<*ngraph;l++){
-	  i=ialset[k]+l*nksegment-1;
-
-	  /* check whether output is requested for solid nodes or
-	     network nodes */
-
-	  if(*iselect==1){
-	    if(inum[i]<=0) continue;
-	  }else if(*iselect==-1){
-	    if(inum[i]>=0) continue;
-	  }else{
-	    if(inum[i]==0) continue;
-	  }
-	  
-	  /* storing the entities */
-
-	  for(n=1;n<=(ITG)((*ncomp+5)/6);n++){
-	    if(n==1){
-	      if(strcmp1(output,"asc")==0){
-		fprintf(f1,"%3s%10" ITGFORMAT "",m1,i+1);
-	      }else{
-		iw=(int)(i+1);fwrite(&iw,sizeof(int),1,f1);
-	      }
-	      for(j=0;j<min(6,*ncomp);j++){
-		if(ifield[j]==1){
-		  if(strcmp1(output,"asc")==0){
-		    fprintf(f1,"%12.5E",(float)field1[i*nfield[0]+icomp[j]]);
-		  }else if(strcmp1(output,"bin")==0){
-		    fl=(float)field1[i*nfield[0]+icomp[j]];
-		    fwrite(&fl,sizeof(float),1,f1);
-		  }else{
-		    fwrite(&field1[i*nfield[0]+icomp[j]],sizeof(double),1,f1);
-		  }
-		}else{
-		  if(strcmp1(output,"asc")==0){
-		    fprintf(f1,"%12.5E",(float)field2[i*nfield[1]+icomp[j]]);
-		  }else if(strcmp1(output,"bin")==0){
-		    fl=(float)field2[i*nfield[1]+icomp[j]];
-		    fwrite(&fl,sizeof(float),1,f1);
-		  }else{
-		    fwrite(&field2[i*nfield[1]+icomp[j]],sizeof(double),1,f1);
-		  }
-		}
-	      }
-	      if(strcmp1(output,"asc")==0)fprintf(f1,"\n");
-	    }else{
-	      if(strcmp1(output,"asc")==0)fprintf(f1,"%3s          ",m2);
-	      for(j=(n-1)*6;j<min(n*6,*ncomp);j++){
-		if(ifield[j]==1){
-		  if(strcmp1(output,"asc")==0){
-		    fprintf(f1,"%12.5E",(float)field1[i*nfield[0]+icomp[j]]);
-		  }else if(strcmp1(output,"bin")==0){
-		    fl=(float)field1[i*nfield[0]+icomp[j]];
-		    fwrite(&fl,sizeof(float),1,f1);
-		  }else{
-		    fwrite(&field1[i*nfield[0]+icomp[j]],sizeof(double),1,f1);
-		  }
-		}else{
-		  if(strcmp1(output,"asc")==0){
-		    fprintf(f1,"%12.5E",(float)field2[i*nfield[1]+icomp[j]]);
-		  }else if(strcmp1(output,"bin")==0){
-		    fl=(float)field2[i*nfield[1]+icomp[j]];
-		    fwrite(&fl,sizeof(float),1,f1);
-		  }else{
-		    fwrite(&field2[i*nfield[1]+icomp[j]],sizeof(double),1,f1);
-		  }
-		}
-	      }
-	      if(strcmp1(output,"asc")==0)fprintf(f1,"\n");
-	    }
-	  }
-	  
+	nnodeset++;
+	if(nnodeset>nnodeset_){
+	  nnodeset_=(ITG)(1.1*nnodeset_);
+	  RENEW(inodeset,ITG,nnodeset_);
 	}
+	inodeset[nnodeset-1]=ialset[k];
       }else{
 	l=ialset[k-2];
 	do{
 	  l-=ialset[k];
 	  if(l>=ialset[k-1]) break;
-	  for(m=0;m<*ngraph;m++){
-	    i=l+m*nksegment-1;
-	    
-	    /* check whether output is requested for solid nodes or
-	       network nodes */
-	    
-	    if(*iselect==1){
-	      if(inum[i]<=0) continue;
-	    }else if(*iselect==-1){
-	      if(inum[i]>=0) continue;
+	  nnodeset++;
+	  if(nnodeset>nnodeset_){
+	    nnodeset_=(ITG)(1.1*nnodeset_);
+	    RENEW(inodeset,ITG,nnodeset_);
+	  }
+	  inodeset[nnodeset-1]=l;
+	}while(1);
+      }
+    }
+	
+    /* sorting the nodes in ascending order (required by the
+       frd format */
+
+    kflag=1;
+    FORTRAN(isortii,(inodeset,iy,&nnodeset,&kflag));
+
+    /* storing the results */
+    
+    nksegment=(*nkcoords)/(*ngraph);
+    for(k=0;k<nnodeset;k++){
+      for(l=0;l<*ngraph;l++){
+	i=inodeset[k]+l*nksegment-1;
+
+	/* check whether output is requested for solid nodes or
+	   network nodes */
+
+	if(*iselect==1){
+	  if(inum[i]<=0) continue;
+	}else if(*iselect==-1){
+	  if(inum[i]>=0) continue;
+	}else{
+	  if(inum[i]==0) continue;
+	}
+	  
+	/* storing the entities */
+
+	for(n=1;n<=(ITG)((*ncomp+5)/6);n++){
+	  if(n==1){
+	    if(strcmp1(output,"asc")==0){
+	      fprintf(f1,"%3s%10" ITGFORMAT "",m1,i+1);
 	    }else{
-	      if(inum[i]==0) continue;
+	      iw=(int)(i+1);fwrite(&iw,sizeof(int),1,f1);
 	    }
-	    
-	    /* storing the entities */
-	    
-	    for(n=1;n<=(ITG)((*ncomp+5)/6);n++){
-	      if(n==1){
+	    for(j=0;j<min(6,*ncomp);j++){
+	      if(ifield[j]==1){
 		if(strcmp1(output,"asc")==0){
-		  fprintf(f1,"%3s%10" ITGFORMAT "",m1,i+1);
+		  fprintf(f1,"%12.5E",(float)field1[i*nfield[0]+icomp[j]]);
+		}else if(strcmp1(output,"bin")==0){
+		  fl=(float)field1[i*nfield[0]+icomp[j]];
+		  fwrite(&fl,sizeof(float),1,f1);
 		}else{
-		  iw=(int)(i+1);fwrite(&iw,sizeof(int),1,f1);
+		  fwrite(&field1[i*nfield[0]+icomp[j]],sizeof(double),1,f1);
 		}
-		for(j=0;j<min(6,*ncomp);j++){
-		  if(ifield[j]==1){
-		    if(strcmp1(output,"asc")==0){
-		      fprintf(f1,"%12.5E",(float)field1[i*nfield[0]+icomp[j]]);
-		    }else if(strcmp1(output,"bin")==0){
-		      fl=(float)field1[i*nfield[0]+icomp[j]];
-		      fwrite(&fl,sizeof(float),1,f1);
-		    }else{
-		      fwrite(&field1[i*nfield[0]+icomp[j]],sizeof(double),1,f1);
-		    }
-		  }else{
-		    if(strcmp1(output,"asc")==0){
-		      fprintf(f1,"%12.5E",(float)field2[i*nfield[1]+icomp[j]]);
-		    }else if(strcmp1(output,"bin")==0){
-		      fl=(float)field2[i*nfield[1]+icomp[j]];
-		      fwrite(&fl,sizeof(float),1,f1);
-		    }else{
-		      fwrite(&field2[i*nfield[1]+icomp[j]],sizeof(double),1,f1);
-		    }
-		  }
-		}
-		if(strcmp1(output,"asc")==0)fprintf(f1,"\n");
 	      }else{
-		if(strcmp1(output,"asc")==0)fprintf(f1,"%3s          ",m2);
-		for(j=(n-1)*6;j<min(n*6,*ncomp);j++){
-		  if(ifield[j]==1){
-		    if(strcmp1(output,"asc")==0){
-		      fprintf(f1,"%12.5E",(float)field1[i*nfield[0]+icomp[j]]);
-		    }else if(strcmp1(output,"bin")==0){
-		      fl=(float)field1[i*nfield[0]+icomp[j]];
-		      fwrite(&fl,sizeof(float),1,f1);
-		    }else{
-		      fwrite(&field1[i*nfield[0]+icomp[j]],sizeof(double),1,f1);
-		    }
-		  }else{
-		    if(strcmp1(output,"asc")==0){
-		      fprintf(f1,"%12.5E",(float)field2[i*nfield[1]+icomp[j]]);
-		    }else if(strcmp1(output,"bin")==0){
-		      fl=(float)field2[i*nfield[1]+icomp[j]];
-		      fwrite(&fl,sizeof(float),1,f1);
-		    }else{
-		      fwrite(&field2[i*nfield[1]+icomp[j]],sizeof(double),1,f1);
-		    }
-		  }
+		if(strcmp1(output,"asc")==0){
+		  fprintf(f1,"%12.5E",(float)field2[i*nfield[1]+icomp[j]]);
+		}else if(strcmp1(output,"bin")==0){
+		  fl=(float)field2[i*nfield[1]+icomp[j]];
+		  fwrite(&fl,sizeof(float),1,f1);
+		}else{
+		  fwrite(&field2[i*nfield[1]+icomp[j]],sizeof(double),1,f1);
 		}
-		if(strcmp1(output,"asc")==0)fprintf(f1,"\n");
 	      }
 	    }
-	    
+	    if(strcmp1(output,"asc")==0)fprintf(f1,"\n");
+	  }else{
+	    if(strcmp1(output,"asc")==0)fprintf(f1,"%3s          ",m2);
+	    for(j=(n-1)*6;j<min(n*6,*ncomp);j++){
+	      if(ifield[j]==1){
+		if(strcmp1(output,"asc")==0){
+		  fprintf(f1,"%12.5E",(float)field1[i*nfield[0]+icomp[j]]);
+		}else if(strcmp1(output,"bin")==0){
+		  fl=(float)field1[i*nfield[0]+icomp[j]];
+		  fwrite(&fl,sizeof(float),1,f1);
+		}else{
+		  fwrite(&field1[i*nfield[0]+icomp[j]],sizeof(double),1,f1);
+		}
+	      }else{
+		if(strcmp1(output,"asc")==0){
+		  fprintf(f1,"%12.5E",(float)field2[i*nfield[1]+icomp[j]]);
+		}else if(strcmp1(output,"bin")==0){
+		  fl=(float)field2[i*nfield[1]+icomp[j]];
+		  fwrite(&fl,sizeof(float),1,f1);
+		}else{
+		  fwrite(&field2[i*nfield[1]+icomp[j]],sizeof(double),1,f1);
+		}
+	      }
+	    }
+	    if(strcmp1(output,"asc")==0)fprintf(f1,"\n");
 	  }
-	}while(1);
+	}
+	  
       }
     }
   }
   
   if(strcmp1(output,"asc")==0)fprintf(f1,"%3s\n",m3);
 
+  SFREE(inodeset);
+  
   return;
 
 }
