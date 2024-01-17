@@ -821,7 +821,7 @@ void csv(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne0,
             fn[3 + i * mt] *= 180.;
           }
         }
-        csvvector(v, &iset, ntrans, &filab[348], &nkcoords, inum, inotr,
+        csvvector(fn, &iset, ntrans, &filab[348], &nkcoords, inum, inotr,
                   trab, co, istartset, iendset, ialset, mi, ngraph,
                   output, time, csv_header, set_name, "FORC", time_step);
 
