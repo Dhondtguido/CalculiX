@@ -476,6 +476,7 @@
                     write(*,*) '         cannot be created: the'
                     write(*,*) 
      &                   '         DOF in this node is already used'
+                    nmpc=nmpc-1
                     cycle
                   endif
                 endif
@@ -547,6 +548,7 @@
                     write(*,*) '         cannot be created: the'
                     write(*,*) 
      &                   '         DOF in this node is already used'
+                    nmpc=nmpc-1
                     cycle
                   endif
                 endif
