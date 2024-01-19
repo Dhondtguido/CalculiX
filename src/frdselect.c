@@ -172,8 +172,8 @@ void frdselect(double *field1,double *field2,ITG *iset,ITG *nkcoords,ITG *inum,
     /* storing the results */
     
     nksegment=(*nkcoords)/(*ngraph);
-    for(k=0;k<nnodeset;k++){
-      for(l=0;l<*ngraph;l++){
+    for(l=0;l<*ngraph;l++){
+      for(k=0;k<nnodeset;k++){
 	i=inodeset[k]+l*nksegment-1;
 
 	/* check whether output is requested for solid nodes or
