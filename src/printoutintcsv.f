@@ -399,7 +399,7 @@ c     &   (lakon(nelel)(1:1).eq.'F')) then
             endif
 !
             if(iorien.eq.0) then
-               write(s_unit,'(i0,",",i0,6(",",e13.6))')
+               write(s_unit,'(i0,",",i0,","6(e13.6,:,","))')
      &                       nelem,j,(stx(k,j,nelel),k=1,6)
             else
                call transformatrix(orab(1,iorien),coords(1,j),a)
@@ -455,7 +455,7 @@ c     &   (lakon(nelel)(1:1).eq.'F')) then
             endif
 !
             if(iorien.eq.0) then
-               write(e_unit,'(i0,",",i0,6(",",e13.6))')
+               write(e_unit,'(i0,",",i0,","6(e13.6,:,","))')
      &                       nelem,j,(eei(k,j,nelel),k=1,6)
             else
                call transformatrix(orab(1,iorien),coords(1,j),a)
@@ -511,7 +511,7 @@ c     &   (lakon(nelel)(1:1).eq.'F')) then
             endif
 !
             if(iorien.eq.0) then
-               write(me_unit,'(i0,",",i0,6(",",e13.6))')
+               write(me_unit,'(i0,",",i0,","6(e13.6,:,","))')
      &               nelem,j,(eme(k,j,nelel),k=1,6)
             else
                call transformatrix(orab(1,iorien),coords(1,j),a)
@@ -547,12 +547,12 @@ c     &   (lakon(nelel)(1:1).eq.'F')) then
          enddo
       elseif(prlab(ii)(1:4).eq.'PEEQ') then
          do j=1,mint3d
-            write(pe_unit,'(i0,",",i0,6(",",e13.6))') 
+            write(pe_unit,'(i0,",",i0,","6(e13.6,:,","))') 
      &          nelem,j,xstate(1,j,nelel)
          enddo
       elseif(prlab(ii)(1:4).eq.'ENER') then
          do j=1,mint3d
-            write(ener_unit,'(i0,",",i0,6(",",e13.6))')
+            write(ener_unit,'(i0,",",i0,","6(e13.6,:,","))')
      &           nelem,j,ener(1,j,nelel)
          enddo
       elseif(prlab(ii)(1:4).eq.'SDV ') then
