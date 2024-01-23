@@ -395,6 +395,9 @@
         ndim=0
         iorienloc=0
         cflag=filab(1)(5:5)
+        do i=1,nk
+          inum(i)=0
+        enddo
         call createinum(ipkon,inum,kon,lakon,nk,ne,cflag,nelemload,
      &       nload,nodeboun,nboun,ndirboun,ithermal,co,vold,mi,ielmat,
      &       ielprop,prop)

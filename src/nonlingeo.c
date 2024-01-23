@@ -16,6 +16,7 @@
 /*     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.         */
 
 #include <stdio.h>
+#include <string.h>
 #include <math.h>
 #include <stdlib.h>
 #include "CalculiX.h"
@@ -86,12 +87,12 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	       ITG *network,char *orname,double *vel,ITG *nef,
 	       double *velo,double *veloo,double *energy,ITG *itempuser,
 	       ITG *ipobody,ITG *inewton,double *t0g,double *t1g,
-	       ITG *ifreebody){
+	       ITG *ifreebody,ITG *nlabel){
 
   char description[13]="            ",*lakon=NULL,jobnamef[396]="",
     *sideface=NULL,*labmpc=NULL,*lakonf=NULL,*env,*envsys,fneig[132]="",
     *sideloadref=NULL,*sideload=NULL,stiffmatrix[132]="",
-    *sideloadf=NULL; 
+    *sideloadf=NULL,cflag[1]=" "; 
  
   ITG *inum=NULL,k,l,iout=0,icntrl,iinc=0,jprint=0,iit=-1,jnz=0,
     icutb=0,istab=0,uncoupled,n1,n2,itruecontact=1,iclean=0,
@@ -136,7 +137,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *iamloadf=NULL,*inotrf=NULL,*jqtherm=NULL,*jqw=NULL,*iroww=NULL,nzsw,
     *kslav=NULL,*lslav=NULL,*ktot=NULL,*ltot=NULL,nmasts,neqtot,
     intpointvarm,calcul_fn,calcul_f,calcul_qa,calcul_cauchy,ikin,
-    intpointvart,*jqbi=NULL,*irowbi=NULL,*jqib=NULL,*irowib=NULL;
+    intpointvart,*jqbi=NULL,*irowbi=NULL,*jqib=NULL,*irowib=NULL,
+    idispfrdonly;
 
   double *stn=NULL,*v=NULL,*een=NULL,cam[5],*epn=NULL,*cg=NULL,
     *cdn=NULL,*pslavsurfold=NULL,*fextload=NULL,
@@ -1246,6 +1248,10 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       /* no nlgeom and no nonlinear material for massless explicit dynamics */
       
       if((iperturb[0]<3)&&(iperturb[1]==0)) masslesslinear=1;
+
+      FORTRAN(checkdispoutonly,(prlab,nprint,nlabel,filab,&idispfrdonly));
+
+      /* check whether the output consists of displacements only */
       
     } //endif massless
       
@@ -3693,38 +3699,51 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
       isiz=mt**nk;cpypardou(v,vold,&isiz,&num_cpus);
 
-      iout=2;
-      icmd=3;
+      if((*mortar==-1)&&(idispfrdonly==1)){
+
+	/* nothing to do if massless explicit dynamics and all output
+           consists of displacements */
+	
+	strcpy1(&cflag[0],&filab[4],1);
+	FORTRAN(createinum,(ipkon,inum,kon,lakon,nk,ne,&cflag[0],nelemload,
+			    nload,nodeboun,nboun,ndirboun,ithermal,co,vold,mi,
+			    ielmat,ielprop,prop));
+      }else{
+      
+	iout=2;
+	icmd=3;
       
 #ifdef COMPANY
-      FORTRAN(uinit,());
+	FORTRAN(uinit,());
 #endif
-      results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,
-	      elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
-	      ielorien,norien,orab,ntmat_,t0,t1act,ithermal,
-	      prestr,iprestr,filab,eme,emn,een,iperturb,
-	      f,fn,nactdof,&iout,qa,vold,b,nodeboun,
-	      ndirboun,xbounact,nboun,ipompc,
-	      nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[1],veold,accold,
-              &bet,&gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
-	      xstateini,xstiff,xstate,npmat_,epn,matname,mi,&ielas,&icmd,
-	      ncmat_,nstate_,stiini,vini,ikboun,ilboun,ener,enern,emeini,
-              xstaten,eei,enerini,cocon,ncocon,set,nset,istartset,iendset,
-              ialset,nprint,prlab,prset,qfx,qfn,trab,inotr,ntrans,fmpc,
-	      nelemload,nload,ikmpc,ilmpc,istep,&iinc,springarea,
-              &reltime,&ne0,thicke,shcon,nshcon,
-              sideload,xloadact,xloadold,&icfd,inomat,pslavsurf,pmastsurf,
-              mortar,islavact,cdn,islavnode,nslavnode,ntie,clearini,
-	      islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
-              inoel,nener,orname,network,ipobody,xbodyact,ibody,typeboun,
-	      itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	      islavelinv,autloc,irowtloc,jqtloc,&nboun2,
-	      ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,coefmpc2,
-	      labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
-	      &intscheme,physcon);
+	results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,
+		elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
+		ielorien,norien,orab,ntmat_,t0,t1act,ithermal,
+		prestr,iprestr,filab,eme,emn,een,iperturb,
+		f,fn,nactdof,&iout,qa,vold,b,nodeboun,
+		ndirboun,xbounact,nboun,ipompc,
+		nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[1],veold,accold,
+		&bet,&gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
+		xstateini,xstiff,xstate,npmat_,epn,matname,mi,&ielas,&icmd,
+		ncmat_,nstate_,stiini,vini,ikboun,ilboun,ener,enern,emeini,
+		xstaten,eei,enerini,cocon,ncocon,set,nset,istartset,iendset,
+		ialset,nprint,prlab,prset,qfx,qfn,trab,inotr,ntrans,fmpc,
+		nelemload,nload,ikmpc,ilmpc,istep,&iinc,springarea,
+		&reltime,&ne0,thicke,shcon,nshcon,
+		sideload,xloadact,xloadold,&icfd,inomat,pslavsurf,pmastsurf,
+		mortar,islavact,cdn,islavnode,nslavnode,ntie,clearini,
+		islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
+		inoel,nener,orname,network,ipobody,xbodyact,ibody,typeboun,
+		itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
+		islavelinv,autloc,irowtloc,jqtloc,&nboun2,
+		ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,coefmpc2,
+		labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
+		&intscheme,physcon);
       
-      isiz=mt**nk;cpypardou(vold,v,&isiz,&num_cpus);
+	isiz=mt**nk;cpypardou(vold,v,&isiz,&num_cpus);
 
+      }
+      
       iout=0;
       if(*iexpl<=1) icmd=0;
       

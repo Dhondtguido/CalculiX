@@ -673,6 +673,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
   /* createinum is called in order to store the nodes and elements
      of the complete structure, not only of the coil */
 
+  ITGMEMSET(inum,0,*nk,0);
   FORTRAN(createinum,(ipkon,inum,kon,lakon,nk,ne,&cflag[0],nelemload,
 		      nload,nodeboun,nboun,ndirboun,ithermal,co,vold,mi,ielmat,
                       ielprop,prop));

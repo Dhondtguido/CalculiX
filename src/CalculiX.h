@@ -715,6 +715,9 @@ void FORTRAN(checkcrosssections,(double *co,double *doubleglob,
 				 double *temp,ITG *nstep,ITG *istartfront,
 				 ITG *iendfront));
 
+void FORTRAN(checkdispoutonly,(char *prlab,ITG *nprint,ITG *nlabel,char *filab,
+			     ITG *idispfrdonly));
+
 void checkdivergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
           ITG *ne,double *stn,ITG *nmethod,
           ITG *kode,char *filab,double *een,double *t1act,
@@ -3186,7 +3189,7 @@ void nonlingeo(double **co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	       ITG *network,char *orname,double *vel,ITG *nef,
 	       double *velo,double *veloo,double *energy,ITG *itempuser,
 	       ITG *ipobody,ITG *inewton,double *t0g,double *t1g,
-	       ITG *ifreebody);
+	       ITG *ifreebody,ITG *nlabel);
 
 void FORTRAN(nonlinmpc,(double *co,double *vold,ITG *ipompc,ITG *nodempc,
 			double *coefmpc,char *labmpc,ITG *nmpc,ITG *ikboun,

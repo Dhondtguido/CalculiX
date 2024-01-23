@@ -37,9 +37,9 @@
 !
       iforce=0
 !
-      do i=1,nk
-         inum(i)=0
-      enddo
+c      do i=1,nk
+c         inum(i)=0
+c      enddo
 !
       do i=1,ne
 !
@@ -106,14 +106,6 @@
                inum(kon(indexe+nopeexp+j))=inum(kon(indexe+nopeexp+j))+1
             enddo
          endif
-c     Bernhardi start
-c        incompatible modes elements
-c         if(lakonl(1:5).eq.'C3D8I') then
-c            do j=1,3
-c               inum(kon(indexe+nope+j))=inum(kon(indexe+nope+j))+1
-c            enddo
-c         endif
-c     Bernhardi end
 !
       enddo
 !

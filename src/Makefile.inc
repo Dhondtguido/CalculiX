@@ -135,6 +135,7 @@ characteristic.f \
 characteristiclength.f \
 checkconstraint.f \
 checkcrosssections.f \
+checkdispoutonly.f \
 checkexiedge.f \
 checkforhomnet.f \
 checkimpacts.f \

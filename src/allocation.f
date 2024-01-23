@@ -2646,7 +2646,7 @@ c     !
 !     
 !     number of terms: 9 per equation
 !     
-      memmpc_=memmpc_+9*3*(3*8*ne2d+8*3*ne1d)
+      if(irstrt(1).eq.0) memmpc_=memmpc_+9*3*(3*8*ne2d+8*3*ne1d)
 !     
 !     number of SPC's: 1 per DOF per expanded node
 !     
@@ -2655,13 +2655,13 @@ c     !
 !     temperature DOF in knots
 !     
       nmpc_=nmpc_+(3*8*ne2d+8*3*ne1d)
-      memmpc_=memmpc_+2*(3*8*ne2d+8*3*ne1d)
+      if(irstrt(1).eq.0) memmpc_=memmpc_+2*(3*8*ne2d+8*3*ne1d)
 !     
 !     extra MPCs to avoid undefinid rotation of rigid body nodes
 !     lying on a line
 !     
       nmpc_=nmpc_+3*8*ne2d+8*3*ne1d
-      memmpc_=memmpc_+3*(3*8*ne2d+8*3*ne1d)
+      if(irstrt(1).eq.0) memmpc_=memmpc_+3*(3*8*ne2d+8*3*ne1d)
 !     
 !     extra nodes for the radiation boundary conditions
 !     
