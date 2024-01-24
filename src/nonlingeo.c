@@ -138,7 +138,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *kslav=NULL,*lslav=NULL,*ktot=NULL,*ltot=NULL,nmasts,neqtot,
     intpointvarm,calcul_fn,calcul_f,calcul_qa,calcul_cauchy,ikin,
     intpointvart,*jqbi=NULL,*irowbi=NULL,*jqib=NULL,*irowib=NULL,
-    idispfrdonly;
+    idispfrdonly,*inumcp=NULL;
 
   double *stn=NULL,*v=NULL,*een=NULL,cam[5],*epn=NULL,*cg=NULL,
     *cdn=NULL,*pslavsurfold=NULL,*fextload=NULL,
@@ -1249,9 +1249,18 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       
       if((iperturb[0]<3)&&(iperturb[1]==0)) masslesslinear=1;
 
+      /* check whether the output consists of displacements only */
+
       FORTRAN(checkdispoutonly,(prlab,nprint,nlabel,filab,&idispfrdonly));
 
-      /* check whether the output consists of displacements only */
+      if(idispfrdonly==1){
+	NNEW(inumcp,ITG,*nk);
+	strcpy1(&cflag[0],&filab[4],1);
+	FORTRAN(createinum,(ipkon,inumcp,kon,lakon,nk,ne,&cflag[0],nelemload,
+			    nload,nodeboun,nboun,ndirboun,ithermal,co,vold,mi,
+			    ielmat,ielprop,prop));
+      }
+
       
     } //endif massless
       
@@ -3704,10 +3713,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	/* nothing to do if massless explicit dynamics and all output
            consists of displacements */
 	
-	strcpy1(&cflag[0],&filab[4],1);
-	FORTRAN(createinum,(ipkon,inum,kon,lakon,nk,ne,&cflag[0],nelemload,
-			    nload,nodeboun,nboun,ndirboun,ithermal,co,vold,mi,
-			    ielmat,ielprop,prop));
+	cpyparitg(inum,inumcp,nk,&num_cpus);
+
       }else{
       
 	iout=2;
@@ -4204,6 +4211,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       SFREE(kslav);SFREE(lslav);SFREE(ktot);SFREE(ltot);
       SFREE(aloc);SFREE(alglob);
       SFREE(adc);SFREE(auc);SFREE(areaslav);SFREE(fric);
+      if(idispfrdonly==1){SFREE(inumcp);}
       if(masslesslinear>0){
 	SFREE(ad);SFREE(au);SFREE(jqbi);SFREE(aubi);SFREE(irowbi);
 	SFREE(jqib);SFREE(auib);SFREE(irowib);SFREE(auw);SFREE(jqw);

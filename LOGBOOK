@@ -5325,3 +5325,6 @@ Dec 2002        - started to work on single crystal plasticity
  23 Jan 2023    - removed an error in allocation.f
                 - removed the initialization of inum to zero from
 		  createinum.f
+
+ 24 Jan 2023    - took createinum out of the major loop for
+                  explicit dynamic massless calculations
