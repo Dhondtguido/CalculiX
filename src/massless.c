@@ -37,9 +37,9 @@
 #include "pastix.h"
 #endif
 
-static ITG neqslavs1,*iacti1,nacti1,num_cpus_loc,*nk1,mt1,*nactdof1;
+static ITG neqslavs1,*iacti1,nacti1,num_cpus_loc,*nk1,mt1,*nactdof1,*neq1;
 
-static double *gmatrix1,*fullgmatrix1,*veolddof1,*veold1;
+static double *gmatrix1,*fullgmatrix1,*veolddof1,*veold1,*b1,*fext1,*rhs1;
 
 void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
 	      double *auc,double *adc,
@@ -517,12 +517,12 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
   
   /* compute the right hand side of the global equation system */
   
-  /* calculate Kii*qi */
+  /* calculate Kii*Ui */
   
   NNEW(rhs,double,neq[0]); 
   opmain(&neq[0],volddof,rhs,ad,au,jq,irow);
 
-  /* calculate Kii*qi+Kib*qb */
+  /* calculate Kii*Ui+Kib*Ub */
 
   itranspose=0;
   mulmatvec_asymmain(auib,jqib,irowib,neqtot,qb,rhs,&itranspose,&neq[0]);
@@ -534,8 +534,6 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
   if(*masslesslinear==0){
     SFREE(jqbi);SFREE(aubi);SFREE(irowbi);SFREE(jqib);SFREE(auib);SFREE(irowib);
   }
-    
-  /* calculate (Mii/Delta_t-Dii/2)*u_i^{k-1/2} */
 
   /* switch for the velocity from a nodal to a dof representation */
   
@@ -559,10 +557,31 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
   for(i=0; i<num_cpus_loc; i++)  pthread_join(tid[i], NULL);
 
   SFREE(ithread);
+    
+  /* calculate (Mii/Delta_t-Dii/2)*u_i^{k-1/2} */
   
   opmain(&neq[0],veolddof,b,adc,auc,jq,irow);
+    
+  /* calculate the RHS of the global system */
 
-  for(i=0;i<neq[0];++i){b[i]=fext[i]-rhs[i]+b[i];}
+  /* check that num_cpus does not exceed neq[0] */
+      
+  if(neq[0]<*num_cpus){
+    num_cpus_loc=neq[0];
+  }else{
+    num_cpus_loc=*num_cpus;
+  }
+
+  neq1=neq;b1=b;fext1=fext;rhs1=rhs;
+      
+  NNEW(ithread,ITG,num_cpus_loc);
+  for(i=0; i<num_cpus_loc; i++)  {
+    ithread[i]=i;
+    pthread_create(&tid[i], NULL, (void *)massless3mt, (void *)&ithread[i]);
+  }
+  for(i=0; i<num_cpus_loc; i++)  pthread_join(tid[i], NULL);
+
+  SFREE(ithread);
   
   SFREE(rhs);SFREE(veolddof);
 
@@ -617,8 +636,9 @@ void *massless1mt(ITG *i){
   return NULL;
 }
 
-/* subroutine for multithreading of 
-   calculating (Mii/Delta_t-Dii/2)*u_i^{k-1/2}  */
+
+/* subroutine for multithreading of the switch for
+   veold from nodal to dof representation  */
 
 void *massless2mt(ITG *i){
 
@@ -635,6 +655,25 @@ void *massless2mt(ITG *i){
         veolddof1[nactdof1[mt1*k+j]-1]=veold1[mt1*k+j];
       }
     }
+  }
+       
+  return NULL;
+}
+
+/* subroutine for multithreading of the calculation of the
+   RHS of the global system  */
+
+void *massless3mt(ITG *i){
+
+  ITG j,neqa,neqb,neqdelta;
+    
+  neqdelta=(ITG)ceil(neq1[0]/(double)num_cpus_loc);
+  neqa=*i*neqdelta;
+  neqb=(*i+1)*neqdelta;
+  if(neqb>neq1[0]) neqb=neq1[0];
+
+  for(j=neqa;j<neqb;++j){
+    b1[j]=fext1[j]-rhs1[j]+b1[j];
   }
        
   return NULL;
