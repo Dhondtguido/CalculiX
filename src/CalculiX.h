@@ -2942,6 +2942,8 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,
 
 void *massless1mt(ITG *i);
 
+void *massless2mt(ITG *i);
+
 void mastruct(ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
               ITG *nodeboun,ITG *ndirboun,ITG *nboun,ITG *ipompc,
               ITG *nodempc,ITG *nmpc,ITG *nactdof,ITG *icol,

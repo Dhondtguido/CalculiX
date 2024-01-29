@@ -37,9 +37,9 @@
 #include "pastix.h"
 #endif
 
-static ITG neqslavs1,*iacti1,nacti1,num_cpus_loc;
+static ITG neqslavs1,*iacti1,nacti1,num_cpus_loc,*nk1,mt1,*nactdof1;
 
-static double *gmatrix1,*fullgmatrix1;
+static double *gmatrix1,*fullgmatrix1,*veolddof1,*veold1;
 
 void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
 	      double *auc,double *adc,
@@ -540,19 +540,31 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
   /* switch for the velocity from a nodal to a dof representation */
   
   NNEW(veolddof,double,neq[0]);
-  for(k=0;k<*nk;++k){
-    for(j=0;j<mt;j++){
-      if(nactdof[mt*k+j]>0){
-        veolddof[nactdof[mt*k+j]-1]=veold[mt*k+j];
-      }
-    }
+
+  /* check that num_cpus does not exceed neqslavs */
+      
+  if(*nk<*num_cpus){
+    num_cpus_loc=*nk;
+  }else{
+    num_cpus_loc=*num_cpus;
   }
 
+  nk1=nk;mt1=mt;nactdof1=nactdof;veolddof1=veolddof;veold1=veold;
+      
+  NNEW(ithread,ITG,num_cpus_loc);
+  for(i=0; i<num_cpus_loc; i++)  {
+    ithread[i]=i;
+    pthread_create(&tid[i], NULL, (void *)massless2mt, (void *)&ithread[i]);
+  }
+  for(i=0; i<num_cpus_loc; i++)  pthread_join(tid[i], NULL);
+
+  SFREE(ithread);
+  
   opmain(&neq[0],veolddof,b,adc,auc,jq,irow);
 
   for(i=0;i<neq[0];++i){b[i]=fext[i]-rhs[i]+b[i];}
-  SFREE(rhs);
-  SFREE(veolddof);
+  
+  SFREE(rhs);SFREE(veolddof);
 
   /* clearing memory for the equation solver;
      only in the nonlinear case */
@@ -598,6 +610,29 @@ void *massless1mt(ITG *i){
 	  gmatrix1[(iacti1[k]-1)*nacti1+(iacti1[j]-1)]=
 	    fullgmatrix1[k*neqslavs1+j];
 	}
+      }
+    }
+  }
+       
+  return NULL;
+}
+
+/* subroutine for multithreading of 
+   calculating (Mii/Delta_t-Dii/2)*u_i^{k-1/2}  */
+
+void *massless2mt(ITG *i){
+
+  ITG j,k,nka,nkb,nkdelta;
+    
+  nkdelta=(ITG)ceil(*nk1/(double)num_cpus_loc);
+  nka=*i*nkdelta;
+  nkb=(*i+1)*nkdelta;
+  if(nkb>*nk1) nkb=*nk1;
+      
+  for(k=nka;k<nkb;++k){
+    for(j=0;j<mt1;j++){
+      if(nactdof1[mt1*k+j]>0){
+        veolddof1[nactdof1[mt1*k+j]-1]=veold1[mt1*k+j];
       }
     }
   }
