@@ -94,7 +94,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     *inotrt=NULL,symmetryflag=0,inputformat=0,ifreebody,*iy=NULL,
     mass=1, stiffness=1, buckling=0, rhsi=0, intscheme=0,*ncocon=NULL,
     coriolis=0,iworsttime,l3,iray,mt,kkx,im,ne0,*integerglob=NULL,
-    *nshcon=NULL,one=1,ncont=0,*itietri=NULL,neq2,
+    *nshcon=NULL,one=1,ncont=0,*itietri=NULL,neq2,iprestrsav=0,
     *koncont=NULL,ismallsliding=0,*itiefac=NULL,*islavsurf=NULL,
     *islavnode=NULL,*imastnode=NULL,*nslavnode=NULL,*nmastnode=NULL,
     *imastop=NULL,*iponoels=NULL,*inoels=NULL,*ipe=NULL,*ime=NULL,
@@ -1375,6 +1375,11 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     NNEW(turdir,char,nev);
       
     /* start of output calculations */
+
+    /* initial stresses should not be added to the modal
+       stresses, therefore deactivate the pre-stress */
+  
+    if(*iprestr!=0){iprestrsav=*iprestr;iprestr=0;}
       
     lfin=0;
     for(j=0;j<nev;++j){
@@ -2554,18 +2559,13 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	  xstate[k]=xstateini[k];
 	}	  
       }
+    } /* end loop over the eigenvalues */
 
-      /* end loop over the eigenvalues */
+    if(iprestrsav!=0){*iprestr=iprestrsav;}
 
-    }
-      
-    /*--------------------------------------------------------------------*/
-    /*
-      -----------
-      free memory
-      -----------
-    */
-    if(*isolver==0){
+    /*  free memory */
+
+      if(*isolver==0){
 #ifdef SPOOLES
       spooles_cleanup();
 #endif

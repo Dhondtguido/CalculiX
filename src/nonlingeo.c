@@ -2695,7 +2695,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		 ntie,nactdof,mi,vold,volddof,veold,nk,fext,isolver,
 		 &masslesslinear,co,springarea,&neqtot,qb,b,&dtime,aloc,fric,
 		 iexpl,nener,ener,ne,&jqbi,&aubi,&irowbi,&jqib,&auib,&irowib,
-		 &iclean,&iinc,fullgmatrix,fullr,alglob);
+		 &iclean,&iinc,fullgmatrix,fullr,alglob,&num_cpus);
         if(masslesslinear==0){SFREE(ad);SFREE(au);} 
       }
 
@@ -4222,7 +4222,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		 ntie,nactdof,mi,vold,volddof,veold,nk,fext,isolver,
 		 &masslesslinear,co,springarea,&neqtot,qb,b,&dtime,aloc,fric,
 		 iexpl,nener,ener,ne,&jqbi,&aubi,&irowbi,&jqib,&auib,&irowib,
-		 &iclean,&iinc,fullgmatrix,fullr,alglob);
+		 &iclean,&iinc,fullgmatrix,fullr,alglob,&num_cpus);
       }
       if(masslesslinear==2){SFREE(fextload);}
 

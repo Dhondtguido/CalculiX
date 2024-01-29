@@ -13125,30 +13125,46 @@ where $m_1=M_1/2$ and $m_2=M_2/2$. For node-to-face penalty contact and
 face-to-face penalty contact the nodal mass on the facial sides can be
 obtained by using the shape functions at the spring location.
 
-To accelerate explicit dynamic calculations mass scaling can be used
+To accelerate explicit dynamic calculations selective mass scaling can be used
 \cite{Olovsson}. It was introduced in CalculiX in the course of a Master
-Thesis \cite{Czech}. Applying mass scaling the time increment can be
-increased, which reduces the overall computational time. In the mass scaling
+Thesis \cite{Czech}. Applying selective mass scaling the time increment can be
+increased, which reduces the overall computational time. In the selective mass scaling
 procedure the lumped mass matrix of each element is augmented by a fully
-populated matrix. The resulting computational increase is, however,
+populated matrix of the form (examplary for a C3D8-element):
+
+\begin{equation}
+ \Delta M = \frac{\beta m}{7 \cdot 8}  \begin{bmatrix} 7 & -1 & \cdots & -1
+   \\ -1 & 7 & & \\ \vdots & & \ddots & \\ -1 & & & 7 \end{bmatrix}.
+\end{equation} 
+
+For other element types ``7'' should be replaced by $n-1$ and ``8'' by $n$,
+where n is the number of nodes in the element. $m$ is the total mass of the
+element and $\beta=(\Delta t_{\text{target}}/\Delta t_{\text{stable}})^2-1$. The resulting computational increase is, however,
 neglegible, since the LU-decomposition has only to be performed once at the
-start of the calculation. Mass scaling is triggered by specifying the minimum time
-increment which the user wants to allow underneath the \htmlref{*DYNAMIC }{dynamic} keyword (third
-parameter). If for any volumetric element the increment size calculated by CalculiX
+start of the calculation. Selective mass scaling is triggered by specifying the minimum time
+increment $\Delta t_{\text{target}}$ which the user is willing to tolerate underneath the \htmlref{*DYNAMIC }{dynamic} keyword (third
+parameter). If for any volumetric element the increment size $\Delta t_{\text{stable}}$ calculated by CalculiX
 (based on the wave speed) is less than the
 minimum, the mass of this element is automatically scaled and redistributed
-such that the total mass of the element does not change. This is obtained by
-moving mass from the off-diagonal positions of the element mass matrix onto
-the diagonal. If any mass scaling takes place, a message is printed and the
+such that the total mass of the element does not change. Adding the above
+matrix $\Delta M$ moves mass from the off-diagonal positions of the element mass matrix onto
+the diagonal. This leads to a reduction of the highest eigenfrequencies of the
+element, and, consequently, to a increase of the stable time step. If any mass scaling takes place, a message is printed and the
 elements for which the mass was redistributed are stored in file
 ``jobname\_WarnElementMassScaled.nam''. This file can be read in any active cgx-session
 by typing ``read jobname\_WarnElementMassScaled.nam inp'' and the elements
-can be appropriately visualized. For spring elements the mimimum time
+can be appropriately visualized. If the mass of too many elements is
+redistributed, the lowest eigenfrequencies might be affected, leading to wrong
+results. Therefore, the maximum allowed time increment should be limited by a
+maximum allowed change of the lowest eigenfrequency by, e.g. 1 \%. It is the
+responsability of the user to check this.
+
+For spring elements the mimimum time
 increment specified by the user is obtained by reducing the spring
 stiffness. CalculiX stores the maximum spring stiffness reduction to standard
 output. 
 
-Without a minimum time increment no mass scaling nor spring stiffness
+Without a minimum time increment no selective mass scaling nor spring stiffness
 reduction is applied.
 
 The following damping options are available:

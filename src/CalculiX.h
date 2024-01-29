@@ -2937,7 +2937,10 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,
 	      double *aloc,double *fric,ITG *iexpl,ITG *nener,double *ener,
 	      ITG *ne,ITG **jqbip,double **aubip,ITG **irowbip,ITG **jqibp,
 	      double **auibp,ITG **irowibp,ITG *iclean,ITG *iinc,
-	      double *fullgmatrix,double *fullr,double *alglob);
+	      double *fullgmatrix,double *fullr,double *alglob,
+	      ITG *num_cpus);
+
+void *massless1mt(ITG *i);
 
 void mastruct(ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
               ITG *nodeboun,ITG *ndirboun,ITG *nboun,ITG *ipompc,

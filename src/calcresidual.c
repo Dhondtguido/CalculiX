@@ -30,15 +30,15 @@
 #endif
 
 
-void calcresidual(ITG *nmethod, ITG *neq, double *b, double *fext, double *f,
-		  ITG *iexpl, ITG *nactdof, double *aux2, double *vold,
-		  double *vini, double *dtime, double *accold, ITG *nk, double *adb,
-		  double *aub, ITG *jq, ITG *irow, ITG *nzl, double *alpha,
-		  double *fextini, double *fini, ITG *islavnode, ITG *nslavnode,
-		  ITG *mortar, ITG *ntie,double *f_cm,
-		  double* f_cs, ITG *mi,ITG *nzs,ITG *nasym,ITG *idamping,
-		  double *veold,double *adc,double *auc,double *cvini,double *cv,
-		  double *alpham,ITG *num_cpus){
+void calcresidual(ITG *nmethod,ITG *neq,double *b,double *fext,double *f,
+		  ITG *iexpl,ITG *nactdof,double *aux2,double *vold,
+		  double *vini,double *dtime,double *accold,ITG *nk,double *adb,
+		  double *aub,ITG *jq,ITG *irow,ITG *nzl,double *alpha,
+		  double *fextini,double *fini,ITG *islavnode,ITG *nslavnode,
+		  ITG *mortar,ITG *ntie,double *f_cm,
+		  double* f_cs,ITG *mi,ITG *nzs,ITG *nasym,ITG *idamping,
+		  double *veold,double *adc,double *auc,double *cvini,
+		  double *cv,double *alpham,ITG *num_cpus){
 
   ITG j,k,mt=mi[1]+1;
   double scal1;

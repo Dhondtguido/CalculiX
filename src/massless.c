@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <pthread.h>
 #include "CalculiX.h"
 
 #ifdef SPOOLES
@@ -36,6 +37,10 @@
 #include "pastix.h"
 #endif
 
+static ITG neqslavs1,*iacti1,nacti1,num_cpus_loc;
+
+static double *gmatrix1,*fullgmatrix1;
+
 void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
 	      double *auc,double *adc,
 	      ITG *jq,ITG *irow,ITG *neq,ITG *nzs,double *auw,
@@ -48,20 +53,22 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
 	      ITG *nener,double *ener,ITG *ne,ITG **jqbip,double **aubip,
 	      ITG **irowbip,ITG **jqibp,double **auibp,ITG **irowibp,
 	      ITG *iclean,ITG *iinc,double *fullgmatrix,double *fullr,
-	      double *alglob){
+	      double *alglob,ITG *num_cpus){
 
   /* determining the RHS of the global system for massless contact */
 
   ITG *jqwnew=NULL,*irowwnew=NULL,symmetryflag=0,mt=mi[1]+1,im,
     inputformat=0,*iacti=NULL,nacti=0,itranspose,i,j,k,kitermax,
     *jqbb=NULL,*irowbb=NULL,*icolbb=NULL,nzsbb,*jqbi=NULL,*irowbi=NULL,
-    nzsbi,*jqib=NULL,*irowib=NULL,nzsib,nrhs=1,neqslavs;
+    nzsbi,*jqib=NULL,*irowib=NULL,nzsib,nrhs=1,neqslavs,*ithread=NULL;
 
   double *auwnew=NULL,sigma=0.0,*gapdisp0=NULL,*gapnorm=NULL,*cvec=NULL,sum,
     *adbbb=NULL,*aubbb=NULL,*gvec=NULL,*gmatrix=NULL,*qi_kbi=NULL,
     *veolddof=NULL,atol,rtol,*aubb=NULL,*adbb=NULL,*gapdisp=NULL,
     *al=NULL,*alnew=NULL,*r=NULL,*rhs=NULL,*aubi=NULL,
     *auib=NULL,omega,*alocold=NULL,*ddisp=NULL;
+    
+  pthread_t tid[*num_cpus];
 
   jqbi=*jqbip;aubi=*aubip;irowbi=*irowbip;jqib=*jqibp;auib=*auibp;
   irowib=*irowibp;
@@ -324,18 +331,27 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
        only for active slave degrees of freedom */
 
     if(*masslesslinear>0){
-    
-      for(i=0;i<neqslavs;i++){
-	if(iacti[i]!=0) {
-	  for(j=0;j<neqslavs;++j){
-	    if(iacti[j]!=0){
-	      gmatrix[(iacti[i]-1)*nacti+(iacti[j]-1)]=
-		fullgmatrix[i*neqslavs+j];
-	    }
-	  }
-	}
+
+      /* check that num_cpus does not exceed neqslavs */
+      
+      if(neqslavs<*num_cpus){
+	num_cpus_loc=neqslavs;
+      }else{
+	num_cpus_loc=*num_cpus;
       }
 
+      neqslavs1=neqslavs;iacti1=iacti;gmatrix1=gmatrix;nacti1=nacti;
+      fullgmatrix1=fullgmatrix;
+
+      NNEW(ithread,ITG,num_cpus_loc);
+      for(i=0; i<num_cpus_loc; i++)  {
+	ithread[i]=i;
+	pthread_create(&tid[i], NULL, (void *)massless1mt, (void *)&ithread[i]);
+      }
+      for(i=0; i<num_cpus_loc; i++)  pthread_join(tid[i], NULL);
+
+      SFREE(ithread);
+      
     }else{
     
       /* loop over the columns of Wb */
@@ -561,6 +577,32 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
   *irowibp=irowib;
 
   return;
+}
+
+/* subroutine for multithreading of the copying of fullgmatrix
+   into gmatrix  */
+
+void *massless1mt(ITG *i){
+
+  ITG j,k,neqslavsa,neqslavsb,neqslavsdelta;
+    
+  neqslavsdelta=(ITG)ceil(neqslavs1/(double)num_cpus_loc);
+  neqslavsa=*i*neqslavsdelta;
+  neqslavsb=(*i+1)*neqslavsdelta;
+  if(neqslavsb>neqslavs1) neqslavsb=neqslavs1;
+      
+  for(k=neqslavsa;k<neqslavsb;k++){
+    if(iacti1[k]!=0) {
+      for(j=0;j<neqslavs1;++j){
+	if(iacti1[j]!=0){
+	  gmatrix1[(iacti1[k]-1)*nacti1+(iacti1[j]-1)]=
+	    fullgmatrix1[k*neqslavs1+j];
+	}
+      }
+    }
+  }
+       
+  return NULL;
 }
 
 

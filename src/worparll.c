@@ -32,7 +32,7 @@ static double *allwk1,*fnext1,*fnextini1,*v1,*vini1;
 void worparll(double *allwk,double *fnext,ITG *mt,double *fnextini,
 		   double *v,double *vini,ITG *nk,ITG *num_cpus){
 
-    ITG i,idelta,isum;
+    ITG i,idelta,isum,num_cpus_loc;
 
     /* variables for multithreading procedure */
 
@@ -40,20 +40,28 @@ void worparll(double *allwk,double *fnext,ITG *mt,double *fnextini,
 
     pthread_t tid[*num_cpus];
 
+    /* check that num_cpus does not exceed nk */
+
+    if(*num_cpus>*nk){
+      num_cpus_loc=*nk;
+    }else{
+      num_cpus_loc=*num_cpus;
+    }
+
     /* determining the element bounds in each thread */
 
-    NNEW(nkapar,ITG,*num_cpus);
-    NNEW(nkbpar,ITG,*num_cpus);
-    NNEW(allwk1,double,*num_cpus);
+    NNEW(nkapar,ITG,num_cpus_loc);
+    NNEW(nkbpar,ITG,num_cpus_loc);
+    NNEW(allwk1,double,num_cpus_loc);
 
     /* dividing the element number range into num_cpus equal numbers of 
        active entries.  */
 
-    idelta=(ITG)floor(*nk/(double)(*num_cpus));
+    idelta=(ITG)floor(*nk/(double)(num_cpus_loc));
     isum=0;
-    for(i=0;i<*num_cpus;i++){
+    for(i=0;i<num_cpus_loc;i++){
 	nkapar[i]=isum;
-	if(i!=*num_cpus-1){
+	if(i!=num_cpus_loc-1){
 	    isum+=idelta;
 	}else{
 	    isum=*nk;
@@ -65,15 +73,15 @@ void worparll(double *allwk,double *fnext,ITG *mt,double *fnextini,
     
     fnext1=fnext;mt1=mt;fnextini1=fnextini;v1=v;vini1=vini;
     
-    NNEW(ithread,ITG,*num_cpus);
+    NNEW(ithread,ITG,num_cpus_loc);
 
-    for(i=0; i<*num_cpus; i++)  {
+    for(i=0; i<num_cpus_loc; i++)  {
       ithread[i]=i;
       pthread_create(&tid[i], NULL, (void *)worparllmt, (void *)&ithread[i]);
     }
-    for(i=0; i<*num_cpus; i++)  pthread_join(tid[i], NULL);
+    for(i=0; i<num_cpus_loc; i++)  pthread_join(tid[i], NULL);
 
-    for(i=0;i<*num_cpus;i++){
+    for(i=0;i<num_cpus_loc;i++){
 	(*allwk)+=allwk1[i];
     }
 

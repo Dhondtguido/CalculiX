@@ -145,7 +145,8 @@
 !           removing the present loading (check!!)
 !
             nforc=0
-            iprestr=0
+c   change on 26012024            
+c            iprestr=0
             if((ithermal(1).eq.1).or.(ithermal(1).eq.3)) then
                do j=1,nk
                   t1(j)=t0(j)
