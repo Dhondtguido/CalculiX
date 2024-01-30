@@ -24,6 +24,25 @@
 
 #define min(a, b) ((a) <= (b) ? (a) : (b))
 #define max(a, b) ((a) >= (b) ? (a) : (b))
+
+#if defined(_WIN32) || defined(_WIN64)
+char *strndup(char *str, int chars)
+{
+  char *buffer;
+  int n;
+
+  buffer = (char *)malloc(chars + 1);
+  if (buffer)
+  {
+    for (n = 0; ((n < chars) && (str[n] != 0)); n++)
+      buffer[n] = str[n];
+    buffer[n] = 0;
+  }
+
+  return buffer;
+}
+#endif
+
 char *get_set(char *s)
 {
   int l = strlen(s);
@@ -35,6 +54,7 @@ char *get_set(char *s)
 
   return strndup(s, l - 1);
 }
+
 void csv(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne0,
          double *v, double *stn, ITG *inum, ITG *nmethod, ITG *kode,
          char *filab, double *een, double *t1, double *fn, double *time,
@@ -69,7 +89,7 @@ void csv(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne0,
       set_name[64],
       csv_filename[64],
       csv_header[240];
-  
+
   FILE *nodes_file;
 
   static ITG icounter = 0, nkcoords, iaxial;
