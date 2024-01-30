@@ -13128,28 +13128,65 @@ obtained by using the shape functions at the spring location.
 To accelerate explicit dynamic calculations selective mass scaling can be used
 \cite{Olovsson}. It was introduced in CalculiX in the course of a Master
 Thesis \cite{Czech}. Applying selective mass scaling the time increment can be
-increased, which reduces the overall computational time. In the selective mass scaling
-procedure the lumped mass matrix of each element is augmented by a fully
-populated matrix of the form (examplary for a C3D8-element):
+increased, which reduces the overall computational time. The selective mass
+scaling procedure starts from the lumped mass matrix, which for linear
+elements and one global coordinate direction looks like (examplary for a C3D8-element):
+
+\begin{equation}
+  M=\frac{m^e}{8} \boldsymbol{I},
+\end{equation}
+
+where $m^e$ is the total mass of the element. Now, this mass matrix is augmented
+by a multiple of itself after removal of the rigid body translational modes:
+
+\begin{equation}
+  \Delta M = \frac{m^e}{8} (\boldsymbol{I} - \boldsymbol{n} \otimes
+  \boldsymbol{n}),
+\end{equation}
+
+where (writing $\boldsymbol{n}$ as a column vector) 
+
+\begin{equation}
+  \boldsymbol{n}^T = \{ 1\; 1\; 1\; 1\; 1\; 1\; 1\; 1 \}/\sqrt{8}.
+  \end{equation} 
+
+This leads to:
+
+\begin{equation}
+ \Delta M = \frac{m}{8}  \begin{bmatrix} 7/8 & -1/8 & \cdots & -1/8
+   \\ -1/8 & 7/8 & & \\ \vdots & & \ddots & \\ -1/8 & & & 7/8 \end{bmatrix}.
+\end{equation} 
+
+Now, the division by 8 in the denominator of the matrix is approximated by a
+division by 7 to yield 1 on the diagonal and a scaling factor $\beta$ is
+introduced:
 
 \begin{equation}
  \Delta M = \frac{\beta m}{7 \cdot 8}  \begin{bmatrix} 7 & -1 & \cdots & -1
    \\ -1 & 7 & & \\ \vdots & & \ddots & \\ -1 & & & 7 \end{bmatrix}.
-\end{equation} 
+\end{equation}
 
-For other element types ``7'' should be replaced by $n-1$ and ``8'' by $n$,
-where n is the number of nodes in the element. $m$ is the total mass of the
-element and $\beta=(\Delta t_{\text{target}}/\Delta t_{\text{stable}})^2-1$. The resulting computational increase is, however,
-neglegible, since the LU-decomposition has only to be performed once at the
-start of the calculation. Selective mass scaling is triggered by specifying the minimum time
+In conclusion, the diagonal elements of matrix $M$ are now modified by a
+factor $1+\beta$. Since the natural frequency $\omega \sim 1/\sqrt{m}$ and
+the time increment $\Delta t \sim 1/\omega$, one can conclude that
+
+\begin{equation}
+  \frac{\Delta t_{\text{target}}}{\Delta t_{\text{stable}}} =
+  \sqrt{\frac{m_{\text{target}}}{m} } = \sqrt{1+\beta },
+  \end{equation} 
+
+from which $\beta=(\Delta t_{\text{target}}/\Delta t_{\text{stable}})^2-1$. For other element types ``7'' should be replaced by $n-1$ and ``8'' by $n$,
+where n is the number of nodes in the element. The resulting mass matrix is
+now not diagonal any more and a LU-decomposition has to be performed. Since
+the mass does not change during the calculation, this decomposition has 
+to be performed only once at the start of the calculation.
+
+In CalculiX, selective mass scaling is triggered by specifying the minimum time
 increment $\Delta t_{\text{target}}$ which the user is willing to tolerate underneath the \htmlref{*DYNAMIC }{dynamic} keyword (third
 parameter). If for any volumetric element the increment size $\Delta t_{\text{stable}}$ calculated by CalculiX
 (based on the wave speed) is less than the
-minimum, the mass of this element is automatically scaled and redistributed
-such that the total mass of the element does not change. Adding the above
-matrix $\Delta M$ moves mass from the off-diagonal positions of the element mass matrix onto
-the diagonal. This leads to a reduction of the highest eigenfrequencies of the
-element, and, consequently, to a increase of the stable time step. If any mass scaling takes place, a message is printed and the
+minimum, the mass of this element is automatically selectively scaled. In that
+case a message is printed and the
 elements for which the mass was redistributed are stored in file
 ``jobname\_WarnElementMassScaled.nam''. This file can be read in any active cgx-session
 by typing ``read jobname\_WarnElementMassScaled.nam inp'' and the elements
@@ -13157,7 +13194,10 @@ can be appropriately visualized. If the mass of too many elements is
 redistributed, the lowest eigenfrequencies might be affected, leading to wrong
 results. Therefore, the maximum allowed time increment should be limited by a
 maximum allowed change of the lowest eigenfrequency by, e.g. 1 \%. It is the
-responsability of the user to check this.
+responsability of the user to check this by performing a
+\htmlref{*FREQUENCY}{frequency} calculation in which the desired time step is
+provided as the fourth entry underneath the *FREQUENCY card. In addition, the
+value of $\alpha$ can also be specified.
 
 For spring elements the mimimum time
 increment specified by the user is obtained by reducing the spring
@@ -13193,7 +13233,7 @@ been coded within a procedure characterized by:
 \item a Verlet time integration scheme.
 \end{itemize}
 
-From now on the method will be called the massless contact method. Its
+From now on the method will be called the massless explicit dynamics method. Its
 implementation closely follows the frictional flow diagram in
 \cite{Monjaraz2}. From this publication it is clear that the contactless
 stiffness matrix is needed. The submatrix related to the contact
@@ -13223,6 +13263,14 @@ procedure only. In a *STATIC or *DYNAMIC implicit step the contact definition
 is replaced by TYPE=NODE TO SURFACE. Note that within one input deck only one
 type of *CONTACT PAIR is allowed. Since the contact is hard, the only
 parameter is the friction coefficient.
+
+In the massless explicit dynamics method selective mass scaling is also
+used. It is triggered in exactly the same way as for the $\alpha$-method,
+i.e. by specifying a minimum time increment exceeding the stable time
+increment. In contrast to the $\alpha$-method the change of mass matrix is
+added to the unlumped mass. Selective mass scaling is particularly
+advantageous in the presence of few very small elements which lead to an
+extremely small stable time increment.
 
 For all dynamic calculations (implicit dynamics, explicit dynamics with
 penalty contact or explicit dynamics with massless contact) a energy balance
