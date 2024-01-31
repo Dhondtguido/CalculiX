@@ -314,13 +314,13 @@ void FORTRAN(assigndomtonodes,(ITG *ne,char *lakon,ITG *ipkon,ITG *kon,
              ITG *ielmat,ITG *inomat,double *elcon,ITG *ncmat_,ITG *ntmat_,
              ITG *mi,ITG *ne2));
 
-void FORTRAN(inclusion,(double *gcontfull,double *cvec,ITG *nacti,
-			ITG *iacti,double *mufric,double *atol,
-			double *rtol,double *alglob,ITG *kitermax,
-			double *auw,ITG *jqw,ITG *iroww,
-			ITG *nslavs,double *al,double *alnew,
-			double *eps_al,double *omega,ITG *masslesslinear,
-			double *fullr));
+void inclusion(double *gcontfull,double *cvec,ITG *nacti,
+	       ITG *iacti,double *mufric,double *atol,
+	       double *rtol,double *alglob,ITG *kitermax,
+	       double *auw,ITG *jqw,ITG *iroww,
+	       ITG *nslavs,double *al,double *alnew,
+	       double *eps_al,double *omega,ITG *masslesslinear,
+	       double *fullr,ITG *num_cpus);
 
 void FORTRAN(autocovmatrix,(double *co,double *ad,double *au,ITG *jqs,
 			    ITG *irows,ITG *ndesi,ITG *nodedesi,double *corrlen,
