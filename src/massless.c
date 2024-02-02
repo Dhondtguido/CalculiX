@@ -433,9 +433,9 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
     }
 
     NNEW(r,double,nacti);
-    inclusion(gmatrix,cvec,iacti,&nacti,fric,&atol,&rtol,
-	      alglob,&kitermax,auw,jqw,iroww,nslavs,al,
-	      alnew,r,&omega,masslesslinear,fullr,num_cpus);
+    FORTRAN(inclusion,(gmatrix,cvec,iacti,&nacti,fric,&atol,&rtol,
+		       alglob,&kitermax,auw,jqw,iroww,nslavs,al,
+		       alnew,r,&omega,masslesslinear,fullr));
 
     if(*nener==1){
       NNEW(alocold,double,neqslavs);

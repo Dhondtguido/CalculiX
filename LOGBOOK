@@ -5330,3 +5330,7 @@ Dec 2002        - started to work on single crystal plasticity
                   explicit dynamic massless calculations
 
  31 Jan 2023    - reinserted inclusion.c instead of inclusion.f
+
+ 2 Feb 2023     - corrected an error in inclusion.c
+                - reverted to inclusion.f (BLAS faster and
+		  parallellized?)
