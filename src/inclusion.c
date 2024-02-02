@@ -90,7 +90,7 @@ void inclusion(double *gmatrix,double *cvec,ITG *iacti,ITG *nacti,double *fric,
     
       if(iacti[3*i]==0) continue;
     
-      in=3*i;
+      in=iacti[3*i]-1;
       it1=in+1;
       it2=in+2;
 
