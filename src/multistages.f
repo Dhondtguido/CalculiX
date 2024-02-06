@@ -79,11 +79,11 @@
 !     Creating of the fields nodel and noder with specific 
 !     information for each node
 !     
-!     node(l,r)(1)=nodenumber
+!     node(l,r)(1)=number of a node belonging to the l/r side
 !     node(l,r)(2)=setnumber
-!     node(l,r)(3)=elementnumber
-!     node(l,r)(4)=segments of cyclic symmetry part
-!     node(l,r)(5)=cyclic symmetry parts number
+!     node(l,r)(3)=number of an element belonging to the l/r side
+!     node(l,r)(4)=number of segments of the l/r side (natural number)
+!     node(l,r)(5)=cyclic symmetry parts number of the l/r side
 !     
 !     Defining the left and right node sets      
 !     
@@ -164,13 +164,18 @@
             enddo
           enddo loop
 !     
+!         determining the number of sectors and the cyclic symmetry     
+!         number for the l/r side
+!     
+!         assumption: number of parts is a natural number     
+!     
           do j=1,mcs
             do l=istartset(int(cs(13,j))),iendset(int(cs(13,j)))
               if (ialset(l).eq.nodel(3)) then
-                nodel(4)=cs(1,j)
+                nodel(4)=nint(cs(1,j))
                 nodel(5)=j
               elseif (ialset(l).eq.noder(3)) then
-                noder(4)=cs(1,j)
+                noder(4)=nint(cs(1,j))
                 noder(5)=j
               endif   
             enddo
@@ -202,9 +207,14 @@
             phi0=(2.d0*pi)/noder(4)
           endif
 !     
+!         scaling factor for the connecting MPC's in static calculations    
+!     
           scale=(1.d0*nodel(4))/noder(4)
 !     
 !     Looking for a node on the independent cyclic symmetry side
+!     
+!     replace next section by "node_cycle=noder(1)"?    
+!     start replace    
 !     
           indepties=tieset(3,int(cs(17,indcs)))
           indeptiet=indepties
@@ -228,7 +238,10 @@
             endif
           enddo
 !     
-!     Defining the rotary matrix for the tie level
+!         end replace   
+!     
+!     Defining a transformation matrix from the globa system into a local
+!     system with the x-direction along the rotation axis 
 !     
           T(1,1)=csab(4)-csab(1)
           T(1,2)=csab(5)-csab(2)
@@ -238,8 +251,7 @@
           T(1,2)=T(1,2)/dd
           T(1,3)=T(1,3)/dd
 !     
-!     Defining the Position of the Leftnode, which contains the angle boundary
-!     for the second parameter for the tie level
+!     second local direction is orthogonal to the rotation axis
 !     
           xap=co(1,node_cycle)-csab(1)
           yap=co(2,node_cycle)-csab(2)
@@ -250,7 +262,7 @@
      &         (zap-zp*T(1,3))**2)
           rp=dsqrt(rp)
 !     
-!     Performing the vector product for the third axis of the rotary matrix
+!     Performing the vector product for the third local direction
 !     
           if(rp.gt.1.d-10) then
             T(2,1)=(xap-zp*T(1,1))/rp
@@ -261,12 +273,14 @@
             T(3,3)=T(1,1)*T(2,2)-T(2,1)*T(1,2)
           endif
 !     
-!     Inverting the rotary matrix to rotate the node back afterwards
+!     (global coordinates)=T^T.(local coordinates)    
+!     (local coordinates)=T.(global coordinates)
+!     
+!     Inverting the rotary matrix transform from local to global
 !     
           call invert3D(T,Tinv,3)
 !     
-!     Writing a secondary rotary matrix which rotates the nodes on
-!     the tie level with the angle phi
+!     mapping the independent nodes into the local system
 !     
           l=0
           do j=istartset(noder(2)),iendset(noder(2))
@@ -347,13 +361,17 @@
             pnod(2)=co(2,ialset(j))-csab(2)
             pnod(3)=co(3,ialset(j))-csab(3)
 !     
-!     Rotating into local coordinates "coord"
+!     change to local coordinates "coord"
 !     
             call Mprod(T,pnod,coord,3)
 !     
-!     Determining the number of segments for the rotation
+!     Determining the phase shift for the tie constraints
 !     
             phi=datan2(-coord(3),coord(2))
+!     
+!     kseg is the number of time the base sector has to be shifted
+!     in order to contain the node at stake    
+!     
             if (phi.gt.(-1.d-5+phi_min)) then
               kseg=int(noder(4)*0.5d0*(phi-phi_min)/pi)
             else 
@@ -371,11 +389,11 @@
             T2D(3,3)=dcos(-kseg*phi0)
 !     
 !     Rotating the dependent nodes by the number of 
-!     segments to "node" in local coordinates
+!     segments to "pnod" in local coordinates
 !     
             call Mprod(T2D,coord,pnod,3)
 !     
-!     Copying the local coordinates to the local variables
+!     copying the local coordinates to the local variables
 !     
             if (cylindrical) then
               yp=pnod(1)
@@ -387,12 +405,14 @@
             endif
             noder0=nk+1
 !     
-!     Rotating back to global coordinates to "coord"
+!     transforming back to global coordinates
 !     
             call Mprod(Tinv,pnod,coord,3)
             co(1,noder0)=coord(1)
             co(2,noder0)=coord(2)
             co(3,noder0)=coord(3)
+!     
+!     determining the coefficients of the multistage MPC's
 !     
             ier=0
             call linkdissimilar(co,csab,
@@ -410,6 +430,8 @@
               enddo
             endif
 !     
+!     all sector shifts for multistage MPC's are stored
+!     
             if(kseg.eq.1) then
               imcs=noder(5)
             elseif(kseg.gt.1) then
@@ -426,6 +448,8 @@
                 cs(13,mcs)=0.5d0
               endif
             endif
+!     
+!     the tie MPC relationships apply in cylindrical coordinates
 !     
             call transformatrix(csab,co(1,ialset(j)),al)
             call transformatrix(csab,co(1,noder0),ar)   

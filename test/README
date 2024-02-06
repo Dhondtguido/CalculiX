@@ -1,0 +1,15 @@
+In the present test directory two scripts are included to run the test
+examples automatically and compare the results (in the .dat and the .frd
+files) with reference results:
+
+1. compare
+
+This script is a serial script and uses only one cpu during execution
+
+2. compare_par (calling compare_par1 and compare_par2)
+
+This script executes the test examples in parallel on all availabel cpus. The
+comparison of the results is subsequently done in a serial way.
+
+In both cases a file with a name starting with error is created showing the
+differences with the reference results (if any).

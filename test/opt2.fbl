@@ -1,0 +1,15 @@
+read opt2.frd
+read opt2.inp
+#
+#  add the deformation to the coordinates
+#
+view disp keep
+#
+#  next line only for 2D applications
+#
+#call set Nall z 0.
+#
+#  store the deformed mesh into Nall.msh
+#
+send Nall abq
+quit

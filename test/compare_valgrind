@@ -1,0 +1,65 @@
+#!/bin/sh
+
+rm -f error.*
+rm -f valgrind.out
+
+tempfile=temp.$$
+errorfile=error.$$
+
+for i in *.inp; do
+
+        echo " "
+        echo "example ${i%.inp}"
+        echo " "
+
+#
+#       removing the old .dat file, if any
+#
+
+	rm -f ${i%.inp}.dat
+
+#
+#       executing CalculiX and generating the .dat file
+#
+
+	echo "${i%.inp}" >> valgrind.out
+        valgrind ~/CalculiX/src/CalculiX  ${i%.inp} >> valgrind.out 2>&1
+
+#
+#       check whether the .dat and .dat.ref files exist
+#
+	if [ ! -f ${i%.inp}.dat ]; then
+	   echo "${i%.inp}.dat does not exist" >> $errorfile
+	   continue
+        fi
+	if [ ! -f ${i%.inp}.dat.ref ]; then
+	   echo "${i%.inp}.dat.ref does not exist" >> $errorfile
+	   continue
+        fi
+#
+#       check whether the .dat and .dat.ref files have the same length
+#
+
+	export sum1=`wc -l ${i%.inp}.dat | awk '{print$1}'`
+	export sum2=`wc -l ${i%.inp}.dat.ref | awk '{print$1}'`
+	if [ $sum1 != $sum2 ]; then
+	   echo "${i%.inp}.dat and ${i%.inp}.dat.ref do not have the same size !!!!!!!!!!!!!!!!!!!!!!" >> $errorfile
+	   echo " ">> $errorfile
+	   continue
+        fi
+
+#
+#       check whether the numbers in the .dat and .dat.ref files
+#       do not differ by more than a given amount (defined in file
+#       datcheck.pl)
+#
+	./datcheck.pl ${i%.inp} >> $errorfile
+
+done
+
+rm -f *.rfn.inp
+rm -f $tempfile
+echo "check the existence of file $errorfile"
+echo "if this file does not exist, the present results"
+echo "agree with the reference results"
+echo " "

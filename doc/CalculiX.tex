@@ -12330,10 +12330,44 @@ the mass of the sector itself. If the normalization were done based on
 360$^\circ$ the modes corresponding to a nodal diameter of 0 and M/2 (if M is
 even) would have to be devided by $\sqrt{M}$, the others by $\sqrt{M/2}$.  
 
+\begin{figure}
+\epsfig{file=multistage.eps,width=10cm}
+\caption{\label{multistage}}
+\end{figure}
+
 Adjacent structures with datum sectors which differ in size can be calculated
-by tying them together with the *TIE,MULTISTAGE keyword. This works well if
-the size difference of the datum sectors is not too large. This is illustrated
+by tying them together with the *TIE,MULTISTAGE keyword. The way this works is
+illustrated in Figure \ref{multistage}. Two stages with different cyclic
+symmetry are adjacent to each other. To connect them, Multiple Point
+Constraints are created. The larger stage is defined as the dependent side,
+the smaller as the independent. Point in between them, such as point A, can be
+connected directly with a tie MPC. Other points, such as B, are mapped into
+the basis sector 0 (point B' belonging to the dependent side) by rotating them by a number of sectors, in this
+case just 1 sector. Therefore, the displacements of B and B' are identical in
+cylindrical coordinates apart from a shift by just one sector:
+
+\begin{equation}
+  \{U\}_{\text{cyl},B} = \{U\}_{\text{cyl},B'} \; e^{i \frac{2 \pi}{M}}
+\end{equation}
+
+for nodal diameter $N=1$. The displacements for point B' in the above equation
+are obtained by a tie constraint of the node with the opposite independent face. For other nodal diameters the argument of the
+exponential function has to be multiplied by $N$. For point C one obtains:
+
+\begin{equation}
+  \{U\}_{\text{cyl},C} = \{U\}_{\text{cyl},C'} \; e^{i \frac{4 \pi}{M}},
+\end{equation}
+
+and for point D:
+
+\begin{equation}
+  \{U\}_{\text{cyl},D} = \{U\}_{\text{cyl},D'} \; e^{i \frac{2 (M-1) \pi}{M}}
+  = \{U\}_{\text{cyl},D'} \; e^{-i \frac{2 \pi}{M}}.
+\end{equation}
+
+The use of multistage conditions is illustrated
 by file multistage.inp in the test examples.
+
 
 Eigenmodes resulting from frequency calculations with cyclic symmetry can be
 interpreted as traveling waves (indeed, all eigenmode solutions exhibiting a

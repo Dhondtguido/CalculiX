@@ -1,0 +1,71 @@
+#!/bin/sh
+
+rm -f error.*
+
+tempfile=temp.$$
+errorfile=error.$$
+
+for i in *.inp; do
+
+        echo " "
+        echo "example ${i%.inp}"
+        echo " "
+
+#
+#       removing the old .dat file, if any
+#
+
+	rm -f ${i%.inp}.frd
+
+#
+#       executing CalculiX and generating the .dat and
+#       the .frd file
+#
+
+        ~/CalculiX/CalculiX  ${i%.inp} >> $tempfile 2>&1
+
+#
+#       check whether the .frd or the .frd.ref file exists
+#
+#	if [ -f ${i%.inp}.frd ] ||[ -f ${i%.inp}.frd.ref ] ; then
+	if grep "^ -5" ${i%.inp}.frd  ||[ -f ${i%.inp}.frd.ref ] ; then
+#
+#           check that both files exist
+#
+	    echo "${i%.inp}.frd.ref" exists
+	    if [ ! -f ${i%.inp}.frd ]; then
+		echo "${i%.inp}.frd does not exist" >> $errorfile
+		continue
+            fi
+	    if [ ! -f ${i%.inp}.frd.ref ]; then
+		echo "${i%.inp}.frd.ref does not exist" >> $errorfile
+		continue
+            fi
+#
+#           check whether the .frd and .frd.ref files have the same length
+#
+	    
+	    export sum1=`wc -l ${i%.inp}.frd | awk '{print$1}'`
+	    export sum2=`wc -l ${i%.inp}.frd.ref | awk '{print$1}'`
+	    if [ $sum1 != $sum2 ]; then
+		echo "${i%.inp}.frd and ${i%.inp}.frd.ref do not have the same size !!!!!!!!!!!!!!!!!!!!!!" >> $errorfile
+		echo " ">> $errorfile
+		continue
+            fi
+#
+#           check whether the numbers in the .frd and .frd.ref files
+#           do not differ by more than a given amount (defined in file
+#           frdcheck.pl)
+#
+	    ./frdcheck.pl ${i%.inp} >> $errorfile
+            
+        fi
+
+done
+
+rm -f *.rfn.inp
+rm -f $tempfile
+echo "check the existence of file $errorfile"
+echo "if this file does not exist, the present results"
+echo "agree with the reference results"
+echo " "
