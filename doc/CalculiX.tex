@@ -8012,6 +8012,38 @@ in the MPC, thus homogenizing it. The numbering of the DOF's is the same as
 for SPC's (cf previous section). It is not allowed to mix thermal and
 mechanical degrees of freedom within one and the same MPC.
 
+\subsubsection{Cyclic symmetry constraints}
+
+These are special kinds of multiple point constraints triggered by the
+presence of at least one
+\htmlref{*CYCLIC SYMMETRY MODEL}{cyclicsymmetrymodel} card and possibly in
+addition by a
+\htmlref{*TIE}{tie}, MULTISTAGE card. An example of a cyclic symmetric model
+is given in Figure \ref{cycsym}. It consists of a sector repeating itself
+several times along the circumference. For being truly cyclic symmetric also
+the loading and boundary conditions have to satisfy the same cyclic symmetry. For static calculations the surfaces
+delimiting the cyclic symmetry sector exhibit the same displacements in
+cylindrical coordinates:
+
+\begin{equation}
+  \{U\}_{\text{cyl,left}} = \{U\}_{\text{cyl,right}}
+\end{equation}
+
+These multiple point equations are generated automatically within
+CalculiX. For frequency calculations these equations have to be modified
+depending on the nodal diameter N which is requested, i.e. the number of waves
+along the circumference one is interested in. For a structure with M
+identical sectors the resulting equations are:
+
+\begin{equation}
+  \{U\}_{\text{cyl,left}} = \{U\}_{\text{cyl,right}} \; e^{i \frac{2 \pi N}{M}}.
+\end{equation}
+
+These are still linear multiple point constraints, however, the coefficients
+are now complex. Therefore, the stiffness and mass matrices are also complex,
+but the ensuing eigenvalue problem can be reduced to a real one double its size. For details the reader is
+referred to  \cite{Dhondt}, Section 2.10.
+
 \subsubsection{Kinematic and Distributing Coupling \label{distcoupload}}
 
 In this section the theoretical background of the keyword
@@ -12337,11 +12369,14 @@ even) would have to be devided by $\sqrt{M}$, the others by $\sqrt{M/2}$.
 
 Adjacent structures with datum sectors which differ in size can be calculated
 by tying them together with the *TIE,MULTISTAGE keyword. The way this works is
-illustrated in Figure \ref{multistage}. Two stages with different cyclic
-symmetry are adjacent to each other. To connect them, Multiple Point
-Constraints are created. The larger stage is defined as the dependent side,
-the smaller as the independent. Point in between them, such as point A, can be
-connected directly with a tie MPC. Other points, such as B, are mapped into
+illustrated in Figure \ref{multistage}. Two stages I and II with different cyclic
+symmetry are adjacent to each other. To connect them, multiple point
+constraints are created. The larger stage segment is defined as the dependent side,
+the smaller as the independent. A point in between them, such as point A
+(belonging to the dependent stage), can be
+connected directly to the independent stage with a tie MPC. Other points, such
+as B (also belonging to the dependent stage), are mapped into a point opposite
+of 
 the basis sector 0 (point B' belonging to the dependent side) by rotating them by a number of sectors, in this
 case just 1 sector. Therefore, the displacements of B and B' are identical in
 cylindrical coordinates apart from a shift by just one sector:
@@ -12351,7 +12386,7 @@ cylindrical coordinates apart from a shift by just one sector:
 \end{equation}
 
 for nodal diameter $N=1$. The displacements for point B' in the above equation
-are obtained by a tie constraint of the node with the opposite independent face. For other nodal diameters the argument of the
+are obtained by a tie constraint of B' with the opposite independent face. For other nodal diameters the argument of the
 exponential function has to be multiplied by $N$. For point C one obtains:
 
 \begin{equation}
@@ -12364,6 +12399,26 @@ and for point D:
   \{U\}_{\text{cyl},D} = \{U\}_{\text{cyl},D'} \; e^{i \frac{2 (M-1) \pi}{M}}
   = \{U\}_{\text{cyl},D'} \; e^{-i \frac{2 \pi}{M}}.
 \end{equation}
+
+If the frequency calculation is a perturbation step (by specifying the parameter PERTURBATION on
+the *STEP card of the frequency step) preceded by a static step, the
+multistage MPC's reduce to those above for N=0, i.e. the displacements in
+cylindrical coordinates are the same for A and A', for B and B' etc. However,
+this leads to inconsistent results in the presence of forces (axial and/or
+tangential) in between the stages. Indeed, due to the larger size of the
+dependent stage, an axial force in the independent stage has to be multiplied
+by the ratio of the size of the stage segments. In the example in Figure
+\ref{multistage} the force in the dependent stage has to be four times the
+force in the independent stage. This is obtained by multiplying the
+coefficient of the dependent node in the connecting multiple points
+constraints by four (\cite{Dhondt}, Section 2.6.2). Therefore, the connecting
+multistage constraints are different for a static step than for a frequency
+step. Since the multistage constraints are created in CalculiX in the first
+step, a static and a frequency step cannot be used in the same multistage
+calculation. The solution to this is to perform the static step in a separate
+calculation, store the stresses and displacements in the .dat-file, transform
+them in the format of \htmlref{*INITIAL CONDITIONS}{initialconditions}  for
+stresses and displacements and include these in a subsequent perturbative frequency calculation.
 
 The use of multistage conditions is illustrated
 by file multistage.inp in the test examples.
@@ -20950,7 +21005,10 @@ Several *CYCLIC SYMMETRY MODEL cards within one input deck defining several
 cyclic symmetries about the same axis within one and the same model are allowed. This, however,
 always is an approximation, since several cyclic symmetries within one model
 cannot really exist. Good results are only feasible if the values of N for the
-different *CYCLIC SYMMETRY MODEL cards do not deviate substantially.
+different *CYCLIC SYMMETRY MODEL cards do not deviate substantially. Care
+should be taken that, when looking in the direction of the cyclic symmetry
+axes, all dependent surfaces in the tie definitions are on the same side. Then,
+naturally, this also applies to the independent surfaces. 
 
 The *CYCLIC SYMMETRY MODEL card triggers the creation of cyclic symmetry
 multiple point constraints between the slave and master side. If the nodes do

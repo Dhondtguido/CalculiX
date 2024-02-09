@@ -35,7 +35,7 @@
 !     7)  *ELSET
 !     8)  *SURFACE
 !     9)  *TRANSFORM
-!     10)  *MATERIAL
+!     10) *MATERIAL
 !     11) *DISTRIBUTION
 !     12) *ORIENTATION
 !     13) *TIE
