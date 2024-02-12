@@ -16096,7 +16096,20 @@ sufficient to use a scalar magnetic potential P satisfying:
 
 \noindent Here, $\boldsymbol{T_0}$ is the magnetic intensity due to the coil
 current in infinite free space.  $\boldsymbol{T_0}$ can be calculated using
-the Biot-Savart relationships \cite{Fitzpatrick}. The body fields can be described
+the Biot-Savart relationship \cite{Fitzpatrick}:
+
+\begin{equation}
+\boldsymbol{T_0}(\boldsymbol{X}) = \frac{1}{4 \pi } \int_{\Omega
+  _{\text{coil}}}  \frac{\boldsymbol{j}(\boldsymbol{\xi }) \times
+    (\boldsymbol{X} - \boldsymbol{\xi })    }{\| \boldsymbol{X}
+  -\boldsymbol{\xi } \|^3}  d \Omega(\boldsymbol{\xi }), \;\;\; \boldsymbol{X}
+\in \Omega_1.    
+\end{equation} 
+
+This integration is computationally very demanding, therefore parallellization
+ is of utmost importance.
+
+The body fields can be described
 using a vector magnetic potential $\boldsymbol{A}$ and a scalar electric
 potential V satisfying:
 
@@ -16540,8 +16553,17 @@ Repeated indices imply implicit summation. The $[K]$ matrices are analogous to
 the conductivity matrix in heat transfer analyses, the $[M]$ matrices are the
 counterpart of the capacity matrix. $\{F\}$ represents the force. The
 resulting system consists of first order ordinary differential equations in
-time and the corresponding matrices look like in Figure \ref{indmatrix}. Solution of this system yields the solution
-for $\boldsymbol{A}, v$ and $P$ from which the magnetic field $\boldsymbol{B}$
+time:
+
+\begin{equation}
+  [M] \{\dot {U} \} + [K] \{U\}  = \{F\},
+  \end{equation} 
+
+where the corresponding matrices look like in Figure \ref{indmatrix}. Solution
+of this system, which is virtually identical to the heat equation and can also
+be solved as such (\cite{Dhondt}, Chapter 7), yields the solution
+for $\boldsymbol{A}, v$ and $P$ (collected in the vector $\{U\}$ in the above
+equation) from which the magnetic field $\boldsymbol{B}$
 and the electric field $\boldsymbol{E}$ can be determined using Equations
 (\ref{defB},\ref{defE}). 
 
@@ -16586,7 +16608,7 @@ three domains represent the air, the conducting workpiece and that part of the
 air which, if filled with workpiece material, makes the workpiece simply
 connected. These three domains are to be meshed with volumetric elements. The
 meshes should not be connected, i.e., one can mesh these domains in a
-completely independent way. This also applies that one can choose the
+completely independent way. This also implies that one can choose the
 appropriate mesh density for each domain separately.
 
 Based on the driving current the field $\boldsymbol{T_0}$ is determined in
@@ -16645,10 +16667,107 @@ athermal electromagnetic calculations the parameter NO HEAT TRANSFER. Default
 is an electromagnetic calculation with heat transfer.
 
 Available output variables are POT (the electric potential in the driving
-current coil) on the *NODE FILE card and ECD (electric current density in the
+current coil) and U (vector magnetic potential $\boldsymbol{A}$ in domain 2
+and 3, integral of the scalar electric potential $V$ in domain 2 and scalar
+magnetic potential in domain 1) on the *NODE FILE card and ECD (electric current density in the
 driving current coil), EMFE (electric field in the workpiece) and EMFB
-(magnetic field in the air and the workpiece) on the *EL FILE card. Examples
-are induction.inp and induction2.inp.
+(magnetic field in the air and the workpiece) on the *EL FILE card. In the
+dat-file the heating power in any element set belonging to domain 2 can be
+stored (key EBHE).
+
+For Alternating Current (AC) the steady state answer can be calculated by use
+of the parameter FREQUENCY and by specifying the frequency of the current (in
+1/[T], where [T] is the unit of time) by means of the parameter OMEGA on the
+\htmlref{\*ELECTROMAGNETICS}{electromagnetics} card. In that case the current
+takes the form
+
+\begin{equation}
+  \boldsymbol{j}= \boldsymbol{j_0} e^{i \omega t},
+\end{equation}
+
+and qa solution for the vector $\{U\}$ is looked for with the same time
+dependency. Substitution in the governing equation and separating real and
+imaginary part leads to
+
+\begin{equation}
+  \begin{bmatrix} K & -\omega M \\ \omega M & K \end{bmatrix} \begin{Bmatrix}
+    U_R \\ U_I \end{Bmatrix} =  \begin{Bmatrix}
+    F \\ 0 \end{Bmatrix}.
+\end{equation}
+
+This is a nonsymmetric system of equations the solution of which constitutes
+the real and imaginary part of the electromagnetic potentials. The fields
+$\boldsymbol{E}$ and $\boldsymbol{B}$ now satisfy:
+
+\begin{equation}
+  \boldsymbol{E} = - i \omega [\boldsymbol{A} - {\nabla} v ] e^{i
+    \omega t},
+\end{equation}
+
+and
+
+\begin{equation}
+  \boldsymbol{B}= ({\nabla } \times \boldsymbol{A} ) e^{i \omega t},
+\end{equation}
+
+where $\boldsymbol{E}$, $\boldsymbol{B}$, $\boldsymbol{A}$ and $v$ are now
+complex quantities. The heating power density amounts to:
+
+\begin{equation}
+  \overline{\boldsymbol{j}} \cdot \boldsymbol{E} = \sigma \overline{\boldsymbol{E} }
+  \cdot \boldsymbol{E} = \sigma ( \| \boldsymbol{E}_R \|^2 +
+  \|\boldsymbol{E}_I \|^2),
+\end{equation} 
+
+where an overline denotes the complex conjugate. Alternating Current is known
+to induce the skin effect in structures \cite{Fitzpatrick}, i.e. the electric field is
+concentrated in a thin layer underneath the surface. To order to capture this
+effect a sufficiently fine mesh is needed in that area.
+
+Experience has shown that the matrices inthe above systems of equations are
+not always well conditioned, especially if the temperature is included and a
+coupled thermal-electromagnetic system is solved. To improve the conditiono a
+scaling of the diagonal terms can be introduced. For a diagonal term $a_{ii}$
+the scaling term is defined as $a_{ii}^s = |a_{ii}| $ if $|a_{ii}| \ge
+10^{-30}$ and $a_{ii}^s =1$ else. The original system of equations
+
+\begin{equation}
+  a_{ij} x_j = b_i
+\end{equation}
+
+can be written as (no implicit summation)
+
+\begin{equation}
+\sum_{j}  \frac{a_{ij}}{\sqrt{|a_{ii}^s| |a_{jj}^s|} } ( x_j \sqrt{|a_{jj}^s|}) =
+  \frac{b_i}{\sqrt{|a_{ii}^s|} },  
+\end{equation} 
+
+or
+
+\begin{equation}
+  A_{ij} X_j = B_i,
+\end{equation}
+
+where 
+
+\begin{equation}
+  A_{ij}=\frac{a_{\underline{i}\underline{j}}}{\sqrt{|a_{\underline{i}\underline{i}}^s| |a_{\underline{j}\underline{j}}^s|} },
+\end{equation}
+
+\begin{equation}
+  X_j=x_{\underline{j}} \sqrt{|a_{\underline{j} \underline{j}}^s|}
+\end{equation}
+
+and
+
+\begin{equation}
+  B_i=\frac{b_{\underline{i}}}{\sqrt{|a_{\underline{i}\underline{i}}^s|} }.
+  \end{equation} 
+
+The latter system is better behaved.
+
+Examples
+are induction.inp, induction2.inp and induction3.inp.
 
 \subsubsection{Sensitivity \label{sectionsensitivity}}
 
