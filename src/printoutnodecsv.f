@@ -36,10 +36,10 @@
 !
       if(prlab(ii)(1:4).eq.'U   ') then
         if((ntrans.eq.0).or.(prlab(ii)(6:6).eq.'G')) then
-            write(uunit,'(i0,1p,6(",",e13.6))') node,
+            write(uunit,'(i0,1p,","6(e13.6,:,","))') node,
      &           (v(j,node),j=1,mi(2))
          elseif(inotr(1,node).eq.0) then
-            write(uunit,'(i0,1p,6(",",e13.6))') node,
+            write(uunit,'(i0,1p,","6(e13.6,:,","))') node,
      &           (v(j,node),j=1,mi(2))
          elseif(mi(2).eq.3) then
             call transformatrix(trab(1,inotr(1,node)),co(1,node),a)
