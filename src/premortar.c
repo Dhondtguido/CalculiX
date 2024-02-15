@@ -600,7 +600,7 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
 	       &mortartrafoflag);*/
   
   mafillsmmain(co,nk,kon,ipkon,lakon,ne,nodeboun,ndirboun,xboun,nboun,
-	       ipompc,nodempc,coefmpc,nmpc,nodeforc,ndirforc,xforc,
+	       ipompc,nodempc,coefmpc,nmpc,nodeforc,ndirforc,xforcact,
 	       nforc,nelemload,sideload,xloadact,nload,xbodyact,ipobody,
 	       nbody,cgr,adtil,autil,fexttil,nactdof,icol,jqtil,irowtil,
 	       neq,nzl,
