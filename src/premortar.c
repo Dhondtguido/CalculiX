@@ -437,10 +437,7 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
     // call checkspsmpc
     
     FORTRAN(checkspcmpc,(ntie,tieset,islavnode,imastnode,nslavnode,nmastnode,
-			 slavnor,islavact,nboun,ndirboun,xboun,
-			 nodempc,coefmpc,ikboun,ilboun,nmpc2,ipompc2,nodempc2,
-			 nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,
-			 nmspc,nmastmpc,imastmpc,nmmpc));
+			 islavact,nodempc,nmpc,ipompc));
         
     for (i=0;i<*ntie;i++){  
       if(tieset[i*(81*3)+80]=='C'){      

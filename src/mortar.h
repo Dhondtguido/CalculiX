@@ -63,13 +63,8 @@ void buildtquad(ITG *ntie,ITG *ipkon,ITG *kon,ITG *nk,
 		ITG *iflagdualquad);
     
 void FORTRAN(checkspcmpc,(ITG *ntie,char *tieset,ITG *islavnode,ITG *imastnode,
-			  ITG *nslavnode,ITG *nmastnode,double *slavnor,
-			  ITG *islavact,ITG *nboun,ITG *ndirboun,double *xboun,
-			  ITG *nodempc,double *coefmpc,ITG *ikboun,ITG *ilboun,
-			  ITG *nmpc2,ITG *ipompc2,ITG *nodempc2,ITG *nslavspc,
-			  ITG *islavspc,ITG *nsspc,ITG *nslavmpc,ITG *islavmpc,
-			  ITG *nsmpc,ITG *nmspc,ITG *nmastmpc,ITG *imastmpc,
-			  ITG *nmmpc));
+			  ITG *nslavnode,ITG *nmastnode,ITG *islavact,
+			  ITG *nodempc,ITG *nmpc,ITG *ipompc));
     
 void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 		   ITG *istartset,ITG *iendset,ITG *ialset,ITG *itietri,

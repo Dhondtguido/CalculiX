@@ -5338,3 +5338,5 @@ Dec 2002        - started to work on single crystal plasticity
 
  15 Feb 2023    - changed xforc into xforcact in the mafillsmmain
                   call in premortar.c
+
+ 17 Feb 2023    - cleaned up checkspcmpc.f

@@ -24,59 +24,27 @@
 !     
 !     [in] islavnode	field storing the nodes of the slave surface
 !     [in] imastnode	field storing the nodes of the master surfaces
-!     [in] nslavnode	(i)pointer into field isalvnode for contact tie i 
+!     [in] nslavnode	(i)pointer into field islavnode for contact tie i 
 !     [in] nmastnode	(i)pointer into field imastnode for contact tie i
-!     [in] slavnor		slave normals
 !     [in,out] islavact	(i) indicates, if slave node i is active (=-3 no-slave-node, =-2 no-LM-node, =-1 no-gap-node, =0 inactive node, =1 sticky node, =2 slipping/active node) 
-!     [in] nslavspc		(2*i) pointer to islavspc...
-!     [in] islavspc         ... which stores SPCs for slave node i
-!     [in] nsspc            number of SPC for slave nodes
-!     [in] nslavmpc		(2*i) pointer to islavmpc...
-!     [in,out] islavmpc		... which stores MPCs for slave node i
-!     [in] nsmpc		number of MPC for slave nodes
-!     [in] nmspc            number of SPC for master nodes
-!     [in] nmastmpc		(2*i) pointer to imastmpc...
-!     [in,out] imastmpc		... which stores MPCs for master node i
-!     [in] nmmpc		number of MPC for master nodes
 !     
       subroutine checkspcmpc(ntie,tieset,islavnode,imastnode,nslavnode,
-     &     nmastnode,slavnor,islavact,nboun,ndirboun,xboun,
-     &     nodempc,coefmpc,ikboun,ilboun,nmpc2,ipompc2,nodempc2,
-     &     nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,
-     &     nmspc,nmastmpc,imastmpc,nmmpc)
+     &     nmastnode,islavact,nodempc,nmpc,ipompc)
 !     
 !     check whether SPC's and MPC's in salve nodes are compatible
 !     with mortar contact    
 !     
 !     author: Sitzmann,Saskia
 !     
-!     islavmpc(2,j)=1  directional blocking
-!     islavmpc(2,j)=2  cyclic symmetry
-!     
-!     imastmpc(2,j)=1  directional blocking
-!     imastmpc(2,j)=2  cyclic symmetry
-!     imastmpc(2,j)=3  spc with displacement
-!     
       implicit none
-!     
-      logical debug,incompatible,nogap,twod
-!     
+!
       character*81 tieset(3,*)
 !     
-      integer ntie,i,j,k,l,dir,dirind,dirdep,id,node,
-     &     islavnode(*),imastnode(*),nslavnode(ntie+1),
-     &     nmastnode(ntie+1),islavact(*),nboun,ndirboun(*),
-     &     nodempc(3,*),index,nmpc2,ipompc2(*),nodempc2(3,*),
-     &     ikboun(*),ilboun(*),nslavspc(2,*),islavspc(2,*),nsspc,
-     &     nslavmpc(2,*),islavmpc(2,*),nsmpc,nmspc,nmastmpc(2,*),
-     &     imastmpc(2,*),nmmpc,ist,zs(3),dof,node2,nsl,nc
+      integer ntie,i,j,l,id,node,islavnode(*),imastnode(*),
+     &     nslavnode(ntie+1),nmastnode(ntie+1),islavact(*),
+     &     nodempc(3,*),index,nmpc,ipompc(*),ist,node2
 !     
-      real*8  xboun(*),coefmpc(*),nn,n(3),fixed_disp,coefdep,
-     &     slavnor(3,*),v(3),sp
-!     
-      debug=.false.
-!     
-!     remove Lagrange Multiplier contributino for nodes which are
+!     remove Lagrange Multiplier contribution for nodes which are
 !     in more than one contact tie
 !     
       if(ntie.gt.1) then
@@ -123,9 +91,9 @@
 !     needed for quadratic elements
 !     attention: 2D calculation are not possible right now
 !     
-      do i=1,nmpc2
-        ist=ipompc2(i)
-        node=nodempc2(1,ist)
+      do i=1,nmpc
+        ist=ipompc(i)
+        node=nodempc(1,ist)
         do j=1,ntie
           call nident(islavnode(nslavnode(j)+1),node,
      &         nslavnode(j+1)-nslavnode(j),id)
@@ -135,11 +103,11 @@
             endif
           endif
         enddo 
-        index=nodempc2(3,ist)
+        index=nodempc(3,ist)
 !     
         if(index.ne.0) then
           do
-            node2=nodempc2(1,index)
+            node2=nodempc(1,index)
             do j=1,ntie
               call nident(islavnode(nslavnode(j)+1),node2,
      &             nslavnode(j+1)-nslavnode(j),id)
@@ -149,7 +117,7 @@
                 endif
               endif
             enddo
-            index=nodempc2(3,index)
+            index=nodempc(3,index)
             if(index.eq.0) exit
           enddo
         endif

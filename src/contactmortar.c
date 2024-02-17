@@ -423,10 +423,7 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
        slave nodes involed in SPCs/MPCs to no-LM nodes */
       
     FORTRAN(checkspcmpc,(ntie,tieset,islavnode,imastnode,nslavnode,nmastnode,
-			 slavnor,islavact,nboun,ndirboun,xboun,
-			 nodempc,coefmpc,ikboun,ilboun,nmpc2,ipompc2,nodempc2,
-			 nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,
-			 nmspc,nmastmpc,imastmpc,nmmpc));
+			 islavact,nodempc,nmpc,ipompc));
       
     nacti=0;ninacti=0;nnogap=0;nstick=0;nnolm=0;nnoslav=0;	
     for (i=0;i<*ntie;i++){	
