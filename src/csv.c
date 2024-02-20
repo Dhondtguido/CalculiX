@@ -221,34 +221,34 @@ void csv(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne0,
 
   /* store the nodal coordinates */
 
-  if ((*kode == 1) && ((*nmethod != 5) || (*mode != 0)))
-  {
-    iaxial = 0.;
-    sprintf(nodes_filename, "nodes_%s.csv", jobnamec);
-    nodes_file = fopen(nodes_filename, "w");
-    if (nodes_file == NULL)
-    {
-      fprintf(stderr, "Couldn't open %s\n", nodes_filename);
-      exit(1);
-    }
+  // if ((*kode == 1) && ((*nmethod != 5) || (*mode != 0)))
+  // {
+  //   iaxial = 0.;
+  //   sprintf(nodes_filename, "nodes_%s.csv", jobnamec);
+  //   nodes_file = fopen(nodes_filename, "w");
+  //   if (nodes_file == NULL)
+  //   {
+  //     fprintf(stderr, "Couldn't open %s\n", nodes_filename);
+  //     exit(1);
+  //   }
 
-    /* storing the coordinates themselves */
+  //   /* storing the coordinates themselves */
 
-    if (*nmethod != 0)
-    {
-      fprintf(nodes_file, "# nodal coordinates (node,x,y,z) for %s\n"
-                          "node,x,y,z\n",
-              jobnamec);
-      for (i = 0; i < *nk; i++)
-      {
-        if ((inum[i] == 0) && (ioutall != 1))
-          continue;
-        fprintf(nodes_file, "%" ITGFORMAT ",%12.5E,%12.5E,%12.5E\n", i + 1, (float)co[3 * i],
-                (float)co[3 * i + 1], (float)co[3 * i + 2]);
-      }
-    }
-    fclose(nodes_file);
-  }
+  //   if (*nmethod != 0)
+  //   {
+  //     fprintf(nodes_file, "# nodal coordinates (node,x,y,z) for %s\n"
+  //                         "node,x,y,z\n",
+  //             jobnamec);
+  //     for (i = 0; i < *nk; i++)
+  //     {
+  //       if ((inum[i] == 0) && (ioutall != 1))
+  //         continue;
+  //       fprintf(nodes_file, "%" ITGFORMAT ",%12.5E,%12.5E,%12.5E\n", i + 1, (float)co[3 * i],
+  //               (float)co[3 * i + 1], (float)co[3 * i + 2]);
+  //     }
+  //   }
+  //   fclose(nodes_file);
+  // }
   /* nkcoords is the number of nodes at the time when
    the nodal coordinates are stored in the csv file */
 
