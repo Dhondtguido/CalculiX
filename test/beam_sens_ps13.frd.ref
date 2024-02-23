@@ -1,11 +1,11 @@
     1C
     1UUSER                                                              
-    1UDATE              24.february.2023                                
-    1UTIME              16:50:29                                        
+    1UDATE              23.february.2024                                
+    1UTIME              17:09:01                                        
     1UHOST                                                              
     1UPGM               CalculiX                                        
     1UVERSION           Version DEVELOPMENT                             
-    1UCOMPILETIME       Mon Feb 20 10:03:38 CET 2023                    
+    1UCOMPILETIME       Fri Feb 23 17:06:32 CET 2024                    
     1UDIR                                                               
     1UDBN                                                               
     1UMAT    1STEEL                                                     
@@ -759,10 +759,10 @@
     1PSTEP                         1           1           2          
   100CL  102 0.00000E+00         126                     3    2           1
  -4  NORM        4    1
- -5  NORMX       1    2	 1    0
- -5  NORMY       1    2	 2    0
- -5  NORMZ       1    2	 3    0
- -5  ALL         1    2	 0    0    1ALL
+ -5  NORMX       1    2    1    0
+ -5  NORMY       1    2    2    0
+ -5  NORMZ       1    2    3    0
+ -5  ALL         1    2    0    0    1ALL
  -1         5 0.00000E+00 0.00000E+00-1.00000E+00
  -1         6 0.00000E+00 0.00000E+00-1.00000E+00
  -1         7 0.00000E+00 0.00000E+00-1.00000E+00
@@ -892,7 +892,7 @@
  -3
     1PSTEP                         2           1           2          
   100CL  103 0.00000E+00         126                     3    3           1
- -4  SENSTRE     2    1
+ -4  SENMISE     2    1
  -5  DFDN        1    1    1    0
  -5  DFDNFIL     1    1    2    0
  -1         5-1.22426E-09-4.81591E-01
@@ -1024,7 +1024,7 @@
  -3
     1PSTEP                         3           1           2          
   100CL  104 0.00000E+00         126                     3    4           1
- -4  SENSTRE     2    1
+ -4  SENPS1      2    1
  -5  DFDN        1    1    1    0
  -5  DFDNFIL     1    1    2    0
  -1         5-4.38086E-10-2.85329E-01
@@ -1156,7 +1156,7 @@
  -3
     1PSTEP                         4           1           2          
   100CL  105 0.00000E+00         126                     3    5           1
- -4  SENSTRE     2    1
+ -4  SENPS3      2    1
  -5  DFDN        1    1    1    0
  -5  DFDNFIL     1    1    2    0
  -1         5-8.55793E-10-5.57385E-01

@@ -1,11 +1,11 @@
     1C
     1UUSER                                                              
-    1UDATE              24.february.2023                                
-    1UTIME              16:50:30                                        
+    1UDATE              23.february.2024                                
+    1UTIME              17:09:02                                        
     1UHOST                                                              
     1UPGM               CalculiX                                        
     1UVERSION           Version DEVELOPMENT                             
-    1UCOMPILETIME       Mon Feb 20 10:03:38 CET 2023                    
+    1UCOMPILETIME       Fri Feb 23 17:06:32 CET 2024                    
     1UDIR                                                               
     1UDBN                                                               
     1UMAT    1C355                                                      
@@ -2265,10 +2265,10 @@
     1PSTEP                         1           1           3          
   100CL  112 0.00000E+00        1001                     3   12           1
  -4  NORM        4    1
- -5  NORMX       1    2	 1    0
- -5  NORMY       1    2	 2    0
- -5  NORMZ       1    2	 3    0
- -5  ALL         1    2	 0    0    1ALL
+ -5  NORMX       1    2    1    0
+ -5  NORMY       1    2    2    0
+ -5  NORMZ       1    2    3    0
+ -5  ALL         1    2    0    0    1ALL
  -1         1 8.08612E-01-3.70567E-01 4.56976E-01
  -1         2 4.91096E-01-5.57712E-01 6.69165E-01
  -1         3-6.26047E-03-6.43925E-02 9.97905E-01

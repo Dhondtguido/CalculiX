@@ -1,11 +1,11 @@
     1C
     1UUSER                                                              
-    1UDATE              28.june.2019                                    
-    1UTIME              15:55:36                                        
+    1UDATE              23.february.2024                                
+    1UTIME              17:09:03                                        
     1UHOST                                                              
     1UPGM               CalculiX                                        
     1UVERSION           Version DEVELOPMENT                             
-    1UCOMPILETIME       Fr 28. Jun 15:24:53 CEST 2019                    
+    1UCOMPILETIME       Fri Feb 23 17:06:32 CET 2024                    
     1UDIR                                                               
     1UDBN                                                               
     1UMAT    1EL                                                        
@@ -119,10 +119,10 @@
     1PSTEP                         1           1           2          
   100CL  102 0.00000E+00          18                     3    2           1
  -4  NORM        4    1
- -5  NORMX       1    2	 1    0
- -5  NORMY       1    2	 2    0
- -5  NORMZ       1    2	 3    0
- -5  ALL         1    2	 0    0    1ALL
+ -5  NORMX       1    2    1    0
+ -5  NORMY       1    2    2    0
+ -5  NORMZ       1    2    3    0
+ -5  ALL         1    2    0    0    1ALL
  -1        22 0.00000E+00-1.00000E+00 0.00000E+00
  -1        24 0.00000E+00-7.07107E-01 7.07107E-01
  -1        25 0.00000E+00-1.00000E+00 0.00000E+00
@@ -149,7 +149,7 @@
  -5  DFDNFIL     1    1    2    0
  -1        22 0.00000E+00 0.00000E+00
  -1        24 0.00000E+00 0.00000E+00
- -1        25-9.33710E-04-1.00000E+00
+ -1        25-9.33711E-04-1.00000E+00
  -1        27 0.00000E+00 0.00000E+00
  -1        28 0.00000E+00 0.00000E+00
  -1        30 0.00000E+00 0.00000E+00

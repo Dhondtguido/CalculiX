@@ -85,18 +85,6 @@
  *  [in] cstressini	Lagrange multiplier at start of the increment
  *  [in] bp_old		old friction bounds
  *  [in] iflag_fric	flag indicating if iwan friction model is used
- *  [in] nboun2            number of transformed SPCs
- *  [in] ndirboun2		(i) direction of transformed SPC i 
- *  [in] nodeboun2         (i) node of transformed SPC i
- *  [in] xboun2            (i) value of transformed SPC i
- *  [in] nmpc2		number of transformed mpcs
- *  [in] ipompc2           (i) pointer to nodempc and coeffmpc for transformed MPC i
- *  [in] nodempc2          nodes and directions of transformed MPCs
- *  [in] coefmpc2          coefficients of transformed MPCs
- *  [in] ikboun2           sorted dofs idof=8*(node-1)+dir for transformed SPCs
- *  [in] ilboun2           transformed SPC numbers for sorted dofs
- *  [in] ikmpc2 		sorted dofs idof=8*(node-1)+dir for transformed MPCs
- *  [in] ilmpc2		transformed SPC numbers for sorted dofs
  *  [in] nslavspc		(2*i) pointer to islavspc...
  *  [in] islavspc         ... which stores SPCs for slave node i
  *  [in] nsspc            number of SPC for slave nodes
@@ -106,9 +94,6 @@
  *  [in] nslavspc2	(2*i) pointer to islavspc2...
  *  [in] islavspc2         ... which stores transformed SPCs for slave node i
  *  [in] nsspc2            number of transformed SPC for slave nodes
- *  [in] nslavmpc2	(2*i) pointer to islavmpc2...
- *  [in] islavmpc2	... which stores transformed MPCs for slave node i
- *  [in] nsmpc2		number of transformed MPC for slave nodes 
  *  [in] nmastspc		(2*i) pointer to imastspc...
  *  [in] imastspc         ... which stores SPCs for master node i
  *  [in] nmspc            number of SPC for master nodes
@@ -151,7 +136,6 @@
  *  [in] lambdaiwanini    Lagrange multiplier splitted to Iwan elements at start of increment
  *  [in] bet		parameter used in alpha-method
  *  [in]  iflagdualquad   flag indicating what mortar contact is used (=1 quad-lin, =2 quad-quad, =3 PG quad-lin, =4 PG quad-quad)
- *  [in]  labmpc2
  *  [in,out]  cfsinitil \f$ \tilde{\Phi}_{c,j}\f$ contact forces from last increment, needed for dynamic calculations  
  */
 
@@ -180,15 +164,13 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 		   double *bp_old,ITG *iflag_fric,ITG *nk,ITG *nboun,
 		   ITG *ndirboun,ITG *nodeboun,double *xboun,ITG *nmpc,
 		   ITG *ipompc,ITG *nodempc,double *coefmpc,ITG *ikboun,
-		   ITG *ilboun,ITG *ikmpc,ITG *ilmpc,ITG *nboun2,
-		   ITG *ndirboun2,ITG *nodeboun2,double *xboun2,ITG *nmpc2,
-		   ITG *ipompc2,ITG *nodempc2,double *coefmpc2,ITG *ikboun2,
-		   ITG *ilboun2,ITG *ikmpc2,ITG *ilmpc2,ITG *nslavspc,
+		   ITG *ilboun,ITG *ikmpc,ITG *ilmpc,
+		   ITG *nslavspc,
 		   ITG *islavspc,ITG *nsspc,ITG *nslavmpc,ITG *islavmpc,
 		   ITG *nsmpc,ITG *nslavspc2,ITG *islavspc2,ITG *nsspc2,
-		   ITG *nslavmpc2,ITG *islavmpc2,ITG *nsmpc2,ITG *nmastspc,
+		   ITG *nmastspc,
 		   ITG *imastspc,ITG *nmspc,ITG *nmastmpc,ITG *imastmpc,
-		   ITG *nmmpc,ITG *nmastmpc2,ITG *imastmpc2,ITG *nmmpc2,
+		   ITG *nmmpc,
 		   double *pslavdual,double *pslavdualpg,ITG *islavactdof,
 		   ITG *islavactdoftie,double *plicon,ITG *nplicon,ITG *npmat_,
 		   ITG *nelcon,double *dtime,ITG *islavnodeinv,double **Bdp,
@@ -200,32 +182,29 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 		   double **Dpgdtilp,ITG **irowdpgtilp,ITG *jqdpgtil,
 		   double **Bpgdtilp,ITG **irowbpgtilp,ITG *jqbpgtil,
 		   double *lambdaiwan,double *lambdaiwanini,double *bet,
-		   ITG *iflagdualquad,char *labmpc2,double *cfsinitil,
+		   ITG *iflagdualquad,double *cfsinitil,
 		   double *reltime,ITG *ithermal,double *plkcon,ITG *nplkcon){
   
-  ITG i,j,k,ntrimax,*nx=NULL,*ny=NULL,*nz=NULL,nintpoint=0,calcul_fn,calcul_f,
+  ITG i,j,k,ntrimax,*nx=NULL,*ny=NULL,*nz=NULL,nintpoint=0,
     nzsbd,*irowbd=NULL,*irowdd=NULL,*irowddinv=NULL,*irowddtil=NULL,
     *irowbdtil=NULL,nzs2,iwan,*irowddtil2=NULL,*irowbdtil2=NULL,l,nstart,kflag,
     ntri,ii,regmode,derivmode,regmodet=1,*irowc=NULL,*imastsurf=NULL,
-    num_cpus=1,*irow=NULL,*irowb=NULL,*irowbhelp=NULL,*irowd=NULL,
+    *irow=NULL,*irowb=NULL,*irowbhelp=NULL,*irowd=NULL,
     *irowdtil=NULL,*irowbtil=NULL,*irowbpg=NULL,*irowdpg=NULL,*irowdpgtil=NULL,
     *irowbpgtil=NULL,nacti,ninacti,nnogap,nstick,nnolm,nnoslav,nzsbdtil,
-    nzsbdtil2,debug;
+    nzsbdtil2;
     
-  double *xo=NULL,*yo=NULL,*zo=NULL,*x=NULL,*y=NULL,*z=NULL,*aubd=NULL,
+  double *xo=NULL,*yo=NULL,*zo=NULL,*x=NULL,*y=NULL,*z=NULL,*aubd=NULL,alpha,
     *cstresstil=NULL,scal,*audd=NULL,*auddtil=NULL,*auddtil2=NULL,
     *auddinv=NULL,*auc=NULL,*pmastsurf=NULL,*gapmints=NULL,*au=NULL,
     *pslavsurf=NULL,*aubdtil=NULL,*aubdtil2=NULL,*Bd=NULL,*Bdhelp=NULL,
     *Dd=NULL,*Ddtil=NULL,*Bdtil=NULL,*Bpgd=NULL,*Dpgd=NULL,*Dpgdtil=NULL,
-    *Bpgdtil=NULL,*areaslav=NULL,mu,fkninv,fktauinv,p0,beta,*rs=NULL,*rsb=NULL,
-    alpha,*fmpc=NULL;
+    *Bpgdtil=NULL,*areaslav=NULL,mu,fkninv,fktauinv,p0,beta,*rs=NULL,*rsb=NULL;
   
   double aninvloc,gnc,xlnold,lt[2],ltold;
   
   double *u_old=NULL,*u_oldt=NULL;
   ITG mt=mi[1]+1,nodes,jj;
-
-  debug=0;
   
   irow=*irowp;au=*aup;auc=*aucp;irowc=*irowcp;
   aubd=*aubdp;irowbd=*irowbdp;
@@ -246,7 +225,6 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
   
   NNEW(rs,double,(mt)**nk);
   NNEW(rsb,double,neq[1]);
-  if(debug==1)printf(" contactmortar: start\n");
   
   /* create field islavactdof;
      coupling the equation degrees of freedom with the corresponding
@@ -309,7 +287,6 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 			     areaslav,set,nset,istartset,iendset,ialset,
 			     islavact,&ifree,tietol));
 	  
-      if(debug==1)printf("\tFrist Active Set : %" ITGFORMAT " nodes\n",ifree);	    
       SFREE(xo);SFREE(yo);SFREE(zo);SFREE(x);SFREE(y);SFREE(z);
       SFREE(nx);SFREE(ny);SFREE(nz);SFREE(areaslav);	
     }
@@ -329,10 +306,6 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 	}	    
       }	
     }
-      
-    if(debug==1)printf("\tcm: N_Activ: %" ITGFORMAT "\t N_stick: %" ITGFORMAT
-	   "\tN_Inactiv: %" ITGFORMAT "\t N_nogap: %" ITGFORMAT
-	   "\t N_nolm %" ITGFORMAT "\n",nacti,nstick,ninacti,nnogap,nnolm);
       
     /* calculating the normals,tangents in the nodes of the slave
        surface */
@@ -394,8 +367,6 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 	}	    
       }	
     }
-    if(debug==1)printf("\tnumber of slave integration points=%" ITGFORMAT "\n",
-	   nintpoint);	
     if (nintpoint!=0){	    
       RENEW(imastsurf,ITG,nintpoint);	
     }else{	    
@@ -438,10 +409,6 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 	}	 
       }	 	
     }
-    if(debug==1)printf("\tcm: N_Activ: %" ITGFORMAT "\t N_stick: %" ITGFORMAT
-	   "\tN_Inactiv: %" ITGFORMAT "\t N_nogap: %" ITGFORMAT
-	   "\t N_nolm: %" ITGFORMAT "\n",nacti,nstick,ninacti,nnogap,
-	   nnolm);	      
       
     /* calculating the coeffs of dual basis functions (Sitzmann, Chapter 3.3.) 
        and redistribute contributions of nogap
@@ -641,10 +608,6 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
   }
   if(*iit==1){
     SFREE(u_old);SFREE(u_oldt);SFREE(cstresstil);}
-  if(debug==1)printf("\tcm: N_Activ: %" ITGFORMAT "\t N_stick: %" ITGFORMAT
-	 "\tN_Inactiv: %" ITGFORMAT "\t N_nogap: %" ITGFORMAT
-	 "\t N_nolm: %" ITGFORMAT " N_noslav: %" ITGFORMAT "\n",
-	 nacti,nstick,ninacti,nnogap,nnolm,nnoslav);      
   
   /* modifying the stiffnes matrix K with the coupling matrices;the
      expanded (symmetric) matrix is described in asymmetric form by
@@ -739,6 +702,5 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
   
   SFREE(rs);SFREE(rsb);
   fflush(stdout);
-  if(debug==1)printf(" contactmortar: end\n\n");
   return;
 }

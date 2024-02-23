@@ -16,10 +16,10 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
-      subroutine multistages(nkon,set,istartset,iendset,
+      subroutine multistages(set,istartset,iendset,
      &     ialset,nset,tieset,tietol,co,nk,ipompc,nodempc,
-     &     coefmpc,nmpc,nmpc_,ikmpc,ilmpc,mpcfree,xind,yind,ics,nx,ny,
-     &     xind0,yind0,ncs_,cs,labmpc,ntie,mcs,rcscg,rcs0cg,zcscg,
+     &     coefmpc,nmpc,ikmpc,ilmpc,mpcfree,xind,yind,ics,nx,ny,
+     &     xind0,yind0,cs,labmpc,ntie,mcs,rcscg,rcs0cg,zcscg,
      &     zcs0cg,nrcg,nzcg,jcs,kontri,straight,ne,ipkon,kon,
      &     lakon,lcs,ifacetet,inodface,jobnamec,nmethod)
 !     
@@ -40,16 +40,16 @@
       character*256 fn
 !     
       integer istartset(*),iendset(*),ialset(*),ipompc(*),nodempc(3,*),
-     &     nset,i,j,k,nk,nmpc,nmpc_,mpcfree,ics(*),l,ikmpc(*),ilmpc(*),
-     &     lcs(*),kflag,ncsnodes,ncs_,mcs,ntie,nrcg(*),nzcg(*),jcs(*),
+     &     nset,i,j,k,nk,nmpc,mpcfree,ics(*),l,ikmpc(*),ilmpc(*),
+     &     lcs(*),kflag,ncsnodes,mcs,ntie,nrcg(*),nzcg(*),jcs(*),
      &     kontri(3,*),ne,ipkon(*),kon(*),ifacetet(*),inodface(*),
-     &     nodel(5),noder(5),nkon,indexe,nope,ipos,nelem,ilen,
+     &     nodel(5),noder(5),indexe,nope,ipos,nelem,ilen,
      &     indcs,node_cycle,itemp(5),nx(*),ny(*),netri,noder0,
      &     nodef(8),nterms,kseg,k2,ndir,idof,number,id,mpcfreeold,
      &     lathyp(3,6),inum,ier,icount,imcs,nmethod
 !     
       real*8 tolloc,co(3,* ),coefmpc(*),xind(*),yind(*),xind0(*),
-     &     yind0(*),dd,xap,yap,zap,tietol(4,*),cs(17,*),xp,yp,
+     &     yind0(*),dd,xap,yap,zap,tietol(4,*),cs(17,*),xdep,ydep,
      &     phi,rcscg(*),rcs0cg(*),zcscg(*),zcs0cg(*),zp,rp,scale,
      &     straight(9,*),T(3,3),csab(7),ratio(8),Tinv(3,3),
      &     coord(3),pnod(3),T2D(3,3),phi0,al(3,3),ar(3,3),
@@ -323,7 +323,7 @@
               pnod(2)=co(2,ialset(j))-csab(2)
               pnod(3)=co(3,ialset(j))-csab(3)
               call Mprod(T,pnod,coord,3)
-              xind(l)=coord(2)
+              xind(l)=coord(1)
               yind(l)=datan2(-coord(3),coord(2))
               nx(l)=l
               ny(l)=l
@@ -396,12 +396,11 @@
 !     copying the local coordinates to the local variables
 !     
             if (cylindrical) then
-              yp=pnod(1)
-              zp=phi
+              xdep=pnod(1)
+              ydep=datan2(-pnod(3),pnod(2))
             else
-              xp=pnod(1)
-              yp=pnod(2)
-              zp=pnod(3)
+              xdep=pnod(2)
+              ydep=pnod(3)
             endif
             noder0=nk+1
 !     
@@ -417,7 +416,7 @@
             ier=0
             call linkdissimilar(co,csab,
      &           rcscg,rcs0cg,zcscg,zcs0cg,nrcg,nzcg,
-     &           straight,nodef,ratio,nterms,yp,zp,netri,
+     &           straight,nodef,ratio,nterms,xdep,ydep,netri,
      &           noder0,ifacetet,inodface,ialset(j),
      &           T(1,1),T(1,2),T(1,3),ier,multistage,icount)
 !     

@@ -2763,30 +2763,19 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		      &auddinv,irowtloc,jqtloc,autloc,irowtlocinv,jqtlocinv,
 		      autlocinv,mi,ipe,ime,tietol,&iflagact,cstress,cstressini,
 		      bp,&iflag_fric,nk,nboun,ndirboun,nodeboun,xbounact,nmpc,
-		      ipompc,nodempc,coefmpc,ikboun,ilboun,ikmpc,ilmpc,&nboun2,
-		      ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,
-		      coefmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,nslavspc,islavspc,
+		      ipompc,nodempc,coefmpc,ikboun,ilboun,ikmpc,ilmpc,
+		      nslavspc,islavspc,
 		      &nsspc,nslavmpc,islavmpc,&nsmpc,nslavspc2,islavspc2,
-		      &nsspc2,nslavmpc2,islavmpc2,&nsmpc2,nmastspc,imastspc,
-		      &nmspc,nmastmpc,imastmpc,&nmmpc,nmastmpc2,imastmpc2,
-		      &nmmpc2,pslavdual,pslavdualpg,islavactdof,islavactdoftie,
+		      &nsspc2,nmastspc,imastspc,
+		      &nmspc,nmastmpc,imastmpc,&nmmpc,
+		      pslavdual,pslavdualpg,islavactdof,islavactdoftie,
 		      plicon,nplicon,npmat_,nelcon,&dtime,islavnodeinv,&Bd,
 		      &irowb,jqb,&Bdhelp,&irowbhelp,jqbhelp,&Dd,&irowd,jqd,
 		      &Ddtil,&irowdtil,jqdtil,&Bdtil,&irowbtil,jqbtil,&Bpgd,
 		      &irowbpg,jqbpg,&Dpgd,&irowdpg,jqdpg,&Dpgdtil,&irowdpgtil,
 		      jqdpgtil,&Bpgdtil,&irowbpgtil,jqbpgtil,lambdaiwan,
-		      lambdaiwanini,&bet,&iflagdualquad,labmpc2,cfsini,
+		      lambdaiwanini,&bet,&iflagdualquad,cfsini,
 		      &reltime,ithermal,plkcon,nplkcon);
-	
-	/*	for(k=0;k<neq[1];++k){printf("nactdofinv=%" ITGFORMAT ",%" ITGFORMAT ",%" ITGFORMAT "\n",k,(ITG)((double)nactdofinv[k]/mt)+1,nactdofinv[k]-mt*((ITG)((double)nactdofinv[k]/mt)));}
-
-	printf("neq[1]=%d,nzs[1]=%d\n",neq[1],nzs[1]);
-	for(k=0;k<neq[1];++k){printf("f=%" ITGFORMAT ",%f\n",k,f[k]);}
-	for(k=0;k<neq[1];++k){printf("fext=%" ITGFORMAT ",%f\n",k,fext[k]);}
-	for(k=0;k<neq[1];++k){printf("ad=%" ITGFORMAT ",%f\n",k,ad[k]);}
-	for(k=0;k<neq[1]+1;++k){printf("jq=%" ITGFORMAT ",%d\n",k,jq[k]);}
-	for(k=0;k<nzs[1];++k){printf("irow=%" ITGFORMAT ",%d\n",k,irow[k]);}
-	for(k=0;k<nzs[1];++k){printf("au=%" ITGFORMAT ",%f\n",k,au[k]);}*/
 	  
 	nzs[0]=nzs[1];
 	nzs[2]=nzs[1];

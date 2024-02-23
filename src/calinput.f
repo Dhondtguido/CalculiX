@@ -1335,12 +1335,12 @@ c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
 !     
 !     New multistage Routine Call
 !     
-      call multistages(nkon,set,istartset,iendset,
+      call multistages(set,istartset,iendset,
      &     ialset,nset,tieset,tietol,co,nk,ipompc,nodempc,
-     &     coefmpc,nmpc,nmpc_,ikmpc,ilmpc,mpcfree,dcs(lprev+1),
+     &     coefmpc,nmpc,ikmpc,ilmpc,mpcfree,dcs(lprev+1),
      &     dcs(ncs_+lprev+1),ics(lprev+1),ics(ncs_+lprev+1),
      &     ics(2*ncs_+lprev+1),dcs(2*ncs_+lprev+1),
-     &     dcs(3*ncs_+lprev+1),ncs_,cs,labmpc,ntie,mcs,
+     &     dcs(3*ncs_+lprev+1),cs,labmpc,ntie,mcs,
      &     dcs(4*ncs_+1),dcs(6*ncs_+1),dcs(8*ncs_+1),dcs(10*ncs_+1),
      &     ics(3*ncs_+1),ics(5*ncs_+1),ics(7*ncs_+1),ics(8*ncs_+1),
      &     dcs(12*ncs_+1),ne,ipkon,kon,lakon,ics(14*ncs_+1),

@@ -1,12 +1,12 @@
     1C
     1UModel: beam     Date: 10-Mar-1998                                 
     1UUSER                                                              
-    1UDATE              21.march.2023                                   
-    1UTIME              19:00:48                                        
+    1UDATE              23.february.2024                                
+    1UTIME              17:09:09                                        
     1UHOST                                                              
     1UPGM               CalculiX                                        
     1UVERSION           Version DEVELOPMENT                             
-    1UCOMPILETIME       Tue Mar 21 18:59:45 CET 2023                    
+    1UCOMPILETIME       Fri Feb 23 17:06:32 CET 2024                    
     1UDIR                                                               
     1UDBN                                                               
     1UMAT    1EL                                                        
@@ -2972,10 +2972,10 @@
     1PSTEP                         1           1           2          
   100CL  111 0.00000E+00          81                     3   11           1
  -4  NORM        4    1
- -5  NORMX       1    2	 1    0
- -5  NORMY       1    2	 2    0
- -5  NORMZ       1    2	 3    0
- -5  ALL         1    2	 0    0    1ALL
+ -5  NORMX       1    2    1    0
+ -5  NORMY       1    2    2    0
+ -5  NORMZ       1    2    3    0
+ -5  ALL         1    2    0    0    1ALL
  -1         1 0.00000E+00 0.00000E+00 0.00000E+00
  -1         2 0.00000E+00 0.00000E+00 0.00000E+00
  -1         3 0.00000E+00 0.00000E+00 0.00000E+00

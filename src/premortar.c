@@ -305,7 +305,7 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
   // check for coupled thermo-mechanical calculation
   
   if(ithermal[0]>1){
-    printf("\tprecontactmortar: coupled thermo-mechanical calculations NOT");
+    printf("\tpremortar: coupled thermo-mechanical calculations NOT");
     printf("supported yet!\n \tPlease use surface-to-surface penalty contact");
     printf("instead.\n\n STOP!\n");
     fflush(stdout);
@@ -490,7 +490,7 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
 	  
 	      // mid node found with extra not supported mpc ->error
 	  
-	      printf(" precontactmortar: Problem with slave mid node  \n\n");
+	      printf(" premortar: Problem with slave mid node  \n\n");
 	      printf(" *ERROR: Slave mid node %"ITGFORMAT" has",node); 
 	      printf(" additional MPC which is not a directional blocking ");
 	      printf("MPC or a 1-to-1 cyclic symmetry MPC.  \n");
@@ -507,7 +507,7 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
       DMEMSET(slavnor,0,3*nslavnode[*ntie],0.);
       DMEMSET(slavtan,0,6*nslavnode[*ntie],0.);
     } 
-    if(debug==1)printf(" precontactmortar: MPC-check OK\n\n");
+    if(debug==1)printf(" premortar: MPC-check OK\n\n");
   }
     
   /* fix for quadratic FE */
@@ -525,7 +525,7 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
   /* calculating the internal forces and tangent stiffness using
      modified shape functions for quadratic elements */
   
-  if(debug==1)printf(" precontactmortar: call results\n");
+  if(debug==1)printf(" premortar: call results\n");
   results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,
         elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
         ielorien,norien,orab,ntmat_,t0,t1act,ithermal,
@@ -550,7 +550,7 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
         labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
 	intscheme,physcon);
   
-  if(debug==1)printf(" precontactmortar: results_dstil finished\n");
+  if(debug==1)printf(" premortar: results_dstil finished\n");
   fflush(stdout);
   
   SFREE(v);SFREE(stx);SFREE(fn);SFREE(inum);SFREE(fmpc2);
@@ -569,7 +569,7 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
   for(i=0;i<nzs[1];i++){
     irowtil[i]=irow[i];}
   
-  if(debug==1)printf(" precontactmortar: call mafillsmmain\n");
+  if(debug==1)printf(" premortar: call mafillsmmain\n");
   fflush(stdout);
   
   /* calculating the external forces fext and stiffness matrix au/ad using
@@ -617,7 +617,7 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
 	       mscalmethod,set,nset,islavelinv,autloc,irowtloc,jqtloc,
 	       &mortartrafoflag);
   
-  if(debug==1)printf(" precontactmortar: mafillsmmain_dstil finished\n");
+  if(debug==1)printf(" premortar: mafillsmmain_dstil finished\n");
   fflush(stdout);
   
   for(i=0;i<neq[1];i++){
@@ -635,7 +635,7 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
   NNEW(accoldtil,double,mt**nk);
   NNEW(btil,double,neq[1]);
   
-  if(debug==1)printf(" precontactmortar: call calcresidual\n");
+  if(debug==1)printf(" premortar: call calcresidual\n");
 
   /* calculating the residual b */
   
@@ -645,7 +645,7 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
 	       f_cs,mi,nzs,nasym,idamping,veoldtil,adctil,auctil,cvinitil,cvtil,
 	       alpham,num_cpus);
   
-  if(debug==1)printf(" precontactmortar: calcresidual finished\n");
+  if(debug==1)printf(" premortar: calcresidual finished\n");
   fflush(stdout);  
 	
   for(k=0;k<neq[1];k++){
