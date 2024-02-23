@@ -66,30 +66,6 @@
  *  [out] f_cs            contact forces for active degrees of freedom
  *  [out] f_cm            not used any more
  *  [out] bp		current friction bound
- *  [in] nboun2            number of transformed SPCs
- *  [in] ndirboun2	(i) direction of transformed SPC i 
- *  [in] nodeboun2        (i) node of transformed SPC i
- *  [in] xboun2           (i) value of transformed SPC i
- *  [in] nmpc2		number of transformed mpcs
- *  [in] ipompc2          (i) pointer to nodempc and coeffmpc for transformed MPC i
- *  [in] nodempc2         nodes and directions of transformed MPCs
- *  [in] coefmpc2         coefficients of transformed MPCs
- *  [in] ikboun2          sorted dofs idof=8*(node-1)+dir for transformed SPCs
- *  [in] ilboun2          transformed SPC numbers for sorted dofs
- *  [in] ikmpc2 		sorted dofs idof=8*(node-1)+dir for transformed MPCs
- *  [in] ilmpc2		transformed SPC numbers for sorted dofs 
- *  [in] nslavspc2	(2*i) pointer to islavspc2...
- *  [in] islavspc2         ... which stores transformed SPCs for slave node i
- *  [in] nsspc2            number of transformed SPC for slave nodes
- *  [in] nslavmpc2	(2*i) pointer to islavmpc2...
- *  [in] islavmpc2	... which stores transformed MPCs for slave node i
- *  [in] nsmpc2		number of transformed MPC for slave nodes 
- *  [in] nmastspc		(2*i) pointer to imastspc...
- *  [in] imastspc         ... which stores SPCs for master node i
- *  [in] nmspc            number of SPC for master nodes
- *  [in] nmastmpc		(2*i) pointer to imastmpc...
- *  [in] imastmpc		... which stores MPCs for master node i
- *  [in] nmmpc		number of MPC for master nodes 
  *  [out] cfs 		contact force 
  *  [out] cfm 		not used any more
  *  [in] islavnodeinv     (i) slave node index for node i
@@ -115,7 +91,6 @@
  *  [in] ithermal         thermal method
  *  [in] iperturb		geometrical method
  *  [in] labmpc           labels of MPCs
- *  [in] labmpc2		labels of transformed MPCs
  *  [in] nk2		number or generated points needed for transformed SPCs
  */
 
@@ -128,15 +103,12 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
 		  double *slavtan,ITG *nactdof,ITG *iflagact,double *cstress,
 		  double *cstressini,ITG *mi,double *cdisp,double *f_cs,
 		  double *f_cm,ITG *iit,ITG *iinc,double *vold,double *vini,
-		  double* bp,ITG *nk,ITG *nboun2,ITG *ndirboun2,
-		  ITG *nodeboun2,double *xboun2,ITG *nmpc2,ITG *ipompc2,
-		  ITG *nodempc2,double *coefmpc2,ITG *ikboun2,ITG *ilboun2,
-		  ITG *ikmpc2,ITG *ilmpc2,ITG *nmpc,ITG *ipompc,ITG *nodempc,
-		  double *coefmpc,ITG *ikboun,ITG *ilboun,ITG *ikmpc,
-		  ITG *ilmpc,ITG *nslavspc2,ITG *islavspc2,ITG *nsspc2,
-		  ITG *nslavmpc2,ITG *islavmpc2,ITG *nsmpc2,ITG *nmastspc,
-		  ITG *imastspc,ITG *nmspc,ITG *nmastmpc,ITG *imastmpc,
-		  ITG *nmmpc,char *tieset,double  *elcon,double *tietol,
+		  double* bp,ITG *nk,ITG *nboun,ITG *ndirboun,
+		  ITG *nodeboun,double *xboun,
+		  ITG *nmpc,ITG *ipompc,ITG *nodempc,
+		  double *coefmpc,
+		  ITG *nslavmpc,ITG *islavmpc,
+		  char *tieset,double  *elcon,double *tietol,
 		  ITG *ncmat_,ITG *ntmat_,double *plicon,ITG *nplicon,
 		  ITG *npmat_,ITG *nelcon,double *dtime,double *cfs,
 		  double *cfm,ITG *islavnodeinv,double *Bd,ITG *irowb,
@@ -146,33 +118,31 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
 		  double *Dpgd,ITG *irowdpg,ITG *jqdpg,double *lambdaiwan,
 		  double *lambdaiwanini,ITG *nmethod,double *bet,
 		  ITG *iflagdualquad,ITG *ithermal,ITG *iperturb,
-		  char *labmpc,char *labmpc2,double *cam,double *veold,
+		  char *labmpc,double *cam,double *veold,
 		  double *accold,double *gam,ITG *nk2,double *cfsini,
 		  double *cfstil,double *plkcon,ITG *nplkcon,char *filab,
 		  double *f,double *fn,double *qa,ITG *nprint,char *prlab,
 		  double *xforc,ITG *nforc){
   
   ITG i,j,l,jj,k,idof1,idof2,idof3,nodes,mt=mi[1]+1,nstick=0,nslip=0,ninacti=0,
-    nnogap=0,nolm=0,ndiverg,nhelp,debug,idof,node2,dirind,dirdep,index,ist,
-    yielded,iout,num_cpus=1,keepset,derivmode,regmode,node_max_ncf_n,
-    node_max_ncf_t[2],ndof,regmodet,iwan,calcul_fn,calcul_f;
+    nnogap=0,nolm=0,ndiverg,nhelp,idof,node2,dirind,dirdep,index,ist,
+    yielded,iout,num_cpus=1,keepset,derivmode,regmode,
+    ndof,regmodet,iwan,calcul_fn,calcul_f;
   
   double aux,stressnormal,ddispnormal,*unitmatrix=NULL,atau2,constant=1.E10,
     constantn=1.E10,constantt=1.E10,stresst[2],stressinit[2],stresstildet[2],
-    ddispt[2],disp_totalnormal,disp_tildet[2],bpold,nw_t=0.0,*du=NULL,f_csn,
-    f_cmn,ch,coefdep,disp_t[2],disp_tildeto[2],scal,w_t[3],*bhat2=NULL,n[3],
+    ddispt[2],disp_tildet[2],bpold,nw_t=0.0,*du=NULL,
+    ch,coefdep,disp_t[2],disp_tildeto[2],scal,w_t[3],*bhat2=NULL,n[3],
     t[6],*fmpc=NULL,lm_t1_av,lm_t2_av,*rc=NULL,f_cs_tot[4],f_cm_tot[4],
     *vectornull=NULL,*u_oldt=NULL,resreg[2],rslip[6],ltslip[6],ltu[2],
     resreg2[2],*cstress2=NULL,*cstresstil=NULL,*cstressini2=NULL,*u_old=NULL,
-    aninvloc,atauinvloc,gnc,gtc[2],*cold=NULL,*cold2=NULL,disp_t2[2],ln_old,
+    aninvloc,atauinvloc,gnc,gtc[2],*cold=NULL,*cold2=NULL,ln_old,
     ncf_n,max_ncf_n,ncf_t[2],max_ncf_t[2],mu,mumax,p0,beta,*b2=NULL,alpha;
   
-  debug=0;
   alpha=1-2*sqrt(*bet);
   keepset=0;
   mumax=-1.0;
   max_ncf_n=-1.0; max_ncf_t[0]=-1.0; max_ncf_t[1]=-1.0;
-  node_max_ncf_n=0;node_max_ncf_t[0]=0;node_max_ncf_t[1]=0;
   lm_t1_av=0;lm_t2_av=0;
   *iflagact=0;
   
@@ -221,8 +191,8 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
   /* fill in missing results from SPCs/MPCs */
   
   FORTRAN(resultsini_mortar,(nk,b2,ithermal,iperturb,nactdof,&iout,vold,b,
-			     nodeboun2,ndirboun2,xboun2,nboun2,ipompc2,
-			     nodempc2,coefmpc2,labmpc2,nmpc2,nmethod,cam,bet,
+			     nodeboun,ndirboun,xboun,nboun,ipompc,
+			     nodempc,coefmpc,labmpc,nmpc,nmethod,cam,bet,
 			     gam,dtime,mi));
   
   /* transformation delta tildeu^q->delta u:
@@ -236,16 +206,6 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
 	idof2=mt*irowtloc[jj]-3+l;
 	bhat2[idof2]+=autloc[jj]*b2[idof1];
       }
-      if(debug==1){
-	printf("node %d b2 %e du %e u %e \n",i,b2[mt*(i+1)-4],bhat2[mt*(i+1)-4],
-	       vold[mt*(i+1)-4]);
-	printf("node %d b2 %e du %e u %e \n",i,b2[mt*(i+1)-3],bhat2[mt*(i+1)-3],
-	       vold[mt*(i+1)-3]); 
-	printf("node %d b2 %e du %e u %e \n",i,b2[mt*(i+1)-2],bhat2[mt*(i+1)-2],
-	       vold[mt*(i+1)-2]);
-	printf("node %d b2 %e du %e u %e \n",i,b2[mt*(i+1)-1],bhat2[mt*(i+1)-1],
-	       vold[mt*(i+1)-1]);
-      } 
     }	
   }
   
@@ -358,15 +318,15 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
 	    cstress[mt*j+k]=cstress2[idof];	  	       	 	  
 	  }else{	    	  	    
 	    cstress[mt*j+k]=0.0;	     	  	    
-	    for(jj=nslavmpc2[2*(j)];jj<nslavmpc2[2*(j)+1];jj++){
-	      ist=islavmpc2[2*jj];            	    	      
-	      dirdep=nodempc2[3*(ist-1)+1];            	    	      
-	      coefdep=coefmpc2[ist-1];            	    	      
-	      index=nodempc2[3*(ist-1)+2];	     	    	      
+	    for(jj=nslavmpc[2*(j)];jj<nslavmpc[2*(j)+1];jj++){
+	      ist=islavmpc[2*jj];            	    	      
+	      dirdep=nodempc[3*(ist-1)+1];            	    	      
+	      coefdep=coefmpc[ist-1];            	    	      
+	      index=nodempc[3*(ist-1)+2];	     	    	      
 	      if(dirdep==k+1){               	      		
 		while(index!=0){               				  
-		  dirind=nodempc2[3*(index-1)+1];
-		  node2=nodempc2[3*(index-1)];
+		  dirind=nodempc[3*(index-1)+1];
+		  node2=nodempc[3*(index-1)];
 		  ch=0.0;
 		  if(node2>*nk){
 		    idof=-1;
@@ -377,8 +337,8 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
 		    ch=cstress2[idof];
 		  } 	       
 		  cstress[mt*j+dirdep-1]=cstress[mt*j+dirdep-1]-
-		    coefmpc2[index-1]*ch/coefdep;
-		  index=nodempc2[3*(index-1)+2];	       	      		
+		    coefmpc[index-1]*ch/coefdep;
+		  index=nodempc[3*(index-1)+2];	       	      		
 		}	      	    	      
 	      }	     	  	    
 	    }	     	     	  	   		  
@@ -443,9 +403,6 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
 	  du[3*j+2]*slavtan[6*j+2];	
 	ddispt[1]=du[3*j+0]*slavtan[6*j+3]+du[3*j+1]*slavtan[6*j+4]+
 	  du[3*j+2]*slavtan[6*j+5];			
-	disp_totalnormal=(du[3*j+0]+u_oldt[j*3])*slavnor[3*j]
-	  +(du[3*j+1]+u_oldt[j*3+1])*slavnor[3*j+1]
-	  +(du[3*j+2]+u_oldt[j*3+2])*slavnor[3*j+2];	  
 	disp_tildet[0]=(du[3*j+0]+u_oldt[j*3])*slavtan[6*j]
 	  +(du[3*j+1]+u_oldt[j*3+1])*slavtan[6*j+1]
 	  +(du[3*j+2]+u_oldt[j*3+2])*slavtan[6*j+2];
@@ -514,7 +471,7 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
 					    &atau2,resreg2,&derivmode,&regmode,
 					    lambdaiwan,lambdaiwanini,&jj,n,t,
 					    &mu,rslip,ltslip,ltu,&yielded,
-					    &nodes,&debug,&iwan,ddispt));
+					    &nodes,&iwan,ddispt));
 	  bpold=max(0.0,bp[j]);
 	  
 	  // calc resreg
@@ -524,11 +481,8 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
 					    &atau2,resreg,&derivmode,&regmode,
 					    lambdaiwan,lambdaiwanini,&jj,n,t,
 					    &mu,rslip,ltslip,ltu,&yielded,
-					    &nodes,&debug,&iwan,ddispt));
+					    &nodes,&iwan,ddispt));
 	}
-	
-	disp_t2[0]=stressinit[0]+constantt*disp_tildet[0];
-	disp_t2[1]=stressinit[1]+constantt*disp_tildet[1];
 	
 	w_t[0]=stresst[0]+constantt*(disp_tildet[0]-gtc[0]);	
 	w_t[1]=stresst[1]+constantt*(disp_tildet[1]-gtc[1]);		
@@ -569,61 +523,11 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
 	if( ncf_n<0.0)ncf_n=-ncf_n;
 	if( ncf_t[0]<0.0)ncf_t[0]=-ncf_t[0];
 	if( ncf_t[1]<0.0)ncf_t[1]=-ncf_t[1];
-	if(ncf_n>max_ncf_n && ndof>0 && islavact[j]>-1){max_ncf_n=ncf_n;
-	  node_max_ncf_n=nodes;}
+	if(ncf_n>max_ncf_n && ndof>0 && islavact[j]>-1){max_ncf_n=ncf_n;}
 	if(ncf_t[0]>max_ncf_t[0] && ndof>0 && islavact[j]>-1){
-	  max_ncf_t[0]=ncf_t[0];node_max_ncf_t[0]=nodes;}
+	  max_ncf_t[0]=ncf_t[0];}
 	if(ncf_t[1]>max_ncf_t[1] && ndof>0 && islavact[j]>-1){
-	  max_ncf_t[1]=ncf_t[1];node_max_ncf_t[1]=nodes;}	
-	if(debug==1  ){  
-	  printf("u(%" ITGFORMAT "): %" ITGFORMAT " %" ITGFORMAT " %"
-		 ITGFORMAT " act %" ITGFORMAT " %" ITGFORMAT "\n",nodes,
-		 idof1+1,idof2+1,idof3+1,islavact[j],yielded);
-	  if(regmodet==2){
-	    printf("\t resreg2-lmt %e %e  \n",resreg2[0]-stresst[0],
-		   resreg2[1]-stresst[1]);
-	  }
-	  printf("\t resreg %e %e bp %e \n",resreg[0],resreg[1],bp[j]);
-	  printf("\t lmtilde %e %e utilde %e %e gtc %e %e \n",stresstildet[0],
-		 stresstildet[1],disp_tildet[0],disp_tildet[1],gtc[0],gtc[1]);
-	  printf("\t w_t2 %e %e \n",disp_t2[0],disp_t2[1]);
-	  printf("\t uhat(%" ITGFORMAT ") : %e %e %e \n",nodes,du[3*j+0],
-		 du[3*j+1],du[3*j+2]);
-	  printf("\t u2(%" ITGFORMAT "): %e  \n",nodes,ddispnormal);
-	  printf("\t u_tot2(%" ITGFORMAT "): %e %e %e \n",nodes,
-		 disp_totalnormal,disp_t[0],disp_t[1]);
-	  printf("\t cstress(%" ITGFORMAT "): %e %e %e,actif: %" ITGFORMAT
-		 "  \n",nodes,cstress[mt*j+0],cstress[mt*j+1],cstress[mt*j+2],
-		 islavact[j]);
-	  printf("\t cstresstil(%" ITGFORMAT "): %e %e %e\n",nodes,
-		 cstresstil[mt*j+0],cstresstil[mt*j+1],cstresstil[mt*j+2]);
-	  printf("\t lm(%" ITGFORMAT ")     : %e %e %e \n",nodes,
-		 stressnormal,stresst[0],stresst[1]);		
-	  printf("\t newton eq. n: %e=%e diff %e \n",
-		 ddispnormal-dgnc_old*stressnormal,
-		 gap[j]+gnc_old-dgnc_old*ln_old,
-		 ddispnormal-dgnc_old*stressnormal-
-		 (gap[j]+gnc_old-dgnc_old*ln_old));
-	  printf("\t u_n %e -dgnc_o*ln %e =gap %e +gnc_o %e -dgnc_o*lo %e\n",
-		 ddispnormal,dgnc_old*stressnormal,gap[j],gnc_old,
-		 dgnc_old*ln_old);
-	  printf("\t ln %e bp/c %e disp-gap %e gnc(ln) %e \n",stressnormal,
-		 ddispnormal-gap[j]-gnc,ddispnormal-gap[j],gnc);
-	  if(mu>1.E-10){
-	    printf("\t uh_t1= %e uh_t2= %e nuh_t= %e \n",disp_tildet[0],
-		   disp_tildet[1],sqrt(disp_tildet[0]*disp_tildet[0]+
-				       disp_tildet[1]*disp_tildet[1])) ;
-	    printf("\t w_t1= %e w_t2= %e nw_t= %e \n",w_t[0],w_t[1],nw_t);
-	    printf("\t ncf_n %e  ncf_t %e %e\n",ncf_n,ncf_t[0],ncf_t[1]);
-	    if(islavact[j]==1){
-	      printf("stick: nlmt %e < bp %e and utildetau-lmtildetau %e %e =0?\n",sqrt((stresst[0])*(stresst[0])+(stresst[1])*(stresst[1])),bp[j],disp_tildet[0]-gtc[0],disp_tildet[1]-gtc[1]);  
-	    }else if(islavact[j]==2){
-	      printf("slip: nlmt %e=bp %e and utildetau-lmtildetau %e %e >0? \n",sqrt((stresst[0])*(stresst[0])+(stresst[1])*(stresst[1])),bp[j],
-		     disp_tildet[0]-gtc[0],disp_tildet[1]-gtc[1]);    
-	    }
-	  }
-	}
-	debug=0;
+	  max_ncf_t[1]=ncf_t[1];}	
 	
 	if(keepset==0){
 	  if(mu>1.E-10){ //contact tie with friction	
@@ -827,18 +731,6 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
     }   
   }
   
-  if(debug==1){
-    if(keepset==1)printf("stressmortar_fric2: keep active set!!!\n");     
-  
-    printf("\n max_ncf_n %e node %" ITGFORMAT "\n",max_ncf_n,node_max_ncf_n);
-    printf(" max_ncf_t %e %e node %" ITGFORMAT " av %e\n",max_ncf_t[0],
-	   max_ncf_t[0]/((lm_t1_av+0.001)/(nstick+nslip+0.001)),
-	   node_max_ncf_t[0],((lm_t1_av+0.001)/(nstick+nslip+0.001)));
-    printf(" max_ncf_t %e %e node %" ITGFORMAT " av %e\n",max_ncf_t[1],
-	   max_ncf_t[1]/((lm_t2_av+0.001)/(nstick+nslip+0.001)),
-	   node_max_ncf_t[1],((lm_t2_av+0.001)/(nstick+nslip+0.001)));
-  }
-  
   if(keepset==0){
     
     /* relative convergence critera for semi-smooth Newton */
@@ -964,21 +856,6 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
 	  }	    
 	}
       }
-      f_csn=sqrt(f_cs_tot[0]*f_cs_tot[0]+f_cs_tot[1]*f_cs_tot[1]+
-		 f_cs_tot[2]*f_cs_tot[2]);      
-      f_cmn=sqrt(f_cm_tot[0]*f_cm_tot[0]+f_cm_tot[1]*f_cm_tot[1]+
-		 f_cm_tot[2]*f_cm_tot[2]); 
-      if(ithermal[0]==3){
-      }else{
-	if(debug==1){
-	  printf("\n tie %" ITGFORMAT
-		 " slave contact force : %e %e %e and norm: %e \n",i+1,
-		 f_cs_tot[0],f_cs_tot[1],f_cs_tot[2],f_csn);      
-	  printf(" tie %" ITGFORMAT
-		 " master contact force: %e %e %e and norm: %e \n",i+1,
-		 f_cm_tot[0],f_cm_tot[1],f_cm_tot[2],f_cmn );
-	}
-      }
     } 	      
   }
   
@@ -1022,14 +899,6 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
   /* needed for adaptive time stepping */
   
   if(*iit>ndiverg){*iflagact=0;}
-
-  if(debug==1){
-    printf("\n contacstress : N_stick : %" ITGFORMAT "\t N_slip : %" ITGFORMAT
-	   "\tN_Inactiv : %" ITGFORMAT "\t N_nogap : %" ITGFORMAT "  N_nolm : %"
-	   ITGFORMAT "\n Flag=%" ITGFORMAT "\n",nstick,nslip,ninacti,nnogap,
-	   nolm,*iflagact);
-    printf(" stressmortar : ndiverg %" ITGFORMAT " \n",ndiverg);
-  }
   
   SFREE(bhat2);
   SFREE(b2);

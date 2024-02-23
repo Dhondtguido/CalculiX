@@ -17,8 +17,8 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
 !
-!     function updating transformed u and inserting inactive dofs due to transformed mpcs,
-!     used in stressmortar
+!     function updating transformed u and inserting inactive dofs due to
+!     transformed mpcs, used in stressmortar
 !      
 !     Author: Saskia Sitzmann
 !

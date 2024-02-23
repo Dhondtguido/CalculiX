@@ -396,9 +396,15 @@
 !     copying the local coordinates to the local variables
 !     
             if (cylindrical) then
+!     
+!             radial connection    
+!     
               xdep=pnod(1)
               ydep=datan2(-pnod(3),pnod(2))
             else
+!     
+!             axial connection     
+!     
               xdep=pnod(2)
               ydep=pnod(3)
             endif

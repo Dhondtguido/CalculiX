@@ -36,14 +36,13 @@
 !  [out] ltslip			matrix used in semi-smooth Newton
 !  [out] ltu			vector used in semi-smooth Newton
 !  [out] yielded			debugging parameter
-!  [in] debug			debug output flag
 !  [in] iwan			number of iwan elements
 !  [in] dut			\f$ \Delta \tilde{u}_\tau \f$
 !
       subroutine regularization_slip_iwan(lambdan,
      &     utilt,bp,atau2,resreg,divmode,regmode,lambdaiwan,
      &     lambdaiwanini,inode,n,t,mu,rslip,ltslip,ltu,yielded,iit,
-     &     debug,iwan,dut)
+     &     iwan,dut)
 !     
 !     regularization function of tangential contact
 !     implementation of iwan-model
@@ -52,14 +51,14 @@
       implicit none
 !     
       integer i,j,k,iwan,divmode,regmode,inode,yielded,iit,
-     &     debug,imodification
+     &     imodification
 !     
       real*8 bp,atau2,kiwan,fstar(10),dut(*),
      &     alpha(10),resreg(2),
      &     nhelp,n(*),t(*),lambdan,
      &     lpt(2),lptini(2),d(2),nd,lambdaiwan(3,iwan,*),
      &     lambdaiwanini(3,iwan,*),lp(4),mp(4),fp(4),ep,mu,
-     &     ltslip(*),rslip(*),ltu(*),utilt(*),det,nlpt
+     &     ltslip(*),rslip(*),ltu(*),utilt(*),nlpt
 !     
       kiwan=atau2
       imodification=regmode
@@ -86,11 +85,6 @@
                d(2)=iwan*lptini(2)+kiwan*utilt(2)
                nd=sqrt(d(1)*d(1)+d(2)*d(2))
                nhelp=sqrt(utilt(1)*utilt(1)+utilt(2)*utilt(2))
-               if(debug.eq.1)then
-                  write(*,*)'imodification',imodification
-                  write(*,*)'lini',lptini(1),lptini(2)
-                  write(*,*)'d',d(1),d(2)
-               endif
                if(nd.le.fstar(i))then
 !                  
 !     update ok
@@ -106,9 +100,6 @@
                   d(2)=fstar(i)*d(2)/(nd)           
                   resreg(1)=resreg(1)+d(1)/real(iwan)
                   resreg(2)=resreg(2)+d(2)/real(iwan)
-               endif
-               if(debug.eq.1)then
-                  write(*,*)'liwan',d(1)/real(iwan),d(2)/real(iwan)
                endif
             enddo
          elseif(divmode.eq.1)then
@@ -165,22 +156,6 @@
                   lp(2)=kiwan*mp(2)
                   lp(3)=kiwan*mp(3)
                   lp(4)=kiwan*mp(4)
-                  if(debug.eq.1)then
-                     write(*,*) 't1',t(1),t(2),t(3)
-                     write(*,*) 't1',t(4),t(5),t(6)
-                     write(*,*)'ep',ep
-                     write(*,*) 'fp',fp(1),fp(2),fp(3),fp(4)
-                     write(*,*) 'mp',mp(1),mp(2),mp(3),mp(4)
-                     write(*,*) 'lp',lp(1),lp(2),lp(3),lp(4)
-                     write(*,*)'rn',(d(1)/nd)*alpha(i)*mu*n(1),
-     &                    (d(1)/nd)*alpha(i)*mu*n(2),
-     &                    (d(1)/nd)*alpha(i)*mu*n(3)
-                     write(*,*)'rn',(d(2)/nd)*alpha(i)*mu*n(1),
-     &                    (d(2)/nd)*alpha(i)*mu*n(2),
-     &                    (d(2)/nd)*alpha(i)*mu*n(3)
-                     det=lp(1)*lp(4)-lp(2)*lp(3) 
-                     write(*,*)'det',det
-                  endif     
                   do j=1,3
                      do k=1,2
                         ltslip((k-1)*3+j)=ltslip((k-1)*3+j)
@@ -198,9 +173,6 @@
 !         
 !     alternative Newton iteration
 !         
-         if(debug.eq.1)then
-            write(*,*)'imodification',imodification
-         endif
          if(divmode.eq.0) then
 !            
 !     update lambdaiwan
@@ -223,10 +195,6 @@
                d(2)=iwan*lptini(2)+kiwan*utilt(2)
                nd=sqrt(d(1)*d(1)+d(2)*d(2))
                nhelp=sqrt(utilt(1)*utilt(1)+utilt(2)*utilt(2))
-               if(debug.eq.1)then
-                  write(*,*)'lini',lptini(1),lptini(2)
-                  write(*,*)'d',d(1),d(2),nd
-               endif
                if(nd.le.fstar(i))then
 !                  
 !     update ok
@@ -278,9 +246,6 @@
                   resreg(1)=resreg(1)+d(1)
                   resreg(2)=resreg(2)+d(2)
                   
-               endif
-               if(debug.eq.1)then
-                  write(*,*)'liwan',d(1),d(2)
                endif
             enddo
          elseif(divmode.eq.1)then
@@ -349,22 +314,6 @@
                   lp(2)=kiwan*mp(2)
                   lp(3)=kiwan*mp(3)
                   lp(4)=kiwan*mp(4)
-                  if(debug.eq.1)then
-                     write(*,*) 't1',t(1),t(2),t(3)
-                     write(*,*) 't1',t(4),t(5),t(6)
-                     write(*,*)'ep',ep
-                     write(*,*) 'fp',fp(1),fp(2),fp(3),fp(4)
-                     write(*,*) 'mp',mp(1),mp(2),mp(3),mp(4)
-                     write(*,*) 'lp',lp(1),lp(2),lp(3),lp(4)
-                     write(*,*)'rn',(d(1)/nd)*alpha(i)*mu*n(1),
-     &                    (d(1)/nd)*alpha(i)*mu*n(2),
-     &                    (d(1)/nd)*alpha(i)*mu*n(3)
-                     write(*,*)'rn',(d(2)/nd)*alpha(i)*mu*n(1),
-     &                    (d(2)/nd)*alpha(i)*mu*n(2),
-     &                    (d(2)/nd)*alpha(i)*mu*n(3)
-                     det=lp(1)*lp(4)-lp(2)*lp(3) 
-                     write(*,*)'det',det
-                  endif     
                   do j=1,3
                      do k=1,2
                         ltslip((k-1)*3+j)=ltslip((k-1)*3+j)

@@ -54,28 +54,37 @@
 
 void transformspcsmpcs_quad(ITG *nboun,ITG *ndirboun,ITG *nodeboun,
 			    double *xboun,
-			    ITG *nmpc,ITG *ipompc,ITG *nodempc,double *coefmpc,char *labmpc,
-			    ITG *ikboun,ITG *ilboun,ITG *ikmpc,ITG *ilmpc,ITG *nboun2,
+			    ITG *nmpc,ITG *ipompc,ITG *nodempc,double *coefmpc,
+			    char *labmpc,
+			    ITG *ikboun,ITG *ilboun,ITG *ikmpc,ITG *ilmpc,
+			    ITG *nboun2,
 			    ITG **ndirboun2p,ITG **nodeboun2p,double **xboun2p,
-			    ITG *nmpc2,ITG **ipompc2p,ITG **nodempc2p,double **coefmpc2p,
-			    char **labmpc2p,ITG **ikboun2p,ITG **ilboun2p,ITG **ikmpc2p,
-			    ITG **ilmpc2p,ITG *irowtlocinv, ITG *jqtlocinv,double *autlocinv, 
+			    ITG *nmpc2,ITG **ipompc2p,ITG **nodempc2p,
+			    double **coefmpc2p,
+			    char **labmpc2p,ITG **ikboun2p,ITG **ilboun2p,
+			    ITG **ikmpc2p,
+			    ITG **ilmpc2p,ITG *irowtlocinv, ITG *jqtlocinv,
+			    double *autlocinv, 
 			    ITG *nk,ITG *nk2,ITG *iflagdualquad,
-			    ITG *ntie, char *tieset, ITG *itiefac,ITG *islavsurf,
-			    char *lakon,ITG *ipkon,ITG *kon,ITG *mt,ITG *memmpc_,
-			    ITG *nodeforc,ITG *ndirforc,double *xforc,ITG *nforc,
-			    ITG **nodeforc2p,ITG **ndirforc2p,double **xforc2p,ITG *nforc2){
+			    ITG *ntie, char *tieset, ITG *itiefac,
+			    ITG *islavsurf,
+			    char *lakon,ITG *ipkon,ITG *kon,ITG *mt,
+			    ITG *memmpc_,
+			    ITG *nodeforc,ITG *ndirforc,double *xforc,
+			    ITG *nforc,
+			    ITG **nodeforc2p,ITG **ndirforc2p,double **xforc2p,
+			    ITG *nforc2){
   
   char *labmpc2=NULL;
 
   ITG i,j,jj,ndimboun2,ndimmpc2a,ndimmpc2b,node,nodedep,nodeind,
     ndir,ndirdep,ndirind,ist,index,ifree,idof,id,debug,
-    mpcfree2,memmpc_2,newnode,
+    mpcfree2,memmpc_2,
     *ndirboun2=NULL, *nodeboun2=NULL, *ipompc2=NULL, *nodempc2=NULL,
     ndimforc2,*ikboun2=NULL, *ilboun2=NULL, *ikmpc2=NULL, *ilmpc2=NULL,
     *nodeforc2=NULL,*ndirforc2=NULL;
   
-  double alpha,a1,b1,fixed_disp,coeffdep,coeffind,fixed_forc,
+  double fixed_disp,coeffdep,coeffind,fixed_forc,
     *xboun2=NULL, *coefmpc2=NULL, *xforc2=NULL; 
 
   debug=0;
@@ -112,17 +121,6 @@ void transformspcsmpcs_quad(ITG *nboun,ITG *ndirboun,ITG *nodeboun,
   RENEW(xforc2,double,*nforc);  
   
   ifree=1;
-  a1=0.0;
-  b1=0.0;
-  if(*iflagdualquad==1 || *iflagdualquad==3){
-    alpha=1.0/2.0;
-    b1=1.0;
-    a1=alpha;
-  }else{
-    alpha=1.0/5.0;
-    b1=(1-2*alpha);
-    a1=alpha; 
-  }
   
   if(debug==1)printf(" transformspcsmpcs_quad: nboun %" ITGFORMAT "\t",*nboun);
   
