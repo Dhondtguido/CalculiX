@@ -53,15 +53,13 @@ void buildtquad(ITG *ntie,ITG *ipkon,ITG *kon,ITG *nk,char *lakon,
 		ITG *iflagdualquad){  
   
   ITG i,j,l,nodesf,nodem,istart,icounter,ndim,ifree,ifree2,
-    nzstloc,nzstlocinv,*idcontr1=NULL,*idcontr2=NULL,debug,
+    nzstloc,nzstlocinv,*idcontr1=NULL,*idcontr2=NULL,
     *mast1=NULL,*mast2=NULL,*irowtloc=NULL,*irowtlocinv=NULL;
   
   double contribution,*dcontr=NULL,*autloc=NULL,*autlocinv=NULL;
   
   irowtloc=*irowtlocp; autloc=*autlocp;
   irowtlocinv=*irowtlocinvp; autlocinv=*autlocinvp;
-  
-  debug=0;
   
   /** built T and T^-1 **/
   
@@ -84,7 +82,6 @@ void buildtquad(ITG *ntie,ITG *ipkon,ITG *kon,ITG *nk,char *lakon,
   for(i=0;i<*ntie;i++){	    
     if(tieset[i*(81*3)+80]=='C'){				
       for(l=itiefac[2*i];l<=itiefac[2*i+1];l++){
-	if(debug==1)printf("bdfill face %" ITGFORMAT "  \n",l);
 
 	/* contribution for T */
 	
@@ -100,8 +97,6 @@ void buildtquad(ITG *ntie,ITG *ipkon,ITG *kon,ITG *nk,char *lakon,
 	  contribution=dcontr[j];
 	  nodesf=idcontr1[j];				
 	  nodem=idcontr2[j];				
-	  if(debug==1)printf("\tbdfill: T nodesf %" ITGFORMAT " nodem %"
-			     ITGFORMAT " c %e \n",nodesf,nodem,contribution);
 	  insertas(&irowtloc,&mast1,&nodesf,&nodem,&ifree,&nzstloc,
 		   &contribution,&autloc);				
 	}
@@ -120,8 +115,6 @@ void buildtquad(ITG *ntie,ITG *ipkon,ITG *kon,ITG *nk,char *lakon,
 	  contribution=dcontr[j];
 	  nodesf=idcontr1[j];				
 	  nodem=idcontr2[j];				
-	  if(debug==1)printf("\tbdfill: Tinv nodesf %" ITGFORMAT " nodem %"
-			     ITGFORMAT " c %e \n",nodesf,nodem,contribution);  
 	  insertas(&irowtlocinv,&mast2,&nodesf,&nodem,&ifree2,&nzstlocinv,
 		   &contribution,&autlocinv);
 	}
@@ -132,7 +125,6 @@ void buildtquad(ITG *ntie,ITG *ipkon,ITG *kon,ITG *nk,char *lakon,
   SFREE(dcontr);SFREE(idcontr1);SFREE(idcontr2);
     
   nzstloc=ifree-1;
-  if(debug==1)printf(" buildquad: \tsize autloc %" ITGFORMAT " \n",ifree);
   ndim=*nk;
   matrixsort(autloc,mast1,irowtloc,jqtloc,&nzstloc,&ndim);
   
@@ -159,7 +151,6 @@ void buildtquad(ITG *ntie,ITG *ipkon,ITG *kon,ITG *nk,char *lakon,
     jqtloc[i]=istart;
   }
   jqtloc[*nk]=icounter+1; 
-  if(debug==1)printf(" buildquad: \tsize autloc %" ITGFORMAT " \n",icounter);
   RENEW(irowtloc,ITG,icounter+1);
   RENEW(autloc,double,icounter+1); 
   SFREE(mast1);	
@@ -192,7 +183,6 @@ void buildtquad(ITG *ntie,ITG *ipkon,ITG *kon,ITG *nk,char *lakon,
   }
   jqtlocinv[*nk]=icounter+1;
   
-  if(debug==1)printf(" buildquad: \tsize autlocinv %" ITGFORMAT " \n\n",icounter);
   RENEW(irowtlocinv,ITG,icounter+1);
   RENEW(autlocinv,double,icounter+1); 
   SFREE(mast2);
