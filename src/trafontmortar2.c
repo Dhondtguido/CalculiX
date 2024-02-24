@@ -26,7 +26,7 @@
 #define max(a,b) ((a) >= (b) ? (a) : (b))
 
 /**
- *  Condense Lagrange Multiplier and embedd contact conditionds for \f$ K_{AX}\f$
+ *  Condense Lagrange Multiplier and embedd contact conditions for \f$ K_{AX}\f$
  * changing au due to N and T (normal and tangential
  *    direction at the slave surface) 
  * 	changing b due to N and T (normal and tangential
@@ -166,9 +166,9 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 		    ITG *iit,ITG *nmethod,double *beta,ITG *ithermal,
 		    double *plkcon,ITG *nplkcon){
   
-  ITG i,j,jj,j2,k,l,debug,idof1,idof2,idof3,iadd,iwan,jrow,jcol,islavnodeentry,
-    jslavnodeentry,mt=mi[1]+1,nodes,node,derivmode,regmode,regmodet,yielded,
-    nodem,*irow_antil=NULL,*irow_amtil=NULL,*irow_aitil=NULL,*irow_aatil=NULL,
+  ITG i,j,jj,j2,k,l,debug,idof1,idof2,idof3,iadd,iwan,jrow,islavnodeentry,
+    mt=mi[1]+1,nodes,node,derivmode,regmode,regmodet,yielded,
+    *irow_antil=NULL,*irow_amtil=NULL,*irow_aitil=NULL,*irow_aatil=NULL,
     *irow_amtil1=NULL,*irow_amtil2=NULL,*irow_aitil1=NULL,*irow_aitil2=NULL,
     *irow_aatil1=NULL,*irow_aatil2=NULL,nzs_antil,nzs_amtil,nzs_aitil,
     nzs_aatil,*jq_amtil1=NULL,*jq_amtil2=NULL,nzs_amtil1,nzs_amtil2,nzs_aitil1,
@@ -176,8 +176,8 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
     *jq_aatil1=NULL,*jq_aatil2=NULL,ifree_antil,ifree_amtil1,ifree_amtil2,
     ifree_aitil1,ifree_aitil2,ifree_aatil1,ifree_aatil2;
   
-  double t1,t2,e1,e2,e3,contribution,dut[2],hpn,scal,bp,up_n,constant=1.E10,
-    constantt=1.E10,atau,lambda_n,nlambda_t,*u_tilde=NULL,resreg[2],
+  double t1,t2,e1,e2,e3,contribution,dut[2],hpn,scal,bp,constant=1.E10,
+    constantt=1.E10,atau,lambda_n,*u_tilde=NULL,resreg[2],
     *cstress2=NULL,*cstressini2=NULL,that[6],n11,n22,aninvloc,gnc,dgnc,dgnc1,
     mu,p0,beta_e,atauinvloc,lambda_t[2],lambdaini_t[2],lambdatilde_t[2],ltu[2],
     ltslip[6],rphat[2],n[3],n2[3],t[6],utildep_t[2],rslip[6],*au_antil=NULL,
@@ -233,15 +233,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	    Dd[jj]*(vold[mt*(nodes)-3+l]-vini[mt*(nodes)-3+l]);
         
 	}
-	if(debug==1) printf("j %" ITGFORMAT " node %" ITGFORMAT
-			    " vold %e %e %e\n",j,nodes,vold[mt*(nodes)-3],
-			    vold[mt*(nodes)-2],vold[mt*(nodes)-1] );
-	if(debug==1) printf("j %" ITGFORMAT " node %" ITGFORMAT
-			    " vini %e %e %e\n",j,nodes,vini[mt*(nodes)-3],
-			    vini[mt*(nodes)-2],vini[mt*(nodes)-1] );
-	if(debug==1) printf("j %" ITGFORMAT " node %" ITGFORMAT
-			    " uold %e %e %e\n",j,nodes,u_tilde[j*3],
-			    u_tilde[j*3+1],u_tilde[j*3+2] );
       }else{
 	printf("\ttrafoNTmortar: something went wrong in node %" ITGFORMAT
 	       "\n",irowd[jj]);
@@ -257,15 +248,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	  u_tilde[(islavnodeinv[irowb[jj]-1]-1)*3+l]+=
 	    Bd[jj]*(vold[mt*(nodes)-3+l]-vini[mt*(nodes)-3+l]);
 	}
-	if(debug==1) printf("j %" ITGFORMAT " node %" ITGFORMAT
-			    " vold %e %e %e\n",j,nodes,vold[mt*(nodes)-3],
-			    vold[mt*(nodes)-2],vold[mt*(nodes)-1] );
-	if(debug==1) printf("j %" ITGFORMAT " node %" ITGFORMAT
-			    " vini %e %e %e\n",j,nodes,vini[mt*(nodes)-3],
-			    vini[mt*(nodes)-2],vini[mt*(nodes)-1] );
-	if(debug==1) printf("j %" ITGFORMAT " node %" ITGFORMAT
-			    " uold %e %e %e\n",j,nodes,u_tilde[j*3],
-			    u_tilde[j*3+1],u_tilde[j*3+2] );
       }else{
 	printf("\ttrafoNTmortar: something went wrong in node %" ITGFORMAT
 	       "\n",irowb[jj]);
@@ -307,9 +289,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
       
       /* calculate fields needed for Coulomb friction */
       
-      up_n=   u_tilde[(islavnodeentry-1)*3]*n2[0]+
-	u_tilde[(islavnodeentry-1)*3+1]*n2[1]+
-	u_tilde[(islavnodeentry-1)*3+2]*n2[2];
       utildep_t[0]=u_tilde[(islavnodeentry-1)*3]*that[0]+
 	u_tilde[(islavnodeentry-1)*3+1]*that[1]+
 	u_tilde[(islavnodeentry-1)*3+2]*that[2];
@@ -333,7 +312,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	cstressini2[(islavnodeentry-1)*mt+2];
       lambdatilde_t[0]=lambda_t[0]-lambdaini_t[0];
       lambdatilde_t[1]=lambda_t[1]-lambdaini_t[1];	   
-      nlambda_t=sqrt(lambda_t[0]*lambda_t[0]+lambda_t[1]*lambda_t[1]);
       bp=bp_old[islavnodeentry-1];
       
       /* perturbed lagrange,normal direction
@@ -376,7 +354,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 					    resreg,&derivmode,&regmodet,
 					    lambdaiwan,lambdaiwanini,
 					    &islavnodeentry,n,t,&mu,rslip,
-					    ltslip,ltu,&yielded,iit,&debug,
+					    ltslip,ltu,&yielded,iit,
 					    &iwan,dut));
 	  rphat[0]=0.0;
 	  rphat[1]=0.0;
@@ -393,22 +371,18 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	    e1=au_dan[i];	      
 	    e2=au_dan[i+1];	      
 	    e3=au_dan[i+2];
-	    if(debug==1){printf("\t au_dan %e %e %e \n \t au_antil",e1,e2,e3);}
 
 	    contribution=(dgnc)*(n[0]*e1+n[1]*e2+n[2]*e3);
 	    insertas_ws(&irow_antil,&(irow_dan[i]),&j2,&ifree_antil,
 			&nzs_antil,&contribution,&au_antil);
-	    if(debug==1){printf(" %e ",contribution/Ddtil[jqdtil[node-1]-1]);}
 	    
 	    contribution=(rslip[0]*e1+rslip[1]*e2+rslip[2]*e3);
 	    insertas_ws(&irow_antil,&(irow_dan[i+1]),&j2,&ifree_antil,
 			&nzs_antil,&contribution,&au_antil);
-	    if(debug==1){printf(" %e ",contribution/Ddtil[jqdtil[node-1]-1]);}
 
 	    contribution=(rslip[3]*e1+rslip[4]*e2+rslip[5]*e3);
 	    insertas_ws(&irow_antil,&(irow_dan[i+2]),&j2,&ifree_antil,
 			&nzs_antil,&contribution,&au_antil);
-	    if(debug==1){printf(" %e \n",contribution/Ddtil[jqdtil[node-1]-1]);}
 	    i=i+2;	     	       
 	  }else if(idof2>-1 && idof3>-1){
 	    //2D auf 3D
@@ -478,8 +452,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
   }
   RENEW(irow_antil,ITG,ifree_antil-1);
   RENEW(au_antil,double,ifree_antil-1);
-  if(debug==1)printf("\ttrafoNT2: au_dan %" ITGFORMAT " au_antil %" ITGFORMAT "\n",
-	 jq_dan[*row_ln]-1,jq_antil[*row_ln]-1);
   
   /* K_AM^til **/
   
@@ -496,13 +468,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
     for(i=jq_dam[j]-1;i<jq_dam[j+1]-1;i++){
       //loop over rows A  	  
       k=irow_dam[i]-1;
-      if(islavactdof[m_flagr[j]-1]<0){
-	jslavnodeentry=floor(-islavactdof[m_flagr[j]-1]/10.);	  
-	jcol= -islavactdof[m_flagr[j]-1]-10*jslavnodeentry;
-      }else{
-	jslavnodeentry=floor(islavactdof[m_flagr[j]-1]/10.);	  
-	jcol= islavactdof[m_flagr[j]-1]-10*jslavnodeentry;	
-      }
       islavnodeentry=floor(islavactdof[a_flagr[k]-1]/10.);	  
       jrow= islavactdof[a_flagr[k]-1]-10*islavnodeentry; 
       node=islavnode[islavnodeentry-1];	   
@@ -527,9 +492,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
       
       /* calculate fields needed for Coulomb friction **/
       
-      up_n=   u_tilde[(islavnodeentry-1)*3]*n2[0]+
-	u_tilde[(islavnodeentry-1)*3+1]*n2[1]+
-	u_tilde[(islavnodeentry-1)*3+2]*n2[2];
       utildep_t[0]=u_tilde[(islavnodeentry-1)*3]*that[0]+
 	u_tilde[(islavnodeentry-1)*3+1]*that[1]+
 	u_tilde[(islavnodeentry-1)*3+2]*that[2];
@@ -553,7 +515,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	that[5]*cstressini2[(islavnodeentry-1)*mt+2];
       lambdatilde_t[0]=lambda_t[0]-lambdaini_t[0];
       lambdatilde_t[1]=lambda_t[1]-lambdaini_t[1];	   
-      nlambda_t=sqrt(lambda_t[0]*lambda_t[0]+lambda_t[1]*lambda_t[1]);
       bp=bp_old[islavnodeentry-1];
       
       /* perturbed lagrange,normal direction  
@@ -599,7 +560,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 					    resreg,&derivmode,&regmodet,
 					    lambdaiwan,lambdaiwanini,
 					    &islavnodeentry,n,t,&mu,rslip,
-					    ltslip,ltu,&yielded,iit,&debug,
+					    ltslip,ltu,&yielded,iit,
 					    &iwan,dut));
 	  
 	  rphat[0]=0.0;
@@ -692,7 +653,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
     }
     jq_amtil1[j+1]=ifree_amtil1;
   }
-  if(debug==1)printf("\ttrafoNT2: size au_amtil1 %" ITGFORMAT " \n",ifree_amtil1-1);
   
   /* add diagonal terms **/
   
@@ -709,15 +669,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
     for(i=jq_bdtil2[j]-1;i<jq_bdtil2[j+1]-1;i++){
       //loop over rows A  
       k=irow_bdtil2[i]-1; 
-      if(islavactdof[m_flagr[j]-1]<0){
-	jslavnodeentry=floor(-islavactdof[m_flagr[j]-1]/10.);	  
-	jcol= -islavactdof[m_flagr[j]-1]-10*jslavnodeentry;
-	nodem=imastnode[jslavnodeentry-1];
-      }else{
-	jslavnodeentry=floor(islavactdof[m_flagr[j]-1]/10.);	  
-	jcol= islavactdof[m_flagr[j]-1]-10*jslavnodeentry;
-	nodem=islavnode[jslavnodeentry-1];	 
-      }	     
       islavnodeentry=floor(islavactdof[a_flagr[k]-1]/10.);	  
       jrow= islavactdof[a_flagr[k]-1]-10*islavnodeentry; 
       node=islavnode[islavnodeentry-1];	   
@@ -740,22 +691,9 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 		    nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,
 		    nmastspc,imastspc,nmspc,nmastmpc,imastmpc,nmmpc,
 		    &debug,&node);
-      if(debug==1){printf("ddtil %e %" ITGFORMAT " %" ITGFORMAT "\n",
-			  Ddtil[jqdtil[node-1]-1],jqdtil[node-1],jqdtil[node]);}
-      if(debug==1){printf("node %" ITGFORMAT " idof %" ITGFORMAT " %"
-			  ITGFORMAT " %" ITGFORMAT " act %" ITGFORMAT "\n",
-			  node,idof1,idof2,idof3,islavact[islavnodeentry-1]);}
-      if(debug==1){printf("\t r %" ITGFORMAT " c %" ITGFORMAT " nodem %"
-			  ITGFORMAT " idof %" ITGFORMAT " %" ITGFORMAT " %"
-			  ITGFORMAT "  \n",jrow,jcol,nodem,
-			  nactdof[mt*nodem-3]-1,nactdof[mt*nodem-2]-1,
-			  nactdof[mt*nodem-1]-1);}
       
       /* calculate fields needed for Coulomb friction **/
       
-      up_n=   u_tilde[(islavnodeentry-1)*3]*n2[0]+
-	u_tilde[(islavnodeentry-1)*3+1]*n2[1]+
-	u_tilde[(islavnodeentry-1)*3+2]*n2[2];
       utildep_t[0]=u_tilde[(islavnodeentry-1)*3]*that[0]+
 	u_tilde[(islavnodeentry-1)*3+1]*that[1]+
 	u_tilde[(islavnodeentry-1)*3+2]*that[2];
@@ -779,7 +717,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	that[5]*cstressini2[(islavnodeentry-1)*mt+2];
       lambdatilde_t[0]=lambda_t[0]-lambdaini_t[0];
       lambdatilde_t[1]=lambda_t[1]-lambdaini_t[1];	   
-      nlambda_t=sqrt(lambda_t[0]*lambda_t[0]+lambda_t[1]*lambda_t[1]);
       bp=bp_old[islavnodeentry-1];
       
       /* perturbed lagrange,normal direction 
@@ -824,7 +761,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 					    resreg,&derivmode,&regmodet,
 					    lambdaiwan,lambdaiwanini,
 					    &islavnodeentry,n,t,&mu,rslip,
-					    ltslip,ltu,&yielded,iit,&debug,
+					    ltslip,ltu,&yielded,iit,
 					    &iwan,dut));
 	  rphat[0]=0.0;
 	  rphat[1]=0.0;
@@ -863,23 +800,15 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	      e2=0.0;
 	      e3=au_bdtil2[i];
 	    }
-	    if(debug==1){printf("\t n %e %e %e\n",n2[0],n2[1],n2[2]);}
-	    if(debug==1){printf("\t au_bdtil %e %e %e cdof %" ITGFORMAT
-				" rdof %" ITGFORMAT " %" ITGFORMAT " %"
-				ITGFORMAT " \n \t au_amtil",e1,e2,e3,
-				m_flagr[j]-1,idof1,idof2,idof3);}
 	    contribution=(n2[0]*e1+n2[1]*e2+n2[2]*e3);
 	    insertas_ws(&irow_amtil2,&(a_flag[idof1]),&(j2),&ifree_amtil2,
 			&nzs_amtil2,&contribution,&au_amtil2);
-	    if(debug==1){printf(" %e ",contribution);}
 	    contribution=(ltslip[0]*e1+ltslip[1]*e2+ltslip[2]*e3);
 	    insertas_ws(&irow_amtil2,&(a_flag[idof2]),&(j2),&ifree_amtil2,
 			&nzs_amtil2,&contribution,&au_amtil2);
-	    if(debug==1){printf(" %e ",contribution);}
 	    contribution=(ltslip[3]*e1+ltslip[4]*e2+ltslip[5]*e3);
 	    insertas_ws(&irow_amtil2,&(a_flag[idof3]),&(j2),&ifree_amtil2,
 			&nzs_amtil2,&contribution,&au_amtil2);
-	    if(debug==1){printf(" %e \n",contribution);}
 	    i=i+iadd;    
 	  }else if(idof2>-1 && idof3>-1){
 	    //2D auf 3D
@@ -898,18 +827,10 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	      e2=0.0;
 	      e3=au_bdtil2[i];
 	    }	  
-	    if(debug==1){printf("\t ktslip %e %e %e \n",ltslip[3],ltslip[4],
-				ltslip[5]);}
-	    if(debug==1){printf("\t au_bdtil %e %e %e cdof %" ITGFORMAT
-				" rdof %" ITGFORMAT " %" ITGFORMAT
-				" \n \t au_amtil",e1,e2,e3,m_flagr[j],idof2,
-				idof3);}
 	    contribution=(n2[0]*e1+n2[1]*e2+n2[2]*e3);
-	    if(debug==1){printf(" %e ",contribution);}
 	    insertas_ws(&irow_amtil2,&(a_flag[idof2]),&(j2),&ifree_amtil2,
 			&nzs_amtil2,&contribution,&au_amtil2);
 	    contribution=(ltslip[3]*e1+ltslip[4]*e2+ltslip[5]*e3);
-	    if(debug==1){printf(" %e \n",contribution);}
 	    insertas_ws(&irow_amtil2,&(a_flag[idof3]),&(j2),&ifree_amtil2,
 			&nzs_amtil2,&contribution,&au_amtil2);
 	    i=i+iadd;    	       	     
@@ -931,18 +852,10 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	      e2=0.0;
 	      e3=au_bdtil2[i];
 	    }
-	    if(debug==1){printf("\t ktslip %e %e %e \n",ltslip[3],ltslip[4],
-				ltslip[5]);}
-	    if(debug==1){printf("\t au_bdtil %e %e %e cdof %" ITGFORMAT
-				" rdof %" ITGFORMAT " %" ITGFORMAT
-				" \n \t au_amtil",e1,e2,e3,m_flagr[j],idof1,
-				idof3);}
 	    contribution=(n2[0]*e1+n2[1]*e2+n2[2]*e3);
-	    if(debug==1){printf(" %e ",contribution);}
 	    insertas_ws(&irow_amtil2,&(a_flag[idof1]),&(j2),&ifree_amtil2,
 			&nzs_amtil2,&contribution,&au_amtil2);
 	    contribution=(ltslip[3]*e1+ltslip[4]*e2+ltslip[5]*e3);
-	    if(debug==1){printf(" %e \n",contribution);}
 	    insertas_ws(&irow_amtil2,&(a_flag[idof3]),&(j2),&ifree_amtil2,
 			&nzs_amtil2,&contribution,&au_amtil2);
 	    i=i+iadd;       	     
@@ -965,18 +878,10 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	      e2=au_bdtil2[i];
 	      e3=0.0;
 	    }
-	    if(debug==1){printf("\t ktslip %e %e %e \n",ltslip[3],ltslip[4],
-				ltslip[5]);}
-	    if(debug==1){printf("\t au_bdtil %e %e %e cdof %" ITGFORMAT
-				" rdof %" ITGFORMAT " %" ITGFORMAT
-				" \n \t au_amtil",e1,e2,e3,m_flagr[j],idof1,
-				idof2);}
 	    contribution=(n2[0]*e1+n2[1]*e2+n2[2]*e3);
-	    if(debug==1){printf(" %e ",contribution);}
 	    insertas_ws(&irow_amtil2,&(a_flag[idof1]),&(j2),&ifree_amtil2,
 			&nzs_amtil2,&contribution,&au_amtil2);
 	    contribution=(ltslip[3]*e1+ltslip[4]*e2+ltslip[5]*e3);
-	    if(debug==1){printf(" %e \n",contribution);}
 	    insertas_ws(&irow_amtil2,&(a_flag[idof2]),&(j2),&ifree_amtil2,
 			&nzs_amtil2,&contribution,&au_amtil2);
 	    i=i+iadd;		           
@@ -1007,7 +912,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
   }
   
   nzs_amtil2=ifree_amtil2-1;
-  if(debug==1)printf("\ttrafoNT2: size au_amtil2 %" ITGFORMAT " \n",nzs_amtil2);
 
   add_rect(au_amtil1,irow_amtil1,jq_amtil1,*row_la,*row_lm,
 	   au_amtil2,irow_amtil2,jq_amtil2,*row_la,*row_lm,
@@ -1015,7 +919,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
   
   SFREE(au_amtil1);SFREE(irow_amtil1);SFREE(jq_amtil1);
   SFREE(au_amtil2);SFREE(irow_amtil2);SFREE(jq_amtil2);
-  if(debug==1)if(debug==1)printf("\ttrafoNT2: size au_amtil %" ITGFORMAT " \n",nzs_amtil);
   debug=0;
   
   /* K_AI **/
@@ -1029,7 +932,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
   ifree_aitil1=1;
   for(j=0;j<*row_li;j++){
     //loop over columns  N   
-    jcol=j+1;
     for(i=jq_dai[j]-1;i<jq_dai[j+1]-1;i++){
       //loop over rows A  	  
       k=irow_dai[i]-1;         
@@ -1056,9 +958,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
       
       /* calculate fields needed for Coulomb friction **/
       
-      up_n=   u_tilde[(islavnodeentry-1)*3]*n2[0]+
-	u_tilde[(islavnodeentry-1)*3+1]*n2[1]+
-	u_tilde[(islavnodeentry-1)*3+2]*n2[2];
       utildep_t[0]=u_tilde[(islavnodeentry-1)*3]*that[0]+
 	u_tilde[(islavnodeentry-1)*3+1]*that[1]+
 	u_tilde[(islavnodeentry-1)*3+2]*that[2];
@@ -1082,7 +981,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	that[5]*cstressini2[(islavnodeentry-1)*mt+2];
       lambdatilde_t[0]=lambda_t[0]-lambdaini_t[0];
       lambdatilde_t[1]=lambda_t[1]-lambdaini_t[1];	   
-      nlambda_t=sqrt(lambda_t[0]*lambda_t[0]+lambda_t[1]*lambda_t[1]);
       bp=bp_old[islavnodeentry-1];
       
       /* perturbed lagrange,normal direction 
@@ -1128,19 +1026,12 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 					    resreg,&derivmode,&regmodet,
 					    lambdaiwan,lambdaiwanini,
 					    &islavnodeentry,n,t,&mu,rslip,
-					    ltslip,ltu,&yielded,iit,&debug,
+					    ltslip,ltu,&yielded,iit,
 					    &iwan,dut));
 	  
 	  rphat[0]=0.0;
 	  rphat[1]=0.0;
 	}
-	if(debug==1){printf("ddtil %e %" ITGFORMAT " %" ITGFORMAT "\n",
-			    Ddtil[jqdtil[node-1]-1],jqdtil[node-1],
-			    jqdtil[node]);}
-	if(debug==1){printf("node %" ITGFORMAT " idof %" ITGFORMAT " %"
-			    ITGFORMAT " %" ITGFORMAT " act %" ITGFORMAT "\n",
-			    node,idof1,idof2,idof3,islavact[islavnodeentry-1]);}
-	if(debug==1){printf("\t dgnc %e \n",dgnc);}
 	if(jrow==4 && ithermal[0]<2){ 
 	  printf(" *ERROR in trafontmortar2\n");
 	  // something went wrong
@@ -1153,19 +1044,12 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	    e2=au_dai[i+1];	      
 	    e3=au_dai[i+2];	      		     
 	    contribution=(dgnc)*(n[0]*e1+n[1]*e2+n[2]*e3);
-	    if(debug==1){printf("\t au_dai %e %e %e \n \t au_aatil",
-				e1/Ddtil[jqdtil[node-1]-1],
-				e2/Ddtil[jqdtil[node-1]-1],
-				e3/Ddtil[jqdtil[node-1]-1]);}
-	    if(debug==1){printf("%e ",contribution/Ddtil[jqdtil[node-1]-1]);}
 	    insertas_ws(&irow_aitil1,&(irow_dai[i]),&j2,&ifree_aitil1,
 			&nzs_aitil1,&contribution,&au_aitil1);
 	    contribution=(rslip[0]*e1+rslip[1]*e2+rslip[2]*e3);
-	    if(debug==1){printf("%e ",contribution/Ddtil[jqdtil[node-1]-1]);}
 	    insertas_ws(&irow_aitil1,&(irow_dai[i+1]),&j2,&ifree_aitil1,
 			&nzs_aitil1,&contribution,&au_aitil1);
 	    contribution=(rslip[3]*e1+rslip[4]*e2+rslip[5]*e3);
-	    if(debug==1){printf("%e \n",contribution/Ddtil[jqdtil[node-1]-1]);}
 	    insertas_ws(&irow_aitil1,&(irow_dai[i+2]),&j2,&ifree_aitil1,
 			&nzs_aitil1,&contribution,&au_aitil1);
 	    i=i+2;	     	       
@@ -1237,7 +1121,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
   } 
   RENEW(irow_aitil1,ITG,ifree_aitil1-1);
   RENEW(au_aitil1,double,ifree_aitil1-1);
-  if(debug==1)printf("\ttrafoNT2: size au_aitil1 %" ITGFORMAT " \n",ifree_aitil1-1); 
 
   /* add diagonal terms **/
 
@@ -1253,15 +1136,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
     for(i=jq_ddtil2i[j]-1;i<jq_ddtil2i[j+1]-1;i++){
       //loop over rows A  
       k=irow_ddtil2i[i]-1; 
-      if(islavactdof[i_flagr[j]-1]<0){
-	jslavnodeentry=floor(-islavactdof[i_flagr[j]-1]/10.);	  
-	jcol= -islavactdof[i_flagr[j]-1]-10*jslavnodeentry;
-	nodem=imastnode[jslavnodeentry-1];
-      }else{
-	jslavnodeentry=floor(islavactdof[i_flagr[j]-1]/10.);	  
-	jcol= islavactdof[i_flagr[j]-1]-10*jslavnodeentry;
-	nodem=islavnode[jslavnodeentry-1];	 
-      }	     
       islavnodeentry=floor(islavactdof[a_flagr[k]-1]/10.);	  
       jrow= islavactdof[a_flagr[k]-1]-10*islavnodeentry; 
       node=islavnode[islavnodeentry-1];	   
@@ -1283,22 +1157,9 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 		    nmastspc,imastspc,nmspc,nmastmpc,imastmpc,nmmpc,
 		    &debug,&node);
       
-      if(debug==1){printf("ddtil %e %" ITGFORMAT " %" ITGFORMAT "\n",
-			  Ddtil[jqdtil[node-1]-1],jqdtil[node-1],jqdtil[node]);}
-      if(debug==1){printf("node %" ITGFORMAT " idof %" ITGFORMAT " %"
-			  ITGFORMAT " %" ITGFORMAT " act %" ITGFORMAT "\n",
-			  node,idof1,idof2,idof3,islavact[islavnodeentry-1]);}
-      if(debug==1){printf("\t r %" ITGFORMAT " c %" ITGFORMAT " nodem %"
-			  ITGFORMAT " idof %" ITGFORMAT " %" ITGFORMAT " %"
-			  ITGFORMAT "  \n",jrow,jcol,nodem,
-			  nactdof[mt*nodem-3]-1,nactdof[mt*nodem-2]-1,
-			  nactdof[mt*nodem-1]-1);}
       
       /* calculate fields needed for Coulomb friction **/
       
-      up_n=   u_tilde[(islavnodeentry-1)*3]*n2[0]+
-	u_tilde[(islavnodeentry-1)*3+1]*n2[1]+
-	u_tilde[(islavnodeentry-1)*3+2]*n2[2];
       utildep_t[0]=u_tilde[(islavnodeentry-1)*3]*
 	that[0]+u_tilde[(islavnodeentry-1)*3+1]*
 	that[1]+u_tilde[(islavnodeentry-1)*3+2]*that[2];
@@ -1322,7 +1183,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	that[5]*cstressini2[(islavnodeentry-1)*mt+2];
       lambdatilde_t[0]=lambda_t[0]-lambdaini_t[0];
       lambdatilde_t[1]=lambda_t[1]-lambdaini_t[1];	   
-      nlambda_t=sqrt(lambda_t[0]*lambda_t[0]+lambda_t[1]*lambda_t[1]);
       bp=bp_old[islavnodeentry-1];
       
       /* perturbed lagrange,normal direction 
@@ -1367,7 +1227,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 					    resreg,&derivmode,&regmodet,
 					    lambdaiwan,lambdaiwanini,
 					    &islavnodeentry,n,t,&mu,rslip,
-					    ltslip,ltu,&yielded,iit,&debug,
+					    ltslip,ltu,&yielded,iit,
 					    &iwan,dut));
 	  rphat[0]=0.0;
 	  rphat[1]=0.0;
@@ -1384,7 +1244,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	      // k=idof1
 	      iadd=0;
 	      e1=au_ddtil2i[i];
-	      //if(debug==1){printf("");}
 	      if(i+1<jq_ddtil2i[j+1]-1 &&
 		 a_flagr[irow_ddtil2i[i+1]-1]-1==idof2){
 		e2=au_ddtil2i[i+1];++iadd;}else{e2=0.0;}
@@ -1409,23 +1268,15 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	      e2=0.0;
 	      e3=au_ddtil2i[i];
 	    }
-	    if(debug==1){printf("\t n %e %e %e\n",n2[0],n2[1],n2[2]);}
-	    if(debug==1){printf("\t au_bdtil %e %e %e cdof %" ITGFORMAT
-				" rdof %" ITGFORMAT " %" ITGFORMAT " %"
-				ITGFORMAT " \n \t au_amtil",e1,e2,e3,
-				i_flagr[j]-1,idof1,idof2,idof3);}
 	    contribution=(n2[0]*e1+n2[1]*e2+n2[2]*e3);
 	    insertas_ws(&irow_aitil2,&(a_flag[idof1]),&(j2),&ifree_aitil2,
 			&nzs_aitil2,&contribution,&au_aitil2);
-	    if(debug==1){printf(" %e ",contribution);}
 	    contribution=(ltslip[0]*e1+ltslip[1]*e2+ltslip[2]*e3);
 	    insertas_ws(&irow_aitil2,&(a_flag[idof2]),&(j2),&ifree_aitil2,
 			&nzs_aitil2,&contribution,&au_aitil2);
-	    if(debug==1){printf(" %e ",contribution);}
 	    contribution=(ltslip[3]*e1+ltslip[4]*e2+ltslip[5]*e3);
 	    insertas_ws(&irow_aitil2,&(a_flag[idof3]),&(j2),&ifree_aitil2,
 			&nzs_aitil2,&contribution,&au_aitil2);
-	    if(debug==1){printf(" %e \n",contribution);}
 	    i=i+iadd;    
 	  }else if(idof2>-1 && idof3>-1){
 	    //2D auf 3D
@@ -1444,18 +1295,10 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	      e2=0.0;
 	      e3=au_ddtil2i[i];
 	    }	  
-	    if(debug==1){printf("\t ktslip %e %e %e \n",ltslip[3],ltslip[4],
-				ltslip[5]);}
-	    if(debug==1){printf("\t au_bdtil %e %e %e cdof %" ITGFORMAT
-				" rdof %" ITGFORMAT " %" ITGFORMAT
-				" \n \t au_amtil",e1,e2,e3,i_flagr[j],idof2,
-				idof3);}
 	    contribution=(n2[0]*e1+n2[1]*e2+n2[2]*e3);
-	    if(debug==1){printf(" %e ",contribution);}
 	    insertas_ws(&irow_aitil2,&(a_flag[idof2]),&(j2),&ifree_aitil2,
 			&nzs_aitil2,&contribution,&au_aitil2);
 	    contribution=(ltslip[3]*e1+ltslip[4]*e2+ltslip[5]*e3);
-	    if(debug==1){printf(" %e \n",contribution);}
 	    insertas_ws(&irow_aitil2,&(a_flag[idof3]),&(j2),&ifree_aitil2,
 			&nzs_aitil2,&contribution,&au_aitil2);
 	    i=i+iadd;    	       	     
@@ -1476,18 +1319,10 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	      e2=0.0;
 	      e3=au_ddtil2i[i];
 	    }
-	    if(debug==1){printf("\t ktslip %e %e %e \n",ltslip[3],ltslip[4],
-				ltslip[5]);}
-	    if(debug==1){printf("\t au_bdtil %e %e %e cdof %" ITGFORMAT
-				" rdof %" ITGFORMAT " %" ITGFORMAT
-				" \n \t au_amtil",e1,e2,e3,i_flagr[j],idof1,
-				idof3);}
 	    contribution=(n2[0]*e1+n2[1]*e2+n2[2]*e3);
-	    if(debug==1){printf(" %e ",contribution);}
 	    insertas_ws(&irow_aitil2,&(a_flag[idof1]),&(j2),&ifree_aitil2,
 			&nzs_aitil2,&contribution,&au_aitil2);
 	    contribution=(ltslip[3]*e1+ltslip[4]*e2+ltslip[5]*e3);
-	    if(debug==1){printf(" %e \n",contribution);}
 	    insertas_ws(&irow_aitil2,&(a_flag[idof3]),&(j2),&ifree_aitil2,
 			&nzs_aitil2,&contribution,&au_aitil2);
 	    i=i+iadd;       	     
@@ -1497,7 +1332,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	      // k=idof1
 	      iadd=0;
 	      e1=au_ddtil2i[i];
-	      //if(debug==1){printf("");}
 	      if(i+1<jq_ddtil2i[j+1]-1 &&
 		 a_flagr[irow_ddtil2i[i+1]-1]-1==idof2){
 		e2=au_ddtil2i[i+1];++iadd;}else{e2=0.0;}
@@ -1509,18 +1343,10 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	      e2=au_ddtil2i[i];
 	      e3=0.0;
 	    }
-	    if(debug==1){printf("\t ktslip %e %e %e \n",ltslip[3],ltslip[4],
-				ltslip[5]);}
-	    if(debug==1){printf("\t au_bdtil %e %e %e cdof %" ITGFORMAT
-				" rdof %" ITGFORMAT " %" ITGFORMAT
-				" \n \t au_amtil",e1,e2,e3,i_flagr[j],idof1,
-				idof2);}
 	    contribution=(n2[0]*e1+n2[1]*e2+n2[2]*e3);
-	    if(debug==1){printf(" %e ",contribution);}
 	    insertas_ws(&irow_aitil2,&(a_flag[idof1]),&(j2),&ifree_aitil2,
 			&nzs_aitil2,&contribution,&au_aitil2);
 	    contribution=(ltslip[3]*e1+ltslip[4]*e2+ltslip[5]*e3);
-	    if(debug==1){printf(" %e \n",contribution);}
 	    insertas_ws(&irow_aitil2,&(a_flag[idof2]),&(j2),&ifree_aitil2,
 			&nzs_aitil2,&contribution,&au_aitil2);
 	    i=i+iadd;		           
@@ -1551,7 +1377,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
   }
   
   nzs_aitil2=ifree_aitil2-1;
-  if(debug==1)printf("\ttrafoNT2: size au_aitil2 %" ITGFORMAT " \n",nzs_aitil2);
   add_rect(au_aitil1,irow_aitil1,jq_aitil1,*row_la,*row_li,
 	   au_aitil2,irow_aitil2,jq_aitil2,*row_la,*row_li,
 	   &au_aitil,&irow_aitil,jq_aitil,&nzs_aitil);
@@ -1559,8 +1384,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
   SFREE(au_aitil1);SFREE(irow_aitil1);SFREE(jq_aitil1);
   SFREE(au_aitil2);SFREE(irow_aitil2);SFREE(jq_aitil2); 
   
-  if(debug==1)printf("\ttrafoNT2: au_dai %" ITGFORMAT " au_aitil %" ITGFORMAT "\n",
-	 jq_dai[*row_li]-1,jq_aitil[*row_li]-1);
 
   /* K_AA **/
   /* loop over columns **/
@@ -1576,8 +1399,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
     j2=j+1;
     for(i=jq_daa[j]-1;i<jq_daa[j+1]-1;i++){
       //loop over rows	  
-      jslavnodeentry=floor(islavactdof[a_flagr[j]-1]/10.);	  
-      jcol= islavactdof[a_flagr[j]-1]-10*jslavnodeentry;	  
       k=irow_daa[i]-1;         
       islavnodeentry=floor(islavactdof[a_flagr[k]-1]/10.);	  
       jrow= islavactdof[a_flagr[k]-1]-10*islavnodeentry;	  
@@ -1602,16 +1423,8 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 		    nmastspc,imastspc,nmspc,nmastmpc,imastmpc,nmmpc,
 		    &debug,&node);
       
-      if(debug==1){printf("node %" ITGFORMAT " jcol %" ITGFORMAT " jrow %"
-			  ITGFORMAT " idof %" ITGFORMAT " %" ITGFORMAT " %"
-			  ITGFORMAT " act %" ITGFORMAT "\n",node,jcol,jrow,
-			  idof1,idof2,idof3,islavact[islavnodeentry-1]);}
-      
       /* calculate fields needed for Coulomb friction **/
       
-      up_n=   u_tilde[(islavnodeentry-1)*3]*n2[0]+
-	u_tilde[(islavnodeentry-1)*3+1]*n2[1]+
-	u_tilde[(islavnodeentry-1)*3+2]*n2[2];
       utildep_t[0]=u_tilde[(islavnodeentry-1)*3]*that[0]+
 	u_tilde[(islavnodeentry-1)*3+1]*that[1]+
 	u_tilde[(islavnodeentry-1)*3+2]*that[2];
@@ -1635,7 +1448,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	that[5]*cstressini2[(islavnodeentry-1)*mt+2];
       lambdatilde_t[0]=lambda_t[0]-lambdaini_t[0];
       lambdatilde_t[1]=lambda_t[1]-lambdaini_t[1];	   
-      nlambda_t=sqrt(lambda_t[0]*lambda_t[0]+lambda_t[1]*lambda_t[1]);
       bp=bp_old[islavnodeentry-1];
       
       /* perturbed lagrange,normal direction 
@@ -1663,8 +1475,10 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	     (see phd-thesis Sitzmann,Chapter 3.4.2) */
 	  
 	  FORTRAN(regularization_slip_lin,(utildep_t,&bp,&atauinvloc,resreg,
-					   &derivmode,islavact,lambda_t,lambdatilde_t,&constantt,&debug,
-					   &islavnodeentry,n2,t,that,&mu,rslip,ltslip,ltu));
+					   &derivmode,islavact,lambda_t,
+					   lambdatilde_t,&constantt,&debug,
+					   &islavnodeentry,n2,t,that,&mu,rslip,
+					   ltslip,ltu));
 	
           rphat[0]=0.0;
 	  rphat[1]=0.0;
@@ -1679,7 +1493,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 					    resreg,&derivmode,&regmodet,
 					    lambdaiwan,lambdaiwanini,
 					    &islavnodeentry,n,t,&mu,rslip,
-					    ltslip,ltu,&yielded,iit,&debug,
+					    ltslip,ltu,&yielded,iit,
 					    &iwan,dut));
 	  
 	  rphat[0]=0.0;
@@ -1695,19 +1509,15 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	    e1=au_daa[i];	        
 	    e2=au_daa[i+1];	        
 	    e3=au_daa[i+2];	
-	    if(debug==1){printf("\t au_daa %e %e %e \n \t au_aatil1",e1,e2,e3);}
 	    contribution=(dgnc)*(n[0]*e1+n[1]*e2+n[2]*e3);
 	    insertas_ws(&irow_aatil1,&(irow_daa[i]),&j2,&ifree_aatil1,
 			&nzs_aatil1,&contribution,&au_aatil1);
-	    if(debug==1){printf("%e ",contribution/Ddtil[jqdtil[node-1]-1]);}
 	    contribution=(rslip[0]*e1+rslip[1]*e2+rslip[2]*e3 );
 	    insertas_ws(&irow_aatil1,&(irow_daa[i+1]),&j2,&ifree_aatil1,
 			&nzs_aatil1,&contribution,&au_aatil1);
-	    if(debug==1){printf("%e ",contribution/Ddtil[jqdtil[node-1]-1]);}
 	    contribution=(rslip[3]*e1+rslip[4]*e2+rslip[5]*e3);
 	    insertas_ws(&irow_aatil1,&(irow_daa[i+2]),&j2,&ifree_aatil1,
 			&nzs_aatil1,&contribution,&au_aatil1);
-	    if(debug==1){printf("%e \n",contribution/Ddtil[jqdtil[node-1]-1]);}
 	    i=i+2;	      
 	  }else if(idof2>-1 && idof3>-1){
 	    //2D auf 3D		              
@@ -1775,7 +1585,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
   }
   RENEW(irow_aatil1,ITG,ifree_aatil1-1);
   RENEW(au_aatil1,double,ifree_aatil1-1);
-  if(debug==1)printf("\ttrafoNT2: size au_aatil1 %" ITGFORMAT "\n",jq_aatil1[*row_la]-1);
 
   /* add diagonal terms **/
 
@@ -1791,15 +1600,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
     for(i=jq_ddtil2a[j]-1;i<jq_ddtil2a[j+1]-1;i++){
       //loop over rows A  
       k=irow_ddtil2a[i]-1; 
-      if(islavactdof[a_flagr[j]-1]<0){
-	jslavnodeentry=floor(-islavactdof[a_flagr[j]-1]/10.);	  
-	jcol= -islavactdof[a_flagr[j]-1]-10*jslavnodeentry;
-	nodem=imastnode[jslavnodeentry-1];
-      }else{
-	jslavnodeentry=floor(islavactdof[a_flagr[j]-1]/10.);	  
-	jcol= islavactdof[a_flagr[j]-1]-10*jslavnodeentry;
-	nodem=islavnode[jslavnodeentry-1];	 
-      }	     
       islavnodeentry=floor(islavactdof[a_flagr[k]-1]/10.);	  
       jrow= islavactdof[a_flagr[k]-1]-10*islavnodeentry; 
       node=islavnode[islavnodeentry-1];	   
@@ -1821,21 +1621,9 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 		    nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,
 		    nmastspc,imastspc,nmspc,nmastmpc,imastmpc,nmmpc,
 		    &debug,&node);
-      if(debug==1){printf("ddtil %e %" ITGFORMAT " %" ITGFORMAT "\n",
-			  Ddtil[jqdtil[node-1]-1],jqdtil[node-1],jqdtil[node]);}
-      if(debug==1){printf("node %" ITGFORMAT " idof %" ITGFORMAT " %"
-			  ITGFORMAT " %" ITGFORMAT " act %" ITGFORMAT "\n",
-			  node,idof1,idof2,idof3,islavact[islavnodeentry-1]);}
-      if(debug==1){printf("\t r %" ITGFORMAT " c %" ITGFORMAT " nodem %"
-			  ITGFORMAT " idof %" ITGFORMAT " %" ITGFORMAT " %"
-			  ITGFORMAT "  \n",jrow,jcol,nodem,
-			  nactdof[mt*nodem-3]-1,nactdof[mt*nodem-2]-1,
-			  nactdof[mt*nodem-1]-1);}
       
-      /* calculate fields needed for Coulomb friction **/ 
-      up_n=   u_tilde[(islavnodeentry-1)*3]*n2[0]+
-	u_tilde[(islavnodeentry-1)*3+1]*n2[1]+
-	u_tilde[(islavnodeentry-1)*3+2]*n2[2];
+      /* calculate fields needed for Coulomb friction */
+      
       utildep_t[0]=u_tilde[(islavnodeentry-1)*3]*that[0]+
 	u_tilde[(islavnodeentry-1)*3+1]*that[1]+
 	u_tilde[(islavnodeentry-1)*3+2]*that[2];
@@ -1859,7 +1647,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	that[5]*cstressini2[(islavnodeentry-1)*mt+2];
       lambdatilde_t[0]=lambda_t[0]-lambdaini_t[0];
       lambdatilde_t[1]=lambda_t[1]-lambdaini_t[1];	   
-      nlambda_t=sqrt(lambda_t[0]*lambda_t[0]+lambda_t[1]*lambda_t[1]);
       bp=bp_old[islavnodeentry-1];
       
       /* perturbed lagrange,normal direction 
@@ -1905,7 +1692,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 					    resreg,&derivmode,&regmodet,
 					    lambdaiwan,lambdaiwanini,
 					    &islavnodeentry,n,t,&mu,rslip,
-					    ltslip,ltu,&yielded,iit,&debug,
+					    ltslip,ltu,&yielded,iit,
 					    &iwan,dut));
 	  
 	  rphat[0]=0.0;
@@ -1948,23 +1735,15 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	      e2=0.0;
 	      e3=au_ddtil2a[i];
 	    }
-	    if(debug==1){printf("\t n %e %e %e\n",n2[0],n2[1],n2[2]);}
-	    if(debug==1){printf("\t au_bdtil %e %e %e cdof %" ITGFORMAT
-				" rdof %" ITGFORMAT " %" ITGFORMAT " %"
-				ITGFORMAT " \n \t au_aatil",e1,e2,e3,
-				a_flagr[j]-1,idof1,idof2,idof3);}
 	    contribution=(n2[0]*e1+n2[1]*e2+n2[2]*e3);
 	    insertas_ws(&irow_aatil2,&(a_flag[idof1]),&(j2),&ifree_aatil2,
 			&nzs_aatil2,&contribution,&au_aatil2);
-	    if(debug==1){printf(" %e ",contribution/Ddtil[jqdtil[node-1]-1]);}
 	    contribution=(ltslip[0]*e1+ltslip[1]*e2+ltslip[2]*e3);
 	    insertas_ws(&irow_aatil2,&(a_flag[idof2]),&(j2),&ifree_aatil2,
 			&nzs_aatil2,&contribution,&au_aatil2);
-	    if(debug==1){printf(" %e ",contribution/Ddtil[jqdtil[node-1]-1]);}
 	    contribution=(ltslip[3]*e1+ltslip[4]*e2+ltslip[5]*e3);
 	    insertas_ws(&irow_aatil2,&(a_flag[idof3]),&(j2),&ifree_aatil2,
 			&nzs_aatil2,&contribution,&au_aatil2);
-	    if(debug==1){printf(" %e \n",contribution/Ddtil[jqdtil[node-1]-1]);}
 	    i=i+iadd;    
 	  }else if(idof2>-1 && idof3>-1){
 	    //2D auf 3D
@@ -1983,18 +1762,10 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	      e2=0.0;
 	      e3=au_ddtil2a[i];
 	    }	  
-	    if(debug==1){printf("\t ktslip %e %e %e \n",ltslip[3],ltslip[4],
-				ltslip[5]);}
-	    if(debug==1){printf("\t au_bdtil %e %e %e cdof %" ITGFORMAT
-				" rdof %" ITGFORMAT " %" ITGFORMAT
-				" \n \t au_aatil",e1,e2,e3,a_flagr[j],idof2,
-				idof3);}
 	    contribution=(n2[0]*e1+n2[1]*e2+n2[2]*e3);
-	    if(debug==1){printf(" %e ",contribution);}
 	    insertas_ws(&irow_aatil2,&(a_flag[idof2]),&(j2),&ifree_aatil2,
 			&nzs_aatil2,&contribution,&au_aatil2);
 	    contribution=(ltslip[3]*e1+ltslip[4]*e2+ltslip[5]*e3);
-	    if(debug==1){printf(" %e \n",contribution);}
 	    insertas_ws(&irow_aatil2,&(a_flag[idof3]),&(j2),&ifree_aatil2,
 			&nzs_aatil2,&contribution,&au_aatil2);
 	    i=i+iadd;    	       	     
@@ -2005,7 +1776,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	      iadd=0;
 	      e1=au_ddtil2a[i];
 	      e2=0.0;
-	      //if(debug==1){printf("");}
 	      if(i+1<jq_ddtil2a[j+1]-1 &&
 		 a_flagr[irow_ddtil2a[i+1]-1]-1==idof3){
 		e3=au_ddtil2a[i+1];++iadd;}else{e3=0.0;}
@@ -2016,18 +1786,10 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	      e2=0.0;
 	      e3=au_ddtil2a[i];
 	    }
-	    if(debug==1){printf("\t ktslip %e %e %e \n",ltslip[3],ltslip[4],
-				ltslip[5]);}
-	    if(debug==1){printf("\t au_bdtil %e %e %e cdof %" ITGFORMAT
-				" rdof %" ITGFORMAT " %" ITGFORMAT
-				" \n \t au_aatil",e1,e2,e3,a_flagr[j],idof1,
-				idof3);}
 	    contribution=(n2[0]*e1+n2[1]*e2+n2[2]*e3);
-	    if(debug==1){printf(" %e ",contribution);}
 	    insertas_ws(&irow_aatil2,&(a_flag[idof1]),&(j2),&ifree_aatil2,
 			&nzs_aatil2,&contribution,&au_aatil2);
 	    contribution=(ltslip[3]*e1+ltslip[4]*e2+ltslip[5]*e3);
-	    if(debug==1){printf(" %e \n",contribution);}
 	    insertas_ws(&irow_aatil2,&(a_flag[idof3]),&(j2),&ifree_aatil2,
 			&nzs_aatil2,&contribution,&au_aatil2);
 	    i=i+iadd;       	     
@@ -2037,7 +1799,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	      // k=idof1
 	      iadd=0;
 	      e1=au_ddtil2a[i];
-	      //if(debug==1){printf("");}
 	      if(i+1<jq_ddtil2a[j+1]-1 &&
 		 a_flagr[irow_ddtil2a[i+1]-1]-1==idof2){
 		e2=au_ddtil2a[i+1];++iadd;}else{e2=0.0;}
@@ -2049,18 +1810,10 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	      e2=au_ddtil2a[i];
 	      e3=0.0;
 	    }
-	    if(debug==1){printf("\t ktslip %e %e %e \n",ltslip[3],ltslip[4],
-				ltslip[5]);}
-	    if(debug==1){printf("\t au_bdtil %e %e %e cdof %" ITGFORMAT
-				" rdof %" ITGFORMAT " %" ITGFORMAT
-				" \n \t au_aatil",e1,e2,e3,a_flagr[j],idof1,
-				idof2);}
 	    contribution=(n2[0]*e1+n2[1]*e2+n2[2]*e3);
-	    if(debug==1){printf(" %e ",contribution);}
 	    insertas_ws(&irow_aatil2,&(a_flag[idof1]),&(j2),&ifree_aatil2,
 			&nzs_aatil2,&contribution,&au_aatil2);
 	    contribution=(ltslip[3]*e1+ltslip[4]*e2+ltslip[5]*e3);
-	    if(debug==1){printf(" %e \n",contribution);}
 	    insertas_ws(&irow_aatil2,&(a_flag[idof2]),&(j2),&ifree_aatil2,
 			&nzs_aatil2,&contribution,&au_aatil2);
 	    i=i+iadd;		           
@@ -2091,16 +1844,12 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
   }
   
   nzs_aatil2=ifree_aatil2-1;
-  if(debug==1)printf("\ttrafoNT2: size au_aatil2 %" ITGFORMAT " \n",nzs_aatil2);
   add_rect(au_aatil1,irow_aatil1,jq_aatil1,*row_la,*row_la,
 	   au_aatil2,irow_aatil2,jq_aatil2,*row_la,*row_la,
 	   &au_aatil,&irow_aatil,jq_aatil,&nzs_aatil);
   
   SFREE(au_aatil1);SFREE(irow_aatil1);SFREE(jq_aatil1);
   SFREE(au_aatil2);SFREE(irow_aatil2);SFREE(jq_aatil2); 
-  
-  if(debug==1)printf("\ttrafoNT2: au_daa %" ITGFORMAT " au_aatil %" ITGFORMAT "\n",
-	 jq_daa[*row_la]-1,jq_aatil[*row_la]-1);
   
   /* changing f_da due to N and T (normal and tangential
      direction at the slave surface **/
@@ -2124,10 +1873,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	t[l]=slavtan[6*(islavnodeentry-1)+l];	     
 	that[l]=slavtan[6*(islavnodeentry-1)+l];	     
       }	
-      if(debug==1){printf("node %" ITGFORMAT " idof %" ITGFORMAT " %"
-			  ITGFORMAT " %" ITGFORMAT " act %" ITGFORMAT "\n",
-			  node,idof1,idof2,idof3,islavact[islavnodeentry-1]);}
-      
+     
       trafontspcmpc(n,t,n2,that,&islavnodeentry,nboun,ndirboun,nodeboun,xboun,
 		    nmpc,ipompc,nodempc,coefmpc,ikboun,ilboun,ikmpc,ilmpc,
 		    nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,
@@ -2136,9 +1882,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
       
       /* calculate needed fields for coulomb friction **/
       
-      up_n=u_tilde[(islavnodeentry-1)*3]*n2[0]+
-	u_tilde[(islavnodeentry-1)*3+1]*n2[1]+
-	u_tilde[(islavnodeentry-1)*3+2]*n2[2];
       utildep_t[0]=u_tilde[(islavnodeentry-1)*3]*that[0]+
 	u_tilde[(islavnodeentry-1)*3+1]*that[1]+
 	u_tilde[(islavnodeentry-1)*3+2]*that[2];
@@ -2162,7 +1905,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	that[5]*cstressini2[(islavnodeentry-1)*mt+2];	   
       lambdatilde_t[0]=lambda_t[0]-lambdaini_t[0];	   
       lambdatilde_t[1]=lambda_t[1]-lambdaini_t[1];		
-      nlambda_t=sqrt(lambda_t[0]*lambda_t[0]+lambda_t[1]*lambda_t[1]);
       bp=bp_old[islavnodeentry-1];
       scal=Ddtil[jqdtil[node-1]-1];
       
@@ -2214,7 +1956,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 					    resreg,&derivmode,&regmodet,
 					    lambdaiwan,lambdaiwanini,
 					    &islavnodeentry,n,t,&mu,rslip,
-					    ltslip,ltu,&yielded,iit,&debug,
+					    ltslip,ltu,&yielded,iit,
 					    &iwan,dut));
 	  
 	  rphat[0]=0.0;
@@ -2223,35 +1965,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	hpn=gap[islavnodeentry-1]+gnc-dgnc*lambda_n;
 	dgnc1=dgnc;
 	
-	if(debug==1){
-	  printf("\t lm= %e %e %e nlm=%e bp=%e\n",lambda_n,lambda_t[0],
-		 lambda_t[1],nlambda_t,bp);
-	  printf("\t lminit= %e %e utilt= %e %e\n",lambdaini_t[0],
-		 lambdaini_t[1],utildep_t[0],utildep_t[1] );
-	  if(regmodet==2){
-	    printf("\t d= %e %e\n",resreg[0],resreg[1]);
-	  }
-	  printf("\t uold(%" ITGFORMAT ")= %e %e %e u_t= %e %e %e \n",k,
-		 u_tilde[(islavnodeentry-1)*3],u_tilde[(islavnodeentry-1)*3+1],
-		 u_tilde[(islavnodeentry-1)*3+2],up_n,
-		 utildep_t[0],utildep_t[1]);
-	  if(mu>1.E-10){
-	    printf("\t rslip1: %e %e %e\n",rslip[0],rslip[1],rslip[2]);
-	    printf("\t rslip2: %e %e %e\n",rslip[3],rslip[4],rslip[5]);
-	    printf("\t ltslip1: %e %e %e\n",ltslip[0],ltslip[1],ltslip[2]);
-	    printf("\t ltslip2: %e %e %e\n",ltslip[3],ltslip[4],ltslip[5]);
-	    printf("\t rphat= %e %e \n",rphat[0],rphat[1]);
-	    printf("\t ltu= %e %e hpn %e  gap %e\n",ltu[0],ltu[1],hpn,
-		   gap[islavnodeentry-1]);
-	  }else{
-	    printf("\t no friction\n");
-	    printf("\t rslip1: %e %e %e\n",rslip[0],rslip[1],rslip[2]);
-	    printf("\t rslip2: %e %e %e\n",rslip[3],rslip[4],rslip[5]);	
-	    printf("\t ltu= %e %e hpn %e  gap %e\n",ltu[0],ltu[1],hpn,
-		   gap[islavnodeentry-1]);	    
-	  }
-	  
-	}
 	if(jrow==4 && ithermal[0]<2){ 
 	  printf(" *ERROR in trafontmortar2\n");
 	  // something went wrong
@@ -2266,11 +1979,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	    f_atil[k]=hpn+(dgnc1)*(n[0]*e1+n[1]*e2+n[2]*e3);
 	    f_atil[k+1]=(rslip[0]*e1+rslip[1]*e2+rslip[2]*e3)+rphat[0]-ltu[0];
 	    f_atil[k+2]=(rslip[3]*e1+rslip[4]*e2+rslip[5]*e3)+rphat[1]-ltu[1];
-	    if(debug==1){printf("\t f_d %e %e %e f_til %e %e %e \n",f_da[k],
-				f_da[k+1],f_da[k+2],
-				f_atil[k]/Ddtil[jqdtil[node-1]-1],
-				f_atil[k+1]/Ddtil[jqdtil[node-1]-1],
-				f_atil[k+2]/Ddtil[jqdtil[node-1]-1]);}
 	    k=k+2;
 	  }else if(idof2>-1 && idof3>-1){
 	    //2D auf 3D
