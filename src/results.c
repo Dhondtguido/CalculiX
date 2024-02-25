@@ -75,10 +75,7 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 	     ITG *network,ITG *ipobody,double *xbody,ITG *ibody,char *typeboun,
 	     ITG *itiefac,char *tieset,double *smscale,ITG *mscalmethod,
 	     ITG *nbody,double *t0g,double *t1g,ITG *islavelinv,double *autloc,
-	     ITG *irowtloc,ITG *jqtloc,ITG *nboun2,ITG *ndirboun2,
-	     ITG *nodeboun2,double *xboun2,ITG *nmpc2,ITG *ipompc2,
-	     ITG *nodempc2,double *coefmpc2,char *labmpc2,ITG *ikboun2,
-	     ITG *ilboun2,ITG *ikmpc2,ITG *ilmpc2,ITG *mortartrafoflag,
+	     ITG *irowtloc,ITG *jqtloc,ITG *mortartrafoflag,
 	     ITG *intscheme,double *physcon){
 
   ITG intpointvarm,calcul_fn,calcul_f,calcul_qa,calcul_cauchy,ikin,
@@ -164,27 +161,14 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
     
   /* 1. nodewise storage of the primary variables
      2. determination which derived variables have to be calculated */
-
-  //ccc  if((*mortar>1)&&(*mortartrafoflag==1)){
     
-    /* fix for trafo U->Uhat for mortar contact */
-    
-  /*ccc resultsini(nk,v,ithermal,filab,iperturb,f,fn,nactdof,iout,qa,vold,b,
-	       nodeboun,ndirboun,xboun2,nboun2,ipompc2,nodempc2,coefmpc2,
-	       labmpc2,nmpc2,nmethod,cam,neq,
-	       veold,accold,bet,gam,dtime,mi,vini,nprint,prlab,
-	       &intpointvarm,&calcul_fn,&calcul_f,&calcul_qa,&calcul_cauchy,
-	       &ikin,&intpointvart,typeboun,&num_cpus,mortar,nener,iponoel,
-	       network);
-	       }else{*/
-    resultsini(nk,v,ithermal,filab,iperturb,f,fn,
-	       nactdof,iout,qa,vold,b,nodeboun,ndirboun,
-	       xboun,nboun,ipompc,nodempc,coefmpc,labmpc,nmpc,nmethod,cam,neq,
-	       veold,accold,bet,gam,dtime,mi,vini,nprint,prlab,
-	       &intpointvarm,&calcul_fn,&calcul_f,&calcul_qa,&calcul_cauchy,
-	       &ikin,&intpointvart,typeboun,&num_cpus,mortar,nener,iponoel,
-	       network);
-    //ccc  }
+  resultsini(nk,v,ithermal,filab,iperturb,f,fn,
+	     nactdof,iout,qa,vold,b,nodeboun,ndirboun,
+	     xboun,nboun,ipompc,nodempc,coefmpc,labmpc,nmpc,nmethod,cam,neq,
+	     veold,accold,bet,gam,dtime,mi,vini,nprint,prlab,
+	     &intpointvarm,&calcul_fn,&calcul_f,&calcul_qa,&calcul_cauchy,
+	     &ikin,&intpointvart,typeboun,&num_cpus,mortar,nener,iponoel,
+	     network);
 
   /* next statement allows for storing the displacements in each
      iteration: for debugging purposes */
@@ -400,18 +384,9 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 
   /* calculating the matrix system internal force vector */
 
-  //ccc  if((*mortar>1)&&(*mortartrafoflag==1)){
-    
-    /* fix for trafo U->Uhat for mortar contact */
-    
-  /*ccc  resultsforc(nk,f,fn,nactdof,ipompc2,nodempc2,
-		coefmpc2,labmpc2,nmpc2,mi,fmpc,&calcul_fn,&calcul_f,
-		&num_cpus);
-		}else{*/
-    resultsforc(nk,f,fn,nactdof,ipompc,nodempc,
-		coefmpc,labmpc,nmpc,mi,fmpc,&calcul_fn,&calcul_f,
-		&num_cpus);
-    //ccc }
+  resultsforc(nk,f,fn,nactdof,ipompc,nodempc,
+	      coefmpc,labmpc,nmpc,mi,fmpc,&calcul_fn,&calcul_f,
+	      &num_cpus);
 
   /* calculating the total energy if
      - iout<=0 (no result output)

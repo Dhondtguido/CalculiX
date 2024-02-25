@@ -4099,10 +4099,7 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
              ITG *ibody,char *typeboun,ITG *itiefac,char *tieset,
              double *smscale,ITG *mscalmethod,ITG *nbody,double *t0g,
 	     double *t1g,ITG *islavelinv,double *autloc,ITG *irowtloc,
-	     ITG *jqtloc,ITG *nboun2,ITG *ndirboun2,ITG *nodeboun2,
-	     double *xboun2,ITG *nmpc2,ITG *ipompc2,ITG *nodempc2,
-	     double *coefmpc2,char *labmpc2,ITG *ikboun2,ITG *ilboun2,
-	     ITG *ikmpc2,ITG *ilmpc2,ITG *mortartrafoflag,ITG *intscheme,
+	     ITG *jqtloc,ITG *mortartrafoflag,ITG *intscheme,
 	     double *physcon);
 
 void FORTRAN(resultsem,(double *co,ITG *kon,ITG *ipkon,char *lakon,

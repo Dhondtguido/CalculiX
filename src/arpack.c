@@ -80,7 +80,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
   /* calls the Arnoldi Package (ARPACK) */
   
   char bmat[2]="G", which[3]="LM", howmny[2]="A", fneig[132]="",
-    description[13]="            ",*lakon=NULL,jobnamef[396]="",*labmpc2=NULL;
+    description[13]="            ",*lakon=NULL,jobnamef[396]="";
 
   ITG *inum=NULL,k,ido,ldz,iparam[11],ipntr[14],lworkl,ngraph=1,im,
     info,rvec=1,*select=NULL,lfin,j,lint,iout,ielas=1,icmd=0,mt=mi[1]+1,
@@ -97,9 +97,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     iflagact=0,*islavsurfold=NULL,ialeatoric=0,kscale=1,network=0,
     *iponoel=NULL,*inoel=NULL,nrhs=1,igreen=0,node,idir,mscalmethod=0,
     *jqw=NULL,*iroww=NULL,nzsw,
-    *islavelinv=NULL,*irowtloc=NULL,*jqtloc=NULL,nboun2,
-    *ndirboun2=NULL,*nodeboun2=NULL,nmpc2,*ipompc2=NULL,*nodempc2=NULL,
-    *ikboun2=NULL,*ilboun2=NULL,*ikmpc2=NULL,*ilmpc2=NULL,mortartrafoflag=0;
+    *islavelinv=NULL,*irowtloc=NULL,*jqtloc=NULL,mortartrafoflag=0;
 
   double *stn=NULL,*v=NULL,*resid=NULL,*z=NULL,*workd=NULL,dtset,
     *workl=NULL,*d=NULL,sigma=1,*temp_array=NULL,*pslavsurfold=NULL,
@@ -116,7 +114,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     *au=NULL,*ad=NULL,*b=NULL,*aub=NULL,*adb=NULL,*pslavsurf=NULL,
     *pmastsurf=NULL,*cdn=NULL,*energyini=NULL,*energy=NULL,
     *cdnr=NULL,*cdni=NULL,*eme=NULL,alea=0.1,*smscale=NULL,*auw=NULL,
-    *autloc=NULL,*xboun2=NULL,*coefmpc2=NULL,dtvol,wavespeed[*nmat];
+    *autloc=NULL,dtvol,wavespeed[*nmat];
 
   FILE *f1;
 
@@ -411,9 +409,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	    islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
 	    inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 	    itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	    islavelinv,autloc,irowtloc,jqtloc,&nboun2,
-	    ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,coefmpc2,
-	    labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
+	    islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
 	    &intscheme,physcon);
   }else{
     results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,
@@ -435,9 +431,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	    islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
 	    inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 	    itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	    islavelinv,autloc,irowtloc,jqtloc,&nboun2,
-	    ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,coefmpc2,
-	    labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
+	    islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
 	    &intscheme,physcon);
   }
   
@@ -1137,9 +1131,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	      islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
               inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 	      itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	      islavelinv,autloc,irowtloc,jqtloc,&nboun2,
-	      ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,coefmpc2,
-	      labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
+	      islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
 	      &intscheme,physcon);}
     else{
       results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,
@@ -1162,9 +1154,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	      islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
               inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 	      itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	      islavelinv,autloc,irowtloc,jqtloc,&nboun2,
-	      ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,coefmpc2,
-	      labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
+	      islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
 	      &intscheme,physcon);
     }
     SFREE(eei);SFREE(stiini);SFREE(emeini);SFREE(vini);

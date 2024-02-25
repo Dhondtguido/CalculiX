@@ -5346,3 +5346,5 @@ Dec 2002        - started to work on single crystal plasticity
                 - cleaned up stressmortar.c
 
  24 Feb 2023    - cleaned up trafontmortar2.c
+
+ 25 Feb 2023    - cleaned up results.c

@@ -1474,9 +1474,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		islavsurf,ielprop,prop,energyini,energy,&iit,iponoel,
 		inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 		itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-		islavelinv,autloc,irowtloc,jqtloc,&nboun2,
-		ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,coefmpc2,
-		labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
+		islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
 		&intscheme,physcon);}
       else{
 	results(co,nk,kon,ipkon,lakon,ne,&v[kkv],&stn[kk6],inum,
@@ -1499,9 +1497,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		islavsurf,ielprop,prop,energyini,energy,&iit,iponoel,
 		inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 		itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-		islavelinv,autloc,irowtloc,jqtloc,&nboun2,
-		ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,coefmpc2,
-		labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
+		islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
 		&intscheme,physcon);
       }
 

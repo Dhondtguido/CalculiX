@@ -149,22 +149,14 @@ c     Bernhardi end
         elseif(lakon(i)(4:4).eq.'6') then
           nope=6
         elseif(lakon(i)(1:2).eq.'ES') then
-c     begin 16.07.2020             
           nope=ichar(lakon(i)(8:8))-47
-c     read(lakon(i)(8:8),'(i1)') nope
-c     nope=nope+1
-c     end 16.07.2020             
 !     
 !     local contact spring number
 !     
-c     write(*,*) 'nope before= ',nope
           if(lakon(i)(7:7).eq.'C') then
             if(nasym.eq.1) cycle
-c     begin 16.07.2020             
             if(mortar.eq.1) nope=kon(indexe)
-c     end 16.07.2020             
           endif
-c     write(*,*) 'nope after= ',nope
         elseif(lakon(i)(1:4).eq.'MASS') then
           nope=1
         elseif((lakon(i)(1:5).eq.'U1   ').or.
@@ -242,7 +234,6 @@ c     write(*,*) 'nope after= ',nope
             jj=(id1-1)*3+k
             call nident(kon(indexe+1),node2,nope,id2)
             ll=(id2-1)*3+m
-c     write(*,*) 'mafillsm ',node1,k,node2,m,jj,ll
             call mafillsmcsmatrix(ipompc,nodempc,coefmpc,nmpc,
      &           labmpc,ad,au,nactdof,jq,irow,mi,ner,
      &           k,m,node1,node2,jj,ll,val,i,mcs,ielcs,ics,cs)
@@ -289,11 +280,6 @@ c     write(*,*) 'mafillsm ',node1,k,node2,m,jj,ll
 !     
             node2=kon(indexe+l)
             jdof2=nactdof(m,node2)
-              if(i.eq.50) then
-                write(20,100) node1,k,node2,m,s(jj,ll)
-                write(21,100) node1,k,node2,m,sm(jj,ll)
-              endif
- 100          format(i10,",",i5,",",i10,",",i5,",",e20.13)
 !     
 !     check whether one of the DOF belongs to a SPC or MPC
 !     
@@ -602,7 +588,6 @@ c     write(*,*) 'mafillsm ',node1,k,node2,m,jj,ll
                           else
                             tr=cs(15,icomplex1)*cs(15,icomplex2)
      &                           +cs(16,icomplex1)*cs(16,icomplex2)
-c     write(*,*) 'tr= ',tr
                             walue=value*tr
                             walu2=valu2*tr
                             call add_sm_ei(au,ad,aub,adb,jq,

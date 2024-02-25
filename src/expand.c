@@ -67,7 +67,7 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 
   /* calls the Arnoldi Package (ARPACK) for cyclic symmetry calculations */
   
-    char *filabt,lakonl[2]=" \0",*labmpc2=NULL;
+    char *filabt,lakonl[2]=" \0";
 
     ITG *inum=NULL,k,idir,j,iout=0,index,inode,id,i,idof,im,
       ielas,icmd,kk,l,nkt,icntrl,imag=1,icomplex,kkv,kk6,iterm,
@@ -79,9 +79,7 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
       nznode,ll,icfd=0,*inomat=NULL,mortar=0,*islavact=NULL,*ipobody=NULL,
       *islavnode=NULL,*nslavnode=NULL,*islavsurf=NULL,idirnew,
       *iponoel=NULL,*inoel=NULL,mscalmethod=0,intscheme=0,
-      *islavelinv=NULL,*irowtloc=NULL,*jqtloc=NULL,nboun2,
-      *ndirboun2=NULL,*nodeboun2=NULL,nmpc2,*ipompc2=NULL,*nodempc2=NULL,
-      *ikboun2=NULL,*ilboun2=NULL,*ikmpc2=NULL,*ilmpc2=NULL,mortartrafoflag=0;
+      *islavelinv=NULL,*irowtloc=NULL,*jqtloc=NULL,mortartrafoflag=0;
 
     long long lint;
 
@@ -93,10 +91,8 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
       *qfx=NULL,*qfn=NULL,xreal,ximag,*vt=NULL,sum,*voldt=NULL,
       *coefright=NULL,coef,a[9],ratio,reltime,*physcon=NULL,
       *shcon=NULL,*springarea=NULL,*z=*zp, *zdof=NULL, *thicke=NULL,
-      *sumi=NULL,
-      *vti=NULL,*pslavsurf=NULL,*pmastsurf=NULL,*cdn=NULL,
-      *energyini=NULL,*energy=NULL,*smscale=NULL,
-      *autloc=NULL,*xboun2=NULL,*coefmpc2=NULL;
+      *sumi=NULL,*vti=NULL,*pslavsurf=NULL,*pmastsurf=NULL,*cdn=NULL,
+      *energyini=NULL,*energy=NULL,*smscale=NULL,*autloc=NULL;
     
     /* dummy arguments for the results call */
     
@@ -474,9 +470,7 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	      islavsurf,ielprop,prop,energyini,energy,&iit,iponoel,
 	      inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 	      itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	      islavelinv,autloc,irowtloc,jqtloc,&nboun2,
-	      ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,coefmpc2,
-	      labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
+	      islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
 	      &intscheme,physcon);
 	    
 	}

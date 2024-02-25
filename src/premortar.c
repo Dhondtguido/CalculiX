@@ -545,9 +545,7 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
         islavsurf,ielprop,prop,energyini,energy,kscale,iponoel,
         inoel,nener,orname,network,ipobody,xbodyact,ibody,typeboun,
 	itiefac,tieset,smscale,mscalmethod,nbody,t0g,t1g,
-        islavelinv,autloc,irowtloc,jqtloc,nboun2,
-        ndirboun2,nodeboun2,xboun2,nmpc2,ipompc2,nodempc2,coefmpc2,
-        labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
+        islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
 	intscheme,physcon);
   
   if(debug==1)printf(" premortar: results_dstil finished\n");

@@ -75,36 +75,31 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 	  double *t0g,double *t1g){
 
   char fneig[132]="",description[13]="            ",*lakon=NULL,*labmpc=NULL,
-    *labmpcold=NULL,lakonl[9]="        \0",*tchar1=NULL,*tchar2=NULL,
-    *tchar3=NULL,cflag[1]=" ",jobnamef[396]="",*labmpc2=NULL;
+    *labmpcold=NULL,*tchar1=NULL,*tchar2=NULL,
+    *tchar3=NULL,cflag[1]=" ",jobnamef[396]="";
 
   ITG nev,i,j,k,idof,*inum=NULL,id,intscheme=0,
-    iinc=0,jprint=0,l,iout,ielas=0,icmd=3,iprescribedboundary,init,ifreebody,
+    iinc=0,jprint=0,l,iout,ielas=0,icmd=3,iprescribedboundary,init,
     mode=-1,noddiam=-1,*kon=NULL,*ipkon=NULL,*ielmat=NULL,*ielorien=NULL,
     *inotr=NULL,*nodeboun=NULL,*ndirboun=NULL,*iamboun=NULL,*ikboun=NULL,
     *ilboun=NULL,*nactdof=NULL,*ipompc=NULL,*nodempc=NULL,*ikmpc=NULL,
     *ilmpc=NULL,nsectors,nmpcold,mpcendold,*ipompcold=NULL,*nodempcold=NULL,
     *ikmpcold=NULL,*ilmpcold=NULL,kflag=2,nmd,nevd,*nm=NULL,*iamt1=NULL,
     *itg=NULL,ntg=0,symmetryflag=0,inputformat=0,dashpot,lrw,liw,iddebdf=0,
-    *iwork=NULL,ngraph=1,nkg,neg,ncont=0,ne0,nkon0,*itietri=NULL,
-    *koncont=NULL,konl[20],imat,nope,kodem,indexe,j1,jdof,icutb=0,
+    *iwork=NULL,ngraph=1,nkg,neg,ncont=0,ne0,
     *ipneigh=NULL,*neigh=NULL,inext,itp=0,*islavact=NULL,
-    ismallsliding=0,isteadystate,mpcfree,im,cyclicsymmetry,
-    memmpc_,imax,*icole=NULL,*irowe=NULL,*jqe=NULL,nzse[3],
+    isteadystate,im,cyclicsymmetry,
+    imax,*icole=NULL,*irowe=NULL,*jqe=NULL,nzse[3],
     nalset_=*nalset,*ialset=*ialsetp,*istartset_=NULL,*iendset_=NULL,
     *itiefac=NULL,*islavsurf=NULL,*islavnode=NULL,mt=mi[1]+1,
-    *imastnode=NULL,*nslavnode=NULL,*nmastnode=NULL,mortar=0,*imastop=NULL,
-    *iponoels=NULL,*inoels=NULL,*imddof=NULL,nmddof,kchdep=0,
-    *ikactcont=NULL,nactcont,nactcont_=100,*ikactmech=NULL,nactmech,
-    iabsload=0,*ipe=NULL,*ime=NULL,iprev=1,inonlinmpc=0,ielem,
+    *nslavnode=NULL,mortar=0,*imddof=NULL,nmddof,kchdep=0,
+    *ikactmech=NULL,nactmech,iabsload=0,iprev=1,inonlinmpc=0,ielem,
     *imdnode=NULL,nmdnode,*imdboun=NULL,nmdboun,*imdmpc=NULL,
-    nmdmpc,intpointvar,kmin,kmax,i1,ifacecount,*izdof=NULL,
+    nmdmpc,intpointvar,*izdof=NULL,
     nzdof,iload,iforc,*iponoel=NULL,*inoel=NULL,*imdelem=NULL,nmdelem,
     nasym=0,*nshcon=NULL,nherm,icfd=0,*inomat=NULL,
-    ialeatoric=0,network=0,iperturbsav,mscalmethod=0,
-    *islavelinv=NULL,*irowtloc=NULL,*jqtloc=NULL,nboun2,
-    *ndirboun2=NULL,*nodeboun2=NULL,nmpc2,*ipompc2=NULL,*nodempc2=NULL,
-    *ikboun2=NULL,*ilboun2=NULL,*ikmpc2=NULL,*ilmpc2=NULL,mortartrafoflag=0;
+    network=0,iperturbsav,mscalmethod=0,
+    *islavelinv=NULL,*irowtloc=NULL,*jqtloc=NULL,mortartrafoflag=0;
 
   long long i2;
 
@@ -123,20 +118,19 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
     *bact=NULL,*bmin=NULL,*co=NULL,*xboun=NULL,*xbounold=NULL,*vold=NULL,
     *eme=NULL,*ener=NULL,*coefmpc=NULL,*fmpc=NULL,*coefmpcold,*veold=NULL,
     *xini=NULL,*rwork=NULL,*adc=NULL,*auc=NULL,*zc=NULL,*rpar=NULL,
-    *cg=NULL,*straight=NULL,xl[27],voldl[mt*9],elas[21],fnl[27],t0l,t1l,
-    elconloc[21],veoldl[mt*9],setnull,deltmx,fextmax,dd,dtheta,dthetaref,
-    theta,*vini=NULL,dthetaold,*bcont=NULL,*vr=NULL,*vi=NULL,*bcontini=NULL,
+    setnull,deltmx,fextmax,dd,dtheta,dthetaref,
+    theta,*vini=NULL,*bcont=NULL,*vr=NULL,*vi=NULL,
     *stnr=NULL,*stni=NULL,*vmax=NULL,*stnmax=NULL,precision,resultmaxprev,
-    resultmax,func,funcp,fexp,fexm,fcos,fsin,sump,*bp=NULL,h14,senergy=0.0,
+    resultmax,func,funcp,fexp,fexm,fcos,fsin,sump,*bp=NULL,h14,
     *bv=NULL,*cstr=NULL,*aube=NULL,*adbe=NULL,*sti=*stip,time0=0.0,
     time=0.0,*xforcdiff=NULL,*xloaddiff=NULL,*xbodydiff=NULL,*t1diff=NULL,
-    *xboundiff=NULL,*bprev=NULL,*bdiff=NULL,*areaslav=NULL,venergy=0.0,
+    *xboundiff=NULL,*bprev=NULL,*bdiff=NULL,
     *springarea=NULL,*fextold=NULL,*eenmax=NULL,*fnr=NULL,*fni=NULL,
-    *xmastnor=NULL,*emeini=NULL,*xstate=NULL,*clearini=NULL,
-    *shcon=NULL,*xmr=NULL,*xmi=NULL,*xnoels=NULL,*pslavsurf=NULL,
+    *emeini=NULL,*xstate=NULL,*clearini=NULL,
+    *shcon=NULL,*xmr=NULL,*xmi=NULL,*pslavsurf=NULL,
     *pmastsurf=NULL,*cdnr=NULL,*cdni=NULL,*tinc,*tper,*tmin,*tmax,
-    *energyini=NULL,*energy=NULL,alea,*fext=NULL,*smscale=NULL,
-    *autloc=NULL,*xboun2=NULL,*coefmpc2=NULL,*fnext=NULL;
+    *energyini=NULL,*energy=NULL,*fext=NULL,*smscale=NULL,
+    *autloc=NULL,*fnext=NULL;
 
   FILE *f1;
 
@@ -177,20 +171,12 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
   tmin=&timepar[2];
   tmax=&timepar[3];
 
-  if(ithermal[0]<=1){
-    kmin=1;kmax=3;
-  }else if(ithermal[0]==2){
-    kmin=0;kmax=mi[1];if(kmax>2)kmax=2;
-  }else{
-    kmin=0;kmax=3;
-  }
-
   dtime=*tinc;
 
   alpham=xmodal[0];
   betam=xmodal[1];
 
-  dd=ctrl[16];deltmx=ctrl[26];alea=ctrl[54];
+  dd=ctrl[16];deltmx=ctrl[26];
 
   ne0=*ne;
   
@@ -757,7 +743,6 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
   FORTRAN(checktime,(itpamp,namta,tinc,ttime,amta,tmin,&inext,&itp,istep,tper));
   dtheta=(*tinc)/(*tper);
   dthetaref=dtheta;
-  dthetaold=dtheta;
 
   *tmin=*tmin/(*tper);
   *tmax=*tmax/(*tper);
@@ -845,7 +830,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
   /* storing the element and topology information before introducing 
      contact elements */
 
-  ne0=*ne;nkon0=*nkon;
+  ne0=*ne;
 
   NNEW(zeta,double,nev);
   NNEW(cstr,double,6);
@@ -1285,7 +1270,6 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 	
       /* increasing the increment size */
 	
-      dthetaold=dtheta;
       dtheta=dthetaref*dd;
 	
       /* check increment length whether
@@ -1789,9 +1773,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 	      islavsurf,ielprop,prop,energyini,energy,&iit,iponoel,
 	      inoel,nener,orname,&network,ipobody,xbodyact,ibody,typeboun,
 	      itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	      islavelinv,autloc,irowtloc,jqtloc,&nboun2,
-	      ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,coefmpc2,
-	      labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
+	      islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
 	      &intscheme,physcon);
 
       /* restoring */
