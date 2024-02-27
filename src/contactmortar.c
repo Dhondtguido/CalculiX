@@ -33,12 +33,6 @@
  *
  * Author: Saskia Sitzmann
  * 
- *  [in] itiefac 		pointer into field islavsurf: (1,i) beginning slave_i (2,i) end of slave_i
- *  [in] islavsurf	islavsurf(1,i) slaveface i islavsurf(2,i) # integration points generated before looking at face i 
- *  [in] islavnode	field storing the nodes of the slave surface
- *  [in] imastnode	field storing the nodes of the master surfaces
- *  [in] nslavnode	(i)pointer into field isalvnode for contact tie i 
- *  [in] nmastnode	(i)pointer into field imastnode for contact tie i 
  *  [out] nzsc		number of nonzero,nondiagonal entries of intermediate system matrix
  *  [out] aucp		intermediate system matrix
  *  [out] adc             intermediate system matrix, diagonal terms
@@ -76,10 +70,6 @@
  *  [in] irowtlocinv	field containing row numbers of autlocinv
  *  [in] jqtlocinv	pointer into field irowtlocinv
  *  [in] autlocinv	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$  
- *  [in] mi		(1) max # of integration points per element (2) max degree of freedom per element
- *  [in] ipe		(i) pointer to ime for node i 
- *  [in] ime              ... cataloging the edges with node i
- *  [in] tietol		(1,i) tie tolerance (2,i) contant interaction material definition
  *  [in] iflagact         here: flag indicating if coupling matrices should be updated every iteration or only once per increment (==0)
  *  [in] cstress		current Lagrange multiplier 
  *  [in] cstressini	Lagrange multiplier at start of the increment
@@ -91,9 +81,6 @@
  *  [in] nslavmpc		(2*i) pointer to islavmpc...
  *  [in] islavmpc		... which stores MPCs for slave node i
  *  [in] nsmpc		number of MPC for slave nodes
- *  [in] nslavspc2	(2*i) pointer to islavspc2...
- *  [in] islavspc2         ... which stores transformed SPCs for slave node i
- *  [in] nsspc2            number of transformed SPC for slave nodes
  *  [in] nmastspc		(2*i) pointer to imastspc...
  *  [in] imastspc         ... which stores SPCs for master node i
  *  [in] nmspc            number of SPC for master nodes
@@ -165,12 +152,9 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 		   ITG *ndirboun,ITG *nodeboun,double *xboun,ITG *nmpc,
 		   ITG *ipompc,ITG *nodempc,double *coefmpc,ITG *ikboun,
 		   ITG *ilboun,ITG *ikmpc,ITG *ilmpc,
-		   ITG *nslavspc,
-		   ITG *islavspc,ITG *nsspc,ITG *nslavmpc,ITG *islavmpc,
-		   ITG *nsmpc,ITG *nslavspc2,ITG *islavspc2,ITG *nsspc2,
-		   ITG *nmastspc,
-		   ITG *imastspc,ITG *nmspc,ITG *nmastmpc,ITG *imastmpc,
-		   ITG *nmmpc,
+		   ITG *nslavspc,ITG *islavspc,ITG *nsspc,ITG *nslavmpc,ITG *islavmpc,
+		   ITG *nsmpc,ITG *nmastspc,
+		   ITG *imastspc,ITG *nmspc,ITG *nmastmpc,ITG *imastmpc,ITG *nmmpc,
 		   double *pslavdual,double *pslavdualpg,ITG *islavactdof,
 		   ITG *islavactdoftie,double *plicon,ITG *nplicon,ITG *npmat_,
 		   ITG *nelcon,double *dtime,ITG *islavnodeinv,double **Bdp,
@@ -264,8 +248,7 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 	ntrimax=itietri[2*i+1]-itietri[2*i]+1;} 	
     }
       
-    /* For the first step, first increment, first iteration 
-       an initial guess for 
+    /* For the first step, first increment, first iteration an initial guess for 
        the active set is generated analogous to node-to-surface penalty */
       
     if ((*iinc==1)&&(*iit==1)&&(*istep==1)){	    

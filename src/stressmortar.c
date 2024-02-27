@@ -91,7 +91,6 @@
  *  [in] ithermal         thermal method
  *  [in] iperturb		geometrical method
  *  [in] labmpc           labels of MPCs
- *  [in] nk2		number or generated points needed for transformed SPCs
  */
 
 void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
@@ -119,7 +118,7 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
 		  double *lambdaiwanini,ITG *nmethod,double *bet,
 		  ITG *iflagdualquad,ITG *ithermal,ITG *iperturb,
 		  char *labmpc,double *cam,double *veold,
-		  double *accold,double *gam,ITG *nk2,double *cfsini,
+		  double *accold,double *gam,double *cfsini,
 		  double *cfstil,double *plkcon,ITG *nplkcon,char *filab,
 		  double *f,double *fn,double *qa,ITG *nprint,char *prlab,
 		  double *xforc,ITG *nforc){
@@ -148,8 +147,8 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
   
   NNEW(vectornull,double,neq[1]);
   NNEW(cstress2,double,neq[1]);  
-  NNEW(bhat2,double,mt*(*nk+*nk2));
-  NNEW(b2,double,mt*(*nk+*nk2));
+  NNEW(bhat2,double,mt**nk);
+  NNEW(b2,double,mt**nk);
   NNEW(cold,double,3*nslavnode[*ntie]);
   NNEW(cold2,double,3*nslavnode[*ntie]);
   NNEW(cstresstil,double,mt*nslavnode[*ntie]);

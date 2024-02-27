@@ -76,32 +76,12 @@
  *  [out] nzstemp	field storing the untransformed stiffness matrix size
  *  [out] slavnor	slave normal
  *  [out] slavtan	slave tangent 
- *  [out] nboun2        number of transformed SPCs
- *  [out] ndirboun2p	(i) direction of transformed SPC i 
- *  [out] nodeboun2p    (i) node of transformed SPC i
- *  [out] xboun2p       (i) value of transformed SPC i
- *  [out] nmpc2		number of transformed mpcs
- *  [out] ipompc2p      (i) pointer to nodempc and coeffmpc for transformed 
- MPC i
- *  [out] nodempc2p     i and directions of transformed MPCs
- *  [out] coefmpc2p     coefficients of transformed MPCs
- *  [out] labmpc2p 	transformed mpc labels
- *  [out] ikboun2p      sorted dofs idof=8*(node-1)+dir for transformed SPCs
- *  [out] ilboun2p      transformed SPC numbers for sorted dofs
- *  [out] ikmpc2p 	sorted dofs idof=8*(node-1)+dir for transformed MPCs
- *  [out] ilmpc2p	transformed SPC numbers for sorted dofs
  *  [out] nslavspcp	(2*i) pointer to islavspc...
  *  [out] islavspcp     ... which stores SPCs for slave node i
  *  [out] nsspc         number of SPC for slave i
  *  [out] nslavmpcp	(2*i) pointer to islavmpc...
  *  [out] islavmpcp	... which stores MPCs for slave node i
  *  [out] nsmpc		number of MPC for slave i
- *  [out] nslavspc2p	(2*i) pointer to islavspc2...
- *  [out] islavspc2p    ... which stores transformed SPCs for slave node i
- *  [out] nsspc2        number of transformed SPC for slave i
- *  [out] nslavmpc2p	(2*i) pointer to islavmpc2...
- *  [out] islavmpc2p	... which stores transformed MPCs for slave node i
- *  [out] nsmpc2	number of transformed MPC for slave i 
  *  [in] imastnode	field storing the i of the master surfaces
  *  [in] nmastnode	(i)pointer into field imastnode for contact tie i 
  *  [out] nmastspcp	(2*i) pointer to imastspc...
@@ -122,7 +102,6 @@
  \f$ p,q \f$ 
  *  [in] irowtlocinv	field containing row numbers of autlocinv
  *  [in] jqtlocinv	pointer into field irowtlocinv
- *  [in] nk2		number or generated points needed for transformed SPCs 
  *  [in]  iflagdualquad   flag indicating what mortar contact is used 
  (=1 quad-lin, =2 quad-quad, =3 PG quad-lin, =4 PG 
  quad-quad) 
@@ -164,19 +143,11 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
 	       ITG *iit,double *slavnor,double *slavtan,
 	       ITG *icol,ITG *irow,ITG *jq,
 	       ITG *ikboun,ITG *ilboun,ITG *ikmpc,ITG *ilmpc,
-	       ITG *nboun2,ITG **ndirboun2p,ITG **nodeboun2p,
-	       double **xboun2p,
-	       ITG *nmpc2,ITG **ipompc2p,ITG **nodempc2p,double **coefmpc2p,
-	       char **labmpc2p,
-	       ITG **ikboun2p,ITG **ilboun2p,ITG **ikmpc2p,ITG **ilmpc2p,
 	       ITG **nslavspcp,ITG **islavspcp,ITG **nslavmpcp,
 	       ITG **islavmpcp,
-	       ITG **nslavspc2p,ITG **islavspc2p,ITG **nslavmpc2p,
-	       ITG **islavmpc2p,
 	       ITG **nmastspcp,ITG **imastspcp,ITG **nmastmpcp,
 	       ITG **imastmpcp,
-	       ITG **nmastmpc2p,ITG **imastmpc2p,ITG *nmmpc2,
-	       ITG *nsspc,ITG *nsspc2,ITG *nsmpc,ITG *nsmpc2,
+	       ITG *nsspc,ITG *nsmpc,
 	       ITG *imastnode,ITG *nmastnode,ITG *nmspc,ITG *nmmpc,
 	       double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	       ITG *ne,double *stn,
@@ -216,7 +187,7 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
 	       ITG *ntie,
 	       double *autloc,ITG *irowtloc,ITG *jqtloc,
 	       double *autlocinv,ITG *irowtlocinv,ITG *jqtlocinv,
-	       ITG *nk2,ITG *iflagdualquad,
+	       ITG *iflagdualquad,
 	       char *tieset,ITG *itiefac  ,ITG *rhsi,
 	       double *au,double *ad,double **f_cmp,double **f_csp,
 	       double *t1act,double *cam,double *bet,double *gam,
@@ -243,13 +214,11 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
 	       double *smscale,ITG *mscalmethod,char *jobnamef){
   
   ITG im,i,ii,j,jj,k,l,mt=mi[1]+1,node,jfaces,nelems,ifaces,nope,nopes,idummy,
-    *ndirboun2=NULL,*nodeboun2=NULL,*ipompc2=NULL,*nodempc2=NULL,nodes[8],
+    nodes[8],
     konl[20],jj2,ifac,debug,
-    *ikboun2=NULL,*ilboun2=NULL,*ikmpc2=NULL,*ilmpc2=NULL,
     *nslavspc=NULL,*islavspc=NULL,*nslavmpc=NULL,*islavmpc=NULL,
-    *nslavspc2=NULL,*islavspc2=NULL,*nslavmpc2=NULL,*islavmpc2=NULL,
-    *nmastspc=NULL,*imastspc=NULL,*nmastmpc=NULL,*imastmpc2=NULL,
-    *nmastmpc2=NULL,*imastmpc=NULL,
+    *nmastspc=NULL,*imastspc=NULL,*nmastmpc=NULL,
+    *imastmpc=NULL,
     *irowc2=NULL,*icolc2=NULL,*jqc2=NULL,*irowbd=NULL,*jqbd=NULL,
     *irowbdtil=NULL,*jqbdtil=NULL,
     *irowbdtil2=NULL,*jqbdtil2=NULL,*irowdd=NULL,*jqdd=NULL,*irowddtil=NULL,
@@ -259,7 +228,7 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
     *irowtil=NULL,*jqtil=NULL,
     *nodeforc2=NULL,*ndirforc2=NULL,mortartrafoflag=1;
   
-  double alpha,*xboun2=NULL,*coefmpc2=NULL,*auc2=NULL,*adc2=NULL,*aubd=NULL,
+  double alpha,*auc2=NULL,*adc2=NULL,*aubd=NULL,
     *aubdtil=NULL,*aubdtil2=NULL,*ftil=NULL,*fexttil=NULL,
     *audd=NULL,*auddtil=NULL,*auddinv=NULL,*auddtil2=NULL,*v=NULL,
     *stx=NULL,*fn=NULL,*autil=NULL,*finitil=NULL,*fextinitil=NULL,
@@ -268,23 +237,15 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
     *adctil=NULL,*auctil=NULL,*veoldtil=NULL,*volddummy=NULL,
     *vectornull=NULL,*f_cs=NULL,*f_cm=NULL,
     *xforc2=NULL,*fnext=NULL,*veolddummy=NULL,*accolddummy=NULL;
-  
-  char *labmpc2=NULL;
 
   debug=0;
     
   alpha=1-2*sqrt(*bet);
   
-  ndirboun2=*ndirboun2p;nodeboun2=*nodeboun2p;xboun2=*xboun2p;
-  ipompc2=*ipompc2p;nodempc2=*nodempc2p;coefmpc2=*coefmpc2p;
-  labmpc2=*labmpc2p;ikboun2=*ikboun2p;ilboun2=*ilboun2p;ikmpc2=*ikmpc2p;
-  ilmpc2=*ilmpc2p;
   nslavspc=*nslavspcp;islavspc=*islavspcp;nslavmpc=*nslavmpcp;
   islavmpc=*islavmpcp;
-  nslavspc2=*nslavspc2p;islavspc2=*islavspc2p;nslavmpc2=*nslavmpc2p;
-  islavmpc2=*islavmpc2p;
   nmastspc=*nmastspcp;imastspc=*imastspcp;nmastmpc=*nmastmpcp;
-  imastmpc=*imastmpcp;nmastmpc2=*nmastmpc2p;imastmpc2=*imastmpc2p;
+  imastmpc=*imastmpcp;
   auc2=*auc2p;adc2=*adc2p;irowc2=*irowc2p;icolc2=*icolc2p;jqc2=*jqc2p;
   aubd=*aubdp;irowbd=*irowbdp;jqbd=*jqbdp;
   aubdtil=*aubdtilp;irowbdtil=*irowbdtilp;jqbdtil=*jqbdtilp;
@@ -377,54 +338,26 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
      combined fix-point Newton approach */
   
   if(*iit>1 && *ismallsliding==1){*iflagact=1;}
-  
-  /* transform SPCs/MPCs in case of quadratic finite elements
-     Caution: there is still a problem with MPCs on slave mid nodes,
-     avoid this!!! */
-  
-  //wird immer aufgerufen,da sich xbounact geaendert haben kann
-  
-  transformspcsmpcs_quad(nboun,ndirboun,nodeboun,xbounact,
-			 nmpc,ipompc,nodempc,coefmpc,labmpc,
-			 ikboun,ilboun,ikmpc,ilmpc,
-			 nboun2,&ndirboun2,&nodeboun2,&xboun2,
-			 nmpc2,&ipompc2,&nodempc2,&coefmpc2,&labmpc2,
-			 &ikboun2,&ilboun2,&ikmpc2,&ilmpc2,
-			 irowtlocinv,jqtlocinv,autlocinv,
-			 nk,nk2,iflagdualquad,
-			 ntie,tieset,itiefac,islavsurf,
-			 lakon,ipkon,kon,&mt,memmpc_,
-			 nodeforc,ndirforc,xforcact,nforc,
-			 &nodeforc2,&ndirforc2,&xforc2,nforc2);
 
   RENEW(islavspc,ITG,2**nboun);
   RENEW(islavmpc,ITG,2**nmpc);
-  RENEW(islavspc2,ITG,2**nboun2);
-  RENEW(islavmpc2,ITG,2**nmpc2);
   RENEW(imastspc,ITG,2**nboun);
   RENEW(imastmpc,ITG,2**nmpc);
-  RENEW(imastmpc2,ITG,2**nmpc);
   
   /* cataloque SPCs/MPCs */
   
   FORTRAN(catsmpcslavno,(ntie,islavnode,imastnode,nslavnode,
-			 nmastnode,nboun,ndirboun,nodeboun,nmpc,
+			 nmastnode,nboun,nmpc,
 			 ipompc,nodempc,ikboun,ilboun,ikmpc,ilmpc,
-			 nboun2,nmpc2,ipompc2,nodempc2,ikboun2,
-			 ilboun2,ikmpc2,ilmpc2,nslavspc,islavspc,
-			 nsspc,nslavmpc,islavmpc,nsmpc,nslavspc2,
-			 islavspc2,nsspc2,nslavmpc2,islavmpc2,
-			 nsmpc2,nmastspc,imastspc,nmspc,nmastmpc,
-			 imastmpc,nmmpc,nmastmpc2,imastmpc2,
-			 nmmpc2,jobnamef));
+			 nslavspc,islavspc,
+			 nsspc,nslavmpc,islavmpc,nsmpc,
+			 nmastspc,imastspc,nmspc,nmastmpc,
+			 imastmpc,nmmpc,jobnamef));
   
   RENEW(islavspc,ITG,2**nsspc+1);
   RENEW(islavmpc,ITG,2**nsmpc+1);
-  RENEW(islavspc2,ITG,2**nsspc2+1);
-  RENEW(islavmpc2,ITG,2**nsmpc2+1);
   RENEW(imastspc,ITG,2**nmspc+1);
   RENEW(imastmpc,ITG,2**nmmpc+1);
-  RENEW(imastmpc2,ITG,2**nmmpc2+1);
   
   /* Check for additional MPCs on slave mid nodes */
   
@@ -514,8 +447,8 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
     
   NNEW(v,double,mt**nk);
   NNEW(stx,double,6*mi[0]**ne);
-  NNEW(fn,double,mt*(*nk+*nk2));
-  NNEW(fmpc2,double,*nmpc2);
+  NNEW(fn,double,mt**nk);
+  NNEW(fmpc2,double,*nmpc);
   memcpy(&v[0],&vold[0],sizeof(double)*mt**nk);
   *iout=-1;
   NNEW(ftil,double,neq[1]);
@@ -572,27 +505,6 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
   
   /* calculating the external forces fext and stiffness matrix au/ad using
      modified shape functions for quadratic elements */
-  
-  /*ccc  mafillsmmain(co,nk,kon,ipkon,lakon,ne,nodeboun2,ndirboun2,xboun2,nboun2,
-	       ipompc2,nodempc2,coefmpc2,nmpc2,nodeforc2,ndirforc2,xforc2,
-	       nforc2,nelemload,sideload,xloadact,nload,xbodyact,ipobody,
-	       nbody,cgr,adtil,autil,fexttil,nactdof,icol,jqtil,irowtil,
-	       neq,nzl,
-	       nmethod,ikmpc2,ilmpc2,ikboun2,ilboun2,
-	       elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,
-	       ielmat,ielorien,norien,orab,ntmat_,
-	       t0,t1act,ithermal,prestr,iprestr,vold,iperturb,sti,
-	       nzs,stx,adb,aub,iexpl,plicon,nplicon,plkcon,nplkcon,
-	       xstiff,npmat_,dtime,matname,mi,
-	       ncmat_,mass,stiffness,buckling,rhsi,intscheme,
-	       physcon,shcon,nshcon,cocon,ncocon,ttime,time,istep,iinc,
-	       coriolis,ibody,xloadold,reltime,veold,springarea,nstate_,
-	       xstateini,xstate,thicke,integerglob,doubleglob,
-	       tieset,istartset,iendset,ialset,ntie,nasym,pslavsurf,
-	       pmastsurf,mortar,clearini,ielprop,prop,ne0,fnext,kscale,
-	       iponoel,inoel,network,ntrans,inotr,trab,smscale,
-	       mscalmethod,set,nset,islavelinv,autloc,irowtloc,jqtloc,
-	       &mortartrafoflag);*/
   
   mafillsmmain(co,nk,kon,ipkon,lakon,ne,nodeboun,ndirboun,xboun,nboun,
 	       ipompc,nodempc,coefmpc,nmpc,nodeforc,ndirforc,xforcact,
@@ -686,16 +598,10 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
   iperturb[1]=iperturb_sav[1];
   mortartrafoflag=0;
   
-  *ndirboun2p=ndirboun2;*nodeboun2p=nodeboun2;*xboun2p=xboun2;
-  *ipompc2p=ipompc2;*nodempc2p=nodempc2;*coefmpc2p=coefmpc2;
-  *labmpc2p=labmpc2;*ikboun2p=ikboun2;*ilboun2p=ilboun2;*ikmpc2p=ikmpc2;
-  *ilmpc2p=ilmpc2;
   *nslavspcp=nslavspc;*islavspcp=islavspc;*nslavmpcp=nslavmpc;
   *islavmpcp=islavmpc;
-  *nslavspc2p=nslavspc2;*islavspc2p=islavspc2;*nslavmpc2p=nslavmpc2;
-  *islavmpc2p=islavmpc2;
   *nmastspcp=nmastspc;*imastspcp=imastspc;*nmastmpcp=nmastmpc;
-  *nmastmpc2p=nmastmpc2;*imastmpcp=imastmpc;*imastmpc2p=imastmpc2;   
+  *imastmpcp=imastmpc;
   *auc2p=auc2;*adc2p=adc2;*irowc2p=irowc2;*icolc2p=icolc2;*jqc2p=jqc2;
   *aubdp=aubd;*irowbdp=irowbd;*jqbdp=jqbd;
   *aubdtilp=aubdtil;*irowbdtilp=irowbdtil;*jqbdtilp=jqbdtil;
