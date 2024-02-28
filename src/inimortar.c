@@ -94,45 +94,43 @@
  *  [out] imastmpcp	... which stores MPCs for master node i 
  *  [out] nsspc            number of SPC for slave nodes 
  *  [out] nsmpc		number of MPC for slave nodes
- *  [in] imastnode	field storing the nodes of the master surfaces
- *  [in] nmastnode	(i)pointer into field imastnode for contact tie i 
  *  [out] nmspc            number of SPC for master nodes
  *  [out] nmmpc		number of MPC for master nodes 
  *  [in] iponoels         (i) pointer to inoels
  *  [in] inoels           (3,i) element number, local node number and pointer to another entry
 **/
-void inimortar(double **enerp, ITG *mi, ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
-	       ITG **ipkonp, char **lakonp, ITG **konp, ITG *nkon,
-	       ITG *maxprevcontel, double **xstatep, ITG *nstate_,
-	       ITG **islavactdoftiep, double **bpp, ITG **islavactp,
-	       double **gapp,double **slavnorp, double **slavtanp,
+void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
+	       ITG **ipkonp,char **lakonp,ITG **konp,ITG *nkon,
+	       ITG *maxprevcontel,double **xstatep,ITG *nstate_,
+	       ITG **islavactdoftiep,double **bpp,ITG **islavactp,
+	       double **gapp,double **slavnorp,double **slavtanp,
 	       double **cdispp,
-	       double **cstressp, double **cfsp, double **cfmp,
+	       double **cstressp,double **cfsp,double **cfmp,
 	       double **cfsinip,double **cfsinitilp,double **cfstilp,
-	       double **bpinip, ITG **islavactinip, double **cstressinip,
-	       ITG *ntie, char *tieset,
-	       ITG *nslavnode, ITG *islavnode,
-	       ITG **islavnodeinvp, ITG **islavelinvp,double **pslavdualp,
+	       double **bpinip,ITG **islavactinip,double **cstressinip,
+	       ITG *ntie,char *tieset,
+	       ITG *nslavnode,ITG *islavnode,
+	       ITG **islavnodeinvp,ITG **islavelinvp,double **pslavdualp,
 	       double **pslavdualpgp,
 	       double **autlocp,ITG **irowtlocp,ITG **jqtlocp,	
 	       double **autlocinvp,ITG **irowtlocinvp,ITG **jqtlocinvp,
 	       double **Bdp,ITG **irowbp,ITG **jqbp,
 	       double **Bdhelpp,ITG **irowbhelpp,ITG **jqbhelpp,
-	       double **Ddp,ITG **irowdp,ITG **jqdp, 
+	       double **Ddp,ITG **irowdp,ITG **jqdp,
 	       double **Ddtilp,ITG **irowdtilp,ITG **jqdtilp,
 	       double **Bdtilp,ITG **irowbtilp,ITG **jqbtilp,
 	       double **Bpgdp,ITG **irowbpgp,ITG **jqbpgp,
-	       double **Dpgdp,ITG **irowdpgp,ITG **jqdpgp, 
+	       double **Dpgdp,ITG **irowdpgp,ITG **jqdpgp,
 	       double **Dpgdtilp,ITG **irowdpgtilp,ITG **jqdpgtilp,
 	       double **Bpgdtilp,ITG **irowbpgtilp,ITG **jqbpgtilp,
-	       ITG *iflagdualquad,ITG *itiefac, ITG *islavsurf,
+	       ITG *iflagdualquad,ITG *itiefac,ITG *islavsurf,
 	       ITG *nboun,ITG *ndirboun,ITG *nodeboun,double *xboun,
 	       ITG *nmpc,ITG *ipompc,ITG *nodempc,double *coefmpc,char *labmpc,
 	       ITG *ikboun,ITG *ilboun,ITG *ikmpc,ITG *ilmpc,
 	       ITG **nslavspcp,ITG **islavspcp,ITG **nslavmpcp,ITG **islavmpcp,
 	       ITG **nmastspcp,ITG **imastspcp,ITG **nmastmpcp,ITG **imastmpcp,
-	       ITG *nsspc, ITG *nsmpc,
-	       ITG *imastnode,ITG *nmastnode,ITG *nmspc, ITG *nmmpc,
+	       ITG *nsspc,ITG *nsmpc,
+	       ITG *imastnode,ITG *nmastnode,ITG *nmspc,ITG *nmmpc,
 	       ITG *iponoels,ITG *inoels,
 	       double *tietol,double *elcon,ITG *ncmat_,ITG *ntmat_,ITG *nasym,
 	       double *vold,ITG *nset,char *set,ITG *mortar,
@@ -140,9 +138,9 @@ void inimortar(double **enerp, ITG *mi, ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
 	       ITG **ielmatp,ITG **ielorienp,ITG *norien,ITG *nmethod,
 	       ITG *nodeforc,ITG *ndirforc,double *xforc,ITG *nforc){
 
-    char *lakon=NULL; 
+  char *lakon=NULL;
     
-  ITG k,i,j,node,mt=mi[1]+1,regmode,*ipkon=NULL,*kon=NULL,
+  ITG k,i,j,node,mt=mi[1]+1,*ipkon=NULL,*kon=NULL,
     *islavactdoftie=NULL,*islavact=NULL,
     *islavactini=NULL,*islavnodeinv=NULL,*islavelinv=NULL,*irowtloc=NULL,
     *jqtloc=NULL,
@@ -156,7 +154,7 @@ void inimortar(double **enerp, ITG *mi, ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
     *nmastspc=NULL,*imastspc=NULL,*nmastmpc=NULL,*imastmpc=NULL,
     *ielmat=NULL,*ielorien=NULL;
   
-  double mu,fkninv,fktauinv,p0,beta,*ener=NULL,*xstate=NULL,*bp=NULL,
+  double *ener=NULL,*xstate=NULL,*bp=NULL,
     *gap=NULL,*slavnor=NULL,*slavtan=NULL,
     *cdisp=NULL,*cstress=NULL,*cfs=NULL,*cfsini=NULL,*cfsinitil=NULL,
     *cfstil=NULL,*cfm=NULL,*bpini=NULL,*cstressini=NULL,*pslavdual=NULL,
@@ -181,7 +179,7 @@ void inimortar(double **enerp, ITG *mi, ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
   Bpgd=*Bpgdp;irowbpg=*irowbpgp;jqbpg=*jqbpgp;
   Dpgd=*Dpgdp;irowdpg=*irowdpgp;jqdpg=*jqdpgp;
   Dpgdtil=*Dpgdtilp;irowdpgtil=*irowdpgtilp;jqdpgtil=*jqdpgtilp;
-  Bpgdtil=*Bpgdtilp;irowbpgtil=*irowbpgtilp;jqbpgtil=*jqbpgtilp;  
+  Bpgdtil=*Bpgdtilp;irowbpgtil=*irowbpgtilp;jqbpgtil=*jqbpgtilp; 
   nslavspc=*nslavspcp;islavspc=*islavspcp;nslavmpc=*nslavmpcp;
   islavmpc=*islavmpcp;
   nmastspc=*nmastspcp;imastspc=*imastspcp;nmastmpc=*nmastmpcp;
@@ -218,34 +216,30 @@ void inimortar(double **enerp, ITG *mi, ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
     kon[*nkon+k]=islavnode[k];
     strcpy1(&lakon[8*(*ne+k)]," S    C0",8);
   }
-  NNEW(islavactdoftie,ITG,nslavnode[*ntie]);
-  NNEW(bp,double,nslavnode[*ntie]);
-  NNEW(islavact,ITG,nslavnode[*ntie]);
-  NNEW(gap,double,nslavnode[*ntie]);
-  NNEW(slavnor,double,3*nslavnode[*ntie]);
-  NNEW(slavtan,double,6*nslavnode[*ntie]);
-  NNEW(cdisp,double,6*nslavnode[*ntie]);
+  NNEW(islavactdoftie,ITG,*nslavs);
+  NNEW(bp,double,*nslavs);
+  NNEW(islavact,ITG,*nslavs);
+  NNEW(gap,double,*nslavs);
+  NNEW(slavnor,double,3**nslavs);
+  NNEW(slavtan,double,6**nslavs);
+  NNEW(cdisp,double,6**nslavs);
   
   /* allocation of temperary fields: stores the structure
      of the stiffness matrix without mortar contact */
   
-  NNEW(cstress,double,mt*nslavnode[*ntie]);
+  NNEW(cstress,double,mt**nslavs);
   NNEW(cfs,double,mt**nk);
 
   /* fields for cutback  */
   
-  NNEW(bpini,double,nslavnode[*ntie]);
-  NNEW(islavactini,ITG,nslavnode[*ntie]);  
-  NNEW(cstressini,double,mt*nslavnode[*ntie]);
+  NNEW(bpini,double,*nslavs);
+  NNEW(islavactini,ITG,*nslavs); 
+  NNEW(cstressini,double,mt**nslavs);
   
-  /* check for friction */
+  /* connect each slave node j with its tie i */
   
-  for (i=0;i<*ntie;i++){
+  for(i=0;i<*ntie;i++){
     if(tieset[i*(81*3)+80]=='C'){
-      FORTRAN(getcontactparams,(&mu,&regmode,&fkninv,&fktauinv,
-				&p0,&beta,tietol,elcon,&i,ncmat_,ntmat_));
-      
-      
       for(j=nslavnode[i];j<nslavnode[i+1];j++){
 	islavactdoftie[j]=i;
       }
@@ -255,7 +249,7 @@ void inimortar(double **enerp, ITG *mi, ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
   /* get results from last step */
   
   if(*maxprevcontel!=0){
-    for (i=0;i<*ntie;i++){
+    for(i=0;i<*ntie;i++){
       if(tieset[i*(81*3)+80]=='C'){
 	if(*nstate_*mi[0]>0){
 	  for(j=nslavnode[i];j<nslavnode[i+1];j++){
@@ -278,17 +272,17 @@ void inimortar(double **enerp, ITG *mi, ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
   }
   NNEW(islavnodeinv,ITG,*nk);
   NNEW(islavelinv,ITG,*ne);
-  for( i=0; i<*ntie; i++){    
+  for( i=0;i<*ntie;i++){    
     if(tieset[i*(81*3)+80]=='C'){ 
-      for(j=nmastnode[i]; j<nmastnode[i+1]; j++){
+      for(j=nmastnode[i];j<nmastnode[i+1];j++){
 	node=imastnode[j];
 	islavnodeinv[node-1]=-(j+1);
       }				
     }
   }    
-  for( i=0; i<*ntie; i++){    
+  for( i=0;i<*ntie;i++){    
     if(tieset[i*(81*3)+80]=='C'){ 
-      for(j=nslavnode[i]; j<nslavnode[i+1]; j++){
+      for(j=nslavnode[i];j<nslavnode[i+1];j++){
 	node=islavnode[j];
 	islavnodeinv[node-1]=j+1;
       }			
@@ -301,12 +295,12 @@ void inimortar(double **enerp, ITG *mi, ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
   
   /*  T and T^-1 and coupling matrices in nodes  */
   
-  NNEW(autloc,double, 3*nslavnode[*ntie]);
-  NNEW(irowtloc,ITG,3*nslavnode[*ntie]);
-  NNEW(jqtloc,ITG, *nk+1);	
-  NNEW(autlocinv,double, 3*nslavnode[*ntie]);
-  NNEW(irowtlocinv,ITG, 3*nslavnode[*ntie]);
-  NNEW(jqtlocinv,ITG, *nk+1);
+  NNEW(autloc,double,3**nslavs);
+  NNEW(irowtloc,ITG,3**nslavs);
+  NNEW(jqtloc,ITG,*nk+1);	
+  NNEW(autlocinv,double,3**nslavs);
+  NNEW(irowtlocinv,ITG,3**nslavs);
+  NNEW(jqtlocinv,ITG,*nk+1);
   NNEW(Bd,double,1);
   NNEW(irowb,ITG,1);
   NNEW(jqb,ITG,*nk+1);
@@ -352,10 +346,10 @@ void inimortar(double **enerp, ITG *mi, ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
     *iflagdualquad=2;
   }
   
-  if(*iflagdualquad==3 ||*iflagdualquad==4){
+  if((*iflagdualquad==3)||(*iflagdualquad==4)){
     NNEW(pslavdualpg,double,64*itiefac[2**ntie-1]);
   }else{
-    NNEW(pslavdualpg,double,64); 
+    NNEW(pslavdualpg,double,64);
   }
   
   buildtquad(ntie,ipkon,kon,nk,lakon,nslavnode,itiefac,tieset,
@@ -364,14 +358,14 @@ void inimortar(double **enerp, ITG *mi, ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
   
   /* checking for SPC's and MPC's on slave and master surface */
 
-  NNEW(nslavspc,ITG,2*nslavnode[*ntie]);
+  NNEW(nslavspc,ITG,2**nslavs);
   NNEW(islavspc,ITG,2**nboun);
-  NNEW(nslavmpc,ITG,2*nslavnode[*ntie]);
+  NNEW(nslavmpc,ITG,2**nslavs);
   NNEW(islavmpc,ITG,2**nmpc);
   NNEW(nmastspc,ITG,2*nmastnode[*ntie]);
   NNEW(imastspc,ITG,2**nboun);
   NNEW(nmastmpc,ITG,2*nmastnode[*ntie]);
-  NNEW(imastmpc,ITG,2**nmpc); 
+  NNEW(imastmpc,ITG,2**nmpc);
   
   FORTRAN(genislavelinv,(islavelinv,jqtloc,lakon,ipkon,kon,ne,nasym));
   

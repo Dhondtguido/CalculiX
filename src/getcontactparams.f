@@ -29,90 +29,85 @@
 !
       subroutine getcontactparams(mu,regmode,fkninv,fktauinv,
      &     p0,beta,tietol,elcon,itie,ncmat_,ntmat_)
-!      
+!     
 !     Author: Saskia Sitzmann 
-!      
+!     
       implicit none
 !     
       integer itie,imat,ncmat_,ntmat_,regmode
 !     
       real*8 mu,fkninv,fktauinv,p0,beta,tietol(4,*),
      &     elcon(0:ncmat_,ntmat_,*)
-!
+!     
       itie=itie+1
       imat=int(tietol(2,itie))
-!
+!     
       if(ncmat_.lt.6)then
-         mu=0.0
-         fktauinv=0.0
+        mu=0.0
+        fktauinv=0.0
       else
-         mu=elcon(6,1,imat)
-         if(elcon(7,1,imat).le.0.0)then
-            fktauinv=0.0
-         else
-            fktauinv=1.0/elcon(7,1,imat)
-         endif
+        mu=elcon(6,1,imat)
+        if(elcon(7,1,imat).le.0.0)then
+          fktauinv=0.0
+        else
+          fktauinv=1.0/elcon(7,1,imat)
+        endif
       endif
 !     
 !     exponential regularization
-!
+!     
       if(ncmat_.gt.2)then
-         if(elcon(3,1,imat).gt.1.4 .and.
-     &        elcon(3,1,imat).lt.1.6 )then
-            regmode=3
-            p0=elcon(2,1,imat)
-            beta=1.0/(elcon(1,1,imat))
-            fkninv=0.0
-            if(mu.gt.1.e-10)then
-               write(*,*)'getcontactparams:'
-               write(*,*)'*ERROR in getcontactparams:',
-     &              ' exponential pressure overclosure',
-     &              ' with friction not yet supported'
-               call exit(201)
-            endif
+        if(int(elcon(3,1,imat)).eq.1) then
+          regmode=3
+          p0=elcon(2,1,imat)
+          beta=1.0/(elcon(1,1,imat))
+          fkninv=0.0
+          if(mu.gt.1.e-10)then
+            write(*,*)'getcontactparams:'
+            write(*,*)'*ERROR in getcontactparams:',
+     &           ' exponential pressure overclosure',
+     &           ' with friction not yet supported'
+            call exit(201)
+          endif
 !     
 !     linear regularization
-!            
-         else if(elcon(3,1,imat).gt.2.4 .and. 
-     &           elcon(3,1,imat).lt.2.6 )then
-            regmode=1
-            fkninv=1.0/elcon(2,1,imat)
-            p0=0.0
-            beta=0.0
+!     
+        elseif(int(elcon(3,1,imat)).eq.2) then
+          regmode=1
+          fkninv=1.0/elcon(2,1,imat)
+          p0=0.0
+          beta=0.0
 !     
 !     piecewiese linear regularization
-!            
-         else if(elcon(3,1,imat).gt.3.4 .and.
-     &           elcon(3,1,imat).lt.3.6 )then
-            regmode=2
-            p0=0.0
-            beta=0.0
-            fkninv=0.0
+!     
+        elseif(int(elcon(3,1,imat)).eq.3) then
+          regmode=2
+          p0=0.0
+          beta=0.0
+          fkninv=0.0
 !     
 !     tied contact
-!            
-         else if(elcon(3,1,imat).gt.4.4 .and.
-     &           elcon(3,1,imat).lt.4.6 )then
-            regmode=4
-            p0=0.0
-            beta=0.0
-            fkninv=0.0
-            mu=0.0
-            fktauinv=0.0
-         else
-            regmode=1
-            fkninv=0.0
-            p0=0.0
-            beta=0.0
-         endif
+!     
+        elseif(int(elcon(3,1,imat)).eq.4) then
+          regmode=4
+          p0=0.0
+          beta=0.0
+          fkninv=0.0
+          mu=0.0
+          fktauinv=0.0
+        else
+          regmode=1
+          fkninv=0.0
+          p0=0.0
+          beta=0.0
+        endif
       else
-         regmode=1
-         fkninv=0.0
-         p0=0.0
-         beta=0.0
+        regmode=1
+        fkninv=0.0
+        p0=0.0
+        beta=0.0
       endif 
       itie=itie-1
 !     
       return
       end
-      
