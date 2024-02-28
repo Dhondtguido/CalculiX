@@ -74,7 +74,6 @@
  *  [in] cstress		current Lagrange multiplier 
  *  [in] cstressini	Lagrange multiplier at start of the increment
  *  [in] bp_old		old friction bounds
- *  [in] iflag_fric	flag indicating if iwan friction model is used
  *  [in] nslavspc		(2*i) pointer to islavspc...
  *  [in] islavspc         ... which stores SPCs for slave node i
  *  [in] nsspc            number of SPC for slave nodes
@@ -119,8 +118,6 @@
  *  [out] Bpgdtilp		transformed Petrov-Galerkin coupling matrix \f$ B_d^{PG}[p,q]=\int \tilde{\phi}_p \tilde{\phi}_q dS \f$, \f$ p \in S, q \in M \f$ 
  *  [out] irowbpgtilp	field containing row numbers of Bpgdtil
  *  [out] jqbpgtil	pointer into field irowbpgtil
- *  [in] lambdaiwan       Lagrange multiplier splitted to Iwan elements
- *  [in] lambdaiwanini    Lagrange multiplier splitted to Iwan elements at start of increment
  *  [in] bet		parameter used in alpha-method
  *  [in]  iflagdualquad   flag indicating what mortar contact is used (=1 quad-lin, =2 quad-quad, =3 PG quad-lin, =4 PG quad-quad)
  *  [in,out]  cfsinitil \f$ \tilde{\Phi}_{c,j}\f$ contact forces from last increment, needed for dynamic calculations  
@@ -148,13 +145,15 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 		   double *autloc,ITG *irowtlocinv,ITG *jqtlocinv,
 		   double *autlocinv,ITG *mi,ITG *ipe,ITG *ime,double *tietol,
 		   ITG *iflagact,double *cstress,double *cstressini,
-		   double *bp_old,ITG *iflag_fric,ITG *nk,ITG *nboun,
+		   double *bp_old,ITG *nk,ITG *nboun,
 		   ITG *ndirboun,ITG *nodeboun,double *xboun,ITG *nmpc,
 		   ITG *ipompc,ITG *nodempc,double *coefmpc,ITG *ikboun,
 		   ITG *ilboun,ITG *ikmpc,ITG *ilmpc,
-		   ITG *nslavspc,ITG *islavspc,ITG *nsspc,ITG *nslavmpc,ITG *islavmpc,
+		   ITG *nslavspc,ITG *islavspc,ITG *nsspc,ITG *nslavmpc,
+		   ITG *islavmpc,
 		   ITG *nsmpc,ITG *nmastspc,
-		   ITG *imastspc,ITG *nmspc,ITG *nmastmpc,ITG *imastmpc,ITG *nmmpc,
+		   ITG *imastspc,ITG *nmspc,ITG *nmastmpc,ITG *imastmpc,
+		   ITG *nmmpc,
 		   double *pslavdual,double *pslavdualpg,ITG *islavactdof,
 		   ITG *islavactdoftie,double *plicon,ITG *nplicon,ITG *npmat_,
 		   ITG *nelcon,double *dtime,ITG *islavnodeinv,double **Bdp,
@@ -165,14 +164,14 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 		   ITG *jqbpg,double **Dpgdp,ITG **irowdpgp,ITG *jqdpg,
 		   double **Dpgdtilp,ITG **irowdpgtilp,ITG *jqdpgtil,
 		   double **Bpgdtilp,ITG **irowbpgtilp,ITG *jqbpgtil,
-		   double *lambdaiwan,double *lambdaiwanini,double *bet,
+		   double *bet,
 		   ITG *iflagdualquad,double *cfsinitil,
 		   double *reltime,ITG *ithermal,double *plkcon,ITG *nplkcon){
   
   ITG i,j,k,ntrimax,*nx=NULL,*ny=NULL,*nz=NULL,nintpoint=0,
     nzsbd,*irowbd=NULL,*irowdd=NULL,*irowddinv=NULL,*irowddtil=NULL,
-    *irowbdtil=NULL,nzs2,iwan,*irowddtil2=NULL,*irowbdtil2=NULL,l,nstart,kflag,
-    ntri,ii,regmode,derivmode,regmodet=1,*irowc=NULL,*imastsurf=NULL,
+    *irowbdtil=NULL,nzs2,*irowddtil2=NULL,*irowbdtil2=NULL,l,nstart,kflag,
+    ntri,ii,regmode,derivmode,*irowc=NULL,*imastsurf=NULL,
     *irow=NULL,*irowb=NULL,*irowbhelp=NULL,*irowd=NULL,
     *irowdtil=NULL,*irowbtil=NULL,*irowbpg=NULL,*irowdpg=NULL,*irowdpgtil=NULL,
     *irowbpgtil=NULL,nacti,ninacti,nnogap,nstick,nnolm,nnoslav,nzsbdtil,
@@ -517,9 +516,8 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 	  xlnold=cstresstil[(j)*(mt)+0]*slavnor[(j*3)+0]+
 	    cstresstil[(j)*(mt)+1]*slavnor[(j*3)+1]+
 	    cstresstil[(j)*(mt)+2]*slavnor[(j*3)+2];
-	  FORTRAN(getcontactparams,(&mu,&regmode,&regmodet,&fkninv,&fktauinv,
-				    &p0,&beta,tietol,elcon,&i,ncmat_,ntmat_,
-				    &iwan));
+	  FORTRAN(getcontactparams,(&mu,&regmode,&fkninv,&fktauinv,
+				    &p0,&beta,tietol,elcon,&i,ncmat_,ntmat_));
 	  derivmode=0;
 	  if(islavact[j]>-1){
 	    scal=Ddtil[jqdtil[islavnode[j]-1]-1];
@@ -546,13 +544,8 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 		islavact[j]=1;}	    
 	      if(islavact[j]>0 && bp_old[j]<1.e-14){
 		bp_old[j]=1;}
-	      if(regmodet==1){
-		if(islavact[j]>0 && ltold <1.e-5){
-		  islavact[j]=1;}// first step
-	      }else{
-		if(islavact[j]==1){
-		  islavact[j]=2;}
-	      }
+	      if(islavact[j]>0 && ltold <1.e-5){
+		islavact[j]=1;}// first step
 	    }
 	  }else{
 	    if(*iinc==1){
@@ -628,7 +621,7 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 		 nmastspc,imastspc,nmspc,nmastmpc,imastmpc,nmmpc,tieset,
 		 islavactdoftie,nelcon,elcon,tietol,ncmat_,ntmat_,plicon,
 		 nplicon,npmat_,dtime,irowtloc,jqtloc,autloc,irowtlocinv,
-		 jqtlocinv,autlocinv,islavnodeinv,lambdaiwan,lambdaiwanini,&k,
+		 jqtlocinv,autlocinv,islavnodeinv,&k,
 		 nmethod,bet,ithermal,plkcon,nplkcon);  
     
   }else{
@@ -647,7 +640,7 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 		 imastspc,nmspc,nmastmpc,imastmpc,nmmpc,tieset,islavactdoftie,
 		 nelcon,elcon,tietol,ncmat_,ntmat_,plicon,nplicon,npmat_,dtime,
 		 irowtloc,jqtloc,autloc,irowtlocinv,jqtlocinv,autlocinv,
-		 islavnodeinv,lambdaiwan,lambdaiwanini,&k,nmethod,bet,ithermal,
+		 islavnodeinv,&k,nmethod,bet,ithermal,
 		 plkcon,nplkcon);
   }
   nzs[0]=jq[neq[1]]-1; 

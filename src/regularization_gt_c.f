@@ -25,12 +25,10 @@
 !                             	should be called
 !                    		=0 function called
 !                    		=1 derivative called    
-!  [in]	regmode        	selects regularization funtion
-!                    		=1 perturbed Lagrange
 !  [out] gtc	        result regularization function
 !  [in]  atauinvloc      stiffness constant for perturbed Lagrange
 !
-      subroutine regularization_gt_c(lambdatt,divmode,regmode,
+      subroutine regularization_gt_c(lambdatt,divmode,
      &     gtc,atauinvloc)
 !     
 !     regularization function for tangential contact
@@ -38,31 +36,21 @@
 !     
       implicit none
 !     
-      integer divmode,regmode,kode
+      integer divmode
 !
-      real*8 lambdatt(*),gtc(*),atauinvloc,t1l
-!
-!
-!
-      kode=-51
-      t1l=0.0
+      real*8 lambdatt(*),gtc(*),atauinvloc
 !
 !     perturbed Lagrange
 !     
-      if(regmode.eq.1)then
-         if(divmode.eq.0)then
-            gtc(1)=atauinvloc*lambdatt(1)
-            gtc(2)=atauinvloc*lambdatt(2)
-         elseif(divmode.eq.1)then
-            gtc(1)=atauinvloc
-            gtc(2)=atauinvloc
-         else
-            write(*,*)'error in regularzation_gt_c.f!'
-            call exit(201)
-         endif
+      if(divmode.eq.0)then
+        gtc(1)=atauinvloc*lambdatt(1)
+        gtc(2)=atauinvloc*lambdatt(2)
+      elseif(divmode.eq.1)then
+        gtc(1)=atauinvloc
+        gtc(2)=atauinvloc
       else
-         gtc(1)=0.0
-         gtc(2)=0.0
+        write(*,*)'error in regularzation_gt_c.f!'
+        call exit(201)
       endif
 !      
       return

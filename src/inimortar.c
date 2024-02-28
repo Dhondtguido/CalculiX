@@ -45,7 +45,6 @@
  *  [out] bpinip		friction bounds at start of the increment
  *  [out] islavactinip	islavact at the start of the increment
  *  [out] cstressinip	Lagrange multiplier at start of the increment
- *  [out] iwan		number of iwan elements
  *  [out] islavnodeinvp     (i) slave node index for node i
  *  [out] islavelinvp       (i)==0 if there is no slave node in the element, >0 otherwise
  *  [out] pslavdualp	(:,i)coefficients \f$ \alpha_{ij}\f$, \f$ 1,j=1,..8\f$ for dual shape functions for face i
@@ -101,9 +100,6 @@
  *  [out] nmmpc		number of MPC for master nodes 
  *  [in] iponoels         (i) pointer to inoels
  *  [in] inoels           (3,i) element number, local node number and pointer to another entry
- *  [in] iflag_fric	flag indicating whether iwan model is used
- *  [out] lambdaiwanp       Lagrange multiplier splitted to Iwan elements
- *  [out] lambdaiwaninip    Lagrange multiplier splitted to Iwan elements at start of increment 
 **/
 void inimortar(double **enerp, ITG *mi, ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
 	       ITG **ipkonp, char **lakonp, ITG **konp, ITG *nkon,
@@ -114,7 +110,7 @@ void inimortar(double **enerp, ITG *mi, ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
 	       double **cstressp, double **cfsp, double **cfmp,
 	       double **cfsinip,double **cfsinitilp,double **cfstilp,
 	       double **bpinip, ITG **islavactinip, double **cstressinip,
-	       ITG *iwan,ITG *ntie, char *tieset,
+	       ITG *ntie, char *tieset,
 	       ITG *nslavnode, ITG *islavnode,
 	       ITG **islavnodeinvp, ITG **islavelinvp,double **pslavdualp,
 	       double **pslavdualpgp,
@@ -139,7 +135,6 @@ void inimortar(double **enerp, ITG *mi, ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
 	       ITG *imastnode,ITG *nmastnode,ITG *nmspc, ITG *nmmpc,
 	       ITG *iponoels,ITG *inoels,
 	       double *tietol,double *elcon,ITG *ncmat_,ITG *ntmat_,ITG *nasym,
-	       ITG *iflag_fric,double **lambdaiwanp,double **lambdaiwaninip,
 	       double *vold,ITG *nset,char *set,ITG *mortar,
 	       ITG *memmpc_,
 	       ITG **ielmatp,ITG **ielorienp,ITG *norien,ITG *nmethod,
@@ -147,7 +142,7 @@ void inimortar(double **enerp, ITG *mi, ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
 
     char *lakon=NULL; 
     
-  ITG k,i,j,node,mt=mi[1]+1,regmode,regmodet,*ipkon=NULL,*kon=NULL,
+  ITG k,i,j,node,mt=mi[1]+1,regmode,*ipkon=NULL,*kon=NULL,
     *islavactdoftie=NULL,*islavact=NULL,
     *islavactini=NULL,*islavnodeinv=NULL,*islavelinv=NULL,*irowtloc=NULL,
     *jqtloc=NULL,
@@ -167,8 +162,7 @@ void inimortar(double **enerp, ITG *mi, ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
     *cfstil=NULL,*cfm=NULL,*bpini=NULL,*cstressini=NULL,*pslavdual=NULL,
     *pslavdualpg=NULL,*autloc=NULL,
     *autlocinv=NULL,*Bd=NULL,*Bdhelp=NULL,*Dd=NULL,*Ddtil=NULL,*Bdtil=NULL,
-    *lambdaiwan=NULL,
-    *lambdaiwanini=NULL,*Bpgd=NULL,*Dpgd=NULL,*Dpgdtil=NULL,*Bpgdtil=NULL;
+    *Bpgd=NULL,*Dpgd=NULL,*Dpgdtil=NULL,*Bpgdtil=NULL;
   
   ener=*enerp;ipkon=*ipkonp;lakon=*lakonp;kon=*konp;xstate=*xstatep;
   islavactdoftie=*islavactdoftiep;bp=*bpp;islavact=*islavactp;gap=*gapp;
@@ -192,7 +186,6 @@ void inimortar(double **enerp, ITG *mi, ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
   islavmpc=*islavmpcp;
   nmastspc=*nmastspcp;imastspc=*imastspcp;nmastmpc=*nmastmpcp;
   imastmpc=*imastmpcp;
-  lambdaiwan=*lambdaiwanp;lambdaiwanini=*lambdaiwaninip;
   ielmat=*ielmatp;ielorien=*ielorienp;
   
   RENEW(ielmat,ITG,mi[2]*(*ne+*nslavs));
@@ -247,25 +240,16 @@ void inimortar(double **enerp, ITG *mi, ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
   
   /* check for friction */
   
-  *iflag_fric=0;
-  
-  *iwan=1;
   for (i=0;i<*ntie;i++){
     if(tieset[i*(81*3)+80]=='C'){
-      FORTRAN(getcontactparams,(&mu,&regmode,&regmodet,&fkninv,&fktauinv,
-				&p0,&beta,tietol,elcon,&i,ncmat_,ntmat_,&k));
+      FORTRAN(getcontactparams,(&mu,&regmode,&fkninv,&fktauinv,
+				&p0,&beta,tietol,elcon,&i,ncmat_,ntmat_));
       
       
       for(j=nslavnode[i];j<nslavnode[i+1];j++){
 	islavactdoftie[j]=i;
       }
-      if(mu>1.e-10 && regmodet==2){*iflag_fric=1;*iwan=max(*iwan,k);}
     }
-  }
-  
-  if(*iflag_fric==1){
-    NNEW(lambdaiwan,double,3**iwan*nslavnode[*ntie]);
-    NNEW(lambdaiwanini,double,3**iwan*nslavnode[*ntie]);
   }
   
   /* get results from last step */
@@ -287,13 +271,6 @@ void inimortar(double **enerp, ITG *mi, ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
 	      islavact[j]=2;
 	    }
 	    xstate[*nstate_*mi[0]*(*ne+j)+3]=0.;
-	    if(*iflag_fric==1){
-	      for(k=0;k<3**iwan;k++){
-		lambdaiwan[3**iwan*j+k]=xstate[*nstate_*mi[0]*(*ne+j)+4+k];
-		lambdaiwanini[3**iwan*j+k]=xstate[*nstate_*mi[0]*(*ne+j)+4+k];
-		xstate[*nstate_*mi[0]*(*ne+j)+4+k]=0.0;
-	      }
-	    }  
 	  }
 	}
       }
@@ -420,7 +397,6 @@ void inimortar(double **enerp, ITG *mi, ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
   *islavmpcp=islavmpc;
   *nmastspcp=nmastspc;*imastspcp=imastspc;*nmastmpcp=nmastmpc;
   *imastmpcp=imastmpc;
-  *lambdaiwanp=lambdaiwan;*lambdaiwaninip=lambdaiwanini;
   *ielmatp=ielmat;*ielorienp=ielorien;
   
   return;

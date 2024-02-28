@@ -51,14 +51,8 @@
  *  [in] irowtlocinv	field containing row numbers of autlocinv
  *  [in] jqtlocinv	pointer into field irowtlocinv
  *  [in] autlocinv	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$  
- *  [in] ntie		number of contraints 
- *  [in] nslavnode	(i)pointer into field isalvnode for contact tie i 
- *  [in] islavnode	field storing the nodes of the slave surface 
- *  [in] nmastnode	(i)pointer into field imastnode for contact tie i
- *  [in] imastnode	field storing the nodes of the master surfaces 
  *  [in] slavnor		slave normals
  *  [in] slavtan		slave tangents 
- *  [in] nactdof 		(i,j) actual degree of freedom for direction i of node j
  *  [out]	iflagact	flag indicating if semi-smooth Newton has converged
  *  [in,out] cstress	current Lagrange multiplier 
  *  [in] cstressini	Lagrange multiplier at start of the increment
@@ -84,8 +78,6 @@
  *  [out] Dpgd		Petrov-Galerkin coupling matrix \f$ D_d[p,q]=\int \tilde{\phi}_p \phi_q dS \f$, \f$ p,q \in S \f$ 
  *  [out] irowdpg		field containing row numbers of Dpgd
  *  [out] jqdpg		pointer into field irowdpg 
- *  [in] lambdaiwan       Lagrange multiplier splitted to Iwan elements
- *  [in] lambdaiwanini    Lagrange multiplier splitted to Iwan elements at start of increment
  *  [in] nmethod		analysis method 
  *  [in]  iflagdualquad   flag indicating what mortar contact is used (=1 quad-lin, =2 quad-quad, =3 PG quad-lin, =4 PG quad-quad)
  *  [in] ithermal         thermal method
@@ -114,8 +106,8 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
 		  ITG *jqb,double *Dd,ITG *irowd,ITG *jqd,double *Ddtil,
 		  ITG *irowdtil,ITG *jqdtil,double *Bdtil,ITG *irowbtil,
 		  ITG *jqbtil,double *Bpgd,ITG *irowbpg,ITG *jqbpg,
-		  double *Dpgd,ITG *irowdpg,ITG *jqdpg,double *lambdaiwan,
-		  double *lambdaiwanini,ITG *nmethod,double *bet,
+		  double *Dpgd,ITG *irowdpg,ITG *jqdpg,
+		  ITG *nmethod,double *bet,
 		  ITG *iflagdualquad,ITG *ithermal,ITG *iperturb,
 		  char *labmpc,double *cam,double *veold,
 		  double *accold,double *gam,double *cfsini,
@@ -125,28 +117,28 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
   
   ITG i,j,l,jj,k,idof1,idof2,idof3,nodes,mt=mi[1]+1,nstick=0,nslip=0,ninacti=0,
     nnogap=0,nolm=0,ndiverg,nhelp,idof,node2,dirind,dirdep,index,ist,
-    yielded,iout,num_cpus=1,keepset,derivmode,regmode,
-    ndof,regmodet,iwan,calcul_fn,calcul_f;
+    iout,num_cpus=1,keepset,derivmode,regmode,
+    ndof,calcul_fn,calcul_f;
   
-  double aux,stressnormal,ddispnormal,*unitmatrix=NULL,atau2,constant=1.E10,
+  double aux,stressnormal,ddispnormal,*unitmatrix=NULL,constant=1.E10,
     constantn=1.E10,constantt=1.E10,stresst[2],stressinit[2],stresstildet[2],
-    ddispt[2],disp_tildet[2],bpold,nw_t=0.0,*du=NULL,
-    ch,coefdep,disp_t[2],disp_tildeto[2],scal,w_t[3],*bhat2=NULL,n[3],
-    t[6],*fmpc=NULL,lm_t1_av,lm_t2_av,*rc=NULL,f_cs_tot[4],f_cm_tot[4],
-    *vectornull=NULL,*u_oldt=NULL,resreg[2],rslip[6],ltslip[6],ltu[2],
-    resreg2[2],*cstress2=NULL,*cstresstil=NULL,*cstressini2=NULL,*u_old=NULL,
+    disp_tildet[2],nw_t=0.0,*du=NULL,
+    ch,coefdep,disp_t[2],scal,w_t[3],*bhat2=NULL,
+    *fmpc=NULL,lm_t1_av,lm_t2_av,*rc=NULL,f_cs_tot[4],f_cm_tot[4],
+    *vectornull=NULL,*u_oldt=NULL,
+    *cstress2=NULL,*cstresstil=NULL,*cstressini2=NULL,*u_old=NULL,
     aninvloc,atauinvloc,gnc,gtc[2],*cold=NULL,*cold2=NULL,ln_old,
     ncf_n,max_ncf_n,ncf_t[2],max_ncf_t[2],mu,mumax,p0,beta,*b2=NULL,alpha;
   
   alpha=1-2*sqrt(*bet);
   keepset=0;
   mumax=-1.0;
-  max_ncf_n=-1.0; max_ncf_t[0]=-1.0; max_ncf_t[1]=-1.0;
+  max_ncf_n=-1.0;max_ncf_t[0]=-1.0;max_ncf_t[1]=-1.0;
   lm_t1_av=0;lm_t2_av=0;
   *iflagact=0;
   
   NNEW(vectornull,double,neq[1]);
-  NNEW(cstress2,double,neq[1]);  
+  NNEW(cstress2,double,neq[1]); 
   NNEW(bhat2,double,mt**nk);
   NNEW(b2,double,mt**nk);
   NNEW(cold,double,3*nslavnode[*ntie]);
@@ -210,10 +202,10 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
   
   /* overwrite b with untransformed delta u*/
   
-  for( i=0; i<*ntie; i++){      	
+  for( i=0;i<*ntie;i++){      	
     if(tieset[i*(81*3)+80]=='C'){
       nhelp=0;
-      for(j=nslavnode[i]; j<nslavnode[i+1]; j++){
+      for(j=nslavnode[i];j<nslavnode[i+1];j++){
 	nodes=islavnode[j];
 	for(l=0;l<3;l++){
 	  b2[mt*nodes-3+l]=bhat2[mt*nodes-3+l];
@@ -304,11 +296,11 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
       for(j=nslavnode[i];j<nslavnode[i+1];j++){
 	cold[3*j+0]=cstress[mt*j];
 	cold[3*j+1]=cstress[mt*j+1];
-	cold[3*j+2]=cstress[mt*j+2];       
+	cold[3*j+2]=cstress[mt*j+2];      
 	nodes=islavnode[j];	    	
 	idof1=nactdof[mt*nodes-3]-1;	
 	idof2=nactdof[mt*nodes-2]-1;	
-	idof3=nactdof[mt*nodes-1]-1; 
+	idof3=nactdof[mt*nodes-1]-1;
 	ndof=0;
 	if(idof1>-1){ndof++;}if(idof2>-1){ndof++;}if(idof3>-1){ndof++;}
 	for(k=0;k<3;k++){	  
@@ -318,9 +310,9 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
 	  }else{	    	  	    
 	    cstress[mt*j+k]=0.0;	     	  	    
 	    for(jj=nslavmpc[2*(j)];jj<nslavmpc[2*(j)+1];jj++){
-	      ist=islavmpc[2*jj];            	    	      
-	      dirdep=nodempc[3*(ist-1)+1];            	    	      
-	      coefdep=coefmpc[ist-1];            	    	      
+	      ist=islavmpc[2*jj];           	    	      
+	      dirdep=nodempc[3*(ist-1)+1];           	    	      
+	      coefdep=coefmpc[ist-1];           	    	      
 	      index=nodempc[3*(ist-1)+2];	     	    	      
 	      if(dirdep==k+1){               	      		
 		while(index!=0){               				  
@@ -375,12 +367,11 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
 	nodes=islavnode[j];
 	idof1=nactdof[mt*nodes-3]-1;	
 	idof2=nactdof[mt*nodes-2]-1;	
-	idof3=nactdof[mt*nodes-1]-1; 
+	idof3=nactdof[mt*nodes-1]-1;
 	ndof=0;
 	if(idof1>-1){ndof++;}if(idof2>-1){ndof++;}if(idof3>-1){ndof++;}
-	FORTRAN(getcontactparams,(&mu,&regmode,&regmodet,&aninvloc,&atauinvloc,
-				  &p0,&beta,tietol,elcon,&i,ncmat_,ntmat_,
-				  &iwan));
+	FORTRAN(getcontactparams,(&mu,&regmode,&aninvloc,&atauinvloc,
+				  &p0,&beta,tietol,elcon,&i,ncmat_,ntmat_));
 	mumax=max(mu,mumax);
 	stressnormal=cstresstil[mt*j+0]*slavnor[3*j]+
 	  cstresstil[mt*j+1]*slavnor[3*j+1]+cstresstil[mt*j+2]*slavnor[3*j+2];	
@@ -393,27 +384,17 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
 	  cstressini2[mt*j+2]*slavtan[6*j+2];	
 	stressinit[1]=cstressini2[mt*j+0]*slavtan[6*j+3]+
 	  cstressini2[mt*j+1]*slavtan[6*j+4]+
-	  cstressini2[mt*j+2]*slavtan[6*j+5];  
+	  cstressini2[mt*j+2]*slavtan[6*j+5]; 
 	stresstildet[0]=(stresst[0]-stressinit[0]);
 	stresstildet[1]=(stresst[1]-stressinit[1]);
 	ddispnormal=du[3*j+0]*slavnor[3*j]+du[3*j+1]*slavnor[3*j+1]+
 	  du[3*j+2]*slavnor[3*j+2];	
-	ddispt[0]=du[3*j+0]*slavtan[6*j]+du[3*j+1]*slavtan[6*j+1]+
-	  du[3*j+2]*slavtan[6*j+2];	
-	ddispt[1]=du[3*j+0]*slavtan[6*j+3]+du[3*j+1]*slavtan[6*j+4]+
-	  du[3*j+2]*slavtan[6*j+5];			
 	disp_tildet[0]=(du[3*j+0]+u_oldt[j*3])*slavtan[6*j]
 	  +(du[3*j+1]+u_oldt[j*3+1])*slavtan[6*j+1]
 	  +(du[3*j+2]+u_oldt[j*3+2])*slavtan[6*j+2];
 	disp_tildet[1]=(du[3*j+0]+u_oldt[j*3])*slavtan[6*j+3]
 	  +(du[3*j+1]+u_oldt[j*3+1])*slavtan[6*j+4]
 	  +(du[3*j+2]+u_oldt[j*3+2])*slavtan[6*j+5];
-	disp_tildeto[0]=(u_oldt[j*3])*slavtan[6*j]
-	  +(u_oldt[j*3+1])*slavtan[6*j+1]
-	  +(u_oldt[j*3+2])*slavtan[6*j+2];
-	disp_tildeto[1]=(u_oldt[j*3])*slavtan[6*j+3]
-	  +(u_oldt[j*3+1])*slavtan[6*j+4]
-	  +(u_oldt[j*3+2])*slavtan[6*j+5];
 	disp_t[0]=(du[3*j+0]+u_old[j*3])*slavtan[6*j]
 	  +(du[3*j+1]+u_old[j*3+1])*slavtan[6*j+1]
 	  +(du[3*j+2]+u_old[j*3+2])*slavtan[6*j+2];
@@ -422,7 +403,6 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
 	  +(du[3*j+2]+u_old[j*3+2])*slavtan[6*j+5];		
 	ln_old=cold2[3*j+0]*slavnor[3*j]+cold2[3*j+1]*slavnor[3*j+1]+
 	  cold2[3*j+2]*slavnor[3*j+2];
-	bpold=bp[j];
 	
 	double gnc_old,dgnc_old;
 	derivmode=0;
@@ -443,7 +423,7 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
 				     &scal));
 	
 	derivmode=0;
-	FORTRAN(regularization_gt_c,(stresstildet,&derivmode,&regmodet,gtc,
+	FORTRAN(regularization_gt_c,(stresstildet,&derivmode,gtc,
 				     &atauinvloc));
 	
 	constantt=min(constant,1.0/atauinvloc);	
@@ -454,38 +434,10 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
 	}else{	  
 	  bp[j]=(stressnormal+constantn*(ddispnormal-gap[j]-gnc));	
 	}
-	yielded=0;
-	resreg[0]=0.0;resreg[1]=0.0;
-	if(regmodet==2 && islavact[j]>0){	  
-	  jj=j+1;
-	  atau2=1.0/atauinvloc;
-	  n[0]=slavnor[3*j];n[1]=slavnor[3*j+1];n[2]=slavnor[3*j+2];
-	  for(k=0;k<6;k++){t[k]=slavtan[6*j+k];}
-	  derivmode=0;
-	  
-	  // update lambdaiwan
-	  
-	  regmode=2;
-	  FORTRAN(regularization_slip_iwan,(&stressnormal,disp_tildeto,&bpold,
-					    &atau2,resreg2,&derivmode,&regmode,
-					    lambdaiwan,lambdaiwanini,&jj,n,t,
-					    &mu,rslip,ltslip,ltu,&yielded,
-					    &nodes,&iwan,ddispt));
-	  bpold=max(0.0,bp[j]);
-	  
-	  // calc resreg
-	  
-	  regmode=1;
-	  FORTRAN(regularization_slip_iwan,(&stressnormal,disp_tildet,&bpold,
-					    &atau2,resreg,&derivmode,&regmode,
-					    lambdaiwan,lambdaiwanini,&jj,n,t,
-					    &mu,rslip,ltslip,ltu,&yielded,
-					    &nodes,&iwan,ddispt));
-	}
 	
 	w_t[0]=stresst[0]+constantt*(disp_tildet[0]-gtc[0]);	
 	w_t[1]=stresst[1]+constantt*(disp_tildet[1]-gtc[1]);		
-	nw_t=sqrt(w_t[0]*w_t[0]+w_t[1]*w_t[1]);  
+	nw_t=sqrt(w_t[0]*w_t[0]+w_t[1]*w_t[1]); 
 	ncf_t[0]=0.0;ncf_t[1]=0.0;ncf_n=0.0;
 	
 	/* evaluate non-linear complementary functions 
@@ -493,27 +445,17 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
 	
 	if(mu>1.E-10){
 	  ncf_n=mu*stressnormal-max(0.0,bp[j]);
-	  if(regmodet==1){
-	    if(islavact[j]==0){
-	      ncf_t[0]=stresst[0];
-	      ncf_t[1]=stresst[1];
-	    }else if(islavact[j]==1){
-	      ncf_t[0]=disp_tildet[0]-gtc[0];
-	      ncf_t[1]=disp_tildet[1]-gtc[1];
-	    }else if(islavact[j]==2){
-	      ncf_t[0]=stresst[0]-bp[j]*w_t[0]/nw_t;
-	      ncf_t[1]=stresst[1]-bp[j]*w_t[1]/nw_t;
-	    }else{
-	      ncf_t[0]=0.0;ncf_t[1]=0.0; 
-	    }
+	  if(islavact[j]==0){
+	    ncf_t[0]=stresst[0];
+	    ncf_t[1]=stresst[1];
+	  }else if(islavact[j]==1){
+	    ncf_t[0]=disp_tildet[0]-gtc[0];
+	    ncf_t[1]=disp_tildet[1]-gtc[1];
+	  }else if(islavact[j]==2){
+	    ncf_t[0]=stresst[0]-bp[j]*w_t[0]/nw_t;
+	    ncf_t[1]=stresst[1]-bp[j]*w_t[1]/nw_t;
 	  }else{
-	    if(islavact[j]==2){ 
-	      ncf_t[0]=stresst[0]-resreg[0];
-	      ncf_t[1]=stresst[1]-resreg[1];
-	    }else{
-	      ncf_t[0]=stresst[0];
-	      ncf_t[1]=stresst[1];     
-	    }
+	    ncf_t[0]=0.0;ncf_t[1]=0.0;
 	  }
 	}else{
 	  ncf_n=stressnormal-max(0.0,bp[j]);
@@ -531,86 +473,50 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
 	if(keepset==0){
 	  if(mu>1.E-10){ //contact tie with friction	
 	    if (islavact[j]>-1){	
-	      if(regmodet==1){
 		
-		/*** Active/Inactive set condition cf: 
-		     Sitzmann Equation (3.58),(3.70) ***/
+	      /*** Active/Inactive set condition cf: 
+		   Sitzmann Equation (3.58),(3.70) ***/
 		
-		if(bp[j]>-1E-10 && nw_t<(bp[j])){
-		  nstick++;			
-		  if (islavact[j]!=1) {*iflagact=1;}				
-		  islavact[j]=1;
-		  cdisp[6*j]=gap[j]-ddispnormal;		  
-		  cdisp[6*j+1]=disp_t[0];
-		  cdisp[6*j+2]=disp_t[1];
-		  cdisp[6*j+3]=stressnormal;				      
-		  cdisp[6*j+4]=stresst[0];				      
-		  cdisp[6*j+5]=stresst[1];
-		  lm_t1_av=lm_t1_av+abs(stresst[0]);
-		  lm_t2_av=lm_t2_av+abs(stresst[1]);
-		}else if(bp[j]>-1E-10 && nw_t>=(bp[j])){
-		  nslip++;						      
-		  if (islavact[j]!=2) {*iflagact=1;}	
-		  islavact[j]=2;
-		  cdisp[6*j]=gap[j]-ddispnormal;		  
-		  cdisp[6*j+1]=disp_t[0];
-		  cdisp[6*j+2]=disp_t[1];
-		  cdisp[6*j+3]=stressnormal;				      
-		  cdisp[6*j+4]=stresst[0];				      
-		  cdisp[6*j+5]=stresst[1];
-		  lm_t1_av=lm_t1_av+abs(stresst[0]);
-		  lm_t2_av=lm_t2_av+abs(stresst[1]);		  
-		}else{				      
-		  if (islavact[j]>0){ *iflagact=1;}	
-		  ninacti++;
-		  islavact[j]=0;				      
-		  cstress[mt*j+0]=0.;				      
-		  cstress[mt*j+1]=0.;				      
-		  cstress[mt*j+2]=0.;
-		  cdisp[6*j]=gap[j]-ddispnormal;
-		  cdisp[6*j+1]=0.;		        	      
-		  cdisp[6*j+2]=0.;		        	      
-		  cdisp[6*j+3]=0.;		        	      
-		  cdisp[6*j+4]=0.;		        	      
-		  cdisp[6*j+5]=0.;
-		  if(idof1>-1)cstress2[idof1]=0.0;
-		  if(idof2>-1)cstress2[idof2]=0.0;
-		  if(idof3>-1)cstress2[idof3]=0.0;
-		}
-	      }else{
-		if(bp[j]>-1E-10){
-		  nslip++;						      
-		  if (islavact[j]!=2) {*iflagact=1;}	
-		  islavact[j]=2;
-		  cdisp[6*j]=gap[j]-ddispnormal;		  
-		  cdisp[6*j+1]=disp_t[0];
-		  cdisp[6*j+2]=disp_t[1];
-		  cdisp[6*j+3]=stressnormal;				      
-		  cdisp[6*j+4]=stresst[0];				      
-		  cdisp[6*j+5]=stresst[1];
-		  
-		}else{
-		  if (islavact[j]>0){ *iflagact=1;}	
-		  ninacti++;
-		  islavact[j]=0;				      
-		  cstress[mt*j+0]=0.;				      
-		  cstress[mt*j+1]=0.;				      
-		  cstress[mt*j+2]=0.;
-		  cdisp[6*j]=gap[j]-ddispnormal;
-		  cdisp[6*j+1]=0.;		        	      
-		  cdisp[6*j+2]=0.;		        	      
-		  cdisp[6*j+3]=0.;		        	      
-		  cdisp[6*j+4]=0.;		        	      
-		  cdisp[6*j+5]=0.;
-		  if(idof1>-1)cstress2[idof1]=0.0;
-		  if(idof2>-1)cstress2[idof2]=0.0;
-		  if(idof3>-1)cstress2[idof3]=0.0;
-		  if(regmodet==2){
-		    for(k=0;k<3*iwan;k++){  
-		      lambdaiwan[3*iwan*j+k]=0.0;	      
-		    }
-		  }
-		}
+	      if(bp[j]>-1E-10 && nw_t<(bp[j])){
+		nstick++;			
+		if (islavact[j]!=1) {*iflagact=1;}				
+		islavact[j]=1;
+		cdisp[6*j]=gap[j]-ddispnormal;		  
+		cdisp[6*j+1]=disp_t[0];
+		cdisp[6*j+2]=disp_t[1];
+		cdisp[6*j+3]=stressnormal;				      
+		cdisp[6*j+4]=stresst[0];				      
+		cdisp[6*j+5]=stresst[1];
+		lm_t1_av=lm_t1_av+abs(stresst[0]);
+		lm_t2_av=lm_t2_av+abs(stresst[1]);
+	      }else if(bp[j]>-1E-10 && nw_t>=(bp[j])){
+		nslip++;						      
+		if (islavact[j]!=2) {*iflagact=1;}	
+		islavact[j]=2;
+		cdisp[6*j]=gap[j]-ddispnormal;		  
+		cdisp[6*j+1]=disp_t[0];
+		cdisp[6*j+2]=disp_t[1];
+		cdisp[6*j+3]=stressnormal;				      
+		cdisp[6*j+4]=stresst[0];				      
+		cdisp[6*j+5]=stresst[1];
+		lm_t1_av=lm_t1_av+abs(stresst[0]);
+		lm_t2_av=lm_t2_av+abs(stresst[1]);		  
+	      }else{				      
+		if (islavact[j]>0){ *iflagact=1;}	
+		ninacti++;
+		islavact[j]=0;				      
+		cstress[mt*j+0]=0.;				      
+		cstress[mt*j+1]=0.;				      
+		cstress[mt*j+2]=0.;
+		cdisp[6*j]=gap[j]-ddispnormal;
+		cdisp[6*j+1]=0.;		        	      
+		cdisp[6*j+2]=0.;		        	      
+		cdisp[6*j+3]=0.;		        	      
+		cdisp[6*j+4]=0.;		        	      
+		cdisp[6*j+5]=0.;
+		if(idof1>-1)cstress2[idof1]=0.0;
+		if(idof2>-1)cstress2[idof2]=0.0;
+		if(idof3>-1)cstress2[idof3]=0.0;
 	      }
 	    }else{
 	      
@@ -633,11 +539,6 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
 	      if(idof1>-1)cstress2[idof1]=0.0;
 	      if(idof2>-1)cstress2[idof2]=0.0;
 	      if(idof3>-1)cstress2[idof3]=0.0;
-	      if(regmodet==2){
-		for(k=0;k<3*iwan;k++){	
-		  lambdaiwan[3*iwan*j+k]=0.0;	      
-		}
-	      }
 	    }   	
 	  }else{ //no friction            	  
 	    if (islavact[j]>-1){
@@ -685,7 +586,7 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
 	      cstress[mt*j+1]=0.;		    	    
 	      cstress[mt*j+2]=0.;
 	      cdisp[6*j]=0.;			    	    
-	      cdisp[6*j+1]=0.;            
+	      cdisp[6*j+1]=0.;           
 	      cdisp[6*j+2]=0.0;			    		    	    
 	      cdisp[6*j+3]=0.;		    	    
 	      cdisp[6*j+4]=0.;		    	    
@@ -725,7 +626,7 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
 	
 	/* update weighted dual gap */
 	
-	gap[j]=gap[j]-ddispnormal;      
+	gap[j]=gap[j]-ddispnormal;     
       }       
     }   
   }
@@ -734,7 +635,7 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
     
     /* relative convergence critera for semi-smooth Newton */
     
-    if(max_ncf_n>1.e-3  ){*iflagact=1;}
+    if(max_ncf_n>1.e-3){*iflagact=1;}
     if((max_ncf_t[0]/((lm_t1_av+0.001)/(nstick+nslip+0.001))>9.e-4 ||
 	max_ncf_t[1]/((lm_t2_av+0.001)/(nstick+nslip+0.001))>9.e-4) &&
        mumax>1.E-10 ){*iflagact=1;} 
@@ -829,13 +730,13 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
   
   /* print total contact force per contact tie for debugging purpose */
   
-  for( i=0; i<*ntie; i++){
+  for( i=0;i<*ntie;i++){
     if(tieset[i*(81*3)+80]=='C'){
       for(jj=0;jj<3;jj++){	
 	f_cs_tot[jj]=0.0;	
-	f_cm_tot[jj]=0.0;     
+	f_cm_tot[jj]=0.0;    
       }
-      for(j=nslavnode[i]; j<nslavnode[i+1]; j++){	  
+      for(j=nslavnode[i];j<nslavnode[i+1];j++){	  
 	nodes=islavnode[j];	  
 	for(l=0;l<3;l++){	    
 	  idof1=nactdof[mt*nodes-3+l]-1;
@@ -845,7 +746,7 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
 	  }
 	}
       }			
-      for(j=nmastnode[i]; j<nmastnode[i+1]; j++){	  
+      for(j=nmastnode[i];j<nmastnode[i+1];j++){	  
 	nodes=imastnode[j];	    
 	for(l=0;l<3;l++){		
 	  idof1=nactdof[mt*nodes-3+l]-1;
@@ -860,9 +761,9 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
   
   /* transform contact traction for frd-output I(LM)=T*LM */
   
-  for( i=0; i<*ntie; i++){
+  for( i=0;i<*ntie;i++){
     if(tieset[i*(81*3)+80]=='C'){
-      for(j=nslavnode[i]; j<nslavnode[i+1]; j++){
+      for(j=nslavnode[i];j<nslavnode[i+1];j++){
 	for(jj=0;jj<mt;jj++){	
 	  cstresstil[mt*j+jj]=0.0;	    
 	}
@@ -879,9 +780,9 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
       }
     }	
   }
-  for( i=0; i<*ntie; i++){      	
+  for( i=0;i<*ntie;i++){      	
     if(tieset[i*(81*3)+80]=='C'){	        
-      for(j=nslavnode[i]; j<nslavnode[i+1]; j++){
+      for(j=nslavnode[i];j<nslavnode[i+1];j++){
 	stressnormal=cstresstil[mt*j+0]*slavnor[3*j]+
 	  cstresstil[mt*j+1]*slavnor[3*j+1]+cstresstil[mt*j+2]*slavnor[3*j+2];	
 	stresst[0]=cstresstil[mt*j+0]*slavtan[6*j]+

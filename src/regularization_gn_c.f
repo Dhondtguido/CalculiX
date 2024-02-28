@@ -27,8 +27,8 @@
 !                    =1 derivative called    
 !  [in]regmode        selects regularization funtion
 !                    =1 perturbed Lagrange
-!                    =2 piece wise linear with given data points
-!                    =3 expontential contact law
+!                    =2 piecewise linear with given data points
+!                    =3 exponential contact law
 !  [out]gnc        result regularization function
 !  [in] aninvloc        stiffness constant for perturbed Lagrange
 !  [in] p0 parameter for exponential regularization
@@ -135,6 +135,6 @@ c         ndata=int(plconloc(81))
             call exit(201)
          endif
       endif
-c     call exit(201)
+!
       return
       end

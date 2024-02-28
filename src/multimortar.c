@@ -100,8 +100,6 @@
  *  [in] jqtlocinv	pointer into field irowtlocinv
  *  [in] autlocinv	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$  
  *  [in] islavnodeinv     (i) slave node index for node i 
- *  [in] lambdaiwan       Lagrange multiplier splitted to Iwan elements
- *  [in] lambdaiwanini    Lagrange multiplier splitted to Iwan elements at start of increment
  */
 
 void multimortar(double **aup,double *ad,ITG **irowp,ITG *jq,ITG *nzs,
@@ -128,8 +126,8 @@ void multimortar(double **aup,double *ad,ITG **irowp,ITG *jq,ITG *nzs,
 		  double *tietol,ITG *ncmat_,ITG *ntmat_,double *plicon,
 		  ITG *nplicon,ITG *npmat_,double *dtime,ITG *irowtloc,
 		  ITG *jqtloc,double *autloc, ITG *irowtlocinv,ITG *jqtlocinv,
-		  double *autlocinv,ITG *islavnodeinv,double *lambdaiwan,
-		  double *lambdaiwanini,ITG *iit,ITG *nmethod,double *bet,
+		 double *autlocinv,ITG *islavnodeinv,
+		  ITG *iit,ITG *nmethod,double *bet,
 		  ITG *ithermal,double *plkcon,ITG *nplkcon){ 
   
   ITG i,j,k,l,m,mt=mi[1]+1,nodesf,nodem,irow_ln,irow_lm,irow_li,irow_la,debug,
@@ -1215,7 +1213,8 @@ void multimortar(double **aup,double *ad,ITG **irowp,ITG *jq,ITG *nzs,
 		 irowd,jqd,Ddtil,irowdtil,jqdtil,au_bdtil2,irow_bdtil2,
 		 jq_bdtil2,au_ddtil2i,irow_ddtil2i,jq_ddtil2i,au_ddtil2a,
 		 irow_ddtil2a,jq_ddtil2a,m_flagr,i_flagr,a_flagr,a_flag,i_flag,
-		 m_flag,&irow_ln,&irow_lm,&irow_li,&irow_la,slavnor,slavtan,vold,
+		 m_flag,&irow_ln,&irow_lm,&irow_li,&irow_la,slavnor,slavtan,
+		 vold,
 		 vini,cstress,cstressini,bp_old,nactdof,islavnode,imastnode,
 		 ntie,mi,nk,nboun,ndirboun,nodeboun,xboun,nmpc,ipompc,nodempc,
 		 coefmpc,ikboun,ilboun,ikmpc,ilmpc,nslavspc,islavspc,nsspc,
@@ -1223,7 +1222,7 @@ void multimortar(double **aup,double *ad,ITG **irowp,ITG *jq,ITG *nzs,
 		 imastmpc,nmmpc,tieset,islavactdoftie,nelcon,elcon,tietol,
 		 ncmat_,ntmat_,plicon,nplicon,npmat_,dtime,irowtloc,jqtloc,
 		 autloc,irowtlocinv,jqtlocinv,autlocinv,islavnodeinv,
-		 lambdaiwan,lambdaiwanini,iit,nmethod,bet,ithermal,plkcon,
+		 iit,nmethod,bet,ithermal,plkcon,
 		 nplkcon);
 		 
   SFREE(au_an);SFREE(irow_an);SFREE(jq_an);

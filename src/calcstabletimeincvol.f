@@ -105,6 +105,7 @@ cc        safefac=0.50d0
 c        safefac=0.80d0
 c      else
         safefac=0.80d0/1.3d0
+c        safefac=0.5d0
 c      endif
       quadfac=0.3d0
 !     

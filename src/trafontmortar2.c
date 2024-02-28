@@ -121,8 +121,6 @@
  *  [in] jqtlocinv	pointer into field irowtlocinv
  *  [in] autlocinv	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$  
  *  [in] islavnodeinv     (i) slave node index for node i
- *  [in] lambdaiwan       Lagrange multiplier splitted to Iwan elements
- *  [in] lambdaiwanini    Lagrange multiplier splitted to Iwan elements at start of increment 
  */
 void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 		    ITG *nslavnode,ITG *nmastnode,double *f_da,double *f_atil,
@@ -162,12 +160,12 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 		    double *plicon,ITG *nplicon,ITG *npmat_,double *dtime,
 		    ITG *irowtloc,ITG *jqtloc,double *autloc, 
 		    ITG *irowtlocinv,ITG *jqtlocinv,double *autlocinv,
-		    ITG *islavnodeinv,double *lambdaiwan,double *lambdaiwanini,
+		    ITG *islavnodeinv,
 		    ITG *iit,ITG *nmethod,double *beta,ITG *ithermal,
 		    double *plkcon,ITG *nplkcon){
   
-  ITG i,j,jj,j2,k,l,debug,idof1,idof2,idof3,iadd,iwan,jrow,islavnodeentry,
-    mt=mi[1]+1,nodes,node,derivmode,regmode,regmodet,yielded,
+  ITG i,j,jj,j2,k,l,debug,idof1,idof2,idof3,iadd,jrow,islavnodeentry,
+    mt=mi[1]+1,nodes,node,derivmode,regmode,
     *irow_antil=NULL,*irow_amtil=NULL,*irow_aitil=NULL,*irow_aatil=NULL,
     *irow_amtil1=NULL,*irow_amtil2=NULL,*irow_aitil1=NULL,*irow_aitil2=NULL,
     *irow_aatil1=NULL,*irow_aatil2=NULL,nzs_antil,nzs_amtil,nzs_aitil,
@@ -176,8 +174,8 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
     *jq_aatil1=NULL,*jq_aatil2=NULL,ifree_antil,ifree_amtil1,ifree_amtil2,
     ifree_aitil1,ifree_aitil2,ifree_aatil1,ifree_aatil2;
   
-  double t1,t2,e1,e2,e3,contribution,dut[2],hpn,scal,bp,constant=1.E10,
-    constantt=1.E10,atau,lambda_n,*u_tilde=NULL,resreg[2],
+  double t1,t2,e1,e2,e3,contribution,hpn,scal,bp,constant=1.E10,
+    constantt=1.E10,lambda_n,*u_tilde=NULL,resreg[2],
     *cstress2=NULL,*cstressini2=NULL,that[6],n11,n22,aninvloc,gnc,dgnc,dgnc1,
     mu,p0,beta_e,atauinvloc,lambda_t[2],lambdaini_t[2],lambdatilde_t[2],ltu[2],
     ltslip[6],rphat[2],n[3],n2[3],t[6],utildep_t[2],rslip[6],*au_antil=NULL,
@@ -318,10 +316,10 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	 (see phd-thesis Sitzmann,Chapter 3.4.1) */
       
       scal=Ddtil[jqdtil[node-1]-1];
-      FORTRAN(getcontactparams,(&mu,&regmode,&regmodet,&aninvloc,&atauinvloc,
+      FORTRAN(getcontactparams,(&mu,&regmode,&aninvloc,&atauinvloc,
 				&p0,&beta_e,tietol,elcon,
 				&islavactdoftie[islavnodeentry-1],ncmat_,
-				ntmat_,&iwan));
+				ntmat_));
       constantt=min(constant,1.0/atauinvloc);
       derivmode=1;
       FORTRAN(regularization_gn_c,(&lambda_n,&derivmode,&regmode,&dgnc,
@@ -330,35 +328,18 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 				   plicon,nplicon,npmat_,ncmat_,tietol,&scal));
       
       if(islavact[islavnodeentry-1]==1 || islavact[islavnodeentry-1]==2){
-	if(regmodet==1){
-	  derivmode=1;
+	derivmode=1;
 	  
-	  /* perturbed lagrange,tangential direction
-	     (see phd-thesis Sitzmann,Chapter 3.4.2) */
+	/* perturbed lagrange,tangential direction
+	   (see phd-thesis Sitzmann,Chapter 3.4.2) */
 	  
-	  FORTRAN(regularization_slip_lin,(utildep_t,&bp,&atauinvloc,resreg,
-					   &derivmode,islavact,lambda_t,
-					   lambdatilde_t,&constantt,&debug,
-					   &islavnodeentry,n2,t,that,&mu,rslip,
-					   ltslip,ltu));
-          rphat[0]=0.0;
-	  rphat[1]=0.0;
-	}else{
-	  derivmode=1;
-	  atau=1.0/atauinvloc;
-	  
-	  /* perturbed lagrange,tangential direction with Iwan elements  
-	     (see phd-thesis Sitzmann,Chapter 3.4.2) */
-	  
-	  FORTRAN(regularization_slip_iwan,(&lambda_n,utildep_t,&bp,&atau,
-					    resreg,&derivmode,&regmodet,
-					    lambdaiwan,lambdaiwanini,
-					    &islavnodeentry,n,t,&mu,rslip,
-					    ltslip,ltu,&yielded,iit,
-					    &iwan,dut));
-	  rphat[0]=0.0;
-	  rphat[1]=0.0;
-	}
+	FORTRAN(regularization_slip_lin,(utildep_t,&bp,&atauinvloc,resreg,
+					 &derivmode,islavact,lambda_t,
+					 lambdatilde_t,&constantt,&debug,
+					 &islavnodeentry,n2,t,that,&mu,rslip,
+					 ltslip,ltu));
+	rphat[0]=0.0;
+	rphat[1]=0.0;
 	
 	if(jrow==4 && ithermal[0]<2){
 	  printf(" *ERROR in trafontmortar2\n");
@@ -521,10 +502,10 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	 (see phd-thesis Sitzmann,Chapter 3.4.1) */
       
       scal=Ddtil[jqdtil[node-1]-1];
-      FORTRAN(getcontactparams,(&mu,&regmode,&regmodet,&aninvloc,&atauinvloc,
+      FORTRAN(getcontactparams,(&mu,&regmode,&aninvloc,&atauinvloc,
 				&p0,&beta_e,tietol,elcon,
 				&islavactdoftie[islavnodeentry-1],ncmat_,
-				ntmat_,&iwan));
+				ntmat_));
       
       constantt=min(constant,1.0/atauinvloc);
       derivmode=1;
@@ -535,37 +516,19 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 				   plicon,nplicon,npmat_,ncmat_,tietol,&scal));
       
       if(islavact[islavnodeentry-1]==1 || islavact[islavnodeentry-1]==2){
-	if(regmodet==1){
-	  derivmode=1;
+	derivmode=1;
 	  
-	  /* perturbed lagrange,tangential direction  
-	     (see phd-thesis Sitzmann,Chapter 3.4.2) */
+	/* perturbed lagrange,tangential direction  
+	   (see phd-thesis Sitzmann,Chapter 3.4.2) */
 	  
-	  FORTRAN(regularization_slip_lin,(utildep_t,&bp,&atauinvloc,resreg,
-					   &derivmode,islavact,lambda_t,
-					   lambdatilde_t,&constantt,&debug,
-					   &islavnodeentry,n2,t,that,&mu,rslip,
-					   ltslip,ltu));
+	FORTRAN(regularization_slip_lin,(utildep_t,&bp,&atauinvloc,resreg,
+					 &derivmode,islavact,lambda_t,
+					 lambdatilde_t,&constantt,&debug,
+					 &islavnodeentry,n2,t,that,&mu,rslip,
+					 ltslip,ltu));
 	  
-          rphat[0]=0.0;
-	  rphat[1]=0.0;
-        }else{
-	  derivmode=1;
-	  atau=1.0/atauinvloc;
-	  
-	  /* perturbed lagrange,tangential direction  
-	     (see phd-thesis Sitzmann,Chapter 3.4.2) */
-	  
-	  FORTRAN(regularization_slip_iwan,(&lambda_n,utildep_t,&bp,&atau,
-					    resreg,&derivmode,&regmodet,
-					    lambdaiwan,lambdaiwanini,
-					    &islavnodeentry,n,t,&mu,rslip,
-					    ltslip,ltu,&yielded,iit,
-					    &iwan,dut));
-	  
-	  rphat[0]=0.0;
-	  rphat[1]=0.0;
-	}	
+	rphat[0]=0.0;
+	rphat[1]=0.0;
 	if(jrow==4 && ithermal[0]<2){ 
 	  printf(" *ERROR in trafontmortar2\n");
 	  // something went wrong
@@ -723,10 +686,10 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	 (see phd-thesis Sitzmann,Chapter 3.4.1) */
       
       scal=Ddtil[jqdtil[node-1]-1];
-      FORTRAN(getcontactparams,(&mu,&regmode,&regmodet,&aninvloc,&atauinvloc,
+      FORTRAN(getcontactparams,(&mu,&regmode,&aninvloc,&atauinvloc,
 				&p0,&beta_e,tietol,elcon,
 				&islavactdoftie[islavnodeentry-1],ncmat_,
-				ntmat_,&iwan));
+				ntmat_));
       
       constantt=min(constant,1.0/atauinvloc);
       derivmode=1;
@@ -736,36 +699,19 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 				   plicon,nplicon,npmat_,ncmat_,tietol,&scal));
       
       if(islavact[islavnodeentry-1]==1 || islavact[islavnodeentry-1]==2){
-	if(regmodet==1){
-	  derivmode=1;
+	derivmode=1;
 	  
-	  /* perturbed lagrange,tangential direction 
-	     (see phd-thesis Sitzmann,Chapter 3.4.2) */
+	/* perturbed lagrange,tangential direction 
+	   (see phd-thesis Sitzmann,Chapter 3.4.2) */
 	  
-	  FORTRAN(regularization_slip_lin,(utildep_t,&bp,&atauinvloc,resreg,
-					   &derivmode,islavact,lambda_t,
-					   lambdatilde_t,&constantt,&debug,
-					   &islavnodeentry,n2,t,that,&mu,rslip,
-					   ltslip,ltu));
+	FORTRAN(regularization_slip_lin,(utildep_t,&bp,&atauinvloc,resreg,
+					 &derivmode,islavact,lambda_t,
+					 lambdatilde_t,&constantt,&debug,
+					 &islavnodeentry,n2,t,that,&mu,rslip,
+					 ltslip,ltu));
 	  
-          rphat[0]=0.0;
-	  rphat[1]=0.0;
-	}else{    
-	  derivmode=1;
-	  atau=1.0/atauinvloc;
-	  
-	  /* perturbed lagrange,tangential direction 
-	     (see phd-thesis Sitzmann,Chapter 3.4.2) */
-	  
-	  FORTRAN(regularization_slip_iwan,(&lambda_n,utildep_t,&bp,&atau,
-					    resreg,&derivmode,&regmodet,
-					    lambdaiwan,lambdaiwanini,
-					    &islavnodeentry,n,t,&mu,rslip,
-					    ltslip,ltu,&yielded,iit,
-					    &iwan,dut));
-	  rphat[0]=0.0;
-	  rphat[1]=0.0;
-	}
+	rphat[0]=0.0;
+	rphat[1]=0.0;
 	if(jrow==4 && ithermal[0]<2){ 
 	  printf(" *ERROR in trafontmortar2\n");
 	  // something went wrong
@@ -987,10 +933,10 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	 (see phd-thesis Sitzmann,Chapter 3.4.1) */
       
       scal=Ddtil[jqdtil[node-1]-1];
-      FORTRAN(getcontactparams,(&mu,&regmode,&regmodet,&aninvloc,&atauinvloc,
+      FORTRAN(getcontactparams,(&mu,&regmode,&aninvloc,&atauinvloc,
 				&p0,&beta_e,tietol,elcon,
 				&islavactdoftie[islavnodeentry-1],ncmat_,
-				ntmat_,&iwan));
+				ntmat_));
       
       constantt=min(constant,1.0/atauinvloc);
       derivmode=1;
@@ -1001,37 +947,19 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 				   plicon,nplicon,npmat_,ncmat_,tietol,&scal));
 
       if(islavact[islavnodeentry-1]==1 || islavact[islavnodeentry-1]==2){
-	if(regmodet==1){
-	  derivmode=1;
+	derivmode=1;
 	  
-	  /* perturbed lagrange,tangential direction 
-	     (see phd-thesis Sitzmann,Chapter 3.4.2) */
+	/* perturbed lagrange,tangential direction 
+	   (see phd-thesis Sitzmann,Chapter 3.4.2) */
 	  
-	  FORTRAN(regularization_slip_lin,(utildep_t,&bp,&atauinvloc,resreg,
-					   &derivmode,islavact,lambda_t,
-					   lambdatilde_t,&constantt,&debug,
-					   &islavnodeentry,n2,t,that,&mu,rslip,
-					   ltslip,ltu));
+	FORTRAN(regularization_slip_lin,(utildep_t,&bp,&atauinvloc,resreg,
+					 &derivmode,islavact,lambda_t,
+					 lambdatilde_t,&constantt,&debug,
+					 &islavnodeentry,n2,t,that,&mu,rslip,
+					 ltslip,ltu));
 	  
-          rphat[0]=0.0;
-	  rphat[1]=0.0;
-	}else{
-	  derivmode=1;
-	  atau=1.0/atauinvloc;
-	  
-	  /* perturbed lagrange,tangential direction 
-	     (see phd-thesis Sitzmann,Chapter 3.4.2) */
-	  
-	  FORTRAN(regularization_slip_iwan,(&lambda_n,utildep_t,&bp,&atau,
-					    resreg,&derivmode,&regmodet,
-					    lambdaiwan,lambdaiwanini,
-					    &islavnodeentry,n,t,&mu,rslip,
-					    ltslip,ltu,&yielded,iit,
-					    &iwan,dut));
-	  
-	  rphat[0]=0.0;
-	  rphat[1]=0.0;
-	}
+	rphat[0]=0.0;
+	rphat[1]=0.0;
 	if(jrow==4 && ithermal[0]<2){ 
 	  printf(" *ERROR in trafontmortar2\n");
 	  // something went wrong
@@ -1189,10 +1117,10 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	 (see phd-thesis Sitzmann,Chapter 3.4.1) */
       
       scal=Ddtil[jqdtil[node-1]-1];
-      FORTRAN(getcontactparams,(&mu,&regmode,&regmodet,&aninvloc,&atauinvloc,
+      FORTRAN(getcontactparams,(&mu,&regmode,&aninvloc,&atauinvloc,
 				&p0,&beta_e,tietol,elcon,
 				&islavactdoftie[islavnodeentry-1],ncmat_,
-				ntmat_,&iwan));
+				ntmat_));
       
       constantt=min(constant,1.0/atauinvloc);
       derivmode=1;
@@ -1202,36 +1130,19 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 				   plicon,nplicon,npmat_,ncmat_,tietol,&scal));
       
       if(islavact[islavnodeentry-1]==1 || islavact[islavnodeentry-1]==2){ 	    
-	if(regmodet==1){
-	  derivmode=1;
+	derivmode=1;
 	  
-	  /* perturbed lagrange,tangential direction 
-	     (see phd-thesis Sitzmann,Chapter 3.4.2) */
+	/* perturbed lagrange,tangential direction 
+	   (see phd-thesis Sitzmann,Chapter 3.4.2) */
 	  
-	  FORTRAN(regularization_slip_lin,(utildep_t,&bp,&atauinvloc,resreg,
-					   &derivmode,islavact,lambda_t,
-					   lambdatilde_t,&constantt,&debug,
-					   &islavnodeentry,n2,t,that,&mu,rslip,
-					   ltslip,ltu));
+	FORTRAN(regularization_slip_lin,(utildep_t,&bp,&atauinvloc,resreg,
+					 &derivmode,islavact,lambda_t,
+					 lambdatilde_t,&constantt,&debug,
+					 &islavnodeentry,n2,t,that,&mu,rslip,
+					 ltslip,ltu));
 	  
-          rphat[0]=0.0;
-	  rphat[1]=0.0;
-	}else{    
-	  derivmode=1;
-	  atau=1.0/atauinvloc;
-	  
-	  /* perturbed lagrange,tangential direction 
-	     (see phd-thesis Sitzmann,Chapter 3.4.2) */
-	  
-	  FORTRAN(regularization_slip_iwan,(&lambda_n,utildep_t,&bp,&atau,
-					    resreg,&derivmode,&regmodet,
-					    lambdaiwan,lambdaiwanini,
-					    &islavnodeentry,n,t,&mu,rslip,
-					    ltslip,ltu,&yielded,iit,
-					    &iwan,dut));
-	  rphat[0]=0.0;
-	  rphat[1]=0.0;
-	}
+	rphat[0]=0.0;
+	rphat[1]=0.0;
 	if(jrow==4 && ithermal[0]<2){ 
 	  printf(" *ERROR in trafontmortar2\n");
 	  // something went wrong
@@ -1454,10 +1365,10 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	 (see phd-thesis Sitzmann,Chapter 3.4.1) */
       
       scal=Ddtil[jqdtil[node-1]-1];
-      FORTRAN(getcontactparams,(&mu,&regmode,&regmodet,&aninvloc,&atauinvloc,
+      FORTRAN(getcontactparams,(&mu,&regmode,&aninvloc,&atauinvloc,
 				&p0,&beta_e,tietol,elcon,
 				&islavactdoftie[islavnodeentry-1],ncmat_,
-				ntmat_,&iwan));
+				ntmat_));
       
       constantt=min(constant,1.0/atauinvloc);
       derivmode=1;
@@ -1468,37 +1379,19 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 				   plicon,nplicon,npmat_,ncmat_,tietol,&scal));
       
       if(islavact[islavnodeentry-1]==1 || islavact[islavnodeentry-1]==2){
-	if(regmodet==1){
-	  derivmode=1;
+	derivmode=1;
 	  
-	  /* perturbed lagrange,tangential direction 
-	     (see phd-thesis Sitzmann,Chapter 3.4.2) */
+	/* perturbed lagrange,tangential direction 
+	   (see phd-thesis Sitzmann,Chapter 3.4.2) */
 	  
-	  FORTRAN(regularization_slip_lin,(utildep_t,&bp,&atauinvloc,resreg,
-					   &derivmode,islavact,lambda_t,
-					   lambdatilde_t,&constantt,&debug,
-					   &islavnodeentry,n2,t,that,&mu,rslip,
-					   ltslip,ltu));
+	FORTRAN(regularization_slip_lin,(utildep_t,&bp,&atauinvloc,resreg,
+					 &derivmode,islavact,lambda_t,
+					 lambdatilde_t,&constantt,&debug,
+					 &islavnodeentry,n2,t,that,&mu,rslip,
+					 ltslip,ltu));
 	
-          rphat[0]=0.0;
-	  rphat[1]=0.0;
-	}else{
-	  derivmode=1;
-	  atau=1.0/atauinvloc;
-	  
-	  /* perturbed lagrange,tangential direction 
-	     (see phd-thesis Sitzmann,Chapter 3.4.2) */
-	  
-	  FORTRAN(regularization_slip_iwan,(&lambda_n,utildep_t,&bp,&atau,
-					    resreg,&derivmode,&regmodet,
-					    lambdaiwan,lambdaiwanini,
-					    &islavnodeentry,n,t,&mu,rslip,
-					    ltslip,ltu,&yielded,iit,
-					    &iwan,dut));
-	  
-	  rphat[0]=0.0;
-	  rphat[1]=0.0;
-	}
+	rphat[0]=0.0;
+	rphat[1]=0.0;
 	if(jrow==4 && ithermal[0]<2){ 
 	  printf(" *ERROR in trafontmortar2\n");
 	  // something went wrong
@@ -1653,10 +1546,10 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	 (see phd-thesis Sitzmann,Chapter 3.4.1) */
       
       scal=Ddtil[jqdtil[node-1]-1];
-      FORTRAN(getcontactparams,(&mu,&regmode,&regmodet,&aninvloc,&atauinvloc,
+      FORTRAN(getcontactparams,(&mu,&regmode,&aninvloc,&atauinvloc,
 				&p0,&beta_e,tietol,elcon,
 				&islavactdoftie[islavnodeentry-1],ncmat_,
-				ntmat_,&iwan));
+				ntmat_));
       
       constantt=min(constant,1.0/atauinvloc);
       derivmode=1;
@@ -1667,37 +1560,19 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 				   plicon,nplicon,npmat_,ncmat_,tietol,&scal));
       
       if(islavact[islavnodeentry-1]==1 || islavact[islavnodeentry-1]==2){ 	    
-	if(regmodet==1){
-	  derivmode=1;
+	derivmode=1;
 	  
-	  /* perturbed lagrange,tangential direction 
-	     (see phd-thesis Sitzmann,Chapter 3.4.2) */
+	/* perturbed lagrange,tangential direction 
+	   (see phd-thesis Sitzmann,Chapter 3.4.2) */
 	  
-	  FORTRAN(regularization_slip_lin,(utildep_t,&bp,&atauinvloc,resreg,
-					   &derivmode,islavact,lambda_t,
-					   lambdatilde_t,&constantt,&debug,
-					   &islavnodeentry,n2,t,that,&mu,rslip,
-					   ltslip,ltu));
+	FORTRAN(regularization_slip_lin,(utildep_t,&bp,&atauinvloc,resreg,
+					 &derivmode,islavact,lambda_t,
+					 lambdatilde_t,&constantt,&debug,
+					 &islavnodeentry,n2,t,that,&mu,rslip,
+					 ltslip,ltu));
 	  
-          rphat[0]=0.0;
-	  rphat[1]=0.0;
-	}else{    
-	  derivmode=1;
-	  atau=1.0/atauinvloc;
-	  
-	  /* perturbed lagrange,tangential direction 
-	     (see phd-thesis Sitzmann,Chapter 3.4.2) */
-	  
-	  FORTRAN(regularization_slip_iwan,(&lambda_n,utildep_t,&bp,&atau,
-					    resreg,&derivmode,&regmodet,
-					    lambdaiwan,lambdaiwanini,
-					    &islavnodeentry,n,t,&mu,rslip,
-					    ltslip,ltu,&yielded,iit,
-					    &iwan,dut));
-	  
-	  rphat[0]=0.0;
-	  rphat[1]=0.0;
-	}
+	rphat[0]=0.0;
+	rphat[1]=0.0;
 	if(jrow==4 && ithermal[0]<2){ 
 	  printf(" *ERROR in trafontmortar2\n");
 	  // something went wrong
@@ -1908,10 +1783,10 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
       bp=bp_old[islavnodeentry-1];
       scal=Ddtil[jqdtil[node-1]-1];
       
-      FORTRAN(getcontactparams,(&mu,&regmode,&regmodet,&aninvloc,&atauinvloc,
+      FORTRAN(getcontactparams,(&mu,&regmode,&aninvloc,&atauinvloc,
 				&p0,&beta_e,tietol,elcon,
 				&islavactdoftie[islavnodeentry-1],ncmat_,
-				ntmat_,&iwan));
+				ntmat_));
       
       constantt=min(constant,1.0/atauinvloc);
       
@@ -1931,37 +1806,18 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 				   plicon,nplicon,npmat_,ncmat_,tietol,&scal));
 
       if(islavact[islavnodeentry-1]==1 || islavact[islavnodeentry-1]==2){
-	yielded=0;
-	if(regmodet==1){
-	  derivmode=1;
+	derivmode=1;
 	  
-	  /* perturbed lagrange,tangential direction 
-	     (see phd-thesis Sitzmann,Chapter 3.4.2) */
+	/* perturbed lagrange,tangential direction 
+	   (see phd-thesis Sitzmann,Chapter 3.4.2) */
 	  
-	  FORTRAN(regularization_slip_lin,(utildep_t,&bp,&atauinvloc,resreg,
-					   &derivmode,islavact,lambda_t,
-					   lambdatilde_t,&constantt,&debug,
-					   &islavnodeentry,n2,t,that,&mu,rslip,
-					   ltslip,ltu));
-          rphat[0]=0.0;
-	  rphat[1]=0.0;
-	}else{
-	  derivmode=1;
-	  atau=1.0/atauinvloc;
-	  
-	  /* perturbed lagrange,tangential direction 
-	     (see phd-thesis Sitzmann,Chapter 3.4.2) */
-	  
-	  FORTRAN(regularization_slip_iwan,(&lambda_n,utildep_t,&bp,&atau,
-					    resreg,&derivmode,&regmodet,
-					    lambdaiwan,lambdaiwanini,
-					    &islavnodeentry,n,t,&mu,rslip,
-					    ltslip,ltu,&yielded,iit,
-					    &iwan,dut));
-	  
-	  rphat[0]=0.0;
-	  rphat[1]=0.0;
-	}
+	FORTRAN(regularization_slip_lin,(utildep_t,&bp,&atauinvloc,resreg,
+					 &derivmode,islavact,lambda_t,
+					 lambdatilde_t,&constantt,&debug,
+					 &islavnodeentry,n2,t,that,&mu,rslip,
+					 ltslip,ltu));
+	rphat[0]=0.0;
+	rphat[1]=0.0;
 	hpn=gap[islavnodeentry-1]+gnc-dgnc*lambda_n;
 	dgnc1=dgnc;
 	

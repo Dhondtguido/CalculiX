@@ -720,7 +720,6 @@ reducematrix.f \
 refinemeshs.f \
 regularization_gn_c.f \
 regularization_gt_c.f \
-regularization_slip_iwan.f \
 regularization_slip_lin.f \
 reinit_refine.f \
 relaxval_al.f \
