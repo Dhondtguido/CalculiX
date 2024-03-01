@@ -189,6 +189,10 @@ crackpropagations.f \
 crackrate.f \
 crackshape.f \
 create_contactdofs.f \
+create_t.f \
+create_t_lin.f \
+create_tinv.f \
+create_tinv_lin.f \
 createbd.f \
 createblock_struct.f \
 createelemneigh.f \
@@ -200,10 +204,6 @@ createlocalsys.f \
 createmddof.f \
 createmdelem.f \
 createnodeneigh.f \
-createtele.f \
-createteleinv.f \
-createteleinv_lin.f \
-createtele_lin.f \
 createtet.f \
 createtiedsurfs.f \
 creep.f \

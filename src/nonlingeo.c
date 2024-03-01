@@ -760,23 +760,19 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     }else if(*mortar>1){
       inimortar(&ener,mi,ne,nslavs,nk,nener,&ipkon,&lakon,&kon,nkon,
 		&maxprevcontel,&xstate,nstate_,&islavactdoftie,&bp,&islavact,
-		&gap,&slavnor,&slavtan,&cdisp,&cstress,&cfs,&cfm,&cfsini,
-		&cfsinitil,&cfstil,&bpini,&islavactini,&cstressini,ntie,
+		&gap,&slavnor,&slavtan,&cdisp,&cstress,&cfs,
+		&bpini,&islavactini,&cstressini,ntie,
 		tieset,nslavnode,islavnode,&islavnodeinv,&islavelinv,
 		&pslavdual,&pslavdualpg,&autloc,&irowtloc,&jqtloc,&autlocinv,
 		&irowtlocinv,&jqtlocinv,&Bd,&irowb,&jqb,&Bdhelp,&irowbhelp,
 		&jqbhelp,&Dd,&irowd,&jqd,&Ddtil,&irowdtil,&jqdtil,&Bdtil,
 		&irowbtil,&jqbtil,&Bpgd,&irowbpg,&jqbpg,&Dpgd,&irowdpg,&jqdpg,
 		&Dpgdtil,&irowdpgtil,&jqdpgtil,&Bpgdtil,&irowbpgtil,&jqbpgtil,
-		&iflagdualquad,itiefac,islavsurf,nboun,ndirboun,nodeboun,
-		xbounact,nmpc,ipompc,nodempc,coefmpc,labmpc,ikboun,ilboun,
-		ikmpc,ilmpc,&nslavspc,&islavspc,&nslavmpc,&islavmpc,
+		&iflagdualquad,itiefac,islavsurf,nboun,
+		nmpc,&nslavspc,&islavspc,&nslavmpc,&islavmpc,
 		&nmastspc,&imastspc,&nmastmpc,&imastmpc,
-		&nsspc,&nsmpc,imastnode,nmastnode,&nmspc,
-		&nmmpc,iponoels,inoels,tietol,elcon,ncmat_,ntmat_,&nasym,
-		vold,nset,set,
-		mortar,&memmpc_,&ielmat,&ielorien,norien,nmethod,nodeforc,
-		ndirforc,xforc,nforc);
+		imastnode,nmastnode,&nasym,
+		mortar,&ielmat,&ielorien,norien);
     }
     NNEW(xmastnor,double,3*nmastnode[*ntie]);
   }

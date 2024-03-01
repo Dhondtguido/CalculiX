@@ -163,6 +163,21 @@ void FORTRAN(catsmpcslavno,(ITG *ntie,ITG *islavnode,ITG *imastnode,
 			    ITG *nmastspc,ITG *imastspc,ITG *nmspc,
 			    ITG *nmastmpc,ITG *imastmpc,ITG *nmmpc,
 			    char *jobnamef));      
+void FORTRAN(create_t,(ITG *ipkon,ITG *kon,char *lakon,ITG *islavsurf,
+			 double *dcontr,ITG *idcontr1,ITG *idcontr2,
+			 ITG *icounter,ITG *l));
+
+void FORTRAN(create_t_lin,(ITG *ipkon,ITG *kon,char *lakon,ITG *islavsurf,
+			     double *dcontr,ITG *idcontr1,ITG *idcontr2,
+			     ITG *icounter,ITG *l));
+
+void FORTRAN(create_tinv,(ITG *ipkon,ITG *kon,char *lakon,ITG *islavsurf,
+			    double *dcontr,ITG *idcontr1,ITG *idcontr2,
+			    ITG *icounter,ITG *l));
+
+void FORTRAN(create_tinv_lin,(ITG *ipkon,ITG *kon,char *lakon,ITG *islavsurf,
+				double *dcontr,ITG *idcontr1,ITG *idcontr2,
+				ITG *icounter,ITG *l));
        
 void FORTRAN(createbd,(ITG *ict,ITG *l,ITG *ipkon,ITG *kon,char *lakon,
 		       double *co,double *vold,double* gapmints,ITG *islavsurf,
@@ -174,29 +189,18 @@ void FORTRAN(createbd,(ITG *ict,ITG *l,ITG *ipkon,ITG *kon,char *lakon,
 		       ITG *icounter,ITG *icounter2,ITG *islavact,
 		       ITG *iflagdualquad));
      
-void FORTRAN(createbd_pg,(ITG *ict,ITG *l,ITG *ipkon,ITG *kon,char *lakon,double *co,double *vold,
+void FORTRAN(createbd_pg,(ITG *ict,ITG *l,ITG *ipkon,ITG *kon,char *lakon,
+			  double *co,double *vold,
 			  double* gapmints,ITG *islavsurf,ITG *imastsurf,
-			  double *pmastsurf,double *contr,ITG *isconstr,ITG *imcontr,
-			  double *dcontr,ITG *idcontr1,ITG *idcontr2,double *gcontr,ITG *igcontr,
+			  double *pmastsurf,double *contr,ITG *isconstr,
+			  ITG *imcontr,
+			  double *dcontr,ITG *idcontr1,ITG *idcontr2,
+			  double *gcontr,ITG *igcontr,
 			  ITG *iponoels,ITG *inoels,ITG *mi,double* pslavsurf,
-			  double* pslavdual,ITG *nslavnode,ITG *islavnode,ITG *nmastnode,ITG *imastnode,
-			  ITG *icounter,ITG *icounter2,ITG *islavact,ITG *iflagdualquad));
-     
-void FORTRAN(createtele,(ITG *ipkon,ITG *kon,char *lakon,ITG *islavsurf,
-			 double *dcontr,ITG *idcontr1,ITG *idcontr2,
-			 ITG *icounter,ITG *l));
-
-void FORTRAN(createteleinv,(ITG *ipkon,ITG *kon,char *lakon,ITG *islavsurf,
-			    double *dcontr,ITG *idcontr1,ITG *idcontr2,
-			    ITG *icounter,ITG *l));
-      
-void FORTRAN(createtele_lin,(ITG *ipkon,ITG *kon,char *lakon,ITG *islavsurf,
-			     double *dcontr,ITG *idcontr1,ITG *idcontr2,
-			     ITG *icounter,ITG *l));
-
-void FORTRAN(createteleinv_lin,(ITG *ipkon,ITG *kon,char *lakon,ITG *islavsurf,
-				double *dcontr,ITG *idcontr1,ITG *idcontr2,
-				ITG *icounter,ITG *l));
+			  double* pslavdual,ITG *nslavnode,ITG *islavnode,
+			  ITG *nmastnode,ITG *imastnode,
+			  ITG *icounter,ITG *icounter2,ITG *islavact,
+			  ITG *iflagdualquad));
 
 void decascade_mortar(ITG *nmpc,ITG *ipompc,ITG **nodempcp,double **coefmpcp,
 		      ITG *ikmpc,ITG *ilmpc,ITG *memmpc_,ITG *mpcfree);
@@ -250,8 +254,7 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
 	       ITG **islavactdoftiep,double **bpp,ITG **islavactp,
 	       double **gapp,double **slavnorp,double **slavtanp,
 	       double **cdispp,
-	       double **cstressp,double **cfsp,double **cfmp,double **cfsinip,
-	       double **cfsinitilp,double **cfstilp,
+	       double **cstressp,double **cfsp,
 	       double **bpinip,ITG **islavactinip,double **cstressinip,
 	       ITG *ntie,char *tieset,
 	       ITG *nslavnode,ITG *islavnode,
@@ -269,18 +272,11 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
 	       double **Dpgdtilp,ITG **irowdpgtilp,ITG **jqdpgtilp,
 	       double **Bpgdtilp,ITG **irowbpgtilp,ITG **jqbpgtilp,
 	       ITG *iflagdualquad,ITG *itiefac,ITG *islavsurf,
-	       ITG *nboun,ITG *ndirboun,ITG *nodeboun,double *xboun,
-	       ITG *nmpc,ITG *ipompc,ITG *nodempc,double *coefmpc,char *labmpc,
-	       ITG *ikboun,ITG *ilboun,ITG *ikmpc,ITG *ilmpc,
+	       ITG *nboun,ITG *nmpc,
 	       ITG **nslavspcp,ITG **islavspcp,ITG **nslavmpcp,ITG **islavmpcp,
 	       ITG **nmastspcp,ITG **imastspcp,ITG **nmastmpcp,ITG **imastmpcp,
-	       ITG *nsspc,ITG *nsmpc,
-	       ITG *imastnode,ITG *nmastnode,ITG *nmspc,ITG *nmmpc,
-	       ITG *iponoels,ITG *inoels,
-	       double *tietol,double *elcon,ITG *ncmat_,ITG *ntmat_,ITG *nasym,
-	       double *vold,ITG *nset,char *set,ITG *mortar,ITG *memmpc_,
-	       ITG **ielmatp,ITG **ielorienp,ITG *norien,ITG *nmethod,
-	       ITG *nodeforc,ITG *ndirforc,double *xforc,ITG *nforc);
+	       ITG *imastnode,ITG *nmastnode,ITG *nasym,ITG *mortar,
+	       ITG **ielmatp,ITG **ielorienp,ITG *norien);
 
 void insertas(ITG **irowp,ITG **mast1p,ITG *i1,
 	      ITG *i2,ITG *ifree,ITG *nzs_,double *contribution,double **bdp);

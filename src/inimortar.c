@@ -24,6 +24,7 @@
 
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 #define min(a,b) (((a) < (b)) ? (a) : (b))
+
 /**   function initializing mortar contact at the start of nonlingeo.c
  *   getting contact parameters, allocating needed fields, get results from last step,
  *   determine used mortar method, (transform and cataloque SPCs/MPCs)
@@ -41,7 +42,6 @@
  *  [out] cdispp		vector saving contact variables for frd-output 
  *  [out] cstressp	current Lagrange multiplier 
  *  [out] cfsp 		contact force 
- *  [out] cfmp 		not used any more 
  *  [out] bpinip		friction bounds at start of the increment
  *  [out] islavactinip	islavact at the start of the increment
  *  [out] cstressinip	Lagrange multiplier at start of the increment
@@ -92,21 +92,13 @@
  *  [out] imastspcp         ... which stores SPCs for master node i
  *  [out] nmastmpcp	(2*i) pointer to imastmpc...
  *  [out] imastmpcp	... which stores MPCs for master node i 
- *  [out] nsspc            number of SPC for slave nodes 
- *  [out] nsmpc		number of MPC for slave nodes
- *  [out] nmspc            number of SPC for master nodes
- *  [out] nmmpc		number of MPC for master nodes 
- *  [in] iponoels         (i) pointer to inoels
- *  [in] inoels           (3,i) element number, local node number and pointer to another entry
 **/
 void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
 	       ITG **ipkonp,char **lakonp,ITG **konp,ITG *nkon,
 	       ITG *maxprevcontel,double **xstatep,ITG *nstate_,
 	       ITG **islavactdoftiep,double **bpp,ITG **islavactp,
 	       double **gapp,double **slavnorp,double **slavtanp,
-	       double **cdispp,
-	       double **cstressp,double **cfsp,double **cfmp,
-	       double **cfsinip,double **cfsinitilp,double **cfstilp,
+	       double **cdispp,double **cstressp,double **cfsp,
 	       double **bpinip,ITG **islavactinip,double **cstressinip,
 	       ITG *ntie,char *tieset,
 	       ITG *nslavnode,ITG *islavnode,
@@ -124,19 +116,11 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
 	       double **Dpgdtilp,ITG **irowdpgtilp,ITG **jqdpgtilp,
 	       double **Bpgdtilp,ITG **irowbpgtilp,ITG **jqbpgtilp,
 	       ITG *iflagdualquad,ITG *itiefac,ITG *islavsurf,
-	       ITG *nboun,ITG *ndirboun,ITG *nodeboun,double *xboun,
-	       ITG *nmpc,ITG *ipompc,ITG *nodempc,double *coefmpc,char *labmpc,
-	       ITG *ikboun,ITG *ilboun,ITG *ikmpc,ITG *ilmpc,
+	       ITG *nboun,ITG *nmpc,
 	       ITG **nslavspcp,ITG **islavspcp,ITG **nslavmpcp,ITG **islavmpcp,
 	       ITG **nmastspcp,ITG **imastspcp,ITG **nmastmpcp,ITG **imastmpcp,
-	       ITG *nsspc,ITG *nsmpc,
-	       ITG *imastnode,ITG *nmastnode,ITG *nmspc,ITG *nmmpc,
-	       ITG *iponoels,ITG *inoels,
-	       double *tietol,double *elcon,ITG *ncmat_,ITG *ntmat_,ITG *nasym,
-	       double *vold,ITG *nset,char *set,ITG *mortar,
-	       ITG *memmpc_,
-	       ITG **ielmatp,ITG **ielorienp,ITG *norien,ITG *nmethod,
-	       ITG *nodeforc,ITG *ndirforc,double *xforc,ITG *nforc){
+	       ITG *imastnode,ITG *nmastnode,ITG *nasym,ITG *mortar,
+	       ITG **ielmatp,ITG **ielorienp,ITG *norien){
 
   char *lakon=NULL;
     
@@ -154,10 +138,9 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
     *nmastspc=NULL,*imastspc=NULL,*nmastmpc=NULL,*imastmpc=NULL,
     *ielmat=NULL,*ielorien=NULL;
   
-  double *ener=NULL,*xstate=NULL,*bp=NULL,
-    *gap=NULL,*slavnor=NULL,*slavtan=NULL,
-    *cdisp=NULL,*cstress=NULL,*cfs=NULL,*cfsini=NULL,*cfsinitil=NULL,
-    *cfstil=NULL,*cfm=NULL,*bpini=NULL,*cstressini=NULL,*pslavdual=NULL,
+  double *ener=NULL,*xstate=NULL,*bp=NULL,*gap=NULL,*slavnor=NULL,*slavtan=NULL,
+    *cdisp=NULL,*cstress=NULL,*cfs=NULL,
+    *bpini=NULL,*cstressini=NULL,*pslavdual=NULL,
     *pslavdualpg=NULL,*autloc=NULL,
     *autlocinv=NULL,*Bd=NULL,*Bdhelp=NULL,*Dd=NULL,*Ddtil=NULL,*Bdtil=NULL,
     *Bpgd=NULL,*Dpgd=NULL,*Dpgdtil=NULL,*Bpgdtil=NULL;
@@ -165,8 +148,8 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
   ener=*enerp;ipkon=*ipkonp;lakon=*lakonp;kon=*konp;xstate=*xstatep;
   islavactdoftie=*islavactdoftiep;bp=*bpp;islavact=*islavactp;gap=*gapp;
   slavnor=*slavnorp;slavtan=*slavtanp;cdisp=*cdispp;cstress=*cstressp;
-  cfs=*cfsp;cfsini=*cfsinip;cfsinitil=*cfsinitilp;cfstil=*cfstilp;
-  cfm=*cfmp;bpini=*bpinip;islavactini=*islavactinip;cstressini=*cstressinip;
+  cfs=*cfsp;
+  bpini=*bpinip;islavactini=*islavactinip;cstressini=*cstressinip;
   islavnodeinv=*islavnodeinvp;islavelinv=*islavelinvp;pslavdual=*pslavdualp;
   pslavdualpg=*pslavdualpgp;
   autloc=*autlocp;irowtloc=*irowtlocp;jqtloc=*jqtlocp;	
@@ -372,8 +355,8 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
   *enerp=ener;*ipkonp=ipkon;*lakonp=lakon;*konp=kon;*xstatep=xstate;
   *islavactdoftiep=islavactdoftie;*bpp=bp;*islavactp=islavact;*gapp=gap;
   *slavnorp=slavnor;*slavtanp=slavtan;*cdispp=cdisp;*cstressp=cstress;
-  *cfsp=cfs;*cfsinip=cfsini;*cfsinitilp=cfsinitil;*cfstilp=cfstil;
-  *cfmp=cfm;*bpinip=bpini;*islavactinip=islavactini;*cstressinip=cstressini;
+  *cfsp=cfs;
+  *bpinip=bpini;*islavactinip=islavactini;*cstressinip=cstressini;
   *islavnodeinvp=islavnodeinv;*islavelinvp=islavelinv;*pslavdualp=pslavdual;
   *pslavdualpgp=pslavdualpg;
   *autlocp=autloc;*irowtlocp=irowtloc;*jqtlocp=jqtloc;	

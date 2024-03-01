@@ -30,7 +30,6 @@
       integer ii,jface,nope,
      &     ifaceq(9,6),ifacet(7,4),ifacew(8,5)
 !
-!      
       include "gauss.f"
 !     
       ifaceq=reshape((/4,3,2,1,11,10,9,12,21,
@@ -52,7 +51,7 @@
       getlocno=0
 !     
       if((nope.eq.20).or.(nope.eq.8).or.
-     &      (nope.eq.26).or.(nope.eq.11)) then
+     &      (nope.eq.11)) then
          getlocno=ifaceq(ii,jface)
       elseif((nope.eq.10).or.(nope.eq.4)) then
          getlocno=ifacet(ii,jface)

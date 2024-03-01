@@ -53,10 +53,10 @@ void buildtquad(ITG *ntie,ITG *ipkon,ITG *kon,ITG *nk,char *lakon,
 		ITG *iflagdualquad){  
   
   ITG i,j,l,nodesf,nodem,istart,icounter,ndim,ifree,ifree2,
-    nzstloc,nzstlocinv,*idcontr1=NULL,*idcontr2=NULL,
+    nzstloc,nzstlocinv,*krow=NULL,*kcol=NULL,
     *mast1=NULL,*mast2=NULL,*irowtloc=NULL,*irowtlocinv=NULL;
   
-  double contribution,*dcontr=NULL,*autloc=NULL,*autlocinv=NULL;
+  double contribution,*contr=NULL,*autloc=NULL,*autlocinv=NULL;
   
   irowtloc=*irowtlocp; autloc=*autlocp;
   irowtlocinv=*irowtlocinvp; autlocinv=*autlocinvp;
@@ -75,9 +75,9 @@ void buildtquad(ITG *ntie,ITG *ipkon,ITG *kon,ITG *nk,char *lakon,
   
   ifree=1;ifree2=1;
   
-  NNEW(dcontr,double,16);
-  NNEW(idcontr1,ITG,16);
-  NNEW(idcontr2,ITG,16);
+  NNEW(contr,double,16);
+  NNEW(krow,ITG,16);
+  NNEW(kcol,ITG,16);
   
   for(i=0;i<*ntie;i++){	    
     if(tieset[i*(81*3)+80]=='C'){				
@@ -86,17 +86,17 @@ void buildtquad(ITG *ntie,ITG *ipkon,ITG *kon,ITG *nk,char *lakon,
 	/* contribution for T */
 	
 	if(*iflagdualquad==2 || *iflagdualquad==4){
-	  FORTRAN(createtele,(ipkon,kon,lakon,islavsurf,
-			      dcontr,idcontr1,idcontr2,&icounter,&l));
+	  FORTRAN(create_t,(ipkon,kon,lakon,islavsurf,
+			    contr,krow,kcol,&icounter,&l));
 	}else{
-	  FORTRAN(createtele_lin,(ipkon,kon,lakon,islavsurf,
-				  dcontr,idcontr1,idcontr2,&icounter,&l));
+	  FORTRAN(create_t_lin,(ipkon,kon,lakon,islavsurf,
+				contr,krow,kcol,&icounter,&l));
 	}
 	
 	for(j=0;j<icounter;j++){
-	  contribution=dcontr[j];
-	  nodesf=idcontr1[j];				
-	  nodem=idcontr2[j];				
+	  contribution=contr[j];
+	  nodesf=krow[j];				
+	  nodem=kcol[j];				
 	  insertas(&irowtloc,&mast1,&nodesf,&nodem,&ifree,&nzstloc,
 		   &contribution,&autloc);				
 	}
@@ -104,17 +104,17 @@ void buildtquad(ITG *ntie,ITG *ipkon,ITG *kon,ITG *nk,char *lakon,
 	/* contribution for T^-1 */
 	
 	if(*iflagdualquad==2 || *iflagdualquad==4){
-	  FORTRAN(createteleinv,(ipkon,kon,lakon,islavsurf,
-				 dcontr,idcontr1,idcontr2,&icounter,&l));
+	  FORTRAN(create_tinv,(ipkon,kon,lakon,islavsurf,
+			       contr,krow,kcol,&icounter,&l));
 	}else{
-	  FORTRAN(createteleinv_lin,(ipkon,kon,lakon,islavsurf,
-				     dcontr,idcontr1,idcontr2,&icounter,&l));
+	  FORTRAN(create_tinv_lin,(ipkon,kon,lakon,islavsurf,
+				   contr,krow,kcol,&icounter,&l));
 	}
 	
 	for(j=0;j<icounter;j++){
-	  contribution=dcontr[j];
-	  nodesf=idcontr1[j];				
-	  nodem=idcontr2[j];				
+	  contribution=contr[j];
+	  nodesf=krow[j];				
+	  nodem=kcol[j];				
 	  insertas(&irowtlocinv,&mast2,&nodesf,&nodem,&ifree2,&nzstlocinv,
 		   &contribution,&autlocinv);
 	}
@@ -122,7 +122,7 @@ void buildtquad(ITG *ntie,ITG *ipkon,ITG *kon,ITG *nk,char *lakon,
       }
     }
   }
-  SFREE(dcontr);SFREE(idcontr1);SFREE(idcontr2);
+  SFREE(contr);SFREE(krow);SFREE(kcol);
     
   nzstloc=ifree-1;
   ndim=*nk;
