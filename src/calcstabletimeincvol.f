@@ -100,13 +100,14 @@
 !     massless contact due to the different time scheme (the
 !     alpha method is not used for massless contact)
 !     
-c      if(mortar.ne.-1) then
-cc        safefac=0.50d0
-c        safefac=0.80d0
-c      else
+      if(mortar.ne.-1) then
         safefac=0.80d0/1.3d0
-c        safefac=0.5d0
-c      endif
+c     safefac=0.80d0
+      else
+c     safefac=0.80d0/1.3d0
+        safefac=0.5d0
+      endif
+!      
       quadfac=0.3d0
 !     
       damping=0

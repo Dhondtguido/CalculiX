@@ -114,14 +114,14 @@
             mortar=0
          elseif(textpart(i)(1:21).eq.'TYPE=SURFACETOSURFACE') then
             mortar=1
-         elseif(textpart(i)(1:11).eq.'TYPE=MORTAR') then
-            mortar=2
-         elseif(textpart(i)(1:13).eq.'TYPE=PGMORTAR') then
-            mortar=5
          elseif(textpart(i)(1:14).eq.'TYPE=LINMORTAR') then
+            mortar=2
+         elseif(textpart(i)(1:11).eq.'TYPE=MORTAR') then
             mortar=3
          elseif(textpart(i)(1:16).eq.'TYPE=PGLINMORTAR') then
             mortar=4
+         elseif(textpart(i)(1:13).eq.'TYPE=PGMORTAR') then
+            mortar=5
          else
             write(*,*) 
      &       '*WARNING reading *CONTACT PAIR: parameter not recognized:'
@@ -234,12 +234,12 @@
          tieset(2,ntie)(1:80)=textpart(1)(1:80)
          tieset(2,ntie)(81:81)=' '
          ipos=index(tieset(2,ntie),' ')
-         tieset(2,ntie)(ipos:ipos)='M'
+         tieset(2,ntie)(ipos:ipos)='O'
       elseif(mortar.eq.3) then
          tieset(2,ntie)(1:80)=textpart(1)(1:80)
          tieset(2,ntie)(81:81)=' '
          ipos=index(tieset(2,ntie),' ')
-         tieset(2,ntie)(ipos:ipos)='O'
+         tieset(2,ntie)(ipos:ipos)='M'
       elseif(mortar.eq.4) then
          tieset(2,ntie)(1:80)=textpart(1)(1:80)
          tieset(2,ntie)(81:81)=' '
@@ -298,12 +298,12 @@
             tieset(2,ntie)(1:80)=textpart(1)(1:80)
             tieset(2,ntie)(81:81)=' '
             ipos=index(tieset(2,ntie),' ')
-            tieset(2,ntie)(ipos:ipos)='M'
+            tieset(2,ntie)(ipos:ipos)='O'
          elseif(mortar.eq.3) then
             tieset(2,ntie)(1:80)=textpart(1)(1:80)
             tieset(2,ntie)(81:81)=' '
             ipos=index(tieset(2,ntie),' ')
-            tieset(2,ntie)(ipos:ipos)='O'
+            tieset(2,ntie)(ipos:ipos)='M'
          elseif(mortar.eq.4) then
             tieset(2,ntie)(1:80)=textpart(1)(1:80)
             tieset(2,ntie)(81:81)=' '

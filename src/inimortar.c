@@ -329,15 +329,15 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
   NNEW(irowbpgtil,ITG,1);
   NNEW(jqbpgtil,ITG,*nk+1);
   
-  /* iflagdualquad==1 : linear-quadratic (mortar==3: linmortar)
-   * iflagdualquad==2 : quadratric-quadratic (mortar==2: mortar)
+  /* iflagdualquad==1 : linear-quadratic (mortar==2: linmortar)
+   * iflagdualquad==2 : quadratric-quadratic (mortar==3: mortar)
    * iflagdualquad==3 : petrov-galerkin lin-quad (mortar==4: pglinmortar)
    * iflagdualquad==4 : petrov-galerkin quad-quad (mortar==5: pgmortar) */
   
   if(*mortar==2){
-    *iflagdualquad=2;
-  }else if(*mortar==3){
     *iflagdualquad=1;
+  }else if(*mortar==3){
+    *iflagdualquad=2;
   }else if(*mortar==4){
     *iflagdualquad=3;
   }else if(*mortar==5){

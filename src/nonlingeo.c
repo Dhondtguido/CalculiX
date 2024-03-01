@@ -1145,10 +1145,10 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 				  nslavnode,fric,tieset,tietol,ntie,elcon,
 				  ncmat_,ntmat_));
 
-      RENEW(kslav,ITG,3**nslavs);
+      /*   RENEW(kslav,ITG,3**nslavs);
       RENEW(lslav,ITG,3**nslavs);
       RENEW(ktot,ITG,neqtot);
-      RENEW(ltot,ITG,neqtot);
+      RENEW(ltot,ITG,neqtot);*/
 
       /* create RHS of system:  M/dt - (aM + bK)/2 and store in adc,auc */
       
