@@ -33,7 +33,7 @@
      &     istartset,iendset,ialset,ntie,nasym,pslavsurf,pmastsurf,
      &     mortar,clearini,ielprop,prop,ne0,fnext,nea,neb,kscale,
      &     iponoel,inoel,network,smscale,mscalmethod,set,nset,
-     &     islavelinv,autloc,irowtloc,jqtloc,mortartrafoflag)
+     &     islavelinv,aut,irowt,jqt,mortartrafoflag)
 !     
 !     filling the stiffness matrix in spare matrix format (sm)
 !     
@@ -60,8 +60,8 @@
      &     ntmat_,indexe,nope,norien,iexpl,i0,ncmat_,istep,iinc,
      &     nplicon(0:ntmat_,*),nplkcon(0:ntmat_,*),npmat_,mortar,
      &     nea,neb,kscale,iponoel(*),inoel(2,*),network,ndof,
-     &     nset,islavelinv(*),jqtloc(*),irowtloc(*),ii,jqtloc1(21),
-     &     irowtloc1(96),i1,j1,j2,konl(26),mortartrafoflag,ikmpc(*),
+     &     nset,islavelinv(*),jqt(*),irowt(*),ii,jqt1(21),
+     &     irowt1(96),i1,j1,j2,konl(26),mortartrafoflag,ikmpc(*),
      &     mscalmethod,kk,imat,istiff
 !     
       real*8 co(3,*),xboun(*),coefmpc(*),xforc(*),xload(2,*),p1(3),
@@ -76,8 +76,8 @@
      &     plicon(0:2*npmat_,ntmat_,*),plkcon(0:2*npmat_,ntmat_,*),
      &     xstiff(27,mi(1),*),veold(0:mi(2),*),om,valu2,value,dtime,
      &     time,thicke(mi(3),*),doubleglob(*),clearini(3,9,*),ttime,
-     &     pslavsurf(3,*),pmastsurf(6,*),smscale(*),autloc(*),val,
-     &     autloc1(96)
+     &     pslavsurf(3,*),pmastsurf(6,*),smscale(*),aut(*),val,
+     &     aut1(96)
 !     
       kflag=2
       i0=0
@@ -228,27 +228,27 @@ c     mortar end
           if(mortartrafoflag.eq.1) then
             if(islavelinv(i).gt.0) then
               if((nope.eq.20).or.(nope.eq.10).or.(nope.eq.15)) then
-                jqtloc1(1)=1
+                jqt1(1)=1
                 ii=1
                 do i1=1,nope
                   node1=konl(i1)
-                  do j1=jqtloc(node1),jqtloc(node1+1)-1
-                    node2=irowtloc(j1)
+                  do j1=jqt(node1),jqt(node1+1)-1
+                    node2=irowt(j1)
                     do j2=1,nope
                       if(konl(j2).eq.node2) then
-                        autloc1(ii)=autloc(j1)
-                        irowtloc1(ii)=j2
+                        aut1(ii)=aut(j1)
+                        irowt1(ii)=j2
                         ii=ii+1
                       endif
                     enddo
                   enddo
-                  jqtloc1(i1+1)=ii
+                  jqt1(i1+1)=ii
                 enddo
               else
-                jqtloc1(1)=1
+                jqt1(1)=1
                 ii=1
                 do i1=1,nope
-                  jqtloc1(i1+1)=ii
+                  jqt1(i1+1)=ii
                 enddo
               endif
             endif
@@ -270,7 +270,7 @@ c     mortar end
      &           integerglob,doubleglob,tieset,istartset,
      &           iendset,ialset,ntie,nasym,pslavsurf,pmastsurf,mortar,
      &           clearini,ielprop,prop,kscale,smscale(i),mscalmethod,
-     &           set,nset,islavelinv,autloc1,irowtloc1,jqtloc1,
+     &           set,nset,islavelinv,aut1,irowt1,jqt1,
      &           mortartrafoflag)
           else
             call e_c3d_u(co,kon,lakon(i),p1,p2,om,bodyf,nbody,s,sm,ff,i,

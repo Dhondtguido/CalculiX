@@ -90,7 +90,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     icutb=0,*kon=NULL,*ipkon=NULL,*ielmat=NULL,ialeatoric=0,kscale=1,
     *iponoel=NULL,*inoel=NULL,
     *ielorien=NULL,network=0,nrhs=1,iperturbsav,mscalmethod=0,*jqw=NULL,
-    *iroww=NULL,nzsw,*islavelinv=NULL,*irowtloc=NULL,*jqtloc=NULL,
+    *iroww=NULL,nzsw,*islavelinv=NULL,*irowt=NULL,*jqt=NULL,
     mortartrafoflag=0;
 
   double *stn=NULL,*v=NULL,*een=NULL,cam[5],*xstiff=NULL,*stiini=NULL,*tper,
@@ -106,7 +106,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *cdni=NULL,*submatrix=NULL,*xnoels=NULL,*cg=NULL,*straight=NULL,
     *areaslav=NULL,*xmastnor=NULL,theta=0.,*ener=NULL,*xstate=NULL,
     *fnext=NULL,*energyini=NULL,*energy=NULL,alea=0.1,*smscale=NULL,
-    *auw=NULL,*autloc=NULL;
+    *auw=NULL,*aut=NULL;
 
   FILE *f1;
   
@@ -374,7 +374,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	  islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
           inoel,nener,orname,&network,ipobody,xbodyact,ibody,typeboun,
 	  itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	  islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
+	  islavelinv,aut,irowt,jqt,&mortartrafoflag,
 	  &intscheme,physcon);
   SFREE(v);SFREE(fn);SFREE(stx);SFREE(inum);
   iout=1;
@@ -455,7 +455,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	       tieset,istartset,iendset,ialset,ntie,&nasym,pslavsurf,
 	       pmastsurf,mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
 	       iponoel,inoel,&network,ntrans,inotr,trab,smscale,&mscalmethod,
-	       set,nset,islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag);
+	       set,nset,islavelinv,aut,irowt,jqt,&mortartrafoflag);
 
   /* check for negative Jacobians */
 
@@ -608,7 +608,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	      islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
 	      inoel,nener,orname,&network,ipobody,xbodyact,ibody,typeboun,
 	      itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	      islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
+	      islavelinv,aut,irowt,jqt,&mortartrafoflag,
 	      &intscheme,physcon);
 	      
       xbounact[iretain[i]-1]=0.;
@@ -833,7 +833,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	    islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
             inoel,nener,orname,&network,ipobody,xbodyact,ibody,typeboun,
 	    itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	    islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
+	    islavelinv,aut,irowt,jqt,&mortartrafoflag,
 	    &intscheme,physcon);
 
     SFREE(eei);

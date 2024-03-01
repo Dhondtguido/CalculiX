@@ -168,7 +168,7 @@ void *createinummt(ITG *i){
 		       thicke1,emeini1,pslavsurf1,pmastsurf1,mortar1,clearini1,
 		       &nea,&neb,ielprop1,prop1,kscale1,&list1,ilist1,smscale1,
 		       mscalmethod1,&energysms1[indexnal],t0g1,t1g1,
-		       islavelinv1,autloc1,irowtloc1,jqtloc1,mortartrafoflag1,
+		       islavelinv1,aut1,irowt1,jqt1,mortartrafoflag1,
 		       intscheme1,physcon1));
 
   return NULL;

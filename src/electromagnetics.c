@@ -117,7 +117,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
     *iponoel=NULL,*inoel=NULL,inoelsize,nrhs=1,neqfreq,nzsfreq,
     *irowfreq=NULL,*icolfreq=NULL,*jqfreq=NULL,*jq=NULL,
     *itiefac=NULL,mscalmethod=0,nkon0,*nintpoint=0,num_cpus,sys_cpus,
-    *islavelinv=NULL,*irowtloc=NULL,*jqtloc=NULL,mortartrafoflag=0;
+    *islavelinv=NULL,*irowt=NULL,*jqt=NULL,mortartrafoflag=0;
 
   double *stn=NULL,*v=NULL,*een=NULL,cam[5],*epn=NULL,*cdn=NULL,
     *f=NULL,*fn=NULL,qa[4]={0.,0.,-1.,0.},qam[2]={0.,0.},dtheta,theta,
@@ -142,7 +142,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
     *emeini=NULL,*doubleglob=NULL,*au=NULL,
     *ad=NULL,*b=NULL,*aub=NULL,*adb=NULL,*pslavsurf=NULL,*pmastsurf=NULL,
     *cdnr=NULL,*cdni=NULL,*energyini=NULL,*energy=NULL,*adfreq=NULL,
-    *aufreq=NULL,*bfreq=NULL,om,*smscale=NULL,*autloc=NULL;
+    *aufreq=NULL,*bfreq=NULL,om,*smscale=NULL,*aut=NULL;
 
 #ifdef SGI
   ITG token;
@@ -500,7 +500,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 	  islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
           inoel,nener,orname,network,ipobody,xbodyact,ibody,typeboun,
 	  itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	  islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
+	  islavelinv,aut,irowt,jqt,&mortartrafoflag,
 	  &intscheme,physcon);
   
   SFREE(fn);SFREE(inum);SFREE(v);
@@ -527,7 +527,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 	       tieset,istartset,iendset,ialset,ntie,&nasym,pslavsurf,
 	       pmastsurf,&mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
 	       iponoel,inoel,network,ntrans,inotr,trab,smscale,&mscalmethod,
-	       set,nset,islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag);
+	       set,nset,islavelinv,aut,irowt,jqt,&mortartrafoflag);
   
   if(nmethodact==0){
       
@@ -628,7 +628,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 	  islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
           inoel,nener,orname,network,ipobody,xbodyact,ibody,typeboun,
 	  itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	  islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
+	  islavelinv,aut,irowt,jqt,&mortartrafoflag,
 	  &intscheme,physcon);
   
   //  memcpy(&vold[0],&v[0],sizeof(double)*mt**nk);

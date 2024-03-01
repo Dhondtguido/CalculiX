@@ -93,12 +93,12 @@
  *  [in] nmmpc		number of MPC for master nodes
  *  [in] tieset           (1,i) name of tie constraint (2,i) dependent surface (3,i) independent surface
  *  [in] islavactdoftie   (i)=tie number for active dof i
- *  [in] irowtloc		field containing row numbers of autloc
- *  [in] jqtloc	        pointer into field irowtloc
- *  [in] autloc		transformation matrix \f$ T[p,q]\f$ for slave nodes \f$ p,q \f$ 
- *  [in] irowtlocinv	field containing row numbers of autlocinv
- *  [in] jqtlocinv	pointer into field irowtlocinv
- *  [in] autlocinv	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$  
+ *  [in] irowt		field containing row numbers of aut
+ *  [in] jqt	        pointer into field irowt
+ *  [in] aut		transformation matrix \f$ T[p,q]\f$ for slave nodes \f$ p,q \f$ 
+ *  [in] irowtinv	field containing row numbers of autinv
+ *  [in] jqtinv	pointer into field irowtinv
+ *  [in] autinv	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$  
  *  [in] islavnodeinv     (i) slave node index for node i 
  */
 
@@ -124,9 +124,9 @@ void multimortar(double **aup,double *ad,ITG **irowp,ITG *jq,ITG *nzs,
 		  ITG *nmastmpc,ITG *imastmpc,ITG *nmmpc,char *tieset,
 		  ITG *islavactdoftie,ITG *nelcon,double  *elcon,
 		  double *tietol,ITG *ncmat_,ITG *ntmat_,double *plicon,
-		  ITG *nplicon,ITG *npmat_,double *dtime,ITG *irowtloc,
-		  ITG *jqtloc,double *autloc, ITG *irowtlocinv,ITG *jqtlocinv,
-		 double *autlocinv,ITG *islavnodeinv,
+		  ITG *nplicon,ITG *npmat_,double *dtime,ITG *irowt,
+		  ITG *jqt,double *aut, ITG *irowtinv,ITG *jqtinv,
+		 double *autinv,ITG *islavnodeinv,
 		  ITG *iit,ITG *nmethod,double *bet,
 		  ITG *ithermal,double *plkcon,ITG *nplkcon){ 
   
@@ -1220,8 +1220,8 @@ void multimortar(double **aup,double *ad,ITG **irowp,ITG *jq,ITG *nzs,
 		 coefmpc,ikboun,ilboun,ikmpc,ilmpc,nslavspc,islavspc,nsspc,
 		 nslavmpc,islavmpc,nsmpc,nmastspc,imastspc,nmspc,nmastmpc,
 		 imastmpc,nmmpc,tieset,islavactdoftie,nelcon,elcon,tietol,
-		 ncmat_,ntmat_,plicon,nplicon,npmat_,dtime,irowtloc,jqtloc,
-		 autloc,irowtlocinv,jqtlocinv,autlocinv,islavnodeinv,
+		 ncmat_,ntmat_,plicon,nplicon,npmat_,dtime,irowt,jqt,
+		 aut,irowtinv,jqtinv,autinv,islavnodeinv,
 		 iit,nmethod,bet,ithermal,plkcon,
 		 nplkcon);
 		 

@@ -45,12 +45,12 @@
  *  [out] irowddinv	field containing row numbers of auddinv
  *  [out] jqddinv		pointer into field irowddinv
  *  [out] auddinv		coupling matrix \f$ \tilde{D}^{-1}_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [in] irowtloc		field containing row numbers of autloc
- *  [in] jqtloc	        pointer into field irowtloc
- *  [in] autloc		transformation matrix \f$ T[p,q]\f$ for slave nodes \f$ p,q \f$ 
- *  [in] irowtlocinv	field containing row numbers of autlocinv
- *  [in] jqtlocinv	pointer into field irowtlocinv
- *  [in] autlocinv	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$  
+ *  [in] irowt		field containing row numbers of aut
+ *  [in] jqt	        pointer into field irowt
+ *  [in] aut		transformation matrix \f$ T[p,q]\f$ for slave nodes \f$ p,q \f$ 
+ *  [in] irowtinv	field containing row numbers of autinv
+ *  [in] jqtinv	pointer into field irowtinv
+ *  [in] autinv	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$  
  *  [in] slavnor		slave normals
  *  [in] slavtan		slave tangents 
  *  [out]	iflagact	flag indicating if semi-smooth Newton has converged
@@ -87,9 +87,9 @@
 
 void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
 		  ITG *neq,double *gap,double *b,ITG *islavact,
-		  ITG *irowddinv,ITG *jqddinv,double *auddinv,ITG *irowtloc,
-		  ITG *jqtloc,double *autloc,ITG *irowtlocinv,ITG *jqtlocinv,
-		  double *autlocinv,ITG *ntie,ITG *nslavnode,ITG *islavnode,
+		  ITG *irowddinv,ITG *jqddinv,double *auddinv,ITG *irowt,
+		  ITG *jqt,double *aut,ITG *irowtinv,ITG *jqtinv,
+		  double *autinv,ITG *ntie,ITG *nslavnode,ITG *islavnode,
 		  ITG *nmastnode,ITG *imastnode,double *slavnor,
 		  double *slavtan,ITG *nactdof,ITG *iflagact,double *cstress,
 		  double *cstressini,ITG *mi,double *cdisp,double *f_cs,
@@ -191,11 +191,11 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
   
   for(i=0;i<*nk;i++){
     nodes=i+1;
-    for(jj=jqtloc[nodes-1]-1;jj<jqtloc[nodes-1+1]-1;jj++){
+    for(jj=jqt[nodes-1]-1;jj<jqt[nodes-1+1]-1;jj++){
       for(l=0;l<3;l++){
 	idof1=mt*nodes-3+l;
-	idof2=mt*irowtloc[jj]-3+l;
-	bhat2[idof2]+=autloc[jj]*b2[idof1];
+	idof2=mt*irowt[jj]-3+l;
+	bhat2[idof2]+=aut[jj]*b2[idof1];
       }
     }	
   }
@@ -772,11 +772,11 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
   }
   for(i=0;i<*nk;i++){
     nodes=i+1;
-    for(jj=jqtloc[nodes-1]-1;jj<jqtloc[nodes-1+1]-1;jj++){
+    for(jj=jqt[nodes-1]-1;jj<jqt[nodes-1+1]-1;jj++){
       for(l=0;l<3;l++){
 	idof1=mt*(islavnodeinv[nodes-1]-1)+l;
-	idof2=mt*(islavnodeinv[irowtloc[jj]-1]-1)+l;
-	cstresstil[idof2]+=autloc[jj]*cstress[idof1];
+	idof2=mt*(islavnodeinv[irowt[jj]-1]-1)+l;
+	cstresstil[idof2]+=aut[jj]*cstress[idof1];
       }
     }	
   }

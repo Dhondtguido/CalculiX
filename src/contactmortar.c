@@ -64,12 +64,12 @@
  *  [out] irowddinvp	field containing row numbers of auddinv
  *  [out] jqddinv		pointer into field irowddinv
  *  [out] auddinvp		coupling matrix \f$ \tilde{D}^{-1}_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [in] irowtloc		field containing row numbers of autloc
- *  [in] jqtloc	        pointer into field irowtloc
- *  [in] autloc		transformation matrix \f$ T[p,q]\f$ for slave nodes \f$ p,q \f$ 
- *  [in] irowtlocinv	field containing row numbers of autlocinv
- *  [in] jqtlocinv	pointer into field irowtlocinv
- *  [in] autlocinv	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$  
+ *  [in] irowt		field containing row numbers of aut
+ *  [in] jqt	        pointer into field irowt
+ *  [in] aut		transformation matrix \f$ T[p,q]\f$ for slave nodes \f$ p,q \f$ 
+ *  [in] irowtinv	field containing row numbers of autinv
+ *  [in] jqtinv	pointer into field irowtinv
+ *  [in] autinv	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$  
  *  [in] iflagact         here: flag indicating if coupling matrices should be updated every iteration or only once per increment (==0)
  *  [in] cstress		current Lagrange multiplier 
  *  [in] cstressini	Lagrange multiplier at start of the increment
@@ -141,9 +141,9 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 		   ITG **irowddp,ITG *jqdd,double **auddp,ITG **irowddtilp,
 		   ITG *jqddtil,double **auddtilp,ITG **irowddtil2p,
 		   ITG *jqddtil2,double **auddtil2p,ITG **irowddinvp,
-		   ITG *jqddinv,double **auddinvp,ITG *irowtloc,ITG *jqtloc,
-		   double *autloc,ITG *irowtlocinv,ITG *jqtlocinv,
-		   double *autlocinv,ITG *mi,ITG *ipe,ITG *ime,double *tietol,
+		   ITG *jqddinv,double **auddinvp,ITG *irowt,ITG *jqt,
+		   double *aut,ITG *irowtinv,ITG *jqtinv,
+		   double *autinv,ITG *mi,ITG *ipe,ITG *ime,double *tietol,
 		   ITG *iflagact,double *cstress,double *cstressini,
 		   double *bp_old,ITG *nk,ITG *nboun,
 		   ITG *ndirboun,ITG *nodeboun,double *xboun,ITG *nmpc,
@@ -409,8 +409,8 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
     bdfill(&irowbd,jqbd,&aubd,&nzsbd,&irowbdtil,jqbdtil,&aubdtil,&nzsbdtil,
 	   &irowbdtil2,jqbdtil2,&aubdtil2,&nzsbdtil2,&irowdd,jqdd,&audd,
 	   &irowddtil,jqddtil,&auddtil,&irowddtil2,jqddtil2,&auddtil2,
-	   &irowddinv,jqddinv,&auddinv,irowtloc,jqtloc,autloc,irowtlocinv,
-	   jqtlocinv,autlocinv,ntie,ipkon,kon,lakon,nslavnode,nmastnode,
+	   &irowddinv,jqddinv,&auddinv,irowt,jqt,aut,irowtinv,
+	   jqtinv,autinv,ntie,ipkon,kon,lakon,nslavnode,nmastnode,
 	   imastnode,islavnode,islavsurf,imastsurf,pmastsurf,itiefac,tieset,
 	   neq,nactdof,co,vold,iponoels,inoels,mi,gapmints,gap,pslavsurf,
 	   pslavdual,pslavdualpg,&nintpoint,slavnor,nk,
@@ -620,8 +620,8 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 		 ikmpc,ilmpc,nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,
 		 nmastspc,imastspc,nmspc,nmastmpc,imastmpc,nmmpc,tieset,
 		 islavactdoftie,nelcon,elcon,tietol,ncmat_,ntmat_,plicon,
-		 nplicon,npmat_,dtime,irowtloc,jqtloc,autloc,irowtlocinv,
-		 jqtlocinv,autlocinv,islavnodeinv,&k,
+		 nplicon,npmat_,dtime,irowt,jqt,aut,irowtinv,
+		 jqtinv,autinv,islavnodeinv,&k,
 		 nmethod,bet,ithermal,plkcon,nplkcon);  
     
   }else{
@@ -639,7 +639,7 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 		 nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,nmastspc,
 		 imastspc,nmspc,nmastmpc,imastmpc,nmmpc,tieset,islavactdoftie,
 		 nelcon,elcon,tietol,ncmat_,ntmat_,plicon,nplicon,npmat_,dtime,
-		 irowtloc,jqtloc,autloc,irowtlocinv,jqtlocinv,autlocinv,
+		 irowt,jqt,aut,irowtinv,jqtinv,autinv,
 		 islavnodeinv,&k,nmethod,bet,ithermal,
 		 plkcon,nplkcon);
   }

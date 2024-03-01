@@ -99,7 +99,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
     nzdof,iload,iforc,*iponoel=NULL,*inoel=NULL,*imdelem=NULL,nmdelem,
     nasym=0,*nshcon=NULL,nherm,icfd=0,*inomat=NULL,
     network=0,iperturbsav,mscalmethod=0,
-    *islavelinv=NULL,*irowtloc=NULL,*jqtloc=NULL,mortartrafoflag=0;
+    *islavelinv=NULL,*irowt=NULL,*jqt=NULL,mortartrafoflag=0;
 
   long long i2;
 
@@ -130,7 +130,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
     *shcon=NULL,*xmr=NULL,*xmi=NULL,*pslavsurf=NULL,
     *pmastsurf=NULL,*cdnr=NULL,*cdni=NULL,*tinc,*tper,*tmin,*tmax,
     *energyini=NULL,*energy=NULL,*fext=NULL,*smscale=NULL,
-    *autloc=NULL,*fnext=NULL;
+    *aut=NULL,*fnext=NULL;
 
   FILE *f1;
 
@@ -1773,7 +1773,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 	      islavsurf,ielprop,prop,energyini,energy,&iit,iponoel,
 	      inoel,nener,orname,&network,ipobody,xbodyact,ibody,typeboun,
 	      itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	      islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
+	      islavelinv,aut,irowt,jqt,&mortartrafoflag,
 	      &intscheme,physcon);
 
       /* restoring */

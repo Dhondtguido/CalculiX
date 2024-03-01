@@ -94,14 +94,14 @@
  >0 otherwise
  *  [in] islavsurf	islavsurf(1,i) slaveface i islavsurf(2,i) # integration
  points generated before looking at face i 
- *  [in] autloc		transformation matrix \f$ T[p,q]\f$ for slave i \f$ p,q
+ *  [in] aut		transformation matrix \f$ T[p,q]\f$ for slave i \f$ p,q
  \f$  
- *  [in] irowtloc		field containing row numbers of autloc
- *  [in] jqtloc	        pointer into field irowtloc
- *  [in] autlocinv	transformation matrix \f$ T^{-1}[p,q]\f$ for slave i 
+ *  [in] irowt		field containing row numbers of aut
+ *  [in] jqt	        pointer into field irowt
+ *  [in] autinv	transformation matrix \f$ T^{-1}[p,q]\f$ for slave i 
  \f$ p,q \f$ 
- *  [in] irowtlocinv	field containing row numbers of autlocinv
- *  [in] jqtlocinv	pointer into field irowtlocinv
+ *  [in] irowtinv	field containing row numbers of autinv
+ *  [in] jqtinv	pointer into field irowtinv
  *  [in]  iflagdualquad   flag indicating what mortar contact is used 
  (=1 quad-lin, =2 quad-quad, =3 PG quad-lin, =4 PG 
  quad-quad) 
@@ -185,8 +185,8 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
 	       ITG *iponoels,ITG *inoels,                      
 	       ITG *mortar,ITG *nslavnode,ITG *islavnode,ITG *nslavs,
 	       ITG *ntie,
-	       double *autloc,ITG *irowtloc,ITG *jqtloc,
-	       double *autlocinv,ITG *irowtlocinv,ITG *jqtlocinv,
+	       double *aut,ITG *irowt,ITG *jqt,
+	       double *autinv,ITG *irowtinv,ITG *jqtinv,
 	       ITG *iflagdualquad,
 	       char *tieset,ITG *itiefac  ,ITG *rhsi,
 	       double *au,double *ad,double **f_cmp,double **f_csp,
@@ -478,7 +478,7 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
         islavsurf,ielprop,prop,energyini,energy,kscale,iponoel,
         inoel,nener,orname,network,ipobody,xbodyact,ibody,typeboun,
 	itiefac,tieset,smscale,mscalmethod,nbody,t0g,t1g,
-        islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
+        islavelinv,aut,irowt,jqt,&mortartrafoflag,
 	intscheme,physcon);
   
   if(debug==1)printf(" premortar: results_dstil finished\n");
@@ -524,7 +524,7 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
 	       tieset,istartset,iendset,ialset,ntie,nasym,pslavsurf,
 	       pmastsurf,mortar,clearini,ielprop,prop,ne0,fnext,kscale,
 	       iponoel,inoel,network,ntrans,inotr,trab,smscale,
-	       mscalmethod,set,nset,islavelinv,autloc,irowtloc,jqtloc,
+	       mscalmethod,set,nset,islavelinv,aut,irowt,jqt,
 	       &mortartrafoflag);
   
   if(debug==1)printf(" premortar: mafillsmmain_dstil finished\n");

@@ -2503,7 +2503,7 @@ void FORTRAN(mafillsm,(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
                double *fnext,ITG *nea,ITG *neb,ITG *kscale,ITG *iponoel,
                ITG *inoel,ITG *network,double *smscale,ITG *mscalmethod,
 	       char *set,ITG *nset,ITG *islavelinv,
-	       double *autloc,ITG *irowtloc,ITG *jqtloc,ITG *mortartrafoflag));
+	       double *aut,ITG *irowt,ITG *jqt,ITG *mortartrafoflag));
 
 void FORTRAN(mafillsmcsse,(double *co,ITG *kon,ITG *ipkon,char *lakon,
                ITG *ne,ITG *ipompc,ITG *nodempc,double *coefmpc,
@@ -2609,7 +2609,7 @@ void mafillsmmain(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
                ITG *network,ITG *ntrans,ITG *inotr,double *trab,
 	       double *smscale,ITG *mscalmethod,char *set,ITG *nset,
 	       ITG *islavelinv,
-	       double *autloc,ITG *irowtloc,ITG *jqtloc,ITG *mortartrafoflag);
+	       double *aut,ITG *irowt,ITG *jqt,ITG *mortartrafoflag);
 
 void mafillsmmain_duds(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	       ITG *ne,ITG *nodeboun,ITG *ndirboun,double *xboun,
@@ -4098,8 +4098,8 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
              char *orname,ITG *network,ITG *ipobody,double *xbodyact,
              ITG *ibody,char *typeboun,ITG *itiefac,char *tieset,
              double *smscale,ITG *mscalmethod,ITG *nbody,double *t0g,
-	     double *t1g,ITG *islavelinv,double *autloc,ITG *irowtloc,
-	     ITG *jqtloc,ITG *mortartrafoflag,ITG *intscheme,
+	     double *t1g,ITG *islavelinv,double *aut,ITG *irowt,
+	     ITG *jqt,ITG *mortartrafoflag,ITG *intscheme,
 	     double *physcon);
 
 void FORTRAN(resultsem,(double *co,ITG *kon,ITG *ipkon,char *lakon,
@@ -4168,7 +4168,7 @@ void FORTRAN(resultsmech,(double *co,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
           double *clearini,ITG *nea,ITG *neb,ITG *ielprop,double *prop,
           ITG *kscale,ITG *list,ITG *ilist,double *smscale,ITG *mscalmethod,
 	  double *enerscal,double *t0g,double *t1g,ITG *islavelinv,
-	  double *autloc,ITG *irowtloc,ITG *jqtloc,ITG *mortartrafoflag,
+	  double *aut,ITG *irowt,ITG *jqt,ITG *mortartrafoflag,
 	  ITG *intscheme,double *physcon));
 
 void *resultsmechmt(ITG *i);

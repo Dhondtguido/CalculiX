@@ -52,12 +52,12 @@
  *  [out] irowddinvp	field containing row numbers of auddinv
  *  [out] jqddinv		pointer into field irowddinv
  *  [out] auddinvp		coupling matrix \f$ \tilde{D}^{-1}_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [in] irowtloc		field containing row numbers of autloc
- *  [in] jqtloc	        pointer into field irowtloc
- *  [in] autloc		transformation matrix \f$ T[p,q]\f$ for slave nodes \f$ p,q \f$ 
- *  [in] irowtlocinv	field containing row numbers of autlocinv
- *  [in] jqtlocinv	pointer into field irowtlocinv
- *  [in] autlocinv	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$  
+ *  [in] irowt		field containing row numbers of aut
+ *  [in] jqt	        pointer into field irowt
+ *  [in] aut		transformation matrix \f$ T[p,q]\f$ for slave nodes \f$ p,q \f$ 
+ *  [in] irowtinv	field containing row numbers of autinv
+ *  [in] jqtinv	pointer into field irowtinv
+ *  [in] autinv	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$  
  *  [in] nslavnode	(i)pointer into field isalvnode for contact tie i 
  *  [in] nmastnode	(i)pointer into field imastnode for contact tie i
  *  [in] imastnode	field storing the nodes of the master surfaces
@@ -127,8 +127,8 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	    ITG **irowddtilp,ITG *jqddtil,double **auddtilp,
 	    ITG **irowddtil2p,ITG *jqddtil2,double **auddtil2p,
 	    ITG **irowddinvp,ITG *jqddinv,double **auddinvp,
-	    ITG *irowtloc,ITG *jqtloc,double *autloc,
-	    ITG *irowtlocinv,ITG *jqtlocinv,double *autlocinv,
+	    ITG *irowt,ITG *jqt,double *aut,
+	    ITG *irowtinv,ITG *jqtinv,double *autinv,
 	    ITG *ntie,ITG *ipkon,ITG *kon,
 	    char *lakon,ITG *nslavnode,ITG *nmastnode,ITG *imastnode,
 	    ITG *islavnode,ITG *islavsurf,ITG *imastsurf,double *pmastsurf,
@@ -636,7 +636,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
     /* need Dpg columnwise stored **/
     
     dim=*nk;
-    nzsdpg1=jqtlocinv[*nk];
+    nzsdpg1=jqtinv[*nk];
     NNEW(Dpgd1,double,nzsdpg1);
     NNEW(irowdpg1,ITG,nzsdpg1);
     NNEW(jqdpg1,ITG,*nk+1);
@@ -650,7 +650,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	      Dpgdtilt,jqdpgtilt,irowdpgtilt);
 	      
     multi_rect(Dpgdtilt,irowdpgtilt,jqdpgtilt,dim,dim,
-	       autlocinv,irowtlocinv,jqtlocinv,dim,dim,           
+	       autinv,irowtinv,jqtinv,dim,dim,           
 	       &Dpgd1,&irowdpg1,jqdpg1,&nzsdpg1);
     
     SFREE(Dpgdtilt);SFREE(irowdpgtilt);SFREE(jqdpgtilt);
@@ -660,7 +660,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
     NNEW(irowbpg2a,ITG,nzsbpg2a);
     NNEW(jqbpg2a,ITG,*nk+1);
     multi_rect(Bpgdtil2,irowbpgtil2,jqbpgtil2,dim,dim,
-	       autlocinv,irowtlocinv,jqtlocinv,dim,dim,           
+	       autinv,irowtinv,jqtinv,dim,dim,           
 	       &Bpgd2a,&irowbpg2a,jqbpg2a,&nzsbpg2a);
   
     NNEW(Bpgdtil2t,double,nzsbpgtil2);	
@@ -695,18 +695,18 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
   /* need D columnwise stored **/
   
   dim=*nk;
-  nzsd1=jqtlocinv[*nk];
+  nzsd1=jqtinv[*nk];
   NNEW(Dd1,double,nzsd1);
   NNEW(irowd1,ITG,nzsd1);
   NNEW(jqd1,ITG,*nk+1);
   kk=1;	
   jqd1[0]=1;
   for(ii=0;ii<*nk;ii++){
-    for(jj=jqtlocinv[ii]-1;jj<jqtlocinv[ii+1]-1;jj++){
-      k=irowtlocinv[jj]-1;
+    for(jj=jqtinv[ii]-1;jj<jqtinv[ii+1]-1;jj++){
+      k=irowtinv[jj]-1;
       if(jqdtil[k+1]-jqdtil[k]==1){
-	Dd1[kk-1]=Ddtil[jqdtil[k]-1]*autlocinv[jj];
-	irowd1[kk-1]=irowtlocinv[jj];
+	Dd1[kk-1]=Ddtil[jqdtil[k]-1]*autinv[jj];
+	irowd1[kk-1]=irowtinv[jj];
 	kk++;
       }else{
 	// something went wrong
@@ -723,7 +723,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
   NNEW(irowb2a,ITG,nzsb2a);
   NNEW(jqb2a,ITG,*nk+1);	     
   multi_rect(Bdtil2,irowbtil2,jqbtil2,dim,dim,
-	     autlocinv,irowtlocinv,jqtlocinv,dim,dim,           
+	     autinv,irowtinv,jqtinv,dim,dim,           
 	     &Bd2a,&irowb2a,jqb2a,&nzsb2a);
   
   NNEW(Bdtil2t,double,nzsbtil2);	

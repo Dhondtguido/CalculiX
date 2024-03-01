@@ -114,12 +114,12 @@
  *  [in] imastmpc		... which stores MPCs for master node i
  *  [in] nmmpc		number of MPC for master nodes 
  *  [in] islavactdoftie   (i)=tie number for active dof i
- *  [in] irowtloc		field containing row numbers of autloc
- *  [in] jqtloc	        pointer into field irowtloc
- *  [in] autloc		transformation matrix \f$ T[p,q]\f$ for slave nodes \f$ p,q \f$ 
- *  [in] irowtlocinv	field containing row numbers of autlocinv
- *  [in] jqtlocinv	pointer into field irowtlocinv
- *  [in] autlocinv	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$  
+ *  [in] irowt		field containing row numbers of aut
+ *  [in] jqt	        pointer into field irowt
+ *  [in] aut		transformation matrix \f$ T[p,q]\f$ for slave nodes \f$ p,q \f$ 
+ *  [in] irowtinv	field containing row numbers of autinv
+ *  [in] jqtinv	pointer into field irowtinv
+ *  [in] autinv	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$  
  *  [in] islavnodeinv     (i) slave node index for node i
  */
 void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
@@ -158,8 +158,8 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 		    ITG *islavactdoftie,ITG *nelcon,double  *elcon,
 		    double *tietol,ITG *ncmat_,ITG *ntmat_,
 		    double *plicon,ITG *nplicon,ITG *npmat_,double *dtime,
-		    ITG *irowtloc,ITG *jqtloc,double *autloc, 
-		    ITG *irowtlocinv,ITG *jqtlocinv,double *autlocinv,
+		    ITG *irowt,ITG *jqt,double *aut, 
+		    ITG *irowtinv,ITG *jqtinv,double *autinv,
 		    ITG *islavnodeinv,
 		    ITG *iit,ITG *nmethod,double *beta,ITG *ithermal,
 		    double *plkcon,ITG *nplkcon){

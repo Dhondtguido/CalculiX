@@ -96,7 +96,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     nmdelem,*integerglob=NULL,*nshcon=NULL,nherm,icfd=0,*inomat=NULL,
     *islavnode=NULL,*nslavnode=NULL,*islavsurf=NULL,iit=-1,
     network=0,kscale=0,nmethodact=1,iperturbsav,coriolis,*itiefac=NULL,
-    mscalmethod=0,*islavelinv=NULL,*irowtloc=NULL,*jqtloc=NULL,mortartrafoflag=0;
+    mscalmethod=0,*islavelinv=NULL,*irowt=NULL,*jqt=NULL,mortartrafoflag=0;
 
   long long i2;
 
@@ -123,7 +123,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     *doubleglob=NULL,*shcon=NULL,*veold=NULL,*xmr=NULL,*xmi=NULL,*eig=NULL,
     *ax=NULL,*bx=NULL,*pslavsurf=NULL,*pmastsurf=NULL,xnull=0.,
     *cdnr=NULL,*cdni=NULL,*energyini=NULL,*energy=NULL,*v=NULL,*b=NULL,
-    *cco=NULL,*smscale=NULL,*autloc=NULL,
+    *cco=NULL,*smscale=NULL,*aut=NULL,
     *umubr=NULL,*umubi=NULL,*fnext=NULL;
 
   /* dummy arguments for the call of expand*/
@@ -1204,7 +1204,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
 		inoel,nener,orname,&network,ipobody,xbodyact,ibody,typeboun,
 		itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-		islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
+		islavelinv,aut,irowt,jqt,&mortartrafoflag,
 		&intscheme,physcon);
 	SFREE(v);SFREE(f);
 	if(intpointvar!=1){SFREE(fn);SFREE(stx);}
@@ -2000,7 +2000,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		islavsurf,ielprop,prop,energyini,energy,&iit,iponoel,
 		inoel,nener,orname,&network,ipobody,xbodyact,ibody,
 		typeboun,itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-		islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
+		islavelinv,aut,irowt,jqt,&mortartrafoflag,
 		&intscheme,physcon);}
       else{
       
@@ -2032,7 +2032,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		clearini,islavsurf,ielprop,prop,energyini,energy,&iit,
 		iponoel,inoel,nener,orname,&network,ipobody,xbodyact,
 		ibody,typeboun,itiefac,tieset,smscale,&mscalmethod,nbody,
-		t0g,t1g,islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
+		t0g,t1g,islavelinv,aut,irowt,jqt,&mortartrafoflag,
 		&intscheme,physcon);
 	      
 	if(nmdnode==0){
@@ -2095,7 +2095,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		islavsurf,ielprop,prop,energyini,energy,&iit,iponoel,
 		inoel,nener,orname,&network,ipobody,xbodyact,ibody,
 		typeboun,itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-		islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
+		islavelinv,aut,irowt,jqt,&mortartrafoflag,
 		&intscheme,physcon);}
       else{ 
       
@@ -2127,7 +2127,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		clearini,islavsurf,ielprop,prop,energyini,energy,&iit,
 		iponoel,inoel,nener,orname,&network,ipobody,xbodyact,
 		ibody,typeboun,itiefac,tieset,smscale,&mscalmethod,nbody,
-		t0g,t1g,islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
+		t0g,t1g,islavelinv,aut,irowt,jqt,&mortartrafoflag,
 		&intscheme,physcon);
 
 	if(nmdnode==0){
@@ -2702,7 +2702,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		  islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
 		  inoel,nener,orname,&network,ipobody,xbodyact,ibody,typeboun,
 		  itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-		  islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
+		  islavelinv,aut,irowt,jqt,&mortartrafoflag,
 		  &intscheme,physcon);
 	  SFREE(v);SFREE(f);
 	  if(intpointvar!=1){SFREE(fn);SFREE(stx);}
@@ -3303,7 +3303,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		islavsurf,ielprop,prop,energyini,energy,&iit,iponoel,
 		inoel,nener,orname,&network,ipobody,xbodyact,ibody,
 		typeboun,itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-		islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
+		islavelinv,aut,irowt,jqt,&mortartrafoflag,
 		&intscheme,physcon);
 	  
 	(*kode)++;

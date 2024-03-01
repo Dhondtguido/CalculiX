@@ -37,41 +37,41 @@
  *  [in] tieset           (i) name of tie i 
  *  [in] islavnode	field storing the nodes of the slave surface
  *  [in] islavsurf	islavsurf(1,i) slaveface i islavsurf(2,i) # integration points generated before looking at face i  
- *  [out] irowtlocp		field containing row numbers of autloc
- *  [out] jqtloc	        pointer into field irowtloc
- *  [out] autlocp		transformation matrix \f$ T[p,q]\f$ for slave nodes \f$ p,q \f$ 
- *  [out] irowtlocinvp	field containing row numbers of autlocinv
- *  [out] jqtlocinv	pointer into field irowtlocinv
- *  [out] autlocinvp	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$ 
+ *  [out] irowtp		field containing row numbers of aut
+ *  [out] jqt	        pointer into field irowt
+ *  [out] autp		transformation matrix \f$ T[p,q]\f$ for slave nodes \f$ p,q \f$ 
+ *  [out] irowtinvp	field containing row numbers of autinv
+ *  [out] jqtinv	pointer into field irowtinv
+ *  [out] autinvp	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$ 
  *  [in]  iflagdualquad   flag indicating what mortar contact is used (=1 quad-lin, =2 quad-quad, =3 PG quad-lin, =4 PG quad-quad)
 */
 void buildtquad(ITG *ntie,ITG *ipkon,ITG *kon,ITG *nk,char *lakon,
 		ITG *nslavnode,ITG *itiefac,char *tieset,
 		ITG *islavnode,ITG *islavsurf,
-		ITG **irowtlocp,ITG *jqtloc,double **autlocp,
-		ITG **irowtlocinvp,ITG *jqtlocinv,double **autlocinvp,
+		ITG **irowtp,ITG *jqt,double **autp,
+		ITG **irowtinvp,ITG *jqtinv,double **autinvp,
 		ITG *iflagdualquad){  
   
   ITG i,j,l,nodesf,nodem,istart,icounter,ndim,ifree,ifree2,
     nzstloc,nzstlocinv,*krow=NULL,*kcol=NULL,
-    *mast1=NULL,*mast2=NULL,*irowtloc=NULL,*irowtlocinv=NULL;
+    *mast1=NULL,*mast2=NULL,*irowt=NULL,*irowtinv=NULL;
   
-  double contribution,*contr=NULL,*autloc=NULL,*autlocinv=NULL;
+  double contribution,*contr=NULL,*aut=NULL,*autinv=NULL;
   
-  irowtloc=*irowtlocp; autloc=*autlocp;
-  irowtlocinv=*irowtlocinvp; autlocinv=*autlocinvp;
+  irowt=*irowtp; aut=*autp;
+  irowtinv=*irowtinvp; autinv=*autinvp;
   
   /** built T and T^-1 **/
   
   nzstloc=3*nslavnode[*ntie];
   NNEW(mast1,ITG,nzstloc);
-  RENEW(autloc,double,nzstloc);
-  RENEW(irowtloc,ITG,nzstloc);
+  RENEW(aut,double,nzstloc);
+  RENEW(irowt,ITG,nzstloc);
   
   nzstlocinv=3*nslavnode[*ntie];
   NNEW(mast2,ITG,nzstlocinv);
-  RENEW(autlocinv,double,nzstloc);
-  RENEW(irowtlocinv,ITG,nzstloc);
+  RENEW(autinv,double,nzstloc);
+  RENEW(irowtinv,ITG,nzstloc);
   
   ifree=1;ifree2=1;
   
@@ -97,8 +97,8 @@ void buildtquad(ITG *ntie,ITG *ipkon,ITG *kon,ITG *nk,char *lakon,
 	  contribution=contr[j];
 	  nodesf=krow[j];				
 	  nodem=kcol[j];				
-	  insertas(&irowtloc,&mast1,&nodesf,&nodem,&ifree,&nzstloc,
-		   &contribution,&autloc);				
+	  insertas(&irowt,&mast1,&nodesf,&nodem,&ifree,&nzstloc,
+		   &contribution,&aut);				
 	}
 
 	/* contribution for T^-1 */
@@ -115,8 +115,8 @@ void buildtquad(ITG *ntie,ITG *ipkon,ITG *kon,ITG *nk,char *lakon,
 	  contribution=contr[j];
 	  nodesf=krow[j];				
 	  nodem=kcol[j];				
-	  insertas(&irowtlocinv,&mast2,&nodesf,&nodem,&ifree2,&nzstlocinv,
-		   &contribution,&autlocinv);
+	  insertas(&irowtinv,&mast2,&nodesf,&nodem,&ifree2,&nzstlocinv,
+		   &contribution,&autinv);
 	}
 	
       }
@@ -126,69 +126,69 @@ void buildtquad(ITG *ntie,ITG *ipkon,ITG *kon,ITG *nk,char *lakon,
     
   nzstloc=ifree-1;
   ndim=*nk;
-  matrixsort(autloc,mast1,irowtloc,jqtloc,&nzstloc,&ndim);
+  matrixsort(aut,mast1,irowt,jqt,&nzstloc,&ndim);
   
   /* Getting rid of identical contributions in T
      (a node can belong to several slave faces) */
   
   icounter=0;
   for (i=0;i<*nk;i++){
-    if(jqtloc[i]!=jqtloc[i+1]){
-      irowtloc[icounter]=irowtloc[jqtloc[i]-1];
-      autloc[icounter]=autloc[jqtloc[i]-1];
+    if(jqt[i]!=jqt[i+1]){
+      irowt[icounter]=irowt[jqt[i]-1];
+      aut[icounter]=aut[jqt[i]-1];
       icounter++;
       istart=icounter;
-      for (j=jqtloc[i];j<jqtloc[i+1]-1;j++){
-	if (irowtloc[j]==irowtloc[icounter-1]){
-	  autloc[icounter-1]=autloc[j];   
+      for (j=jqt[i];j<jqt[i+1]-1;j++){
+	if (irowt[j]==irowt[icounter-1]){
+	  aut[icounter-1]=aut[j];   
 	}else{
-	  irowtloc[icounter]=irowtloc[j];
-	  autloc[icounter]=autloc[j];
+	  irowt[icounter]=irowt[j];
+	  aut[icounter]=aut[j];
 	  icounter++;
 	  }
       }
     }else{ istart=icounter+1;}   
-    jqtloc[i]=istart;
+    jqt[i]=istart;
   }
-  jqtloc[*nk]=icounter+1; 
-  RENEW(irowtloc,ITG,icounter+1);
-  RENEW(autloc,double,icounter+1); 
+  jqt[*nk]=icounter+1; 
+  RENEW(irowt,ITG,icounter+1);
+  RENEW(aut,double,icounter+1); 
   SFREE(mast1);	
   
   nzstlocinv=ifree2-1; 
   ndim=*nk;
-  matrixsort(autlocinv,mast2,irowtlocinv,jqtlocinv,&nzstlocinv,&ndim);  
+  matrixsort(autinv,mast2,irowtinv,jqtinv,&nzstlocinv,&ndim);  
  
   /* Getting rid of identical contributions in T^-1
      (a node can belong to several slave faces) */
   
   icounter=0;
   for (i=0;i<*nk;i++){
-    if(jqtlocinv[i]!=jqtlocinv[i+1]){
-      irowtlocinv[icounter]=irowtlocinv[jqtlocinv[i]-1];
-      autlocinv[icounter]=autlocinv[jqtlocinv[i]-1];
+    if(jqtinv[i]!=jqtinv[i+1]){
+      irowtinv[icounter]=irowtinv[jqtinv[i]-1];
+      autinv[icounter]=autinv[jqtinv[i]-1];
       icounter++;
       istart=icounter;
-      for (j=jqtlocinv[i];j<jqtlocinv[i+1]-1;j++){
-	if (irowtlocinv[j]==irowtlocinv[icounter-1]){
-	  autlocinv[icounter-1]=autlocinv[j];   
+      for (j=jqtinv[i];j<jqtinv[i+1]-1;j++){
+	if (irowtinv[j]==irowtinv[icounter-1]){
+	  autinv[icounter-1]=autinv[j];   
 	}else{
-	  irowtlocinv[icounter]=irowtlocinv[j];
-	  autlocinv[icounter]=autlocinv[j];
+	  irowtinv[icounter]=irowtinv[j];
+	  autinv[icounter]=autinv[j];
 	  icounter++;
 	}
       }
     }else{ istart=icounter+1;}   
-    jqtlocinv[i]=istart;
+    jqtinv[i]=istart;
   }
-  jqtlocinv[*nk]=icounter+1;
+  jqtinv[*nk]=icounter+1;
   
-  RENEW(irowtlocinv,ITG,icounter+1);
-  RENEW(autlocinv,double,icounter+1); 
+  RENEW(irowtinv,ITG,icounter+1);
+  RENEW(autinv,double,icounter+1); 
   SFREE(mast2);
   
-  *irowtlocp=irowtloc;*autlocp=autloc;
-  *irowtlocinvp=irowtlocinv;*autlocinvp=autlocinv;
+  *irowtp=irowt;*autp=aut;
+  *irowtinvp=irowtinv;*autinvp=autinv;
   
   return;
 }	    

@@ -230,7 +230,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   ITG *nslavspc=NULL,*islavspc=NULL,nsspc,*nslavmpc=NULL,*islavmpc=NULL,nsmpc,
     *nmastspc=NULL,*imastspc=NULL,nmspc,*nmastmpc=NULL,*imastmpc=NULL,nmmpc,
     *islavactdof=NULL,*islavactini=NULL,iflagact_old,*islavactdoftie=NULL,
-    *irowtloc=NULL,*jqtloc=NULL,*irowtlocinv=NULL,*jqtlocinv=NULL,
+    *irowt=NULL,*jqt=NULL,*irowtinv=NULL,*jqtinv=NULL,
     iflagdualquad,
     *irowb=NULL,*jqb=NULL,*irowd=NULL,*jqd=NULL,*irowdtil=NULL,*jqdtil=NULL,
     *irowbtil=NULL,*jqbtil=NULL,*irowbhelp=NULL,*jqbhelp=NULL,
@@ -249,8 +249,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   double *bp=NULL,*gap=NULL,*slavnor=NULL,
     *slavtan=NULL,*cdisp=NULL,*cstress=NULL,*cfs=NULL,*cfm=NULL,*cfsini=NULL,
     *cfstil=NULL,*cfsinitil=NULL,*bpini=NULL,
-    *cstressini=NULL,*pslavdual=NULL,*pslavdualpg=NULL,*autloc=NULL,
-    *autlocinv=NULL,*Bd=NULL,*Bdhelp=NULL,
+    *cstressini=NULL,*pslavdual=NULL,*pslavdualpg=NULL,*aut=NULL,
+    *autinv=NULL,*Bd=NULL,*Bdhelp=NULL,
     *Dd=NULL,*Ddtil=NULL,*Bdtil=NULL,*auc2=NULL,*adc2=NULL,*aubd=NULL,
     *audd=NULL,*auddtil=NULL,*auddtil2=NULL,*auddinv=NULL,*bhat=NULL,
     *aubdtil=NULL,
@@ -763,8 +763,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		&gap,&slavnor,&slavtan,&cdisp,&cstress,&cfs,
 		&bpini,&islavactini,&cstressini,ntie,
 		tieset,nslavnode,islavnode,&islavnodeinv,&islavelinv,
-		&pslavdual,&pslavdualpg,&autloc,&irowtloc,&jqtloc,&autlocinv,
-		&irowtlocinv,&jqtlocinv,&Bd,&irowb,&jqb,&Bdhelp,&irowbhelp,
+		&pslavdual,&pslavdualpg,&aut,&irowt,&jqt,&autinv,
+		&irowtinv,&jqtinv,&Bd,&irowb,&jqb,&Bdhelp,&irowbhelp,
 		&jqbhelp,&Dd,&irowd,&jqd,&Ddtil,&irowdtil,&jqdtil,&Bdtil,
 		&irowbtil,&jqbtil,&Bpgd,&irowbpg,&jqbpg,&Dpgd,&irowdpg,&jqdpg,
 		&Dpgdtil,&irowdpgtil,&jqdpgtil,&Bpgdtil,&irowbpgtil,&jqbpgtil,
@@ -999,7 +999,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	    islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
 	    inoel,nener,orname,network,ipobody,xbodyact,ibody,typeboun,
 	    itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	    islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
+	    islavelinv,aut,irowt,jqt,&mortartrafoflag,
 	    &intscheme,physcon);
       
     SFREE(fn);SFREE(stx);if(ne1d2d==1)SFREE(inum);
@@ -1089,7 +1089,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		 tieset,istartset,iendset,ialset,ntie,&nasym,pslavsurf,
 		 pmastsurf,mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
 		 iponoel,inoel,network,ntrans,inotr,trab,smscale,&mscalmethod,
-		 set,nset,islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag);
+		 set,nset,islavelinv,aut,irowt,jqt,&mortartrafoflag);
     
     if(*nmethod==0){
 	  
@@ -1430,7 +1430,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	      islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
 	      inoel,nener,orname,network,ipobody,xbodyact,ibody,typeboun,
 	      itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	      islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
+	      islavelinv,aut,irowt,jqt,&mortartrafoflag,
 	      &intscheme,physcon);
       if(ne1d2d==1)SFREE(inum);
       dtime=0.;
@@ -2129,7 +2129,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	      islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
 	      inoel,nener,orname,network,ipobody,xbodyact,ibody,typeboun,
 	      itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	      islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
+	      islavelinv,aut,irowt,jqt,&mortartrafoflag,
 	      &intscheme,physcon);
       iperturb[0]=0;if(ne1d2d==1)SFREE(inum);
 	  
@@ -2163,7 +2163,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
 		inoel,nener,orname,network,ipobody,xbodyact,ibody,typeboun,
 		itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-		islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
+		islavelinv,aut,irowt,jqt,&mortartrafoflag,
 		&intscheme,physcon);
 	//	for(k=0;k<neq[1];++k){printf("f=%" ITGFORMAT ",%f\n",k,f[k]);}
 	//           FORTRAN(stop,());
@@ -2424,7 +2424,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		  islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
 		  inoel,nener,orname,network,ipobody,xbodyact,ibody,typeboun,
 		  itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-		  islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
+		  islavelinv,aut,irowt,jqt,&mortartrafoflag,
 		  &intscheme,physcon);
 	  
 	  isiz=mt**nk;cpypardou(vold,v,&isiz,&num_cpus);
@@ -2499,7 +2499,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		     tieset,istartset,iendset,ialset,ntie,&nasym,pslavsurf,
 		     pmastsurf,mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
 		     iponoel,inoel,network,ntrans,inotr,trab,smscale,
-		     &mscalmethod,set,nset,islavelinv,autloc,irowtloc,jqtloc,
+		     &mscalmethod,set,nset,islavelinv,aut,irowt,jqt,
 		     &mortartrafoflag);
 
 	if(nasym==1){
@@ -2699,8 +2699,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		  xforc,nforc,thicke,shcon,nshcon,sideload,xload,xloadold,
 		  &icfd,inomat,islavelinv,islavsurf,iponoels,inoels,
 		  mortar,nslavnode,
-		  islavnode,nslavs,ntie,autloc,irowtloc,jqtloc,autlocinv,
-		  irowtlocinv,jqtlocinv,&iflagdualquad,tieset,
+		  islavnode,nslavs,ntie,aut,irowt,jqt,autinv,
+		  irowtinv,jqtinv,&iflagdualquad,tieset,
 		  itiefac,&rhsi,au,ad,&f_cm,&f_cs,t1act,cam,&bet,&gam,epn,
 		  xloadact,nodeforc,ndirforc,xforcact,xbodyact,ipobody,
 		  nbody,cgr,nzl,sti,iexpl,mass,&buckling,&stiffness,
@@ -2726,8 +2726,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		      &irowbdtil,jqbdtil,&aubdtil,&irowbdtil2,jqbdtil2,
 		      &aubdtil2,&irowdd,jqdd,&audd,&irowddtil,jqddtil,&auddtil,
 		      &irowddtil2,jqddtil2,&auddtil2,&irowddinv,jqddinv,
-		      &auddinv,irowtloc,jqtloc,autloc,irowtlocinv,jqtlocinv,
-		      autlocinv,mi,ipe,ime,tietol,&iflagact,cstress,cstressini,
+		      &auddinv,irowt,jqt,aut,irowtinv,jqtinv,
+		      autinv,mi,ipe,ime,tietol,&iflagact,cstress,cstressini,
 		      bp,nk,nboun,ndirboun,nodeboun,xbounact,nmpc,
 		      ipompc,nodempc,coefmpc,ikboun,ilboun,ikmpc,ilmpc,
 		      nslavspc,islavspc,
@@ -3113,8 +3113,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	/* trafo util->u , calculate cstress and update active set  */
 
 	stressmortar(bhat,adc2,auc2,jqc2,irowc2,neq,gap,b,islavact,irowddinv,
-		     jqddinv,auddinv,irowtloc,jqtloc,autloc,irowtlocinv,
-		     jqtlocinv,autlocinv,ntie,nslavnode,islavnode,nmastnode,
+		     jqddinv,auddinv,irowt,jqt,aut,irowtinv,
+		     jqtinv,autinv,ntie,nslavnode,islavnode,nmastnode,
 		     imastnode,slavnor,slavtan,nactdof,&iflagact,cstress,
 		     cstressini,mi,cdisp,f_cs,f_cm,&iit,&iinc,vold,vini,bp,
 		     nk,nboun,ndirboun,nodeboun,xboun,
@@ -3187,7 +3187,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
 		inoel,nener,orname,network,ipobody,xbodyact,ibody,typeboun,
 		itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-		islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
+		islavelinv,aut,irowt,jqt,&mortartrafoflag,
 		&intscheme,physcon);
 	if(ne1d2d==1)SFREE(inum);
       }
@@ -3283,7 +3283,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
 		inoel,nener,orname,network,ipobody,xbodyact,ibody,typeboun,
 		itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-		islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
+		islavelinv,aut,irowt,jqt,&mortartrafoflag,
 		&intscheme,physcon);
 	if(ne1d2d==1)SFREE(inum);
       }
@@ -3687,7 +3687,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
 		inoel,nener,orname,network,ipobody,xbodyact,ibody,typeboun,
 		itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-		islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
+		islavelinv,aut,irowt,jqt,&mortartrafoflag,
 		&intscheme,physcon);
       
 	isiz=mt**nk;cpypardou(vold,v,&isiz,&num_cpus);
@@ -3819,7 +3819,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	    islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
             inoel,nener,orname,network,ipobody,xbodyact,ibody,typeboun,
 	    itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	    islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
+	    islavelinv,aut,irowt,jqt,&mortartrafoflag,
 	    &intscheme,physcon);
     
     isiz=mt**nk;cpypardou(vold,v,&isiz,&num_cpus);
@@ -4175,8 +4175,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       SFREE(nmastspc);SFREE(imastspc);SFREE(nmastmpc);SFREE(imastmpc);
       SFREE(pslavdual);SFREE(pslavdualpg);
       SFREE(cstressini);SFREE(bpini);SFREE(islavactini);
-      SFREE(autloc);SFREE(irowtloc);SFREE(jqtloc);
-      SFREE(autlocinv);SFREE(irowtlocinv);SFREE(jqtlocinv);
+      SFREE(aut);SFREE(irowt);SFREE(jqt);
+      SFREE(autinv);SFREE(irowtinv);SFREE(jqtinv);
       SFREE(Bd);SFREE(irowb);SFREE(jqb);
       SFREE(Bdhelp);SFREE(irowbhelp);SFREE(jqbhelp);
       SFREE(Dd);SFREE(irowd);SFREE(jqd);

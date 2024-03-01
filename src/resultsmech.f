@@ -27,7 +27,7 @@
      &     ikin,nal,ne0,thicke,emeini,pslavsurf,
      &     pmastsurf,mortar,clearini,nea,neb,ielprop,prop,kscale,
      &     list,ilist,smscale,mscalmethod,enerscal,t0g,t1g,
-     &     islavelinv,autloc,irowtloc,jqtloc,mortartrafoflag,
+     &     islavelinv,aut,irowt,jqt,mortartrafoflag,
      &     intscheme,physcon)
 !     
 !     calculates stresses and the material tangent at the integration
@@ -50,7 +50,7 @@
      &     nplicon(0:ntmat_,*),nplkcon(0:ntmat_,*),npmat_,calcul_fn,
      &     calcul_cauchy,calcul_qa,nopered,mortar,jfaces,igauss,
      &     istrainfree,nlgeom_undo,list,ilist(*),m,j1,mscalmethod,
-     &     irowtloc(*),jqtloc(*),jqtloc1(21),irowtloc1(96),icmdcpy,
+     &     irowt(*),jqt(*),jqt1(21),irowt1(96),icmdcpy,
      &     islavelinv(*),node1,node2,j2,ii,mortartrafoflag
 !     
       real*8 co(3,*),v(0:mi(2),*),shp(4,20),stiini(6,mi(1),*),
@@ -73,8 +73,8 @@
      &     gs(8,4),a,reltime,tlayer(4),dlayer(4),xlayer(mi(3),4),
      &     thicke(mi(3),*),emeini(6,mi(1),*),clearini(3,9,*),
      &     pslavsurf(3,*),pmastsurf(6,*),smscale(*),sum1,sum2,
-     &     scal,enerscal,elineng(6),t0g(2,*),t1g(2,*),autloc(*),
-     &     autloc1(96),shptil(4,20)
+     &     scal,enerscal,elineng(6),t0g(2,*),t1g(2,*),aut(*),
+     &     aut1(96),shptil(4,20)
 !     
       include "gauss.f"
 !
@@ -328,26 +328,26 @@ c     Bernhardi end
         enddo
 !     
 !     mortar start
-!     autloc for element
+!     aut for element
 !     
         if(mortartrafoflag.eq.1) then
           if(islavelinv(i).gt.0) then
             if((nope.eq.20).or.(nope.eq.10).or.(nope.eq.15)) then
-              jqtloc1(1)=1
+              jqt1(1)=1
               ii=1
               do i1=1,nope
                 node1=konl(i1)
-                do j1=jqtloc(node1),jqtloc(node1+1)-1
-                  node2=irowtloc(j1)
+                do j1=jqt(node1),jqt(node1+1)-1
+                  node2=irowt(j1)
                   do j2=1,nope
                     if(konl(j2).eq.node2) then
-                      autloc1(ii)=autloc(j1)
-                      irowtloc1(ii)=j2
+                      aut1(ii)=aut(j1)
+                      irowt1(ii)=j2
                       ii=ii+1
                     endif
                   enddo
                 enddo
-                jqtloc1(i1+1)=ii
+                jqt1(i1+1)=ii
               enddo
             endif
           endif
@@ -659,21 +659,21 @@ c     Bernhardi end
             if(islavelinv(i).gt.0) then
               if((nope.eq.20).or.(nope.eq.10).or.(nope.eq.15)) then
                 do i1=1,nope
-                  if(jqtloc1(i1+1)-jqtloc1(i1).gt.0) then
+                  if(jqt1(i1+1)-jqt1(i1).gt.0) then
                     shptil(1,i1)=0.0
                     shptil(2,i1)=0.0
                     shptil(3,i1)=0.0
                     shptil(4,i1)=0.0
                   endif
-                  do j1=jqtloc1(i1),jqtloc1(i1+1)-1
-                    j2=irowtloc1(j1)
-                    shptil(1,i1)=shptil(1,i1)+autloc1(j1)
+                  do j1=jqt1(i1),jqt1(i1+1)-1
+                    j2=irowt1(j1)
+                    shptil(1,i1)=shptil(1,i1)+aut1(j1)
      &                   *shp(1,j2)
-                    shptil(2,i1)=shptil(2,i1)+autloc1(j1)
+                    shptil(2,i1)=shptil(2,i1)+aut1(j1)
      &                   *shp(2,j2)
-                    shptil(3,i1)=shptil(3,i1)+autloc1(j1)
+                    shptil(3,i1)=shptil(3,i1)+aut1(j1)
      &                   *shp(3,j2)
-                    shptil(4,i1)=shptil(4,i1)+autloc1(j1)
+                    shptil(4,i1)=shptil(4,i1)+aut1(j1)
      &                   *shp(4,j2)
                   enddo
                 enddo

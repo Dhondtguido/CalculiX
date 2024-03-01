@@ -56,8 +56,8 @@
      &     mpc1,mpc2,index1,index2,node1,node2,kflag,icalccg,ndamp,
      &     ntmat_,indexe,nope,norien,iexpl,i0,ncmat_,istep,iinc,imat,
      &     nplicon(0:ntmat_,*),nplkcon(0:ntmat_,*),npmat_,mortar,kode,
-     &     nea,neb,kscale,ndof,ii,igauss,islavelinv(1),irowtloc(1),
-     &     jqtloc(1),mortartrafoflag,kk
+     &     nea,neb,kscale,ndof,ii,igauss,islavelinv(1),irowt(1),
+     &     jqt(1),mortartrafoflag,kk
 !     
       real*8 co(3,*),coefmpc(*),xload(2,*),p1(3),smscale(1),dd,
      &     p2(3),ad(*),au(*),bodyf(3),xloadold(2,*),reltime,
@@ -72,7 +72,7 @@
      &     xstiff(27,mi(1),*),veold(0:mi(2),*),om,value,dtime,ttime,
      &     time,thicke(mi(3),*),doubleglob(*),clearini(3,9,*),damping,
      &     pslavsurf(3,*),pmastsurf(6,*),freq,stiff(21),dacon(*),
-     &     autloc(1)
+     &     aut(1)
 !     
       mortartrafoflag=0
       one=1
@@ -293,7 +293,7 @@ c     Bernhardi end
      &           iendset,ialset,ntie,nasym,pslavsurf,pmastsurf,mortar,
      &           clearini,ielprop,prop,kscale,smscale(1),mscalmethod,
      &           set,nset,islavelinv,
-     &           autloc,irowtloc,jqtloc,mortartrafoflag)
+     &           aut,irowt,jqt,mortartrafoflag)
           else
             call e_c3d_u(co,kon,lakon(i),p1,p2,om,bodyf,nbody,s,sm,
      &           ff,i,nmethod,elcon,nelcon,rhcon,nrhcon,alcon,nalcon,

@@ -85,7 +85,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
     *integerglob=NULL,ntie,icfd=0,*inomat=NULL,mortar=0,*islavnode=NULL,
     *islavact=NULL,*nslavnode=NULL,*islavsurf=NULL,kscale=1,
     *iponoel=NULL,*inoel=NULL,network=0,nrhs=1,*itiefac=NULL,mscalmethod=0,
-    *islavelinv=NULL,*irowtloc=NULL,*jqtloc=NULL,mortartrafoflag=0;
+    *islavelinv=NULL,*irowt=NULL,*jqt=NULL,mortartrafoflag=0;
 
   double *stn=NULL,*v=NULL,*resid=NULL,*z=NULL,*workd=NULL,
     *workl=NULL,*d=NULL,sigma,*temp_array=NULL,*fnext=NULL,
@@ -99,7 +99,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
     *emeini=NULL,*doubleglob=NULL,*au=NULL,*clearini=NULL,
     *ad=NULL,*b=NULL,*aub=NULL,*adb=NULL,*pslavsurf=NULL,*pmastsurf=NULL,
     *cdnr=NULL,*cdni=NULL,*energyini=NULL,*energy=NULL,*smscale=NULL,
-    *autloc=NULL;
+    *aut=NULL;
 
   FILE *f1;
 
@@ -169,7 +169,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	    islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
 	    inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 	    itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	    islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
+	    islavelinv,aut,irowt,jqt,&mortartrafoflag,
 	    &intscheme,physcon);
   }else{
     results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,
@@ -191,7 +191,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	    islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
 	    inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 	    itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	    islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
+	    islavelinv,aut,irowt,jqt,&mortartrafoflag,
 	    &intscheme,physcon);
   }
   
@@ -225,7 +225,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		 tieset,istartset,iendset,ialset,&ntie,&nasym,pslavsurf,pmastsurf,
 		 &mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,iponoel,inoel,
 		 &network,ntrans,inotr,trab,smscale,&mscalmethod,set,nset,
-		 islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag);
+		 islavelinv,aut,irowt,jqt,&mortartrafoflag);
   }
   else{
     mafillsmmain(co,nk,kon,ipkon,lakon,ne,nodeboun,ndirboun,xboun,nboun,
@@ -245,7 +245,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		 tieset,istartset,iendset,ialset,&ntie,&nasym,pslavsurf,
 		 pmastsurf,&mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
 		 iponoel,inoel,&network,ntrans,inotr,trab,smscale,&mscalmethod,
-		 set,nset,islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag);
+		 set,nset,islavelinv,aut,irowt,jqt,&mortartrafoflag);
   }
 
   /* determining the right hand side */
@@ -374,7 +374,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	    islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
             inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 	    itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	    islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
+	    islavelinv,aut,irowt,jqt,&mortartrafoflag,
 	    &intscheme,physcon);}
   else{
     results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,
@@ -396,7 +396,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	    islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
             inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 	    itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	    islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
+	    islavelinv,aut,irowt,jqt,&mortartrafoflag,
 	    &intscheme,physcon);
   }
 
@@ -456,7 +456,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		 tieset,istartset,iendset,ialset,&ntie,&nasym,pslavsurf,
 		 pmastsurf,&mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
 		 iponoel,inoel,&network,ntrans,inotr,trab,smscale,&mscalmethod,
-		 set,nset,islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag);
+		 set,nset,islavelinv,aut,irowt,jqt,&mortartrafoflag);
   }
   else{
     mafillsmmain(co,nk,kon,ipkon,lakon,ne,nodeboun,ndirboun,xboun,nboun,
@@ -476,7 +476,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		 tieset,istartset,iendset,ialset,&ntie,&nasym,pslavsurf,
 		 pmastsurf,&mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
 		 iponoel,inoel,&network,ntrans,inotr,trab,smscale,&mscalmethod,
-		 set,nset,islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag);
+		 set,nset,islavelinv,aut,irowt,jqt,&mortartrafoflag);
   }
 
   SFREE(stx);SFREE(fext);
@@ -792,7 +792,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	      islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
               inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 	      itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	      islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
+	      islavelinv,aut,irowt,jqt,&mortartrafoflag,
 	      &intscheme,physcon);}
     else{
       results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,
@@ -815,7 +815,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	      islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
               inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 	      itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	      islavelinv,autloc,irowtloc,jqtloc,&mortartrafoflag,
+	      islavelinv,aut,irowt,jqt,&mortartrafoflag,
 	      &intscheme,physcon);
     }
 

@@ -20,9 +20,9 @@
 !   function calculation islavelinv
 !
 !  [out] islavelinv       (i)==0 if there is no slave node in the element, >0 otherwise
-!  [in] jqtloc	        pointer into field irowtloc
+!  [in] jqt	        pointer into field irowt
 !
-      subroutine genislavelinv(islavelinv,jqtloc,
+      subroutine genislavelinv(islavelinv,jqt,
      &     lakon,ipkon,kon,ne,nasym)
 !     
 !     Author: Saskia Sitzmann
@@ -31,7 +31,7 @@
 !     
       character*8 lakon(*)
 !     
-      integer kon(*),islavelinv(*),i,j,ne,jqtloc(*),
+      integer kon(*),islavelinv(*),i,j,ne,jqt(*),
      &     ipkon(*),konl(26),nope,node,indexe,nasym
 !     
       do i=1,ne
@@ -79,8 +79,8 @@ c     Bernhardi end
          do j=1,nope
             node=konl(j)
 cccccc error?????? (Guido 22 Nov 2019)
-c            if(jqtloc(node+1)-jqtloc(node).gt.1)then
-            if(jqtloc(node+1)-jqtloc(node).gt.0)then
+c            if(jqt(node+1)-jqt(node).gt.1)then
+            if(jqt(node+1)-jqt(node).gt.0)then
                islavelinv(i)=1
             endif
             

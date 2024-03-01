@@ -40,9 +40,9 @@
  *  [out] ilboun2p        transformed SPC numbers for sorted dofs
  *  [out] ikmpc2p 	sorted dofs idof=8*(node-1)+dir for transformed MPCs
  *  [out] ilmpc2p		transformed SPC numbers for sorted dofs 
- *  [in] irowtlocinv	field containing row numbers of autlocinv
- *  [in] jqtlocinv	pointer into field irowtlocinv
- *  [in] autlocinv	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$  
+ *  [in] irowtinv	field containing row numbers of autinv
+ *  [in] jqtinv	pointer into field irowtinv
+ *  [in] autinv	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$  
  *  [out] nk2		number or generated points needed for transformed SPCs 
  *  [in]  iflagdualquad   flag indicating what mortar contact is used (=1 quad-lin, 
  =2 quad-quad, =3 PG quad-lin, =4 PG quad-quad) 
@@ -63,8 +63,8 @@ void transformspcsmpcs_quad(ITG *nboun,ITG *ndirboun,ITG *nodeboun,
 			    double **coefmpc2p,
 			    char **labmpc2p,ITG **ikboun2p,ITG **ilboun2p,
 			    ITG **ikmpc2p,
-			    ITG **ilmpc2p,ITG *irowtlocinv, ITG *jqtlocinv,
-			    double *autlocinv, 
+			    ITG **ilmpc2p,ITG *irowtinv, ITG *jqtinv,
+			    double *autinv, 
 			    ITG *nk,ITG *nk2,ITG *iflagdualquad,
 			    ITG *ntie, char *tieset, ITG *itiefac,
 			    ITG *islavsurf,

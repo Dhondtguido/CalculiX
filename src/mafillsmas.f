@@ -60,8 +60,8 @@
      &     ntmat_,indexe,nope,norien,iexpl,ncmat_,istep,iinc,mpc2,
      &     nplicon(0:ntmat_,*),nplkcon(0:ntmat_,*),npmat_,ist1,ist2,
      &     mortar,ielprop(*),kscale,iponoel(*),inoel(2,*),network,
-     &     neam,nebm,neat,nebt,ikmpc(*),nset,islavelinv(1),irowtloc1(1),
-     &     jqtloc1(1),mortartrafoflag,mscalmethod
+     &     neam,nebm,neat,nebt,ikmpc(*),nset,islavelinv(1),irowt1(1),
+     &     jqt1(1),mortartrafoflag,mscalmethod
 !     
       real*8 co(3,*),xboun(*),coefmpc(*),xforc(*),xload(2,*),p1(3),
      &     p2(3),ad(*),au(*),bodyf(3),bb(*),xloadold(2,*),value,
@@ -76,7 +76,7 @@
      &     plicon(0:2*npmat_,ntmat_,*),plkcon(0:2*npmat_,ntmat_,*),
      &     xstiff(27,mi(1),*),veold(0:mi(2),*),doubleglob(*),
      &     om,dtime,ttime,time,pslavsurf(3,*),pmastsurf(6,*),
-     &     autloc1(1)
+     &     aut1(1)
 !     
       i0=0
       mortartrafoflag=0
@@ -130,7 +130,7 @@
      &         doubleglob,tieset,istartset,iendset,ialset,ntie,nasym,
      &         pslavsurf,pmastsurf,mortar,clearini,ielprop,prop,kscale,
      &         smscale(1),mscalmethod,
-     &         set,nset,islavelinv,autloc1,irowtloc1,jqtloc1,
+     &         set,nset,islavelinv,aut1,irowt1,jqt1,
      &         mortartrafoflag)
 !     
           do jj=1,3*nope
