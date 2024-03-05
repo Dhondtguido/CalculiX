@@ -21,20 +21,9 @@
 !     the slave surface
 !     see phd thesis Sitzmann Chapter 3.3. (p.34) and Chapter 4.3.
 !     
-!     
-!     [in]     islavact  (i) indicates, if slave node i is active (=-3 no-slave-node, =-2 no-LM-node, =-1 no-gap-node, =0 inactive node, =1 sticky node, =2 slipping/active node)
-!     [in]     islavsurf  islavsurf(1,i) slaveface i islavsurf(2,i) pointer into imastsurf and pmastsurf
-!     [in]     itiefac    pointer into field islavsurf: (1,i) beginning slave_i (2,i) end of slave_i
-!     [in]     islavnode  fields containing nodes of slace surfaces
-!     [in]     nslavnode  (i) for contraint i pointer into field islavnode
-!     [in]     pslavsurf  integration points and weights on slave side 
-!     [in] pslavdual (:,i)coefficients \f$ \alpha_{ij}\f$, \f$ 1,j=1,..8\f$ for dual shape functions for face i
-!     [in] pslavdualpg (:,i)coefficients \f$ \alpha_{ij}\f$, \f$ 1,j=1,..8\f$ for Petrov-Galerkin shape functions for face i
-!     [in]  iflagdualquad   flag indicating what mortar contact is used (=1 quad-lin, =2 quad-quad, =3 PG quad-lin, =4 PG quad-quad)
-!     
       subroutine gendualcoeffs(tieset,ntie,ipkon,kon,lakon,co,vold,
      &     islavact,islavsurf,itiefac,islavnode,nslavnode,
-     &     mi,pslavsurf,pslavdual,pslavdualpg,iflagdualquad)
+     &     mi,pslavsurf,pslavdual)
 !     
 !     Determining the coefficients of the dual shape functions on
 !     the slave surface
@@ -54,15 +43,13 @@
      &     mint2d,m,nopes,konl(20),id,nopes2,ipiv(8),info,ipnt,ifac,
      &     getlocno,lnode(2,8),nnogap,n1,n2,iscontr(8*8),
      &     imcontr(8*8),jj,locm,locs,nodesf,nodem,ifs,
-     &     ifm,ns,indexf,idummy,modf,iflagdualquad
+     &     ifm,ns,indexf,idummy,modf
 !     
       real*8 co(3,*),vold(0:mi(2),*),ets,xis,weight,xl2s(3,8),xsj2(3),
      &     shp2(7,8),shp2s(7,8),dx,help,xs2(3,7),
      &     pslavdual(64,*),diag_els(8),m_els(36),contribution,work(8),
      &     contr(8*8),xs2m(3,7),xsj2m(3),shp2m(7,8),etm,xim,
-     &     pslavsurf(3,*),pslavdualpg(64,*)
-!     
-!     
+     &     pslavsurf(3,*)
 !     
       data iflag /2/
 !     
@@ -124,28 +111,7 @@
 !     for quad-lin mortar method only corner nodes carry
 !     Lagrange Multiplier contribution
 !     
-              if((nopes.eq.8).and. 
-     &             ((iflagdualquad.eq.1).or.(iflagdualquad.eq.3)))
-     &             then
-                if((lnode(2,m).lt.0).and.(m.le.4))then
-                  nnogap=nnogap+1
-                endif
-                if(m.gt.4) then
-                  islavact(nslavnode(i)+id)=-2
-                  lnode(2,m)=islavact(nslavnode(i)+id)
-                endif
-              else if((nopes.eq.6).and. 
-     &               ((iflagdualquad.eq.1).or.(iflagdualquad.eq.3)))then
-                if((lnode(2,m).lt.0).and.(m.le.3)) then
-                  nnogap=nnogap+1
-                endif
-                if(m.gt.3) then
-                  islavact(nslavnode(i)+id)=-2
-                  lnode(2,m)=islavact(nslavnode(i)+id)
-                endif
-              else
-                if(lnode(2,m).lt.0) nnogap=nnogap+1
-              endif             
+              if(lnode(2,m).lt.0) nnogap=nnogap+1
               if(checknorm)then
                 write(*,*) 'node',lnode(1,m),lnode(2,m)
               endif
@@ -160,17 +126,7 @@
      &             vold(j,konl(ifac))
             enddo
           enddo
-          if(((iflagdualquad.eq.1).or.(iflagdualquad.eq.3)))then
-            if(nopes.eq.6)then
-              nopes2=3
-            else if(nopes.eq.8)then
-              nopes2=4
-            else
-              nopes2=nopes
-            endif
-          else
-            nopes2=nopes
-          endif
+          nopes2=nopes
 !     
           mint2d=islavsurf(2,l+1)-islavsurf(2,l)
           if(mint2d.eq.0) cycle
@@ -193,22 +149,12 @@
 !     basis functions
 !     
             if(nopes.eq.8) then
-              if((iflagdualquad.eq.2).or.(iflagdualquad.eq.4))then
                 call shape8qtilde(xis,ets,xl2s,xsj2,xs2,shp2,iflag)
-              else
-                call shape8qtilde_lin(xis,ets,xl2s,xsj2,xs2,
-     &               shp2,iflag)
-              endif
-            elseif(nopes.eq.4) then
+              elseif(nopes.eq.4) then
               call shape4q(xis,ets,xl2s,xsj2,xs2,shp2,iflag)
             elseif(nopes.eq.6) then
-              if((iflagdualquad.eq.2).or.(iflagdualquad.eq.4))then
-                call shape6tritilde(xis,ets,xl2s,xsj2,xs2,shp2,
-     &               iflag)
-              else
-                call shape6tritilde_lin(xis,ets,xl2s,xsj2,xs2,
-     &               shp2,iflag)
-              endif
+              call shape6tritilde(xis,ets,xl2s,xsj2,xs2,shp2,
+     &             iflag)
             else
               call shape3tri(xis,ets,xl2s,xsj2,xs2,shp2,iflag)
             endif 
@@ -252,14 +198,8 @@
 !     
           do k=1,64
             pslavdual(k,l)=0.0
-            if(iflagdualquad.gt.2)then
-              pslavdualpg(k,l)=0.0
-            endif
           enddo
           do k=1,nopes2
-            if(iflagdualquad.gt.2)then
-              pslavdualpg((k-1)*8+k,l)=1.0
-            endif
             do j=1,nopes2
               if(k.le.j)then
                 pslavdual((k-1)*8+j,l)=diag_els(k)
@@ -297,20 +237,9 @@
      &               +0.5*pslavdual((ii-1)*8+jj,l)
                 pslavdual((n2-1)*8+jj,l)=pslavdual((n2-1)*8+jj,l)
      &               +0.5*pslavdual((ii-1)*8+jj,l)
-                if(iflagdualquad.gt.2)then
-                  pslavdualpg((n1-1)*8+jj,l)=
-     &                 pslavdualpg((n1-1)*8+jj,l)
-     &                 +0.5*pslavdualpg((ii-1)*8+jj,l)
-                  pslavdualpg((n2-1)*8+jj,l)=
-     &                 pslavdualpg((n2-1)*8+jj,l)
-     &                 +0.5*pslavdualpg((ii-1)*8+jj,l)
-                endif
               enddo
               do jj=1,nopes2
                 pslavdual((ii-1)*8+jj,l)=0.0
-                if(iflagdualquad.gt.2)then
-                  pslavdualpg((ii-1)*8+jj,l)=0.0
-                endif
               enddo
             elseif(nnogap.eq.2)then
               do ii=1,nopes2
@@ -326,20 +255,9 @@
                     pslavdual((n2-1)*8+jj,l)=
      &                   pslavdual((n2-1)*8+jj,l)
      &                   +0.5*pslavdual((ii-1)*8+jj,l)
-                    if(iflagdualquad.gt.2)then
-                      pslavdualpg((n1-1)*8+jj,l)=
-     &                     pslavdualpg((n1-1)*8+jj,l)
-     &                     +0.5*pslavdualpg((ii-1)*8+jj,l)
-                      pslavdualpg((n2-1)*8+jj,l)=
-     &                     pslavdualpg((n2-1)*8+jj,l)
-     &                     +0.5*pslavdualpg((ii-1)*8+jj,l)
-                    endif
                   enddo
                   do jj=1,nopes2
                     pslavdual((ii-1)*8+jj,l)=0.0
-                    if(iflagdualquad.gt.2)then
-                      pslavdualpg((ii-1)*8+jj,l)=0.0
-                    endif
                   enddo
                 endif
               enddo
@@ -353,17 +271,9 @@
                     pslavdual((n1-1)*8+jj,l)=
      &                   pslavdual((n1-1)*8+jj,l)
      &                   +pslavdual((ii-1)*8+jj,l)
-                    if(iflagdualquad.gt.2)then
-                      pslavdualpg((n1-1)*8+jj,l)=
-     &                     pslavdualpg((n1-1)*8+jj,l)
-     &                     +pslavdualpg((ii-1)*8+jj,l)
-                    endif 
-                  enddo
+                 enddo
                   do jj=1,nopes2
                     pslavdual((ii-1)*8+jj,l)=0.0
-                    if(iflagdualquad.gt.2)then
-                      pslavdualpg((ii-1)*8+jj,l)=0.0
-                    endif
                   enddo
                 endif
               enddo
@@ -381,20 +291,9 @@
      &               +0.5*pslavdual((ii-1)*8+jj,l)
                 pslavdual((n2-1)*8+jj,l)=pslavdual((n2-1)*8+jj,l)
      &               +0.5*pslavdual((ii-1)*8+jj,l)
-                if(iflagdualquad.gt.2)then
-                  pslavdualpg((n1-1)*8+jj,l)=
-     &                 pslavdualpg((n1-1)*8+jj,l)
-     &                 +0.5*pslavdualpg((ii-1)*8+jj,l)
-                  pslavdualpg((n2-1)*8+jj,l)=
-     &                 pslavdualpg((n2-1)*8+jj,l)
-     &                 +0.5*pslavdualpg((ii-1)*8+jj,l)
-                endif
               enddo
               do jj=1,nopes2
                 pslavdual((ii-1)*8+jj,l)=0.0
-                if(iflagdualquad.gt.2)then
-                  pslavdualpg((ii-1)*8+jj,l)=0.0
-                endif
               enddo
             elseif(nnogap.eq.2)then
               do ii=1,nopes2
@@ -406,17 +305,9 @@
                     pslavdual((n1-1)*8+jj,l)=
      &                   pslavdual((n1-1)*8+jj,l)
      &                   +pslavdual((ii-1)*8+jj,l)
-                    if(iflagdualquad.gt.2)then
-                      pslavdualpg((n1-1)*8+jj,l)=
-     &                     pslavdualpg((n1-1)*8+jj,l)
-     &                     +pslavdualpg((ii-1)*8+jj,l)
-                    endif
                   enddo
                   do jj=1,nopes2
                     pslavdual((ii-1)*8+jj,l)=0.0
-                    if(iflagdualquad.gt.2)then
-                      pslavdualpg((ii-1)*8+jj,l)=0.0
-                    endif
                   enddo
                 endif
               enddo                  
@@ -438,20 +329,9 @@
      &               +0.5*pslavdual((ii-1)*8+jj,l)
                 pslavdual((n2-1)*8+jj,l)=pslavdual((n2-1)*8+jj,l)
      &               +0.5*pslavdual((ii-1)*8+jj,l)
-                if(iflagdualquad.gt.2)then
-                  pslavdualpg((n1-1)*8+jj,l)=
-     &                 pslavdualpg((n1-1)*8+jj,l)
-     &                 +0.5*pslavdualpg((ii-1)*8+jj,l)
-                  pslavdualpg((n2-1)*8+jj,l)=
-     &                 pslavdualpg((n2-1)*8+jj,l)
-     &                 +0.5*pslavdualpg((ii-1)*8+jj,l)
-                endif
               enddo
               do jj=1,nopes2
                 pslavdual((ii-1)*8+jj,l)=0.0
-                if(iflagdualquad.gt.2)then
-                  pslavdualpg((ii-1)*8+jj,l)=0.0
-                endif
               enddo                  
             elseif((nnogap.gt.1).and.(nnogap.lt.7))then
               do ii=1,nopes2
@@ -485,21 +365,10 @@
                       pslavdual((n2-1)*8+jj,l)=
      &                     pslavdual((n2-1)*8+jj,l)
      &                     +0.5*pslavdual((ii-1)*8+jj,l)
-                      if(iflagdualquad.gt.2)then
-                        pslavdualpg((n1-1)*8+jj,l)=
-     &                       pslavdualpg((n1-1)*8+jj,l)
-     &                       +0.5*pslavdualpg((ii-1)*8+jj,l)
-                        pslavdualpg((n2-1)*8+jj,l)=
-     &                       pslavdualpg((n2-1)*8+jj,l)
-     &                       +0.5*pslavdualpg((ii-1)*8+jj,l)
-                      endif
                     enddo
                   endif
                   do jj=1,nopes2
                     pslavdual((ii-1)*8+jj,l)=0.0
-                    if(iflagdualquad.gt.2)then
-                      pslavdualpg((ii-1)*8+jj,l)=0.0
-                    endif
                   enddo
                 endif
               enddo
@@ -513,17 +382,9 @@
                     pslavdual((n1-1)*8+jj,l)=
      &                   pslavdual((n1-1)*8+jj,l)
      &                   +pslavdual((ii-1)*8+jj,l)
-                    if(iflagdualquad.gt.2)then
-                      pslavdualpg((n1-1)*8+jj,l)=
-     &                     pslavdualpg((n1-1)*8+jj,l)
-     &                     +pslavdualpg((ii-1)*8+jj,l)
-                    endif
                   enddo
                   do jj=1,nopes2
                     pslavdual((ii-1)*8+jj,l)=0.0
-                    if(iflagdualquad.gt.2)then
-                      pslavdualpg((ii-1)*8+jj,l)=0.0
-                    endif
                   enddo
                 endif
               enddo                  
@@ -545,20 +406,9 @@
      &               +0.5*pslavdual((ii-1)*8+jj,l)
                 pslavdual((n2-1)*8+jj,l)=pslavdual((n2-1)*8+jj,l)
      &               +0.5*pslavdual((ii-1)*8+jj,l)
-                if(iflagdualquad.gt.2)then
-                  pslavdualpg((n1-1)*8+jj,l)=
-     &                 pslavdualpg((n1-1)*8+jj,l)
-     &                 +0.5*pslavdualpg((ii-1)*8+jj,l)
-                  pslavdualpg((n2-1)*8+jj,l)=
-     &                 pslavdualpg((n2-1)*8+jj,l)
-     &                 +0.5*pslavdualpg((ii-1)*8+jj,l)
-                endif
               enddo
               do jj=1,nopes2
                 pslavdual((ii-1)*8+jj,l)=0.0
-                if(iflagdualquad.gt.2)then
-                  pslavdualpg((ii-1)*8+jj,l)=0.0
-                endif
               enddo                   
             elseif((nnogap.gt.1).and.(nnogap.lt.5))then
               do ii=1,nopes2
@@ -592,21 +442,10 @@
                       pslavdual((n2-1)*8+jj,l)=
      &                     pslavdual((n2-1)*8+jj,l)
      &                     +0.5*pslavdual((ii-1)*8+jj,l)
-                      if(iflagdualquad.gt.2)then
-                        pslavdualpg((n1-1)*8+jj,l)=
-     &                       pslavdualpg((n1-1)*8+jj,l)
-     &                       +0.5*pslavdualpg((ii-1)*8+jj,l)
-                        pslavdualpg((n2-1)*8+jj,l)=
-     &                       pslavdualpg((n2-1)*8+jj,l)
-     &                       +0.5*pslavdualpg((ii-1)*8+jj,l)
-                      endif
                     enddo
                   endif
                   do jj=1,nopes2
                     pslavdual((ii-1)*8+jj,l)=0.0
-                    if(iflagdualquad.gt.2)then
-                      pslavdualpg((ii-1)*8+jj,l)=0.0
-                    endif
                   enddo
                 endif
               enddo
@@ -620,17 +459,9 @@
                     pslavdual((n1-1)*8+jj,l)=
      &                   pslavdual((n1-1)*8+jj,l)
      &                   +pslavdual((ii-1)*8+jj,l)
-                    if(iflagdualquad.gt.2)then
-                      pslavdualpg((n1-1)*8+jj,l)=
-     &                     pslavdualpg((n1-1)*8+jj,l)
-     &                     +pslavdualpg((ii-1)*8+jj,l)
-                    endif
                   enddo
                   do jj=1,nopes2
                     pslavdual((ii-1)*8+jj,l)=0.0
-                    if(iflagdualquad.gt.2)then
-                      pslavdualpg((ii-1)*8+jj,l)=0.0
-                    endif
                   enddo
                 endif
               enddo                  
@@ -682,26 +513,15 @@
               ns=l
               iflag=2
               if(nopes.eq.8) then
-                if((iflagdualquad.eq.2).or.(iflagdualquad.eq.4))then
-                  call dualshape8qtilde(xis,ets,xl2s,xsj2,xs2,
-     &                 shp2s,ns,pslavdual,iflag)
-                else
-                  call dualshape8qtilde_lin(xis,ets,xl2s,xsj2,
-     &                 xs2,shp2s,ns,pslavdual,iflag)
-                endif
+                call dualshape8qtilde(xis,ets,xl2s,xsj2,xs2,
+     &               shp2s,ns,pslavdual,iflag)
               elseif(nopes.eq.4) then
                 call dualshape4q(xis,ets,xl2s,xsj2,xs2,shp2s,ns,
      &               pslavdual,iflag)
               elseif(nopes.eq.6) then
-                if((iflagdualquad.eq.2).or.(iflagdualquad.eq.4))then
-                  call dualshape6tritilde
-     &                 (xis,ets,xl2s,xsj2,xs2,shp2s,ns,
-     &                 pslavdual,iflag)
-                else
-                  call dualshape6tritilde_lin
-     &                 (xis,ets,xl2s,xsj2,xs2,shp2s,ns,
-     &                 pslavdual,iflag)
-                endif
+                call dualshape6tritilde
+     &               (xis,ets,xl2s,xsj2,xs2,shp2s,ns,
+     &               pslavdual,iflag)
               else
                 call dualshape3tri(xis,ets,xl2s,xsj2,xs2,shp2s,ns,
      &               pslavdual,iflag)
@@ -710,27 +530,13 @@
               etm=pslavsurf(2,indexf+m)
 !     
               if(nopes.eq.8) then
-                if((iflagdualquad.eq.2).or.(iflagdualquad.eq.4))then
-                  call shape8qtilde(xim,etm,xl2s,xsj2m,xs2m,
-     &                 shp2m,iflag)
-                else
-                  call shape4q(xim,etm,xl2s,xsj2m,xs2m,shp2m,
-     &                 iflag)
-                  dx=dsqrt(xsj2m(1)**2+xsj2m(2)**2+xsj2m(3)**2)
-                  call shape8qtilde_lin(xim,etm,xl2s,xsj2m,
-     &                 xs2m,shp2m,iflag) 
-                  dx=dsqrt(xsj2m(1)**2+xsj2m(2)**2+xsj2m(3)**2)
-                endif
+                call shape8qtilde(xim,etm,xl2s,xsj2m,xs2m,
+     &               shp2m,iflag)
               elseif(nopes.eq.4) then
                 call shape4q(xim,etm,xl2s,xsj2m,xs2m,shp2m,iflag)
               elseif(nopes.eq.6) then
-                if((iflagdualquad.eq.2).or.(iflagdualquad.eq.4))then
-                  call shape6tritilde(xim,etm,xl2s,xsj2m,
-     &                 xs2m,shp2m,iflag)
-                else
-                  call shape6tritilde_lin(xim,etm,xl2s,xsj2m,
-     &                 xs2m,shp2m,iflag)
-                endif
+                call shape6tritilde(xim,etm,xl2s,xsj2m,
+     &               xs2m,shp2m,iflag)
               else
                 call shape3tri(xim,etm,xl2s,xsj2m,xs2m,shp2m,iflag)
               endif
@@ -792,13 +598,6 @@
      &               vold(j,konl(ifac))
               enddo
             enddo 
-            if((iflagdualquad.eq.1).or.(iflagdualquad.eq.3))then
-              if(nopes.eq.6)then
-                nopes=3
-              else if(nopes.eq.8)then
-                nopes=4
-              endif
-            endif
             do m=1,mint2d
               xis=pslavsurf(1,indexf+m)
               ets=pslavsurf(2,indexf+m)

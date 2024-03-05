@@ -87,7 +87,6 @@
  *  [in] imastmpc		... which stores MPCs for master node i
  *  [in] nmmpc		number of MPC for master nodes
  *  [in] pslavdual	(:,i)coefficients \f$ \alpha_{ij}\f$, \f$ 1,j=1,..8\f$ for dual shape functions for face i
- *  [in] pslavdualpg	(:,i)coefficients \f$ \alpha_{ij}\f$, \f$ 1,j=1,..8\f$ for Petrov-Galerkin shape functions for face i 
  *  [in] islavactdof      (i)=10*slavenodenumber+direction for active dof i
  *  [in] islavactdoftie   (i)=tie number for active dof i
  *  [in] islavnodeinv     (i) slave node index for node i
@@ -106,20 +105,7 @@
  *  [out] Bdtilp		coupling matrix \f$ \tilde{B}_d[p,q]=\int \psi_p \tilde{\phi}_q dS \f$, \f$ p \in S, q \in M \f$ 
  *  [out] irowbtilp	field containing row numbers of Bdtil
  *  [out] jqbtil		pointer into field irowbtil
- *  [out] Bpgdp		Petrov-Galerkin coupling matrix \f$ B_d^{PG}[p,q]=\int \tilde{\phi}_p \phi_q dS \f$, \f$ p \in S, q \in M \f$ 
- *  [out] irowbpgp		field containing row numbers of Bpgd
- *  [out] jqbpg		pointer into field irowbpg
- *  [out] Dpgdp		Petrov-Galerkin coupling matrix \f$ D_d[p,q]=\int \tilde{\phi}_p \phi_q dS \f$, \f$ p,q \in S \f$ 
- *  [out] irowdpgp		field containing row numbers of Dpgd
- *  [out] jqdpg		pointer into field irowdpg
- *  [out] Dpgdtilp		transformed Petrov-Galerkin coupling matrix \f$ D_d[p,q]=\int \tilde{\phi}_p \tilde{\phi}_q dS \f$, \f$ p,q \in S \f$ 
- *  [out] irowdpgtilp	field containing row numbers of Dpgdtil
- *  [out] jqdpgtil	pointer into field irowdpgtil
- *  [out] Bpgdtilp		transformed Petrov-Galerkin coupling matrix \f$ B_d^{PG}[p,q]=\int \tilde{\phi}_p \tilde{\phi}_q dS \f$, \f$ p \in S, q \in M \f$ 
- *  [out] irowbpgtilp	field containing row numbers of Bpgdtil
- *  [out] jqbpgtil	pointer into field irowbpgtil
  *  [in] bet		parameter used in alpha-method
- *  [in]  iflagdualquad   flag indicating what mortar contact is used (=1 quad-lin, =2 quad-quad, =3 PG quad-lin, =4 PG quad-quad)
  *  [in,out]  cfsinitil \f$ \tilde{\Phi}_{c,j}\f$ contact forces from last increment, needed for dynamic calculations  
  */
 
@@ -154,18 +140,14 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 		   ITG *nsmpc,ITG *nmastspc,
 		   ITG *imastspc,ITG *nmspc,ITG *nmastmpc,ITG *imastmpc,
 		   ITG *nmmpc,
-		   double *pslavdual,double *pslavdualpg,ITG *islavactdof,
+		   double *pslavdual,ITG *islavactdof,
 		   ITG *islavactdoftie,double *plicon,ITG *nplicon,ITG *npmat_,
 		   ITG *nelcon,double *dtime,ITG *islavnodeinv,double **Bdp,
 		   ITG **irowbp,ITG *jqb,double **Bdhelpp,ITG **irowbhelpp,
 		   ITG *jqbhelp,double **Ddp,ITG **irowdp,ITG *jqd,
 		   double **Ddtilp,ITG **irowdtilp,ITG *jqdtil,double **Bdtilp,
-		   ITG **irowbtilp,ITG *jqbtil,double **Bpgdp,ITG **irowbpgp,
-		   ITG *jqbpg,double **Dpgdp,ITG **irowdpgp,ITG *jqdpg,
-		   double **Dpgdtilp,ITG **irowdpgtilp,ITG *jqdpgtil,
-		   double **Bpgdtilp,ITG **irowbpgtilp,ITG *jqbpgtil,
-		   double *bet,
-		   ITG *iflagdualquad,double *cfsinitil,
+		   ITG **irowbtilp,ITG *jqbtil,
+		   double *bet,double *cfsinitil,
 		   double *reltime,ITG *ithermal,double *plkcon,ITG *nplkcon){
   
   ITG i,j,k,ntrimax,*nx=NULL,*ny=NULL,*nz=NULL,nintpoint=0,
@@ -173,16 +155,15 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
     *irowbdtil=NULL,nzs2,*irowddtil2=NULL,*irowbdtil2=NULL,l,nstart,kflag,
     ntri,ii,regmode,derivmode,*irowc=NULL,*imastsurf=NULL,
     *irow=NULL,*irowb=NULL,*irowbhelp=NULL,*irowd=NULL,
-    *irowdtil=NULL,*irowbtil=NULL,*irowbpg=NULL,*irowdpg=NULL,*irowdpgtil=NULL,
-    *irowbpgtil=NULL,nacti,ninacti,nnogap,nstick,nnolm,nnoslav,nzsbdtil,
+    *irowdtil=NULL,*irowbtil=NULL,nacti,ninacti,nnogap,nstick,nnolm,nnoslav,nzsbdtil,
     nzsbdtil2;
     
   double *xo=NULL,*yo=NULL,*zo=NULL,*x=NULL,*y=NULL,*z=NULL,*aubd=NULL,alpha,
     *cstresstil=NULL,scal,*audd=NULL,*auddtil=NULL,*auddtil2=NULL,
     *auddinv=NULL,*auc=NULL,*pmastsurf=NULL,*gapmints=NULL,*au=NULL,
     *pslavsurf=NULL,*aubdtil=NULL,*aubdtil2=NULL,*Bd=NULL,*Bdhelp=NULL,
-    *Dd=NULL,*Ddtil=NULL,*Bdtil=NULL,*Bpgd=NULL,*Dpgd=NULL,*Dpgdtil=NULL,
-    *Bpgdtil=NULL,*areaslav=NULL,mu,fkninv,fktauinv,p0,beta,*rs=NULL,*rsb=NULL;
+    *Dd=NULL,*Ddtil=NULL,*Bdtil=NULL,
+    *areaslav=NULL,mu,fkninv,fktauinv,p0,beta,*rs=NULL,*rsb=NULL;
   
   double aninvloc,gnc,xlnold,lt[2],ltold;
   
@@ -201,10 +182,6 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
   irowd=*irowdp;Dd =*Ddp;
   irowdtil=*irowdtilp;Ddtil =*Ddtilp;
   irowbtil=*irowbtilp;Bdtil =*Bdtilp;
-  irowbpg=*irowbpgp;Bpgd =*Bpgdp;
-  irowdpg=*irowdpgp;Dpgd =*Dpgdp;
-  irowdpgtil=*irowdpgtilp;Dpgdtil =*Dpgdtilp;
-  irowbpgtil=*irowbpgtilp;Bpgdtil =*Bpgdtilp;
   
   NNEW(rs,double,(mt)**nk);
   NNEW(rsb,double,neq[1]);
@@ -398,7 +375,7 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
       
     FORTRAN(gendualcoeffs,(tieset,ntie,ipkon,kon,lakon,co,vold,islavact,
 			   islavsurf,itiefac,islavnode,nslavnode,
-			   mi,pslavsurf,pslavdual,pslavdualpg,iflagdualquad));
+			   mi,pslavsurf,pslavdual));
     
     /* calculate all mortar coupling matrices as well as the dual gap 
        via the segmentation of the slave surface */
@@ -413,16 +390,14 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 	   jqtinv,autinv,ntie,ipkon,kon,lakon,nslavnode,nmastnode,
 	   imastnode,islavnode,islavsurf,imastsurf,pmastsurf,itiefac,tieset,
 	   neq,nactdof,co,vold,iponoels,inoels,mi,gapmints,gap,pslavsurf,
-	   pslavdual,pslavdualpg,&nintpoint,slavnor,nk,
+	   pslavdual,&nintpoint,slavnor,nk,
 	   nmpc,ipompc,nodempc,coefmpc,ikmpc,ilmpc,
 	   nslavspc,islavspc,nsspc,nslavmpc,islavmpc,
 	   nsmpc,
 	   nmastspc,imastspc,nmspc,nmastmpc,imastmpc,nmmpc,
 	   iit,iinc,islavactdof,islavact,islavnodeinv,&Bd,&irowb,jqb,
 	   &Bdhelp,&irowbhelp,jqbhelp,&Dd,&irowd,jqd,&Ddtil,&irowdtil,jqdtil,
-	   &Bdtil,&irowbtil,jqbtil,&Bpgd,&irowbpg,jqbpg,&Dpgd,&irowdpg,jqdpg,
-	   &Dpgdtil,&irowdpgtil,jqdpgtil,&Bpgdtil,&irowbpgtil,jqbpgtil,
-	   iflagdualquad,ithermal);
+	   &Bdtil,&irowbtil,jqbtil,ithermal);
     
     SFREE(imastsurf);SFREE(pmastsurf);SFREE(gapmints);SFREE(pslavsurf);      
     fflush(stdout);  
@@ -605,44 +580,24 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
      according to active set entry*/
   
   if(*iit==1 && *iinc==1){k=1;}else{k=2;}
-  if(*iflagdualquad>2){
-    
-    /* Petrov-Galerkin formulation (Sitzmann, Chapter 4.2.) */
-    
-    multimortar(&au,ad,&irow,jq,&nzs2,&auc,adc,&irowc,jqc,nzsc,aubd,irowbd,
-		 jqbd,aubdtil,irowbdtil,jqbdtil,aubdtil2,irowbdtil2,jqbdtil2,
-		 irowdd,jqdd,audd,irowddtil2,jqddtil2,auddtil2,irowddinv,
-		 jqddinv,auddinv,Bpgd,irowbpg,jqbpg,Dpgd,irowdpg,jqdpg,Ddtil,
-		 irowdtil,jqdtil,neq,b,bhat,islavnode,imastnode,nslavnode,
-		 nmastnode,islavact,islavactdof,gap,slavnor,slavtan,vold,vini,
-		 cstress,cstressini,bp_old,nactdof,ntie,mi,nk,nboun,ndirboun,
-		 nodeboun,xboun,nmpc,ipompc,nodempc,coefmpc,ikboun,ilboun,
-		 ikmpc,ilmpc,nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,
-		 nmastspc,imastspc,nmspc,nmastmpc,imastmpc,nmmpc,tieset,
-		 islavactdoftie,nelcon,elcon,tietol,ncmat_,ntmat_,plicon,
-		 nplicon,npmat_,dtime,irowt,jqt,aut,irowtinv,
-		 jqtinv,autinv,islavnodeinv,&k,
-		 nmethod,bet,ithermal,plkcon,nplkcon);  
-    
-  }else{
     
     /* normal formulation (Sitzmann, Chapter 4.1.)*/
     
-    multimortar(&au,ad,&irow,jq,&nzs2,&auc,adc,&irowc,jqc,nzsc,aubd,irowbd,
-		 jqbd,aubdtil,irowbdtil,jqbdtil,aubdtil2,irowbdtil2,jqbdtil2,
-		 irowdd,jqdd,audd,irowddtil2,jqddtil2,auddtil2,irowddinv,
-		 jqddinv,auddinv,Bd,irowb,jqb,Dd,irowd,jqd,Ddtil,irowdtil,
-		 jqdtil,neq,b,bhat,islavnode,imastnode,nslavnode,nmastnode,
-		 islavact,islavactdof,gap,slavnor,slavtan,vold,vini,cstress,
-		 cstressini,bp_old,nactdof,ntie,mi,nk,nboun,ndirboun,nodeboun,
-		 xboun,nmpc,ipompc,nodempc,coefmpc,ikboun,ilboun,ikmpc,ilmpc,
-		 nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,nmastspc,
-		 imastspc,nmspc,nmastmpc,imastmpc,nmmpc,tieset,islavactdoftie,
-		 nelcon,elcon,tietol,ncmat_,ntmat_,plicon,nplicon,npmat_,dtime,
-		 irowt,jqt,aut,irowtinv,jqtinv,autinv,
-		 islavnodeinv,&k,nmethod,bet,ithermal,
-		 plkcon,nplkcon);
-  }
+  multimortar(&au,ad,&irow,jq,&nzs2,&auc,adc,&irowc,jqc,nzsc,aubd,irowbd,
+	      jqbd,aubdtil,irowbdtil,jqbdtil,aubdtil2,irowbdtil2,jqbdtil2,
+	      irowdd,jqdd,audd,irowddtil2,jqddtil2,auddtil2,irowddinv,
+	      jqddinv,auddinv,Bd,irowb,jqb,Dd,irowd,jqd,Ddtil,irowdtil,
+	      jqdtil,neq,b,bhat,islavnode,imastnode,nslavnode,nmastnode,
+	      islavact,islavactdof,gap,slavnor,slavtan,vold,vini,cstress,
+	      cstressini,bp_old,nactdof,ntie,mi,nk,nboun,ndirboun,nodeboun,
+	      xboun,nmpc,ipompc,nodempc,coefmpc,ikboun,ilboun,ikmpc,ilmpc,
+	      nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,nmastspc,
+	      imastspc,nmspc,nmastmpc,imastmpc,nmmpc,tieset,islavactdoftie,
+	      nelcon,elcon,tietol,ncmat_,ntmat_,plicon,nplicon,npmat_,dtime,
+	      irowt,jqt,aut,irowtinv,jqtinv,autinv,
+	      islavnodeinv,&k,nmethod,bet,ithermal,
+	      plkcon,nplkcon);
+
   nzs[0]=jq[neq[1]]-1; 
   nzs[1]=jq[neq[1]]-1;
   
@@ -671,10 +626,6 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
   *Ddp=Dd;*irowdp= irowd;
   *Ddtilp=Ddtil;*irowdtilp= irowdtil;
   *Bdtilp=Bdtil;*irowbtilp= irowbtil;
-  *Bpgdp=Bpgd;*irowbpgp= irowbpg;
-  *Dpgdp=Dpgd;*irowdpgp= irowdpg;
-  *Dpgdtilp=Dpgdtil;*irowdpgtilp= irowdpgtil;
-  *Bpgdtilp=Bpgdtil;*irowbpgtilp= irowbpgtil;
   
   SFREE(rs);SFREE(rsb);
   fflush(stdout);

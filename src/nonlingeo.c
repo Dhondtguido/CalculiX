@@ -118,7 +118,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     coriolis=0,*ipneigh=NULL,*neigh=NULL,maxprevcontel,nslavs_prev_step,
     *nelemface=NULL,*ipoface=NULL,*nodface=NULL,*ifreestream=NULL,
     *isolidsurf=NULL,*neighsolidsurf=NULL,*iponoel=NULL,*inoel=NULL,
-    nface,nfreestream,nsolidsurf,i,icfd=0,id,mortarsav=0,
+    nface,nfreestream,nsolidsurf,i,icfd=0,id,
     node,networknode,iflagact=0,*nodorig=NULL,*ipivr=NULL,iglob=0,
     *inomat=NULL,ntrimax,*nx=NULL,*ny=NULL,*nz=NULL,nforcrhs,nloadrhs,
     idampingwithoutcontact=0,*nactdoh=NULL,*nactdohinv=NULL,*ipkonf=NULL,
@@ -134,7 +134,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *ipompcf=NULL,*nodempcf=NULL,*nodebounf=NULL,*ndirbounf=NULL,
     *nelemloadf=NULL,*ipobodyf=NULL,nkf,nkonf,memmpcf,nbounf,nloadf,nmpcf,
     *ikbounf=NULL,*ilbounf=NULL,*ikmpcf=NULL,*ilmpcf=NULL,*iambounf=NULL,
-    *iamloadf=NULL,*inotrf=NULL,*jqtherm=NULL,*jqw=NULL,*iroww=NULL,nzsw,
+    *iamloadf=NULL,*inotrf=NULL,*jqw=NULL,*iroww=NULL,nzsw,*jqtherm=NULL,
     *kslav=NULL,*lslav=NULL,*ktot=NULL,*ltot=NULL,nmasts,neqtot,
     intpointvarm,calcul_fn,calcul_f,calcul_qa,calcul_cauchy,ikin,
     intpointvart,*jqbi=NULL,*irowbi=NULL,*jqib=NULL,*irowib=NULL,
@@ -168,7 +168,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *x=NULL,*y=NULL,*z=NULL,*xo=NULL,sum1,sum2,flinesearch,
     *yo=NULL,*zo=NULL,*cdnr=NULL,*cdni=NULL,*fnext=NULL,*fnextini=NULL,
     allwk=0.,allwkini,energyini[4]={0.,0.,0.,0.},*cof=NULL,
-    energyref,denergymax,dtcont,dtvol,wavespeed[*nmat],emax,r_abs,
+    energyref,dtcont,dtvol,wavespeed[*nmat],emax,r_abs,
     enetoll,dampwk=0.,dampwkini=0.,temax,*tmp=NULL,energystartstep[4],
     sizemaxinc,*adblump=NULL,*adcpy=NULL,*aucpy=NULL,*rwork=NULL,
     *sol=NULL,*rgwk=NULL,tol,*sb=NULL,*sx=NULL,delcon,alea,
@@ -231,7 +231,6 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *nmastspc=NULL,*imastspc=NULL,nmspc,*nmastmpc=NULL,*imastmpc=NULL,nmmpc,
     *islavactdof=NULL,*islavactini=NULL,iflagact_old,*islavactdoftie=NULL,
     *irowt=NULL,*jqt=NULL,*irowtinv=NULL,*jqtinv=NULL,
-    iflagdualquad,
     *irowb=NULL,*jqb=NULL,*irowd=NULL,*jqd=NULL,*irowdtil=NULL,*jqdtil=NULL,
     *irowbtil=NULL,*jqbtil=NULL,*irowbhelp=NULL,*jqbhelp=NULL,
     *islavnodeinv=NULL,*islavelinv=NULL,*irowc2=NULL,*jqc2=NULL,nzsc2,
@@ -241,22 +240,16 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *jqdd=NULL,*irowdd=NULL,*jqddtil=NULL,*irowddtil=NULL,*jqddtil2=NULL,
     *irowddtil2=NULL,
     *jqddinv=NULL,*irowddinv=NULL,*jqtemp=NULL,*irowtemp=NULL,*icoltemp=NULL,
-    nzstemp[3],
-    *irowbpg=NULL,*jqbpg=NULL,*irowbpgtil=NULL,*jqbpgtil=NULL,
-    *irowdpg=NULL,*jqdpg=NULL,*irowdpgtil=NULL,*jqdpgtil=NULL,
-    *nodeforc2=NULL,*ndirforc2=NULL,nforc2;
+    nzstemp[3];
   
   double *bp=NULL,*gap=NULL,*slavnor=NULL,
     *slavtan=NULL,*cdisp=NULL,*cstress=NULL,*cfs=NULL,*cfm=NULL,*cfsini=NULL,
-    *cfstil=NULL,*cfsinitil=NULL,*bpini=NULL,
-    *cstressini=NULL,*pslavdual=NULL,*pslavdualpg=NULL,*aut=NULL,
+    *cfstil=NULL,*bpini=NULL,
+    *cstressini=NULL,*pslavdual=NULL,*aut=NULL,
     *autinv=NULL,*Bd=NULL,*Bdhelp=NULL,
     *Dd=NULL,*Ddtil=NULL,*Bdtil=NULL,*auc2=NULL,*adc2=NULL,*aubd=NULL,
     *audd=NULL,*auddtil=NULL,*auddtil2=NULL,*auddinv=NULL,*bhat=NULL,
-    *aubdtil=NULL,
-    *aubdtil2=NULL,*Bpgd=NULL,*Bpgdtil=NULL,*auxtil2=NULL,*cvtil=NULL,
-    *cvtilini=NULL,
-    *Dpgd=NULL,*Dpgdtil=NULL,*xforc2=NULL;
+    *aubdtil=NULL,*aubdtil2=NULL,*auxtil2=NULL,*cvtil=NULL,*cvtilini=NULL;
 
   /* end of declarations for mortar contact */
 
@@ -763,12 +756,10 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		&gap,&slavnor,&slavtan,&cdisp,&cstress,&cfs,
 		&bpini,&islavactini,&cstressini,ntie,
 		tieset,nslavnode,islavnode,&islavnodeinv,&islavelinv,
-		&pslavdual,&pslavdualpg,&aut,&irowt,&jqt,&autinv,
+		&pslavdual,&aut,&irowt,&jqt,&autinv,
 		&irowtinv,&jqtinv,&Bd,&irowb,&jqb,&Bdhelp,&irowbhelp,
 		&jqbhelp,&Dd,&irowd,&jqd,&Ddtil,&irowdtil,&jqdtil,&Bdtil,
-		&irowbtil,&jqbtil,&Bpgd,&irowbpg,&jqbpg,&Dpgd,&irowdpg,&jqdpg,
-		&Dpgdtil,&irowdpgtil,&jqdpgtil,&Bpgdtil,&irowbpgtil,&jqbpgtil,
-		&iflagdualquad,itiefac,islavsurf,nboun,
+		&irowbtil,&jqbtil,itiefac,islavsurf,nboun,
 		nmpc,&nslavspc,&islavspc,&nslavmpc,&islavmpc,
 		&nmastspc,&imastspc,&nmastmpc,&imastmpc,
 		imastnode,nmastnode,&nasym,
@@ -2700,7 +2691,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		  &icfd,inomat,islavelinv,islavsurf,iponoels,inoels,
 		  mortar,nslavnode,
 		  islavnode,nslavs,ntie,aut,irowt,jqt,autinv,
-		  irowtinv,jqtinv,&iflagdualquad,tieset,
+		  irowtinv,jqtinv,tieset,
 		  itiefac,&rhsi,au,ad,&f_cm,&f_cs,t1act,cam,&bet,&gam,epn,
 		  xloadact,nodeforc,ndirforc,xforcact,xbodyact,ipobody,
 		  nbody,cgr,nzl,sti,iexpl,mass,&buckling,&stiffness,
@@ -2708,7 +2699,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		  doubleglob,&nasym,&alpham,&betam,auxtil2,pslavsurf,
 		  pmastsurf,clearini,ielprop,prop,islavact,cdn,&memmpc_,
 		  cvtilini,cvtil,&idamping,&iforbou,iperturb_sav,
-		  adb,aub,&nodeforc2,&ndirforc2,&xforc2,&nforc2,
+		  adb,aub,
 		  itietri,cg,straight,koncont,energyini,energy,&kscale,
 		  iponoel,inoel,nener,orname,network,typeboun,&num_cpus,
 		  t0g,t1g,smscale,&mscalmethod,jobnamef);
@@ -2734,13 +2725,11 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		      &nsspc,nslavmpc,islavmpc,&nsmpc,
 		      nmastspc,imastspc,
 		      &nmspc,nmastmpc,imastmpc,&nmmpc,
-		      pslavdual,pslavdualpg,islavactdof,islavactdoftie,
+		      pslavdual,islavactdof,islavactdoftie,
 		      plicon,nplicon,npmat_,nelcon,&dtime,islavnodeinv,&Bd,
 		      &irowb,jqb,&Bdhelp,&irowbhelp,jqbhelp,&Dd,&irowd,jqd,
-		      &Ddtil,&irowdtil,jqdtil,&Bdtil,&irowbtil,jqbtil,&Bpgd,
-		      &irowbpg,jqbpg,&Dpgd,&irowdpg,jqdpg,&Dpgdtil,&irowdpgtil,
-		      jqdpgtil,&Bpgdtil,&irowbpgtil,jqbpgtil,
-		      &bet,&iflagdualquad,cfsini,
+		      &Ddtil,&irowdtil,jqdtil,&Bdtil,&irowbtil,jqbtil,
+		      &bet,cfsini,
 		      &reltime,ithermal,plkcon,nplkcon);
 	  
 	nzs[0]=nzs[1];
@@ -3124,8 +3113,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		     tieset,elcon,tietol,ncmat_,ntmat_,plicon,nplicon,npmat_,
 		     nelcon,&dtime,cfs,cfm,islavnodeinv,Bd,irowb,jqb,Dd,
 		     irowd,jqd,Ddtil,irowdtil,jqdtil,Bdtil,irowbtil,jqbtil,
-		     Bpgd,irowbpg,jqbpg,Dpgd,irowdpg,jqdpg,
-		     nmethod,&bet,&iflagdualquad,ithermal,
+		     nmethod,&bet,ithermal,
 		     iperturb,labmpc,cam,veold,accold,&gam,
 		     cfsini,cfstil,plkcon,nplkcon,filab,f,fn,qa,nprint,prlab,
 		     xforc,nforc);
@@ -4173,7 +4161,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       SFREE(cdisp);SFREE(bp);SFREE(islavactdoftie);
       SFREE(nslavspc);SFREE(islavspc);SFREE(nslavmpc);SFREE(islavmpc);
       SFREE(nmastspc);SFREE(imastspc);SFREE(nmastmpc);SFREE(imastmpc);
-      SFREE(pslavdual);SFREE(pslavdualpg);
+      SFREE(pslavdual);
       SFREE(cstressini);SFREE(bpini);SFREE(islavactini);
       SFREE(aut);SFREE(irowt);SFREE(jqt);
       SFREE(autinv);SFREE(irowtinv);SFREE(jqtinv);
@@ -4182,12 +4170,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       SFREE(Dd);SFREE(irowd);SFREE(jqd);
       SFREE(Ddtil);SFREE(irowdtil);SFREE(jqdtil);
       SFREE(Bdtil);SFREE(irowbtil);SFREE(jqbtil);
-      SFREE(Bpgd);SFREE(irowbpg);SFREE(jqbpg);
-      SFREE(Dpgd);SFREE(irowdpg);SFREE(jqdpg);
-      SFREE(Dpgdtil);SFREE(irowdpgtil);SFREE(jqdpgtil);
-      SFREE(Bpgdtil);SFREE(irowbpgtil);SFREE(jqbpgtil);
       SFREE(islavnodeinv);SFREE(islavelinv);
-      SFREE(nodeforc2);SFREE(ndirforc2);SFREE(xforc2);
     }
   }
 

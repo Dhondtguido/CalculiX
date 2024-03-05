@@ -43,14 +43,12 @@
  *  [out] irowtinvp	field containing row numbers of autinv
  *  [out] jqtinv	pointer into field irowtinv
  *  [out] autinvp	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$ 
- *  [in]  iflagdualquad   flag indicating what mortar contact is used (=1 quad-lin, =2 quad-quad, =3 PG quad-lin, =4 PG quad-quad)
 */
 void buildtquad(ITG *ntie,ITG *ipkon,ITG *kon,ITG *nk,char *lakon,
 		ITG *nslavnode,ITG *itiefac,char *tieset,
 		ITG *islavnode,ITG *islavsurf,
 		ITG **irowtp,ITG *jqt,double **autp,
-		ITG **irowtinvp,ITG *jqtinv,double **autinvp,
-		ITG *iflagdualquad){  
+		ITG **irowtinvp,ITG *jqtinv,double **autinvp){  
   
   ITG i,j,l,nodesf,nodem,istart,icounter,ndim,ifree,ifree2,
     nzstloc,nzstlocinv,*krow=NULL,*kcol=NULL,
@@ -85,13 +83,8 @@ void buildtquad(ITG *ntie,ITG *ipkon,ITG *kon,ITG *nk,char *lakon,
 
 	/* contribution for T */
 	
-	if(*iflagdualquad==2 || *iflagdualquad==4){
-	  FORTRAN(create_t,(ipkon,kon,lakon,islavsurf,
-			    contr,krow,kcol,&icounter,&l));
-	}else{
-	  FORTRAN(create_t_lin,(ipkon,kon,lakon,islavsurf,
-				contr,krow,kcol,&icounter,&l));
-	}
+	FORTRAN(create_t,(ipkon,kon,lakon,islavsurf,
+			  contr,krow,kcol,&icounter,&l));
 	
 	for(j=0;j<icounter;j++){
 	  contribution=contr[j];
@@ -103,13 +96,8 @@ void buildtquad(ITG *ntie,ITG *ipkon,ITG *kon,ITG *nk,char *lakon,
 
 	/* contribution for T^-1 */
 	
-	if(*iflagdualquad==2 || *iflagdualquad==4){
-	  FORTRAN(create_tinv,(ipkon,kon,lakon,islavsurf,
-			       contr,krow,kcol,&icounter,&l));
-	}else{
-	  FORTRAN(create_tinv_lin,(ipkon,kon,lakon,islavsurf,
-				   contr,krow,kcol,&icounter,&l));
-	}
+	FORTRAN(create_tinv,(ipkon,kon,lakon,islavsurf,
+			     contr,krow,kcol,&icounter,&l));
 	
 	for(j=0;j<icounter;j++){
 	  contribution=contr[j];

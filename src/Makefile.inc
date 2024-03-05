@@ -190,9 +190,7 @@ crackrate.f \
 crackshape.f \
 create_contactdofs.f \
 create_t.f \
-create_t_lin.f \
 create_tinv.f \
-create_tinv_lin.f \
 createbd.f \
 createblock_struct.f \
 createelemneigh.f \
@@ -1147,7 +1145,6 @@ thicknessmain.c \
 tiedcontact.c \
 trafontmortar2.c \
 trafontspcmpc.c \
-transformspcsmpcs_quad.c \
 transitionmain.c \
 transpose.c \
 u_calloc.c \

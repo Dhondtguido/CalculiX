@@ -5356,3 +5356,5 @@ Dec 2002        - started to work on single crystal plasticity
  1 Mar 2024     - switched mortar=2 with mortar=3
                 - cleaned up inimortar.c
                 - changed autloc into aut etc...
+
+ 5 Mar 2024     - removed LINMORTAR and Petrov-Galerkin Mortar

@@ -102,9 +102,6 @@
  \f$ p,q \f$ 
  *  [in] irowtinv	field containing row numbers of autinv
  *  [in] jqtinv	pointer into field irowtinv
- *  [in]  iflagdualquad   flag indicating what mortar contact is used 
- (=1 quad-lin, =2 quad-quad, =3 PG quad-lin, =4 PG 
- quad-quad) 
  *  [out] f_cmp		not used any more
  *  [out] f_csp		contact force for active degrees of freedom
  *  [in]	auxtil2		auxilary field
@@ -123,10 +120,6 @@
  *  [in] iforbou		flag indicating wheter fist iteration is calculated 
  linear geometrically 
  *  [in] iperturb_sav	saved iperturb values 
- *  [out] nodeforc2p	transformed point force, node
- *  [out] ndirforc2p	transformed point force, dir
- *  [out] xforc2p		transformed point force, value
- *  [out] nforc2		number of transformed point forces   
  **/
 
 void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
@@ -187,7 +180,6 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
 	       ITG *ntie,
 	       double *aut,ITG *irowt,ITG *jqt,
 	       double *autinv,ITG *irowtinv,ITG *jqtinv,
-	       ITG *iflagdualquad,
 	       char *tieset,ITG *itiefac  ,ITG *rhsi,
 	       double *au,double *ad,double **f_cmp,double **f_csp,
 	       double *t1act,double *cam,double *bet,double *gam,
@@ -204,8 +196,6 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
 	       ITG *islavact,double *cdn,ITG *memmpc_,
 	       double *cvinitil,double *cvtil,ITG *idamping,
 	       ITG *iforbou,ITG *iperturb_sav,double *adb,double *aub,
-	       ITG **nodeforc2p,ITG **ndirforc2p,double **xforc2p,
-	       ITG *nforc2,
 	       ITG *itietri,double *cg,double *straight,ITG *koncont,
 	       double *energyini,
 	       double *energy,ITG *kscale,ITG *iponoel,ITG *inoel,ITG *nener,
@@ -214,8 +204,7 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
 	       double *smscale,ITG *mscalmethod,char *jobnamef){
   
   ITG im,i,ii,j,jj,k,l,mt=mi[1]+1,node,jfaces,nelems,ifaces,nope,nopes,idummy,
-    nodes[8],
-    konl[20],jj2,ifac,debug,
+    nodes[8],konl[20],jj2,ifac,
     *nslavspc=NULL,*islavspc=NULL,*nslavmpc=NULL,*islavmpc=NULL,
     *nmastspc=NULL,*imastspc=NULL,*nmastmpc=NULL,
     *imastmpc=NULL,
@@ -225,8 +214,7 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
     *jqddtil=NULL,
     *irowddinv=NULL,*jqddinv=NULL,*irowddtil2=NULL,*jqddtil2=NULL,
     *irowtemp=NULL,*icoltemp=NULL,*jqtemp=NULL,*inum=NULL,*icoltil=NULL,
-    *irowtil=NULL,*jqtil=NULL,
-    *nodeforc2=NULL,*ndirforc2=NULL,mortartrafoflag=1;
+    *irowtil=NULL,*jqtil=NULL,mortartrafoflag=1;
   
   double alpha,*auc2=NULL,*adc2=NULL,*aubd=NULL,
     *aubdtil=NULL,*aubdtil2=NULL,*ftil=NULL,*fexttil=NULL,
@@ -235,10 +223,7 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
     *adtil=NULL,*fmpc2=NULL,*voldtil=NULL,*vinitil=NULL,*accoldtil=NULL,
     *btil=NULL,*aubtil=NULL,*adbtil=NULL,
     *adctil=NULL,*auctil=NULL,*veoldtil=NULL,*volddummy=NULL,
-    *vectornull=NULL,*f_cs=NULL,*f_cm=NULL,
-    *xforc2=NULL,*fnext=NULL,*veolddummy=NULL,*accolddummy=NULL;
-
-  debug=0;
+    *vectornull=NULL,*f_cs=NULL,*f_cm=NULL,*fnext=NULL;
     
   alpha=1-2*sqrt(*bet);
   
@@ -256,7 +241,6 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
   auddinv=*auddinvp;irowddinv=*irowddinvp;jqddinv=*jqddinvp;
   irowtemp=*irowtempp;icoltemp=*icoltempp;jqtemp=*jqtempp;
   f_cs=*f_csp;f_cm=*f_cmp;
-  ndirforc2=*ndirforc2p;nodeforc2=*nodeforc2p;xforc2=*xforc2p;
   
   fflush(stdout);
   
@@ -275,7 +259,7 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
   
   // fix for linear calculation in first iteration of first increment
   
-  if((*iforbou==1)&&(*iit==1)&&(*iinc==1)){  
+  if(*iforbou==1 && *iit==1 && *iinc==1){  
     *ielas=1;  
     iperturb[0]=-1;  
     iperturb[1]=0;	  
@@ -295,26 +279,26 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
   NNEW(icolc2,ITG,neq[1]);
   NNEW(jqc2,ITG,neq[1]+1); 
   if(*iit==1 || *ismallsliding==0){
-    NNEW(aubd,double,6*nslavnode[*ntie]);
-    NNEW(irowbd,ITG,6*nslavnode[*ntie]);
+    NNEW(aubd,double,6**nslavs);
+    NNEW(irowbd,ITG,6**nslavs);
     NNEW(jqbd,ITG,neq[1]+1);
-    NNEW(aubdtil,double,6*nslavnode[*ntie]);
-    NNEW(irowbdtil,ITG,6*nslavnode[*ntie]);
+    NNEW(aubdtil,double,6**nslavs);
+    NNEW(irowbdtil,ITG,6**nslavs);
     NNEW(jqbdtil,ITG,neq[1]+1);
-    NNEW(aubdtil2,double,6*nslavnode[*ntie]);
-    NNEW(irowbdtil2,ITG,6*nslavnode[*ntie]);
+    NNEW(aubdtil2,double,6**nslavs);
+    NNEW(irowbdtil2,ITG,6**nslavs);
     NNEW(jqbdtil2,ITG,neq[1]+1);
-    NNEW(audd,double,3*nslavnode[*ntie]);
-    NNEW(irowdd,ITG,3*nslavnode[*ntie]);
+    NNEW(audd,double,3**nslavs);
+    NNEW(irowdd,ITG,3**nslavs);
     NNEW(jqdd,ITG,neq[1]+1);
-    NNEW(auddtil,double,3*nslavnode[*ntie]);
-    NNEW(irowddtil,ITG,3*nslavnode[*ntie]);
+    NNEW(auddtil,double,3**nslavs);
+    NNEW(irowddtil,ITG,3**nslavs);
     NNEW(jqddtil,ITG,neq[1]+1);
-    NNEW(auddtil2,double,3*nslavnode[*ntie]);
-    NNEW(irowddtil2,ITG,3*nslavnode[*ntie]);
+    NNEW(auddtil2,double,3**nslavs);
+    NNEW(irowddtil2,ITG,3**nslavs);
     NNEW(jqddtil2,ITG,neq[1]+1);
-    NNEW(auddinv,double,3*nslavnode[*ntie]);
-    NNEW(irowddinv,ITG,3*nslavnode[*ntie]);
+    NNEW(auddinv,double,3**nslavs);
+    NNEW(irowddinv,ITG,3**nslavs);
     NNEW(jqddinv,ITG,neq[1]+1);	    
   }
   
@@ -330,8 +314,8 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
   for (i=0;i<nzs[1];i++){irowtemp[i]=irow[i];}
   
   if(*iit==1 || *ismallsliding==0){
-    DMEMSET(slavnor,0,3*nslavnode[*ntie],0.);
-    DMEMSET(slavtan,0,6*nslavnode[*ntie],0.);
+    DMEMSET(slavnor,0,3**nslavs,0.);
+    DMEMSET(slavtan,0,6**nslavs,0.);
   }
   
   /* setting iflagact=1 before calling contactmortar invokes
@@ -383,7 +367,6 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
 	      // MPC cannot be identified
 		  
 	      checkformidnode=1;
-	      if(debug==1)printf(" check for mid node %"ITGFORMAT"\n",node);
 	    }	      
 	  }
 	    
@@ -437,10 +420,9 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
     }
       
     if(*iit==1 || *ismallsliding==0){
-      DMEMSET(slavnor,0,3*nslavnode[*ntie],0.);
-      DMEMSET(slavtan,0,6*nslavnode[*ntie],0.);
+      DMEMSET(slavnor,0,3**nslavs,0.);
+      DMEMSET(slavtan,0,6**nslavs,0.);
     } 
-    if(debug==1)printf(" premortar: MPC-check OK\n\n");
   }
     
   /* fix for quadratic FE */
@@ -458,7 +440,6 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
   /* calculating the internal forces and tangent stiffness using
      modified shape functions for quadratic elements */
   
-  if(debug==1)printf(" premortar: call results\n");
   results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,
         elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
         ielorien,norien,orab,ntmat_,t0,t1act,ithermal,
@@ -481,9 +462,6 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
         islavelinv,aut,irowt,jqt,&mortartrafoflag,
 	intscheme,physcon);
   
-  if(debug==1)printf(" premortar: results_dstil finished\n");
-  fflush(stdout);
-  
   SFREE(v);SFREE(stx);SFREE(fn);SFREE(inum);SFREE(fmpc2);
   *iout=0;	    
   
@@ -499,9 +477,6 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
     icoltil[i]=icol[i];}
   for(i=0;i<nzs[1];i++){
     irowtil[i]=irow[i];}
-  
-  if(debug==1)printf(" premortar: call mafillsmmain\n");
-  fflush(stdout);
   
   /* calculating the external forces fext and stiffness matrix au/ad using
      modified shape functions for quadratic elements */
@@ -527,9 +502,6 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
 	       mscalmethod,set,nset,islavelinv,aut,irowt,jqt,
 	       &mortartrafoflag);
   
-  if(debug==1)printf(" premortar: mafillsmmain_dstil finished\n");
-  fflush(stdout);
-  
   for(i=0;i<neq[1];i++){
     ad[i]=adtil[i];
   }
@@ -544,8 +516,6 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
   NNEW(vinitil,double,mt**nk);
   NNEW(accoldtil,double,mt**nk);
   NNEW(btil,double,neq[1]);
-  
-  if(debug==1)printf(" premortar: call calcresidual\n");
 
   /* calculating the residual b */
   
@@ -554,9 +524,6 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
 	       &alpha,fextinitil,finitil,islavnode,nslavnode,mortar,ntie,f_cm,
 	       f_cs,mi,nzs,nasym,idamping,veoldtil,adctil,auctil,cvinitil,cvtil,
 	       alpham,num_cpus);
-  
-  if(debug==1)printf(" premortar: calcresidual finished\n");
-  fflush(stdout);  
 	
   for(k=0;k<neq[1];k++){
     b[k]=btil[k];}
@@ -569,15 +536,11 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
   
   /* update vold due to spcs to get gap right for rigid body movements */
   
-  if(*iinc==1 && *iit==1 &&*nmethod!=4){       
+  if(*iinc==1 && *iit==1 && *nmethod!=4){       
     NNEW(v,double,mt**nk);	       
     NNEW(volddummy,double,mt**nk);
-    NNEW(veolddummy,double,mt**nk);
-    NNEW(accolddummy,double,mt**nk);	       
     for(k=0;k<mt**nk;k++){
-      volddummy[k]=0.0;
-      veolddummy[k]=0.0;
-      accolddummy[k]=0.0;}           
+      volddummy[k]=0.0;}           
     memcpy(&v[0],&vold[0],sizeof(double)*mt**nk);	       
     NNEW(vectornull,double,neq[1]);	       
     *iout=-1;
@@ -588,8 +551,7 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
 			       bet,gam,dtime,mi));
     
     memcpy(&vold[0],&v[0],sizeof(double)*mt**nk);	     	
-    SFREE(v);SFREE(vectornull);SFREE(volddummy);SFREE(veolddummy);
-    SFREE(accolddummy);	    
+    SFREE(v);SFREE(vectornull);SFREE(volddummy);   
   }
   
   *ielas=0;
@@ -612,8 +574,6 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
   *auddinvp=auddinv;*irowddinvp=irowddinv;*jqddinvp=jqddinv;
   *irowtempp=irowtemp;*icoltempp=icoltemp;*jqtempp=jqtemp;
   *f_csp=f_cs;*f_cmp=f_cm;
-  *nodeforc2p=nodeforc2;*ndirforc2p=ndirforc2;
-  *xforc2p=xforc2;
   
   return;
 }

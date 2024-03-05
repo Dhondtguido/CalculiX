@@ -9681,15 +9681,9 @@ basis functions the Lagrange multiplier degrees of freedom can be easily
 eliminated from the resulting equation system and therefore the number of
 unknowns in the system is in each iteration not larger than without
 contact. Because the negative parts of the standard basis functions for
-quadratic elements can cause problems, several options to circumvent these
-problems have been implemented. Right now, the user can choose between TYPE=MORTAR, TYPE=LINMORTAR
-and TYPE=PGLINMORTAR on the \htmlref{*CONTACT PAIR}{contactpair} card. For
-TYPE=MORTAR the standard dual basis functions are used for the Lagrange
-multiplier. For TYPE=LINMORTAR linear dual basis functions are used, i.e. the
-Lagrange multiplier at the midnodes (if any) is not taken into account. For
-linear elements MORTAR and LINMORTAR coincide. In case of TYPE=PGLINMORTAR the
-variation of the Lagrange multiplier is done using linear standard basis
-functions (PG stands for Petrov-Galerkin). The following rules apply when
+quadratic elements can cause problems, they are mapped by a transformation
+onto nonnegative functions. Mortar contact is triggereed by TYPE=MORTAR
+on the \htmlref{*CONTACT PAIR}{contactpair} card. The following rules apply when
 using Mortar contact:
 
 \begin{itemize}
@@ -9702,8 +9696,7 @@ using Mortar contact:
     problems. In general, the mortar method is not well suited if the contact
     areas are too much constrained by extra multiple point constraints.  
   \item The mortar method cannot be combined with the penalty method in one
-    input file. Also a single mortar method (MORTAR or LINMORTAR or
-    PGLINMORTAR) has to be choosen for all contact pairs in one input file.
+    input file. 
   \item Using the \htmlref{*CYCLIC SYMMETRY MODEL}{cyclicsymmetrymodel} option, one has
     to make sure that a one-to-one connection is made if hte slave surface
     touches the cyclic symmetry boundary. If non-matching meshes are used, one
@@ -20204,19 +20197,14 @@ contact pair. The surface interaction defines the nature of the contact
 (hard versus soft contact..)
 
 The TYPE parameter can take the value NODE TO SURFACE, SURFACE TO
-SURFACE, MORTAR, LINMORTAR, PGLINMORTAR or MASSLESS. NODE TO SURFACE triggers node-to-face penalty contact, SURFACE TO
+SURFACE, MORTAR or MASSLESS. NODE TO SURFACE triggers node-to-face penalty contact, SURFACE TO
 SURFACE face-to-face penalty contact. MORTAR triggers the mortar method with
-standard dual shape functions for the Lagrange multipliers, LINMORTAR the
-mortar method with linear dual shape functions and PGLINMORTAR the
-Petrov-Galerkin method in which the usual shape functions are used to describe
-the variation of the Lagrange multiplier. For details the reader is referred
-to Section \ref{mortarcontact} and \cite{Sitzmann1}-\cite{Sitzmann4}. If the
-reader wants to apply mortar contact, it is suggested to start with MORTAR
-contact and to use LINMORTAR or PGLINMORTAR only if MORTAR fails. Finally,
+standard dual shape functions for the Lagrange multipliers. For details the reader is referred
+to Section \ref{mortarcontact} and \cite{Sitzmann1}-\cite{Sitzmann4}. Finally,
 MASSLESS triggers the massless contact explicit dynamics procedure. Notice that although several *CONTACT
 PAIR cards can be used within one and the same input deck, all must be of the
 same type. It is not allowed to mix NODE TO SURFACE, SURFACE TO SURFACE
-MORTAR, LINMORTAR, PGLINMORTAR and MASSLESS contact within one and the same input deck.
+MORTAR and MASSLESS contact within one and the same input deck.
 
 The SMALL SLIDING parameter only applies to node-to-face penalty contact. If it is not active, the
 contact is large sliding. This means that the pairing between the nodes
@@ -20225,7 +20213,7 @@ performed anew in every iteration. If the SMALL SLIDING parameter is active,
 the pairing is done once at the start of every increment and kept during the
 complete increment. SMALL SLIDING usually converges better than LARGE SLIDING, since
 changes in the pairing can deteriorate the convergence rate. For face-to-face
-contact (SURFACE TO SURFACE, MORTAR, LINMORTAR or PGLINMORTAR) small sliding is active by default.
+contact (SURFACE TO SURFACE or MORTAR) small sliding is active by default.
 
 The ADJUST parameter allows the user to move selected slave nodes at
 the start of the calculation (i.e. at the start of the first step) such that they make contact with the master
@@ -38071,9 +38059,6 @@ nuel & number of different user element types \\
       &         0: node-to-surface penalty contact \\
       &         1: surface-to-surface penalty contact \\
       &         2: mortar contact \\
-      &         3: linmortar contact \\
-      &         4: pglinmortar contact \\
-      &         5: pgmortar contact  \\
                        
 
       \textbf{For triangle i} & \\

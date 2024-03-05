@@ -48,7 +48,6 @@
  *  [out] islavnodeinvp     (i) slave node index for node i
  *  [out] islavelinvp       (i)==0 if there is no slave node in the element, >0 otherwise
  *  [out] pslavdualp	(:,i)coefficients \f$ \alpha_{ij}\f$, \f$ 1,j=1,..8\f$ for dual shape functions for face i
- *  [out] pslavdualpgp	(:,i)coefficients \f$ \alpha_{ij}\f$, \f$ 1,j=1,..8\f$ for Petrov-Galerkin shape functions for face i 
  *  [out] autp		transformation matrix \f$ T[p,q]\f$ for slave nodes \f$ p,q \f$
  *  [out] irowtp		field containing row numbers of aut
  *  [out] jqtp	        pointer into field irowt
@@ -70,19 +69,6 @@
  *  [out] Bdtilp		coupling matrix \f$ \tilde{B}_d[p,q]=\int \psi_p \tilde{\phi}_q dS \f$, \f$ p \in S, q \in M \f$ 
  *  [out] irowbtilp	field containing row numbers of Bdtil
  *  [out] jqbtilp		pointer into field irowbtil
- *  [out] Bpgdp		Petrov-Galerkin coupling matrix \f$ B_d^{PG}[p,q]=\int \tilde{\phi}_p \phi_q dS \f$, \f$ p \in S, q \in M \f$ 
- *  [out] irowbpgp		field containing row numbers of Bpgd
- *  [out] jqbpgp		pointer into field irowbpg
- *  [out] Dpgdp		Petrov-Galerkin coupling matrix \f$ D_d[p,q]=\int \tilde{\phi}_p \phi_q dS \f$, \f$ p,q \in S \f$ 
- *  [out] irowdpgp		field containing row numbers of Dpgd
- *  [out] jqdpgp		pointer into field irowdpg
- *  [out] Dpgdtilp		transformed Petrov-Galerkin coupling matrix \f$ D_d[p,q]=\int \tilde{\phi}_p \tilde{\phi}_q dS \f$, \f$ p,q \in S \f$ 
- *  [out] irowdpgtilp	field containing row numbers of Dpgdtil
- *  [out] jqdpgtilp	pointer into field irowdpgtil
- *  [out] Bpgdtilp		transformed Petrov-Galerkin coupling matrix \f$ B_d^{PG}[p,q]=\int \tilde{\phi}_p \tilde{\phi}_q dS \f$, \f$ p \in S, q \in M \f$ 
- *  [out] irowbpgtilp	field containing row numbers of Bpgdtil
- *  [out] jqbpgtilp	pointer into field irowbpgtil
- *  [in]  iflagdualquad   flag indicating what mortar contact is used (=1 quad-lin, =2 quad-quad, =3 PG quad-lin, =4 PG quad-quad)
  *  [in] itiefac 		pointer into field islavsurf: (1,i) beginning slave_i (2,i) end of slave_i
  *  [out] nslavspcp	(2*i) pointer to islavspc...
  *  [out] islavspcp         ... which stores SPCs for slave node i
@@ -103,7 +89,6 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
 	       ITG *ntie,char *tieset,
 	       ITG *nslavnode,ITG *islavnode,
 	       ITG **islavnodeinvp,ITG **islavelinvp,double **pslavdualp,
-	       double **pslavdualpgp,
 	       double **autp,ITG **irowtp,ITG **jqtp,	
 	       double **autinvp,ITG **irowtinvp,ITG **jqtinvp,
 	       double **Bdp,ITG **irowbp,ITG **jqbp,
@@ -111,11 +96,7 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
 	       double **Ddp,ITG **irowdp,ITG **jqdp,
 	       double **Ddtilp,ITG **irowdtilp,ITG **jqdtilp,
 	       double **Bdtilp,ITG **irowbtilp,ITG **jqbtilp,
-	       double **Bpgdp,ITG **irowbpgp,ITG **jqbpgp,
-	       double **Dpgdp,ITG **irowdpgp,ITG **jqdpgp,
-	       double **Dpgdtilp,ITG **irowdpgtilp,ITG **jqdpgtilp,
-	       double **Bpgdtilp,ITG **irowbpgtilp,ITG **jqbpgtilp,
-	       ITG *iflagdualquad,ITG *itiefac,ITG *islavsurf,
+	       ITG *itiefac,ITG *islavsurf,
 	       ITG *nboun,ITG *nmpc,
 	       ITG **nslavspcp,ITG **islavspcp,ITG **nslavmpcp,ITG **islavmpcp,
 	       ITG **nmastspcp,ITG **imastspcp,ITG **nmastmpcp,ITG **imastmpcp,
@@ -131,19 +112,15 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
     *irowtinv=NULL,*jqtinv=NULL,*irowbhelp=NULL,*jqbhelp=NULL,
     *irowb=NULL,*jqb=NULL,
     *irowd=NULL,*jqd=NULL,*irowdtil=NULL,*jqdtil=NULL,
-    *irowbtil=NULL,*jqbtil=NULL,*irowbpg=NULL,*jqbpg=NULL,
-    *irowdpg=NULL,*jqdpg=NULL,*irowdpgtil=NULL,*jqdpgtil=NULL,
-    *irowbpgtil=NULL,*jqbpgtil=NULL,
+    *irowbtil=NULL,*jqbtil=NULL,
     *nslavspc=NULL,*islavspc=NULL,*nslavmpc=NULL,*islavmpc=NULL,
     *nmastspc=NULL,*imastspc=NULL,*nmastmpc=NULL,*imastmpc=NULL,
     *ielmat=NULL,*ielorien=NULL;
   
   double *ener=NULL,*xstate=NULL,*bp=NULL,*gap=NULL,*slavnor=NULL,*slavtan=NULL,
     *cdisp=NULL,*cstress=NULL,*cfs=NULL,
-    *bpini=NULL,*cstressini=NULL,*pslavdual=NULL,
-    *pslavdualpg=NULL,*aut=NULL,
-    *autinv=NULL,*Bd=NULL,*Bdhelp=NULL,*Dd=NULL,*Ddtil=NULL,*Bdtil=NULL,
-    *Bpgd=NULL,*Dpgd=NULL,*Dpgdtil=NULL,*Bpgdtil=NULL;
+    *bpini=NULL,*cstressini=NULL,*pslavdual=NULL,*aut=NULL,
+    *autinv=NULL,*Bd=NULL,*Bdhelp=NULL,*Dd=NULL,*Ddtil=NULL,*Bdtil=NULL;
   
   ener=*enerp;ipkon=*ipkonp;lakon=*lakonp;kon=*konp;xstate=*xstatep;
   islavactdoftie=*islavactdoftiep;bp=*bpp;islavact=*islavactp;gap=*gapp;
@@ -151,7 +128,6 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
   cfs=*cfsp;
   bpini=*bpinip;islavactini=*islavactinip;cstressini=*cstressinip;
   islavnodeinv=*islavnodeinvp;islavelinv=*islavelinvp;pslavdual=*pslavdualp;
-  pslavdualpg=*pslavdualpgp;
   aut=*autp;irowt=*irowtp;jqt=*jqtp;	
   autinv=*autinvp;irowtinv=*irowtinvp;jqtinv=*jqtinvp;
   Bd=*Bdp;irowb=*irowbp;jqb=*jqbp;
@@ -159,10 +135,6 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
   Dd=*Ddp;irowd=*irowdp;jqd=*jqdp;
   Ddtil=*Ddtilp;irowdtil=*irowdtilp;jqdtil=*jqdtilp;
   Bdtil=*Bdtilp;irowbtil=*irowbtilp;jqbtil=*jqbtilp;
-  Bpgd=*Bpgdp;irowbpg=*irowbpgp;jqbpg=*jqbpgp;
-  Dpgd=*Dpgdp;irowdpg=*irowdpgp;jqdpg=*jqdpgp;
-  Dpgdtil=*Dpgdtilp;irowdpgtil=*irowdpgtilp;jqdpgtil=*jqdpgtilp;
-  Bpgdtil=*Bpgdtilp;irowbpgtil=*irowbpgtilp;jqbpgtil=*jqbpgtilp; 
   nslavspc=*nslavspcp;islavspc=*islavspcp;nslavmpc=*nslavmpcp;
   islavmpc=*islavmpcp;
   nmastspc=*nmastspcp;imastspc=*imastspcp;nmastmpc=*nmastmpcp;
@@ -299,45 +271,10 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
   NNEW(Bdtil,double,1);
   NNEW(irowbtil,ITG,1);
   NNEW(jqbtil,ITG,*nk+1);
-  NNEW(Bpgd,double,1);
-  NNEW(irowbpg,ITG,1);
-  NNEW(jqbpg,ITG,*nk+1);
-  NNEW(Dpgd,double,1);
-  NNEW(irowdpg,ITG,1);
-  NNEW(jqdpg,ITG,*nk+1);
-  NNEW(Dpgdtil,double,1);
-  NNEW(irowdpgtil,ITG,1);
-  NNEW(jqdpgtil,ITG,*nk+1);
-  NNEW(Bpgdtil,double,1);
-  NNEW(irowbpgtil,ITG,1);
-  NNEW(jqbpgtil,ITG,*nk+1);
-  
-  /* iflagdualquad==1 : linear-quadratic (mortar==2: linmortar)
-   * iflagdualquad==2 : quadratric-quadratic (mortar==3: mortar)
-   * iflagdualquad==3 : petrov-galerkin lin-quad (mortar==4: pglinmortar)
-   * iflagdualquad==4 : petrov-galerkin quad-quad (mortar==5: pgmortar) */
-  
-  if(*mortar==2){
-    *iflagdualquad=1;
-  }else if(*mortar==3){
-    *iflagdualquad=2;
-  }else if(*mortar==4){
-    *iflagdualquad=3;
-  }else if(*mortar==5){
-    *iflagdualquad=4;
-  }else{
-    *iflagdualquad=2;
-  }
-  
-  if((*iflagdualquad==3)||(*iflagdualquad==4)){
-    NNEW(pslavdualpg,double,64*itiefac[2**ntie-1]);
-  }else{
-    NNEW(pslavdualpg,double,64);
-  }
   
   buildtquad(ntie,ipkon,kon,nk,lakon,nslavnode,itiefac,tieset,
 	     islavnode,islavsurf,&irowt,jqt,&aut,
-	     &irowtinv,jqtinv,&autinv,iflagdualquad);
+	     &irowtinv,jqtinv,&autinv);
   
   /* checking for SPC's and MPC's on slave and master surface */
 
@@ -358,7 +295,6 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
   *cfsp=cfs;
   *bpinip=bpini;*islavactinip=islavactini;*cstressinip=cstressini;
   *islavnodeinvp=islavnodeinv;*islavelinvp=islavelinv;*pslavdualp=pslavdual;
-  *pslavdualpgp=pslavdualpg;
   *autp=aut;*irowtp=irowt;*jqtp=jqt;	
   *autinvp=autinv;*irowtinvp=irowtinv;*jqtinvp=jqtinv;
   *Bdp=Bd;*irowbp=irowb;*jqbp=jqb;
@@ -366,10 +302,6 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
   *Ddp=Dd;*irowdp=irowd;*jqdp=jqd;
   *Ddtilp=Ddtil;*irowdtilp=irowdtil;*jqdtilp=jqdtil;
   *Bdtilp=Bdtil;*irowbtilp=irowbtil;*jqbtilp=jqbtil;
-  *Bpgdp=Bpgd;*irowbpgp=irowbpg;*jqbpgp=jqbpg;
-  *Dpgdp=Dpgd;*irowdpgp=irowdpg;*jqdpgp=jqdpg;
-  *Dpgdtilp=Dpgdtil;*irowdpgtilp=irowdpgtil;*jqdpgtilp=jqdpgtil;
-  *Bpgdtilp=Bpgdtil;*irowbpgtilp=irowbpgtil;*jqbpgtilp=jqbpgtil;
   *nslavspcp=nslavspc;*islavspcp=islavspc;*nslavmpcp=nslavmpc;
   *islavmpcp=islavmpc;
   *nmastspcp=nmastspc;*imastspcp=imastspc;*nmastmpcp=nmastmpc;

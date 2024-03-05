@@ -22,18 +22,22 @@
 #include <time.h>
 #include "CalculiX.h"
 #include "mortar.h"
-/** 
- *  sort unsorted sparse matrix au 
+/* 
+   bring general (asymmetric) matrix values in a (au,irow,jq)-format 
 
- * Author: Saskia Sitzmann
- *
- *  [in,out] au		matrix values
- *  [in,out] mast1	column numbers
- *  [in,out] irow	row numbers
- *  [out] jq 		column pointer to irow 
- *  [in,out] nzs	number of non-zero values in au
- *  [in,out] ndim	dimention of matrix au ndim x ndim
-**/
+   Author: Saskia Sitzmann
+ 
+   in: au[i]: matrix values
+       irow[i]: corresponding row numbers
+       mast1[i]: corresponding column numbers
+       nzs: number of values
+       ndim: dimension of the square matrix (ndim x ndim)
+
+   out: matrix described by fields au, irow and jq:
+        au[i]: matrix values, column by column, sorted in
+               ascending row numbers in each column
+        irow[i]: corresponding row numbers
+        jq[i]: start of column i+1 in field au */ 
 
 void matrixsort(double *au,ITG *mast1,ITG *irow,ITG *jq, 
 		ITG *nzs,ITG *ndim){

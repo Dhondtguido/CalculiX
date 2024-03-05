@@ -28,62 +28,50 @@
 
 /**  transforming the system back to the standard basis functions 
      \f$ \tilde{u}\rightarrow u \f$ and updating the active
- *       and inactive sets and the Langrange Multipliers (LM) 
- *       see Sitzmann Algorithm 2, p.71
- * 
- * Author: Saskia Sitzmann
- *
- *  [in] 	bhat		intermediate right hand side 
- *  [in] 	adc		intermediate system matrix, diagonal terms
- *  [in] 	auc		intermediate system matrix, nondiagonal terms
- *  [in] 	jqc             pointer to irowc
- *  [in] 	irowc		row numbers of auc
- *  [in] 	neq             number of active degrees of freedom
- *  [in] 	gap		(i) gap for slave node i
- *  [in,out] b		in: differenzial displacement out:real displacement
- *  [in,out] islavact	(i) indicates, if slave node i is active (=-3 no-slave-node, =-2 no-LM-node, =-1 no-gap-node, =0 inactive node, =1 sticky node, =2 slipping/active node) 
- *  [out] irowddinv	field containing row numbers of auddinv
- *  [out] jqddinv		pointer into field irowddinv
- *  [out] auddinv		coupling matrix \f$ \tilde{D}^{-1}_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [in] irowt		field containing row numbers of aut
- *  [in] jqt	        pointer into field irowt
- *  [in] aut		transformation matrix \f$ T[p,q]\f$ for slave nodes \f$ p,q \f$ 
- *  [in] irowtinv	field containing row numbers of autinv
- *  [in] jqtinv	pointer into field irowtinv
- *  [in] autinv	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$  
- *  [in] slavnor		slave normals
- *  [in] slavtan		slave tangents 
- *  [out]	iflagact	flag indicating if semi-smooth Newton has converged
- *  [in,out] cstress	current Lagrange multiplier 
- *  [in] cstressini	Lagrange multiplier at start of the increment
- *  [out] cdisp		vector saving contact variables for frd-output
- *  [out] f_cs            contact forces for active degrees of freedom
- *  [out] f_cm            not used any more
- *  [out] bp		current friction bound
- *  [out] cfs 		contact force 
- *  [out] cfm 		not used any more
- *  [in] islavnodeinv     (i) slave node index for node i
- *  [out] Bd		coupling matrix \f$ B_d[p,q]=\int \psi_p \phi_q dS \f$, \f$ p \in S, q \in M \f$ 
- *  [out] irowb		field containing row numbers of Bd
- *  [out] jqb		pointer into field irowb
- *  [out] Dd		coupling matrix \f$ D_d[p,q]=\int \psi_p \phi_q dS \f$, \f$ p,q \in S \f$ 
- *  [out] irowd		field containing row numbers of Dd
- *  [out] jqd		pointer into field irowd
- *  [out] Ddtil		coupling matrix \f$ \tilde{D}_d[p,q]=\int \psi_p \tilde{\phi}_q dS \f$, \f$ p,q \in S \f$ 
- *  [out] irowdtil	field containing row numbers of Ddtil
- *  [out] jqdtil		pointer into field irowdtil 
- *  [out] Bpgd		Petrov-Galerkin coupling matrix \f$ B_d^{PG}[p,q]=\int \tilde{\phi}_p \phi_q dS \f$, \f$ p \in S, q \in M \f$ 
- *  [out] irowbpg		field containing row numbers of Bpgd
- *  [out] jqbpg		pointer into field irowbpg
- *  [out] Dpgd		Petrov-Galerkin coupling matrix \f$ D_d[p,q]=\int \tilde{\phi}_p \phi_q dS \f$, \f$ p,q \in S \f$ 
- *  [out] irowdpg		field containing row numbers of Dpgd
- *  [out] jqdpg		pointer into field irowdpg 
- *  [in] nmethod		analysis method 
- *  [in]  iflagdualquad   flag indicating what mortar contact is used (=1 quad-lin, =2 quad-quad, =3 PG quad-lin, =4 PG quad-quad)
- *  [in] ithermal         thermal method
- *  [in] iperturb		geometrical method
- *  [in] labmpc           labels of MPCs
- */
+     *       and inactive sets and the Langrange Multipliers (LM) 
+     *       see Sitzmann Algorithm 2, p.71
+     * 
+     * Author: Saskia Sitzmann
+     *
+     *  [in] 	bhat		intermediate right hand side 
+     *  [in] 	adc		intermediate system matrix, diagonal terms
+     *  [in] 	auc		intermediate system matrix, nondiagonal terms
+     *  [in] 	jqc             pointer to irowc
+     *  [in] 	irowc		row numbers of auc
+    *  [in] 	gap		(i) gap for slave node i
+     *  [in,out] b		in: differenzial displacement out:real displacement
+     *  [in,out] islavact	(i) indicates, if slave node i is active (=-3 no-slave-node, =-2 no-LM-node, =-1 no-gap-node, =0 inactive node, =1 sticky node, =2 slipping/active node) 
+     *  [out] irowddinv	field containing row numbers of auddinv
+     *  [out] jqddinv		pointer into field irowddinv
+     *  [out] auddinv		coupling matrix \f$ \tilde{D}^{-1}_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
+     *  [in] irowt		field containing row numbers of aut
+     *  [in] jqt	        pointer into field irowt
+     *  [in] aut		transformation matrix \f$ T[p,q]\f$ for slave nodes \f$ p,q \f$ 
+     *  [in] irowtinv	field containing row numbers of autinv
+     *  [in] jqtinv	pointer into field irowtinv
+     *  [in] autinv	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$  
+     *  [in] slavnor		slave normals
+     *  [in] slavtan		slave tangents 
+     *  [out]	iflagact	flag indicating if semi-smooth Newton has converged
+     *  [in,out] cstress	current Lagrange multiplier 
+     *  [in] cstressini	Lagrange multiplier at start of the increment
+     *  [out] cdisp		vector saving contact variables for frd-output
+     *  [out] f_cs            contact forces for active degrees of freedom
+     *  [out] f_cm            not used any more
+     *  [out] bp		current friction bound
+     *  [out] cfs 		contact force 
+     *  [out] cfm 		not used any more
+     *  [in] islavnodeinv     (i) slave node index for node i
+     *  [out] Bd		coupling matrix \f$ B_d[p,q]=\int \psi_p \phi_q dS \f$, \f$ p \in S, q \in M \f$ 
+     *  [out] irowb		field containing row numbers of Bd
+     *  [out] jqb		pointer into field irowb
+     *  [out] Dd		coupling matrix \f$ D_d[p,q]=\int \psi_p \phi_q dS \f$, \f$ p,q \in S \f$ 
+     *  [out] irowd		field containing row numbers of Dd
+     *  [out] jqd		pointer into field irowd
+     *  [out] Ddtil		coupling matrix \f$ \tilde{D}_d[p,q]=\int \psi_p \tilde{\phi}_q dS \f$, \f$ p,q \in S \f$ 
+     *  [out] irowdtil	field containing row numbers of Ddtil
+     *  [out] jqdtil		pointer into field irowdtil 
+     */
 
 void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
 		  ITG *neq,double *gap,double *b,ITG *islavact,
@@ -105,10 +93,9 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
 		  double *cfm,ITG *islavnodeinv,double *Bd,ITG *irowb,
 		  ITG *jqb,double *Dd,ITG *irowd,ITG *jqd,double *Ddtil,
 		  ITG *irowdtil,ITG *jqdtil,double *Bdtil,ITG *irowbtil,
-		  ITG *jqbtil,double *Bpgd,ITG *irowbpg,ITG *jqbpg,
-		  double *Dpgd,ITG *irowdpg,ITG *jqdpg,
+		  ITG *jqbtil,
 		  ITG *nmethod,double *bet,
-		  ITG *iflagdualquad,ITG *ithermal,ITG *iperturb,
+		  ITG *ithermal,ITG *iperturb,
 		  char *labmpc,double *cam,double *veold,
 		  double *accold,double *gam,double *cfsini,
 		  double *cfstil,double *plkcon,ITG *nplkcon,char *filab,
@@ -223,71 +210,35 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
       ndiverg=max(ndiverg,(nhelp/100)+*ntie);
     }
   }
-  
-  /* calculate hatu=D u^S+ B u^M for update in semi-smooth Newton,
-     see Sitzmann Chapter 3.4. */
-  
-  if(*iflagdualquad>2){
     
-    /* Petrov-Galerkin formulation*/  
-    /* get du^hat */ 
-    /* get uhat_k-1 */
+  /* normal formulation */  
+  /* get du^hat */ 
+  /* get uhat_k-1 */
     
-    for(i=0;i<*nk;i++){
-      nodes=i+1;
-      for(jj=jqdpg[nodes-1]-1;jj<jqdpg[nodes-1+1]-1;jj++){
-	for(k=0;k<3;k++){
-	  du[(islavnodeinv[irowdpg[jj]-1]-1)*3+k]+=Dpgd[jj]*b2[mt*nodes-3+k];
-	  u_oldt[(islavnodeinv[irowdpg[jj]-1]-1)*3+k]+=
-	    Dpgd[jj]*(vold[mt*(nodes)-3+k]-vini[mt*(nodes)-3+k]);
-	  u_old[(islavnodeinv[irowdpg[jj]-1]-1)*3+k]+=
-	    Dpgd[jj]*(vold[mt*(nodes)-3+k]);
-	}
-      }	    
-    }
-    for(i=0;i<*nk;i++){
-      nodes=i+1;
-      for(jj=jqbpg[nodes-1]-1;jj<jqbpg[nodes-1+1]-1;jj++){
-	for(k=0;k<3;k++){
-	  du[(islavnodeinv[irowbpg[jj]-1]-1)*3+k]+=Bpgd[jj]*b2[mt*nodes-3+k];
-	  u_oldt[(islavnodeinv[irowbpg[jj]-1]-1)*3+k]+=
-	    Bpgd[jj]*(vold[mt*(nodes)-3+k]-vini[mt*(nodes)-3+k]);
-	  u_old[(islavnodeinv[irowbpg[jj]-1]-1)*3+k]+=
-	    Bpgd[jj]*(vold[mt*(nodes)-3]+k);
-	}
-      }	  
-    } 
-  }else{
-    
-    /* normal formulation */  
-    /* get du^hat */ 
-    /* get uhat_k-1 */
-    
-    for(i=0;i<*nk;i++){
-      nodes=i+1;
-      for(jj=jqd[nodes-1]-1;jj<jqd[nodes-1+1]-1;jj++){
-	for(k=0;k<3;k++){
-	  du[(islavnodeinv[irowd[jj]-1]-1)*3+k]+=Dd[jj]*b2[mt*nodes-3+k];
-	  u_oldt[(islavnodeinv[irowd[jj]-1]-1)*3+k]+=
-	    Dd[jj]*(vold[mt*(nodes)-3+k]-vini[mt*(nodes)-3+k]);
-	  u_old[(islavnodeinv[irowd[jj]-1]-1)*3+k]+=
-	    Dd[jj]*(vold[mt*(nodes)-3+k]);
-	}
-      }	    
-    }
-    for(i=0;i<*nk;i++){
-      nodes=i+1;
-      for(jj=jqb[nodes-1]-1;jj<jqb[nodes-1+1]-1;jj++){
-	for(k=0;k<3;k++){
-	  du[(islavnodeinv[irowb[jj]-1]-1)*3+k]+=Bd[jj]*b2[mt*nodes-3+k];	
-	  u_oldt[(islavnodeinv[irowb[jj]-1]-1)*3+k]+=
-	    Bd[jj]*(vold[mt*(nodes)-3+k]-vini[mt*(nodes)-3+k]);
-	  u_old[(islavnodeinv[irowb[jj]-1]-1)*3+k]+=
-	    Bd[jj]*(vold[mt*(nodes)-3+k]);
-	}
-      }	  
-    } 
+  for(i=0;i<*nk;i++){
+    nodes=i+1;
+    for(jj=jqd[nodes-1]-1;jj<jqd[nodes-1+1]-1;jj++){
+      for(k=0;k<3;k++){
+	du[(islavnodeinv[irowd[jj]-1]-1)*3+k]+=Dd[jj]*b2[mt*nodes-3+k];
+	u_oldt[(islavnodeinv[irowd[jj]-1]-1)*3+k]+=
+	  Dd[jj]*(vold[mt*(nodes)-3+k]-vini[mt*(nodes)-3+k]);
+	u_old[(islavnodeinv[irowd[jj]-1]-1)*3+k]+=
+	  Dd[jj]*(vold[mt*(nodes)-3+k]);
+      }
+    }	    
   }
+  for(i=0;i<*nk;i++){
+    nodes=i+1;
+    for(jj=jqb[nodes-1]-1;jj<jqb[nodes-1+1]-1;jj++){
+      for(k=0;k<3;k++){
+	du[(islavnodeinv[irowb[jj]-1]-1)*3+k]+=Bd[jj]*b2[mt*nodes-3+k];	
+	u_oldt[(islavnodeinv[irowb[jj]-1]-1)*3+k]+=
+	  Bd[jj]*(vold[mt*(nodes)-3+k]-vini[mt*(nodes)-3+k]);
+	u_old[(islavnodeinv[irowb[jj]-1]-1)*3+k]+=
+	  Bd[jj]*(vold[mt*(nodes)-3+k]);
+      }
+    }	  
+  } 
   
   /* get lambda_scaled */
   
