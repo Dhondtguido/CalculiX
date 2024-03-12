@@ -70,14 +70,6 @@
  *  [out] irowbtilp	field containing row numbers of Bdtil
  *  [out] jqbtilp		pointer into field irowbtil
  *  [in] itiefac 		pointer into field islavsurf: (1,i) beginning slave_i (2,i) end of slave_i
- *  [out] nslavspcp	(2*i) pointer to islavspc...
- *  [out] islavspcp         ... which stores SPCs for slave node i
- *  [out] nslavmpcp	(2*i) pointer to islavmpc...
- *  [out] islavmpcp	... which stores MPCs for slave node i
- *  [out] nmastspcp	(2*i) pointer to imastspc...
- *  [out] imastspcp         ... which stores SPCs for master node i
- *  [out] nmastmpcp	(2*i) pointer to imastmpc...
- *  [out] imastmpcp	... which stores MPCs for master node i 
 **/
 void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
 	       ITG **ipkonp,char **lakonp,ITG **konp,ITG *nkon,
@@ -279,13 +271,13 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
   /* checking for SPC's and MPC's on slave and master surface */
 
   NNEW(nslavspc,ITG,2**nslavs);
-  NNEW(islavspc,ITG,2**nboun);
+  NNEW(islavspc,ITG,*nboun);
   NNEW(nslavmpc,ITG,2**nslavs);
-  NNEW(islavmpc,ITG,2**nmpc);
+  NNEW(islavmpc,ITG,*nmpc);
   NNEW(nmastspc,ITG,2*nmastnode[*ntie]);
-  NNEW(imastspc,ITG,2**nboun);
+  NNEW(imastspc,ITG,*nboun);
   NNEW(nmastmpc,ITG,2*nmastnode[*ntie]);
-  NNEW(imastmpc,ITG,2**nmpc);
+  NNEW(imastmpc,ITG,*nmpc);
   
   FORTRAN(genislavelinv,(islavelinv,jqt,lakon,ipkon,kon,ne,nasym));
   

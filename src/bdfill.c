@@ -74,18 +74,6 @@
  *  [in] pslavdual	(:,i)coefficients \f$ \alpha_{ij}\f$, \f$ 1,j=1,..8\f$ for dual shape functions for face i
  *  [in] nintpoint	number of integration points
  *  [in] slavnor		slave normals
- *  [in] nslavspc		(2*i) pointer to islavspc...
- *  [in] islavspc         ... which stores SPCs for slave node i
- *  [in] nsspc            number of SPC for slave nodes
- *  [in] nslavmpc		(2*i) pointer to islavmpc...
- *  [in] islavmpc		... which stores MPCs for slave node i
- *  [in] nsmpc		number of MPC for slave nodes
- *  [in] nmastspc		(2*i) pointer to imastspc...
- *  [in] imastspc         ... which stores SPCs for master node i
- *  [in] nmspc            number of SPC for master nodes
- *  [in] nmastmpc		(2*i) pointer to imastmpc...
- *  [in] imastmpc		... which stores MPCs for master node i
- *  [in] nmmpc		number of MPC for master nodes
  *  [in] islavactdof      (i)=10*slavenodenumber+direction for active dof i
  *  [in] islavact		(i) indicates, if slave node i is active (=-3 no-slave-node, =-2 no-LM-node, =-1 no-gap-node, =0 inactive node, =1 sticky node, =2 slipping/active node) 
  *  [in] islavnodeinv     (i) slave node index for node i
@@ -124,11 +112,8 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	    double* pslavsurf,double* pslavdual,
 	    ITG *nintpoint,double *slavnor,ITG *nk,
 	    ITG *nmpc,ITG *ipompc,ITG *nodempc,double *coefmpc,
-	    ITG *ikmpc,ITG *ilmpc,
-	    ITG *nslavspc,ITG *islavspc,ITG *nsspc,ITG *nslavmpc,ITG *islavmpc,
-	    ITG *nsmpc,
-	    ITG *nmastspc,ITG *imastspc,ITG *nmspc,ITG *nmastmpc,ITG *imastmpc,
-	    ITG *nmmpc,
+	    ITG *ikmpc,ITG *ilmpc,ITG *nslavmpc,ITG *islavmpc,
+	    ITG *nsmpc,ITG *nmastmpc,ITG *imastmpc,ITG *nmmpc,
 	    ITG *iit,ITG *iinc,ITG *islavactdof,ITG *islavact,ITG *islavnodeinv,
 	    double **Bdp,ITG **irowbp,ITG *jqb,
 	    double **Bdhelpp,ITG **irowbhelpp,ITG *jqbhelp,
@@ -592,7 +577,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 					 contribution<-1e-18)){
 	  // mpc on master node			                  
 	  for(jj=nslavmpc[2*(imn-1)];jj<nslavmpc[2*(imn-1)+1];jj++){
-	    ist=islavmpc[2*jj];                                           
+	    ist=islavmpc[jj];                                           
 	    dirdep=nodempc[3*(ist-1)+1];
 	    coefdep=coefmpc[ist-1];                                           
 	    index=nodempc[3*(ist-1)+2];					   
@@ -616,7 +601,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	  //mpc on slave node
 	  
 	  for(jj=nslavmpc[2*(isn-1)];jj<nslavmpc[2*(isn-1)+1];jj++){
-	    ist=islavmpc[2*(jj)];                                           
+	    ist=islavmpc[jj];                                           
 	    dirdep=nodempc[3*(ist-1)+1];
 	    coefdep=coefmpc[ist-1];                                           
 	    index=nodempc[3*(ist-1)+2];					   
@@ -641,7 +626,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	  //mpc on master and slave node
 	  
 	  for(jj=nslavmpc[2*(imn-1)];jj<nslavmpc[2*(imn-1)+1];jj++){
-	    ist=islavmpc[2*jj];                                           
+	    ist=islavmpc[jj];                                           
 	    dirdep=nodempc[3*(ist-1)+1];
 	    coefdep=coefmpc[ist-1];                                           
 	    index=nodempc[3*(ist-1)+2];					   
@@ -652,7 +637,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 		c2=-coefmpc[index-1]*contribution/coefdep;
 		idofm=nactdof[mt*(node1-1)+(dirind-1)+1];		        
 		for(kk=nslavmpc[2*(isn-1)];kk<nslavmpc[2*(isn-1)+1];kk++){
-		  ist2=islavmpc[2*kk];
+		  ist2=islavmpc[kk];
 		  dirdep2=nodempc[3*(ist2-1)+1];
 		  coefdep2=coefmpc[ist2-1];
 		  index2=nodempc[3*(ist2-1)+2];
@@ -740,7 +725,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	  
 	  if(imn<0){
 	    for(jj=nmastmpc[2*(-imn-1)];jj<nmastmpc[2*(-imn-1)+1];jj++){
-	      ist=imastmpc[2*jj];                                           
+	      ist=imastmpc[jj];                                           
 	      dirdep=nodempc[3*(ist-1)+1];
 	      coefdep=coefmpc[ist-1];                                           
 	      index=nodempc[3*(ist-1)+2];
@@ -760,7 +745,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	    }
 	  }else{
 	    for(jj=nslavmpc[2*(imn-1)];jj<nslavmpc[2*(imn-1)+1];jj++){
-	      ist=islavmpc[2*jj];                                           
+	      ist=islavmpc[jj];                                           
 	      dirdep=nodempc[3*(ist-1)+1];
 	      coefdep=coefmpc[ist-1];                                           
 	      index=nodempc[3*(ist-1)+2];
@@ -784,7 +769,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	  //mpc on slave node
 	  
 	  for(jj=nslavmpc[2*(isn-1)];jj<nslavmpc[2*(isn-1)+1];jj++){
-	    ist=islavmpc[2*(jj)];                                           
+	    ist=islavmpc[jj];                                           
 	    dirdep=nodempc[3*(ist-1)+1];
 	    coefdep=coefmpc[ist-1];                                           
 	    index=nodempc[3*(ist-1)+2];					   
@@ -810,7 +795,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	  
 	  if(imn<0){
 	    for(jj=nmastmpc[2*(-imn-1)];jj<nmastmpc[2*(-imn-1)+1];jj++){
-	      ist=imastmpc[2*jj];                                           
+	      ist=imastmpc[jj];                                           
 	      dirdep=nodempc[3*(ist-1)+1];
 	      coefdep=coefmpc[ist-1];                                           
 	      index=nodempc[3*(ist-1)+2];
@@ -821,7 +806,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 		  c2=-coefmpc[index-1]*contribution/coefdep;
 		  idofm=nactdof[mt*(node1-1)+(dirind-1)+1];		        
 		  for(kk=nslavmpc[2*(isn-1)];kk<nslavmpc[2*(isn-1)+1];kk++){
-		    ist2=islavmpc[2*kk];
+		    ist2=islavmpc[kk];
 		    dirdep2=nodempc[3*(ist2-1)+1];
 		    coefdep2=coefmpc[ist2-1];
 		    index2=nodempc[3*(ist2-1)+2];  
@@ -845,7 +830,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	    }
 	  }else{
 	    for(jj=nslavmpc[2*(imn-1)];jj<nslavmpc[2*(imn-1)+1];jj++){
-	      ist=islavmpc[2*jj];                                           
+	      ist=islavmpc[jj];                                           
 	      dirdep=nodempc[3*(ist-1)+1];
 	      coefdep=coefmpc[ist-1];                                           
 	      index=nodempc[3*(ist-1)+2];
@@ -856,7 +841,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 		  c2=-coefmpc[index-1]*contribution/coefdep;
 		  idofm=nactdof[mt*(node1-1)+(dirind-1)+1];		        
 		  for(kk=nslavmpc[2*(isn-1)];kk<nslavmpc[2*(isn-1)+1];kk++){
-		    ist2=islavmpc[2*kk];
+		    ist2=islavmpc[kk];
 		    dirdep2=nodempc[3*(ist2-1)+1];
 		    coefdep2=coefmpc[ist2-1];
 		    index2=nodempc[3*(ist2-1)+2];  
@@ -1005,7 +990,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	  // mpc on master node
 	  
 	  for(jj=nslavmpc[2*(imn-1)];jj<nslavmpc[2*(imn-1)+1];jj++){
-	    ist=islavmpc[2*jj];
+	    ist=islavmpc[jj];
 	    dirdep=nodempc[3*(ist-1)+1];
 	    coefdep=coefmpc[ist-1];
 	    index=nodempc[3*(ist-1)+2];
@@ -1030,7 +1015,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	}else if((idofm>0)&&(contribution>1e-18 ||contribution<-1e-18)){
 	  //mpc on slave node			                  
 	  for(jj=nslavmpc[2*(isn-1)];jj<nslavmpc[2*(isn-1)+1];jj++){
-	    ist=islavmpc[2*(jj)];
+	    ist=islavmpc[jj];
 	    dirdep=nodempc[3*(ist-1)+1];
 	    coefdep=coefmpc[ist-1];
 	    index=nodempc[3*(ist-1)+2];
@@ -1056,7 +1041,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	}else if((idofs<=0)&&(idofm<=0)&&(contribution>1e-18 ||contribution<-1e-18)){
 	  //mpc on master and slave node			                  
 	  for(jj=nslavmpc[2*(imn-1)];jj<nslavmpc[2*(imn-1)+1];jj++){
-	    ist=islavmpc[2*jj];
+	    ist=islavmpc[jj];
 	    dirdep=nodempc[3*(ist-1)+1];
 	    coefdep=coefmpc[ist-1];
 	    index=nodempc[3*(ist-1)+2];
@@ -1071,7 +1056,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 		  idofm=nactdof[mt*(node1-1)+(dirind-1)+1];
 		}
 		for(kk=nslavmpc[2*(isn-1)];kk<nslavmpc[2*(isn-1)+1];kk++){  
-		  ist2=islavmpc[2*kk];  
+		  ist2=islavmpc[kk];  
 		  dirdep2=nodempc[3*(ist2-1)+1];  
 		  coefdep2=coefmpc[ist2-1];  
 		  index2=nodempc[3*(ist2-1)+2];  
@@ -1130,7 +1115,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	       vorkommen können */
 	      
 	    for(jj=nmastmpc[2*(-imn-1)];jj<nmastmpc[2*(-imn-1)+1];jj++){
-	      ist=imastmpc[2*jj];
+	      ist=imastmpc[jj];
 	      dirdep=nodempc[3*(ist-1)+1];
 	      coefdep=coefmpc[ist-1];
 	      index=nodempc[3*(ist-1)+2];
@@ -1154,7 +1139,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	    }
 	  }else{
 	    for(jj=nslavmpc[2*(imn-1)];jj<nslavmpc[2*(imn-1)+1];jj++){
-	      ist=islavmpc[2*jj];
+	      ist=islavmpc[jj];
 	      dirdep=nodempc[3*(ist-1)+1];
 	      coefdep=coefmpc[ist-1];
 	      index=nodempc[3*(ist-1)+2];
@@ -1182,7 +1167,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	  //mpc on slave node
 	  
 	  for(jj=nslavmpc[2*(isn-1)];jj<nslavmpc[2*(isn-1)+1];jj++){
-	    ist=islavmpc[2*(jj)];
+	    ist=islavmpc[jj];
 	    dirdep=nodempc[3*(ist-1)+1];
 	    coefdep=coefmpc[ist-1];
 	    index=nodempc[3*(ist-1)+2];
@@ -1212,7 +1197,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	  
 	  if(imn<0){
 	    for(jj=nmastmpc[2*((-imn)-1)];jj<nmastmpc[2*((-imn)-1)+1];jj++){
-	      ist=imastmpc[2*jj];
+	      ist=imastmpc[jj];
 	      dirdep=nodempc[3*(ist-1)+1];
 	      coefdep=coefmpc[ist-1];
 	      index=nodempc[3*(ist-1)+2];
@@ -1227,7 +1212,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 		    idofm=nactdof[mt*(node1-1)+(dirind-1)+1];
 		  }		  
 		  for(kk=nslavmpc[2*(isn-1)];kk<nslavmpc[2*(isn-1)+1];kk++){  
-		    ist2=islavmpc[2*kk];  
+		    ist2=islavmpc[kk];  
 		    dirdep2=nodempc[3*(ist2-1)+1];  
 		    coefdep2=coefmpc[ist2-1];  
 		    index2=nodempc[3*(ist2-1)+2];  
@@ -1255,7 +1240,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	    }
 	  }else{
 	    for(jj=nslavmpc[2*(imn-1)];jj<nslavmpc[2*(imn-1)+1];jj++){
-	      ist=islavmpc[2*jj];
+	      ist=islavmpc[jj];
 	      dirdep=nodempc[3*(ist-1)+1];
 	      coefdep=coefmpc[ist-1];
 	      index=nodempc[3*(ist-1)+2];
@@ -1270,7 +1255,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 		    idofm=nactdof[mt*(node1-1)+(dirind-1)+1];
 		  }
 		  for(kk=nslavmpc[2*(isn-1)];kk<nslavmpc[2*(isn-1)+1];kk++){  
-		    ist2=islavmpc[2*kk];  
+		    ist2=islavmpc[kk];  
 		    dirdep2=nodempc[3*(ist2-1)+1];  
 		    coefdep2=coefmpc[ist2-1];  
 		    index2=nodempc[3*(ist2-1)+2];  

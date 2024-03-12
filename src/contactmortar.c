@@ -74,18 +74,6 @@
  *  [in] cstress		current Lagrange multiplier 
  *  [in] cstressini	Lagrange multiplier at start of the increment
  *  [in] bp_old		old friction bounds
- *  [in] nslavspc		(2*i) pointer to islavspc...
- *  [in] islavspc         ... which stores SPCs for slave node i
- *  [in] nsspc            number of SPC for slave nodes
- *  [in] nslavmpc		(2*i) pointer to islavmpc...
- *  [in] islavmpc		... which stores MPCs for slave node i
- *  [in] nsmpc		number of MPC for slave nodes
- *  [in] nmastspc		(2*i) pointer to imastspc...
- *  [in] imastspc         ... which stores SPCs for master node i
- *  [in] nmspc            number of SPC for master nodes
- *  [in] nmastmpc		(2*i) pointer to imastmpc...
- *  [in] imastmpc		... which stores MPCs for master node i
- *  [in] nmmpc		number of MPC for master nodes
  *  [in] pslavdual	(:,i)coefficients \f$ \alpha_{ij}\f$, \f$ 1,j=1,..8\f$ for dual shape functions for face i
  *  [in] islavactdof      (i)=10*slavenodenumber+direction for active dof i
  *  [in] islavactdoftie   (i)=tie number for active dof i
@@ -390,11 +378,8 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 	   jqtinv,autinv,ntie,ipkon,kon,lakon,nslavnode,nmastnode,
 	   imastnode,islavnode,islavsurf,imastsurf,pmastsurf,itiefac,tieset,
 	   neq,nactdof,co,vold,iponoels,inoels,mi,gapmints,gap,pslavsurf,
-	   pslavdual,&nintpoint,slavnor,nk,
-	   nmpc,ipompc,nodempc,coefmpc,ikmpc,ilmpc,
-	   nslavspc,islavspc,nsspc,nslavmpc,islavmpc,
-	   nsmpc,
-	   nmastspc,imastspc,nmspc,nmastmpc,imastmpc,nmmpc,
+	   pslavdual,&nintpoint,slavnor,nk,nmpc,ipompc,nodempc,coefmpc,ikmpc,
+	   ilmpc,nslavmpc,islavmpc,nsmpc,nmastmpc,imastmpc,nmmpc,
 	   iit,iinc,islavactdof,islavact,islavnodeinv,&Bd,&irowb,jqb,
 	   &Bdhelp,&irowbhelp,jqbhelp,&Dd,&irowd,jqd,&Ddtil,&irowdtil,jqdtil,
 	   &Bdtil,&irowbtil,jqbtil,ithermal);

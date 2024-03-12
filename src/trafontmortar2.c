@@ -31,13 +31,11 @@
  *    direction at the slave surface) 
  * 	changing b due to N and T (normal and tangential
  *	direction at the slave surface) 
- *  phd-thesis Sitzmann, Chapter 3+4, equation (4.15) (Tpye=MORTAR/LINMORTAR) or (4.24) (TYPE=PGLINMORTAR) 
+ *  phd-thesis Sitzmann, Chapter 3+4, equation (4.15) (Type=MORTAR)
  * 
  * author: Saskia Sitzmann
  *  [in] islavactdof      (i)=10*slavenodenumber+direction for active dof i
  *  [in] islavact		(i) indicates, if slave node i is active (=-3 no-slave-node, =-2 no-LM-node, =-1 no-gap-node, =0 inactive node, =1 sticky node, =2 slipping/active node)  
- *  [in] nslavnode	(i)pointer into field isalvnode for contact tie i 
- *  [in] nmastnode	(i)pointer into field imastnode for contact tie i 
  *  [in] f_da		\f$ r_A \f$ residual for active slave nodes
  *  [out] f_atil		\f$ r_A \f$ condensed residual for active slave nodes
  *  [in] au_dan		\f$ K_{AN}\f$	
@@ -98,21 +96,6 @@
  *  [in] cstress		current Lagrange multiplier 
  *  [in] cstressini	Lagrange multiplier at start of the increment 
  *  [in] bp_old		old friction bounds
- *  [in] nactdof 		(i,j) actual degree of freedom for direction i of node j 
- *  [in] islavnode	field storing the nodes of the slave surface 
- *  [in] imastnode	field storing the nodes of the master surfaces 
- *  [in] nslavspc		(2*i) pointer to islavspc...
- *  [in] islavspc         ... which stores SPCs for slave node i
- *  [in] nsspc            number of SPC for slave nodes
- *  [in] nslavmpc		(2*i) pointer to islavmpc...
- *  [in] islavmpc		... which stores MPCs for slave node i
- *  [in] nsmpc		number of MPC for slave nodes
- *  [in] nmastspc		(2*i) pointer to imastspc...
- *  [in] imastspc         ... which stores SPCs for master node i
- *  [in] nmspc            number of SPC for master nodes
- *  [in] nmastmpc		(2*i) pointer to imastmpc...
- *  [in] imastmpc		... which stores MPCs for master node i
- *  [in] nmmpc		number of MPC for master nodes 
  *  [in] islavactdoftie   (i)=tie number for active dof i
  *  [in] irowt		field containing row numbers of aut
  *  [in] jqt	        pointer into field irowt
@@ -123,7 +106,7 @@
  *  [in] islavnodeinv     (i) slave node index for node i
  */
 void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
-		    ITG *nslavnode,ITG *nmastnode,double *f_da,double *f_atil,
+		    ITG *nslavnode,double *f_da,double *f_atil,
 		    double *au_dan,ITG *irow_dan,ITG *jq_dan,
 		    double *au_dam,ITG *irow_dam,ITG *jq_dam,
 		    double *au_dai,ITG *irow_dai,ITG *jq_dai,
@@ -148,12 +131,10 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 		    double *bp_old,ITG *nactdof,ITG *islavnode,
 		    ITG *imastnode,ITG *ntie,ITG *mi,ITG *nk,
 		    ITG *nboun,ITG *ndirboun,ITG *nodeboun,double *xboun,
-		    ITG *nmpc,ITG *ipompc,ITG *nodempc,double *coefmpc,
+		    ITG *ipompc,ITG *nodempc,double *coefmpc,
 		    ITG *ikboun,ITG *ilboun,ITG *ikmpc,ITG *ilmpc,
 		    ITG *nslavspc,ITG *islavspc,ITG *nsspc,ITG *nslavmpc,
-		    ITG *islavmpc,ITG *nsmpc,
-		    ITG *nmastspc,ITG *imastspc,ITG *nmspc,ITG *nmastmpc,
-		    ITG *imastmpc,ITG *nmmpc,
+		    ITG *islavmpc,ITG *nsmpc,ITG *imastspc,ITG *imastmpc,
 		    char *tieset,
 		    ITG *islavactdoftie,ITG *nelcon,double  *elcon,
 		    double *tietol,ITG *ncmat_,ITG *ntmat_,
@@ -161,10 +142,10 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 		    ITG *irowt,ITG *jqt,double *aut, 
 		    ITG *irowtinv,ITG *jqtinv,double *autinv,
 		    ITG *islavnodeinv,
-		    ITG *iit,ITG *nmethod,double *beta,ITG *ithermal,
+		    ITG *iit,double *beta,ITG *ithermal,
 		    double *plkcon,ITG *nplkcon){
   
-  ITG i,j,jj,j2,k,l,debug,idof1,idof2,idof3,iadd,jrow,islavnodeentry,
+  ITG i,j,jj,j2,k,l,idof1,idof2,idof3,iadd,jrow,islavnodeentry,
     mt=mi[1]+1,nodes,node,derivmode,regmode,
     *irow_antil=NULL,*irow_amtil=NULL,*irow_aitil=NULL,*irow_aatil=NULL,
     *irow_amtil1=NULL,*irow_amtil2=NULL,*irow_aitil1=NULL,*irow_aitil2=NULL,
@@ -182,8 +163,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
     *au_amtil=NULL,*au_aitil=NULL,*au_aatil=NULL,*au_amtil1=NULL,
     *au_amtil2=NULL,*au_aitil1=NULL,*au_aitil2=NULL,*au_aatil1=NULL,
     *au_aatil2=NULL;
-  
-  debug=0;
   
   au_antil=*au_antilp;au_amtil=*au_amtilp;au_aitil=*au_aitilp;
   au_aatil=*au_aatilp;
@@ -280,10 +259,9 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
       }
 
       trafontspcmpc(n,t,n2,that,&islavnodeentry,nboun,ndirboun,nodeboun,xboun,
-		    nmpc,ipompc,nodempc,coefmpc,ikboun,ilboun,ikmpc,ilmpc,
+		    ipompc,nodempc,coefmpc,ikboun,ilboun,ikmpc,ilmpc,
 		    nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,
-		    nmastspc,imastspc,nmspc,nmastmpc,imastmpc,nmmpc,
-		    &debug,&node);
+		    imastspc,imastmpc,&node);
       
       /* calculate fields needed for Coulomb friction */
       
@@ -335,7 +313,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	  
 	FORTRAN(regularization_slip_lin,(utildep_t,&bp,&atauinvloc,resreg,
 					 &derivmode,islavact,lambda_t,
-					 lambdatilde_t,&constantt,&debug,
+					 lambdatilde_t,&constantt,
 					 &islavnodeentry,n2,t,that,&mu,rslip,
 					 ltslip,ltu));
 	rphat[0]=0.0;
@@ -436,7 +414,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
   
   /* K_AM^til **/
   
-  debug=0;
   ifree_amtil1=1;
   nzs_amtil1=jq_dam[*row_lm]-1;
   NNEW(irow_amtil1,ITG,nzs_amtil1);
@@ -465,11 +442,11 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
       }
       trafontspcmpc(n,t,n2,that,&islavnodeentry,
 		    nboun,ndirboun,nodeboun,xboun,
-		    nmpc,ipompc,nodempc,coefmpc,
+		    ipompc,nodempc,coefmpc,
 		    ikboun,ilboun,ikmpc,ilmpc,
 		    nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,
-		    nmastspc,imastspc,nmspc,nmastmpc,imastmpc,nmmpc,
-		    &debug,&node);
+		    imastspc,imastmpc,
+		    &node);
       
       /* calculate fields needed for Coulomb friction **/
       
@@ -523,7 +500,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	  
 	FORTRAN(regularization_slip_lin,(utildep_t,&bp,&atauinvloc,resreg,
 					 &derivmode,islavact,lambda_t,
-					 lambdatilde_t,&constantt,&debug,
+					 lambdatilde_t,&constantt,
 					 &islavnodeentry,n2,t,that,&mu,rslip,
 					 ltslip,ltu));
 	  
@@ -619,7 +596,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
   
   /* add diagonal terms **/
   
-  debug=0;
   nzs_amtil2=3*(jq_bdtil2[*row_lm]-1);
   NNEW(au_amtil2,double,3*(jq_bdtil2[*row_lm]-1));
   NNEW(irow_amtil2,ITG,3*(jq_bdtil2[*row_lm]-1));
@@ -646,14 +622,13 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	t[l]=slavtan[6*(islavnodeentry-1)+l];	     
 	that[l]=slavtan[6*(islavnodeentry-1)+l];	     	   
       }
-      debug=0;
       trafontspcmpc(n,t,n2,that,&islavnodeentry,
 		    nboun,ndirboun,nodeboun,xboun,
-		    nmpc,ipompc,nodempc,coefmpc,
+		    ipompc,nodempc,coefmpc,
 		    ikboun,ilboun,ikmpc,ilmpc,
 		    nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,
-		    nmastspc,imastspc,nmspc,nmastmpc,imastmpc,nmmpc,
-		    &debug,&node);
+		    imastspc,imastmpc,
+		    &node);
       
       /* calculate fields needed for Coulomb friction **/
       
@@ -706,7 +681,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	  
 	FORTRAN(regularization_slip_lin,(utildep_t,&bp,&atauinvloc,resreg,
 					 &derivmode,islavact,lambda_t,
-					 lambdatilde_t,&constantt,&debug,
+					 lambdatilde_t,&constantt,
 					 &islavnodeentry,n2,t,that,&mu,rslip,
 					 ltslip,ltu));
 	  
@@ -865,7 +840,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
   
   SFREE(au_amtil1);SFREE(irow_amtil1);SFREE(jq_amtil1);
   SFREE(au_amtil2);SFREE(irow_amtil2);SFREE(jq_amtil2);
-  debug=0;
   
   /* K_AI **/
   
@@ -897,10 +871,10 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
       }
 
       trafontspcmpc(n,t,n2,that,&islavnodeentry,nboun,ndirboun,nodeboun,xboun,
-		    nmpc,ipompc,nodempc,coefmpc,ikboun,ilboun,ikmpc,ilmpc,
+		    ipompc,nodempc,coefmpc,ikboun,ilboun,ikmpc,ilmpc,
 		    nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,
-		    nmastspc,imastspc,nmspc,nmastmpc,imastmpc,nmmpc,
-		    &debug,&node);
+		    imastspc,imastmpc,
+		    &node);
       
       /* calculate fields needed for Coulomb friction **/
       
@@ -954,7 +928,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	  
 	FORTRAN(regularization_slip_lin,(utildep_t,&bp,&atauinvloc,resreg,
 					 &derivmode,islavact,lambda_t,
-					 lambdatilde_t,&constantt,&debug,
+					 lambdatilde_t,&constantt,
 					 &islavnodeentry,n2,t,that,&mu,rslip,
 					 ltslip,ltu));
 	  
@@ -1080,10 +1054,10 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
       }
       
       trafontspcmpc(n,t,n2,that,&islavnodeentry,nboun,ndirboun,nodeboun,xboun,
-		    nmpc,ipompc,nodempc,coefmpc,ikboun,ilboun,ikmpc,ilmpc,
+		    ipompc,nodempc,coefmpc,ikboun,ilboun,ikmpc,ilmpc,
 		    nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,
-		    nmastspc,imastspc,nmspc,nmastmpc,imastmpc,nmmpc,
-		    &debug,&node);
+		    imastspc,imastmpc,
+		    &node);
       
       
       /* calculate fields needed for Coulomb friction **/
@@ -1137,7 +1111,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	  
 	FORTRAN(regularization_slip_lin,(utildep_t,&bp,&atauinvloc,resreg,
 					 &derivmode,islavact,lambda_t,
-					 lambdatilde_t,&constantt,&debug,
+					 lambdatilde_t,&constantt,
 					 &islavnodeentry,n2,t,that,&mu,rslip,
 					 ltslip,ltu));
 	  
@@ -1329,10 +1303,10 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	that[l]=slavtan[6*(islavnodeentry-1)+l];	     	   
       }
       trafontspcmpc(n,t,n2,that,&islavnodeentry,nboun,ndirboun,nodeboun,xboun,
-		    nmpc,ipompc,nodempc,coefmpc,ikboun,ilboun,ikmpc,ilmpc,
+		    ipompc,nodempc,coefmpc,ikboun,ilboun,ikmpc,ilmpc,
 		    nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,
-		    nmastspc,imastspc,nmspc,nmastmpc,imastmpc,nmmpc,
-		    &debug,&node);
+		    imastspc,imastmpc,
+		    &node);
       
       /* calculate fields needed for Coulomb friction **/
       
@@ -1386,7 +1360,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	  
 	FORTRAN(regularization_slip_lin,(utildep_t,&bp,&atauinvloc,resreg,
 					 &derivmode,islavact,lambda_t,
-					 lambdatilde_t,&constantt,&debug,
+					 lambdatilde_t,&constantt,
 					 &islavnodeentry,n2,t,that,&mu,rslip,
 					 ltslip,ltu));
 	
@@ -1509,11 +1483,11 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
       }
       trafontspcmpc(n,t,n2,that,&islavnodeentry,
 		    nboun,ndirboun,nodeboun,xboun,
-		    nmpc,ipompc,nodempc,coefmpc,
+		    ipompc,nodempc,coefmpc,
 		    ikboun,ilboun,ikmpc,ilmpc,
 		    nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,
-		    nmastspc,imastspc,nmspc,nmastmpc,imastmpc,nmmpc,
-		    &debug,&node);
+		    imastspc,imastmpc,
+		    &node);
       
       /* calculate fields needed for Coulomb friction */
       
@@ -1567,7 +1541,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	  
 	FORTRAN(regularization_slip_lin,(utildep_t,&bp,&atauinvloc,resreg,
 					 &derivmode,islavact,lambda_t,
-					 lambdatilde_t,&constantt,&debug,
+					 lambdatilde_t,&constantt,
 					 &islavnodeentry,n2,t,that,&mu,rslip,
 					 ltslip,ltu));
 	  
@@ -1750,10 +1724,10 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
       }	
      
       trafontspcmpc(n,t,n2,that,&islavnodeentry,nboun,ndirboun,nodeboun,xboun,
-		    nmpc,ipompc,nodempc,coefmpc,ikboun,ilboun,ikmpc,ilmpc,
+		    ipompc,nodempc,coefmpc,ikboun,ilboun,ikmpc,ilmpc,
 		    nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,
-		    nmastspc,imastspc,nmspc,nmastmpc,imastmpc,nmmpc,
-		    &debug,&node);
+		    imastspc,imastmpc,
+		    &node);
       
       /* calculate needed fields for coulomb friction **/
       
@@ -1813,7 +1787,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 	  
 	FORTRAN(regularization_slip_lin,(utildep_t,&bp,&atauinvloc,resreg,
 					 &derivmode,islavact,lambda_t,
-					 lambdatilde_t,&constantt,&debug,
+					 lambdatilde_t,&constantt,
 					 &islavnodeentry,n2,t,that,&mu,rslip,
 					 ltslip,ltu));
 	rphat[0]=0.0;

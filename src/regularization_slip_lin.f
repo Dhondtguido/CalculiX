@@ -42,7 +42,7 @@
 !  [out] ltuvector used in semi-smooth Newton
 !
       subroutine regularization_slip_lin(utilt,bp,atauinv,resreg,
-     &     divmode,islavact,lambdat,lambdatilt,constantt,debug,
+     &     divmode,islavact,lambdat,lambdatilt,constantt,
      &     inode,n2,t,that,mu,rslip,ltslip,ltu)
 !     
 !     regularization function of tangential contact
@@ -50,7 +50,7 @@
 !      
       implicit none
 !      
-      integer l,m,divmode,inode,imodification,islavact(*),debug
+      integer l,m,divmode,inode,imodification,islavact(*)
 !     
       real*8 bp,atauinv,constantt,resreg(2),t(*),lp(4),mp(4),fp(4),ep,
      &     mu,ltslip(*),rslip(*),ltu(*),utilt(*),lambdat(*),
@@ -187,21 +187,6 @@
      &              *(lp(1)*lambdat(1)+lp(2)*lambdat(2))
                ltu(2)=-((1.0/constantt)-atauinv)
      &              *(lp(3)*lambdat(1)+lp(4)*lambdat(2)) 
-               if(debug.eq.1)then
-                  write(*,*) 't1',t(1),t(2),t(3)
-                  write(*,*) 't1',t(4),t(5),t(6)
-                  write(*,*)'ep',ep,'vp',vp(1),vp(2)
-                  write(*,*) 'fp',fp(1),fp(2),fp(3),fp(4)
-                  write(*,*) 'mp',mp(1),mp(2),mp(3),mp(4)
-                  write(*,*) 'mp2',mp2(1),mp2(2),mp2(3),mp2(4)
-                  write(*,*) 'mp3',mp3(1),mp3(2),mp3(3),mp3(4)
-                  write(*,*)'rsn',mu*vp(1)*n2(1),mu*vp(1)*n2(1),
-     &                 mu*vp(1)*n2(1)
-                  write(*,*)'rsn',mu*vp(2)*n2(1),mu*vp(2)*n2(1),
-     &                 mu*vp(2)*n2(1)
-                  write(*,*)'det',det,beta,alpha,delta
-                  write(*,*) 'lp',lp(1),lp(2),lp(3),lp(4)
-               endif 
             else
 !               
 !              contact tie without friction

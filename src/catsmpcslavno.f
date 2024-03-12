@@ -18,19 +18,6 @@
 !     
 !     Author: Saskia Sitzmann
 !     
-!     [out] nslavspc	(2*i) pointer to islavspc...
-!     [out] islavspc         ... which stores SPCs for slave node i
-!     [out] nsspc            number of SPC for slave nodes
-!     [out] nslavmpc	(2*i) pointer to islavmpc...
-!     [out] islavmpc	... which stores MPCs for slave node i
-!     [out] nsmpc		number of MPC for slave nodes
-!     [out] nmastspc	(2*i) pointer to imastspc...
-!     [out] imastspc        ... which stores SPCs for master node i
-!     [out] nmspc           number of SPC for master nodes
-!     [out] nmastmpc	(2*i) pointer to imastmpc...
-!     [out] imastmpc	... which stores MPCs for master node i
-!     [out] nmmpc		number of MPC for master nodes
-!     
       subroutine catsmpcslavno(ntie,islavnode,imastnode,
      &     nslavnode,nmastnode,nboun,nmpc,ipompc,
      &     nodempc,ikboun,ilboun,ikmpc,ilmpc,
@@ -57,9 +44,9 @@
      &     imastnode(*),nslavnode(ntie+1),nmastnode(ntie+1),index1,
      &     nboun,nmpc,ipompc(*),nodempc(3,*),idof,ikboun(*),
      &     ilboun(*),ikmpc(*),ilmpc(*),nslavspc(2,*),
-     &     islavspc(2,*),nsspc,nslavmpc(2,*),islavmpc(2,*),nsmpc,
-     &     nmastspc(2,*),imastspc(2,*),nmspc,
-     &     nmastmpc(2,*),imastmpc(2,*),nmmpc,isspc,imspc,ismpc,immpc,
+     &     islavspc(*),nsspc,nslavmpc(2,*),islavmpc(*),nsmpc,
+     &     nmastspc(2,*),imastspc(*),nmspc,
+     &     nmastmpc(2,*),imastmpc(*),nmmpc,isspc,imspc,ismpc,immpc,
      &     ist,secondnode,node2,itie
 !     
 !     slave surfaces
@@ -79,7 +66,7 @@
             if(id.gt.0) then
               if(idof.eq.ikboun(id)) then
                 isspc=isspc+1
-                islavspc(1,isspc)=ilboun(id)
+                islavspc(isspc)=ilboun(id)
               endif
             endif
           enddo
@@ -94,7 +81,7 @@
             if(id.gt.0) then
               if(idof.eq.ikmpc(id)) then
                 ismpc=ismpc+1
-                islavmpc(1,ismpc)=ipompc(ilmpc(id))
+                islavmpc(ismpc)=ipompc(ilmpc(id))
               endif
             endif
           enddo
@@ -121,7 +108,7 @@
             if(id.gt.0) then
               if(idof.eq.ikboun(id)) then
                 imspc=imspc+1
-                imastspc(1,imspc)=ilboun(id)
+                imastspc(imspc)=ilboun(id)
               endif
             endif
           enddo
@@ -136,7 +123,7 @@
             if(id.gt.0) then
               if(idof.eq.ikmpc(id)) then
                 immpc=immpc+1
-                imastmpc(1,immpc)=ipompc(ilmpc(id))
+                imastmpc(immpc)=ipompc(ilmpc(id))
               endif
             endif
           enddo

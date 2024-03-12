@@ -260,8 +260,8 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
 	    cstress[mt*j+k]=cstress2[idof];	  	       	 	  
 	  }else{	    	  	    
 	    cstress[mt*j+k]=0.0;	     	  	    
-	    for(jj=nslavmpc[2*(j)];jj<nslavmpc[2*(j)+1];jj++){
-	      ist=islavmpc[2*jj];           	    	      
+	    for(jj=nslavmpc[2*j];jj<nslavmpc[2*(j)+1];jj++){
+	      ist=islavmpc[jj];           	    	      
 	      dirdep=nodempc[3*(ist-1)+1];           	    	      
 	      coefdep=coefmpc[ist-1];           	    	      
 	      index=nodempc[3*(ist-1)+2];	     	    	      

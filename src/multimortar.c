@@ -67,31 +67,12 @@
  *  [in] neq		(0) # of mechanical equations (1) sum of mechanical and thermal equations (2) neq(1+ # of single point contraints)
  *  [in,out] b		right hand side
  *  [out] bhat		intermediate right hand side
- *  [in] islavnode	field storing the nodes of the slave surface
- *  [in] imastnode	field storing the nodes of the master surfaces
- *  [in] nslavnode	(i)pointer into field isalvnode for contact tie i 
- *  [in] nmastnode	(i)pointer into field imastnode for contact tie i
  *  [in] islavact		(i) indicates, if slave node i is active (=-3 no-slave-node, =-2 no-LM-node, =-1 no-gap-node, =0 inactive node, =1 sticky node, =2 slipping/active node) 
  *  [in] islavactdof      (i)=10*slavenodenumber+direction for active dof i
  *  [in] gap		(i) \f$ g_i= <g, \Psi_i> \f$ for node i on slave surface
- *  [in] slavnor		slave normal
- *  [in] slavtan		slave tangent  
  *  [in] cstress		current Lagrange multiplier 
  *  [in] cstressini	Lagrange multiplier at start of the increment
  *  [in] bp_old		old friction bounds 
- *  [in] nslavspc		(2*i) pointer to islavspc...
- *  [in] islavspc         ... which stores SPCs for slave node i
- *  [in] nsspc            number of SPC for slave nodes
- *  [in] nslavmpc		(2*i) pointer to islavmpc...
- *  [in] islavmpc		... which stores MPCs for slave node i
- *  [in] nsmpc		number of MPC for slave nodes
- *  [in] nmastspc		(2*i) pointer to imastspc...
- *  [in] imastspc         ... which stores SPCs for master node i
- *  [in] nmspc            number of SPC for master nodes
- *  [in] nmastmpc		(2*i) pointer to imastmpc...
- *  [in] imastmpc		... which stores MPCs for master node i
- *  [in] nmmpc		number of MPC for master nodes
- *  [in] tieset           (1,i) name of tie constraint (2,i) dependent surface (3,i) independent surface
  *  [in] islavactdoftie   (i)=tie number for active dof i
  *  [in] irowt		field containing row numbers of aut
  *  [in] jqt	        pointer into field irowt
@@ -130,7 +111,7 @@ void multimortar(double **aup,double *ad,ITG **irowp,ITG *jq,ITG *nzs,
 		  ITG *iit,ITG *nmethod,double *bet,
 		  ITG *ithermal,double *plkcon,ITG *nplkcon){ 
   
-  ITG i,j,k,l,m,mt=mi[1]+1,nodesf,nodem,irow_ln,irow_lm,irow_li,irow_la,debug,
+  ITG i,j,k,l,m,mt=mi[1]+1,nodesf,nodem,irow_ln,irow_lm,irow_li,irow_la,
     impclack,dim,nzs_nn,nzs_nm,nzs_ni,nzs_na,nzs_mn,nzs_mm,nzs_mi,nzs_ma,
     nzs_in,nzs_im,nzs_ii,nzs_ia,nzs_an,nzs_am,nzs_ai,nzs_aa,nzs_bd1,nzs_bdtil2,
     nzs_ddtil2i,nzs_ddtil2a,nzsbdtil2,nzs_mmf,nzs_iif,nzs_aaf,nzs_intmn,
@@ -171,7 +152,6 @@ void multimortar(double **aup,double *ad,ITG **irowp,ITG *jq,ITG *nzs,
   
   irowc=*irowcp; auc=*aucp;
   irow=*irowp; au=*aup;
-  debug=0;
   
   /* save full K matrix without contact conditions
      needed for calculation of the Lagrange multiplier in stressmortar */
@@ -663,10 +643,6 @@ void multimortar(double **aup,double *ad,ITG **irowp,ITG *jq,ITG *nzs,
     if (a_flag[j]!=0)jq_aa[a_flag[j]]=ifree_aa;   
   }
   // end loop over the global column 
-  
-  if(debug==1)printf("\tmm2: N %" ITGFORMAT " M %" ITGFORMAT " I %" ITGFORMAT
-	 " A %" ITGFORMAT "  nzs %" ITGFORMAT " \n",irow_ln,irow_lm,irow_li,
-	 irow_la,*nzs);  
 
   /* NN */
   
@@ -859,15 +835,6 @@ void multimortar(double **aup,double *ad,ITG **irowp,ITG *jq,ITG *nzs,
     RENEW(au_aa,double,1);           
     RENEW(irow_aa,ITG,1);		
   }  
-
-  if(debug==1){
-    printf("\tmm2: MN %" ITGFORMAT " %" ITGFORMAT " IN %" ITGFORMAT " %"
-	   ITGFORMAT " AN %" ITGFORMAT " %" ITGFORMAT " \n",nzs_mn,nzs_nm,
-	   nzs_in,nzs_ni,nzs_an,nzs_na);
-    printf("\tmm2: IM %" ITGFORMAT " %" ITGFORMAT " AM %" ITGFORMAT " %"
-	   ITGFORMAT " AI %" ITGFORMAT " %" ITGFORMAT " \n",nzs_im,nzs_mi,
-	   nzs_am,nzs_ma,nzs_ai,nzs_ia);
-  }
   
   /* generate D_d,D_d^-1,B_a ,B_d^til in local dofs **/
   
@@ -1017,22 +984,6 @@ void multimortar(double **aup,double *ad,ITG **irowp,ITG *jq,ITG *nzs,
   RENEW(irow_ddtil2a,ITG,nzs_ddtil2a);	 
   RENEW(au_ddtil2a,double,nzs_ddtil2a);
 
-  if(debug==1){
-    printf("\tmm2: nzs_ddtil2a %" ITGFORMAT " mpclack %" ITGFORMAT " \n",
-	   nzs_ddtil2a,impclack);
-    printf("\tmm2: nzs_ddtil2i %" ITGFORMAT " mpclack %" ITGFORMAT " \n",
-	   nzs_ddtil2i,impclack);
-    printf("\tmm2: nzs_bdtil %" ITGFORMAT " mpclack %" ITGFORMAT " \n",
-	   nzs_bdtil2,impclack);
-    printf("\tmm2: nzs_bd1 %" ITGFORMAT "\n",nzs_bd1);
-    
-    /* add diagonals in K for matrices mm, aa and ii 
-       matrix nn is not transformed, so the diagonal of nn
-       can be kept in vector ad_nn **/
-  
-    printf("\tmm2: add diagonals\n");
-  }
-
   /* ad_mm: diagonal of mm stored as general matrix
      au_mm: off-diagonal terms of mm stored as general matrix
      au_mmf: all terms of mm stored as general matrix */
@@ -1068,8 +1019,6 @@ void multimortar(double **aup,double *ad,ITG **irowp,ITG *jq,ITG *nzs,
   add_rect(ad_aa,irow_aad,jq_aad,irow_la,irow_la,
 	   au_aa,irow_aa,jq_aa,irow_la,irow_la,
 	   &au_aaf,&irow_aaf,jq_aaf,&nzs_aaf);
-  if(debug==1)printf("\tmm2: NN %" ITGFORMAT " MM %" ITGFORMAT " II %" ITGFORMAT " AA %"
-	 ITGFORMAT "\n",nzs_nn,nzs_mmf,nzs_iif,nzs_aaf);
   SFREE(au_ii);SFREE(irow_ii);SFREE(jq_ii);
   SFREE(au_aa);SFREE(irow_aa);SFREE(jq_aa);
   SFREE(au_mm);SFREE(irow_mm);SFREE(jq_mm);
@@ -1104,8 +1053,6 @@ void multimortar(double **aup,double *ad,ITG **irowp,ITG *jq,ITG *nzs,
   
   /* K_MX -> K_MX^til: K_MX^til=K_MX-Btil^T*K_AX 
      entries in the second row of the lhs matrix: **/
-  
-  if(debug==1)printf("\tmm2: alter K_MX\n");
   
   /* K_MN^til **/
   
@@ -1176,11 +1123,6 @@ void multimortar(double **aup,double *ad,ITG **irowp,ITG *jq,ITG *nzs,
   add_rect(au_intma,irow_intma,jq_intma,irow_lm,irow_la,
 	   au_ma,irow_ma,jq_ma,irow_lm,irow_la,
 	   &au_matil,&irow_matil,jq_matil,&nzs_matil);
-  
-  if(debug==1)printf("\tmm2: MNtil %" ITGFORMAT " %" ITGFORMAT " MMtil %" ITGFORMAT " %"
-	 ITGFORMAT " MItil %" ITGFORMAT " %" ITGFORMAT " MAtil %" ITGFORMAT
-	 " %" ITGFORMAT " \n",nzs_intmn,nzs_mntil,nzs_intmm,nzs_mmtil,
-	 nzs_intmi,nzs_mitil,nzs_intma,nzs_matil);
 
   /* deleting the original 2nd row in the matrix (master row entries) */
   
@@ -1205,7 +1147,7 @@ void multimortar(double **aup,double *ad,ITG **irowp,ITG *jq,ITG *nzs,
   NNEW(au_aatil,double,jq_aaf[irow_la]-1);
   NNEW(irow_aatil,ITG,jq_aaf[irow_la]-1);
   NNEW(f_atil,double,irow_la);
-  trafontmortar2(neq,nzs,islavactdof,islavact,nslavnode,nmastnode,f_a,f_atil,
+  trafontmortar2(neq,nzs,islavactdof,islavact,nslavnode,f_a,f_atil,
 		 au_an,irow_an,jq_an,au_am,irow_am,jq_am,au_ai,irow_ai,jq_ai,
 		 au_aaf,irow_aaf,jq_aaf,&au_antil,&irow_antil,jq_antil,
 		 &au_amtil,&irow_amtil,jq_amtil,&au_aitil,&irow_aitil,
@@ -1216,13 +1158,13 @@ void multimortar(double **aup,double *ad,ITG **irowp,ITG *jq,ITG *nzs,
 		 m_flag,&irow_ln,&irow_lm,&irow_li,&irow_la,slavnor,slavtan,
 		 vold,
 		 vini,cstress,cstressini,bp_old,nactdof,islavnode,imastnode,
-		 ntie,mi,nk,nboun,ndirboun,nodeboun,xboun,nmpc,ipompc,nodempc,
+		 ntie,mi,nk,nboun,ndirboun,nodeboun,xboun,ipompc,nodempc,
 		 coefmpc,ikboun,ilboun,ikmpc,ilmpc,nslavspc,islavspc,nsspc,
-		 nslavmpc,islavmpc,nsmpc,nmastspc,imastspc,nmspc,nmastmpc,
-		 imastmpc,nmmpc,tieset,islavactdoftie,nelcon,elcon,tietol,
+		 nslavmpc,islavmpc,nsmpc,imastspc,
+		 imastmpc,tieset,islavactdoftie,nelcon,elcon,tietol,
 		 ncmat_,ntmat_,plicon,nplicon,npmat_,dtime,irowt,jqt,
 		 aut,irowtinv,jqtinv,autinv,islavnodeinv,
-		 iit,nmethod,bet,ithermal,plkcon,
+		 iit,bet,ithermal,plkcon,
 		 nplkcon);
 		 
   SFREE(au_an);SFREE(irow_an);SFREE(jq_an);
@@ -1442,20 +1384,6 @@ void multimortar(double **aup,double *ad,ITG **irowp,ITG *jq,ITG *nzs,
   
   /*************************/	
   /*END transmit the new stiffness matrix*/
-  
-  if(debug==1)printf("\tnzsc %" ITGFORMAT " nzs %" ITGFORMAT " \n",*nzsc,*nzs);
-  if(debug==1){	
-    number=3;		
-    FORTRAN(writematrix,(auc,adc,irowc,jqc,&neq[1],&number));	    	
-    
-    number=4;		
-    FORTRAN(writematrix,(au,ad,irow,jq,&neq[1],&number));		
-    printf("\n");	
-    number=5;		
-    FORTRAN(writevector,(b,&neq[1],&number));		
-    number=6;		
-    FORTRAN(writevector,(bhat,&neq[1],&number));
-  }
 
   *irowcp=irowc; *aucp=auc;
   *irowp=irow; *aup=au;

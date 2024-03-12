@@ -76,20 +76,6 @@
  *  [out] nzstemp	field storing the untransformed stiffness matrix size
  *  [out] slavnor	slave normal
  *  [out] slavtan	slave tangent 
- *  [out] nslavspcp	(2*i) pointer to islavspc...
- *  [out] islavspcp     ... which stores SPCs for slave node i
- *  [out] nsspc         number of SPC for slave i
- *  [out] nslavmpcp	(2*i) pointer to islavmpc...
- *  [out] islavmpcp	... which stores MPCs for slave node i
- *  [out] nsmpc		number of MPC for slave i
- *  [in] imastnode	field storing the i of the master surfaces
- *  [in] nmastnode	(i)pointer into field imastnode for contact tie i 
- *  [out] nmastspcp	(2*i) pointer to imastspc...
- *  [out] imastspcp     ... which stores SPCs for master node i
- *  [out] nmspc         number of SPC for master i
- *  [out] nmastmpcp	(2*i) pointer to imastmpc...
- *  [out] imastmpcp	... which stores MPCs for master node i
- *  [out] nmmpc		number of MPC for master i 
  *  [in] islavelinv       (i)==0 if there is no slave node in the element, 
  >0 otherwise
  *  [in] islavsurf	islavsurf(1,i) slaveface i islavsurf(2,i) # integration
@@ -323,10 +309,10 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
   
   if(*iit>1 && *ismallsliding==1){*iflagact=1;}
 
-  RENEW(islavspc,ITG,2**nboun);
-  RENEW(islavmpc,ITG,2**nmpc);
-  RENEW(imastspc,ITG,2**nboun);
-  RENEW(imastmpc,ITG,2**nmpc);
+  RENEW(islavspc,ITG,*nboun);
+  RENEW(islavmpc,ITG,*nmpc);
+  RENEW(imastspc,ITG,*nboun);
+  RENEW(imastmpc,ITG,*nmpc);
   
   /* cataloque SPCs/MPCs */
   
@@ -338,91 +324,24 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
 			 nmastspc,imastspc,nmspc,nmastmpc,
 			 imastmpc,nmmpc,jobnamef));
   
-  RENEW(islavspc,ITG,2**nsspc+1);
-  RENEW(islavmpc,ITG,2**nsmpc+1);
-  RENEW(imastspc,ITG,2**nmspc+1);
-  RENEW(imastmpc,ITG,2**nmmpc+1);
-  
-  /* Check for additional MPCs on slave mid nodes */
+  RENEW(islavspc,ITG,*nsspc);
+  RENEW(islavmpc,ITG,*nsmpc);
+  RENEW(imastspc,ITG,*nmspc);
+  RENEW(imastmpc,ITG,*nmmpc);
   
   if(*iit==1 && *iinc==1){
-      
+  
+    /* calculate normal and tangential vectors on the slave surfaces */
+    
     FORTRAN(nortanslav,(tieset,ntie,ipkon,kon,lakon,set,co,vold,nset,
 			islavsurf,itiefac,islavnode,nslavnode,slavnor,slavtan,
 			mi));
     
-    // call checkspsmpc
+    /* remove the Lagrange Multiplier from nodes common to several
+       slave surfaces and from node which belong to a MPC */
     
     FORTRAN(checkspcmpc,(ntie,tieset,islavnode,imastnode,nslavnode,nmastnode,
 			 islavact,nodempc,nmpc,ipompc));
-        
-    for (i=0;i<*ntie;i++){  
-      if(tieset[i*(81*3)+80]=='C'){      
-	for(j=nslavnode[i];j<nslavnode[i+1];j++){     
-	  node=islavnode[j];
-	  int checkformidnode=0;
-	  for(jj=nslavmpc[2*(j)];jj<nslavmpc[2*(j)+1];jj++){
-	    if(islavmpc[2*jj+1]==-2){
-		  
-	      // MPC cannot be identified
-		  
-	      checkformidnode=1;
-	    }	      
-	  }
-	    
-	  if(checkformidnode==1){
-	
-	    //check for mid node
-	
-	    do{
-	    	      
-	      for(l=itiefac[2*i];l<=itiefac[2*i+1];l++){
-		ifaces = islavsurf[2*(l-1)+0];
-		nelems = (ITG)(ifaces/10);
-		jfaces = ifaces - nelems*10;
-		FORTRAN(getnumberofnodes,(&nelems,&jfaces,lakon,&nope,&nopes,
-					  &idummy)); 
-		for(jj=0;jj<nope;jj++){
-		  konl[jj]=kon[ipkon[nelems-1]+jj];
-		}
-		for(jj=0;jj<nopes;jj++){
-		  jj2=jj+1;
-		  ifac=FORTRAN(getlocno,(&jj2,&jfaces,&nope));
-		  nodes[jj]=konl[ifac-1]; 
-		}
-		ii=-1;
-		for(jj=0;jj<nopes;jj++){
-		  if(nodes[jj]==node){ii=jj;}
-		}
-		if(ii>-1){
-		  break;
-		}
-	      }
-
-	      break;
-	    }while(1);
-      
-	    if((ii>2 && nopes==6)||(ii>3 && nopes==8)){
-	  
-	      // mid node found with extra not supported mpc ->error
-	  
-	      printf(" premortar: Problem with slave mid node  \n\n");
-	      printf(" *ERROR: Slave mid node %"ITGFORMAT" has",node); 
-	      printf(" additional MPC which is not a directional blocking ");
-	      printf("MPC or a 1-to-1 cyclic symmetry MPC.  \n");
-	      printf("\t\t This is not supported yet!!!!!!!!!!!!!\n");
-	      fflush(stdout);
-	      FORTRAN(stop,());
-	    }
-	  }        
-	}
-      }
-    }
-      
-    if(*iit==1 || *ismallsliding==0){
-      DMEMSET(slavnor,0,3**nslavs,0.);
-      DMEMSET(slavtan,0,6**nslavs,0.);
-    } 
   }
     
   /* fix for quadratic FE */
