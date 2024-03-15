@@ -1646,6 +1646,20 @@ void filtermain_forward(double *co,double *gradproj,ITG *nk,
                 ITG *nodedesi,ITG *ndesi,char *objectset,double *xdesi,
 		double *distmin,double *feasdir);
 
+void FORTRAN(filtermatrix,(double *au,ITG *jq,ITG *irow,ITG *icol,
+		ITG *ndesi,ITG *nodedesi,double *filterrad,double *co,
+		ITG *nk,double *denominator,char *objectset,double *filterval,
+		double *xdesi,double *distmin));
+
+void FORTRAN(filter_backward,(double *au,ITG *jq,ITG *irow,ITG *icol,
+		ITG *ndesi,ITG *nodedesi,double *dgdxglob,ITG *nobject,ITG *nk,
+		ITG *nobjectstart,char *objectset));
+
+void FORTRAN(filter_forward,(double *gradproj,ITG *nk,ITG *nodedesi,ITG *ndesi,
+		char *objectset,double *xo,double *yo,double *zo,double *x,double *y,double *z,
+		ITG *nx,ITG *ny,ITG *nz,ITG *neighbor,double *r,ITG *ndesia,ITG *ndesib,double *xdesi,
+		double *distmin,double *feasdir,double *filterval));
+
 void *filtermt(ITG *i);
 
 void *filter_forwardmt(ITG *i);
@@ -3431,6 +3445,18 @@ void packagingmain(double *co,ITG *nobject,ITG *nk,ITG *nodedesi,ITG *ndesi,
 		   double *dgdxglob,double *extnor,double *g0);
 
 void *packagingmt(ITG *i);
+
+void FORTRAN(prepackaging,(double *co,double *xo,double *yo,double *zo,
+			   double *x,double *y,double *z,ITG *nx,ITG *ny,
+			   ITG *nz,ITG *ifree,ITG *nodedesiinv,ITG *ndesiboun, ITG *nodedesiboun,
+			   char *set,ITG *nset,char *objectset,ITG *iobject,ITG *istartset,
+			   ITG *iendset,ITG *ualset,ITG *nodenum));
+
+void FORTRAN(packaging,(ITG *nodedesiboun,ITG *ndesiboun,char *objectset,
+			double *xo,double *yo,double *zo,double *x,double *y,
+			double *z,ITG *nx,ITG *ny,ITG* nz,double *co,ITG *ifree,
+			ITG *ndesia,ITG *ndesib,ITG *iobject,ITG *ndesi, double *dgdxglob,
+			ITG *nk,double *extnor,double *g0,ITG *nodenum));
   
 void FORTRAN(paracfd,(double *b,ITG *irowcpu,ITG *jqcpu,ITG *num_cpus,
 		      ITG *nk,ITG *idofa,ITG *idofb,ITG *nka,ITG *nkb,
