@@ -463,7 +463,7 @@ void radflowload(ITG *itg,ITG *ieg,ITG *ntg,ITG *ntr,double *adrad,
       }
     }
       
-    // next line is to be inserted in a similar way for all other paralell parts
+    // next line is to be inserted in a similar way for all other parallel parts
       
     if(*ntr<num_cpus) num_cpus=*ntr;
       
