@@ -39,9 +39,9 @@ void trafontspcmpc( double *n,double *t,double *n2,double *that,
 		    ITG *islavnodeentry,ITG *nboun,ITG *ndirboun,ITG *nodeboun,
 		    double *xboun,ITG *ipompc,ITG *nodempc,
 		    double *coefmpc,ITG *ikboun,ITG *ilboun,ITG *ikmpc,
-		    ITG *ilmpc,ITG *nslavspc,ITG *islavspc,ITG *nsspc,
-		    ITG *nslavmpc,ITG *islavmpc,ITG *nsmpc,
-		    ITG *imastspc,ITG *imastmpc,ITG *node){
+		    ITG *ilmpc,ITG *nslavspc,ITG *islavspc,
+		    ITG *nslavmpc,ITG *islavmpc,
+		    ITG *node){
   
   ITG jj,kk,ist,dir,node1,index,dirind,dirdep,nt1;
   

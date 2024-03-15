@@ -17,10 +17,14 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
 !
-!   function calculation islavelinv
+!     calculates islavelinv(i) for all elements i
 !
-!  [out] islavelinv       (i)==0 if there is no slave node in the element, >0 otherwise
-!  [in] jqt	        pointer into field irowt
+!     islavelinv(i)=1 if: - i is a quadratic element
+!                         - element i contains at least one slave node
+!                     else the value is 0.
+!
+!     the regular shape functions for elements i for which islavelinv(i)=1
+!     have to be replaced by the tilde shape functions.
 !
       subroutine genislavelinv(islavelinv,jqt,
      &     lakon,ipkon,kon,ne,nasym)
@@ -35,7 +39,6 @@
      &     ipkon(*),konl(26),nope,node,indexe,nasym
 !     
       do i=1,ne
-c     if(islavelinv(i).lt.1)cycle
 !     
          indexe=ipkon(i)
          if(lakon(i)(1:5).eq.'C3D8I') then
@@ -79,8 +82,8 @@ c     Bernhardi end
          do j=1,nope
             node=konl(j)
 cccccc error?????? (Guido 22 Nov 2019)
-c            if(jqt(node+1)-jqt(node).gt.1)then
-            if(jqt(node+1)-jqt(node).gt.0)then
+            if(jqt(node+1)-jqt(node).gt.1)then
+c            if(jqt(node+1)-jqt(node).gt.0)then
                islavelinv(i)=1
             endif
             

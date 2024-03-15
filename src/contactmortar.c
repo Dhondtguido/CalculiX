@@ -123,11 +123,8 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 		   ITG *ndirboun,ITG *nodeboun,double *xboun,ITG *nmpc,
 		   ITG *ipompc,ITG *nodempc,double *coefmpc,ITG *ikboun,
 		   ITG *ilboun,ITG *ikmpc,ITG *ilmpc,
-		   ITG *nslavspc,ITG *islavspc,ITG *nsspc,ITG *nslavmpc,
-		   ITG *islavmpc,
-		   ITG *nsmpc,ITG *nmastspc,
-		   ITG *imastspc,ITG *nmspc,ITG *nmastmpc,ITG *imastmpc,
-		   ITG *nmmpc,
+		   ITG *nslavspc,ITG *islavspc,ITG *nslavmpc,
+		   ITG *islavmpc,ITG *nmastmpc,ITG *imastmpc,
 		   double *pslavdual,ITG *islavactdof,
 		   ITG *islavactdoftie,double *plicon,ITG *nplicon,ITG *npmat_,
 		   ITG *nelcon,double *dtime,ITG *islavnodeinv,double **Bdp,
@@ -146,7 +143,7 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
     *irowdtil=NULL,*irowbtil=NULL,nacti,ninacti,nnogap,nstick,nnolm,nnoslav,nzsbdtil,
     nzsbdtil2;
     
-  double *xo=NULL,*yo=NULL,*zo=NULL,*x=NULL,*y=NULL,*z=NULL,*aubd=NULL,alpha,
+  double *xo=NULL,*yo=NULL,*zo=NULL,*x=NULL,*y=NULL,*z=NULL,*aubd=NULL,
     *cstresstil=NULL,scal,*audd=NULL,*auddtil=NULL,*auddtil2=NULL,
     *auddinv=NULL,*auc=NULL,*pmastsurf=NULL,*gapmints=NULL,*au=NULL,
     *pslavsurf=NULL,*aubdtil=NULL,*aubdtil2=NULL,*Bd=NULL,*Bdhelp=NULL,
@@ -379,7 +376,7 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 	   imastnode,islavnode,islavsurf,imastsurf,pmastsurf,itiefac,tieset,
 	   neq,nactdof,co,vold,iponoels,inoels,mi,gapmints,gap,pslavsurf,
 	   pslavdual,&nintpoint,slavnor,nk,nmpc,ipompc,nodempc,coefmpc,ikmpc,
-	   ilmpc,nslavmpc,islavmpc,nsmpc,nmastmpc,imastmpc,nmmpc,
+	   ilmpc,nslavmpc,islavmpc,nmastmpc,imastmpc,
 	   iit,iinc,islavactdof,islavact,islavnodeinv,&Bd,&irowb,jqb,
 	   &Bdhelp,&irowbhelp,jqbhelp,&Dd,&irowd,jqd,&Ddtil,&irowdtil,jqdtil,
 	   &Bdtil,&irowbtil,jqbtil,ithermal);
@@ -552,8 +549,6 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
   nzsbd=jqbd[neq[1]]-1;		
   *nzsc=nzs[1];	
   nzs2=nzs[1];
-  
-  alpha=1-2*sqrt(*bet);
 
   /* modifying the stiffnes matrix K with the coupling matrices;
      embedding of the contact conditions
@@ -576,8 +571,8 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 	      islavact,islavactdof,gap,slavnor,slavtan,vold,vini,cstress,
 	      cstressini,bp_old,nactdof,ntie,mi,nk,nboun,ndirboun,nodeboun,
 	      xboun,nmpc,ipompc,nodempc,coefmpc,ikboun,ilboun,ikmpc,ilmpc,
-	      nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,nmastspc,
-	      imastspc,nmspc,nmastmpc,imastmpc,nmmpc,tieset,islavactdoftie,
+	      nslavspc,islavspc,nslavmpc,islavmpc,
+	      tieset,islavactdoftie,
 	      nelcon,elcon,tietol,ncmat_,ntmat_,plicon,nplicon,npmat_,dtime,
 	      irowt,jqt,aut,irowtinv,jqtinv,autinv,
 	      islavnodeinv,&k,nmethod,bet,ithermal,

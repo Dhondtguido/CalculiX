@@ -25,52 +25,20 @@
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
-/**   function initializing mortar contact at the start of nonlingeo.c
- *   getting contact parameters, allocating needed fields, get results from last step,
- *   determine used mortar method, (transform and cataloque SPCs/MPCs)
- *   and generate islavelinv and  islavnodeinv
- *
- *   Author: Saskia Sitzmann
- *
- *  [in,out] enerp		?
- *  [out] islavactdoftiep   (i)=tie number for active dof i
- *  [out] bpp		friction bounds 
- *  [out] islavactp	(i) indicates, if slave node i is active (=-3 no-slave-node, =-2 no-LM-node, =-1 no-gap-node, =0 inactive node, =1 sticky node, =2 slipping/active node)  
- *  [out] gapp		(i) gap for node i on slave surface
- *  [out] slavnorp		slave normal
- *  [out] slavtanp		slave tangent 
- *  [out] cdispp		vector saving contact variables for frd-output 
- *  [out] cstressp	current Lagrange multiplier 
- *  [out] cfsp 		contact force 
- *  [out] bpinip		friction bounds at start of the increment
- *  [out] islavactinip	islavact at the start of the increment
- *  [out] cstressinip	Lagrange multiplier at start of the increment
- *  [out] islavnodeinvp     (i) slave node index for node i
- *  [out] islavelinvp       (i)==0 if there is no slave node in the element, >0 otherwise
- *  [out] pslavdualp	(:,i)coefficients \f$ \alpha_{ij}\f$, \f$ 1,j=1,..8\f$ for dual shape functions for face i
- *  [out] autp		transformation matrix \f$ T[p,q]\f$ for slave nodes \f$ p,q \f$
- *  [out] irowtp		field containing row numbers of aut
- *  [out] jqtp	        pointer into field irowt
- *  [out] autinvp	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$ 
- *  [out] irowtinvp	field containing row numbers of autinv
- *  [out] jqtinvp	pointer into field irowtinv
- *  [out] Bdp		coupling matrix \f$ B_d[p,q]=\int \psi_p \phi_q dS \f$, \f$ p \in S, q \in M \f$ 
- *  [out] irowbp		field containing row numbers of Bd
- *  [out] jqbp		pointer into field irowb
- *  [out] Bdhelpp		coupling matrix \f$ Bhelp_d[p,q]=\tilde{D}^{-1}\tilde{B}\f$, \f$ p \in S, q \in M \f$ 
- *  [out] irowbhelpp	field containing row numbers of Bdhelp
- *  [out] jqbhelpp		pointer into field irowbhelp
- *  [out] Ddp		coupling matrix \f$ D_d[p,q]=\int \psi_p \phi_q dS \f$, \f$ p,q \in S \f$ 
- *  [out] irowdp		field containing row numbers of Dd
- *  [out] jqdp		pointer into field irowd
- *  [out] Ddtilp		coupling matrix \f$ \tilde{D}_d[p,q]=\int \psi_p \tilde{\phi}_q dS \f$, \f$ p,q \in S \f$ 
- *  [out] irowdtilp	field containing row numbers of Ddtil
- *  [out] jqdtilp		pointer into field irowdtil 
- *  [out] Bdtilp		coupling matrix \f$ \tilde{B}_d[p,q]=\int \psi_p \tilde{\phi}_q dS \f$, \f$ p \in S, q \in M \f$ 
- *  [out] irowbtilp	field containing row numbers of Bdtil
- *  [out] jqbtilp		pointer into field irowbtil
- *  [in] itiefac 		pointer into field islavsurf: (1,i) beginning slave_i (2,i) end of slave_i
-**/
+/*   - allocating fields
+     - determining the transformation matrix for the shape functions
+       for quadratic elements
+     - determining the quadratic elements which contain slave nodes
+     - create fields islavspc, islavmpc, imastspc... connecting slave
+       and/or master nodes with the spc/mpc's applied in them
+     - determine a local system (normals, tangential vectors) in the
+       slave nodes (nortanslav)
+     - remove Lagrange multipliers in nodes common to two slave
+       surfaces and in slave nodes with MPC's
+ 
+     Author: Saskia Sitzmann
+*/
+
 void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
 	       ITG **ipkonp,char **lakonp,ITG **konp,ITG *nkon,
 	       ITG *maxprevcontel,double **xstatep,ITG *nstate_,
@@ -78,8 +46,7 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
 	       double **gapp,double **slavnorp,double **slavtanp,
 	       double **cdispp,double **cstressp,double **cfsp,
 	       double **bpinip,ITG **islavactinip,double **cstressinip,
-	       ITG *ntie,char *tieset,
-	       ITG *nslavnode,ITG *islavnode,
+	       ITG *ntie,char *tieset,ITG *nslavnode,ITG *islavnode,
 	       ITG **islavnodeinvp,ITG **islavelinvp,double **pslavdualp,
 	       double **autp,ITG **irowtp,ITG **jqtp,	
 	       double **autinvp,ITG **irowtinvp,ITG **jqtinvp,
@@ -88,23 +55,21 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
 	       double **Ddp,ITG **irowdp,ITG **jqdp,
 	       double **Ddtilp,ITG **irowdtilp,ITG **jqdtilp,
 	       double **Bdtilp,ITG **irowbtilp,ITG **jqbtilp,
-	       ITG *itiefac,ITG *islavsurf,
-	       ITG *nboun,ITG *nmpc,
+	       ITG *itiefac,ITG *islavsurf,ITG *nboun,ITG *nmpc,
 	       ITG **nslavspcp,ITG **islavspcp,ITG **nslavmpcp,ITG **islavmpcp,
 	       ITG **nmastspcp,ITG **imastspcp,ITG **nmastmpcp,ITG **imastmpcp,
 	       ITG *imastnode,ITG *nmastnode,ITG *nasym,ITG *mortar,
-	       ITG **ielmatp,ITG **ielorienp,ITG *norien){
+	       ITG **ielmatp,ITG **ielorienp,ITG *norien,ITG *ipompc,
+	       ITG *nodempc,ITG *ikboun,ITG *ilboun,ITG *ikmpc,ITG *ilmpc,
+	       char *jobnamef,char *set,double *co,double *vold,ITG *nset){
 
   char *lakon=NULL;
     
-  ITG k,i,j,node,mt=mi[1]+1,*ipkon=NULL,*kon=NULL,
-    *islavactdoftie=NULL,*islavact=NULL,
-    *islavactini=NULL,*islavnodeinv=NULL,*islavelinv=NULL,*irowt=NULL,
-    *jqt=NULL,
-    *irowtinv=NULL,*jqtinv=NULL,*irowbhelp=NULL,*jqbhelp=NULL,
-    *irowb=NULL,*jqb=NULL,
-    *irowd=NULL,*jqd=NULL,*irowdtil=NULL,*jqdtil=NULL,
-    *irowbtil=NULL,*jqbtil=NULL,
+  ITG k,i,j,node,mt=mi[1]+1,*ipkon=NULL,*kon=NULL,*islavactdoftie=NULL,
+    *islavact=NULL,*islavactini=NULL,*islavnodeinv=NULL,*islavelinv=NULL,
+    *irowt=NULL,*jqt=NULL,nmspc,nmmpc,nsspc,nsmpc,*irowtinv=NULL,*jqtinv=NULL,
+    *irowbhelp=NULL,*jqbhelp=NULL,*irowb=NULL,*jqb=NULL,*irowd=NULL,*jqd=NULL,
+    *irowdtil=NULL,*jqdtil=NULL,*irowbtil=NULL,*jqbtil=NULL,
     *nslavspc=NULL,*islavspc=NULL,*nslavmpc=NULL,*islavmpc=NULL,
     *nmastspc=NULL,*imastspc=NULL,*nmastmpc=NULL,*imastmpc=NULL,
     *ielmat=NULL,*ielorien=NULL;
@@ -167,8 +132,6 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
   NNEW(bp,double,*nslavs);
   NNEW(islavact,ITG,*nslavs);
   NNEW(gap,double,*nslavs);
-  NNEW(slavnor,double,3**nslavs);
-  NNEW(slavtan,double,6**nslavs);
   NNEW(cdisp,double,6**nslavs);
   
   /* allocation of temperary fields: stores the structure
@@ -248,6 +211,52 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
   NNEW(autinv,double,3**nslavs);
   NNEW(irowtinv,ITG,3**nslavs);
   NNEW(jqtinv,ITG,*nk+1);
+  
+  buildtquad(ntie,ipkon,kon,nk,lakon,nslavnode,itiefac,tieset,
+	     islavnode,islavsurf,&irowt,jqt,&aut,
+	     &irowtinv,jqtinv,&autinv);
+  
+  FORTRAN(genislavelinv,(islavelinv,jqt,lakon,ipkon,kon,ne,nasym));
+  
+  /* checking for SPC's and MPC's on slave and master surface */
+
+  NNEW(nslavspc,ITG,2**nslavs);
+  NNEW(islavspc,ITG,*nboun);
+  NNEW(nslavmpc,ITG,2**nslavs);
+  NNEW(islavmpc,ITG,*nmpc);
+  NNEW(nmastspc,ITG,2*nmastnode[*ntie]);
+  NNEW(imastspc,ITG,*nboun);
+  NNEW(nmastmpc,ITG,2*nmastnode[*ntie]);
+  NNEW(imastmpc,ITG,*nmpc);
+  
+  FORTRAN(catsmpcslavno,(ntie,islavnode,imastnode,nslavnode,
+			 nmastnode,nboun,nmpc,
+			 ipompc,nodempc,ikboun,ilboun,ikmpc,ilmpc,
+			 nslavspc,islavspc,
+			 &nsspc,nslavmpc,islavmpc,&nsmpc,
+			 nmastspc,imastspc,&nmspc,nmastmpc,
+			 imastmpc,&nmmpc,jobnamef));
+  
+  RENEW(islavspc,ITG,nsspc);
+  RENEW(islavmpc,ITG,nsmpc);
+  RENEW(imastspc,ITG,nmspc);
+  RENEW(imastmpc,ITG,nmmpc);
+  
+  /* calculate normal and tangential vectors on the slave surfaces */
+  
+  NNEW(slavnor,double,3**nslavs);
+  NNEW(slavtan,double,6**nslavs);
+  
+  FORTRAN(nortanslav,(tieset,ntie,ipkon,kon,lakon,set,co,vold,nset,
+		      islavsurf,itiefac,islavnode,nslavnode,slavnor,slavtan,
+		      mi));
+    
+    /* remove the Lagrange Multiplier from nodes common to several
+       slave surfaces and from node which belong to a MPC */
+    
+  FORTRAN(checkspcmpc,(ntie,tieset,islavnode,imastnode,nslavnode,nmastnode,
+		       islavact,nodempc,nmpc,ipompc));
+  
   NNEW(Bd,double,1);
   NNEW(irowb,ITG,1);
   NNEW(jqb,ITG,*nk+1);
@@ -263,23 +272,6 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
   NNEW(Bdtil,double,1);
   NNEW(irowbtil,ITG,1);
   NNEW(jqbtil,ITG,*nk+1);
-  
-  buildtquad(ntie,ipkon,kon,nk,lakon,nslavnode,itiefac,tieset,
-	     islavnode,islavsurf,&irowt,jqt,&aut,
-	     &irowtinv,jqtinv,&autinv);
-  
-  /* checking for SPC's and MPC's on slave and master surface */
-
-  NNEW(nslavspc,ITG,2**nslavs);
-  NNEW(islavspc,ITG,*nboun);
-  NNEW(nslavmpc,ITG,2**nslavs);
-  NNEW(islavmpc,ITG,*nmpc);
-  NNEW(nmastspc,ITG,2*nmastnode[*ntie]);
-  NNEW(imastspc,ITG,*nboun);
-  NNEW(nmastmpc,ITG,2*nmastnode[*ntie]);
-  NNEW(imastmpc,ITG,*nmpc);
-  
-  FORTRAN(genislavelinv,(islavelinv,jqt,lakon,ipkon,kon,ne,nasym));
   
   *enerp=ener;*ipkonp=ipkon;*lakonp=lakon;*konp=kon;*xstatep=xstate;
   *islavactdoftiep=islavactdoftie;*bpp=bp;*islavactp=islavact;*gapp=gap;

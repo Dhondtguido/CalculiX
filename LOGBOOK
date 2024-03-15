@@ -5358,3 +5358,9 @@ Dec 2002        - started to work on single crystal plasticity
                 - changed autloc into aut etc...
 
  5 Mar 2024     - removed LINMORTAR and Petrov-Galerkin Mortar
+
+ 12 Mar 2024    - replaced islavspc(2,*) by islavspc(*) and similar
+                  fields
+
+ 15 Mar 2024    - made some small changes in dynamics.f
+                - worked on inimortar.c and premortar.c

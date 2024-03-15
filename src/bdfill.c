@@ -58,16 +58,6 @@
  *  [in] irowtinv	field containing row numbers of autinv
  *  [in] jqtinv	pointer into field irowtinv
  *  [in] autinv	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$  
- *  [in] nslavnode	(i)pointer into field isalvnode for contact tie i 
- *  [in] nmastnode	(i)pointer into field imastnode for contact tie i
- *  [in] imastnode	field storing the nodes of the master surfaces
- *  [in] islavnode	field storing the nodes of the slave surface
- *  [in] islavsurf	islavsurf(1,i) slaveface i islavsurf(2,i) # integration points generated before looking at face i 
- *  [in] imastsurf	index of masterface corresponding to integration point i
- *  [in] pmastsurf 	field storing position and etal for integration points on master side
- *  [in] itiefac		pointer into field islavsurf: (1,i) beginning slave_i (2,i) end of slave_i
- *  [in] iponoels		(i) pointer into field inoels...
- *  [in] inoels		...which stores 1D&2D elements belonging to node: (1,i)el. number (2,i) # nodes (3,i) pointer to next entry 
  *  [in] gapmints		(i) gap between slave surface and master surface in integration point i
  *  [out] gap		(i) \f$ g_i= <g, \Psi_i> \f$ for node i on slave surface
  *  [in] pslavsurf	field storing  position xil, etal and weight for integration point on slave side
@@ -113,7 +103,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	    ITG *nintpoint,double *slavnor,ITG *nk,
 	    ITG *nmpc,ITG *ipompc,ITG *nodempc,double *coefmpc,
 	    ITG *ikmpc,ITG *ilmpc,ITG *nslavmpc,ITG *islavmpc,
-	    ITG *nsmpc,ITG *nmastmpc,ITG *imastmpc,ITG *nmmpc,
+	    ITG *nmastmpc,ITG *imastmpc,
 	    ITG *iit,ITG *iinc,ITG *islavactdof,ITG *islavact,ITG *islavnodeinv,
 	    double **Bdp,ITG **irowbp,ITG *jqb,
 	    double **Bdhelpp,ITG **irowbhelpp,ITG *jqbhelp,

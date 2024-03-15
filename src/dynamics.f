@@ -215,13 +215,14 @@ c          tmin=1.d-5
       endif
 !
       if(idrct.ne.1) then
-        if(tinc.gt.0.d0) then
+        if((tinc.gt.0.d0).and.(iexpl.eq.2)) then
           write(*,*) '*WARNING reading *DYNAMIC: the initial time'
           write(*,*) '         increment defined by the user will not'
           write(*,*) '         be used since the time increment is'
           write(*,*) '         determined automatically by the dynamic'
           write(*,*) '         procedure based on stability'
           write(*,*) '         considerations'
+          write(*,*)
         endif
       else
         if(tinc.le.0.d0) then
@@ -285,6 +286,7 @@ c          tmin=1.d-5
         write(*,*) '*INFO reading *DYNAMIC: for implicit calculations'
         write(*,*) '      the calculation of the internal energy'
         write(*,*) '      is activated.'
+        write(*,*)
       endif
 !     
       call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,

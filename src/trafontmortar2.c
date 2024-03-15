@@ -129,13 +129,12 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 		    double *vold,double *vini,double *cstress,
 		    double *cstressini,
 		    double *bp_old,ITG *nactdof,ITG *islavnode,
-		    ITG *imastnode,ITG *ntie,ITG *mi,ITG *nk,
+		    ITG *ntie,ITG *mi,ITG *nk,
 		    ITG *nboun,ITG *ndirboun,ITG *nodeboun,double *xboun,
 		    ITG *ipompc,ITG *nodempc,double *coefmpc,
 		    ITG *ikboun,ITG *ilboun,ITG *ikmpc,ITG *ilmpc,
-		    ITG *nslavspc,ITG *islavspc,ITG *nsspc,ITG *nslavmpc,
-		    ITG *islavmpc,ITG *nsmpc,ITG *imastspc,ITG *imastmpc,
-		    char *tieset,
+		    ITG *nslavspc,ITG *islavspc,ITG *nslavmpc,
+		    ITG *islavmpc,char *tieset,
 		    ITG *islavactdoftie,ITG *nelcon,double  *elcon,
 		    double *tietol,ITG *ncmat_,ITG *ntmat_,
 		    double *plicon,ITG *nplicon,ITG *npmat_,double *dtime,
@@ -260,8 +259,8 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 
       trafontspcmpc(n,t,n2,that,&islavnodeentry,nboun,ndirboun,nodeboun,xboun,
 		    ipompc,nodempc,coefmpc,ikboun,ilboun,ikmpc,ilmpc,
-		    nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,
-		    imastspc,imastmpc,&node);
+		    nslavspc,islavspc,nslavmpc,islavmpc,
+		    &node);
       
       /* calculate fields needed for Coulomb friction */
       
@@ -444,8 +443,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 		    nboun,ndirboun,nodeboun,xboun,
 		    ipompc,nodempc,coefmpc,
 		    ikboun,ilboun,ikmpc,ilmpc,
-		    nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,
-		    imastspc,imastmpc,
+		    nslavspc,islavspc,nslavmpc,islavmpc,
 		    &node);
       
       /* calculate fields needed for Coulomb friction **/
@@ -626,8 +624,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 		    nboun,ndirboun,nodeboun,xboun,
 		    ipompc,nodempc,coefmpc,
 		    ikboun,ilboun,ikmpc,ilmpc,
-		    nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,
-		    imastspc,imastmpc,
+		    nslavspc,islavspc,nslavmpc,islavmpc,
 		    &node);
       
       /* calculate fields needed for Coulomb friction **/
@@ -846,7 +843,6 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
   nzs_aitil1=jq_dai[*row_li];
   NNEW(irow_aitil1,ITG,nzs_aitil1);
   NNEW(jq_aitil1,ITG,*row_li+1);
-  //mastamtil1=NNEW(int,nzs_amtil);
   NNEW(au_aitil1,double,nzs_aitil1);
   jq_aitil1[0]=1;
   ifree_aitil1=1;
@@ -872,8 +868,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 
       trafontspcmpc(n,t,n2,that,&islavnodeentry,nboun,ndirboun,nodeboun,xboun,
 		    ipompc,nodempc,coefmpc,ikboun,ilboun,ikmpc,ilmpc,
-		    nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,
-		    imastspc,imastmpc,
+		    nslavspc,islavspc,nslavmpc,islavmpc,
 		    &node);
       
       /* calculate fields needed for Coulomb friction **/
@@ -1055,8 +1050,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
       
       trafontspcmpc(n,t,n2,that,&islavnodeentry,nboun,ndirboun,nodeboun,xboun,
 		    ipompc,nodempc,coefmpc,ikboun,ilboun,ikmpc,ilmpc,
-		    nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,
-		    imastspc,imastmpc,
+		    nslavspc,islavspc,nslavmpc,islavmpc,
 		    &node);
       
       
@@ -1304,8 +1298,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
       }
       trafontspcmpc(n,t,n2,that,&islavnodeentry,nboun,ndirboun,nodeboun,xboun,
 		    ipompc,nodempc,coefmpc,ikboun,ilboun,ikmpc,ilmpc,
-		    nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,
-		    imastspc,imastmpc,
+		    nslavspc,islavspc,nslavmpc,islavmpc,
 		    &node);
       
       /* calculate fields needed for Coulomb friction **/
@@ -1485,8 +1478,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 		    nboun,ndirboun,nodeboun,xboun,
 		    ipompc,nodempc,coefmpc,
 		    ikboun,ilboun,ikmpc,ilmpc,
-		    nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,
-		    imastspc,imastmpc,
+		    nslavspc,islavspc,nslavmpc,islavmpc,
 		    &node);
       
       /* calculate fields needed for Coulomb friction */
@@ -1725,8 +1717,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
      
       trafontspcmpc(n,t,n2,that,&islavnodeentry,nboun,ndirboun,nodeboun,xboun,
 		    ipompc,nodempc,coefmpc,ikboun,ilboun,ikmpc,ilmpc,
-		    nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,
-		    imastspc,imastmpc,
+		    nslavspc,islavspc,nslavmpc,islavmpc,
 		    &node);
       
       /* calculate needed fields for coulomb friction **/

@@ -227,8 +227,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   
   /* declarations for mortar contact */
 
-  ITG *nslavspc=NULL,*islavspc=NULL,nsspc,*nslavmpc=NULL,*islavmpc=NULL,nsmpc,
-    *nmastspc=NULL,*imastspc=NULL,nmspc,*nmastmpc=NULL,*imastmpc=NULL,nmmpc,
+  ITG *nslavspc=NULL,*islavspc=NULL,*nslavmpc=NULL,*islavmpc=NULL,
+    *nmastspc=NULL,*imastspc=NULL,*nmastmpc=NULL,*imastmpc=NULL,
     *islavactdof=NULL,*islavactini=NULL,iflagact_old,*islavactdoftie=NULL,
     *irowt=NULL,*jqt=NULL,*irowtinv=NULL,*jqtinv=NULL,
     *irowb=NULL,*jqb=NULL,*irowd=NULL,*jqd=NULL,*irowdtil=NULL,*jqdtil=NULL,
@@ -762,8 +762,9 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		&irowbtil,&jqbtil,itiefac,islavsurf,nboun,
 		nmpc,&nslavspc,&islavspc,&nslavmpc,&islavmpc,
 		&nmastspc,&imastspc,&nmastmpc,&imastmpc,
-		imastnode,nmastnode,&nasym,
-		mortar,&ielmat,&ielorien,norien);
+		imastnode,nmastnode,&nasym,mortar,&ielmat,&ielorien,norien,
+		ipompc,nodempc,ikboun,ilboun,ikmpc,ilmpc,jobnamef,set,
+		co,vold,nset);
     }
     NNEW(xmastnor,double,3*nmastnode[*ntie]);
   }
@@ -2673,9 +2674,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		  &auddtil2,&irowddtil2,&jqddtil2,&auddinv,&irowddinv,
 		  &jqddinv,&jqtemp,&irowtemp,&icoltemp,nzstemp,&iit,
 		  slavnor,slavtan,icol,irow,jq,ikboun,ilboun,ikmpc,ilmpc,
-		  &nslavspc,&islavspc,&nslavmpc,&islavmpc,&nmastspc,
-		  &imastspc,&nmastmpc,&imastmpc,&nsspc,&nsmpc,imastnode,
-		  nmastnode,&nmspc,&nmmpc,co,nk,kon,ipkon,lakon,ne,stn,
+		  imastnode,nmastnode,co,nk,kon,ipkon,lakon,ne,stn,
 		  elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 		  ielorien,norien,orab,ntmat_,t0,t1,ithermal,prestr,
 		  iprestr,filab,eme,emn,een,iperturb,f,nactdof,&iout,qa,
@@ -2702,7 +2701,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		  adb,aub,
 		  itietri,cg,straight,koncont,energyini,energy,&kscale,
 		  iponoel,inoel,nener,orname,network,typeboun,&num_cpus,
-		  t0g,t1g,smscale,&mscalmethod,jobnamef);
+		  t0g,t1g,smscale,&mscalmethod);
 	
 	/* calculating coupling matrices and embedding weak 
 	   contact conditions */ 
@@ -2721,10 +2720,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		      autinv,mi,ipe,ime,tietol,&iflagact,cstress,cstressini,
 		      bp,nk,nboun,ndirboun,nodeboun,xbounact,nmpc,
 		      ipompc,nodempc,coefmpc,ikboun,ilboun,ikmpc,ilmpc,
-		      nslavspc,islavspc,
-		      &nsspc,nslavmpc,islavmpc,&nsmpc,
-		      nmastspc,imastspc,
-		      &nmspc,nmastmpc,imastmpc,&nmmpc,
+		      nslavspc,islavspc,nslavmpc,islavmpc,
+		      nmastmpc,imastmpc,
 		      pslavdual,islavactdof,islavactdoftie,
 		      plicon,nplicon,npmat_,nelcon,&dtime,islavnodeinv,&Bd,
 		      &irowb,jqb,&Bdhelp,&irowbhelp,jqbhelp,&Dd,&irowd,jqd,

@@ -122,12 +122,7 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
 	       ITG *iit,double *slavnor,double *slavtan,
 	       ITG *icol,ITG *irow,ITG *jq,
 	       ITG *ikboun,ITG *ilboun,ITG *ikmpc,ITG *ilmpc,
-	       ITG **nslavspcp,ITG **islavspcp,ITG **nslavmpcp,
-	       ITG **islavmpcp,
-	       ITG **nmastspcp,ITG **imastspcp,ITG **nmastmpcp,
-	       ITG **imastmpcp,
-	       ITG *nsspc,ITG *nsmpc,
-	       ITG *imastnode,ITG *nmastnode,ITG *nmspc,ITG *nmmpc,
+	       ITG *imastnode,ITG *nmastnode,
 	       double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	       ITG *ne,double *stn,
 	       double *elcon,ITG *nelcon,double *rhcon,ITG *nrhcon,
@@ -187,17 +182,11 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
 	       double *energy,ITG *kscale,ITG *iponoel,ITG *inoel,ITG *nener,
 	       char *orname,ITG *network,
 	       char *typeboun,ITG *num_cpus,double *t0g,double *t1g,
-	       double *smscale,ITG *mscalmethod,char *jobnamef){
+	       double *smscale,ITG *mscalmethod){
   
-  ITG im,i,ii,j,jj,k,l,mt=mi[1]+1,node,jfaces,nelems,ifaces,nope,nopes,idummy,
-    nodes[8],konl[20],jj2,ifac,
-    *nslavspc=NULL,*islavspc=NULL,*nslavmpc=NULL,*islavmpc=NULL,
-    *nmastspc=NULL,*imastspc=NULL,*nmastmpc=NULL,
-    *imastmpc=NULL,
-    *irowc2=NULL,*icolc2=NULL,*jqc2=NULL,*irowbd=NULL,*jqbd=NULL,
-    *irowbdtil=NULL,*jqbdtil=NULL,
-    *irowbdtil2=NULL,*jqbdtil2=NULL,*irowdd=NULL,*jqdd=NULL,*irowddtil=NULL,
-    *jqddtil=NULL,
+  ITG im,i,k,mt=mi[1]+1,*irowc2=NULL,*icolc2=NULL,*jqc2=NULL,*irowbd=NULL,
+    *jqbd=NULL,*irowbdtil=NULL,*jqbdtil=NULL,*irowbdtil2=NULL,*jqbdtil2=NULL,
+    *irowdd=NULL,*jqdd=NULL,*irowddtil=NULL,*jqddtil=NULL,
     *irowddinv=NULL,*jqddinv=NULL,*irowddtil2=NULL,*jqddtil2=NULL,
     *irowtemp=NULL,*icoltemp=NULL,*jqtemp=NULL,*inum=NULL,*icoltil=NULL,
     *irowtil=NULL,*jqtil=NULL,mortartrafoflag=1;
@@ -213,10 +202,6 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
     
   alpha=1-2*sqrt(*bet);
   
-  nslavspc=*nslavspcp;islavspc=*islavspcp;nslavmpc=*nslavmpcp;
-  islavmpc=*islavmpcp;
-  nmastspc=*nmastspcp;imastspc=*imastspcp;nmastmpc=*nmastmpcp;
-  imastmpc=*imastmpcp;
   auc2=*auc2p;adc2=*adc2p;irowc2=*irowc2p;icolc2=*icolc2p;jqc2=*jqc2p;
   aubd=*aubdp;irowbd=*irowbdp;jqbd=*jqbdp;
   aubdtil=*aubdtilp;irowbdtil=*irowbdtilp;jqbdtil=*jqbdtilp;
@@ -308,40 +293,20 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
      combined fix-point Newton approach */
   
   if(*iit>1 && *ismallsliding==1){*iflagact=1;}
-
-  RENEW(islavspc,ITG,*nboun);
-  RENEW(islavmpc,ITG,*nmpc);
-  RENEW(imastspc,ITG,*nboun);
-  RENEW(imastmpc,ITG,*nmpc);
-  
-  /* cataloque SPCs/MPCs */
-  
-  FORTRAN(catsmpcslavno,(ntie,islavnode,imastnode,nslavnode,
-			 nmastnode,nboun,nmpc,
-			 ipompc,nodempc,ikboun,ilboun,ikmpc,ilmpc,
-			 nslavspc,islavspc,
-			 nsspc,nslavmpc,islavmpc,nsmpc,
-			 nmastspc,imastspc,nmspc,nmastmpc,
-			 imastmpc,nmmpc,jobnamef));
-  
-  RENEW(islavspc,ITG,*nsspc);
-  RENEW(islavmpc,ITG,*nsmpc);
-  RENEW(imastspc,ITG,*nmspc);
-  RENEW(imastmpc,ITG,*nmmpc);
   
   if(*iit==1 && *iinc==1){
   
     /* calculate normal and tangential vectors on the slave surfaces */
     
-    FORTRAN(nortanslav,(tieset,ntie,ipkon,kon,lakon,set,co,vold,nset,
+    /*  FORTRAN(nortanslav,(tieset,ntie,ipkon,kon,lakon,set,co,vold,nset,
 			islavsurf,itiefac,islavnode,nslavnode,slavnor,slavtan,
-			mi));
+			mi));*/
     
     /* remove the Lagrange Multiplier from nodes common to several
        slave surfaces and from node which belong to a MPC */
     
-    FORTRAN(checkspcmpc,(ntie,tieset,islavnode,imastnode,nslavnode,nmastnode,
-			 islavact,nodempc,nmpc,ipompc));
+    /* FORTRAN(checkspcmpc,(ntie,tieset,islavnode,imastnode,nslavnode,nmastnode,
+       islavact,nodempc,nmpc,ipompc));*/
   }
     
   /* fix for quadratic FE */
@@ -479,10 +444,6 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
   iperturb[1]=iperturb_sav[1];
   mortartrafoflag=0;
   
-  *nslavspcp=nslavspc;*islavspcp=islavspc;*nslavmpcp=nslavmpc;
-  *islavmpcp=islavmpc;
-  *nmastspcp=nmastspc;*imastspcp=imastspc;*nmastmpcp=nmastmpc;
-  *imastmpcp=imastmpc;
   *auc2p=auc2;*adc2p=adc2;*irowc2p=irowc2;*icolc2p=icolc2;*jqc2p=jqc2;
   *aubdp=aubd;*irowbdp=irowbd;*jqbdp=jqbd;
   *aubdtilp=aubdtil;*irowbdtilp=irowbdtil;*jqbdtilp=jqbdtil;
