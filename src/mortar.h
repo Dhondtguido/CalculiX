@@ -307,7 +307,7 @@ void FORTRAN(opnonsym,(ITG *neq,double *aux,double *b,double *bhat,
 void FORTRAN(opnonsymt,(ITG *neq,double *aux,double *b,double *bhat,
 			double *bdd,double*bdu,ITG *jqbd,ITG *irowbd));
 
-void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
+void premortar(ITG *iflagact,ITG *nzs,ITG *nzsc2,
 	       double **auc2p,double **adc2p,ITG **irowc2p,ITG **icolc2p,
 	       ITG **jqc2p,
 	       double **aubdp,ITG **irowbdp,ITG **jqbdp,

@@ -5364,3 +5364,5 @@ Dec 2002        - started to work on single crystal plasticity
 
  15 Mar 2024    - made some small changes in dynamics.f
                 - worked on inimortar.c and premortar.c
+
+ 18 Mar 2024    - set ismallsliding by default to 1 for mortar

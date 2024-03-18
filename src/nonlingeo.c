@@ -751,6 +751,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       FORTRAN(checktruecontact,(ntie,tieset,tietol,elcon,&itruecontact,
 				ncmat_,ntmat_));
     }else if(*mortar>1){
+      ismallsliding=1;
       inimortar(&ener,mi,ne,nslavs,nk,nener,&ipkon,&lakon,&kon,nkon,
 		&maxprevcontel,&xstate,nstate_,&islavactdoftie,&bp,&islavact,
 		&gap,&slavnor,&slavtan,&cdisp,&cstress,&cfs,
@@ -2667,7 +2668,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	
 	/* trafo u -> util */
 	
-	premortar(&iflagact,&ismallsliding,nzs,&nzsc2,&auc2,&adc2,
+	premortar(&iflagact,nzs,&nzsc2,&auc2,&adc2,
 		  &irowc2,&icolc2,&jqc2,&aubd,&irowbd,&jqbd,&aubdtil,
 		  &irowbdtil,&jqbdtil,&aubdtil2,&irowbdtil2,&jqbdtil2,
 		  &audd,&irowdd,&jqdd,&auddtil,&irowddtil,&jqddtil,
@@ -3118,15 +3119,6 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	  
 	SFREE(auc2);SFREE(adc2);SFREE(irowc2);SFREE(icolc2);SFREE(jqc2);
 	SFREE(au);SFREE(ad);	  
-	if(ismallsliding==0){
-	  SFREE(aubd);SFREE(jqbd);SFREE(irowbd);
-	  SFREE(aubdtil);SFREE(jqbdtil);SFREE(irowbdtil);
-	  SFREE(aubdtil2);SFREE(jqbdtil2);SFREE(irowbdtil2);
-	  SFREE(audd);SFREE(jqdd);SFREE(irowdd);
-	  SFREE(auddinv);SFREE(jqddinv);SFREE(irowddinv);
-	  SFREE(auddtil);SFREE(jqddtil);SFREE(irowddtil);
-	  SFREE(auddtil2);SFREE(jqddtil2);SFREE(irowddtil2);
-	}
       }
 
       /* calculating the displacements, stresses and forces */
@@ -3488,15 +3480,13 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
        another increment size (dtheta) */
 
     if(*mortar>1){
-      if(ismallsliding==1){      
-	SFREE(aubd);SFREE(jqbd);SFREE(irowbd);
-	SFREE(aubdtil);SFREE(jqbdtil);SFREE(irowbdtil);
-	SFREE(aubdtil2);SFREE(jqbdtil2);SFREE(irowbdtil2);
-	SFREE(audd);SFREE(jqdd);SFREE(irowdd);
-	SFREE(auddinv);SFREE(jqddinv);SFREE(irowddinv);
-	SFREE(auddtil);SFREE(jqddtil);SFREE(irowddtil);
-	SFREE(auddtil2);SFREE(jqddtil2);SFREE(irowddtil2);
-      }
+      SFREE(aubd);SFREE(jqbd);SFREE(irowbd);
+      SFREE(aubdtil);SFREE(jqbdtil);SFREE(irowbdtil);
+      SFREE(aubdtil2);SFREE(jqbdtil2);SFREE(irowbdtil2);
+      SFREE(audd);SFREE(jqdd);SFREE(irowdd);
+      SFREE(auddinv);SFREE(jqddinv);SFREE(irowddinv);
+      SFREE(auddtil);SFREE(jqddtil);SFREE(irowddtil);
+      SFREE(auddtil2);SFREE(jqddtil2);SFREE(irowddtil2);
       SFREE(bhat);	  
       SFREE(islavactdof);
     }

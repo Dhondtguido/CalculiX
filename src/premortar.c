@@ -108,7 +108,7 @@
  *  [in] iperturb_sav	saved iperturb values 
  **/
 
-void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
+void premortar(ITG *iflagact,ITG *nzs,ITG *nzsc2,
 	       double **auc2p,double **adc2p,ITG **irowc2p,ITG **icolc2p,
 	       ITG **jqc2p,
 	       double **aubdp,ITG **irowbdp,ITG **jqbdp,
@@ -242,14 +242,13 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
      have been implemented */
   
   *iflagact=0;
-  *ismallsliding=1;
   *nzsc2=nzs[1];
   NNEW(auc2,double,*nzsc2);
   NNEW(adc2,double,neq[1]);
   NNEW(irowc2,ITG,*nzsc2);
   NNEW(icolc2,ITG,neq[1]);
   NNEW(jqc2,ITG,neq[1]+1); 
-  if(*iit==1 || *ismallsliding==0){
+  if(*iit==1){
     NNEW(aubd,double,6**nslavs);
     NNEW(irowbd,ITG,6**nslavs);
     NNEW(jqbd,ITG,neq[1]+1);
@@ -284,7 +283,7 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
   jqtemp[neq[1]]=jq[neq[1]];
   for (i=0;i<nzs[1];i++){irowtemp[i]=irow[i];}
   
-  if(*iit==1 || *ismallsliding==0){
+  if(*iit==1){
     DMEMSET(slavnor,0,3**nslavs,0.);
     DMEMSET(slavtan,0,6**nslavs,0.);
   }
@@ -292,7 +291,7 @@ void premortar(ITG *iflagact,ITG *ismallsliding,ITG *nzs,ITG *nzsc2,
   /* setting iflagact=1 before calling contactmortar invokes
      combined fix-point Newton approach */
   
-  if(*iit>1 && *ismallsliding==1){*iflagact=1;}
+  if(*iit>1){*iflagact=1;}
   
   if(*iit==1 && *iinc==1){
   
