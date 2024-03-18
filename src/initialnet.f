@@ -721,7 +721,7 @@ c     call exit(201)
             write(*,*) '          node1',node1,' pressure'
      &           ,v(2,node1)    
             write(*,*) '          node2',node2,
-     &           'given intial pressure',
+     &           'given initial pressure',
      &           v(2,node2)
             v(2,node2)=0.9d0*v(2,node2)
             write(*,*) '          node2',node2,
@@ -741,12 +741,12 @@ c     call exit(201)
      &           ' given initial pressure',v(2,node1)  
             v(2,node1)=1.05d0*v(2,node2)
             write(*,*) '          node1',node1,
-     &           ' new intial pressure',v(2,node1)
+     &           ' new initial pressure',v(2,node1)
             write(*,*) '          node2',node2,
      &           ' given initial pressure',v(2,node2)
             v(2,node2)=0.95d0*v(2,node2)
             write(*,*) '          node2',node2,
-     &           ' new intial pressure',v(2,node2)
+     &           ' new initial pressure',v(2,node2)
           endif
         endif
 !     

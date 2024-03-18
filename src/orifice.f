@@ -196,7 +196,7 @@
                else
                   write(*,*) '*ERROR in orifice:'
                   write(*,*) ' element',nelemswirl
-                  write(*,*) ' refered by element',nelem
+                  write(*,*) ' referred by element',nelem
                   write(*,*) ' is not a swirl generating element'
                endif
             endif
@@ -531,7 +531,7 @@ c            endif
                else
                   write(*,*) '*ERROR in orifice:'
                   write(*,*) ' element',nelemswirl
-                  write(*,*) 'refered by element',nelem
+                  write(*,*) 'referred by element',nelem
                   write(*,*) 'is not a swirl generating element'
                endif
             endif

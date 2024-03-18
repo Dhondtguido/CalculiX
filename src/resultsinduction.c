@@ -150,7 +150,7 @@ void resultsinduction(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	}
     }
 
-// next line is to be inserted in a similar way for all other paralell parts
+// next line is to be inserted in a similar way for all other parallel parts
 
     if(*ne<num_cpus) num_cpus=*ne;
     
