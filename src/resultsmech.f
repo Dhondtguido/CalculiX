@@ -35,8 +35,6 @@
 !     
       implicit none
 !     
-      integer cauchy
-!     
       character*8 lakon(*),lakonl
       character*80 amat,matname(*)
 !     
@@ -328,11 +326,14 @@ c     Bernhardi end
         enddo
 !     
 !     mortar start
-!     aut for element
+!     calculating the transformation matrix for quadratic elements containing
+!     at least one slave node; this matrix transforms the regular 
+!     quadratic shape functions into purely positive ones for slave
+!     faces.    
 !     
         if(mortartrafoflag.eq.1) then
           if(islavelinv(i).gt.0) then
-            if((nope.eq.20).or.(nope.eq.10).or.(nope.eq.15)) then
+c            if((nope.eq.20).or.(nope.eq.10).or.(nope.eq.15)) then
               jqt1(1)=1
               ii=1
               do i1=1,nope
@@ -349,7 +350,7 @@ c     Bernhardi end
                 enddo
                 jqt1(i1+1)=ii
               enddo
-            endif
+c            endif
           endif
         endif
 !     
@@ -648,22 +649,24 @@ c     Bernhardi end
           endif
 !     
 !     mortar start
+!     transforming the shape functions for quadratic elements containing at    
+!     lease one slave node into purely positive functions on the slave    
+!     faces     
 !     
           if(mortartrafoflag.eq.1) then
-            do i1=1,nope
-              shptil(1,i1)=shp(1,i1)
-              shptil(2,i1)=shp(2,i1)
-              shptil(3,i1)=shp(3,i1)
-              shptil(4,i1)=shp(4,i1)
-            enddo
             if(islavelinv(i).gt.0) then
-              if((nope.eq.20).or.(nope.eq.10).or.(nope.eq.15)) then
+c              if((nope.eq.20).or.(nope.eq.10).or.(nope.eq.15)) then
                 do i1=1,nope
                   if(jqt1(i1+1)-jqt1(i1).gt.0) then
                     shptil(1,i1)=0.0
                     shptil(2,i1)=0.0
                     shptil(3,i1)=0.0
                     shptil(4,i1)=0.0
+                  else
+                    shptil(1,i1)=shp(1,i1)
+                    shptil(2,i1)=shp(2,i1)
+                    shptil(3,i1)=shp(3,i1)
+                    shptil(4,i1)=shp(4,i1)
                   endif
                   do j1=jqt1(i1),jqt1(i1+1)-1
                     j2=irowt1(j1)
@@ -677,8 +680,15 @@ c     Bernhardi end
      &                   *shp(4,j2)
                   enddo
                 enddo
-!
-              endif
+!     
+c              endif
+            else
+              do i1=1,nope
+                shptil(1,i1)=shp(1,i1)
+                shptil(2,i1)=shp(2,i1)
+                shptil(3,i1)=shp(3,i1)
+                shptil(4,i1)=shp(4,i1)
+              enddo
             endif
           endif
 !
@@ -1134,6 +1144,9 @@ c          if((iout.ge.0).or.(iout.eq.-2).or.(kode.le.-100).or.
 !     mortar start
 !     
             if(mortartrafoflag.eq.1) then
+!
+!             using the tilde shape functions
+!
               do m1=1,nope
                 do m2=1,3
 !
