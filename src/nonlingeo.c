@@ -249,7 +249,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *autinv=NULL,*Bd=NULL,*Bdhelp=NULL,
     *Dd=NULL,*Ddtil=NULL,*Bdtil=NULL,*auc2=NULL,*adc2=NULL,*aubd=NULL,
     *audd=NULL,*auddtil=NULL,*auddtil2=NULL,*auddinv=NULL,*bhat=NULL,
-    *aubdtil=NULL,*aubdtil2=NULL,*auxtil2=NULL,*cvtil=NULL,*cvtilini=NULL;
+    *aubdtil=NULL,*aubdtil2=NULL;
 
   /* end of declarations for mortar contact */
 
@@ -2678,7 +2678,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		  imastnode,nmastnode,co,nk,kon,ipkon,lakon,ne,stn,
 		  elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 		  ielorien,norien,orab,ntmat_,t0,t1,ithermal,prestr,
-		  iprestr,filab,eme,emn,een,iperturb,f,nactdof,&iout,qa,
+		  iprestr,filab,eme,emn,een,iperturb,nactdof,&iout,qa,
 		  vold,b,nodeboun,ndirboun,xbounact,xboun,nboun,ipompc,
 		  nodempc,coefmpc,labmpc,nmpc,nmethod,neq,veold,accold,
 		  &dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -2696,10 +2696,9 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		  xloadact,nodeforc,ndirforc,xforcact,xbodyact,ipobody,
 		  nbody,cgr,nzl,sti,iexpl,mass,&buckling,&stiffness,
 		  &intscheme,physcon,&coriolis,ibody,integerglob,
-		  doubleglob,&nasym,&alpham,&betam,auxtil2,pslavsurf,
+		  doubleglob,&nasym,&alpham,&betam,pslavsurf,
 		  pmastsurf,clearini,ielprop,prop,islavact,cdn,&memmpc_,
-		  cvtilini,cvtil,&idamping,&iforbou,iperturb_sav,
-		  adb,aub,
+		  &idamping,&iforbou,iperturb_sav,
 		  itietri,cg,straight,koncont,energyini,energy,&kscale,
 		  iponoel,inoel,nener,orname,network,typeboun,&num_cpus,
 		  t0g,t1g,smscale,&mscalmethod);

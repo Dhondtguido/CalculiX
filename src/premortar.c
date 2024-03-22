@@ -23,90 +23,11 @@
 #include "CalculiX.h"
 #include "mortar.h"
 
-/**
- * function called before solver transforming the SPCs/MPCs, the matrix and the right hand side for quadratic elements 
- (see Phd-thesis Sitzmann,Chapter 4)
+ /* function called before solver transforming the SPCs/MPCs, the matrix 
+    and the right hand side for quadratic elements 
+    (see Phd-thesis Sitzmann,Chapter 4)
 
- * * Author: Saskia Sitzmann
- *
- *  [out] iflagact	flag indicating, whether the coupling matrices have to 
- be recalculated
- *  [out] nzsc2		number of nonzero,nondiagonal entries of intermediate 
- system matrix
- *  [out] auc2p		intermediate system matrix
- *  [out] adc2p         intermediate system matrix, diagonal terms
- *  [out] irowc2p       rows for intermediate system matrix
- *  [out] icolc2p	columns for intermediate system matrix
- *  [out] jqc2p		pointer to irowc 
- *  [out] aubdp		coupling matrix \f$ B_d[nactdof(i,p),nactdof(j,q)]\f$ 
- for all active degrees od freedoms 
- *  [out] irowbdp	field containing row numbers of aubd
- *  [out] jqbdp		pointer into field irowbd
- *  [out] aubdtilp	matrix \f$ \tilde{D}^{-1}\tilde{B}_d[nactdof(i,p),
- nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [out] irowbdtilp	field containing row numbers of aubd
- *  [out] jqbdtilp	pointer into field irowbdtil 
- *  [out] aubdtil2p	coupling matrix \f$ \tilde{D}$ and 
- $\tilde{B}^2_d[nactdof(i,p),nactdof(j,q)]\f$ for all 
- active degrees od freedoms 
- *  [out] irowbdtil2p	field containing row numbers of aubdtil2
- *  [out] jqbdtil2p	pointer into field irowbdtil2
- *  [out] auddp		coupling matrix \f$ D_d[nactdof(i,p),nactdof(j,q)]\f$ 
- for all active degrees od freedoms
- *  [out] irowddp	field containing row numbers of audd
- *  [out] jqddp		pointer into field irowdd
- *  [out] auddtilp	coupling matrix \f$ \tilde{D}_d[nactdof(i,p),nactdof(j,
- q)]\f$ for all active degrees od freedoms
- *  [out] irowddtilp	field containing row numbers of audd
- *  [out] jqddtilp	pointer into field irowdd
- *  [out] auddtil2p	matrix \f$ Id_d[nactdof(i,p),nactdof(j,q)]\f$ for all 
- active degrees od freedoms
- *  [out] irowddtil2p	field containing row numbers of audd
- *  [out] jqddtil2p	pointer into field irowdd
- *  [out] auddinvp	coupling matrix \f$ \tilde{D}^{-1}_d[nactdof(i,p),
- nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [out] irowddinvp	field containing row numbers of auddinv
- *  [out] jqddinvp	pointer into field irowddinv
- *  [out] jqtempp	field storing the untransformed stiffness matrix 
- representation
- *  [out] irowtempp	field storing the untransformed stiffness matrix 
- representation
- *  [out] icoltempp	field storing the untransformed stiffness matrix 
- representation
- *  [out] nzstemp	field storing the untransformed stiffness matrix size
- *  [out] slavnor	slave normal
- *  [out] slavtan	slave tangent 
- *  [in] islavelinv       (i)==0 if there is no slave node in the element, 
- >0 otherwise
- *  [in] islavsurf	islavsurf(1,i) slaveface i islavsurf(2,i) # integration
- points generated before looking at face i 
- *  [in] aut		transformation matrix \f$ T[p,q]\f$ for slave i \f$ p,q
- \f$  
- *  [in] irowt		field containing row numbers of aut
- *  [in] jqt	        pointer into field irowt
- *  [in] autinv	transformation matrix \f$ T^{-1}[p,q]\f$ for slave i 
- \f$ p,q \f$ 
- *  [in] irowtinv	field containing row numbers of autinv
- *  [in] jqtinv	pointer into field irowtinv
- *  [out] f_cmp		not used any more
- *  [out] f_csp		contact force for active degrees of freedom
- *  [in]	auxtil2		auxilary field
- *  [in] pslavsurf	field storing  position xil, etal and weight for 
- integration point on slave side
- *  [in] pmastsurf 	field storing position and etal for integration points 
- on master side
- *  [in] islavact	(i) indicates, if slave node i is active 
- (=-3 no-slave-node, =-2 no-LM-node, =-1 no-gap-node, 
- =0 inactive node, =1 sticky node, =2 slipping/active 
- node) 
- *  [in] cdn		?
- *  [in] cvtilini		C*v at start of the increment
- *  [in] cvtil		C*v
- *  [in] idamping		flag indicating whether damping is used
- *  [in] iforbou		flag indicating wheter fist iteration is calculated 
- linear geometrically 
- *  [in] iperturb_sav	saved iperturb values 
- **/
+    Author: Saskia Sitzmann */
 
 void premortar(ITG *iflagact,ITG *nzs,ITG *nzsc2,
 	       double **auc2p,double **adc2p,ITG **irowc2p,ITG **icolc2p,
@@ -130,7 +51,7 @@ void premortar(ITG *iflagact,ITG *nzs,ITG *nzsc2,
 	       ITG *ielorien,ITG *norien,double *orab,ITG *ntmat_,
 	       double *t0,double *t1,ITG *ithermal,double *prestr,
 	       ITG *iprestr,char *filab,double *eme,double *emn,
-	       double *een,ITG *iperturb,double *f,ITG *nactdof,
+	       double *een,ITG *iperturb,ITG *nactdof,
 	       ITG *iout,double *qa,
 	       double *vold,double *b,ITG *nodeboun,ITG *ndirboun,
 	       double *xbounact,double *xboun,ITG *nboun,ITG *ipompc,
@@ -171,12 +92,12 @@ void premortar(ITG *iflagact,ITG *nzs,ITG *nzsc2,
 	       ITG *stiffness,
 	       ITG *intscheme,double *physcon,ITG *coriolis,ITG *ibody,
 	       ITG *integerglob,double *doubleglob,ITG *nasym,
-	       double *alpham,double *betam,double *auxtil2,
+	       double *alpham,double *betam,
 	       double *pslavsurf,double *pmastsurf,
 	       double *clearini,ITG *ielprop,double *prop,
 	       ITG *islavact,double *cdn,ITG *memmpc_,
-	       double *cvinitil,double *cvtil,ITG *idamping,
-	       ITG *iforbou,ITG *iperturb_sav,double *adb,double *aub,
+	       ITG *idamping,
+	       ITG *iforbou,ITG *iperturb_sav,
 	       ITG *itietri,double *cg,double *straight,ITG *koncont,
 	       double *energyini,
 	       double *energy,ITG *kscale,ITG *iponoel,ITG *inoel,ITG *nener,
@@ -188,16 +109,15 @@ void premortar(ITG *iflagact,ITG *nzs,ITG *nzsc2,
     *jqbd=NULL,*irowbdtil=NULL,*jqbdtil=NULL,*irowbdtil2=NULL,*jqbdtil2=NULL,
     *irowdd=NULL,*jqdd=NULL,*irowddtil=NULL,*jqddtil=NULL,
     *irowddinv=NULL,*jqddinv=NULL,*irowddtil2=NULL,*jqddtil2=NULL,
-    *irowtemp=NULL,*icoltemp=NULL,*jqtemp=NULL,*inum=NULL,*icoltil=NULL,
-    *irowtil=NULL,*jqtil=NULL,mortartrafoflag=1;
+    *irowtemp=NULL,*icoltemp=NULL,*jqtemp=NULL,*inum=NULL,
+    mortartrafoflag=1;
   
-  double alpha,*auc2=NULL,*adc2=NULL,*aubd=NULL,
-    *aubdtil=NULL,*aubdtil2=NULL,*ftil=NULL,*fexttil=NULL,
+  double alpha,*auc2=NULL,*adc2=NULL,*aubd=NULL,*aux2=NULL,*cv=NULL,
+    *aubdtil=NULL,*aubdtil2=NULL,*f=NULL,*fext=NULL,*cvini=NULL,
     *audd=NULL,*auddtil=NULL,*auddinv=NULL,*auddtil2=NULL,*v=NULL,
-    *stx=NULL,*fn=NULL,*autil=NULL,*finitil=NULL,*fextinitil=NULL,
-    *adtil=NULL,*fmpc2=NULL,*voldtil=NULL,*vinitil=NULL,*accoldtil=NULL,
-    *btil=NULL,*aubtil=NULL,*adbtil=NULL,
-    *adctil=NULL,*auctil=NULL,*veoldtil=NULL,*volddummy=NULL,
+    *stx=NULL,*fn=NULL,*fini=NULL,*fextini=NULL,
+    *fmpc2=NULL,*aub=NULL,*adb=NULL,
+    *adc=NULL,*auc=NULL,*volddummy=NULL,
     *vectornull=NULL,*f_cs=NULL,*f_cm=NULL,*fnext=NULL;
     
   alpha=1-2*sqrt(*bet);
@@ -316,8 +236,8 @@ void premortar(ITG *iflagact,ITG *nzs,ITG *nzsc2,
   NNEW(fmpc2,double,*nmpc);
   memcpy(&v[0],&vold[0],sizeof(double)*mt**nk);
   *iout=-1;
-  NNEW(ftil,double,neq[1]);
-  NNEW(fexttil,double,neq[1]);
+  NNEW(f,double,neq[1]);
+  NNEW(fext,double,neq[1]);
   NNEW(inum,ITG,*nk);
   
   /* calculating the internal forces and tangent stiffness using
@@ -327,7 +247,7 @@ void premortar(ITG *iflagact,ITG *nzs,ITG *nzsc2,
         elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
         ielorien,norien,orab,ntmat_,t0,t1act,ithermal,
         prestr,iprestr,filab,eme,emn,een,iperturb,
-        ftil,fn,nactdof,iout,qa,vold,b,nodeboun,
+        f,fn,nactdof,iout,qa,vold,b,nodeboun,
         ndirboun,xbounact,nboun,ipompc,
         nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[1],veold,accold,
         bet,gam,dtime,time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -349,17 +269,8 @@ void premortar(ITG *iflagact,ITG *nzs,ITG *nzsc2,
   *iout=0;	    
   
   *rhsi=1;
-  NNEW(adtil,double,neq[1]);
-  NNEW(autil,double,nzs[1]);
-  NNEW(irowtil,ITG,nzs[1]);
-  NNEW(jqtil,ITG,neq[1]+1);
-  NNEW(icoltil,ITG,neq[1]);
-  for(i=0;i<neq[1]+1;i++){
-    jqtil[i]=jq[i];}
-  for(i=0;i<neq[1];i++){
-    icoltil[i]=icol[i];}
-  for(i=0;i<nzs[1];i++){
-    irowtil[i]=irow[i];}
+  DMEMSET(ad,0,neq[1],0.);
+  DMEMSET(au,0,nzs[1],0.);
   
   /* calculating the external forces fext and stiffness matrix au/ad using
      modified shape functions for quadratic elements */
@@ -367,7 +278,7 @@ void premortar(ITG *iflagact,ITG *nzs,ITG *nzsc2,
   mafillsmmain(co,nk,kon,ipkon,lakon,ne,nodeboun,ndirboun,xboun,nboun,
 	       ipompc,nodempc,coefmpc,nmpc,nodeforc,ndirforc,xforcact,
 	       nforc,nelemload,sideload,xloadact,nload,xbodyact,ipobody,
-	       nbody,cgr,adtil,autil,fexttil,nactdof,icol,jqtil,irowtil,
+	       nbody,cgr,ad,au,fext,nactdof,icol,jq,irow,
 	       neq,nzl,
 	       nmethod,ikmpc,ilmpc,ikboun,ilboun,
 	       elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,
@@ -384,38 +295,16 @@ void premortar(ITG *iflagact,ITG *nzs,ITG *nzsc2,
 	       iponoel,inoel,network,ntrans,inotr,trab,smscale,
 	       mscalmethod,set,nset,islavelinv,aut,irowt,jqt,
 	       &mortartrafoflag);
-  
-  for(i=0;i<neq[1];i++){
-    ad[i]=adtil[i];
-  }
-  for(i=0;i<nzs[1];i++){
-    au[i]=autil[i];
-  }
-  
-  /* transform vold,vini,accold for dynamic calculations */
-  
-  NNEW(voldtil,double,mt**nk);
-  NNEW(veoldtil,double,mt**nk);
-  NNEW(vinitil,double,mt**nk);
-  NNEW(accoldtil,double,mt**nk);
-  NNEW(btil,double,neq[1]);
 
   /* calculating the residual b */
   
-  calcresidual(nmethod,neq,btil,fexttil,ftil,iexpl,nactdof,auxtil2,voldtil,
-	       vinitil,dtime,accoldtil,nk,adbtil,aubtil,jqtil,irowtil,nzl,
-	       &alpha,fextinitil,finitil,islavnode,nslavnode,mortar,ntie,f_cm,
-	       f_cs,mi,nzs,nasym,idamping,veoldtil,adctil,auctil,cvinitil,cvtil,
+  calcresidual(nmethod,neq,b,fext,f,iexpl,nactdof,aux2,vold,
+	       vini,dtime,accold,nk,adb,aub,jq,irow,nzl,
+	       &alpha,fextini,fini,islavnode,nslavnode,mortar,ntie,f_cm,
+	       f_cs,mi,nzs,nasym,idamping,veold,adc,auc,cvini,cv,
 	       alpham,num_cpus);
-	
-  for(k=0;k<neq[1];k++){
-    b[k]=btil[k];}
   
-  SFREE(btil);SFREE(ftil);SFREE(fexttil);
-
-  SFREE(voldtil);SFREE(vinitil);SFREE(accoldtil);SFREE(veoldtil);
-
-  SFREE(adtil);SFREE(autil);SFREE(irowtil);SFREE(jqtil);SFREE(icoltil);
+  SFREE(f);SFREE(fext);
   
   /* update vold due to spcs to get gap right for rigid body movements */
   
@@ -429,8 +318,10 @@ void premortar(ITG *iflagact,ITG *nzs,ITG *nzsc2,
     *iout=-1;
     
     FORTRAN(resultsini_mortar,(nk,v,ithermal,iperturb,
-			       nactdof,iout,volddummy,vectornull,nodeboun,ndirboun,
-			       xbounact,nboun,ipompc,nodempc,coefmpc,labmpc,nmpc,nmethod,cam,
+			       nactdof,iout,volddummy,vectornull,nodeboun,
+			       ndirboun,
+			       xbounact,nboun,ipompc,nodempc,coefmpc,labmpc,
+			       nmpc,nmethod,cam,
 			       bet,gam,dtime,mi));
     
     memcpy(&vold[0],&v[0],sizeof(double)*mt**nk);	     	
