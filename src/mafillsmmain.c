@@ -35,7 +35,7 @@ static ITG *nk1,*kon1,*ipkon1,*ne1,*nodeboun1,*ndirboun1,*nboun1,
   *integerglob1,*istartset1,*iendset1,*ialset1,*ntie1,*nasym1,
   *mortar1,*ielprop1,*ne01,num_cpus,*kscale1,*iponoel1,*inoel1,
   *network1,*neapar=NULL,*nebpar=NULL,*mscalmethod1,*nset1,
-  *irowt1,*jqt1,*islavelinv1,*mortartrafoflag1;
+  *irowt1,*jqt1,*islavquadel1,*mortartrafoflag1;
 
 static double *co1,*xboun1,*coefmpc1,*xforc1,*xload1,*xbody1,*cgr1,
   *ad1=NULL,*au1=NULL,*fext1=NULL,*elcon1,*rhcon1,*alcon1,*alzero1,
@@ -80,7 +80,7 @@ void mafillsmmain(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		  double *fnext,ITG *kscale,ITG *iponoel,ITG *inoel,
 		  ITG *network,ITG *ntrans,ITG *inotr,double *trab,
 		  double *smscale,ITG *mscalmethod,char *set,ITG *nset,
-		  ITG *islavelinv,double *aut,ITG *irowt,ITG *jqt,
+		  ITG *islavquadel,double *aut,ITG *irowt,ITG *jqt,
 		  ITG *mortartrafoflag){
 
   /* mafillsmmain = main program for MAtrix FILLing of the Stiffnes
@@ -235,7 +235,7 @@ void mafillsmmain(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
   clearini1=clearini;ielprop1=ielprop;prop1=prop;ne01=ne0;kscale1=kscale;
   iponoel1=iponoel;inoel1=inoel;network1=network;
   smscale1=smscale;mscalmethod1=mscalmethod;set1=set;nset1=nset;
-  islavelinv1=islavelinv;aut1=aut;irowt1=irowt;jqt1=jqt;
+  islavquadel1=islavquadel;aut1=aut;irowt1=irowt;jqt1=jqt;
   mortartrafoflag1=mortartrafoflag; 
 
   /* calculating the stiffness/mass */
@@ -455,7 +455,7 @@ void *mafillsmmt(ITG *i){
 		    tieset1,istartset1,iendset1,ialset1,ntie1,nasym1,pslavsurf1,
 		    pmastsurf1,mortar1,clearini1,ielprop1,prop1,ne01,
 		    &fnext1[indexfnext],&nea,&neb,kscale1,iponoel1,inoel1,
-		    network1,smscale1,mscalmethod1,set1,nset1,islavelinv1,
+		    network1,smscale1,mscalmethod1,set1,nset1,islavquadel1,
 		    aut1,irowt1,jqt1,mortartrafoflag1));
 
   return NULL;

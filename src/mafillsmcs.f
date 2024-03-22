@@ -59,7 +59,7 @@
      &     ntmat_,indexe,nope,norien,iexpl,i0,nm,inode,icomplex,
      &     inode1,icomplex1,inode2,icomplex2,ner,ncmat_,intscheme,istep,
      &     iinc,mcs,ielcs(*),nplicon(0:ntmat_,*),nplkcon(0:ntmat_,*),
-     &     npmat_,islavelinv(1),irowt(1),jqt(1),mortartrafoflag,
+     &     npmat_,islavquadel(1),irowt(1),jqt(1),mortartrafoflag,
      &     mscalmethod,kk,imat
 !     
       real*8 co(3,*),xboun(*),coefmpc(*),xforc(*),xload(2,*),p1(3),
@@ -215,7 +215,7 @@ c     Bernhardi end
      &         integerglob,doubleglob,tieset,istartset,
      &         iendset,ialset,ntie,nasym,pslavsurf,pmastsurf,mortar,
      &         clearini,ielprop,prop,kscale,smscale(i),mscalmethod,
-     &         set,nset,islavelinv,aut,
+     &         set,nset,islavquadel,aut,
      &         irowt,jqt,mortartrafoflag)
         else
           nope=-1

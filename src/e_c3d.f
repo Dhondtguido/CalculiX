@@ -28,7 +28,7 @@
      &     nstate_,xstateini,xstate,ne0,ipkon,thicke,
      &     integerglob,doubleglob,tieset,istartset,iendset,ialset,ntie,
      &     nasym,pslavsurf,pmastsurf,mortar,clearini,ielprop,prop,
-     &     kscale,smscalel,mscalmethod,set,nset,islavelinv,aut,
+     &     kscale,smscalel,mscalmethod,set,nset,islavquadel,aut,
      &     irowt,jqt,mortartrafoflag)
 !     
 !     computation of the element matrix and rhs for the element with
@@ -73,7 +73,7 @@
      &     nmpc,ikmpc(*),ilmpc(*),iscale,nstate_,ne0,iselect(6),kscale,
      &     istartset(*),iendset(*),ialset(*),ntie,integerglob(*),nasym,
      &     nplicon(0:ntmat_,*),nplkcon(0:ntmat_,*),npmat_,nopered,
-     &     mscalmethod,nset,islavelinv(*),jqt(*),irowt(*),
+     &     mscalmethod,nset,islavquadel(*),jqt(*),irowt(*),
      &     node1,node2,irowt1(16),jqt1(9),j2,mortartrafoflag
 !     
       real*8 co(3,*),xl(3,20),shp(4,20),xs2(3,7),veold(0:mi(2),*),
@@ -681,7 +681,7 @@ c     mortar start
             shptil(3,i1)=shp(3,i1)
             shptil(4,i1)=shp(4,i1)
           enddo
-          if(islavelinv(nelem).gt.0) then
+          if(islavquadel(nelem).gt.0) then
             if((nope.eq.20).or.(nope.eq.10).or.(nope.eq.15)) then
               do i1=1,nope
                 if(jqt(i1+1)-jqt(i1).gt.0) then
@@ -1406,7 +1406,7 @@ c     mortar start
 !
 !     generate aut1
 !
-            if(islavelinv(nelem).gt.0) then
+            if(islavquadel(nelem).gt.0) then
               if((nope.eq.20).or.(nope.eq.10).or.(nope.eq.15)) then
                 jqt1(1)=1
                 ii=1
@@ -1490,7 +1490,7 @@ c     mortar start
                   shptil2(3,i1)=shp2(3,i1)
                   shptil2(4,i1)=shp2(4,i1)
                 enddo
-                if(islavelinv(nelem).gt.0) then
+                if(islavquadel(nelem).gt.0) then
                   if((nopes.eq.8).or.(nopes.eq.6)) then
                     do i1=1,nopes
                       if(jqt1(i1+1)-jqt1(i1).gt.0) then
@@ -1634,7 +1634,7 @@ c     mortar start
                   shptil2(3,i1)=shp2(3,i1)
                   shptil2(4,i1)=shp2(4,i1)
                 enddo
-                if(islavelinv(nelem).gt.0) then
+                if(islavquadel(nelem).gt.0) then
                   if((nopes.eq.8).or.(nopes.eq.6)) then
                     do i1=1,nopes
                       if(jqt1(i1+1)-jqt1(i1).gt.0) then

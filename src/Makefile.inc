@@ -386,7 +386,7 @@ generatetet_refine2.f \
 generatetet_refine.f \
 genfirstactif.f \
 genislavactdof.f \
-genislavelinv.f \
+genislavquadel.f \
 genmidnodes.f \
 genmodes.f \
 genmpc.f \

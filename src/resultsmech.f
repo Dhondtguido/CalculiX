@@ -27,7 +27,7 @@
      &     ikin,nal,ne0,thicke,emeini,pslavsurf,
      &     pmastsurf,mortar,clearini,nea,neb,ielprop,prop,kscale,
      &     list,ilist,smscale,mscalmethod,enerscal,t0g,t1g,
-     &     islavelinv,aut,irowt,jqt,mortartrafoflag,
+     &     islavquadel,aut,irowt,jqt,mortartrafoflag,
      &     intscheme,physcon)
 !     
 !     calculates stresses and the material tangent at the integration
@@ -49,7 +49,7 @@
      &     calcul_cauchy,calcul_qa,nopered,mortar,jfaces,igauss,
      &     istrainfree,nlgeom_undo,list,ilist(*),m,j1,mscalmethod,
      &     irowt(*),jqt(*),jqt1(21),irowt1(96),icmdcpy,
-     &     islavelinv(*),node1,node2,j2,ii,mortartrafoflag
+     &     islavquadel(*),node1,node2,j2,ii,mortartrafoflag
 !     
       real*8 co(3,*),v(0:mi(2),*),shp(4,20),stiini(6,mi(1),*),
      &     stx(6,mi(1),*),xl(3,20),vl(0:mi(2),20),stre(6),prop(*),
@@ -332,7 +332,7 @@ c     Bernhardi end
 !     faces.    
 !     
         if(mortartrafoflag.eq.1) then
-          if(islavelinv(i).gt.0) then
+          if(islavquadel(i).gt.0) then
 c            if((nope.eq.20).or.(nope.eq.10).or.(nope.eq.15)) then
               jqt1(1)=1
               ii=1
@@ -654,7 +654,7 @@ c     Bernhardi end
 !     faces     
 !     
           if(mortartrafoflag.eq.1) then
-            if(islavelinv(i).gt.0) then
+            if(islavquadel(i).gt.0) then
 c              if((nope.eq.20).or.(nope.eq.10).or.(nope.eq.15)) then
                 do i1=1,nope
                   if(jqt1(i1+1)-jqt1(i1).gt.0) then

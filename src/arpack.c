@@ -97,7 +97,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     iflagact=0,*islavsurfold=NULL,ialeatoric=0,kscale=1,network=0,
     *iponoel=NULL,*inoel=NULL,nrhs=1,igreen=0,node,idir,mscalmethod=0,
     *jqw=NULL,*iroww=NULL,nzsw,
-    *islavelinv=NULL,*irowt=NULL,*jqt=NULL,mortartrafoflag=0;
+    *islavquadel=NULL,*irowt=NULL,*jqt=NULL,mortartrafoflag=0;
 
   double *stn=NULL,*v=NULL,*resid=NULL,*z=NULL,*workd=NULL,dtset,
     *workl=NULL,*d=NULL,sigma=1,*temp_array=NULL,*pslavsurfold=NULL,
@@ -409,7 +409,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	    islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
 	    inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 	    itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	    islavelinv,aut,irowt,jqt,&mortartrafoflag,
+	    islavquadel,aut,irowt,jqt,&mortartrafoflag,
 	    &intscheme,physcon);
   }else{
     results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,
@@ -431,7 +431,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	    islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
 	    inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 	    itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	    islavelinv,aut,irowt,jqt,&mortartrafoflag,
+	    islavquadel,aut,irowt,jqt,&mortartrafoflag,
 	    &intscheme,physcon);
   }
   
@@ -509,7 +509,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 		 tieset,istartset,iendset,ialset,ntie,&nasym,pslavsurf,
 		 pmastsurf,mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
 		 iponoel,inoel,&network,ntrans,inotr,trab,smscale,&mscalmethod,
-		 set,nset,islavelinv,aut,irowt,jqt,&mortartrafoflag);
+		 set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag);
   }
   else{
     mafillsmmain(co,nk,kon,ipkon,lakon,ne,nodeboun,ndirboun,xboun,nboun,
@@ -529,7 +529,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 		 tieset,istartset,iendset,ialset,ntie,&nasym,pslavsurf,
 		 pmastsurf,mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
 		 iponoel,inoel,&network,ntrans,inotr,trab,smscale,&mscalmethod,
-		 set,nset,islavelinv,aut,irowt,jqt,&mortartrafoflag);
+		 set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag);
 
     if(nasym==1){
       RENEW(au,double,nzs[2]+nzs[1]);
@@ -1131,7 +1131,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	      islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
               inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 	      itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	      islavelinv,aut,irowt,jqt,&mortartrafoflag,
+	      islavquadel,aut,irowt,jqt,&mortartrafoflag,
 	      &intscheme,physcon);}
     else{
       results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,
@@ -1154,7 +1154,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	      islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
               inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 	      itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	      islavelinv,aut,irowt,jqt,&mortartrafoflag,
+	      islavquadel,aut,irowt,jqt,&mortartrafoflag,
 	      &intscheme,physcon);
     }
     SFREE(eei);SFREE(stiini);SFREE(emeini);SFREE(vini);

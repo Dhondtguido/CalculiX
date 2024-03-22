@@ -77,7 +77,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     ielset,*istartnmd=NULL,*iendnmd=NULL,inmd,neqact,*nshcon=NULL,
     *ipev=NULL,icfd=0,*inomat=NULL,mortar=0,*islavsurf=NULL,
     *iponoel=NULL,*inoel=NULL,iperturbsav,nevcomplex,*itiefac=NULL,
-    mscalmethod=0,*islavelinv=NULL,*irowt=NULL,*jqt=NULL,nboun2,
+    mscalmethod=0,*islavquadel=NULL,*irowt=NULL,*jqt=NULL,nboun2,
     *ndirboun2=NULL,*nodeboun2=NULL,nmpc2,*ipompc2=NULL,*nodempc2=NULL,
     *ikboun2=NULL,*ilboun2=NULL,*ikmpc2=NULL,*ilmpc2=NULL,mortartrafoflag=0,
     intscheme=0;
@@ -1474,7 +1474,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		islavsurf,ielprop,prop,energyini,energy,&iit,iponoel,
 		inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 		itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-		islavelinv,aut,irowt,jqt,&mortartrafoflag,
+		islavquadel,aut,irowt,jqt,&mortartrafoflag,
 		&intscheme,physcon);}
       else{
 	results(co,nk,kon,ipkon,lakon,ne,&v[kkv],&stn[kk6],inum,
@@ -1497,7 +1497,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		islavsurf,ielprop,prop,energyini,energy,&iit,iponoel,
 		inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 		itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-		islavelinv,aut,irowt,jqt,&mortartrafoflag,
+		islavquadel,aut,irowt,jqt,&mortartrafoflag,
 		&intscheme,physcon);
       }
 

@@ -33,7 +33,7 @@
      &     istartset,iendset,ialset,ntie,nasym,pslavsurf,pmastsurf,
      &     mortar,clearini,ielprop,prop,ne0,fnext,nea,neb,kscale,
      &     iponoel,inoel,network,smscale,mscalmethod,set,nset,
-     &     islavelinv,aut,irowt,jqt,mortartrafoflag)
+     &     islavquadel,aut,irowt,jqt,mortartrafoflag)
 !     
 !     filling the stiffness matrix in spare matrix format (sm)
 !     
@@ -60,7 +60,7 @@
      &     ntmat_,indexe,nope,norien,iexpl,i0,ncmat_,istep,iinc,
      &     nplicon(0:ntmat_,*),nplkcon(0:ntmat_,*),npmat_,mortar,
      &     nea,neb,kscale,iponoel(*),inoel(2,*),network,ndof,
-     &     nset,islavelinv(*),jqt(*),irowt(*),ii,jqt1(21),
+     &     nset,islavquadel(*),jqt(*),irowt(*),ii,jqt1(21),
      &     irowt1(96),i1,j1,j2,konl(26),mortartrafoflag,ikmpc(*),
      &     mscalmethod,kk,imat,istiff
 !     
@@ -226,7 +226,7 @@ c     mortar end
 !     generate local transformation matrix for current element
 !     
           if(mortartrafoflag.eq.1) then
-            if(islavelinv(i).gt.0) then
+            if(islavquadel(i).gt.0) then
               if((nope.eq.20).or.(nope.eq.10).or.(nope.eq.15)) then
                 jqt1(1)=1
                 ii=1
@@ -270,7 +270,7 @@ c     mortar end
      &           integerglob,doubleglob,tieset,istartset,
      &           iendset,ialset,ntie,nasym,pslavsurf,pmastsurf,mortar,
      &           clearini,ielprop,prop,kscale,smscale(i),mscalmethod,
-     &           set,nset,islavelinv,aut1,irowt1,jqt1,
+     &           set,nset,islavquadel,aut1,irowt1,jqt1,
      &           mortartrafoflag)
           else
             call e_c3d_u(co,kon,lakon(i),p1,p2,om,bodyf,nbody,s,sm,ff,i,

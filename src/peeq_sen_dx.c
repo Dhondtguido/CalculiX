@@ -46,7 +46,7 @@ void peeq_sen_dx(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
   ITG mt=mi[1]+1,calcul_fn,list,
     calcul_qa,calcul_cauchy,ikin=0,nal,iout=2,icmd=3,nener=0,
     *inum=NULL,nfield,ndim,iorienglob,
-    iforce,mscalmethod=0,*islavelinv=NULL,*irowt=NULL,*jqt=NULL,
+    iforce,mscalmethod=0,*islavquadel=NULL,*irowt=NULL,*jqt=NULL,
     mortartrafoflag=0,intscheme=0;
 
   double *fn=NULL,*eei=NULL,qa[4]={0.,0.,-1.,0.},*xstiff=NULL,*ener=NULL,    
@@ -83,7 +83,7 @@ void peeq_sen_dx(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 		       &ikin,&nal,ne0,thicke,emeini,
 		       pslavsurf,pmastsurf,mortar,clearini,nea,neb,ielprop,
 		       prop,kscale,&list,ialdesi,smscale,&mscalmethod,
-		       &enerscal,t0g,t1g,islavelinv,aut,irowt,jqt,
+		       &enerscal,t0g,t1g,islavquadel,aut,irowt,jqt,
 		       &mortartrafoflag,&intscheme,physcon));
 
   /* extrapolating the perturbed equivalent plastic strain */

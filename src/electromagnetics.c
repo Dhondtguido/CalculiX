@@ -117,7 +117,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
     *iponoel=NULL,*inoel=NULL,inoelsize,nrhs=1,neqfreq,nzsfreq,
     *irowfreq=NULL,*icolfreq=NULL,*jqfreq=NULL,*jq=NULL,
     *itiefac=NULL,mscalmethod=0,nkon0,*nintpoint=0,num_cpus,sys_cpus,
-    *islavelinv=NULL,*irowt=NULL,*jqt=NULL,mortartrafoflag=0;
+    *islavquadel=NULL,*irowt=NULL,*jqt=NULL,mortartrafoflag=0;
 
   double *stn=NULL,*v=NULL,*een=NULL,cam[5],*epn=NULL,*cdn=NULL,
     *f=NULL,*fn=NULL,qa[4]={0.,0.,-1.,0.},qam[2]={0.,0.},dtheta,theta,
@@ -500,7 +500,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 	  islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
           inoel,nener,orname,network,ipobody,xbodyact,ibody,typeboun,
 	  itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	  islavelinv,aut,irowt,jqt,&mortartrafoflag,
+	  islavquadel,aut,irowt,jqt,&mortartrafoflag,
 	  &intscheme,physcon);
   
   SFREE(fn);SFREE(inum);SFREE(v);
@@ -527,7 +527,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 	       tieset,istartset,iendset,ialset,ntie,&nasym,pslavsurf,
 	       pmastsurf,&mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
 	       iponoel,inoel,network,ntrans,inotr,trab,smscale,&mscalmethod,
-	       set,nset,islavelinv,aut,irowt,jqt,&mortartrafoflag);
+	       set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag);
   
   if(nmethodact==0){
       
@@ -628,7 +628,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 	  islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
           inoel,nener,orname,network,ipobody,xbodyact,ibody,typeboun,
 	  itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	  islavelinv,aut,irowt,jqt,&mortartrafoflag,
+	  islavquadel,aut,irowt,jqt,&mortartrafoflag,
 	  &intscheme,physcon);
   
   //  memcpy(&vold[0],&v[0],sizeof(double)*mt**nk);

@@ -76,7 +76,7 @@ void premortar(ITG *iflagact,ITG *nzs,ITG *nzsc2,
 	       ITG *nforc,double *thicke,
 	       double *shcon,ITG *nshcon,char *sideload,double *xload,
 	       double *xloadold,ITG *icfd,ITG *inomat,
-	       ITG *islavelinv,ITG *islavsurf,
+	       ITG *islavquadel,ITG *islavsurf,
 	       ITG *iponoels,ITG *inoels,                      
 	       ITG *mortar,ITG *nslavnode,ITG *islavnode,ITG *nslavs,
 	       ITG *ntie,
@@ -212,21 +212,6 @@ void premortar(ITG *iflagact,ITG *nzs,ITG *nzsc2,
      combined fix-point Newton approach */
   
   if(*iit>1){*iflagact=1;}
-  
-  if(*iit==1 && *iinc==1){
-  
-    /* calculate normal and tangential vectors on the slave surfaces */
-    
-    /*  FORTRAN(nortanslav,(tieset,ntie,ipkon,kon,lakon,set,co,vold,nset,
-			islavsurf,itiefac,islavnode,nslavnode,slavnor,slavtan,
-			mi));*/
-    
-    /* remove the Lagrange Multiplier from nodes common to several
-       slave surfaces and from node which belong to a MPC */
-    
-    /* FORTRAN(checkspcmpc,(ntie,tieset,islavnode,imastnode,nslavnode,nmastnode,
-       islavact,nodempc,nmpc,ipompc));*/
-  }
     
   /* fix for quadratic FE */
     
@@ -262,7 +247,7 @@ void premortar(ITG *iflagact,ITG *nzs,ITG *nzsc2,
         islavsurf,ielprop,prop,energyini,energy,kscale,iponoel,
         inoel,nener,orname,network,ipobody,xbodyact,ibody,typeboun,
 	itiefac,tieset,smscale,mscalmethod,nbody,t0g,t1g,
-        islavelinv,aut,irowt,jqt,&mortartrafoflag,
+        islavquadel,aut,irowt,jqt,&mortartrafoflag,
 	intscheme,physcon);
   
   SFREE(v);SFREE(stx);SFREE(fn);SFREE(inum);SFREE(fmpc2);
@@ -293,7 +278,7 @@ void premortar(ITG *iflagact,ITG *nzs,ITG *nzsc2,
 	       tieset,istartset,iendset,ialset,ntie,nasym,pslavsurf,
 	       pmastsurf,mortar,clearini,ielprop,prop,ne0,fnext,kscale,
 	       iponoel,inoel,network,ntrans,inotr,trab,smscale,
-	       mscalmethod,set,nset,islavelinv,aut,irowt,jqt,
+	       mscalmethod,set,nset,islavquadel,aut,irowt,jqt,
 	       &mortartrafoflag);
 
   /* calculating the residual b */

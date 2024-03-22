@@ -79,7 +79,7 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
       nznode,ll,icfd=0,*inomat=NULL,mortar=0,*islavact=NULL,*ipobody=NULL,
       *islavnode=NULL,*nslavnode=NULL,*islavsurf=NULL,idirnew,
       *iponoel=NULL,*inoel=NULL,mscalmethod=0,intscheme=0,
-      *islavelinv=NULL,*irowt=NULL,*jqt=NULL,mortartrafoflag=0;
+      *islavquadel=NULL,*irowt=NULL,*jqt=NULL,mortartrafoflag=0;
 
     long long lint;
 
@@ -470,7 +470,7 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	      islavsurf,ielprop,prop,energyini,energy,&iit,iponoel,
 	      inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 	      itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	      islavelinv,aut,irowt,jqt,&mortartrafoflag,
+	      islavquadel,aut,irowt,jqt,&mortartrafoflag,
 	      &intscheme,physcon);
 	    
 	}

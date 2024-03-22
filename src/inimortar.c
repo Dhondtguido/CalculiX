@@ -47,7 +47,7 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
 	       double **cdispp,double **cstressp,double **cfsp,
 	       double **bpinip,ITG **islavactinip,double **cstressinip,
 	       ITG *ntie,char *tieset,ITG *nslavnode,ITG *islavnode,
-	       ITG **islavnodeinvp,ITG **islavelinvp,double **pslavdualp,
+	       ITG **islavnodeinvp,ITG **islavquadelp,double **pslavdualp,
 	       double **autp,ITG **irowtp,ITG **jqtp,	
 	       double **autinvp,ITG **irowtinvp,ITG **jqtinvp,
 	       double **Bdp,ITG **irowbp,ITG **jqbp,
@@ -66,7 +66,7 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
   char *lakon=NULL;
     
   ITG k,i,j,node,mt=mi[1]+1,*ipkon=NULL,*kon=NULL,*islavactdoftie=NULL,
-    *islavact=NULL,*islavactini=NULL,*islavnodeinv=NULL,*islavelinv=NULL,
+    *islavact=NULL,*islavactini=NULL,*islavnodeinv=NULL,*islavquadel=NULL,
     *irowt=NULL,*jqt=NULL,nmspc,nmmpc,nsspc,nsmpc,*irowtinv=NULL,*jqtinv=NULL,
     *irowbhelp=NULL,*jqbhelp=NULL,*irowb=NULL,*jqb=NULL,*irowd=NULL,*jqd=NULL,
     *irowdtil=NULL,*jqdtil=NULL,*irowbtil=NULL,*jqbtil=NULL,
@@ -84,7 +84,7 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
   slavnor=*slavnorp;slavtan=*slavtanp;cdisp=*cdispp;cstress=*cstressp;
   cfs=*cfsp;
   bpini=*bpinip;islavactini=*islavactinip;cstressini=*cstressinip;
-  islavnodeinv=*islavnodeinvp;islavelinv=*islavelinvp;pslavdual=*pslavdualp;
+  islavnodeinv=*islavnodeinvp;islavquadel=*islavquadelp;pslavdual=*pslavdualp;
   aut=*autp;irowt=*irowtp;jqt=*jqtp;	
   autinv=*autinvp;irowtinv=*irowtinvp;jqtinv=*jqtinvp;
   Bd=*Bdp;irowb=*irowbp;jqb=*jqbp;
@@ -181,7 +181,7 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
     }	
   }
   NNEW(islavnodeinv,ITG,*nk);
-  NNEW(islavelinv,ITG,*ne);
+  NNEW(islavquadel,ITG,*ne);
   for( i=0;i<*ntie;i++){    
     if(tieset[i*(81*3)+80]=='C'){ 
       for(j=nmastnode[i];j<nmastnode[i+1];j++){
@@ -216,7 +216,7 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
 	     islavnode,islavsurf,&irowt,jqt,&aut,
 	     &irowtinv,jqtinv,&autinv);
   
-  FORTRAN(genislavelinv,(islavelinv,jqt,lakon,ipkon,kon,ne,nasym));
+  FORTRAN(genislavquadel,(islavquadel,jqt,lakon,ipkon,kon,ne,nasym));
   
   /* checking for SPC's and MPC's on slave and master surface */
 
@@ -278,7 +278,7 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
   *slavnorp=slavnor;*slavtanp=slavtan;*cdispp=cdisp;*cstressp=cstress;
   *cfsp=cfs;
   *bpinip=bpini;*islavactinip=islavactini;*cstressinip=cstressini;
-  *islavnodeinvp=islavnodeinv;*islavelinvp=islavelinv;*pslavdualp=pslavdual;
+  *islavnodeinvp=islavnodeinv;*islavquadelp=islavquadel;*pslavdualp=pslavdual;
   *autp=aut;*irowtp=irowt;*jqtp=jqt;	
   *autinvp=autinv;*irowtinvp=irowtinv;*jqtinvp=jqtinv;
   *Bdp=Bd;*irowbp=irowb;*jqbp=jqb;

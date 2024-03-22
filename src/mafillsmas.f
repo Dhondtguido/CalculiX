@@ -60,7 +60,7 @@
      &     ntmat_,indexe,nope,norien,iexpl,ncmat_,istep,iinc,mpc2,
      &     nplicon(0:ntmat_,*),nplkcon(0:ntmat_,*),npmat_,ist1,ist2,
      &     mortar,ielprop(*),kscale,iponoel(*),inoel(2,*),network,
-     &     neam,nebm,neat,nebt,ikmpc(*),nset,islavelinv(1),irowt1(1),
+     &     neam,nebm,neat,nebt,ikmpc(*),nset,islavquadel(1),irowt1(1),
      &     jqt1(1),mortartrafoflag,mscalmethod
 !     
       real*8 co(3,*),xboun(*),coefmpc(*),xforc(*),xload(2,*),p1(3),
@@ -130,7 +130,7 @@
      &         doubleglob,tieset,istartset,iendset,ialset,ntie,nasym,
      &         pslavsurf,pmastsurf,mortar,clearini,ielprop,prop,kscale,
      &         smscale(1),mscalmethod,
-     &         set,nset,islavelinv,aut1,irowt1,jqt1,
+     &         set,nset,islavquadel,aut1,irowt1,jqt1,
      &         mortartrafoflag)
 !     
           do jj=1,3*nope

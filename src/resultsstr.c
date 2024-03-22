@@ -29,7 +29,7 @@ static ITG *kon1,*ipkon1,*ne1,*nelcon1,*nrhcon1,*nalcon1,*ielmat1,*ielorien1,
   *nplicon1,*nplkcon1,*npmat1_,*mi1,*ielas1,*icmd1,*ncmat1_,*nstate1_,
   *istep1,*iinc1,calcul_fn1,calcul_qa1,calcul_cauchy1,*nener1,ikin1,
   *nal=NULL,num_cpus,mt1,*nk1,*ne01,*mortar1,*ielprop1,*kscale1,*neapar1,
-  *nebpar1,mscalmethod1=0,*irowt1=NULL,*jqt1=NULL,*islavelinv1=NULL,
+  *nebpar1,mscalmethod1=0,*irowt1=NULL,*jqt1=NULL,*islavquadel1=NULL,
   mortartrafoflag1=0,intscheme1=0;
 
 static double *co1,*v1,*stx1,*elcon1,*rhcon1,*alcon1,*alzero1,*orab1,*t01,*t11,
@@ -308,7 +308,7 @@ void *resultsmechmtstr(ITG *i){
 		       ielprop1,prop1,
 		       kscale1,&list,ilist,smscale1,&mscalmethod1,
 		       &energysms1[indexnal],
-		       t0g1,t1g1,islavelinv1,aut1,irowt1,jqt1,
+		       t0g1,t1g1,islavquadel1,aut1,irowt1,jqt1,
 		       &mortartrafoflag1,&intscheme1,physcon1));
 
   return NULL;
