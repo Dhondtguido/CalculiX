@@ -40,7 +40,7 @@ void premortar(ITG *iflagact,ITG *nzs,ITG *nzsc2,
 	       double **auddtil2p,ITG **irowddtil2p,ITG **jqddtil2p,
 	       double **auddinvp,ITG **irowddinvp,ITG **jqddinvp,
 	       ITG **jqtempp,ITG **irowtempp,ITG **icoltempp,ITG *nzstemp,
-	       ITG *iit,double *slavnor,double *slavtan,
+	       ITG *iit,
 	       ITG *icol,ITG *irow,ITG *jq,
 	       ITG *ikboun,ITG *ilboun,ITG *ikmpc,ITG *ilmpc,
 	       ITG *imastnode,ITG *nmastnode,
@@ -133,8 +133,6 @@ void premortar(ITG *iflagact,ITG *nzs,ITG *nzsc2,
   irowtemp=*irowtempp;icoltemp=*icoltempp;jqtemp=*jqtempp;
   f_cs=*f_csp;f_cm=*f_cmp;
   
-  fflush(stdout);
-  
   NNEW(f_cs,double,neq[1]);
   NNEW(f_cm,double,neq[1]);
   
@@ -156,7 +154,7 @@ void premortar(ITG *iflagact,ITG *nzs,ITG *nzsc2,
     iperturb[1]=0;	  
   }  
   
-  /* small sliding is autometically set active due to combined fix-point
+  /* small sliding is automatically set active due to combined fix-point
      Newton approach 
      do NOT change this unless the additional derivates neglected here 
      have been implemented */
@@ -202,11 +200,6 @@ void premortar(ITG *iflagact,ITG *nzs,ITG *nzsc2,
   for (i=0;i<neq[1];i++){jqtemp[i]=jq[i];icoltemp[i]=icol[i];}
   jqtemp[neq[1]]=jq[neq[1]];
   for (i=0;i<nzs[1];i++){irowtemp[i]=irow[i];}
-  
-  if(*iit==1){
-    DMEMSET(slavnor,0,3**nslavs,0.);
-    DMEMSET(slavtan,0,6**nslavs,0.);
-  }
   
   /* setting iflagact=1 before calling contactmortar invokes
      combined fix-point Newton approach */
@@ -285,8 +278,8 @@ void premortar(ITG *iflagact,ITG *nzs,ITG *nzsc2,
   
   calcresidual(nmethod,neq,b,fext,f,iexpl,nactdof,aux2,vold,
 	       vini,dtime,accold,nk,adb,aub,jq,irow,nzl,
-	       &alpha,fextini,fini,islavnode,nslavnode,mortar,ntie,f_cm,
-	       f_cs,mi,nzs,nasym,idamping,veold,adc,auc,cvini,cv,
+	       &alpha,fextini,fini,islavnode,nslavnode,mortar,ntie,
+	       mi,nzs,nasym,idamping,veold,adc,auc,cvini,cv,
 	       alpham,num_cpus);
   
   SFREE(f);SFREE(fext);

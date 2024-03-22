@@ -2646,7 +2646,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	//	               for(k=0;k<neq[1];++k){printf("b=%" ITGFORMAT ",%f\n",k,f[k]);}
 	calcresidual(nmethod,neq,b,fext,f,iexpl,nactdof,aux2,vold,
 		     vini,&dtime,accold,nk,adb,aub,jq,irow,nzl,alpha,fextini,
-		     fini,islavnode,nslavnode,mortar,ntie,f_cm,f_cs,mi,
+		     fini,islavnode,nslavnode,mortar,ntie,mi,
 		     nzs,&nasym,&idamping,veold,adc,auc,cvini,cv,&alpham,
 		     &num_cpus);
 	//	                for(k=0;k<neq[1];++k){printf("b=%" ITGFORMAT ",%f\n",k,b[k]);}
@@ -2674,7 +2674,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		  &audd,&irowdd,&jqdd,&auddtil,&irowddtil,&jqddtil,
 		  &auddtil2,&irowddtil2,&jqddtil2,&auddinv,&irowddinv,
 		  &jqddinv,&jqtemp,&irowtemp,&icoltemp,nzstemp,&iit,
-		  slavnor,slavtan,icol,irow,jq,ikboun,ilboun,ikmpc,ilmpc,
+		  icol,irow,jq,ikboun,ilboun,ikmpc,ilmpc,
 		  imastnode,nmastnode,co,nk,kon,ipkon,lakon,ne,stn,
 		  elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 		  ielorien,norien,orab,ntmat_,t0,t1,ithermal,prestr,
@@ -3204,7 +3204,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	NNEW(res,double,neq[1]);
 	calcresidual(nmethod,neq,res,fext,f,iexpl,nactdof,aux2,vold,vini,
 		     &dtime,accold,nk,adb,aub,jq,irow,nzl,alpha,fextini,fini,
-		     islavnode,nslavnode,mortar,ntie,f_cm,f_cs,mi,nzs,&nasym,
+		     islavnode,nslavnode,mortar,ntie,mi,nzs,&nasym,
 		     &idamping,veold,adc,auc,cvini,cv,&alpham,&num_cpus);
 
 	/* calculating the line search factor */
@@ -3270,7 +3270,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       if((*iexpl<=1)||(*nener==1)){
 	calcresidual(nmethod,neq,b,fext,f,iexpl,nactdof,aux2,vold,vini,&dtime,
 		     accold,nk,adb,aub,jq,irow,nzl,alpha,fextini,fini,
-		     islavnode,nslavnode,mortar,ntie,f_cm,f_cs,mi,
+		     islavnode,nslavnode,mortar,ntie,mi,
 		     nzs,&nasym,&idamping,veold,adc,auc,cvini,cv,&alpham,
 		     &num_cpus);
       }

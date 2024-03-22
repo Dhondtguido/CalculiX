@@ -420,7 +420,7 @@ void calcresidual(ITG *nmethod,ITG *neq,double *b,double *fext,double *f,
         double *aub,ITG *icol,ITG *irow,ITG *nzl,double *alpha,
         double *fextini,double *fini,ITG *islavnode,ITG *nslavnode,
         ITG *mortar,ITG *ntie,
-        double *f_cm,double *f_cs,ITG *mi,ITG *nzs,ITG *nasym,
+        ITG *mi,ITG *nzs,ITG *nasym,
         ITG *idamping,double *veold,double *adc,double *auc,double *cvini,
         double *cv,double *alpham,ITG *num_cpus);
 
