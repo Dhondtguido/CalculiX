@@ -29,7 +29,7 @@
 
     Author: Saskia Sitzmann */
 
-void premortar(ITG *iflagact,ITG *nzs,ITG *nzsc2,
+void premortar(ITG *nzs,ITG *nzsc2,
 	       double **auc2p,double **adc2p,ITG **irowc2p,ITG **icolc2p,
 	       ITG **jqc2p,
 	       double **aubdp,ITG **irowbdp,ITG **jqbdp,
@@ -159,7 +159,6 @@ void premortar(ITG *iflagact,ITG *nzs,ITG *nzsc2,
      do NOT change this unless the additional derivates neglected here 
      have been implemented */
   
-  *iflagact=0;
   *nzsc2=nzs[1];
   NNEW(auc2,double,*nzsc2);
   NNEW(adc2,double,neq[1]);
@@ -200,11 +199,6 @@ void premortar(ITG *iflagact,ITG *nzs,ITG *nzsc2,
   for (i=0;i<neq[1];i++){jqtemp[i]=jq[i];icoltemp[i]=icol[i];}
   jqtemp[neq[1]]=jq[neq[1]];
   for (i=0;i<nzs[1];i++){irowtemp[i]=irow[i];}
-  
-  /* setting iflagact=1 before calling contactmortar invokes
-     combined fix-point Newton approach */
-  
-  if(*iit>1){*iflagact=1;}
     
   /* fix for quadratic FE */
     

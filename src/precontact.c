@@ -28,7 +28,7 @@ void precontact(ITG *ncont, ITG *ntie, char *tieset, ITG *nset, char *set,
         ITG *istep,ITG *iinc,ITG *iit,ITG *itiefac,
         ITG *islavsurf, ITG *islavnode, ITG *imastnode,
         ITG *nslavnode, ITG *nmastnode,ITG *imastop,ITG *mi,
-	ITG *ipe, ITG *ime,double *tietol,ITG *iflagact,
+	ITG *ipe, ITG *ime,double *tietol,
 	ITG *nintpoint,double **pslavsurfp,double *xmastnor,double *cs,
 	ITG *mcs,ITG *ics,double *clearini,ITG *nslavs){
 

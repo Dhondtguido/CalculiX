@@ -229,7 +229,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
   ITG *nslavspc=NULL,*islavspc=NULL,*nslavmpc=NULL,*islavmpc=NULL,
     *nmastspc=NULL,*imastspc=NULL,*nmastmpc=NULL,*imastmpc=NULL,
-    *islavactdof=NULL,*islavactini=NULL,iflagact_old,*islavactdoftie=NULL,
+    *islavactdof=NULL,*islavactini=NULL,*islavactdoftie=NULL,
     *irowt=NULL,*jqt=NULL,*irowtinv=NULL,*jqtinv=NULL,
     *irowb=NULL,*jqb=NULL,*irowd=NULL,*jqd=NULL,*irowdtil=NULL,*jqdtil=NULL,
     *irowbtil=NULL,*jqbtil=NULL,*irowbhelp=NULL,*jqbhelp=NULL,
@@ -1761,7 +1761,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
                      iendset,ialset,itietri,lakon,ipkon,kon,koncont,ne,
                      cg,straight,co,vold,istep,&iinc,&iit,itiefac,
                      islavsurf,islavnode,imastnode,nslavnode,nmastnode,
-                     imastop,mi,ipe,ime,tietol,&iflagact,
+                     imastop,mi,ipe,ime,tietol,
 		     nintpoint,&pslavsurf,xmastnor,cs,mcs,ics,clearini,
                      nslavs);
 		  
@@ -2186,7 +2186,6 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     if(*mortar>1){	  
       NNEW(bhat,double,neq[1]);
       NNEW(islavactdof,ITG,neq[1]);
-      iflagact_old=1;
     } 
       
     iit=1;
@@ -2670,7 +2669,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	
 	/* trafo u -> util */
 	
-	premortar(&iflagact,nzs,&nzsc2,&auc2,&adc2,
+	premortar(nzs,&nzsc2,&auc2,&adc2,
 		  &irowc2,&icolc2,&jqc2,&aubd,&irowbd,&jqbd,&aubdtil,
 		  &irowbdtil,&jqbdtil,&aubdtil2,&irowbdtil2,&jqbdtil2,
 		  &audd,&irowdd,&jqdd,&auddtil,&irowddtil,&jqddtil,
@@ -2719,7 +2718,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		      &aubdtil2,&irowdd,jqdd,&audd,&irowddtil,jqddtil,&auddtil,
 		      &irowddtil2,jqddtil2,&auddtil2,&irowddinv,jqddinv,
 		      &auddinv,irowt,jqt,aut,irowtinv,jqtinv,
-		      autinv,mi,ipe,ime,tietol,&iflagact,cstress,cstressini,
+		      autinv,mi,ipe,ime,tietol,cstress,cstressini,
 		      bp,nk,nboun,ndirboun,nodeboun,xbounact,nmpc,
 		      ipompc,nodempc,coefmpc,ikboun,ilboun,ikmpc,ilmpc,
 		      nslavspc,islavspc,nslavmpc,islavmpc,
@@ -3096,7 +3095,6 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	jq[neq[1]]=jqtemp[neq[1]];
 	for (i=0;i<nzs[1];i++){irow[i]=irowtemp[i];}
 	SFREE(jqtemp);SFREE(irowtemp);SFREE(icoltemp);
-	iflagact=iflagact_old;
 
 	/* trafo util->u , calculate cstress and update active set  */
 
@@ -3116,7 +3114,6 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		     iperturb,labmpc,cam,veold,accold,&gam,
 		     cfsini,cfstil,plkcon,nplkcon,filab,f,fn,qa,nprint,prlab,
 		     xforc,nforc);
-	iflagact_old=iflagact;
 	  
 	SFREE(auc2);SFREE(adc2);SFREE(irowc2);SFREE(icolc2);SFREE(jqc2);
 	SFREE(au);SFREE(ad);	  

@@ -70,7 +70,6 @@
  *  [in] irowtinv	field containing row numbers of autinv
  *  [in] jqtinv	pointer into field irowtinv
  *  [in] autinv	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$  
- *  [in] iflagact         here: flag indicating if coupling matrices should be updated every iteration or only once per increment (==0)
  *  [in] cstress		current Lagrange multiplier 
  *  [in] cstressini	Lagrange multiplier at start of the increment
  *  [in] bp_old		old friction bounds
@@ -118,7 +117,7 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 		   ITG *jqddinv,double **auddinvp,ITG *irowt,ITG *jqt,
 		   double *aut,ITG *irowtinv,ITG *jqtinv,
 		   double *autinv,ITG *mi,ITG *ipe,ITG *ime,double *tietol,
-		   ITG *iflagact,double *cstress,double *cstressini,
+		   double *cstress,double *cstressini,
 		   double *bp_old,ITG *nk,ITG *nboun,
 		   ITG *ndirboun,ITG *nodeboun,double *xboun,ITG *nmpc,
 		   ITG *ipompc,ITG *nodempc,double *coefmpc,ITG *ikboun,
@@ -179,16 +178,14 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 			  nmastnode,imastnode,islavactdof,
 			  islavnode,mi,ithermal));
   
-  /* right now iflagact is 1 in the first iteration of every increment 
-     and 0 for all subsequent iterations.
-     Thus the update of the normals and tangentials as well as 
+  /* The update of the normals and tangentials as well as 
      the segmentation of the contact surface needed
      for the calculation of the coupling matrices is done only once 
      per increment, since a combined fix-point
      Newton approach in implemented, see phd-thesis Saskia Sitzmann, 
      Chapter 3 introduction  */
   
-  if(*iflagact==0){
+  if(*iit==1){
       
     /* update the location of the center of gravity of 
        the master triangles and the coefficients of their

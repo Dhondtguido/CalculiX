@@ -261,7 +261,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 		   iendset,ialset,itietri,lakon,ipkon,kon,koncont,ne,
 		   cg,straight,co,vold,istep,&iinc,&iit,itiefac,
 		   islavsurf,islavnode,imastnode,nslavnode,nmastnode,
-		   imastop,mi,ipe,ime,tietol,&iflagact,
+		   imastop,mi,ipe,ime,tietol,
 		   nintpoint,&pslavsurf,xmastnor,cs,mcs,ics,clearini,
 		   nslavs);
 	      
