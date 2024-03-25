@@ -286,7 +286,7 @@ void premortar(ITG *iflagact,ITG *nzs,ITG *nzsc2,
   
   /* update vold due to spcs to get gap right for rigid body movements */
   
-  if(*iinc==1 && *iit==1 && *nmethod!=4){       
+  /* if(*iinc==1 && *iit==1 && *nmethod!=4){       
     NNEW(v,double,mt**nk);	       
     NNEW(volddummy,double,mt**nk);
     for(k=0;k<mt**nk;k++){
@@ -304,7 +304,7 @@ void premortar(ITG *iflagact,ITG *nzs,ITG *nzsc2,
     
     memcpy(&vold[0],&v[0],sizeof(double)*mt**nk);	     	
     SFREE(v);SFREE(vectornull);SFREE(volddummy);   
-  }
+    }*/
   
   *ielas=0;
   *iout=0;

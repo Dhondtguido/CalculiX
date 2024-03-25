@@ -54,9 +54,10 @@ void buildtquad(ITG *ntie,ITG *ipkon,ITG *kon,ITG *nk,
 		ITG **irowtp,ITG *jqt,double **autp,
 		ITG **irowtinvp,ITG *jqtinv,double **autinvp);
     
-void FORTRAN(checkspcmpc,(ITG *ntie,char *tieset,ITG *islavnode,ITG *imastnode,
-			  ITG *nslavnode,ITG *nmastnode,ITG *islavact,
-			  ITG *nodempc,ITG *nmpc,ITG *ipompc));
+void FORTRAN(remlagrangemult,(ITG *ntie,char *tieset,ITG *islavnode,
+			      ITG *imastnode,ITG *nslavnode,ITG *nmastnode,
+			      ITG *islavact,ITG *nodempc,ITG *nmpc,
+			      ITG *ipompc));
     
 void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 		   ITG *istartset,ITG *iendset,ITG *ialset,ITG *itietri,
@@ -203,8 +204,8 @@ void FORTRAN(genislavactdof,(ITG *ntie,char *tieset,ITG *nactdof,
 			     ITG *islavactdof,ITG *islavnode,ITG *mi,
 			     ITG *ithermal));
      
-void FORTRAN(genislavelinv,(ITG *islavelinv,ITG *jqt,char *lakon,
-			    ITG *ipkon,ITG *kon,ITG *ne,ITG *nasym));
+void FORTRAN(genislavquadel,(ITG *islavquadel,ITG *jqt,char *lakon,
+			     ITG *ipkon,ITG *kon,ITG *ne,ITG *nasym));
 
 void FORTRAN(getcontactparams,(double *mu,ITG *regmode,
 			       double *fkninv,double *fktauinv,
@@ -221,7 +222,7 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
 	       ITG **ipkonp,char **lakonp,ITG **konp,ITG *nkon,
 	       ITG *maxprevcontel,double **xstatep,ITG *nstate_,
 	       ITG **islavactdoftiep,double **bpp,ITG **islavactp,
-	       double **gapp,double **slavnorp,double **slavtanp,
+	       double **gapp,
 	       double **cdispp,double **cstressp,double **cfsp,
 	       double **bpinip,ITG **islavactinip,double **cstressinip,
 	       ITG *ntie,char *tieset,ITG *nslavnode,ITG *islavnode,

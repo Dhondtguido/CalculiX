@@ -19,8 +19,8 @@
 !
 !     calculates islavquadel(i) for all elements i
 !
-!     islavquadel(i)=1 if: - i is a quadratic element
-!                         - element i contains at least one slave node
+!     islavquadel(i)=1 if i is a quadratic element containing
+!                         at least one slave node
 !                     else the value is 0.
 !
 !     the regular shape functions for elements i for which islavquadel(i)=1

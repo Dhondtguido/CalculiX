@@ -752,9 +752,11 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 				ncmat_,ntmat_));
     }else if(*mortar>1){
       ismallsliding=1;
+      NNEW(slavnor,double,3**nslavs);
+      NNEW(slavtan,double,6**nslavs);
       inimortar(&ener,mi,ne,nslavs,nk,nener,&ipkon,&lakon,&kon,nkon,
 		&maxprevcontel,&xstate,nstate_,&islavactdoftie,&bp,&islavact,
-		&gap,&slavnor,&slavtan,&cdisp,&cstress,&cfs,
+		&gap,&cdisp,&cstress,&cfs,
 		&bpini,&islavactini,&cstressini,ntie,
 		tieset,nslavnode,islavnode,&islavnodeinv,&islavquadel,
 		&pslavdual,&aut,&irowt,&jqt,&autinv,

@@ -31,8 +31,6 @@
      - determining the quadratic elements which contain slave nodes
      - create fields islavspc, islavmpc, imastspc... connecting slave
        and/or master nodes with the spc/mpc's applied in them
-     - determine a local system (normals, tangential vectors) in the
-       slave nodes (nortanslav)
      - remove Lagrange multipliers in nodes common to two slave
        surfaces and in slave nodes with MPC's
  
@@ -43,7 +41,7 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
 	       ITG **ipkonp,char **lakonp,ITG **konp,ITG *nkon,
 	       ITG *maxprevcontel,double **xstatep,ITG *nstate_,
 	       ITG **islavactdoftiep,double **bpp,ITG **islavactp,
-	       double **gapp,double **slavnorp,double **slavtanp,
+	       double **gapp,
 	       double **cdispp,double **cstressp,double **cfsp,
 	       double **bpinip,ITG **islavactinip,double **cstressinip,
 	       ITG *ntie,char *tieset,ITG *nslavnode,ITG *islavnode,
@@ -74,14 +72,14 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
     *nmastspc=NULL,*imastspc=NULL,*nmastmpc=NULL,*imastmpc=NULL,
     *ielmat=NULL,*ielorien=NULL;
   
-  double *ener=NULL,*xstate=NULL,*bp=NULL,*gap=NULL,*slavnor=NULL,*slavtan=NULL,
+  double *ener=NULL,*xstate=NULL,*bp=NULL,*gap=NULL,
     *cdisp=NULL,*cstress=NULL,*cfs=NULL,
     *bpini=NULL,*cstressini=NULL,*pslavdual=NULL,*aut=NULL,
     *autinv=NULL,*Bd=NULL,*Bdhelp=NULL,*Dd=NULL,*Ddtil=NULL,*Bdtil=NULL;
   
   ener=*enerp;ipkon=*ipkonp;lakon=*lakonp;kon=*konp;xstate=*xstatep;
   islavactdoftie=*islavactdoftiep;bp=*bpp;islavact=*islavactp;gap=*gapp;
-  slavnor=*slavnorp;slavtan=*slavtanp;cdisp=*cdispp;cstress=*cstressp;
+  cdisp=*cdispp;cstress=*cstressp;
   cfs=*cfsp;
   bpini=*bpinip;islavactini=*islavactinip;cstressini=*cstressinip;
   islavnodeinv=*islavnodeinvp;islavquadel=*islavquadelp;pslavdual=*pslavdualp;
@@ -241,21 +239,12 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
   RENEW(islavmpc,ITG,nsmpc);
   RENEW(imastspc,ITG,nmspc);
   RENEW(imastmpc,ITG,nmmpc);
-  
-  /* calculate normal and tangential vectors on the slave surfaces */
-  
-  NNEW(slavnor,double,3**nslavs);
-  NNEW(slavtan,double,6**nslavs);
-  
-  FORTRAN(nortanslav,(tieset,ntie,ipkon,kon,lakon,set,co,vold,nset,
-		      islavsurf,itiefac,islavnode,nslavnode,slavnor,slavtan,
-		      mi));
     
     /* remove the Lagrange Multiplier from nodes common to several
        slave surfaces and from node which belong to a MPC */
     
-  FORTRAN(checkspcmpc,(ntie,tieset,islavnode,imastnode,nslavnode,nmastnode,
-		       islavact,nodempc,nmpc,ipompc));
+  FORTRAN(remlagrangemult,(ntie,tieset,islavnode,imastnode,nslavnode,nmastnode,
+			   islavact,nodempc,nmpc,ipompc));
   
   NNEW(Bd,double,1);
   NNEW(irowb,ITG,1);
@@ -275,7 +264,7 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
   
   *enerp=ener;*ipkonp=ipkon;*lakonp=lakon;*konp=kon;*xstatep=xstate;
   *islavactdoftiep=islavactdoftie;*bpp=bp;*islavactp=islavact;*gapp=gap;
-  *slavnorp=slavnor;*slavtanp=slavtan;*cdispp=cdisp;*cstressp=cstress;
+  *cdispp=cdisp;*cstressp=cstress;
   *cfsp=cfs;
   *bpinip=bpini;*islavactinip=islavactini;*cstressinip=cstressini;
   *islavnodeinvp=islavnodeinv;*islavquadelp=islavquadel;*pslavdualp=pslavdual;

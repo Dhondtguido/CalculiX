@@ -144,7 +144,6 @@ checkintegrity.f \
 checkjac.f \
 checkprojectgrad.f \
 checksharp.f \
-checkspcmpc.f \
 checktemp.f \
 checktempload.f \
 checktime.f \
@@ -722,6 +721,7 @@ regularization_slip_lin.f \
 reinit_refine.f \
 relaxval_al.f \
 relaxval_alfull.f \
+remlagrangemult.f \
 removesliver.f \
 removetet_refine.f \
 removetet_sliver.f \

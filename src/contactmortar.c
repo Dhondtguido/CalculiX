@@ -337,8 +337,8 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
     /* check SPC's and MPC's on slave nodes for compability and set all 
        slave nodes involed in SPCs/MPCs to no-LM nodes */
       
-    FORTRAN(checkspcmpc,(ntie,tieset,islavnode,imastnode,nslavnode,nmastnode,
-			 islavact,nodempc,nmpc,ipompc));
+    FORTRAN(remlagrangemult,(ntie,tieset,islavnode,imastnode,nslavnode,
+			     nmastnode,islavact,nodempc,nmpc,ipompc));
       
     nacti=0;ninacti=0;nnogap=0;nstick=0;nnolm=0;nnoslav=0;	
     for (i=0;i<*ntie;i++){	
