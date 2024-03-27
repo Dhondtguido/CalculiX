@@ -5368,3 +5368,5 @@ Dec 2002        - started to work on single crystal plasticity
  18 Mar 2024    - set ismallsliding by default to 1 for mortar
 
  22 Mar 2024    - simplified premortar.c
+
+ 27 Mar 2024    - worked on premortar.c

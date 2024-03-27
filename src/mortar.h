@@ -205,7 +205,8 @@ void FORTRAN(genislavactdof,(ITG *ntie,char *tieset,ITG *nactdof,
 			     ITG *ithermal));
      
 void FORTRAN(genislavquadel,(ITG *islavquadel,ITG *jqt,char *lakon,
-			     ITG *ipkon,ITG *kon,ITG *ne,ITG *nasym));
+			     ITG *ipkon,ITG *kon,ITG *ne,ITG *nasym,
+			     ITG *nslavquadel));
 
 void FORTRAN(getcontactparams,(double *mu,ITG *regmode,
 			       double *fkninv,double *fktauinv,
@@ -240,7 +241,8 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
 	       ITG *imastnode,ITG *nmastnode,ITG *nasym,ITG *mortar,
 	       ITG **ielmatp,ITG **ielorienp,ITG *norien,ITG *ipompc,
 	       ITG *nodempc,ITG *ikboun,ITG *ilboun,ITG *ikmpc,ITG *ilmpc,
-	       char *jobnamef,char *set,double *co,double *vold,ITG *nset);
+	       char *jobnamef,char *set,double *co,double *vold,ITG *nset,
+	       ITG *nslavquadel);
 
 void insertas(ITG **irowp,ITG **mast1p,ITG *i1,
 	      ITG *i2,ITG *ifree,ITG *nzs_,double *contribution,double **bdp);
@@ -382,7 +384,7 @@ void premortar(ITG *nzs,ITG *nzsc2,
 	       double *energy,ITG *kscale,ITG *iponoel,ITG *inoel,ITG *nener,
 	       char *orname,ITG *network,
 	       char *typeboun,ITG *num_cpus,double *t0g,double *t1g,
-	       double *smscale,ITG *mscalmethod);
+	       double *smscale,ITG *mscalmethod,ITG *nslavquadel);
        
 void FORTRAN(regularization_gn_c,(double *lambdap,ITG *divmode,ITG *regmode,
 				  double *gnc,double *aninvloc,double *p0,

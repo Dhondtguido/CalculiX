@@ -118,7 +118,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     coriolis=0,*ipneigh=NULL,*neigh=NULL,maxprevcontel,nslavs_prev_step,
     *nelemface=NULL,*ipoface=NULL,*nodface=NULL,*ifreestream=NULL,
     *isolidsurf=NULL,*neighsolidsurf=NULL,*iponoel=NULL,*inoel=NULL,
-    nface,nfreestream,nsolidsurf,i,icfd=0,id,
+    nface,nfreestream,nsolidsurf,i,icfd=0,id,nslavquadel=0,
     node,networknode,iflagact=0,*nodorig=NULL,*ipivr=NULL,iglob=0,
     *inomat=NULL,ntrimax,*nx=NULL,*ny=NULL,*nz=NULL,nforcrhs,nloadrhs,
     idampingwithoutcontact=0,*nactdoh=NULL,*nactdohinv=NULL,*ipkonf=NULL,
@@ -767,7 +767,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		&nmastspc,&imastspc,&nmastmpc,&imastmpc,
 		imastnode,nmastnode,&nasym,mortar,&ielmat,&ielorien,norien,
 		ipompc,nodempc,ikboun,ilboun,ikmpc,ilmpc,jobnamef,set,
-		co,vold,nset);
+		co,vold,nset,&nslavquadel);
     }
     NNEW(xmastnor,double,3*nmastnode[*ntie]);
   }
@@ -2702,7 +2702,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		  &idamping,&iforbou,iperturb_sav,
 		  itietri,cg,straight,koncont,energyini,energy,&kscale,
 		  iponoel,inoel,nener,orname,network,typeboun,&num_cpus,
-		  t0g,t1g,smscale,&mscalmethod);
+		  t0g,t1g,smscale,&mscalmethod,&nslavquadel);
 	
 	/* calculating coupling matrices and embedding weak 
 	   contact conditions */ 

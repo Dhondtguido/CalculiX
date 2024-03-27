@@ -59,7 +59,8 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
 	       ITG *imastnode,ITG *nmastnode,ITG *nasym,ITG *mortar,
 	       ITG **ielmatp,ITG **ielorienp,ITG *norien,ITG *ipompc,
 	       ITG *nodempc,ITG *ikboun,ITG *ilboun,ITG *ikmpc,ITG *ilmpc,
-	       char *jobnamef,char *set,double *co,double *vold,ITG *nset){
+	       char *jobnamef,char *set,double *co,double *vold,ITG *nset,
+	       ITG *nslavquadel){
 
   char *lakon=NULL;
     
@@ -214,7 +215,8 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
 	     islavnode,islavsurf,&irowt,jqt,&aut,
 	     &irowtinv,jqtinv,&autinv);
   
-  FORTRAN(genislavquadel,(islavquadel,jqt,lakon,ipkon,kon,ne,nasym));
+  FORTRAN(genislavquadel,(islavquadel,jqt,lakon,ipkon,kon,ne,nasym,
+			  nslavquadel));
   
   /* checking for SPC's and MPC's on slave and master surface */
 

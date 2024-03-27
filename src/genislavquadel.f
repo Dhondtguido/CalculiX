@@ -26,8 +26,8 @@
 !     the regular shape functions for elements i for which islavquadel(i)=1
 !     have to be replaced by the tilde shape functions.
 !
-      subroutine genislavquadel(islavquadel,jqt,
-     &     lakon,ipkon,kon,ne,nasym)
+      subroutine genislavquadel(islavquadel,jqt,lakon,ipkon,kon,ne,
+     &     nasym,nslavquadel)
 !     
 !     Author: Saskia Sitzmann
 !     

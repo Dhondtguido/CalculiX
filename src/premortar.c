@@ -103,7 +103,7 @@ void premortar(ITG *nzs,ITG *nzsc2,
 	       double *energy,ITG *kscale,ITG *iponoel,ITG *inoel,ITG *nener,
 	       char *orname,ITG *network,
 	       char *typeboun,ITG *num_cpus,double *t0g,double *t1g,
-	       double *smscale,ITG *mscalmethod){
+	       double *smscale,ITG *mscalmethod,ITG *nslavquadel){
   
   ITG im,i,k,mt=mi[1]+1,*irowc2=NULL,*icolc2=NULL,*jqc2=NULL,*irowbd=NULL,
     *jqbd=NULL,*irowbdtil=NULL,*jqbdtil=NULL,*irowbdtil2=NULL,*jqbdtil2=NULL,
@@ -147,12 +147,14 @@ void premortar(ITG *nzs,ITG *nzsc2,
   }
   
   // fix for linear calculation in first iteration of first increment
-  
-  if(*iforbou==1 && *iit==1 && *iinc==1){  
-    *ielas=1;  
-    iperturb[0]=-1;  
-    iperturb[1]=0;	  
-  }  
+
+  if(*nslavquadel>0){
+    if(*iforbou==1 && *iit==1 && *iinc==1){  
+      *ielas=1;  
+      iperturb[0]=-1;  
+      iperturb[1]=0;	  
+    }
+  }
   
   /* small sliding is automatically set active due to combined fix-point
      Newton approach 
@@ -202,6 +204,7 @@ void premortar(ITG *nzs,ITG *nzsc2,
     
   /* fix for quadratic FE */
     
+  if(*nslavquadel>0){
   NNEW(v,double,mt**nk);
   NNEW(stx,double,6*mi[0]**ne);
   NNEW(fn,double,mt**nk);
@@ -277,6 +280,7 @@ void premortar(ITG *nzs,ITG *nzsc2,
 	       alpham,num_cpus);
   
   SFREE(f);SFREE(fext);
+  }
   
   /* update vold due to spcs to get gap right for rigid body movements */
   
