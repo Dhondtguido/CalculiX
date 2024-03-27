@@ -172,7 +172,7 @@ c     Bernhardi end
           endif
 !     
 c     mortar start
-          if(mortartrafoflag.eq.1) then
+          if(mortartrafoflag.gt.0) then
             do j=1,nope
               konl(j)=kon(indexe+j)
             enddo
@@ -225,7 +225,7 @@ c     mortar end
 !     
 !     generate local transformation matrix for current element
 !     
-          if(mortartrafoflag.eq.1) then
+          if(mortartrafoflag.gt.0) then
             if(islavquadel(i).gt.0) then
               if((nope.eq.20).or.(nope.eq.10).or.(nope.eq.15)) then
                 jqt1(1)=1

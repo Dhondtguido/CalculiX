@@ -148,13 +148,13 @@ void premortar(ITG *nzs,ITG *nzsc2,
   
   // fix for linear calculation in first iteration of first increment
 
-  if(*nslavquadel>0){
+  /*  if(*nslavquadel>0){
     if(*iforbou==1 && *iit==1 && *iinc==1){  
       *ielas=1;  
       iperturb[0]=-1;  
       iperturb[1]=0;	  
     }
-  }
+    }*/
   
   /* small sliding is automatically set active due to combined fix-point
      Newton approach 
@@ -204,7 +204,7 @@ void premortar(ITG *nzs,ITG *nzsc2,
     
   /* fix for quadratic FE */
     
-  if(*nslavquadel>0){
+  /* if(*nslavquadel>0){
   NNEW(v,double,mt**nk);
   NNEW(stx,double,6*mi[0]**ne);
   NNEW(fn,double,mt**nk);
@@ -213,12 +213,12 @@ void premortar(ITG *nzs,ITG *nzsc2,
   *iout=-1;
   NNEW(f,double,neq[1]);
   NNEW(fext,double,neq[1]);
-  NNEW(inum,ITG,*nk);
+  NNEW(inum,ITG,*nk);*/
   
   /* calculating the internal forces and tangent stiffness using
      modified shape functions for quadratic elements */
   
-  results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,
+  /*  results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,
         elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
         ielorien,norien,orab,ntmat_,t0,t1act,ithermal,
         prestr,iprestr,filab,eme,emn,een,iperturb,
@@ -245,12 +245,12 @@ void premortar(ITG *nzs,ITG *nzsc2,
   
   *rhsi=1;
   DMEMSET(ad,0,neq[1],0.);
-  DMEMSET(au,0,nzs[1],0.);
+  DMEMSET(au,0,nzs[1],0.);*/
   
   /* calculating the external forces fext and stiffness matrix au/ad using
      modified shape functions for quadratic elements */
   
-  mafillsmmain(co,nk,kon,ipkon,lakon,ne,nodeboun,ndirboun,xboun,nboun,
+  /* mafillsmmain(co,nk,kon,ipkon,lakon,ne,nodeboun,ndirboun,xboun,nboun,
 	       ipompc,nodempc,coefmpc,nmpc,nodeforc,ndirforc,xforcact,
 	       nforc,nelemload,sideload,xloadact,nload,xbodyact,ipobody,
 	       nbody,cgr,ad,au,fext,nactdof,icol,jq,irow,
@@ -269,18 +269,24 @@ void premortar(ITG *nzs,ITG *nzsc2,
 	       pmastsurf,mortar,clearini,ielprop,prop,ne0,fnext,kscale,
 	       iponoel,inoel,network,ntrans,inotr,trab,smscale,
 	       mscalmethod,set,nset,islavquadel,aut,irowt,jqt,
-	       &mortartrafoflag);
+	       &mortartrafoflag);*/
 
   /* calculating the residual b */
   
-  calcresidual(nmethod,neq,b,fext,f,iexpl,nactdof,aux2,vold,
+  /*calcresidual(nmethod,neq,b,fext,f,iexpl,nactdof,aux2,vold,
 	       vini,dtime,accold,nk,adb,aub,jq,irow,nzl,
 	       &alpha,fextini,fini,islavnode,nslavnode,mortar,ntie,
 	       mi,nzs,nasym,idamping,veold,adc,auc,cvini,cv,
-	       alpham,num_cpus);
+	       alpham,num_cpus);*/
   
-  SFREE(f);SFREE(fext);
-  }
+  /*  for(k=0;k<neq[1];++k){printf("f=%" ITGFORMAT ",%f\n",k,f[k]);}
+  for(k=0;k<neq[1];++k){printf("fext=%" ITGFORMAT ",%f\n",k,fext[k]);}
+  for(k=0;k<neq[1];++k){printf("b=%" ITGFORMAT ",%f\n",k,b[k]);}
+  for(k=0;k<neq[1];++k){printf("ad=%" ITGFORMAT ",%f\n",k,ad[k]);}
+  for(k=0;k<nzs[1];++k){printf("au=%" ITGFORMAT ",%f\n",k,au[k]);}*/
+  
+  /* SFREE(f);SFREE(fext);
+     }*/
   
   /* update vold due to spcs to get gap right for rigid body movements */
   
@@ -304,11 +310,11 @@ void premortar(ITG *nzs,ITG *nzsc2,
     SFREE(v);SFREE(vectornull);SFREE(volddummy);   
     }*/
   
-  *ielas=0;
+  /*  *ielas=0;
   *iout=0;
   iperturb[0]=iperturb_sav[0];
   iperturb[1]=iperturb_sav[1];
-  mortartrafoflag=0;
+  mortartrafoflag=0;*/
   
   *auc2p=auc2;*adc2p=adc2;*irowc2p=irowc2;*icolc2p=icolc2;*jqc2p=jqc2;
   *aubdp=aubd;*irowbdp=irowbd;*jqbdp=jqbd;

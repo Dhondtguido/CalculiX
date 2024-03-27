@@ -5370,3 +5370,7 @@ Dec 2002        - started to work on single crystal plasticity
  22 Mar 2024    - simplified premortar.c
 
  27 Mar 2024    - worked on premortar.c
+                - covered the calculation of the stiffness matrix and
+		  forces for mortar with quadratic contact elements by
+		  the usual calls of results and mafillsm in nonlingeo
+		  (use of nslavquadel) instead of in premortar.c.

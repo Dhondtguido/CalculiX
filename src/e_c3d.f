@@ -674,7 +674,7 @@ c     Bernhardi end
         endif
 !     
 c     mortar start
-        if(mortartrafoflag.eq.1) then
+        if(mortartrafoflag.gt.0) then
           do i1=1,nope
             shptil(1,i1)=shp(1,i1)
             shptil(2,i1)=shp(2,i1)
@@ -846,7 +846,7 @@ c     call orthotropic(stiff,anisox)
         xsjj=dsqrt(xsj)
 !        
 c     mortar start
-        if(mortartrafoflag.eq.1) then
+        if(mortartrafoflag.gt.0) then
           do i1=1,nope
             shpj(1,i1)=shptil(1,i1)*xsjj
             shpj(2,i1)=shptil(2,i1)*xsjj
@@ -980,7 +980,7 @@ c            if((mass.eq.1).and.(iexpl.gt.1)) then
                   if(mass.eq.1) then
                     if(lakonl(4:5).ne.'8I') then
 c     mortar start
-                      if(mortartrafoflag.eq.1) then
+                      if(mortartrafoflag.gt.0) then
                         sm(ii1,jj1)=sm(ii1,jj1)
      &                       +rho*shpj(4,ii)*shptil(4,jj)*weight
                       else
@@ -1000,7 +1000,7 @@ c     mortar end
 !     
                   if(coriolis.eq.1) then
 c     mortar start
-                    if(mortartrafoflag.eq.1) then
+                    if(mortartrafoflag.gt.0) then
                       dmass=2.d0*
      &                     rho*shpj(4,ii)*shptil(4,jj)*weight
      &                     *dsqrt(omx)
@@ -1118,7 +1118,7 @@ c            if((mass.eq.1).and.(iexpl.gt.1)) then
 !     
                 if((mass.eq.1).and.(om.gt.0.d0)) then
 c     mortar start                  
-                  if(mortartrafoflag.eq.1) then
+                  if(mortartrafoflag.gt.0) then
                     dmass=shpj(4,ii)*shptil(4,jj)*weight*om
                   else
 c     mortar end                  
@@ -1139,7 +1139,7 @@ c     mortar end
                 if(mass.eq.1) then
                   if(lakonl(4:5).ne.'8I') then
 c     mortar start                    
-                    if(mortartrafoflag.eq.1) then
+                    if(mortartrafoflag.gt.0) then
                       sm(ii1,jj1)=sm(ii1,jj1)
      &                     +rho*shpj(4,ii)*shptil(4,jj)*weight
                     else
@@ -1159,7 +1159,7 @@ c     mortar end
 !     
                 if(coriolis.eq.1) then
 c     mortar start                    
-                  if(mortartrafoflag.eq.1) then
+                  if(mortartrafoflag.gt.0) then
                     dmass=2.d0*
      &                   rho*shpj(4,ii)*shptil(4,jj)*
      &                   weight*dsqrt(omx)
@@ -1402,7 +1402,7 @@ c     Bernhardi end
           endif
 !     
 c     mortar start
-          if(mortartrafoflag.eq.1) then
+          if(mortartrafoflag.gt.0) then
 !
 !     generate aut1
 !
@@ -1483,7 +1483,7 @@ c     mortar end
               endif
 !     
 c     mortar start
-              if(mortartrafoflag.eq.1) then
+              if(mortartrafoflag.gt.0) then
                 do i1=1,nopes
                   shptil2(1,i1)=shp2(1,i1)
                   shptil2(2,i1)=shp2(2,i1)
@@ -1589,7 +1589,7 @@ c     Bernhardi end
                   ipointer=(ifacew(k,ig)-1)*3
                 endif
 c     mortar start                
-                if(mortartrafoflag.eq.1) then
+                if(mortartrafoflag.gt.0) then
                   ff(ipointer+1)=ff(ipointer+1)
      &                 -shptil2(4,k)*xload(1,id)
      &                 *xsj2(1)*weight
@@ -1627,7 +1627,7 @@ c     mortar end
                 call shape3tri(xi,et,xl1,xsj2,xs2,shp2,iflag)
               endif
 c     mortar start
-              if(mortartrafoflag.eq.1) then
+              if(mortartrafoflag.gt.0) then
                 do i1=1,nopes
                   shptil2(1,i1)=shp2(1,i1)
                   shptil2(2,i1)=shp2(2,i1)
@@ -1770,7 +1770,7 @@ c     Bernhardi end
                           if(k.lt.l) eknlsign=-1.d0
                         endif
 c     mortar start                        
-                        if(mortartrafoflag.eq.1) then
+                        if(mortartrafoflag.gt.0) then
                           term=weight*xload(1,id)*shptil2(4,ii)*
      &                         eknlsign*(xsj2(1)*
      &                         (xkl(n,2)*shptil2(3,jj)-xkl(n,3)*
@@ -1813,7 +1813,7 @@ c     mortar end
                             if(k.lt.l) eknlsign=-1.d0
                           endif
 c     mortar start                          
-                          if(mortartrafoflag.eq.1) then
+                          if(mortartrafoflag.gt.0) then
                             term=-weight*stre(kk,k)*
      &                           shptil2(4,ii)*
      &                           eknlsign*(xsj2(1)*

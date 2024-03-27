@@ -331,7 +331,7 @@ c     Bernhardi end
 !     quadratic shape functions into purely positive ones for slave
 !     faces.    
 !     
-        if(mortartrafoflag.eq.1) then
+        if(mortartrafoflag.gt.0) then
           if(islavquadel(i).gt.0) then
 c            if((nope.eq.20).or.(nope.eq.10).or.(nope.eq.15)) then
               jqt1(1)=1
@@ -653,7 +653,7 @@ c     Bernhardi end
 !     lease one slave node into purely positive functions on the slave    
 !     faces     
 !     
-          if(mortartrafoflag.eq.1) then
+          if(mortartrafoflag.gt.0) then
             if(islavquadel(i).gt.0) then
 c              if((nope.eq.20).or.(nope.eq.10).or.(nope.eq.15)) then
                 do i1=1,nope
@@ -1143,7 +1143,7 @@ c          if((iout.ge.0).or.(iout.eq.-2).or.(kode.le.-100).or.
 !     
 !     mortar start
 !     
-            if(mortartrafoflag.eq.1) then
+            if(mortartrafoflag.gt.0) then
 !
 !             using the tilde shape functions
 !

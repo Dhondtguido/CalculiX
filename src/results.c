@@ -93,14 +93,18 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
     calculate strains, stresses..., no result output
     corresponds to iout=-1 with in addition the
     calculation of the internal energy density
+
     iout=-1: v is assumed to be known and is used to
     calculate strains, stresses..., no result output;
     is used to take changes in SPC's and MPC's at the
     start of a new increment or iteration into account
+
     iout=0: v is calculated from the system solution
     and strains, stresses.. are calculated, no result output
+
     iout=1:  v is calculated from the system solution and strains,
     stresses.. are calculated, requested results output
+
     iout=2: v is assumed to be known and is used to 
     calculate strains, stresses..., requested results output */
       
@@ -173,7 +177,7 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
   /* next statement allows for storing the displacements in each
      iteration: for debugging purposes */
 
-  if((strcmp1(&filab[3],"I")==0)&&(*iout==0)&&(*mortartrafoflag!=1)){
+  if((strcmp1(&filab[3],"I")==0)&&(*iout==0)&&(*mortartrafoflag==0)){
     FORTRAN(frditeration,(co,nk,kon,ipkon,lakon,ne,v,
 			  ttime,ielmat,matname,mi,istep,iinc,ithermal));
   }
@@ -306,7 +310,7 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
   /* calculating the thermal flux and material tangent at the 
      integration points; calculating the internal point flux */
 
-  if((ithermal[0]>=2)&&(intpointvart==1)&&(*mortartrafoflag!=1)){
+  if((ithermal[0]>=2)&&(intpointvart==1)&&(*mortartrafoflag==0)){
     
     /* determining the element bounds in each thread */
 
@@ -396,7 +400,7 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
      - mi[1]!=5 (no electromagnetic calculation) */
 
   if((*iout<=0)&&(*nmethod==4)&&(iperturb[0]>1)&&(ithermal[0]<=1)&&
-     (mi[1]!=5)&&(*mortartrafoflag!=1)&&(*nener==1)){
+     (mi[1]!=5)&&(*mortartrafoflag==0)&&(*nener==1)){
     
     /* determining the element bounds in each thread */
 
@@ -450,7 +454,7 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
      extrapolation of integration point values to the nodes
      interpolation of 3d results for 1d/2d elements */
 
-  if(*mortartrafoflag!=1){
+  if(*mortartrafoflag==0){
     FORTRAN(resultsprint,(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,ielorien,
 			  norien,orab,t1,ithermal,filab,een,iperturb,fn,nactdof,
 			  iout,vold,nodeboun,ndirboun,nboun,nmethod,ttime,
