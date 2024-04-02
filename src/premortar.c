@@ -23,11 +23,11 @@
 #include "CalculiX.h"
 #include "mortar.h"
 
- /* function called before solver transforming the SPCs/MPCs, the matrix 
-    and the right hand side for quadratic elements 
-    (see Phd-thesis Sitzmann,Chapter 4)
+/* function called before solver transforming the SPCs/MPCs, the matrix 
+   and the right hand side for quadratic elements 
+   (see Phd-thesis Sitzmann,Chapter 4)
 
-    Author: Saskia Sitzmann */
+   Author: Saskia Sitzmann */
 
 void premortar(ITG *nzs,ITG *nzsc2,
 	       double **auc2p,double **adc2p,ITG **irowc2p,ITG **icolc2p,
@@ -148,13 +148,13 @@ void premortar(ITG *nzs,ITG *nzsc2,
   
   // fix for linear calculation in first iteration of first increment
 
-  /*  if(*nslavquadel>0){
+  if(*nslavquadel>0){
     if(*iforbou==1 && *iit==1 && *iinc==1){  
       *ielas=1;  
       iperturb[0]=-1;  
       iperturb[1]=0;	  
     }
-    }*/
+  }
   
   /* small sliding is automatically set active due to combined fix-point
      Newton approach 
@@ -204,117 +204,116 @@ void premortar(ITG *nzs,ITG *nzsc2,
     
   /* fix for quadratic FE */
     
-  /* if(*nslavquadel>0){
-  NNEW(v,double,mt**nk);
-  NNEW(stx,double,6*mi[0]**ne);
-  NNEW(fn,double,mt**nk);
-  NNEW(fmpc2,double,*nmpc);
-  memcpy(&v[0],&vold[0],sizeof(double)*mt**nk);
-  *iout=-1;
-  NNEW(f,double,neq[1]);
-  NNEW(fext,double,neq[1]);
-  NNEW(inum,ITG,*nk);*/
+  if(*nslavquadel>0){
+    NNEW(v,double,mt**nk);
+    NNEW(stx,double,6*mi[0]**ne);
+    NNEW(fn,double,mt**nk);
+    NNEW(fmpc2,double,*nmpc);
+    memcpy(&v[0],&vold[0],sizeof(double)*mt**nk);
+    *iout=-1;
+    NNEW(f,double,neq[1]);
+    NNEW(fext,double,neq[1]);
+    NNEW(inum,ITG,*nk);
   
-  /* calculating the internal forces and tangent stiffness using
-     modified shape functions for quadratic elements */
+    /* calculating the internal forces and tangent stiffness using
+       modified shape functions for quadratic elements */
   
-  /*  results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,
-        elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
-        ielorien,norien,orab,ntmat_,t0,t1act,ithermal,
-        prestr,iprestr,filab,eme,emn,een,iperturb,
-        f,fn,nactdof,iout,qa,vold,b,nodeboun,
-        ndirboun,xbounact,nboun,ipompc,
-        nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[1],veold,accold,
-        bet,gam,dtime,time,ttime,plicon,nplicon,plkcon,nplkcon,
-        xstateini,xstiff,xstate,npmat_,epn,matname,mi,ielas,icmd,
-        ncmat_,nstate_,stiini,vini,ikboun,ilboun,ener,enern,emeini,
-        xstaten,eei,enerini,cocon,ncocon,set,nset,istartset,iendset,
-        ialset,nprint,prlab,prset,qfx,qfn,trab,inotr,ntrans,fmpc2,
-        nelemload,nload,ikmpc,ilmpc,istep,iinc,springarea,
-        reltime,ne0,thicke,shcon,nshcon,
-        sideload,xloadact,xloadold,icfd,inomat,pslavsurf,pmastsurf,
-        mortar,islavact,cdn,islavnode,nslavnode,ntie,clearini,
-        islavsurf,ielprop,prop,energyini,energy,kscale,iponoel,
-        inoel,nener,orname,network,ipobody,xbodyact,ibody,typeboun,
-	itiefac,tieset,smscale,mscalmethod,nbody,t0g,t1g,
-        islavquadel,aut,irowt,jqt,&mortartrafoflag,
-	intscheme,physcon);
+    results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,
+	    elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
+	    ielorien,norien,orab,ntmat_,t0,t1act,ithermal,
+	    prestr,iprestr,filab,eme,emn,een,iperturb,
+	    f,fn,nactdof,iout,qa,vold,b,nodeboun,
+	    ndirboun,xbounact,nboun,ipompc,
+	    nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[1],veold,accold,
+	    bet,gam,dtime,time,ttime,plicon,nplicon,plkcon,nplkcon,
+	    xstateini,xstiff,xstate,npmat_,epn,matname,mi,ielas,icmd,
+	    ncmat_,nstate_,stiini,vini,ikboun,ilboun,ener,enern,emeini,
+	    xstaten,eei,enerini,cocon,ncocon,set,nset,istartset,iendset,
+	    ialset,nprint,prlab,prset,qfx,qfn,trab,inotr,ntrans,fmpc2,
+	    nelemload,nload,ikmpc,ilmpc,istep,iinc,springarea,
+	    reltime,ne0,thicke,shcon,nshcon,
+	    sideload,xloadact,xloadold,icfd,inomat,pslavsurf,pmastsurf,
+	    mortar,islavact,cdn,islavnode,nslavnode,ntie,clearini,
+	    islavsurf,ielprop,prop,energyini,energy,kscale,iponoel,
+	    inoel,nener,orname,network,ipobody,xbodyact,ibody,typeboun,
+	    itiefac,tieset,smscale,mscalmethod,nbody,t0g,t1g,
+	    islavquadel,aut,irowt,jqt,&mortartrafoflag,
+	    intscheme,physcon);
   
-  SFREE(v);SFREE(stx);SFREE(fn);SFREE(inum);SFREE(fmpc2);
-  *iout=0;	    
+    SFREE(v);SFREE(stx);SFREE(fn);SFREE(inum);SFREE(fmpc2);
+    *iout=0;	    
   
-  *rhsi=1;
-  DMEMSET(ad,0,neq[1],0.);
-  DMEMSET(au,0,nzs[1],0.);*/
+    *rhsi=1;
+    DMEMSET(ad,0,neq[1],0.);
+    DMEMSET(au,0,nzs[1],0.);
   
-  /* calculating the external forces fext and stiffness matrix au/ad using
-     modified shape functions for quadratic elements */
+    /* calculating the external forces fext and stiffness matrix au/ad using
+       modified shape functions for quadratic elements */
   
-  /* mafillsmmain(co,nk,kon,ipkon,lakon,ne,nodeboun,ndirboun,xboun,nboun,
-	       ipompc,nodempc,coefmpc,nmpc,nodeforc,ndirforc,xforcact,
-	       nforc,nelemload,sideload,xloadact,nload,xbodyact,ipobody,
-	       nbody,cgr,ad,au,fext,nactdof,icol,jq,irow,
-	       neq,nzl,
-	       nmethod,ikmpc,ilmpc,ikboun,ilboun,
-	       elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,
-	       ielmat,ielorien,norien,orab,ntmat_,
-	       t0,t1act,ithermal,prestr,iprestr,vold,iperturb,sti,
-	       nzs,stx,adb,aub,iexpl,plicon,nplicon,plkcon,nplkcon,
-	       xstiff,npmat_,dtime,matname,mi,
-	       ncmat_,mass,stiffness,buckling,rhsi,intscheme,
-	       physcon,shcon,nshcon,cocon,ncocon,ttime,time,istep,iinc,
-	       coriolis,ibody,xloadold,reltime,veold,springarea,nstate_,
-	       xstateini,xstate,thicke,integerglob,doubleglob,
-	       tieset,istartset,iendset,ialset,ntie,nasym,pslavsurf,
-	       pmastsurf,mortar,clearini,ielprop,prop,ne0,fnext,kscale,
-	       iponoel,inoel,network,ntrans,inotr,trab,smscale,
-	       mscalmethod,set,nset,islavquadel,aut,irowt,jqt,
-	       &mortartrafoflag);*/
+    mafillsmmain(co,nk,kon,ipkon,lakon,ne,nodeboun,ndirboun,xboun,nboun,
+		 ipompc,nodempc,coefmpc,nmpc,nodeforc,ndirforc,xforcact,
+		 nforc,nelemload,sideload,xloadact,nload,xbodyact,ipobody,
+		 nbody,cgr,ad,au,fext,nactdof,icol,jq,irow,
+		 neq,nzl,
+		 nmethod,ikmpc,ilmpc,ikboun,ilboun,
+		 elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,
+		 ielmat,ielorien,norien,orab,ntmat_,
+		 t0,t1act,ithermal,prestr,iprestr,vold,iperturb,sti,
+		 nzs,stx,adb,aub,iexpl,plicon,nplicon,plkcon,nplkcon,
+		 xstiff,npmat_,dtime,matname,mi,
+		 ncmat_,mass,stiffness,buckling,rhsi,intscheme,
+		 physcon,shcon,nshcon,cocon,ncocon,ttime,time,istep,iinc,
+		 coriolis,ibody,xloadold,reltime,veold,springarea,nstate_,
+		 xstateini,xstate,thicke,integerglob,doubleglob,
+		 tieset,istartset,iendset,ialset,ntie,nasym,pslavsurf,
+		 pmastsurf,mortar,clearini,ielprop,prop,ne0,fnext,kscale,
+		 iponoel,inoel,network,ntrans,inotr,trab,smscale,
+		 mscalmethod,set,nset,islavquadel,aut,irowt,jqt,
+		 &mortartrafoflag);
 
-  /* calculating the residual b */
+    /* calculating the residual b */
   
-  /*calcresidual(nmethod,neq,b,fext,f,iexpl,nactdof,aux2,vold,
-	       vini,dtime,accold,nk,adb,aub,jq,irow,nzl,
-	       &alpha,fextini,fini,islavnode,nslavnode,mortar,ntie,
-	       mi,nzs,nasym,idamping,veold,adc,auc,cvini,cv,
-	       alpham,num_cpus);*/
+    calcresidual(nmethod,neq,b,fext,f,iexpl,nactdof,aux2,vold,
+		 vini,dtime,accold,nk,adb,aub,jq,irow,nzl,
+		 &alpha,fextini,fini,islavnode,nslavnode,mortar,ntie,
+		 mi,nzs,nasym,idamping,veold,adc,auc,cvini,cv,
+		 alpham,num_cpus);
   
-  /*  for(k=0;k<neq[1];++k){printf("f=%" ITGFORMAT ",%f\n",k,f[k]);}
-  for(k=0;k<neq[1];++k){printf("fext=%" ITGFORMAT ",%f\n",k,fext[k]);}
-  for(k=0;k<neq[1];++k){printf("b=%" ITGFORMAT ",%f\n",k,b[k]);}
-  for(k=0;k<neq[1];++k){printf("ad=%" ITGFORMAT ",%f\n",k,ad[k]);}
-  for(k=0;k<nzs[1];++k){printf("au=%" ITGFORMAT ",%f\n",k,au[k]);}*/
+    /*  for(k=0;k<neq[1];++k){printf("f=%" ITGFORMAT ",%f\n",k,f[k]);}
+	for(k=0;k<neq[1];++k){printf("fext=%" ITGFORMAT ",%f\n",k,fext[k]);}
+	for(k=0;k<neq[1];++k){printf("b=%" ITGFORMAT ",%f\n",k,b[k]);}
+	for(k=0;k<neq[1];++k){printf("ad=%" ITGFORMAT ",%f\n",k,ad[k]);}
+	for(k=0;k<nzs[1];++k){printf("au=%" ITGFORMAT ",%f\n",k,au[k]);}*/
   
-  /* SFREE(f);SFREE(fext);
-     }*/
+    SFREE(f);SFREE(fext);
+  }
   
   /* update vold due to spcs to get gap right for rigid body movements */
   
   /* if(*iinc==1 && *iit==1 && *nmethod!=4){       
-    NNEW(v,double,mt**nk);	       
-    NNEW(volddummy,double,mt**nk);
-    for(k=0;k<mt**nk;k++){
-      volddummy[k]=0.0;}           
-    memcpy(&v[0],&vold[0],sizeof(double)*mt**nk);	       
-    NNEW(vectornull,double,neq[1]);	       
-    *iout=-1;
+     NNEW(v,double,mt**nk);	       
+     NNEW(volddummy,double,mt**nk);
+     for(k=0;k<mt**nk;k++){
+     volddummy[k]=0.0;}           
+     memcpy(&v[0],&vold[0],sizeof(double)*mt**nk);	       
+     NNEW(vectornull,double,neq[1]);	       
+     *iout=-1;
     
-    FORTRAN(resultsini_mortar,(nk,v,ithermal,iperturb,
-			       nactdof,iout,volddummy,vectornull,nodeboun,
-			       ndirboun,
-			       xbounact,nboun,ipompc,nodempc,coefmpc,labmpc,
-			       nmpc,nmethod,cam,
-			       bet,gam,dtime,mi));
+     FORTRAN(resultsini_mortar,(nk,v,ithermal,iperturb,
+     nactdof,iout,volddummy,vectornull,nodeboun,
+     ndirboun,
+     xbounact,nboun,ipompc,nodempc,coefmpc,labmpc,
+     nmpc,nmethod,cam,
+     bet,gam,dtime,mi));
     
-    memcpy(&vold[0],&v[0],sizeof(double)*mt**nk);	     	
-    SFREE(v);SFREE(vectornull);SFREE(volddummy);   
-    }*/
+     memcpy(&vold[0],&v[0],sizeof(double)*mt**nk);	     	
+     SFREE(v);SFREE(vectornull);SFREE(volddummy);   
+     }*/
   
-  /*  *ielas=0;
+  *ielas=0;
   *iout=0;
   iperturb[0]=iperturb_sav[0];
   iperturb[1]=iperturb_sav[1];
-  mortartrafoflag=0;*/
   
   *auc2p=auc2;*adc2p=adc2;*irowc2p=irowc2;*icolc2p=icolc2;*jqc2p=jqc2;
   *aubdp=aubd;*irowbdp=irowbd;*jqbdp=jqbd;

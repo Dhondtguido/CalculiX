@@ -75,7 +75,7 @@
  *  [in] bp_old		old friction bounds
  *  [in] pslavdual	(:,i)coefficients \f$ \alpha_{ij}\f$, \f$ 1,j=1,..8\f$ for dual shape functions for face i
  *  [in] islavactdof      (i)=10*slavenodenumber+direction for active dof i
- *  [in] islavactdoftie   (i)=tie number for active dof i
+ *  [in] islavtie   (i)=tie number for active dof i
  *  [in] islavnodeinv     (i) slave node index for node i
  *  [out] Bdp		coupling matrix \f$ B_d[p,q]=\int \psi_p \phi_q dS \f$, \f$ p \in S, q \in M \f$ 
  *  [out] irowbp		field containing row numbers of Bd
@@ -125,7 +125,7 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 		   ITG *nslavspc,ITG *islavspc,ITG *nslavmpc,
 		   ITG *islavmpc,ITG *nmastmpc,ITG *imastmpc,
 		   double *pslavdual,ITG *islavactdof,
-		   ITG *islavactdoftie,double *plicon,ITG *nplicon,ITG *npmat_,
+		   ITG *islavtie,double *plicon,ITG *nplicon,ITG *npmat_,
 		   ITG *nelcon,double *dtime,ITG *islavnodeinv,double **Bdp,
 		   ITG **irowbp,ITG *jqb,double **Bdhelpp,ITG **irowbhelpp,
 		   ITG *jqbhelp,double **Ddp,ITG **irowdp,ITG *jqd,
@@ -569,7 +569,7 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 	      cstressini,bp_old,nactdof,ntie,mi,nk,nboun,ndirboun,nodeboun,
 	      xboun,nmpc,ipompc,nodempc,coefmpc,ikboun,ilboun,ikmpc,ilmpc,
 	      nslavspc,islavspc,nslavmpc,islavmpc,
-	      tieset,islavactdoftie,
+	      tieset,islavtie,
 	      nelcon,elcon,tietol,ncmat_,ntmat_,plicon,nplicon,npmat_,dtime,
 	      irowt,jqt,aut,irowtinv,jqtinv,autinv,
 	      islavnodeinv,&k,nmethod,bet,ithermal,

@@ -73,7 +73,7 @@
  *  [in] cstress		current Lagrange multiplier 
  *  [in] cstressini	Lagrange multiplier at start of the increment
  *  [in] bp_old		old friction bounds 
- *  [in] islavactdoftie   (i)=tie number for active dof i
+ *  [in] islavtie   (i)=tie number for active dof i
  *  [in] irowt		field containing row numbers of aut
  *  [in] jqt	        pointer into field irowt
  *  [in] aut		transformation matrix \f$ T[p,q]\f$ for slave nodes \f$ p,q \f$ 
@@ -101,7 +101,7 @@ void multimortar(double **aup,double *ad,ITG **irowp,ITG *jq,ITG *nzs,
 		  ITG *nmpc,ITG *ipompc,ITG *nodempc,double *coefmpc,
 		  ITG *ikboun,ITG *ilboun,ITG *ikmpc,ITG *ilmpc,ITG *nslavspc,
 		  ITG *islavspc,ITG *nslavmpc,ITG *islavmpc,char *tieset,
-		  ITG *islavactdoftie,ITG *nelcon,double  *elcon,
+		  ITG *islavtie,ITG *nelcon,double  *elcon,
 		  double *tietol,ITG *ncmat_,ITG *ntmat_,double *plicon,
 		  ITG *nplicon,ITG *npmat_,double *dtime,ITG *irowt,
 		  ITG *jqt,double *aut, ITG *irowtinv,ITG *jqtinv,
@@ -1159,7 +1159,7 @@ void multimortar(double **aup,double *ad,ITG **irowp,ITG *jq,ITG *nzs,
 		 ntie,mi,nk,nboun,ndirboun,nodeboun,xboun,ipompc,nodempc,
 		 coefmpc,ikboun,ilboun,ikmpc,ilmpc,nslavspc,islavspc,
 		 nslavmpc,islavmpc,
-		 tieset,islavactdoftie,nelcon,elcon,tietol,
+		 tieset,islavtie,nelcon,elcon,tietol,
 		 ncmat_,ntmat_,plicon,nplicon,npmat_,dtime,irowt,jqt,
 		 aut,irowtinv,jqtinv,autinv,islavnodeinv,
 		 iit,bet,ithermal,plkcon,

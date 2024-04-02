@@ -42,9 +42,9 @@
 !
       character*81 tieset(3,*)
 !     
-      integer ntie,i,j,l,id,node,islavnode(*),imastnode(*),
+      integer ntie,i,j,l,id,node,islavnode(*),imastnode(*),ilen,
      &     nslavnode(ntie+1),nmastnode(ntie+1),islavact(*),
-     &     nodempc(3,*),index,nmpc,ipompc(*),ist,node2
+     &     nodempc(3,*),index1,nmpc,ipompc(*),ist,node2
 !     
 !     remove Lagrange Multiplier contribution for nodes which are
 !     in more than one contact tie
@@ -63,10 +63,16 @@
                   if(id>0) then
                     if(islavnode(nslavnode(j)+id).eq.node) then
                       islavact(l)=-2
-                      write(*,*)'checkspcmpc: node',node,
-     &                     'tie1s',i,'tie2s',j
-                      write(*,*)'in more than one contact',
-     &                     'tie and set NoLM!'
+                      write(*,*) '*WARNING in remlagrangemult:'
+                      write(*,*) '         node ',node,
+     &                     ' belongs to both slave surface'
+                      ilen=index(tieset(1,i)(1:80),' ')
+                      write(*,*) '         ',tieset(1,i)(1:ilen-1),
+     &                     ' and slave surface'
+                      ilen=index(tieset(1,j)(1:80),' ')
+                      write(*,*) '         ',tieset(1,j)(1:ilen-1),
+     &                     ' Lagrange multiplier is removed'
+                      write(*,*)
                     endif
                   endif                   
                   call nident(imastnode(nmastnode(j)+1),node,
@@ -74,10 +80,16 @@
                   if(id>0) then
                     if(imastnode(nmastnode(j)+id).eq.node) then
                       islavact(l)=-2
-                      write(*,*)'checkspcmpc: node',node,
-     &                     'tie1s',i,'tie2m',j
-                      write(*,*)'in more than one',
-     &                     ' contact tie and set NoLM!'
+                      write(*,*) '*WARNING in remlagrangemult:'
+                      write(*,*) '         node ',node,
+     &                     ' belongs to both slave surface'
+                      ilen=index(tieset(1,i)(1:80),' ')
+                      write(*,*) '         ',tieset(1,i)(1:ilen-1),
+     &                     ' and master surface'
+                      ilen=index(tieset(1,j)(1:80),' ')
+                      write(*,*) '         ',tieset(1,j)(1:ilen-1),
+     &                     ' Lagrange multiplier is removed'
+                      write(*,*)
                     endif
                   endif                   
                 endif
@@ -105,11 +117,11 @@
             endif
           endif
         enddo 
-        index=nodempc(3,ist)
+        index1=nodempc(3,ist)
 !     
-        if(index.ne.0) then
+        if(index1.ne.0) then
           do
-            node2=nodempc(1,index)
+            node2=nodempc(1,index1)
             do j=1,ntie
               call nident(islavnode(nslavnode(j)+1),node2,
      &             nslavnode(j+1)-nslavnode(j),id)
@@ -119,8 +131,8 @@
                 endif
               endif
             enddo
-            index=nodempc(3,index)
-            if(index.eq.0) exit
+            index1=nodempc(3,index1)
+            if(index1.eq.0) exit
           enddo
         endif
       enddo

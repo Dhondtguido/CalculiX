@@ -96,7 +96,7 @@
  *  [in] cstress		current Lagrange multiplier 
  *  [in] cstressini	Lagrange multiplier at start of the increment 
  *  [in] bp_old		old friction bounds
- *  [in] islavactdoftie   (i)=tie number for active dof i
+ *  [in] islavtie   (i)=tie number for active dof i
  *  [in] irowt		field containing row numbers of aut
  *  [in] jqt	        pointer into field irowt
  *  [in] aut		transformation matrix \f$ T[p,q]\f$ for slave nodes \f$ p,q \f$ 
@@ -135,7 +135,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 		    ITG *ikboun,ITG *ilboun,ITG *ikmpc,ITG *ilmpc,
 		    ITG *nslavspc,ITG *islavspc,ITG *nslavmpc,
 		    ITG *islavmpc,char *tieset,
-		    ITG *islavactdoftie,ITG *nelcon,double  *elcon,
+		    ITG *islavtie,ITG *nelcon,double  *elcon,
 		    double *tietol,ITG *ncmat_,ITG *ntmat_,
 		    double *plicon,ITG *nplicon,ITG *npmat_,double *dtime,
 		    ITG *irowt,ITG *jqt,double *aut, 
@@ -295,13 +295,13 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
       scal=Ddtil[jqdtil[node-1]-1];
       FORTRAN(getcontactparams,(&mu,&regmode,&aninvloc,&atauinvloc,
 				&p0,&beta_e,tietol,elcon,
-				&islavactdoftie[islavnodeentry-1],ncmat_,
+				&islavtie[islavnodeentry-1],ncmat_,
 				ntmat_));
       constantt=min(constant,1.0/atauinvloc);
       derivmode=1;
       FORTRAN(regularization_gn_c,(&lambda_n,&derivmode,&regmode,&dgnc,
 				   &aninvloc,&p0,&beta_e,elcon,nelcon,
-				   &islavactdoftie[islavnodeentry-1],ntmat_,
+				   &islavtie[islavnodeentry-1],ntmat_,
 				   plicon,nplicon,npmat_,ncmat_,tietol,&scal));
       
       if(islavact[islavnodeentry-1]==1 || islavact[islavnodeentry-1]==2){
@@ -479,7 +479,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
       scal=Ddtil[jqdtil[node-1]-1];
       FORTRAN(getcontactparams,(&mu,&regmode,&aninvloc,&atauinvloc,
 				&p0,&beta_e,tietol,elcon,
-				&islavactdoftie[islavnodeentry-1],ncmat_,
+				&islavtie[islavnodeentry-1],ncmat_,
 				ntmat_));
       
       constantt=min(constant,1.0/atauinvloc);
@@ -487,7 +487,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
       
       FORTRAN(regularization_gn_c,(&lambda_n,&derivmode,&regmode,&dgnc,
 				   &aninvloc,&p0,&beta_e,elcon,nelcon,
-				   &islavactdoftie[islavnodeentry-1],ntmat_,
+				   &islavtie[islavnodeentry-1],ntmat_,
 				   plicon,nplicon,npmat_,ncmat_,tietol,&scal));
       
       if(islavact[islavnodeentry-1]==1 || islavact[islavnodeentry-1]==2){
@@ -660,14 +660,14 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
       scal=Ddtil[jqdtil[node-1]-1];
       FORTRAN(getcontactparams,(&mu,&regmode,&aninvloc,&atauinvloc,
 				&p0,&beta_e,tietol,elcon,
-				&islavactdoftie[islavnodeentry-1],ncmat_,
+				&islavtie[islavnodeentry-1],ncmat_,
 				ntmat_));
       
       constantt=min(constant,1.0/atauinvloc);
       derivmode=1;
       FORTRAN(regularization_gn_c,(&lambda_n,&derivmode,&regmode,&dgnc,
 				   &aninvloc,&p0,&beta_e,elcon,nelcon,
-				   &islavactdoftie[islavnodeentry-1],ntmat_,
+				   &islavtie[islavnodeentry-1],ntmat_,
 				   plicon,nplicon,npmat_,ncmat_,tietol,&scal));
       
       if(islavact[islavnodeentry-1]==1 || islavact[islavnodeentry-1]==2){
@@ -904,7 +904,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
       scal=Ddtil[jqdtil[node-1]-1];
       FORTRAN(getcontactparams,(&mu,&regmode,&aninvloc,&atauinvloc,
 				&p0,&beta_e,tietol,elcon,
-				&islavactdoftie[islavnodeentry-1],ncmat_,
+				&islavtie[islavnodeentry-1],ncmat_,
 				ntmat_));
       
       constantt=min(constant,1.0/atauinvloc);
@@ -912,7 +912,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
       
       FORTRAN(regularization_gn_c,(&lambda_n,&derivmode,&regmode,&dgnc,
 				   &aninvloc,&p0,&beta_e,elcon,nelcon,
-				   &islavactdoftie[islavnodeentry-1],ntmat_,
+				   &islavtie[islavnodeentry-1],ntmat_,
 				   plicon,nplicon,npmat_,ncmat_,tietol,&scal));
 
       if(islavact[islavnodeentry-1]==1 || islavact[islavnodeentry-1]==2){
@@ -1087,14 +1087,14 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
       scal=Ddtil[jqdtil[node-1]-1];
       FORTRAN(getcontactparams,(&mu,&regmode,&aninvloc,&atauinvloc,
 				&p0,&beta_e,tietol,elcon,
-				&islavactdoftie[islavnodeentry-1],ncmat_,
+				&islavtie[islavnodeentry-1],ncmat_,
 				ntmat_));
       
       constantt=min(constant,1.0/atauinvloc);
       derivmode=1;
       FORTRAN(regularization_gn_c,(&lambda_n,&derivmode,&regmode,&dgnc,
 				   &aninvloc,&p0,&beta_e,elcon,nelcon,
-				   &islavactdoftie[islavnodeentry-1],ntmat_,
+				   &islavtie[islavnodeentry-1],ntmat_,
 				   plicon,nplicon,npmat_,ncmat_,tietol,&scal));
       
       if(islavact[islavnodeentry-1]==1 || islavact[islavnodeentry-1]==2){ 	    
@@ -1334,7 +1334,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
       scal=Ddtil[jqdtil[node-1]-1];
       FORTRAN(getcontactparams,(&mu,&regmode,&aninvloc,&atauinvloc,
 				&p0,&beta_e,tietol,elcon,
-				&islavactdoftie[islavnodeentry-1],ncmat_,
+				&islavtie[islavnodeentry-1],ncmat_,
 				ntmat_));
       
       constantt=min(constant,1.0/atauinvloc);
@@ -1342,7 +1342,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
       
       FORTRAN(regularization_gn_c,(&lambda_n,&derivmode,&regmode,&dgnc,
 				   &aninvloc,&p0,&beta_e,elcon,nelcon,
-				   &islavactdoftie[islavnodeentry-1],ntmat_,
+				   &islavtie[islavnodeentry-1],ntmat_,
 				   plicon,nplicon,npmat_,ncmat_,tietol,&scal));
       
       if(islavact[islavnodeentry-1]==1 || islavact[islavnodeentry-1]==2){
@@ -1514,7 +1514,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
       scal=Ddtil[jqdtil[node-1]-1];
       FORTRAN(getcontactparams,(&mu,&regmode,&aninvloc,&atauinvloc,
 				&p0,&beta_e,tietol,elcon,
-				&islavactdoftie[islavnodeentry-1],ncmat_,
+				&islavtie[islavnodeentry-1],ncmat_,
 				ntmat_));
       
       constantt=min(constant,1.0/atauinvloc);
@@ -1522,7 +1522,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
       
       FORTRAN(regularization_gn_c,(&lambda_n,&derivmode,&regmode,&dgnc,
 				   &aninvloc,&p0,&beta_e,elcon,nelcon,
-				   &islavactdoftie[islavnodeentry-1],ntmat_,
+				   &islavtie[islavnodeentry-1],ntmat_,
 				   plicon,nplicon,npmat_,ncmat_,tietol,&scal));
       
       if(islavact[islavnodeentry-1]==1 || islavact[islavnodeentry-1]==2){ 	    
@@ -1750,7 +1750,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
       
       FORTRAN(getcontactparams,(&mu,&regmode,&aninvloc,&atauinvloc,
 				&p0,&beta_e,tietol,elcon,
-				&islavactdoftie[islavnodeentry-1],ncmat_,
+				&islavtie[islavnodeentry-1],ncmat_,
 				ntmat_));
       
       constantt=min(constant,1.0/atauinvloc);
@@ -1761,13 +1761,13 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
       derivmode=1;
       FORTRAN(regularization_gn_c,(&lambda_n,&derivmode,&regmode,&dgnc,
 				   &aninvloc,&p0,&beta_e,elcon,nelcon,
-				   &islavactdoftie[islavnodeentry-1],ntmat_,
+				   &islavtie[islavnodeentry-1],ntmat_,
 				   plicon,nplicon,npmat_,ncmat_,tietol,&scal));
       derivmode=0;
       
       FORTRAN(regularization_gn_c,(&lambda_n,&derivmode,&regmode,&gnc,
 				   &aninvloc,&p0,&beta_e,elcon,nelcon,
-				   &islavactdoftie[islavnodeentry-1],ntmat_,
+				   &islavtie[islavnodeentry-1],ntmat_,
 				   plicon,nplicon,npmat_,ncmat_,tietol,&scal));
 
       if(islavact[islavnodeentry-1]==1 || islavact[islavnodeentry-1]==2){

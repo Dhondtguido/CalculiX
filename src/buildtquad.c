@@ -22,28 +22,11 @@
 #include <time.h>
 #include "CalculiX.h"
 #include "mortar.h"
-/**
- * Calculates the transformation matrices \f$ T \f$ and \f$ T^{-1} \f$ for quad-quad or quad-lin method
- * see phd-thesis Sitzmann Chapter 4.1
- * Author: Saskia Sitzmann
- * 
- *  [in] ntie		number of contraints
- *  [in] ipkon		pointer into field kon...
- *  [in] kon 		.. for element i storing the connectivity list of elem. in succ. order 
- *  [in] nk 		number of nodes
- *  [in] lakon		(i) label for element i 
- *  [in] nslavnode	(i)pointer into field isalvnode for contact tie i 
- *  [in] itiefac		pointer into field islavsurf: (1,i) beginning slave_i (2,i) end of slave_i 
- *  [in] tieset           (i) name of tie i 
- *  [in] islavnode	field storing the nodes of the slave surface
- *  [in] islavsurf	islavsurf(1,i) slaveface i islavsurf(2,i) # integration points generated before looking at face i  
- *  [out] irowtp		field containing row numbers of aut
- *  [out] jqt	        pointer into field irowt
- *  [out] autp		transformation matrix \f$ T[p,q]\f$ for slave nodes \f$ p,q \f$ 
- *  [out] irowtinvp	field containing row numbers of autinv
- *  [out] jqtinv	pointer into field irowtinv
- *  [out] autinvp	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$ 
-*/
+
+/*  Calculates the transformation matrices for quadratic elements
+    see phd-thesis Sitzmann Chapter 4.1
+    Author: Saskia Sitzmann */
+
 void buildtquad(ITG *ntie,ITG *ipkon,ITG *kon,ITG *nk,char *lakon,
 		ITG *nslavnode,ITG *itiefac,char *tieset,
 		ITG *islavnode,ITG *islavsurf,

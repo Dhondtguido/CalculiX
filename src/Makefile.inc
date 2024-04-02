@@ -97,7 +97,6 @@ carbon_seal.f \
 catedges_crackprop.f \
 catedges_refine.f \
 catnodes.f \
-catsmpcslavno.f \
 cattet.f \
 cattri.f \
 cavity_refine.f \
@@ -808,6 +807,7 @@ smoothshock.f \
 solidsections.f \
 sortev.f \
 spcmatch.f \
+spcmpcmortar.f \
 specificgasconstants.f \
 specificheats.f \
 splitline.f \

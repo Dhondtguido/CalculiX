@@ -5374,3 +5374,5 @@ Dec 2002        - started to work on single crystal plasticity
 		  forces for mortar with quadratic contact elements by
 		  the usual calls of results and mafillsm in nonlingeo
 		  (use of nslavquadel) instead of in premortar.c.
+
+ 2 Apr 2024     - worked on speeding up mortar contact

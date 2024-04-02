@@ -229,7 +229,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
   ITG *nslavspc=NULL,*islavspc=NULL,*nslavmpc=NULL,*islavmpc=NULL,
     *nmastspc=NULL,*imastspc=NULL,*nmastmpc=NULL,*imastmpc=NULL,
-    *islavactdof=NULL,*islavactini=NULL,*islavactdoftie=NULL,
+    *islavactdof=NULL,*islavactini=NULL,*islavtie=NULL,
     *irowt=NULL,*jqt=NULL,*irowtinv=NULL,*jqtinv=NULL,
     *irowb=NULL,*jqb=NULL,*irowd=NULL,*jqd=NULL,*irowdtil=NULL,*jqdtil=NULL,
     *irowbtil=NULL,*jqbtil=NULL,*irowbhelp=NULL,*jqbhelp=NULL,
@@ -755,7 +755,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       NNEW(slavnor,double,3**nslavs);
       NNEW(slavtan,double,6**nslavs);
       inimortar(&ener,mi,ne,nslavs,nk,nener,&ipkon,&lakon,&kon,nkon,
-		&maxprevcontel,&xstate,nstate_,&islavactdoftie,&bp,&islavact,
+		&maxprevcontel,&xstate,nstate_,&islavtie,&bp,&islavact,
 		&gap,&cdisp,&cstress,&cfs,
 		&bpini,&islavactini,&cstressini,ntie,
 		tieset,nslavnode,islavnode,&islavnodeinv,&islavquadel,
@@ -2124,8 +2124,9 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	      islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
 	      inoel,nener,orname,network,ipobody,xbodyact,ibody,typeboun,
 	      itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	      islavquadel,aut,irowt,jqt,&nslavquadel,
+	      islavquadel,aut,irowt,jqt,&mortartrafoflag,
 	      &intscheme,physcon);
+      //	      islavquadel,aut,irowt,jqt,&nslavquadel,
       iperturb[0]=0;if(ne1d2d==1)SFREE(inum);
 	  
       /* check whether any displacements or temperatures are changed
@@ -2158,10 +2159,9 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
 		inoel,nener,orname,network,ipobody,xbodyact,ibody,typeboun,
 		itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-		islavquadel,aut,irowt,jqt,&nslavquadel,
+		islavquadel,aut,irowt,jqt,&mortartrafoflag,
 		&intscheme,physcon);
-	//	for(k=0;k<neq[1];++k){printf("f=%" ITGFORMAT ",%f\n",k,f[k]);}
-	//           FORTRAN(stop,());
+	//		islavquadel,aut,irowt,jqt,&nslavquadel,
 	if(ne1d2d==1)SFREE(inum);
 	  
 	isiz=mt**nk;cpypardou(vold,v,&isiz,&num_cpus);
@@ -2418,8 +2418,9 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		  islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
 		  inoel,nener,orname,network,ipobody,xbodyact,ibody,typeboun,
 		  itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-		  islavquadel,aut,irowt,jqt,&nslavquadel,
+		  islavquadel,aut,irowt,jqt,&mortartrafoflag,
 		  &intscheme,physcon);
+	  //		  islavquadel,aut,irowt,jqt,&nslavquadel,
 	  
 	  isiz=mt**nk;cpypardou(vold,v,&isiz,&num_cpus);
 	      
@@ -2494,8 +2495,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		     pmastsurf,mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
 		     iponoel,inoel,network,ntrans,inotr,trab,smscale,
 		     &mscalmethod,set,nset,islavquadel,aut,irowt,jqt,
-		     &nslavquadel);
-	//		     &mortartrafoflag);
+		     &mortartrafoflag);
+	//		     &nslavquadel);
 
 	if(nasym==1){
 	  RENEW(au,double,2*nzs[1]);
@@ -2724,7 +2725,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		      ipompc,nodempc,coefmpc,ikboun,ilboun,ikmpc,ilmpc,
 		      nslavspc,islavspc,nslavmpc,islavmpc,
 		      nmastmpc,imastmpc,
-		      pslavdual,islavactdof,islavactdoftie,
+		      pslavdual,islavactdof,islavtie,
 		      plicon,nplicon,npmat_,nelcon,&dtime,islavnodeinv,&Bd,
 		      &irowb,jqb,&Bdhelp,&irowbhelp,jqbhelp,&Dd,&irowd,jqd,
 		      &Ddtil,&irowdtil,jqdtil,&Bdtil,&irowbtil,jqbtil,
@@ -4144,7 +4145,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     }else if(*mortar>1){
       SFREE(islavact);SFREE(gap);SFREE(slavnor);SFREE(slavtan);
       SFREE(cstress);SFREE(ipe);SFREE(ime);SFREE(cfs);SFREE(cfm);
-      SFREE(cdisp);SFREE(bp);SFREE(islavactdoftie);
+      SFREE(cdisp);SFREE(bp);SFREE(islavtie);
       SFREE(nslavspc);SFREE(islavspc);SFREE(nslavmpc);SFREE(islavmpc);
       SFREE(nmastspc);SFREE(imastspc);SFREE(nmastmpc);SFREE(imastmpc);
       SFREE(pslavdual);

@@ -40,7 +40,7 @@
 void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
 	       ITG **ipkonp,char **lakonp,ITG **konp,ITG *nkon,
 	       ITG *maxprevcontel,double **xstatep,ITG *nstate_,
-	       ITG **islavactdoftiep,double **bpp,ITG **islavactp,
+	       ITG **islavtiep,double **bpp,ITG **islavactp,
 	       double **gapp,
 	       double **cdispp,double **cstressp,double **cfsp,
 	       double **bpinip,ITG **islavactinip,double **cstressinip,
@@ -64,7 +64,7 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
 
   char *lakon=NULL;
     
-  ITG k,i,j,node,mt=mi[1]+1,*ipkon=NULL,*kon=NULL,*islavactdoftie=NULL,
+  ITG k,i,j,node,mt=mi[1]+1,*ipkon=NULL,*kon=NULL,*islavtie=NULL,
     *islavact=NULL,*islavactini=NULL,*islavnodeinv=NULL,*islavquadel=NULL,
     *irowt=NULL,*jqt=NULL,nmspc,nmmpc,nsspc,nsmpc,*irowtinv=NULL,*jqtinv=NULL,
     *irowbhelp=NULL,*jqbhelp=NULL,*irowb=NULL,*jqb=NULL,*irowd=NULL,*jqd=NULL,
@@ -79,7 +79,7 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
     *autinv=NULL,*Bd=NULL,*Bdhelp=NULL,*Dd=NULL,*Ddtil=NULL,*Bdtil=NULL;
   
   ener=*enerp;ipkon=*ipkonp;lakon=*lakonp;kon=*konp;xstate=*xstatep;
-  islavactdoftie=*islavactdoftiep;bp=*bpp;islavact=*islavactp;gap=*gapp;
+  islavtie=*islavtiep;bp=*bpp;islavact=*islavactp;gap=*gapp;
   cdisp=*cdispp;cstress=*cstressp;
   cfs=*cfsp;
   bpini=*bpinip;islavactini=*islavactinip;cstressini=*cstressinip;
@@ -127,7 +127,7 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
     kon[*nkon+k]=islavnode[k];
     strcpy1(&lakon[8*(*ne+k)]," S    C0",8);
   }
-  NNEW(islavactdoftie,ITG,*nslavs);
+  NNEW(islavtie,ITG,*nslavs);
   NNEW(bp,double,*nslavs);
   NNEW(islavact,ITG,*nslavs);
   NNEW(gap,double,*nslavs);
@@ -150,7 +150,7 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
   for(i=0;i<*ntie;i++){
     if(tieset[i*(81*3)+80]=='C'){
       for(j=nslavnode[i];j<nslavnode[i+1];j++){
-	islavactdoftie[j]=i;
+	islavtie[j]=i;
       }
     }
   }
@@ -229,13 +229,13 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
   NNEW(nmastmpc,ITG,2*nmastnode[*ntie]);
   NNEW(imastmpc,ITG,*nmpc);
   
-  FORTRAN(catsmpcslavno,(ntie,islavnode,imastnode,nslavnode,
-			 nmastnode,nboun,nmpc,
-			 ipompc,nodempc,ikboun,ilboun,ikmpc,ilmpc,
-			 nslavspc,islavspc,
-			 &nsspc,nslavmpc,islavmpc,&nsmpc,
-			 nmastspc,imastspc,&nmspc,nmastmpc,
-			 imastmpc,&nmmpc,jobnamef));
+  FORTRAN(spcmpcmortar,(ntie,islavnode,imastnode,nslavnode,
+			nmastnode,nboun,nmpc,
+			ipompc,nodempc,ikboun,ilboun,ikmpc,ilmpc,
+			nslavspc,islavspc,
+			&nsspc,nslavmpc,islavmpc,&nsmpc,
+			nmastspc,imastspc,&nmspc,nmastmpc,
+			imastmpc,&nmmpc,jobnamef));
   
   RENEW(islavspc,ITG,nsspc);
   RENEW(islavmpc,ITG,nsmpc);
@@ -265,7 +265,7 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
   NNEW(jqbtil,ITG,*nk+1);
   
   *enerp=ener;*ipkonp=ipkon;*lakonp=lakon;*konp=kon;*xstatep=xstate;
-  *islavactdoftiep=islavactdoftie;*bpp=bp;*islavactp=islavact;*gapp=gap;
+  *islavtiep=islavtie;*bpp=bp;*islavactp=islavact;*gapp=gap;
   *cdispp=cdisp;*cstressp=cstress;
   *cfsp=cfs;
   *bpinip=bpini;*islavactinip=islavactini;*cstressinip=cstressini;
