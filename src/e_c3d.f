@@ -28,8 +28,8 @@
      &     nstate_,xstateini,xstate,ne0,ipkon,thicke,
      &     integerglob,doubleglob,tieset,istartset,iendset,ialset,ntie,
      &     nasym,pslavsurf,pmastsurf,mortar,clearini,ielprop,prop,
-     &     kscale,smscalel,mscalmethod,set,nset,islavquadel,aut,
-     &     irowt,jqt,mortartrafoflag)
+     &     kscale,smscalel,mscalmethod,set,nset,islavquadel,aute,
+     &     irowte,jqte,mortartrafoflag)
 !     
 !     computation of the element matrix and rhs for the element with
 !     the topology in konl
@@ -61,7 +61,7 @@
       character*81 tieset(3,*),set(*)
 !     
       integer konl(20),ifaceq(8,6),nelemload(2,*),nbody,nelem,
-     &     mi(*),jfaces,igauss,mortar,kon(*),ielprop(*),null,
+     &     mi(*),jfaces,igauss,mortar,kon(*),ielprop(*),null,length,
      &     mattyp,ithermal(*),iperturb(*),nload,idist,i,j,k,l,i1,i2,j1,
      &     nmethod,k1,l1,ii,jj,ii1,jj1,id,ipointer,ig,m1,m2,m3,m4,kk,
      &     nelcon(2,*),nrhcon(*),nalcon(2,*),ielmat(mi(3),*),six,
@@ -73,8 +73,8 @@
      &     nmpc,ikmpc(*),ilmpc(*),iscale,nstate_,ne0,iselect(6),kscale,
      &     istartset(*),iendset(*),ialset(*),ntie,integerglob(*),nasym,
      &     nplicon(0:ntmat_,*),nplkcon(0:ntmat_,*),npmat_,nopered,
-     &     mscalmethod,nset,islavquadel(*),jqt(*),irowt(*),
-     &     node1,node2,irowt1(16),jqt1(9),j2,mortartrafoflag
+     &     mscalmethod,nset,islavquadel(*),jqte(*),irowte(*),
+     &     node1,node2,irowtf(16),jqtf(9),j2,mortartrafoflag
 !     
       real*8 co(3,*),xl(3,20),shp(4,20),xs2(3,7),veold(0:mi(2),*),
      &     s(60,60),w(3,3),p1(3),p2(3),bodyf(3),bodyfx(3),ff(60),
@@ -95,8 +95,8 @@
      &     xstiff(27,mi(1),*),plconloc(802),dtime,ttime,time,tvar(2),
      &     sax(60,60),ffax(60),gs(8,4),a,stress(6),stre(3,3),
      &     pslavsurf(3,*),pmastsurf(6,*),xmass,xsjmass,shpmass(4,20),
-     &     shpjmass(4,20),smscalel,smfactor,shptil(4,20),aut(*),
-     &     shptil2(7,9),aut1(16),doubleglob(*)
+     &     shpjmass(4,20),smscalel,smfactor,shptil(4,20),aute(*),
+     &     shptil2(7,9),autf(16),doubleglob(*)
 !     
       include "gauss.f"
 !     
@@ -673,6 +673,10 @@ c     Bernhardi end
           call shape6w(xi,et,ze,xl,xsj,shp,iflag)
         endif
 !     
+!       aute,jqte,irowte: describe local transformation matrix for element    
+!       autf,jqtf,irowtf: describe local transformation matrix for face of
+!                         element
+!     
 c     mortar start
         if(mortartrafoflag.gt.0) then
           do i1=1,nope
@@ -684,18 +688,18 @@ c     mortar start
           if(islavquadel(nelem).gt.0) then
             if((nope.eq.20).or.(nope.eq.10).or.(nope.eq.15)) then
               do i1=1,nope
-                if(jqt(i1+1)-jqt(i1).gt.0) then
+                if(jqte(i1+1)-jqte(i1).gt.0) then
                   shptil(1,i1)=0.0
                   shptil(2,i1)=0.0
                   shptil(3,i1)=0.0
                   shptil(4,i1)=0.0
                 endif
-                do j1=jqt(i1),jqt(i1+1)-1
-                  j2=irowt(j1)
-                  shptil(1,i1)=shptil(1,i1)+aut(j1)*shp(1,j2)
-                  shptil(2,i1)=shptil(2,i1)+aut(j1)*shp(2,j2)
-                  shptil(3,i1)=shptil(3,i1)+aut(j1)*shp(3,j2)
-                  shptil(4,i1)=shptil(4,i1)+aut(j1)*shp(4,j2)
+                do j1=jqte(i1),jqte(i1+1)-1
+                  j2=irowte(j1)
+                  shptil(1,i1)=shptil(1,i1)+aute(j1)*shp(1,j2)
+                  shptil(2,i1)=shptil(2,i1)+aute(j1)*shp(2,j2)
+                  shptil(3,i1)=shptil(3,i1)+aute(j1)*shp(3,j2)
+                  shptil(4,i1)=shptil(4,i1)+aute(j1)*shp(4,j2)
                 enddo
               enddo
             endif
@@ -1402,13 +1406,47 @@ c     Bernhardi end
           endif
 !     
 c     mortar start
-          if(mortartrafoflag.gt.0) then
 !
-!     generate aut1
+!     generate autf
 !
-            if(islavquadel(nelem).gt.0) then
-              if((nope.eq.20).or.(nope.eq.10).or.(nope.eq.15)) then
-                jqt1(1)=1
+c          if(mortartrafoflag.gt.0) then
+c            if(islavquadel(nelem).gt.0) then
+c              jqtf(1)=1
+c              ii=1
+c              do i1=1,nopes
+c                if(nope.eq.20) then
+c                  node1=ifaceq(i1,ig)
+c                elseif(nope.eq.10) then
+c                  node1=ifacet(i1,ig)
+c                else
+c                  node1=ifacew(i1,ig)
+c                endif
+c                length=jqte(node1+1)-jqte(node1)
+c                do j2=1,nopes
+c                  if(nope.eq.20) then
+c                    node2=ifaceq(j2,ig)
+c                  elseif(nope.eq.10) then
+c                    node2=ifacet(j2,ig)
+c                  else
+c                    node2=ifacew(j2,ig)
+c                  endif
+c                  call nident(irowte(jqte(node1)),node2,length,id)
+c                  if(id.gt.0) then
+c                    j1=jqte(node1)+id-1
+c                    if(irowte(j1).eq.node2) then
+c                      autf(ii)=aute(j1)
+c                      irowtf(ii)=j2
+c                      ii=ii+1
+c                    endif
+c                  endif
+c                enddo
+c                jqtf(i1+1)=ii
+c              enddo
+c            endif
+c          endif
+            if(mortartrafoflag.gt.0) then
+              if(islavquadel(nelem).gt.0) then
+                jqtf(1)=1
                 ii=1
                 do i1=1,nopes
                   if(nope.eq.20) then
@@ -1419,8 +1457,8 @@ c     mortar start
                     ipointer=ifacew(i1,ig)
                   endif
                   node1=ipointer
-                  do j1=jqt(node1),jqt(node1+1)-1
-                    node2=irowt(j1)
+                  do j1=jqte(node1),jqte(node1+1)-1
+                    node2=irowte(j1)
                     do j2=1,nopes
                       if(nope.eq.20) then
                         ipointer=ifaceq(j2,ig)
@@ -1430,17 +1468,16 @@ c     mortar start
                         ipointer=ifacew(j2,ig)
                       endif
                       if(ipointer.eq.node2) then
-                        aut1(ii)=aut(j1)
-                        irowt1(ii)=j2
+                        autf(ii)=aute(j1)
+                        irowtf(ii)=j2
                         ii=ii+1
                       endif
                     enddo
                   enddo
-                  jqt1(i1+1)=ii
+                  jqtf(i1+1)=ii
                 enddo
               endif
             endif
-          endif
 c     mortar end
 !          
           do i=1,mint2d
@@ -1493,22 +1530,22 @@ c     mortar start
                 if(islavquadel(nelem).gt.0) then
                   if((nopes.eq.8).or.(nopes.eq.6)) then
                     do i1=1,nopes
-                      if(jqt1(i1+1)-jqt1(i1).gt.0) then
+                      if(jqtf(i1+1)-jqtf(i1).gt.0) then
                         shptil2(1,i1)=0.0
                         shptil2(2,i1)=0.0
                         shptil2(3,i1)=0.0
                         shptil2(4,i1)=0.0
                       endif
-                      do j1=jqt1(i1),jqt1(i1+1)-1
-                        j2=irowt1(j1)
+                      do j1=jqtf(i1),jqtf(i1+1)-1
+                        j2=irowtf(j1)
                         shptil2(1,i1)=shptil2(1,i1)
-     &                       +aut1(j1)*shp2(1,j2)
+     &                       +autf(j1)*shp2(1,j2)
                         shptil2(2,i1)=shptil2(2,i1)
-     &                       +aut1(j1)*shp2(2,j2)
+     &                       +autf(j1)*shp2(2,j2)
                         shptil2(3,i1)=shptil2(3,i1)
-     &                       +aut1(j1)*shp2(3,j2)
+     &                       +autf(j1)*shp2(3,j2)
                         shptil2(4,i1)=shptil2(4,i1)
-     &                       +aut1(j1)*shp2(4,j2)
+     &                       +autf(j1)*shp2(4,j2)
                       enddo
                     enddo
                   endif
@@ -1637,22 +1674,22 @@ c     mortar start
                 if(islavquadel(nelem).gt.0) then
                   if((nopes.eq.8).or.(nopes.eq.6)) then
                     do i1=1,nopes
-                      if(jqt1(i1+1)-jqt1(i1).gt.0) then
+                      if(jqtf(i1+1)-jqtf(i1).gt.0) then
                         shptil2(1,i1)=0.0
                         shptil2(2,i1)=0.0
                         shptil2(3,i1)=0.0
                         shptil2(4,i1)=0.0
                       endif
-                      do j1=jqt1(i1),jqt1(i1+1)-1
-                        j2=irowt1(j1)
+                      do j1=jqtf(i1),jqtf(i1+1)-1
+                        j2=irowtf(j1)
                         shptil2(1,i1)=shptil2(1,i1)
-     &                       +aut1(j1)*shp2(1,j2)
+     &                       +autf(j1)*shp2(1,j2)
                         shptil2(2,i1)=shptil2(2,i1)
-     &                       +aut1(j1)*shp2(2,j2)
+     &                       +autf(j1)*shp2(2,j2)
                         shptil2(3,i1)=shptil2(3,i1)
-     &                       +aut1(j1)*shp2(3,j2)
+     &                       +autf(j1)*shp2(3,j2)
                         shptil2(4,i1)=shptil2(4,i1)
-     &                       +aut1(j1)*shp2(4,j2)
+     &                       +autf(j1)*shp2(4,j2)
                       enddo
                     enddo
                   endif
