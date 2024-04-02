@@ -48,7 +48,7 @@
      &     nplicon(0:ntmat_,*),nplkcon(0:ntmat_,*),npmat_,calcul_fn,
      &     calcul_cauchy,calcul_qa,nopered,mortar,jfaces,igauss,
      &     istrainfree,nlgeom_undo,list,ilist(*),m,j1,mscalmethod,
-     &     irowt(*),jqt(*),jqt1(21),irowt1(96),icmdcpy,
+     &     irowt(*),jqt(*),jqt1(21),irowt1(96),icmdcpy,length,id,
      &     islavquadel(*),node1,node2,j2,ii,mortartrafoflag
 !     
       real*8 co(3,*),v(0:mi(2),*),shp(4,20),stiini(6,mi(1),*),
@@ -326,33 +326,59 @@ c     Bernhardi end
         enddo
 !     
 !     mortar start
-!     calculating the transformation matrix for quadratic elements containing
+!     
+!     calculating the transformation matrix for a quadratic element containing
 !     at least one slave node; this matrix transforms the regular 
 !     quadratic shape functions into purely positive ones for slave
 !     faces.    
 !     
+!     for the local matrix row numbers in columns are not in ascending order    
+!     
         if(mortartrafoflag.gt.0) then
           if(islavquadel(i).gt.0) then
-c            if((nope.eq.20).or.(nope.eq.10).or.(nope.eq.15)) then
               jqt1(1)=1
               ii=1
               do i1=1,nope
                 node1=konl(i1)
-                do j1=jqt(node1),jqt(node1+1)-1
-                  node2=irowt(j1)
-                  do j2=1,nope
-                    if(konl(j2).eq.node2) then
+                length=jqt(node1+1)-jqt(node1)
+                do j2=1,nope
+                  node2=konl(j2)
+                  call nident(irowt(jqt(node1)),node2,length,id)
+                  if(id.gt.0) then
+                    j1=jqt(node1)+id-1
+                    if(irowt(j1).eq.node2) then
                       aut1(ii)=aut(j1)
                       irowt1(ii)=j2
                       ii=ii+1
                     endif
-                  enddo
+                  endif
                 enddo
                 jqt1(i1+1)=ii
               enddo
-c            endif
           endif
         endif
+c        if(mortartrafoflag.gt.0) then
+c          if(islavquadel(i).gt.0) then
+c            if((nope.eq.20).or.(nope.eq.10).or.(nope.eq.15)) then
+c              jqt1(1)=1
+c              ii=1
+c              do i1=1,nope
+c                node1=konl(i1)
+c                do j1=jqt(node1),jqt(node1+1)-1
+c                  node2=irowt(j1)
+c                  do j2=1,nope
+c                    if(konl(j2).eq.node2) then
+c                      aut1(ii)=aut(j1)
+c                      irowt1(ii)=j2
+c                      ii=ii+1
+c                    endif
+c                  enddo
+c                enddo
+c                jqt1(i1+1)=ii
+c              enddo
+c            endif
+c          endif
+c        endif
 !     
 !     mortar end
 !     
