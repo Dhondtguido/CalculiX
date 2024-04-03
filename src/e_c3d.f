@@ -60,7 +60,7 @@
       character*80 matname(*),amat
       character*81 tieset(3,*),set(*)
 !     
-      integer konl(20),ifaceq(8,6),nelemload(2,*),nbody,nelem,
+      integer konl(20),ifaceq(8,6),nelemload(2,*),nbody,nelem,id1,
      &     mi(*),jfaces,igauss,mortar,kon(*),ielprop(*),null,length,
      &     mattyp,ithermal(*),iperturb(*),nload,idist,i,j,k,l,i1,i2,j1,
      &     nmethod,k1,l1,ii,jj,ii1,jj1,id,ipointer,ig,m1,m2,m3,m4,kk,
@@ -1409,75 +1409,76 @@ c     mortar start
 !
 !     generate autf
 !
-c          if(mortartrafoflag.gt.0) then
-c            if(islavquadel(nelem).gt.0) then
-c              jqtf(1)=1
-c              ii=1
-c              do i1=1,nopes
-c                if(nope.eq.20) then
-c                  node1=ifaceq(i1,ig)
-c                elseif(nope.eq.10) then
-c                  node1=ifacet(i1,ig)
-c                else
-c                  node1=ifacew(i1,ig)
-c                endif
-c                length=jqte(node1+1)-jqte(node1)
-c                do j2=1,nopes
-c                  if(nope.eq.20) then
-c                    node2=ifaceq(j2,ig)
-c                  elseif(nope.eq.10) then
-c                    node2=ifacet(j2,ig)
-c                  else
-c                    node2=ifacew(j2,ig)
-c                  endif
-c                  call nident(irowte(jqte(node1)),node2,length,id)
-c                  if(id.gt.0) then
-c                    j1=jqte(node1)+id-1
-c                    if(irowte(j1).eq.node2) then
-c                      autf(ii)=aute(j1)
-c                      irowtf(ii)=j2
-c                      ii=ii+1
-c                    endif
-c                  endif
-c                enddo
-c                jqtf(i1+1)=ii
-c              enddo
-c            endif
-c          endif
-            if(mortartrafoflag.gt.0) then
-              if(islavquadel(nelem).gt.0) then
-                jqtf(1)=1
-                ii=1
-                do i1=1,nopes
+          if(mortartrafoflag.gt.0) then
+            if(islavquadel(nelem).gt.0) then
+              jqtf(1)=1
+              ii=1
+              do i1=1,nopes
+                if(nope.eq.20) then
+                  node1=ifaceq(i1,ig)
+                elseif(nope.eq.10) then
+                  node1=ifacet(i1,ig)
+                else
+                  node1=ifacew(i1,ig)
+                endif
+                length=jqte(node1+1)-jqte(node1)
+                do j2=1,nopes
                   if(nope.eq.20) then
-                    ipointer=ifaceq(i1,ig)
+                    node2=ifaceq(j2,ig)
                   elseif(nope.eq.10) then
-                    ipointer=ifacet(i1,ig)
+                    node2=ifacet(j2,ig)
                   else
-                    ipointer=ifacew(i1,ig)
+                    node2=ifacew(j2,ig)
                   endif
-                  node1=ipointer
-                  do j1=jqte(node1),jqte(node1+1)-1
-                    node2=irowte(j1)
-                    do j2=1,nopes
-                      if(nope.eq.20) then
-                        ipointer=ifaceq(j2,ig)
-                      elseif(nope.eq.10) then
-                        ipointer=ifacet(j2,ig)
-                      else
-                        ipointer=ifacew(j2,ig)
-                      endif
-                      if(ipointer.eq.node2) then
-                        autf(ii)=aute(j1)
-                        irowtf(ii)=j2
-                        ii=ii+1
-                      endif
-                    enddo
-                  enddo
-                  jqtf(i1+1)=ii
+                  id1=0
+                 call nident(irowte(jqte(node1)),node2,length,id1)
+                  if(id1.gt.0) then
+                    j1=jqte(node1)+id1-1
+                    if(irowte(j1).eq.node2) then
+                      autf(ii)=aute(j1)
+                      irowtf(ii)=j2
+                      ii=ii+1
+                    endif
+                  endif
                 enddo
-              endif
+                jqtf(i1+1)=ii
+              enddo
             endif
+          endif
+c            if(mortartrafoflag.gt.0) then
+c              if(islavquadel(nelem).gt.0) then
+c                jqtf(1)=1
+c                ii=1
+c                do i1=1,nopes
+c                  if(nope.eq.20) then
+c                    ipointer=ifaceq(i1,ig)
+c                  elseif(nope.eq.10) then
+c                    ipointer=ifacet(i1,ig)
+c                  else
+c                    ipointer=ifacew(i1,ig)
+c                  endif
+c                  node1=ipointer
+c                  do j1=jqte(node1),jqte(node1+1)-1
+c                    node2=irowte(j1)
+c                    do j2=1,nopes
+c                      if(nope.eq.20) then
+c                        ipointer=ifaceq(j2,ig)
+c                      elseif(nope.eq.10) then
+c                        ipointer=ifacet(j2,ig)
+c                      else
+c                        ipointer=ifacew(j2,ig)
+c                      endif
+c                      if(ipointer.eq.node2) then
+c                        autf(ii)=aute(j1)
+c                        irowtf(ii)=j2
+c                        ii=ii+1
+c                      endif
+c                    enddo
+c                  enddo
+c                  jqtf(i1+1)=ii
+c                enddo
+c              endif
+c            endif
 c     mortar end
 !          
           do i=1,mint2d

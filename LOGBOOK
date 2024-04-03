@@ -5375,4 +5375,6 @@ Dec 2002        - started to work on single crystal plasticity
 		  the usual calls of results and mafillsm in nonlingeo
 		  (use of nslavquadel) instead of in premortar.c.
 
- 2 Apr 2024     - worked on speeding up mortar contact
+ 2 April 2024   - worked on speeding up mortar contact
+
+ 3 April 2024   - optimized e_c3d.f
