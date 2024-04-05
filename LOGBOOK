@@ -5378,3 +5378,6 @@ Dec 2002        - started to work on single crystal plasticity
  2 April 2024   - worked on speeding up mortar contact
 
  3 April 2024   - optimized e_c3d.f
+
+ 5 April 2024   - cleaned up genfirstactif.f
+                - optimized e_c3d.f further

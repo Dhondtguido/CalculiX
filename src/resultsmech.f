@@ -355,28 +355,6 @@ c     Bernhardi end
               enddo
           endif
         endif
-c        if(mortartrafoflag.gt.0) then
-c          if(islavquadel(i).gt.0) then
-c            if((nope.eq.20).or.(nope.eq.10).or.(nope.eq.15)) then
-c              jqte(1)=1
-c              ii=1
-c              do i1=1,nope
-c                node1=konl(i1)
-c                do j1=jqt(node1),jqt(node1+1)-1
-c                  node2=irowt(j1)
-c                  do j2=1,nope
-c                    if(konl(j2).eq.node2) then
-c                      aute(ii)=aut(j1)
-c                      irowte(ii)=j2
-c                      ii=ii+1
-c                    endif
-c                  enddo
-c                enddo
-c                jqte(i1+1)=ii
-c              enddo
-c            endif
-c          endif
-c        endif
 !     
 !     mortar end
 !     
@@ -679,7 +657,6 @@ c     Bernhardi end
 !     
           if(mortartrafoflag.gt.0) then
             if(islavquadel(i).gt.0) then
-c              if((nope.eq.20).or.(nope.eq.10).or.(nope.eq.15)) then
                 do i1=1,nope
                   if(jqte(i1+1)-jqte(i1).gt.0) then
                     shptil(1,i1)=0.0
@@ -704,8 +681,6 @@ c              if((nope.eq.20).or.(nope.eq.10).or.(nope.eq.15)) then
      &                   *shp(4,j2)
                   enddo
                 enddo
-!     
-c              endif
             else
               do i1=1,nope
                 shptil(1,i1)=shp(1,i1)

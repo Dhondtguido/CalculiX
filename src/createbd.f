@@ -24,30 +24,6 @@
 !     
 !     Author:Saskia Sitzmann
 !     
-!     [in] ict               current tie
-!     [in] l                 current slave face
-!     [in] gapmints		(i) gap between slave surface and master surface in integration point i
-!     [in] islavsurf         islavsurf(1,i) slaveface i islavsurf(2,i) pointer into imastsurf and pmastsurf
-!     [in] imastsurf         index of masterface corresponding to integration point i
-!     [in] pmastsurf         field storing position xil, etal and weight for integration point on master side
-!     [out] contr            field containing B_d contributions for current face
-!     [out] iscontr          (i) slave node  of contribution(i)
-!     [out] imcontr          (i) master node of contribution(i)
-!     [out] dcontr            field containing D_d contributions for current face
-!     [out] idcontr1          (i) slave node of contribution(i)
-!     [out] idcontr2          (i) master node of contribution(i)
-!     [out] gcontr            field containing gap contributions for current face
-!     [out] igcontr          (i) nodesf of contribution(i)
-!     [in] pslavsurf         field storing position xil, etal and weight for integration point on slave side
-!     [in] pslavdual         (:,i)coefficients \f$ \alpha_{ij}\f$, \f$ 1,j=1,..8\f$ for dual shape functions for face i
-!     [in] nslavnode	(i)pointer into field isalvnode for contact tie i
-!     [in] islavnode	field storing the nodes of the slave surface
-!     [in] nmastnode	(i)pointer into field imastnode for contact tie i
-!     [in] imastnode	field storing the nodes of the master surfaces
-!     [out] icounter	counter variable for contr
-!     [out] icounter2      	counter variable for dcontr
-!     [in] islavact		(i) indicates, if slave node i is active (=-3 no-slave-node, =-2 no-LM-node, =-1 no-gap-node, =0 inactive node, =1 sticky node, =2 slipping/active node) 
-!     
       subroutine createbd(ict,l,ipkon,kon,lakon,co, vold, gapmints,
      &     islavsurf,imastsurf,pmastsurf,contr,iscontr,imcontr,
      &     dcontr,idcontr1,idcontr2,gcontr,igcontr,mi,

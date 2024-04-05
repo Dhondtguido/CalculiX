@@ -16,7 +16,6 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
-!     
 !     Determining the coefficients of the dual shape functions on
 !     the slave surface
 !     see phd thesis Sitzmann Chapter 3.3. (p.34) and Chapter 4.3.

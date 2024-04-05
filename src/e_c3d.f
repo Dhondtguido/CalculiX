@@ -679,30 +679,34 @@ c     Bernhardi end
 !     
 c     mortar start
         if(mortartrafoflag.gt.0) then
-          do i1=1,nope
-            shptil(1,i1)=shp(1,i1)
-            shptil(2,i1)=shp(2,i1)
-            shptil(3,i1)=shp(3,i1)
-            shptil(4,i1)=shp(4,i1)
-          enddo
           if(islavquadel(nelem).gt.0) then
-            if((nope.eq.20).or.(nope.eq.10).or.(nope.eq.15)) then
-              do i1=1,nope
-                if(jqte(i1+1)-jqte(i1).gt.0) then
-                  shptil(1,i1)=0.0
-                  shptil(2,i1)=0.0
-                  shptil(3,i1)=0.0
-                  shptil(4,i1)=0.0
-                endif
-                do j1=jqte(i1),jqte(i1+1)-1
-                  j2=irowte(j1)
-                  shptil(1,i1)=shptil(1,i1)+aute(j1)*shp(1,j2)
-                  shptil(2,i1)=shptil(2,i1)+aute(j1)*shp(2,j2)
-                  shptil(3,i1)=shptil(3,i1)+aute(j1)*shp(3,j2)
-                  shptil(4,i1)=shptil(4,i1)+aute(j1)*shp(4,j2)
-                enddo
+            do i1=1,nope
+              if(jqte(i1+1)-jqte(i1).gt.0) then
+                shptil(1,i1)=0.0
+                shptil(2,i1)=0.0
+                shptil(3,i1)=0.0
+                shptil(4,i1)=0.0
+              else
+                shptil(1,i1)=shp(1,i1)
+                shptil(2,i1)=shp(2,i1)
+                shptil(3,i1)=shp(3,i1)
+                shptil(4,i1)=shp(4,i1)
+              endif
+              do j1=jqte(i1),jqte(i1+1)-1
+                j2=irowte(j1)
+                shptil(1,i1)=shptil(1,i1)+aute(j1)*shp(1,j2)
+                shptil(2,i1)=shptil(2,i1)+aute(j1)*shp(2,j2)
+                shptil(3,i1)=shptil(3,i1)+aute(j1)*shp(3,j2)
+                shptil(4,i1)=shptil(4,i1)+aute(j1)*shp(4,j2)
               enddo
-            endif
+            enddo
+          else
+            do i1=1,nope
+              shptil(1,i1)=shp(1,i1)
+              shptil(2,i1)=shp(2,i1)
+              shptil(3,i1)=shp(3,i1)
+              shptil(4,i1)=shp(4,i1)
+            enddo
           endif
         endif
 c     mortar end
@@ -1445,40 +1449,6 @@ c     mortar start
               enddo
             endif
           endif
-c            if(mortartrafoflag.gt.0) then
-c              if(islavquadel(nelem).gt.0) then
-c                jqtf(1)=1
-c                ii=1
-c                do i1=1,nopes
-c                  if(nope.eq.20) then
-c                    ipointer=ifaceq(i1,ig)
-c                  elseif(nope.eq.10) then
-c                    ipointer=ifacet(i1,ig)
-c                  else
-c                    ipointer=ifacew(i1,ig)
-c                  endif
-c                  node1=ipointer
-c                  do j1=jqte(node1),jqte(node1+1)-1
-c                    node2=irowte(j1)
-c                    do j2=1,nopes
-c                      if(nope.eq.20) then
-c                        ipointer=ifaceq(j2,ig)
-c                      elseif(nope.eq.10) then
-c                        ipointer=ifacet(j2,ig)
-c                      else
-c                        ipointer=ifacew(j2,ig)
-c                      endif
-c                      if(ipointer.eq.node2) then
-c                        autf(ii)=aute(j1)
-c                        irowtf(ii)=j2
-c                        ii=ii+1
-c                      endif
-c                    enddo
-c                  enddo
-c                  jqtf(i1+1)=ii
-c                enddo
-c              endif
-c            endif
 c     mortar end
 !          
           do i=1,mint2d
@@ -1564,7 +1534,6 @@ c     mortar end
                     coords(k)=coords(k)+xl2(k,j)*shp2(4,j)
                   enddo
                 enddo
-c     read(sideload(id)(2:2),'(i1)') jltyp
                 jltyp=ichar(sideload(id)(2:2))-48
                 jltyp=jltyp+20
                 iscale=1

@@ -25,76 +25,13 @@
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
-/**
- *  function to include contact conditions with the dual mortar method in the 
- transformed system
- *
- *        see phd-thesis Sitzmann, Algorithm 2, p.71
- *
- * Author: Saskia Sitzmann
- * 
- *  [out] nzsc		number of nonzero,nondiagonal entries of intermediate system matrix
- *  [out] aucp		intermediate system matrix
- *  [out] adc             intermediate system matrix, diagonal terms
- *  [out] irowcp           rows for intermediate system matrix
- *  [out] jqc		pointer to irowc
- *  [in,out] islavact	(i) indicates, if slave node i is active (=-3 no-slave-node, =-2 no-LM-node, =-1 no-gap-node, =0 inactive node, =1 sticky node, =2 slipping/active node) 
- *  [in,out] gap		(i) gap for node i on slave surface
- *  [in,out] slavnor		slave normal
- *  [in,out] slavtan		slave tangent 
- *  [out] bhat            intermediate right hand side 
- *  [out] irowbdp		field containing row numbers of aubd
- *  [out] jqbd		pointer into field irowbd
- *  [out] aubdp		coupling matrix \f$ B_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [out] irowbdtilp	field containing row numbers of aubd
- *  [out] jqbdtil		pointer into field irowbdtil
- *  [out] aubdtilp		matrix \f$ \tilde{D}^{-1}\tilde{B}_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [out] irowbdtil2p	field containing row numbers of aubdtil2
- *  [out] jqbdtil2	pointer into field irowbdtil2
- *  [out] aubdtil2p	coupling matrix \f$ \tilde{D}$ and $\tilde{B}^2_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [out] irowddp		field containing row numbers of audd
- *  [out] jqdd		pointer into field irowdd
- *  [out] auddp		coupling matrix \f$ D_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [out] irowddtilp	field containing row numbers of audd
- *  [out] jqddtil		pointer into field irowdd
- *  [out] auddtilp		coupling matrix \f$ \tilde{D}_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [out] irowddtil2p	field containing row numbers of audd
- *  [out] jqddtil2	pointer into field irowdd
- *  [out] auddtil2p	matrix \f$ Id_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [out] irowddinvp	field containing row numbers of auddinv
- *  [out] jqddinv		pointer into field irowddinv
- *  [out] auddinvp		coupling matrix \f$ \tilde{D}^{-1}_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [in] irowt		field containing row numbers of aut
- *  [in] jqt	        pointer into field irowt
- *  [in] aut		transformation matrix \f$ T[p,q]\f$ for slave nodes \f$ p,q \f$ 
- *  [in] irowtinv	field containing row numbers of autinv
- *  [in] jqtinv	pointer into field irowtinv
- *  [in] autinv	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$  
- *  [in] cstress		current Lagrange multiplier 
- *  [in] cstressini	Lagrange multiplier at start of the increment
- *  [in] bp_old		old friction bounds
- *  [in] pslavdual	(:,i)coefficients \f$ \alpha_{ij}\f$, \f$ 1,j=1,..8\f$ for dual shape functions for face i
- *  [in] islavactdof      (i)=10*slavenodenumber+direction for active dof i
- *  [in] islavtie   (i)=tie number for active dof i
- *  [in] islavnodeinv     (i) slave node index for node i
- *  [out] Bdp		coupling matrix \f$ B_d[p,q]=\int \psi_p \phi_q dS \f$, \f$ p \in S, q \in M \f$ 
- *  [out] irowbp		field containing row numbers of Bd
- *  [out] jqb		pointer into field irowb
- *  [out] Bdhelpp		coupling matrix \f$ Bhelp_d[p,q]=\tilde{D}^{-1}\tilde{B}\f$, \f$ p \in S, q \in M \f$ 
- *  [out] irowbhelpp	field containing row numbers of Bdhelp
- *  [out] jqbhelp		pointer into field irowbhelp
- *  [out] Ddp		coupling matrix \f$ D_d[p,q]=\int \psi_p \phi_q dS \f$, \f$ p,q \in S \f$ 
- *  [out] irowdp		field containing row numbers of Dd
- *  [out] jqd		pointer into field irowd
- *  [out] Ddtilp		coupling matrix \f$ \tilde{D}_d[p,q]=\int \psi_p \tilde{\phi}_q dS \f$, \f$ p,q \in S \f$ 
- *  [out] irowdtilp	field containing row numbers of Ddtil
- *  [out] jqdtil		pointer into field irowdtil 
- *  [out] Bdtilp		coupling matrix \f$ \tilde{B}_d[p,q]=\int \psi_p \tilde{\phi}_q dS \f$, \f$ p \in S, q \in M \f$ 
- *  [out] irowbtilp	field containing row numbers of Bdtil
- *  [out] jqbtil		pointer into field irowbtil
- *  [in] bet		parameter used in alpha-method
- *  [in,out]  cfsinitil \f$ \tilde{\Phi}_{c,j}\f$ contact forces from last increment, needed for dynamic calculations  
- */
+/*
+  function to include contact conditions with the dual mortar method in the 
+  transformed system
+ 
+  see phd-thesis Sitzmann, Algorithm 2, p.71
+ 
+  Author: Saskia Sitzmann   */
 
 void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 		   ITG *istartset,ITG *iendset,ITG *ialset,ITG *itietri,
@@ -147,7 +84,7 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
     *auddinv=NULL,*auc=NULL,*pmastsurf=NULL,*gapmints=NULL,*au=NULL,
     *pslavsurf=NULL,*aubdtil=NULL,*aubdtil2=NULL,*Bd=NULL,*Bdhelp=NULL,
     *Dd=NULL,*Ddtil=NULL,*Bdtil=NULL,
-    *areaslav=NULL,mu,fkninv,fktauinv,p0,beta,*rs=NULL,*rsb=NULL;
+    mu,fkninv,fktauinv,p0,beta,*rs=NULL,*rsb=NULL;
   
   double aninvloc,gnc,xlnold,lt[2],ltold;
   
@@ -201,13 +138,12 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
       
     ntrimax=0;	
     for(i=0;i<*ntie;i++){
-      //      printf("contactmortar line 284 itietri %d\n",2*i+1);
       if(itietri[2*i+1]-itietri[2*i]+1>ntrimax){		
 	ntrimax=itietri[2*i+1]-itietri[2*i]+1;} 	
     }
       
-    /* For the first step, first increment, first iteration an initial guess for 
-       the active set is generated analogous to node-to-surface penalty */
+    /* For the first step, first increment, first iteration an initial guess
+       for the active set is generated analogous to node-to-surface penalty */
       
     if ((*iinc==1)&&(*iit==1)&&(*istep==1)){	    
       NNEW(xo,double,ntrimax);	    
@@ -219,17 +155,15 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
       NNEW(nx,ITG,ntrimax);	   
       NNEW(ny,ITG,ntrimax);	    
       NNEW(nz,ITG,ntrimax);	    
-      NNEW(areaslav,double,itiefac[2*(*ntie-1)+1]);	    
-      ITG ifree=0;	    
-      FORTRAN(genfirstactif,(tieset,ntie,itietri,ipkon,kon,lakon,cg,
+      FORTRAN(genfirstactif,(tieset,ntie,itietri,cg,
 			     straight,co,vold,xo,yo,zo,x,y,z,nx,ny,nz,
 			     istep,iinc,iit,mi,imastop,
-			     nslavnode,islavnode,islavsurf,itiefac,
-			     areaslav,set,nset,istartset,iendset,ialset,
-			     islavact,&ifree,tietol));
+			     nslavnode,islavnode,
+			     set,nset,istartset,iendset,ialset,
+			     islavact,tietol));
 	  
       SFREE(xo);SFREE(yo);SFREE(zo);SFREE(x);SFREE(y);SFREE(z);
-      SFREE(nx);SFREE(ny);SFREE(nz);SFREE(areaslav);	
+      SFREE(nx);SFREE(ny);SFREE(nz);
     }
     fflush(stdout);
 

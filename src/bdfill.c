@@ -23,66 +23,10 @@
 #include "CalculiX.h"
 #include "mortar.h"
 
-/**
- * Calculates the coupling matrices \f$ B_d \f$ and \f$ D_d \f$, and insert them into the data structure
+/*
+  Calculates the coupling matrices \f$ B_d \f$ and \f$ D_d \f$, and insert them into the data structure
 
- * Authors: Samoela Rakotonanahary, Saskia Sitzmann
- * 
- *  [out] irowbdp		field containing row numbers of aubd
- *  [out] jqbd		pointer into field irowbd
- *  [out] aubdp		coupling matrix \f$ B_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [out] nzsbd		nonzero entries of aubd 
- *  [out] irowbdtilp	field containing row numbers of aubd
- *  [out] jqbdtil		pointer into field irowbdtil
- *  [out] aubdtilp		matrix \f$ \tilde{D}^{-1}\tilde{B}_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [out] nzsbdtil	nonzero entries of aubdtil 
- *  [out] irowbdtil2p	field containing row numbers of aubdtil2
- *  [out] jqbdtil2	pointer into field irowbdtil2
- *  [out] aubdtil2p	coupling matrix \f$ \tilde{D}$ and $\tilde{B}^2_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [out] nzsbdtil2	nonzero entries of aubdtil2 
- *  [out] irowddp		field containing row numbers of audd
- *  [out] jqdd		pointer into field irowdd
- *  [out] auddp		coupling matrix \f$ D_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [out] irowddtilp	field containing row numbers of audd
- *  [out] jqddtil		pointer into field irowdd
- *  [out] auddtilp		coupling matrix \f$ \tilde{D}_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [out] irowddtil2p	field containing row numbers of audd
- *  [out] jqddtil2	pointer into field irowdd
- *  [out] auddtil2p	matrix \f$ Id_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [out] irowddinvp	field containing row numbers of auddinv
- *  [out] jqddinv		pointer into field irowddinv
- *  [out] auddinvp		coupling matrix \f$ \tilde{D}^{-1}_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [in] irowt		field containing row numbers of aut
- *  [in] jqt	        pointer into field irowt
- *  [in] aut		transformation matrix \f$ T[p,q]\f$ for slave nodes \f$ p,q \f$ 
- *  [in] irowtinv	field containing row numbers of autinv
- *  [in] jqtinv	pointer into field irowtinv
- *  [in] autinv	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$  
- *  [in] gapmints		(i) gap between slave surface and master surface in integration point i
- *  [out] gap		(i) \f$ g_i= <g, \Psi_i> \f$ for node i on slave surface
- *  [in] pslavsurf	field storing  position xil, etal and weight for integration point on slave side
- *  [in] pslavdual	(:,i)coefficients \f$ \alpha_{ij}\f$, \f$ 1,j=1,..8\f$ for dual shape functions for face i
- *  [in] nintpoint	number of integration points
- *  [in] slavnor		slave normals
- *  [in] islavactdof      (i)=10*slavenodenumber+direction for active dof i
- *  [in] islavact		(i) indicates, if slave node i is active (=-3 no-slave-node, =-2 no-LM-node, =-1 no-gap-node, =0 inactive node, =1 sticky node, =2 slipping/active node) 
- *  [in] islavnodeinv     (i) slave node index for node i
- *  [out] Bdp		coupling matrix \f$ B_d[p,q]=\int \psi_p \phi_q dS \f$, \f$ p \in S, q \in M \f$ 
- *  [out] irowbp		field containing row numbers of Bd
- *  [out] jqb		pointer into field irowb
- *  [out] Bdhelpp		coupling matrix \f$ Bhelp_d[p,q]=\tilde{D}^{-1}\tilde{B}\f$, \f$ p \in S, q \in M \f$ 
- *  [out] irowbhelpp	field containing row numbers of Bdhelp
- *  [out] jqbhelp		pointer into field irowbhelp
- *  [out] Ddp		coupling matrix \f$ D_d[p,q]=\int \psi_p \phi_q dS \f$, \f$ p,q \in S \f$ 
- *  [out] irowdp		field containing row numbers of Dd
- *  [out] jqd		pointer into field irowd
- *  [out] Ddtilp		coupling matrix \f$ \tilde{D}_d[p,q]=\int \psi_p \tilde{\phi}_q dS \f$, \f$ p,q \in S \f$ 
- *  [out] irowdtilp	field containing row numbers of Ddtil
- *  [out] jqdtil		pointer into field irowdtil 
- *  [out] Bdtilp		coupling matrix \f$ \tilde{B}_d[p,q]=\int \psi_p \tilde{\phi}_q dS \f$, \f$ p \in S, q \in M \f$ 
- *  [out] irowbtilp	field containing row numbers of Bdtil
- *  [out] jqbtil		pointer into field irowbtil
- */
+  Authors: Samoela Rakotonanahary, Saskia Sitzmann */
 
 void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	    ITG **irowbdtilp,ITG *jqbdtil,double **aubdtilp,ITG *nzsbdtil,

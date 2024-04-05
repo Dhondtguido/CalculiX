@@ -189,16 +189,15 @@ void FORTRAN(gendualcoeffs,(char *tieset,ITG *ntie,ITG *ipkon,ITG *kon,
 			    ITG *nslavnode,ITG *mi,double *pslavsurf,
 			    double* pslavdual));
 
-void FORTRAN(genfirstactif,(char *tieset,ITG *ntie,ITG *itietri,ITG *ipkon,
-			    ITG *kon,char *lakon,double *cg,double *straight,
+void FORTRAN(genfirstactif,(char *tieset,ITG *ntie,ITG *itietri,
+			    double *cg,double *straight,
 			    double *co,double *vold,double *xo,double *yo,
 			    double *zo,double *x,double *y,double *z,ITG *nx,
 			    ITG *ny,ITG *nz,ITG *istep,ITG *iinc,ITG *iit,
-			    ITG *mi,ITG *imastop,
-			    ITG *nslavnode,ITG *islavnode,ITG *islavsurf,
-			    ITG *itiefac,double *areaslav,char *set,ITG *nset,
+			    ITG *mi,ITG *imastop,ITG *nslavnode,ITG *islavnode,
+			    char *set,ITG *nset,
 			    ITG *istartset,ITG *iendset,ITG *ialset,
-			    ITG *islavact,ITG *ifree,double *tietol));
+			    ITG *islavact,double *tietol));
 
 void FORTRAN(genislavactdof,(ITG *ntie,char *tieset,ITG *nactdof,
 			     ITG *nslavnode,ITG *nmastnode,ITG *imastnode,

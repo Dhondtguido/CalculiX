@@ -25,63 +25,13 @@
 
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 #define min(a,b) (((a) < (b)) ? (a) : (b))
-/**
- *  embedding the contact conditions into the matrix system
- *        and condening the Lagrange multiplier
- *        see phd-thesis Sitzmann equation (4.15) for quad-quad/quad-lin method  or (4.24) for PG quad-lin method
 
- * Authors: Samoela Rakotonanahary, Saskia Sitzmann
- *
- *  [out] aucp		nondiagonal entries of intermediate matrix \f$ K_c \f$
- *  [out] adc		diagonal entries of intermediate matrix \f$ K_c \f$
- *  [out] irowcp		field containing row number for entries in auc
- *  [out] jqc		(i) first element in auc belonging to column i	
- *  [out] nzsc		size of auc 
- *  [in] aubd		coupling matrix \f$ B_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [in] irowbd		field containing row numbers of aubd
- *  [in] jqbd		pointer into field irowbd
- *  [in] aubdtil		matrix \f$ \tilde{D}^{-1}\tilde{B}_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [in] irowbdtil	field containing row numbers of aubd
- *  [in] jqbdtil		pointer into field irowbdtil
- *  [in] aubdtil2		coupling matrix \f$ \tilde{D}$ and $\tilde{B}^2_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [in] irowbdtil2	field containing row numbers of aubdtil2
- *  [in] jqbdtil2		pointer into field irowbdtil2
- *  [in] irowdd		field containing row numbers of audd
- *  [in] jqdd		pointer into field irowdd
- *  [in] audd		coupling matrix \f$ D_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [in] irowddtil2	field containing row numbers of audd
- *  [in] jqddtil2		pointer into field irowdd
- *  [in] auddtil2		matrix \f$ Id_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [in] irowddinv	field containing row numbers of auddinv
- *  [in] jqddinv		pointer into field irowddinv
- *  [in] auddinv		coupling matrix \f$ \tilde{D}^{-1}_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [in] Bd		coupling matrix \f$ B_d[p,q]=\int \psi_p \phi_q dS \f$, \f$ p \in S, q \in M \f$ 
- *  [in] irowb		field containing row numbers of Bd
- *  [in] jqb		pointer into field irowb
- *  [in] Dd		coupling matrix \f$ D_d[p,q]=\int \psi_p \phi_q dS \f$, \f$ p,q \in S \f$ 
- *  [in] irowd		field containing row numbers of Dd
- *  [in] jqd		pointer into field irowd
- *  [in] Ddtil		coupling matrix \f$ \tilde{D}_d[p,q]=\int \psi_p \tilde{\phi}_q dS \f$, \f$ p,q \in S \f$ 
- *  [in] irowdtil	field containing row numbers of Ddtil
- *  [in] jqdtil		pointer into field irowdtil 
- *  [in] neq		(0) # of mechanical equations (1) sum of mechanical and thermal equations (2) neq(1+ # of single point contraints)
- *  [in,out] b		right hand side
- *  [out] bhat		intermediate right hand side
- *  [in] islavact		(i) indicates, if slave node i is active (=-3 no-slave-node, =-2 no-LM-node, =-1 no-gap-node, =0 inactive node, =1 sticky node, =2 slipping/active node) 
- *  [in] islavactdof      (i)=10*slavenodenumber+direction for active dof i
- *  [in] gap		(i) \f$ g_i= <g, \Psi_i> \f$ for node i on slave surface
- *  [in] cstress		current Lagrange multiplier 
- *  [in] cstressini	Lagrange multiplier at start of the increment
- *  [in] bp_old		old friction bounds 
- *  [in] islavtie   (i)=tie number for active dof i
- *  [in] irowt		field containing row numbers of aut
- *  [in] jqt	        pointer into field irowt
- *  [in] aut		transformation matrix \f$ T[p,q]\f$ for slave nodes \f$ p,q \f$ 
- *  [in] irowtinv	field containing row numbers of autinv
- *  [in] jqtinv	pointer into field irowtinv
- *  [in] autinv	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$  
- *  [in] islavnodeinv     (i) slave node index for node i 
- */
+/*
+   embedding the contact conditions into the matrix system
+         and condening the Lagrange multiplier
+         see phd-thesis Sitzmann equation (4.15) for quad-quad/quad-lin method  or (4.24) for PG quad-lin method
+
+  Authors: Samoela Rakotonanahary, Saskia Sitzmann */
 
 void multimortar(double **aup,double *ad,ITG **irowp,ITG *jq,ITG *nzs,
 		  double **aucp,double *adc,ITG **irowcp,ITG *jqc,ITG *nzsc,

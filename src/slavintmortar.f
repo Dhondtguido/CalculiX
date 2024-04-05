@@ -21,24 +21,6 @@
 !     and generating the integration points needed for the calculation of the coupling matrices
 !     for details see phd-thesis Sitzmann Appendix A 
 !     
-!     [out]    nintpoint   number of generated integration points 
-!     [in]     koncont     (1:3,i) nodes of triagle_i (4,i) element face
-!     [in,out] islavsurf   islavsurf(1,i) slaveface i islavsurf(2,i) # integration points generated before looking at face i
-!     [out]    imastsurf   pointer into pmastsurf  
-!     [out]    pmastsurf   field storing position and weights for integration points on master side 
-!     [in]     islavnode   fields containing nodes of slace surfaces
-!     [in]     nslavnode   (i) for contraint i pointer into field islavnode
-!     [in]     imastop     (l,i) for edge l in triagle i neightbouring triangle
-!     [out]    gapmints    stores gaps between master and slave side
-!     [in,out] islavact	 (i) indicates, if slave node i is active (=-3 no-slave-node, =-2 no-LM-node, =-1 no-gap-node, =0 inactive node, =1 sticky node, =2 slipping/active node) 
-!     [in]     ncont	 number of triangles in triagulation of master side
-!     [in]     ipe	 (i) pointer to ime for node i 
-!     [in]     ime         ... cataloging the edges with node i
-!     [out]    pslavsurf   field storing position xil, etal and weight for integration point on slave side
-!     [in]     i           current tie
-!     [in]     l           current face
-!     [in]     ntri        # triangles
-!     
       subroutine slavintmortar(ntie,itietri,ipkon,kon,lakon,straight,
      &     nintpoint,koncont,co,vold,xo,yo,zo,x,y,z,nx,ny,nz,
      &     iinc,islavsurf,imastsurf,pmastsurf,
