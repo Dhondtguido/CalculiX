@@ -77,7 +77,10 @@
           tieset(1,i)(81:81)=' '
 !     
 !     Creating of the fields nodel and noder with specific 
-!     information for each node
+!     information for each field
+!     
+!     l = left     
+!     r = right
 !     
 !     node(l,r)(1)=number of a node belonging to the l/r side
 !     node(l,r)(2)=setnumber
@@ -188,8 +191,8 @@
             csab(7)=-1.d0
           enddo
 !     
-!     Sorting such that rightset is independent with lesser angle
-!     and noder is in the independent set
+!     Sorting such that rightset has the smaller angle;
+!     it is taken is independent side for the multistage MPC's     
 !     
           if (nodel(4).ge.noder(4)) then
             indcs=nodel(5)
@@ -211,7 +214,8 @@
 !     
           scale=(1.d0*nodel(4))/noder(4)
 !     
-!     Looking for a node on the independent cyclic symmetry side
+!     Looking for a node on the independent cyclic symmetry side of
+!     the right side of the multistage tie    
 !     
 !     replace next section by "node_cycle=noder(1)"?    
 !     start replace    
@@ -240,7 +244,7 @@
 !     
 !         end replace   
 !     
-!     Defining a transformation matrix from the globa system into a local
+!     Defining a transformation matrix from the global system into a local
 !     system with the x-direction along the rotation axis 
 !     
           T(1,1)=csab(4)-csab(1)
@@ -369,13 +373,13 @@
 !     
             phi=datan2(-coord(3),coord(2))
 !     
-!     kseg is the number of time the base sector has to be shifted
+!     kseg is the number of times the base sector has to be shifted
 !     in order to contain the node at stake    
 !     
             if (phi.gt.(-1.d-5+phi_min)) then
-              kseg=int(noder(4)*0.5d0*(phi-phi_min)/pi)
+              kseg=int(noder(4)*(phi-phi_min)/(2.d0*pi))
             else 
-              kseg=int(noder(4)*0.5d0*(2.d0*pi+(phi-phi_min))/pi)
+              kseg=int(noder(4)*(2.d0*pi+(phi-phi_min))/(2.d0*pi))
             endif
 !     
             T2D(1,1)=1.d0
@@ -425,6 +429,10 @@
      &           straight,nodef,ratio,nterms,xdep,ydep,netri,
      &           noder0,ifacetet,inodface,ialset(j),
      &           T(1,1),T(1,2),T(1,3),ier,multistage,icount)
+!     
+!     if no corresponding face was found: go to next slave node
+!     
+            if(ier.ne.0) cycle
 !     
 !     scaling the independent degrees of freedom of the
 !     multistage equations for non-frequency calculations

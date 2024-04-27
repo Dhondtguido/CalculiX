@@ -5381,3 +5381,6 @@ Dec 2002        - started to work on single crystal plasticity
 
  5 April 2024   - cleaned up genfirstactif.f
                 - optimized e_c3d.f further
+
+ 27 April 2024  - no equations are generated for slave nodes with no
+                  master partner face in multistages.f

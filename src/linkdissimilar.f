@@ -32,7 +32,7 @@
      &  itri,ifirst,ilast,ifacetet(*),inodface(*),noded,ier
 !
       real*8 co(3,*),csab(7),rp,zp,xi,et,xn,yn,zn,rp1,zp1,rp2,zp2,
-     &  straight(9,*),zcscg(*),rcscg(*),zcs0cg(*),rcs0cg(*),distmax,
+     &  straight(9,*),zcscg(*),rcscg(*),zcs0cg(*),rcs0cg(*),distmin,
      &  dist,ratio(9),pneigh(3,9),pnode(3),xap,yap,zap,
      &  x12,y12,z12,x13,y13,z13,area,typdist
 !
@@ -44,7 +44,7 @@
       call near2d(rcs0cg,zcs0cg,rcscg,zcscg,nrcg,nzcg,rp,zp,
      &     netri,ineigh,nneigh)
 !     
-      distmax=1.d30
+      distmin=1.d30
 !     
       do j=1,nneigh
          itri=ineigh(j)
@@ -55,13 +55,13 @@
      &        max(rp*straight(7,itri)+zp*straight(8,itri)+
      &        straight(9,itri),0.d0)
          if(dist.le.0.d0) then
-            distmax=0.d0
+            distmin=0.d0
             itrimax=itri
             exit
          endif
-         if(dist.lt.distmax) then
+         if(dist.lt.distmin) then
             itrimax=itri
-            distmax=dist
+            distmin=dist
          endif
       enddo
 !
