@@ -1372,7 +1372,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     /* initial stresses should not be added to the modal
        stresses, therefore deactivate the pre-stress */
   
-    if(*iprestr!=0){iprestrsav=*iprestr;iprestr=0;}
+    if(*iprestr!=0){iprestrsav=*iprestr;*iprestr=0;}
       
     lfin=0;
     for(j=0;j<nev;++j){

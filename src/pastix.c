@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 #include "CalculiX.h"
 #include "pastix.h"
 
