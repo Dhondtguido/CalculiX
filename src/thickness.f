@@ -68,28 +68,29 @@
         scalar=deltax*extnor(1,iactnode)+deltay*extnor(2,iactnode)+
      &         deltaz*extnor(3,iactnode)   
 !
-!       calculated distance
-!
-        actdist=dsqrt(deltax**2+deltay**2+deltaz**2)
-        dgdxglob(1,iactnode,iobject)=actdist
-!   
-!       calculate the function value of the objective function
-!
-        if(objectset(1,iobject)(1:13).eq.'MINMEMBERSIZE') then
-           dgdxglob(2,iactnode,iobject)=bound-actdist
-        else if(objectset(1,iobject)(1:13).eq.'MAXMEMBERSIZE') then
-           dgdxglob(2,iactnode,iobject)=actdist-bound
-        endif
-!
         if(scalar.lt.0.d0) then
+!
+!          calculated distance
+!  
+           actdist=dsqrt(deltax**2+deltay**2+deltaz**2)
+           dgdxglob(1,iactnode,iobject)=actdist
+!    
+!          calculate the function value of the objective function
+!
+           if(objectset(1,iobject)(1:13).eq.'MINMEMBERSIZE') then
+              dgdxglob(2,iactnode,iobject)=bound-actdist
+           else if(objectset(1,iobject)(1:13).eq.'MAXMEMBERSIZE') then
+              dgdxglob(2,iactnode,iobject)=actdist-bound
+           endif
 !
 !          Calculate the normalized objective function and check if vectors
 !          of actual and inital design variable position still point in the
 !          same direction --> measure that both points lie on the same side
 !          of the bound verifiying that the bound has not been crossed 
 !          (only relevant for minmembersize)
-!
+!     
            if(objectset(1,iobject)(1:13).eq.'MINMEMBERSIZE') then
+!
               inivector(1)=xo(irefnode)-coini(1,iactnode)
               inivector(2)=yo(irefnode)-coini(2,iactnode)
               inivector(3)=zo(irefnode)-coini(3,iactnode)
@@ -105,8 +106,9 @@
            write(*,*) '*WARNING no reference node found in negative'
            write(*,*) '         normal direction for node ',iactnode
            write(*,*) '         node ',iactnode,'ignored for'
-           write(*,*) '         MEMBERSIZE constraint'    
-        endif
+           write(*,*) '         MEMBERSIZE constraint'
+           dgdxglob(1,iactnode,iobject)=-1.0
+        endif      
 ! 
 !       count number of active nodes
 !

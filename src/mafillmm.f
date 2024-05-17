@@ -16,8 +16,8 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-      subroutine mafillmm(ndesi,nodedesi,co,nodedesiinv,iregion,au,ad,
-     &   aub,adb,irow,icol,jq,ipkonfa,konfa,lakonfa,nodedesipos,
+      subroutine mafillmm(co,nodedesiinv,iregion,au,ad,
+     &   aub,adb,irow,jq,ipkonfa,konfa,lakonfa,nodedesipos,
      &   ipkonfadesi,nsurfa,nsurfb,area)
 !
 !     calculation of the entries of the mass matrix and it's derivative
@@ -26,14 +26,14 @@
 !
       character*8 lakonfa(*)
 !
-      integer idesvar1,idesvar2,kk,l,ipos1,ipos2,n,ndesi,nodedesi(*),
-     &   nopes,ifour,ithree,indexel,mint2d,iflag,nodes1(8),indexs,
+      integer idesvar1,idesvar2,kk,l,ipos1,ipos2,n,
+     &   nopes,ifour,ithree,indexel,mint2d,iflag,indexs,
      &   i,node1,node2,nopedesi,nnodes,nodedesiinv(*),iregion,irow(*),
-     &   icol(*),jq(*),nsurfa,nsurfb,isurf,ipkonfa(*),konfa(*),jj,
-     &   konfal(8),nodedesipos(*),id,ipointer,ipkonfadesi(*),ipostemp
+     &   jq(*),nsurfa,nsurfb,isurf,ipkonfa(*),konfa(*),
+     &   konfal(8),nodedesipos(*),id,ipointer,ipkonfadesi(*)
 !
       real*8 xi,et,xl(3,9),xs(3,2),xsj(3),shp(7,9),co(3,*),au(*),ad(*),
-     &   aub(*),adb(*),xsjj,weight,val,area(*),dshp1(3),dshp2(3),
+     &   aub(*),adb(*),xsjj,weight,val,area(*),
      &   shpprj1(3),shpprj2(3),sclprd1,sclprd2
 !
 !     flag for shape functions
@@ -44,6 +44,7 @@
       include "gauss.f"
 !
 !     flag for shape functions
+!
       ifour=4
       ithree=3
 !
@@ -52,6 +53,7 @@
 !---------------------------------------------------------------------
 !
 !     Loop over all external surfaces
+!
       do i=nsurfa,nsurfb
         isurf=ipkonfadesi(i)
         indexs=ipkonfa(isurf)
@@ -59,6 +61,7 @@
 !       mint2d: # of integration points on the surface
 !       nopes:  # of nodes in the surface
 !       nope:   # of nodes in the element   
+!
         if(lakonfa(isurf)(1:2).eq.'S3') then
           mint2d=3
           nopes=3
@@ -81,6 +84,7 @@
         if(iregion.eq.0) nopedesi=0
 !     
 !       Check if sufficient designnodes on that surface  
+!
         nnodes=0
         do l=1,nopes
           if(nodedesiinv(konfa(indexs+l)).eq.1) then
@@ -91,6 +95,7 @@
         if(nnodes.ge.nopedesi) then
 !
 !         storing node numbers and coordinates of nodes of the surface   
+!
           do l=1,nopes
             konfal(l)=konfa(indexs+l)
             do n=1,3
@@ -99,6 +104,7 @@
           enddo 
 !     
 !         Evaluate Shape functions and their derivatives 
+!
           do kk=1,mint2d   
             if(lakonfa(isurf)(1:2).eq.'S3') then
               xi=gauss2d5(1,kk)
@@ -123,23 +129,28 @@
             endif
 !
 !           Loop over all nodes on the surface element
+!
             do idesvar1=1,nopes
               node1=konfal(idesvar1)
               ipos1=nodedesipos(node1)
 !
 !             Loop over all nodes on the surface element
+!
               do idesvar2=1,nopes
                 node2=konfal(idesvar2)
                 ipos2=nodedesipos(node2)
 !
 !               check if both nodes are designvariables
+!
                 if((nodedesiinv(node1).eq.1).and.
      &             (nodedesiinv(node2).eq.1)) then      
 !
 !                 Calculate Jacobian determinant     
+!
                   xsjj=dsqrt(xsj(1)**2+xsj(2)**2+xsj(3)**2)
 !
 !                 entry on the main diagonal
+!
                   if(node1.eq.node2) then
                     adb(ipos1)=adb(ipos1)
      &                        +shp(4,idesvar1)**2*weight*xsjj
@@ -158,17 +169,9 @@
      &              +shpprj1(2)**2
      &              +shpprj1(3)**2)*weight*xsjj
                     ad(ipos1)=ad(ipos1)+val
-
-C                   write(5,*) node1,node2,kk
-C                   write(5,*) konfal(1),konfal(2),konfal(3)
-C                   write(5,*) xl(1,1),xl(2,1),xl(3,1)
-C                   write(5,*) xl(1,2),xl(2,2),xl(3,2)
-C                   write(5,*) xl(1,3),xl(2,3),xl(3,3)
-C                   write(5,*) sclprd1
-C                   write(5,*) shp(1,idesvar1),shp(2,idesvar1),shp(3,idesvar1)
-C                   write(5,*) shpprj1(1),shpprj1(2),shpprj1(3)
 !
 !                 entry on sub diagonal
+!
                   elseif(ipos2.gt.ipos1) then
 !
                     call nident(irow(jq(ipos1)),ipos2,
@@ -203,10 +206,6 @@ C                   write(5,*) shpprj1(1),shpprj1(2),shpprj1(3)
      &                    +shpprj1(3)*shpprj2(3))*weight*xsjj
                       au(ipointer)=au(ipointer)+val
 !
-!                     write(5,*) node1,node2,kk
-!                     write(5,*) shp(1,idesvar1),shp(2,idesvar1),shp(3,idesvar1)
-!                     write(5,*) shp(1,idesvar2),shp(2,idesvar2),shp(3,idesvar2)
-!
                     endif            
                   endif
                 endif
@@ -216,12 +215,5 @@ C                   write(5,*) shpprj1(1),shpprj1(2),shpprj1(3)
         endif 
       enddo   
 !              
-!      do l=1,ndesi
-!       write(5,*) nodedesi(l),nodedesi(l),ad(l)
-!       do kk=jq(l),jq(l+1)-1
-!       write(5,*) nodedesi(l),nodedesi(irow(kk)),au(l)
-!       enddo
-!      enddo
-!
       return
       end

@@ -47,16 +47,13 @@
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #define abs(a) (((a) < (0)) ? (-a) : (a))
 
-static char *lakon1,*objectset1,*lakonfa1;
+static char *lakonfa1;
 
-static ITG *istartdesi1,*ialdesi1,*ipkon1,*ipoface1,*ndesi1,*nodedesi1,
-  *kon1,*nodedesiinv1,*iregion1,*irow1,*icol1,*jq1,nzs1,*nk1,*nodface1,
-  *nodedesi1,*ndesi1,*nx1,*ny1,*nz1,*neighbor1=NULL,num_cpus,*nodedesipos1,
-  *nsurfs1,*konfa1,*ipkonfa1,nsurfsdesi1,*ipkonfadesi1;
+static ITG *ndesi1,*nodedesi1,*nodedesiinv1,*iregion1,*irow1,*icol1,*jq1,nzs1,
+  *nodedesi1,*ndesi1,num_cpus,*nodedesipos1,*nsurfs1,*konfa1,*ipkonfa1,
+  nsurfsdesi1,*ipkonfadesi1;
   
-static double *gradproj1,*xo1,*yo1,*zo1,*x1,*yy1,*z1,*r1=NULL,*xdesi1,
-  *feasdir1,*au1=NULL,*ad1=NULL,*aub1=NULL,*adb1=NULL,*co1,*filterval1=NULL,
-  *area1=NULL;
+static double *au1=NULL,*ad1=NULL,*aub1=NULL,*adb1=NULL,*co1,*area1=NULL;
 
 /* y1 had to be replaced by yy1, else the following compiler error
    popped up: 
@@ -73,12 +70,12 @@ void filterforwardmain(double *co,double *gradproj,ITG *nk,
 				
   /* forward filtering of the sensitivities */
 
-  ITG *nx=NULL,*ny=NULL,*nz=NULL,i,j,inode,*irow=NULL,*icol=NULL,
+  ITG *nx=NULL,*ny=NULL,*nz=NULL,i,j,*irow=NULL,*icol=NULL,
     *ipointer=NULL,nzs,symmetryflag=0,iflag,inputformat=0,nrhs=1,
-    iobject,*nnodes=NULL,*mast=NULL,*nodedesipos=NULL,*jq=NULL,
+    *mast=NULL,*nodedesipos=NULL,*jq=NULL,
     *irowf=NULL,*icolf=NULL,*jqf=NULL,nsurfsdesi,*ipkonfadesi=NULL;
         
-  double *xo=NULL,*yo=NULL,*zo=NULL,*x=NULL,*y=NULL,*z=NULL,dd=.0,
+  double *xo=NULL,*yo=NULL,*zo=NULL,*x=NULL,*y=NULL,*z=NULL,
     filterrad=0,*ad=NULL,*adb=NULL,*aub=NULL,*adb2=NULL,*aub2=NULL,
     sigma=0,*rhs=NULL,*au=NULL,*adf=NULL,*auf=NULL,*temparray=NULL,
     *weighting=NULL,*area=NULL;
@@ -277,12 +274,11 @@ void filterforwardmain(double *co,double *gradproj,ITG *nk,
     NNEW(weighting,double,*ndesi);
     NNEW(temparray,double,*ndesi);
   
-    FORTRAN(mafillfilter,(adf,auf,jqf,irowf,icolf,ndesi,nodedesi,&filterrad,
+    FORTRAN(mafillfilter,(adf,auf,jqf,irowf,ndesi,nodedesi,&filterrad,
                           co,weighting,objectset,xdesi,area));
 			       
-    FORTRAN(filterforward_exp,(adf,auf,jqf,irowf,icolf,ndesi,nodedesi,gradproj,
-                               feasdir,nk,weighting,temparray,adb,aub,jq,irow,
-			       icol));
+    FORTRAN(filterforward_exp,(adf,auf,jqf,irowf,ndesi,nodedesi,gradproj,
+                               feasdir,weighting,temparray,adb,aub,jq,irow));
     
     SFREE(weighting);SFREE(irowf);SFREE(jqf);SFREE(icolf);SFREE(adf);
     SFREE(auf);SFREE(xo);SFREE(yo);SFREE(zo);SFREE(x);SFREE(y);SFREE(z);
@@ -459,8 +455,8 @@ void *mafillmmmt2(ITG *i){
   nsurfb=(*i+1)*nsurfdelta;
   if(nsurfb>nsurfsdesi1) nsurfb=nsurfsdesi1;
 
-  FORTRAN(mafillmm,(ndesi1,nodedesi1,co1,nodedesiinv1,iregion1,&au1[indexau],
-		    &ad1[indexad],&aub1[indexau],&adb1[indexad],irow1,icol1,
+  FORTRAN(mafillmm,(co1,nodedesiinv1,iregion1,&au1[indexau],
+		    &ad1[indexad],&aub1[indexau],&adb1[indexad],irow1,
 		    jq1,ipkonfa1,konfa1,lakonfa1,nodedesipos1,ipkonfadesi1,
 		    &nsurfa,&nsurfb,&area1[indexad]));	    
 

@@ -25,86 +25,17 @@
 #define min(a,b) ((a) <= (b) ? (a) : (b))
 #define max(a,b) ((a) >= (b) ? (a) : (b))
 
-/**
- *  Condense Lagrange Multiplier and embedd contact conditions for \f$ K_{AX}\f$
- * changing au due to N and T (normal and tangential
- *    direction at the slave surface) 
- * 	changing b due to N and T (normal and tangential
- *	direction at the slave surface) 
- *  phd-thesis Sitzmann, Chapter 3+4, equation (4.15) (Type=MORTAR)
- * 
- * author: Saskia Sitzmann
- *  [in] islavactdof      (i)=10*slavenodenumber+direction for active dof i
- *  [in] islavact		(i) indicates, if slave node i is active (=-3 no-slave-node, =-2 no-LM-node, =-1 no-gap-node, =0 inactive node, =1 sticky node, =2 slipping/active node)  
- *  [in] f_da		\f$ r_A \f$ residual for active slave nodes
- *  [out] f_atil		\f$ r_A \f$ condensed residual for active slave nodes
- *  [in] au_dan		\f$ K_{AN}\f$	
- *  [in] irow_dan		rows of matrix au_dan
- *  [in] jq_dan		column pointer to irow_dan
- *  [in] au_dam		\f$ K_{AM}\f$
- *  [in] irow_dam		rows of matrix au_dam
- *  [in] jq_dam		column pointer to irow_dam
- *  [in] au_dai		\f$ K_{AI}\f$
- *  [in] irow_dai		rows of matrix au_dai
- *  [in] jq_dai		column pointer to irow_dai
- *  [in] au_daa		\f$ K_{AA}\f$
- *  [in] irow_daa		rows of matrix au_daa
- *  [in] jq_daa		column pointer to irow_daa
- *  [out] au_antilp	condensed \f$ K_{AN}\f$
- *  [out] irow_antilp	rows of matrix au_antil
- *  [out] jq_antil	column pointer to irow_antil
- *  [out] au_amtilp	condensed \f$ K_{AM}\f$
- *  [out] irow_amtilp	rows of matrix au_amtil	
- *  [out] jq_amtil	column pointer to irow_amtil
- *  [out] au_aitilp	condensed \f$ K_{AI}\f$
- *  [out] irow_aitilp	rows of matrix au_aitil
- *  [out] jq_aitil	column pointer to irow_aitil
- *  [out] au_aatilp	condensed \f$ K_{AA}\f$
- *  [out] irow_aatilp	rows of matrix au_aatil
- *  [out] jq_aatil	column pointer to irow_aatil
- *  [in] gap		(i) gap for node i on slave surface 
- *  [in] Bd		coupling matrix \f$ B_d[p,q]=\int \psi_p \phi_q dS \f$, \f$ p \in S, q \in M \f$ 
- *  [in] irowb		field containing row numbers of Bd
- *  [in] jqb		pointer into field irowb
- *  [out] Dd		coupling matrix \f$ D_d[p,q]=\int \psi_p \phi_q dS \f$, \f$ p,q \in S \f$ 
- *  [out] irowd		field containing row numbers of Dd
- *  [out] jqd		pointer into field irowd 
- *  [out] Ddtil		coupling matrix \f$ \tilde{D}_d[p,q]=\int \psi_p \tilde{\phi}_q dS \f$, \f$ p,q \in S \f$ 
- *  [out] irowdtil	field containing row numbers of Ddtil
- *  [out] jqdtil		pointer into field irowdtil  
- *  [in] au_bdtil2	\f$ B_d|_{AM} \f$ for active degrees of freedom
- *  [in] irow_bdtil2	rows of matrix au_bdtil2	
- *  [in] jq_bdtil2	pointer into field irow_bdtil2
- *  [in] au_ddtil2i	\f$ D_d|_{AI} \f$ for active degrees of freedom
- *  [in] irow_ddtil2i	rows of matrix au_bdtil2i
- *  [in] jq_ddtil2i 	pointer into field irow_bdtil2i
- *  [in] au_ddtil2a	\f$ D_d|_{AA} \f$ for active degrees of freedom
- *  [in] irow_ddtil2a	rows of matrix au_bdtil2a
- *  [in] jq_ddtil2a 	pointer into field irow_bdtil2a
- *  [in] m_flagr		field from local to global dof for master nodes
- *  [in] i_flagr		field from local to global dof for inactive nodes
- *  [in] a_flagr		field from local to global dof for active nodes
- *  [in] a_flag		field from global to local dof for active nodes
- *  [in] i_flag		field from global to local dof for inactive nodes
- *  [in] m_flag		field from global to local dof for master nodes
- *  [in] row_ln		number of \f$ N \f$ rows
- *  [in] row_lm		number of \f$ M \f$ rows (Master)
- *  [in] row_li		number of \f$ I \f$ rows (Inactive)
- *  [in] row_la		number of \f$ A \f$ rows (Slave)
- *  [in] slavnor		slave normal
- *  [in] slavtan		slave tangent 
- *  [in] cstress		current Lagrange multiplier 
- *  [in] cstressini	Lagrange multiplier at start of the increment 
- *  [in] bp_old		old friction bounds
- *  [in] islavtie   (i)=tie number for active dof i
- *  [in] irowt		field containing row numbers of aut
- *  [in] jqt	        pointer into field irowt
- *  [in] aut		transformation matrix \f$ T[p,q]\f$ for slave nodes \f$ p,q \f$ 
- *  [in] irowtinv	field containing row numbers of autinv
- *  [in] jqtinv	pointer into field irowtinv
- *  [in] autinv	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$  
- *  [in] islavnodeinv     (i) slave node index for node i
+/*
+  - Condense Lagrange Multiplier and embedd contact conditions for K_{AX}
+  - changing au due to N and T (normal and tangential
+    direction at the slave surface) 
+  - changing b due to N and T (normal and tangential
+    direction at the slave surface) 
+  phd-thesis Sitzmann, Chapter 3+4, equation (4.15) (Type=MORTAR)
+  
+  author: Saskia Sitzmann
  */
+
 void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 		    ITG *nslavnode,double *f_da,double *f_atil,
 		    double *au_dan,ITG *irow_dan,ITG *jq_dan,

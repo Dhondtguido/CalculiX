@@ -951,6 +951,9 @@ void FORTRAN(contingentsurf,(ITG *ncrack,double *xplanecrack,
 void convert2rowbyrow(double *ad,double *au, ITG *icol,ITG *irow, 
 		      ITG *jq,ITG *neq,ITG *nzs,double **aupardisop,
 		      ITG **pointersp,ITG **icolpardisop);
+
+void FORTRAN(copysens,(double *rhs,double *dgdxglob,ITG *iobject,ITG *icopy,
+		       ITG *nk,ITG *ndesi,ITG *nodedesi));
     
 void FORTRAN(coriolissolve,(double *cc,ITG *nev,double *aa,double *bb,
              double *xx,double *eiga,double *eigb,double *eigxx,
@@ -1576,10 +1579,7 @@ void FORTRAN(extract_matrices,(double *au,double *ad,ITG *jq,ITG *irow,
 			       ITG *nzsib,ITG *ktot,ITG *icolbb));
 
 void FORTRAN(extrapol2dto3d,(double *dgdxglob,ITG *nod2nd3rd,ITG *ndesi,
-                             ITG *nodedesi,ITG *nobject,ITG *nk,
-                             double *xinterpol,ITG *nnodes,ITG *ipkon,
-                             char *lakon,ITG *kon,ITG *ne,ITG *iponoel,
-                             ITG *inoel));
+                             ITG *nodedesi,ITG *nobject,ITG *nk));
 
 void FORTRAN(extrapolate,(double *yi,double *yn,ITG *ipkon,ITG *inum,
              ITG *kon,char *lakon,ITG *nfield,ITG *nk,ITG *ne,ITG *mi,
@@ -1623,7 +1623,7 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
 		       char *output,ITG *ntrans,ITG *inotr,double *trab,
 		       char *orname,double *xdesi,double *timepar,
 		       double *coini,ITG *ikboun,ITG *nactdof,ITG *ne2d,
-		       ITG *nkon);
+		       ITG *nkon,char *tieset,ITG *ntie);
 
 void FORTRAN(fill_neiel,(ITG *nef,ITG *ipnei,ITG *neiel,ITG *neielcp));
 
@@ -1633,18 +1633,43 @@ void FORTRAN(filter,(double *dgdxglob,ITG *nobject,ITG *nk,ITG *nodedesi,
                      ITG *ny,ITG *nz,ITG *neighbor,double *r,ITG *ndesia,
                      ITG *ndesib,double *xdesi,double *distmin));
 
-void filtermain(double *co,double *dgdxglob,ITG *nobject,ITG *nk,
-                ITG *nodedesi,ITG *ndesi,char *objectset,double *xdesi,
-                double *distmin);
+void FORTRAN(filterbackward_exp,(double *adf,double *auf,ITG *jqf,ITG *irowf,
+				ITG *ndesi,ITG *nodedesi,
+				double *dgdxglob,double *dgdx,ITG *nobject,
+				ITG *nk,ITG *nobjectstart,
+				double *weighting));
 
-void filtermain_backward(double *co, double *dgdxglob, ITG *nobject,
-                         ITG *nk,ITG *nodedesi, ITG *ndesi, 
-		         char *objectset,double *xdesi,double *distmin,
-			 ITG *nobjectstart);
+void FORTRAN(filterbackward_imp,(ITG *ndesi,double *au,
+				 double *ad,double *aub,double *adb,ITG *jq,
+				 char *objectset));
 
-void filtermain_forward(double *co,double *gradproj,ITG *nk,
-                ITG *nodedesi,ITG *ndesi,char *objectset,double *xdesi,
-		double *distmin,double *feasdir);
+void filterbackwardmain(double *co, double *dgdxglob, ITG *nobject,
+			ITG *nk,ITG *nodedesi, ITG *ndesi,char *objectset, 
+			double *xdesi,ITG *nobjectstart,ITG *iponoelfa,
+			ITG *inoelfa,char *lakonfa,ITG *konfa,
+			ITG *ipkonfa,ITG *nodedesiinv,ITG *istartdesi,
+			ITG *ialdesi,ITG *ipkon,char *lakon,ITG *ipoface,
+			ITG *nodface,ITG *kon,ITG *iregion,ITG *isolver,
+			double *dgdx,ITG *ne,ITG *nsurfs);
+
+void FORTRAN(filterforward_exp,(double *adf,double *auf,ITG *jqf,ITG *irowf,
+				ITG *ndesi,ITG *nodedesi,
+				double *gradproj,double *feasdir,
+				double *weighting,double *temparray,
+				double *adb,double *aub,ITG *jq,ITG *irow));
+
+ void FORTRAN(filterforward_imp,(double *ad,double *au,double *adb,double *aub,
+				 double *feasdir,double *gradproj,double *rhs,
+				 ITG *ndesi,ITG *nodedesi,ITG *iflag,ITG *jq,
+				 ITG *irow,char *objectset));
+
+void filterforwardmain(double *co,double *gradproj,ITG *nk,
+		       ITG *nodedesi,ITG *ndesi,char *objectset,double *xdesi,
+		       double *feasdir,ITG *ne,ITG *iponoelfa,ITG *inoelfa,
+		       char *lakonfa,ITG *konfa,ITG *ipkonfa,ITG *nodedesiinv,
+		       ITG *istartdesi,ITG *ialdesi,ITG *ipkon,char *lakon,
+		       ITG *ipoface,ITG *nodface,ITG *kon,ITG *iregion,
+		       ITG *isolver,ITG *nsurfs);
 
 void *filtermt(ITG *i);
 
@@ -2406,6 +2431,11 @@ void FORTRAN(mafillem,(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
                double *pmastsurf,ITG *mortar,double *clearini,
                ITG *ielprop,double *prop,ITG *iponoel,ITG *inoel,
                ITG *network));
+ 
+ void FORTRAN(mafillfilter,(double *adf,double *auf,ITG *jqf,ITG *irowf,
+			    ITG *ndesi,ITG *nodedesi,
+			    double *filterrad,double *co,double *weighting,
+			    char *objectset,double *xdesi,double *area));
 
 void FORTRAN(mafillfreq_em,(double *ad,double *au,double *adb,double *aub,
              ITG *irow,ITG *jq,ITG *neq,double *adfreq,double *aubfreq,
@@ -2436,6 +2466,16 @@ void FORTRAN(mafillkrhs,(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	double *dt,double *ck,double *ct,double *physcon,ITG *ipface));
 
 void *mafillkrhsmt(ITG *i);
+
+void FORTRAN(mafillmm,(double *co,ITG *nodedesiinv,
+		       ITG *iregion,double *au,double *ad,double *aub,
+		       double *adb,ITG *irow,ITG *jq,ITG *ipkonfa,
+		       ITG *konfa,char *lakonfa,ITG *nodedesipos,
+		       ITG *ipkonfadesi,ITG *nsurfa,ITG *nsurfb,double *area));
+
+void *mafillmmmt(ITG *i);
+
+void *mafillmmmt2(ITG *i);
 
 void FORTRAN(mafillnet,(ITG *itg,ITG *ieg,ITG *ntg,
                         double *ac,ITG *nload,char *sideload,
@@ -2996,7 +3036,7 @@ void mastructfilter(ITG *icol,ITG *jq,ITG **mastp,ITG **irowp,
 		    ITG *ipointer,ITG *nzs,ITG *ndesi,ITG *nodedesi,
 		    double *xo,double *yo,double *zo,double *x,
 		    double *y,double *z,ITG *nx,ITG *ny,ITG *nz,
-		    char *objectset,double *filterrad);
+		    double *filterrad);
 
 void mastructmatrix(ITG *ipompc,ITG *nodempc,ITG *nmpc,ITG *nactdof,
 		    ITG *jq,ITG **mast1p,ITG *neq,ITG *ipointer, ITG *nzs_, 
@@ -3008,6 +3048,12 @@ void mastructmatrixcs(ITG *ipompc,ITG *nodempc,ITG *nmpc,ITG *nactdof,
 		      ITG *nmethod,ITG *mi,ITG **nextp,
 		      ITG *node1,ITG *k,ITG *node2,ITG *m,ITG *ifree,
 		      char *labmpc,ITG *mcs,double *cs,ITG *ics);
+
+void mastructmm(ITG *icol,ITG *jq,ITG **mastp,ITG **irowp,
+		ITG *ipointer,ITG *nzs,ITG *ndesi,ITG *nodedesi,
+		ITG *iponoelfa,ITG *inoelfa,ITG *nk,char *lakonfa,
+		ITG *konfa,ITG *ipkonfa,ITG *nodedesiinv,
+		ITG *nodedesipos);
 
 void mastructnmatrix(ITG *icols,ITG *jqs,ITG **mast1p,ITG **irowsp,
 		     ITG *ipointer,ITG *nzss,ITG *nactive,ITG *nnlconst);
@@ -3139,6 +3185,10 @@ void FORTRAN(nidentll,(long long *x,long long *px,ITG *n,ITG *id));
 void FORTRAN(nmatrix,(double *ad,double *au,ITG *jqs,ITG *irows,ITG *ndesi,
 		      ITG *nodedesi,double *dgdxglob,ITG *nactive,ITG *nobject,
 		      ITG *nnlconst,ITG *ipoacti,ITG *nk));         
+
+void FORTRAN(nodedesionface,(ITG *iregion,ITG *nsurfs,ITG *ipkonfa,
+			      char *lakonfa,ITG *konfa,ITG *nsurfsdesi,
+			      ITG *ipkonfadesi,ITG *nodedesiinv));
 
 void FORTRAN(nodesperface,(ITG *ipkonf,ITG *konf,char *lakonf,ITG *nface,
 			   ITG *ielfa,ITG *iponofa,ITG *inofa));
@@ -3421,9 +3471,13 @@ void FORTRAN(opfortran,(ITG *n,double *x,double *y,double *ad,double *au,ITG *jq
 void opmain(ITG *n,double *x,double *y,double *ad,double *au,ITG *jq,ITG *irow);
 
 void *opmt(ITG *i);
-
-void FORTRAN(op,(double *x,double *y,double *ad,double *au,ITG *jq,
-		    ITG *irow,ITG *na,ITG *nb));
+ 
+void FORTRAN(packaging,(ITG *nodedesiboun,ITG *ndesiboun,char *objectset,
+			double *xo,double *yo,double *zo,double *x,double *y,
+			double *z,ITG *nx,ITG *ny,ITG *nz,double *co,
+			ITG *ifree,ITG *ndesia,ITG *ndesib,ITG *iobject,
+			ITG *ndesi,double *dgdxglob,ITG *nk,double *extnor,
+			double *g0,ITG *nodenum));
 
 void packagingmain(double *co,ITG *nobject,ITG *nk,ITG *nodedesi,ITG *ndesi,
 		   char *objectset,char *set,ITG *nset,ITG *istartset,
@@ -3552,6 +3606,13 @@ void FORTRAN(prefilter,(double *co,ITG *nodedesi,ITG *ndesi,double *xo,
 
 void preiter(double *ad,double **aup,double *b,ITG **icolp,ITG **irowp,
              ITG *neq,ITG *nzs,ITG *isolver,ITG *iperturb);
+ 
+void FORTRAN(prepackaging,(double *co,double *xo,double *yo,double *zo,
+			   double *x,double *y,double *z,ITG *nx,ITG *ny,
+			   ITG *nz,ITG *ifree,ITG *nodedesiinv,ITG *ndesiboun,
+			   ITG *nodedesiboun,char *set,ITG *nset,
+			   char *objectset,ITG *iobject,ITG *istartset,
+			   ITG *iendset,ITG *ialset,ITG *nodenum));
 
 void preparll(ITG *mt,double *dtime,double *veold,double *scal1,
                    double *accold,double *uam,ITG *nactdof,double *v,

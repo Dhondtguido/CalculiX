@@ -119,7 +119,7 @@
                endif          
             enddo
             write(5,102) i-1,objectset(1,i),objectset(1,i)(19:22),
-     &         funcvalabs,bound,funcvalnorm,'ACTIVE  '      
+     &         abs(funcvalabs),bound,funcvalnorm,'ACTIVE  '      
          elseif(objectset(1,i)(1:13).eq.'MINMEMBERSIZE') then     
             read(objectset(1,i)(61:80),'(f20.0)',iostat=istat) bound
             do j=1,ndesiboun
@@ -138,7 +138,7 @@
                endif          
             enddo
             write(5,102) i-1,objectset(1,i),objectset(1,i)(19:22),
-     &         funcvalabs,bound,funcvalnorm,'ACTIVE  '      
+     &         abs(funcvalabs),bound,funcvalnorm,'ACTIVE  '      
          elseif(objectset(1,i)(1:12).eq.'MAXSHRINKAGE') then     
             read(objectset(1,i)(61:80),'(f20.0)',iostat=istat) bound
             do j=1,ndesiboun
@@ -151,11 +151,11 @@
                   funcvalabs=obj
                else
                   funcvalnorm=max(funcvalnorm,objnorm)
-                  funcvalabs=max(funcvalabs,obj)
+                  funcvalabs=min(funcvalabs,obj)
                endif          
             enddo
             write(5,102) i-1,objectset(1,i),objectset(1,i)(19:22),
-     &         funcvalabs,bound,funcvalnorm,'ACTIVE  '      
+     &         abs(funcvalabs),bound,funcvalnorm,'ACTIVE  '      
          elseif(objectset(1,i)(1:9).eq.'MAXGROWTH') then     
             read(objectset(1,i)(61:80),'(f20.0)',iostat=istat) bound
             do j=1,ndesiboun
@@ -172,7 +172,7 @@
                endif          
             enddo
             write(5,102) i-1,objectset(1,i),objectset(1,i)(19:22),
-     &         funcvalabs,bound,funcvalnorm,'ACTIVE  '      
+     &         abs(funcvalabs),bound,funcvalnorm,'ACTIVE  '      
          elseif(objectset(1,i)(1:9).eq.'PACKAGING') then     
             bound=0.d0
             do j=1,ndesiboun
@@ -189,7 +189,7 @@
                endif        
             enddo
             write(5,102) i-1,objectset(1,i),objectset(1,i)(19:22),
-     &         funcvalabs,bound,funcvalnorm,'ACTIVE  '      
+     &         abs(funcvalabs),bound,funcvalnorm,'ACTIVE  '      
 !
 !        all nonlinear constraints
 !
@@ -222,21 +222,21 @@
 !              dividing by it leads to inf; therefore, the minimum          
 !              function is introduced.
 !
-               objnorm=min(g0(i)/bound-1.d0,-1.d-10)
-               do j=1,ndesi
-                  inode=nodedesi(j)
-                  gradproj(1,inode)=gradproj(1,inode)-
-     &               dgdxglob(2,inode,i)/objnorm
-               enddo
+               objnorm=g0(i)/bound-1.d0
+               if(objnorm.eq.0.d0) then
+                  objnorm=-1.d-10
+               endif
             elseif(objectset(1,i)(19:20).eq.'GE') then
-               objnorm=max(g0(i)/bound-1.d0,1.d-10)
-c               objnorm=g0(i)/bound+1
-               do j=1,ndesi
-                  inode=nodedesi(j)
-                  gradproj(1,inode)=gradproj(1,inode)+
-     &               dgdxglob(2,inode,i)/objnorm       
-               enddo
+               objnorm=-1.d0*g0(i)/bound+1.d0
+               if(objnorm.eq.0.d0) then
+                  objnorm=-1.d-10
+               endif
             endif
+            do j=1,ndesi
+               inode=nodedesi(j)
+               gradproj(1,inode)=gradproj(1,inode)-
+     &          dgdxglob(2,inode,i)/objnorm      
+            enddo
             write(5,102) i-1,objectset(1,i),objectset(1,i)(19:22),
      &         g0(i),bound,objnorm,'ACTIVE  ',objectset(5,i)    
          endif

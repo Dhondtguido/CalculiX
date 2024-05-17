@@ -27,10 +27,11 @@
 !     
       real*8 rhs(*),dgdxglob(2,nk,*)
 !  
-!     icopy=0: copy unfilterd sensitivites to dgdxglob
-!     icopy=1: copy filterd sensitivites to dgdxglob
+!     icopy=0: copy unfiltered sensitivites to dgdxglob
+!     icopy=1: copy filtered sensitivites to dgdxglob
 !
 !     FORTRAN convention for iobject
+!
       istart=iobject+1
 !
 !     copy unfiltered sensitivities
@@ -41,6 +42,7 @@
          enddo
 !   
 !     copy filtered sensitivities
+!
       elseif(icopy.eq.1) then
          do idesvar=1,ndesi
             inode=nodedesi(idesvar)

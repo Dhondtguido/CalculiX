@@ -16,7 +16,7 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
-      subroutine mafillfilter(adf,auf,jqf,irowf,icolf,ndesi,
+      subroutine mafillfilter(adf,auf,jqf,irowf,ndesi,
      &   nodedesi,filterrad,co,weighting,objectset,xdesi,
      &   area)           
 !     
@@ -26,11 +26,11 @@
 !
       character*81 objectset(5,*)
 !
-      integer jqf(*),irowf(*),icolf(*),ndesi,nodedesi(*),i,kk,jj,
+      integer jqf(*),irowf(*),ndesi,nodedesi(*),kk,jj,
      &   inode1,inode2,ipos,actdir
 !     
-      real*8 auf(*),co(3,*),pi,filterrad,dist,dx,dy,dz,distmin,
-     &   weighting(*),sigma,scalar,xdesi(3,*),adf(*),filterval,
+      real*8 auf(*),co(3,*),filterrad,dist,dx,dy,dz,distmin,
+     &   weighting(*),scalar,xdesi(3,*),adf(*),filterval,
      &   area(*)
 ! 
 !     Check if direction weighting is turned on

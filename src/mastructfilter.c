@@ -28,7 +28,7 @@ void mastructfilter(ITG *icol,ITG *jq,ITG **mastp,ITG **irowp,
                   ITG *ipointer,ITG *nzs,ITG *ndesi,ITG *nodedesi,
 		  double *xo,double *yo,double *zo,double *x,
 		  double *y,double *z,ITG *nx,ITG *ny,ITG *nz,
-		  char *objectset,double *filterrad){
+		  double *filterrad){
 		  
 
   /* determines the structure of the filter matrix */
@@ -56,7 +56,7 @@ void mastructfilter(ITG *icol,ITG *jq,ITG **mastp,ITG **irowp,
   for(k=0;k<*ndesi;k++){
      idof1=k+1;
      //inode1=nodedesi[k];  
-
+     
      FORTRAN(near3d_se,(xo,yo,zo,x,y,z,nx,ny,nz,&xo[k],&yo[k],&zo[k],
                         ndesi,neighbor,r,&nnodesinside,filterrad));
      
@@ -65,8 +65,10 @@ void mastructfilter(ITG *icol,ITG *jq,ITG **mastp,ITG **irowp,
      for(j=0;j<nnodesinside;j++){
 	//inode2=nodedesi[neighbor[j]-1];
 	idof2=(neighbor[j]-1)+1;
-
-	insert_cmatrix(ipointer,&mast,&next,&idof1,&idof2,&ifree,nzs); 
+        
+	if(idof2<idof1)continue;
+	
+	insert(ipointer,&mast,&next,&idof1,&idof2,&ifree,nzs); 
      }
   }
   

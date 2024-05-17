@@ -3,9 +3,9 @@
 
 
    ##############################################################################################################
-   D E S I G N   R E S P O N S E                    I N F O R M A T I O N
+   D E S I G N   R E S P O N S E   I N F O R M A T I O N
 
    FUNCTION        FUNCTION VALUE    LENGTH GRADIENT   NAME                                                        
    ##############################################################################################################
 
-   STRAINENERGY     0.2380952E-03      0.9337112E-03   ENER_OBJ                                                                        
+   STRAINENERGY     0.2380952E-03      0.1190482E-03   ENER_OBJ                                                                        

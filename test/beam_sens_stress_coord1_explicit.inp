@@ -1,6 +1,7 @@
 **
 **   Structure: cantilever beam.
 **   Test objective: stress sensitivity w.r.t the geometry
+**                   explicit filtering
 **
 *HEADING
 Model: beam     Date: 10-Mar-1998
@@ -319,8 +320,9 @@ CN7, 3
 *DESIGNVARIABLES,TYPE=COORDINATE
 Nall
 *STEP
-*FREQUENCY,STORAGE=YES
-10
+*STATIC
+*CLOAD
+100,2,1.
 *NODE FILE
 U
 *EL FILE
@@ -329,7 +331,7 @@ S
 *STEP
 *SENSITIVITY
 *DESIGN RESPONSE, NAME=STRESS_OBJ
-MODALSTRESS,NALL,10.,5.e7
+MISESSTRESS,NALL,10.,10.
 *FILTER,TYPE=EXPLICIT,EDGE PRESERVATION=YES
 2.
 *NODE FILE

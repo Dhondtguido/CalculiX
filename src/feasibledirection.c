@@ -55,7 +55,7 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
 		       ITG *ialset,char *jobnamec,char *output,ITG *ntrans,
 		       ITG *inotr,double *trab,char *orname,double *xdesi,
 		       double *timepar,double *coini,ITG *ikboun,ITG *nactdof,
-		       ITG *ne2d,ITG *nkon){
+		       ITG *ne2d,ITG *nkon,char *tieset,ITG *ntie){
                
   /* finding a feasible direction based on the sensitivity information */
   
@@ -69,7 +69,8 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
     igeoconst=0,*nodedesipos=NULL,*ipoface=NULL,*nodface=NULL,
     *konfa=NULL,*ipkonfa=NULL,*iponoelfa=NULL,*inoelfa=NULL,nsurfs,ifreemax,
     inoelsize,iregion=0,*nod2nd3rd=NULL,*nodedesiboun=NULL,addout,
-    ipos,ifree,nfield,iforce,*inoel=NULL,*iponoel=NULL;
+    ipos,ifree,nfield,iforce,*inoel=NULL,*iponoel=NULL,*istartdesi=NULL,
+    *ialdesi=NULL;
          
   double *objnorm=NULL,*dgdxglob=NULL,*stn=NULL,ptime=0.,*gradproj=NULL,
     *extnorini=NULL,*extnor=NULL,distmin,*feasdir=NULL,*tinc;
@@ -83,7 +84,18 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
      is written in the frd file */
   
   addout=0;
+
+  /* check which design variables are active */
   
+  for(i=0;i<*ntie;i++){
+    if(strcmp1(&tieset[i*243+80],"D")==0){
+      if(*nobject>0){
+	if(strcmp1(&objectset[90],"EDG")==0){iregion=1;}
+      }
+      break;
+    }
+  }
+
   methodfd=timepar[3];
   NNEW(feasdir,double,2**nk);
   NNEW(gradproj,double,3**nk);
@@ -101,6 +113,52 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
                       nodeboun,nboun,ndirboun,ithermal,co,vold,mi,ielmat,
                       ielprop,prop));
 
+  /* determining the elements belonging to a given node */
+  
+  NNEW(iponoel,ITG,*nk);
+  NNEW(inoel,ITG,2**nkon);
+  FORTRAN(elementpernode,(iponoel,inoel,lakon,ipkon,kon,ne));
+
+  /* storing the elements to which each design variable belongs
+     in field ialdesi */
+
+  NNEW(istartdesi,ITG,*ndesi+1);
+  NNEW(ialdesi,ITG,*nkon);
+  FORTRAN(elemperdesi,(ndesi,nodedesi,iponoel,inoel,istartdesi,ialdesi,lakon,
+		       ipkon,kon,nodedesiinv,&icoordinate,&iregion));
+		       
+  RENEW(ialdesi,ITG,istartdesi[*ndesi]-1);
+
+  /* determining the elements belonging to a given node */
+  
+  NNEW(iponoel,ITG,*nk);
+  NNEW(inoel,ITG,2**nkon);
+  FORTRAN(elementpernode,(iponoel,inoel,lakon,ipkon,kon,ne));
+
+  NNEW(nodedesipos,ITG,*nk);
+  NNEW(ipoface,ITG,*nk);
+  NNEW(nodface,ITG,5*6**ne);
+  NNEW(konfa,ITG,8*6**ne);
+  NNEW(ipkonfa,ITG,6**ne);
+  NNEW(lakonfa,char,8*6**ne);
+  
+  FORTRAN(findextsurface,(nodface,ipoface,ne,ipkon,lakon,kon,
+        		  konfa,ipkonfa,nk,lakonfa,&nsurfs,
+        		  &ifreemax,&ifree));
+  
+  RENEW(nodface,ITG,5*ifreemax);
+  RENEW(konfa,ITG,8*nsurfs);
+  RENEW(ipkonfa,ITG,nsurfs);
+  RENEW(lakonfa,char,8*nsurfs);
+
+  NNEW(iponoelfa,ITG,*nk);
+  NNEW(inoelfa,ITG,3*8*6**ne);
+  
+  FORTRAN(extfacepernode,(iponoelfa,inoelfa,lakonfa,ipkonfa,konfa,
+        		&nsurfs,&inoelsize));
+  
+  RENEW(inoelfa,ITG,3*inoelsize);
+
   /***************************************************************************/
   /* assessment of geometrical constraints                                   */
   /***************************************************************************/
@@ -115,29 +173,6 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
     
     /*finding the normal directions */
 
-    NNEW(nodedesipos,ITG,*nk);
-    NNEW(ipoface,ITG,*nk);
-    NNEW(nodface,ITG,5*6**ne);
-    NNEW(konfa,ITG,8*6**ne);
-    NNEW(ipkonfa,ITG,6**ne+1);
-    NNEW(lakonfa,char,8*6**ne);
-    
-    FORTRAN(findextsurface,(nodface,ipoface,ne,ipkon,lakon,kon,
-			    konfa,ipkonfa,nk,lakonfa,&nsurfs,
-			    &ifreemax,&ifree));
-    
-    RENEW(nodface,ITG,5*ifreemax);
-    RENEW(konfa,ITG,ifree);
-    RENEW(ipkonfa,ITG,nsurfs+1);
-    RENEW(lakonfa,char,8*nsurfs);
-
-    NNEW(iponoelfa,ITG,*nk);
-    NNEW(inoelfa,ITG,3*8*6**ne);
-   
-    FORTRAN(extfacepernode,(iponoelfa,inoelfa,lakonfa,ipkonfa,konfa,
-			    &nsurfs,&inoelsize));
-   
-    RENEW(inoelfa,ITG,3*inoelsize);
     NNEW(extnorini,double,3**nk);
     NNEW(extnor,double,3**nk);
     
@@ -154,8 +189,6 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
 			         nodface,nactdof,mi,nodedesiinv,&iregion,
 			         iponoelfa,ndesi,nodedesi,nod2nd3rd,
 			         ikboun,nboun,ne2d)); 		          
-
-    SFREE(konfa);SFREE(ipkonfa);SFREE(lakonfa);SFREE(iponoelfa);SFREE(inoelfa);
     
     for(i=0;i<*nobject;i++){
       if(strcmp1(&objectset[i*405+3],"MEMBERSIZE")==0){
@@ -250,23 +283,12 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
   }
   
   /* ********************************************************************* */
-  /*         GRADIENT DESCENT AKIN METHOD                                  */
+  /*         GRADIENT DESCENT METHOD                                       */
   /* ********************************************************************* */
   
   if(methodfd==1){
     
-    printf(" Computation of feasible direction with Gradient Descent Akin method\n\n");
-
-    // NEEDED? ALREADY DONE AT END OF SENSITIVITY.C???
-    
-    /* Scaling all sensitivities to unit length */
-
-    /*    iscaleflag=1;   
-    for(i=0;i<*nobject;i++){
-      istart=i+1;
-      FORTRAN(scalesen,(dgdxglob,feasdir,nk,nodedesi,ndesi,objectset
-			,&iscaleflag,&istart,ne2d));
-			}*/
+    printf(" Computation of feasible direction with Gradient Descent method\n\n");
 
     /* determining the assembled gradient vector */
     
@@ -302,9 +324,9 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
     }
 
 
-    /*************************************************************************/
-    /*        CALCULATION OF PROJECTED GRADIENT                              */
-    /*************************************************************************/
+  /*************************************************************************/
+  /*         GRADIENT PROJETION METHOD                                     */
+  /*************************************************************************/
 
   }else if(methodfd==2){                                    
 
@@ -373,30 +395,27 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
 
   printf(" Forward filtering of feasible direction\n\n");
   
-  /*distmin is set to 1.0e-08 --> perturabtion which reduces the
-    finite difference error the most */
-  distmin=1.0e-08;
-  
-  filtermain_forward(co,gradproj,nk,nodedesi,ndesi,objectset,xdesi,
-	             &distmin,feasdir);
+  filterforwardmain(co,gradproj,nk,nodedesi,ndesi,objectset,xdesi,feasdir,
+	            ne,iponoelfa,inoelfa,lakonfa,konfa,ipkonfa,nodedesiinv,
+	            istartdesi,ialdesi,ipkon,lakon,ipoface,nodface,kon,
+	            &iregion,isolver,&nsurfs);
 
   /* scaling the designnodes being in the transition between 
-     the designspace and the non-designspace */
-       
-  transitionmain(co,feasdir,nobject,nk,nodedesi,ndesi,objectset,
-        	 ipkon,kon,lakon,ipoface,nodface,nodedesiinv);
+     the designspace and the non-designspace (only necessary for the explicit 
+     filter, the implicit one does this automatically */
+  
+  if(strcmp1(&objectset[89],"E")==0){     
+  
+    transitionmain(co,feasdir,nobject,nk,nodedesi,ndesi,objectset,
+        	   ipkon,kon,lakon,ipoface,nodface,nodedesiinv);
+  
+  }
   
   printf(" Normalization of forward filtered sensitivities \n\n");
 
   iscaleflag=4; 
   FORTRAN(scalesen,(dgdxglob,feasdir,nk,nodedesi,ndesi,objectset,&iscaleflag,
 		    &istart,ne2d));
-
-  /* determining the elements belonging to a given node */
-  
-  NNEW(iponoel,ITG,*nk);
-  NNEW(inoel,ITG,2**nkon);
-  FORTRAN(elementpernode,(iponoel,inoel,lakon,ipkon,kon,ne));
 
   /* writing the change in nodal coordinates to the mesh modification
      input deck */
@@ -434,10 +453,10 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
 			 cflag,co,vold,&iforce,mi,ielprop,prop));
   }
 
-  SFREE(inum);SFREE(objnorm);SFREE(ipoacti);SFREE(iconstacti);
-  SFREE(nodedesiboun);
+  SFREE(inum);SFREE(objnorm);SFREE(ipoacti);SFREE(iconstacti);SFREE(nodedesiboun);
   SFREE(inameacti);SFREE(nodedesiinv);SFREE(gradproj);SFREE(gradprojname);
-  SFREE(feasdir);SFREE(ipoface);SFREE(nodface);
+  SFREE(feasdir);SFREE(nodface);SFREE(ipoface);SFREE(istartdesi);SFREE(ialdesi);
+  SFREE(konfa);SFREE(ipkonfa);SFREE(lakonfa);SFREE(iponoelfa);SFREE(inoelfa);
   
   *objectsetp=objectset;*dgdxglobp=dgdxglob;*ipkonp=ipkon;*lakonp=lakon;
   *konp=kon;*ielmatp=ielmat;

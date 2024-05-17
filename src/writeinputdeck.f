@@ -412,9 +412,11 @@
           elseif(lakon(i)(4:4).eq.'6') then
             nope=6
             label='C3D6    '
-          else
+          elseif(lakon(i)(4:4).eq.'4') then
             nope=4
             label='C3D4    '
+          else
+            cycle
           endif
         endif
         write(20,107) label
@@ -541,7 +543,6 @@ c      enddo
             p(k)=p(k)+shp(4,j)*xl(k,j)
           enddo
         enddo
-c        write(*,*) i,p(1),p(2),p(3)
 !     
 !     determining the neighboring design node
 !     
@@ -549,7 +550,6 @@ c        write(*,*) i,p(1),p(2),p(3)
      &       ndesi,neigh,kneigh)
 !
         nodeext=nodedesi(neigh(1))
-c        write(*,*) i,nodeext
         dist(i)=dsqrt((p(1)-co(1,nodeext))**2+
      &                (p(2)-co(2,nodeext))**2+
      &                (p(3)-co(3,nodeext))**2)

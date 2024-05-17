@@ -81,7 +81,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *istartelem=NULL,*ialelem=NULL,ieigenfrequency=0,cyclicsymmetry=0,
     nherm,nev,iev,inoelsize,*itmp=NULL,nmd,nevd,*nm=NULL,*ielorien=NULL,
     igreen=0,iglob=0,idesvar=0,inorm=0,irand=0,*nodedesiinv=NULL,
-    *nnodes=NULL,iregion=0,*konfa=NULL,*ipkonfa=NULL,nsurfs,ifree,
+    iregion=0,*konfa=NULL,*ipkonfa=NULL,nsurfs,ifree,
     *iponor=NULL,*iponoelfa=NULL,*inoelfa=NULL,ifreemax,
     *iponexp=NULL,*ipretinfo=NULL,nfield,iforce,*nod2nd3rd=NULL,
     *nod1st=NULL,ishape=0,iscaleflag,istart,modalstress=0,ifeasd=0,
@@ -97,10 +97,10 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *ad=NULL,*b=NULL,*aub=NULL,*adb=NULL,*pslavsurf=NULL,
     *pmastsurf=NULL,*cdn=NULL,*xstate=NULL,*fnext=NULL,*energyini=NULL,
     *energy=NULL,*ener=NULL,*dxstiff=NULL,*d=NULL,*z=NULL,
-    distmin,*df=NULL,*dgdx=NULL,sigma=0,*xinterpol=NULL,
-    *extnor=NULL,*veold=NULL,*accold=NULL,bet,gam,sigmak=1.,sigmal=1.,
-    dtime,time,reltime=1.,*weightformgrad=NULL,*fint=NULL,*xnor=NULL,
-    *dgdxdy=NULL,*x=NULL,*y=NULL,*xo=NULL,*yo=NULL,*zo=NULL,*dist=NULL;
+    distmin,*df=NULL,*dgdx=NULL,sigma=0,*extnor=NULL,*veold=NULL,
+    *accold=NULL,bet,gam,sigmak=1.,sigmal=1.,dtime,time,reltime=1.,
+    *fint=NULL,*xnor=NULL,*dgdxdy=NULL,*x=NULL,*y=NULL,*xo=NULL,*yo=NULL,
+    *zo=NULL,*dist=NULL,*dummy=NULL;
 
   FILE *f1;
   
@@ -367,7 +367,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   NNEW(ny,ITG,*nk);
   NNEW(nz,ITG,*nk);
   NNEW(nodes,ITG,*nk);
-  NNEW(dist,double,*nk);
+  NNEW(dist,double,*ne);
       
   FORTRAN(writeinputdeck,(nk,co,iponoelfa,inoelfa,konfa,ipkonfa,lakonfa,
 			  &nsurfs,iponor,xnor,nodedesiinv,jobnamef,
@@ -376,11 +376,10 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 			  ipoface,nodface,ne,x,y,z,xo,yo,zo,nx,ny,nz,nodes,
 			  dist,ne2d,nod1st,nod2nd3rd,extnor,nodedesi,ndesi));
                   
-  SFREE(konfa);SFREE(ipkonfa);SFREE(lakonfa);SFREE(iponor);SFREE(xnor);
-  SFREE(iponoelfa);SFREE(inoelfa);SFREE(iponexp);SFREE(ipretinfo);
+  SFREE(iponor);SFREE(xnor);SFREE(iponexp);SFREE(ipretinfo);
   SFREE(x);SFREE(y);SFREE(z);SFREE(xo);SFREE(yo);SFREE(zo);SFREE(nx);
   SFREE(ny);SFREE(nz);SFREE(nodes);SFREE(dist);
-	  
+
   /* createinum is called in order to determine the nodes belonging
      to elements; this information is needed in frd_se */
       
@@ -957,49 +956,27 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       }
     }
 
-    /* Elimination of mesh-dependency and filling of dgdxglob  */
-  
-    NNEW(weightformgrad,double,*ndesi);
-          
-    FORTRAN(distributesens,(istartdesi,ialdesi,ipkon,lakon,ipoface,
-			    ndesi,nodedesi,nodface,kon,co,dgdx,nobject,
-			    weightformgrad,nodedesiinv,&iregion,objectset,
-			    dgdxglob,nk,physcon,nobjectstart));
-		  
-    SFREE(weightformgrad);
-
-    /* for quadratic elements: interpolation of midnode-sensitivity 
-       to the corner nodes */
-	  
-    NNEW(xinterpol,double,*nk**nobject);
-    NNEW(nnodes,ITG,*nk);
-	  
-    FORTRAN(quadraticsens,(ipkon,lakon,kon,nobject,dgdxglob,xinterpol,nnodes,
-			   ne,nk,nodedesiinv,objectset,nobjectstart));
-		            
-    SFREE(nnodes);SFREE(xinterpol);
-
     /* Backward filtering of sensitivities 
        --> variable transformation from x to s */
   
-    filtermain_backward(co,dgdxglob,nobject,nk,nodedesi,ndesi,objectset,
-	       xdesi,&distmin,nobjectstart);
+    filterbackwardmain(co,dgdxglob,nobject,nk,nodedesi,ndesi,objectset,
+	       xdesi,nobjectstart,iponoelfa,inoelfa,lakonfa,
+	       konfa,ipkonfa,nodedesiinv,istartdesi,ialdesi,ipkon,lakon,
+	       ipoface,nodface,kon,&iregion,isolver,dgdx,ne,&nsurfs);
 
     /* createinum is called in order to determine the nodes belonging
        to elements; this information is needed in frd_se */
 
     NNEW(inum,ITG,*nk);
-    FORTRAN(createinum,(ipkon,inum,kon,lakon,nk,ne,&cflag[0],nelemload,nload,
-			nodeboun,nboun,ndirboun,ithermal,co,vold,mi,ielmat,
-			ielprop,prop));
+    FORTRAN(createinum,(ipkon,inum,kon,lakon,nk,ne,&cflag[0],nelemload,
+			nload,nodeboun,nboun,ndirboun,ithermal,co,vold,
+			mi,ielmat,ielprop,prop));
 
     /* for 2D models extrapolate the results of the midnodes 
        to the 2 symmetry planes */
 
     if(*ne2d!=0){
-      FORTRAN(extrapol2dto3d,(dgdxglob,nod2nd3rd,ndesi,
-			      nodedesi,nobject,nk,xinterpol,nnodes,
-			      ipkon,lakon,kon,ne,iponoel,inoel));
+      FORTRAN(extrapol2dto3d,(dgdxglob,nod2nd3rd,ndesi,nodedesi,nobject,nk));		     
     }
 	    
     //++*kode;
@@ -1015,7 +992,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
       iscaleflag=1;
       istart=iobject+1;
-      FORTRAN(scalesen,(dgdxglob,weightformgrad,nk,nodedesi,ndesi,objectset,
+      FORTRAN(scalesen,(dgdxglob,dummy,nk,nodedesi,ndesi,objectset,
 			&iscaleflag,&istart,ne2d)); 	  
 
       /* storing the sensitivities in the frd-file for visualization 
@@ -1044,7 +1021,8 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
             
   } // end loop over nev
 
-  SFREE(iponoel);SFREE(inoel);SFREE(nodedesiinv);
+  SFREE(iponoel);SFREE(inoel);SFREE(nodedesiinv);SFREE(inoelfa);
+  SFREE(konfa);SFREE(ipkonfa);SFREE(lakonfa);SFREE(iponoelfa);	  
   
   if(*ne2d!=0){
     SFREE(nod2nd3rd);SFREE(nod1st);

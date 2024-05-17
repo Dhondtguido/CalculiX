@@ -1,11 +1,11 @@
     1C
     1UUSER                                                              
-    1UDATE              23.february.2024                                
-    1UTIME              17:09:02                                        
+    1UDATE              17.may.2024                                     
+    1UTIME              17:13:10                                        
     1UHOST                                                              
     1UPGM               CalculiX                                        
     1UVERSION           Version DEVELOPMENT                             
-    1UCOMPILETIME       Fri Feb 23 17:06:32 CET 2024                    
+    1UCOMPILETIME       Fri May 17 16:12:00 CEST 2024                    
     1UDIR                                                               
     1UDBN                                                               
     1UMAT    1EL                                                        
@@ -91,12 +91,12 @@
  -4  SENENER     2    1
  -5  DFDN        1    1    1    0
  -5  DFDNFIL     1    1    2    0
- -1         1 1.60952E+01 5.00000E-01
+ -1         1 1.20714E+05 5.00000E-01
  -1         2 0.00000E+00 0.00000E+00
  -1         3 0.00000E+00 0.00000E+00
- -1         4 1.60952E+01 5.00000E-01
- -1         5 1.60952E+01 5.00000E-01
- -1         6 1.60952E+01 5.00000E-01
+ -1         4 1.20714E+05 5.00000E-01
+ -1         5 1.20714E+05 5.00000E-01
+ -1         6 1.20714E+05 5.00000E-01
  -1         7 0.00000E+00 0.00000E+00
  -1         8 0.00000E+00 0.00000E+00
  -3

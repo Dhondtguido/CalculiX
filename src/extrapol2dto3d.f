@@ -16,65 +16,18 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-      subroutine extrapol2dto3d(dgdxglob,nod2nd3rd,ndesi,
-     &   nodedesi,nobject,nk,xinterpol,nnodes,ipkon,lakon,kon,
-     &   nodedesimpc,ndesimpc,ne,iponoel,inoel)
+      subroutine extrapol2dto3d(dgdxglob,nod2nd3rd,ndesi,nodedesi,
+     &     nobject,nk)
 !
 !     for 2D models extrapolate the results of the midnodes 
 !     to the 2 symmetry planes
 !
       implicit none
 !
-      character*8 lakon(*)
+      integer nod2nd3rd(2,*),ndesi,nodedesi(*),nobject,node,nk,
+     &     idesvar,i,j,l
 !
-      integer nod2nd3rd(2,*),ndesi,nodedesi(*),nobject,
-     &  node,nk,idesvar,ipkon(*),konl(26),ifaceq(2,20),
-     &  ifacet(2,10),ifacew(2,15),kon(*),nnodes(nk),nope,ielem,
-     &  start,nodedesimpc(*),ndesimpc,ne,indexe,i,j,l,ii,
-     &  iponoel(*),inoel(2,*),nodecor1,nodecor2
-!
-      real*8 dgdxglob(2,nk,nobject),xinterpol(2,nk,nobject)
-!
-!     cornernodes next to the midnode for quadratic hex element
-!
-      data ifaceq /0,0,
-     &             0,0,
-     &             0,0,
-     &             0,0,
-     &             0,0,
-     &             0,0,
-     &             0,0,
-     &             0,0,
-     &             1,2,
-     &             2,3,
-     &             3,4,
-     &             1,4,
-     &             5,6,
-     &             6,7,
-     &             7,8,
-     &             5,8,
-     &             1,5,
-     &             2,6,
-     &             3,7,
-     &             4,8/
-!
-!     cornernodes next to the midnode for quadratic wedge elements
-!
-      data ifacew /0,0,
-     &             0,0,
-     &             0,0,
-     &             0,0,
-     &             0,0,
-     &             0,0,
-     &             1,2,
-     &             2,3,
-     &             1,3,
-     &             4,5,
-     &             5,6,
-     &             4,6,
-     &             1,4,
-     &             2,5,
-     &             3,6/
+      real*8 dgdxglob(2,nk,*)
 !
 !     Loop over all designvariables
 !

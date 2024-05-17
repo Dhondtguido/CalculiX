@@ -42,7 +42,7 @@
 #include "pastix.h"
 #endif
 
-static char *lakon1,*lakonfa1,*objectset1;
+static char *lakonfa1;
 
 static ITG num_cpus;
 
@@ -126,12 +126,6 @@ void filterbackwardmain(double *co, double *dgdxglob, ITG *nobject,
   if(*ndesi<num_cpus) num_cpus=*ndesi;
     
   pthread_t tid[num_cpus];
-
-  /* if no filter is defined activation of iregion */
-  
-  if(strcmp1(&objectset[89]," ")==0){
-    *iregion=1;
-  }
   
   /*--------------------------------------------------------------------------*/
   /* Determination of mass matrix M and it's derivative K                     */
@@ -244,8 +238,7 @@ void filterbackwardmain(double *co, double *dgdxglob, ITG *nobject,
   
     icopy=0;        
     for(iobject=*nobjectstart;iobject<*nobject;iobject++){
-      i=iobject-*nobjectstart;
-      FORTRAN(copysens,(&dgdx[i**ndesi],dgdxglob,&iobject,&icopy,nk,
+      FORTRAN(copysens,(&dgdx[iobject**ndesi],dgdxglob,&iobject,&icopy,nk,
                         ndesi,nodedesi));
     }
 
@@ -283,12 +276,11 @@ void filterbackwardmain(double *co, double *dgdxglob, ITG *nobject,
     NNEW(weighting,double,*ndesi);
     NNEW(temparray,double,*ndesi**nobject);
  
-    FORTRAN(mafillfilter,(adf,auf,jqf,irowf,icolf,ndesi,nodedesi,&filterrad,
+    FORTRAN(mafillfilter,(adf,auf,jqf,irowf,ndesi,nodedesi,&filterrad,
                           co,weighting,objectset,xdesi,area));
 			       
-    FORTRAN(filterbackward_exp,(adf,auf,jqf,irowf,icolf,ndesi,nodedesi,dgdxglob,
-                                dgdx,nobject,nk,nobjectstart,objectset,
-				weighting,temparray,adb,aub,jq,irow,icol));
+    FORTRAN(filterbackward_exp,(adf,auf,jqf,irowf,ndesi,nodedesi,dgdxglob,
+                                dgdx,nobject,nk,nobjectstart,weighting));
     
     SFREE(weighting);SFREE(irowf);SFREE(jqf);SFREE(icolf);SFREE(adf);
     SFREE(auf);SFREE(xo);SFREE(yo);SFREE(zo);SFREE(x);SFREE(y);SFREE(z);
@@ -306,14 +298,13 @@ void filterbackwardmain(double *co, double *dgdxglob, ITG *nobject,
   
     icopy=0;        
     for(iobject=*nobjectstart;iobject<*nobject;iobject++){
-      i=iobject-*nobjectstart;
-      FORTRAN(copysens,(&dgdx[i**ndesi],dgdxglob,&iobject,&icopy,nk,
+      FORTRAN(copysens,(&dgdx[iobject**ndesi],dgdxglob,&iobject,&icopy,nk,
                         ndesi,nodedesi));
     }
 
     /* assembly of implicit filter matrix */
     
-    FORTRAN(filterbackward_imp,(ndesi,nodedesi,au,ad,aub,adb,jq,objectset,irow));
+    FORTRAN(filterbackward_imp,(ndesi,au,ad,aub,adb,jq,objectset));
          
     /* Solve the system of equations */
 
@@ -376,9 +367,8 @@ void filterbackwardmain(double *co, double *dgdxglob, ITG *nobject,
     NNEW(rhs,double,*ndesi);
     
     for(iobject=*nobjectstart;iobject<*nobject;iobject++){
-      i=iobject-*nobjectstart;      
       for(inode=0;inode<*ndesi;inode++){
-         rhs[inode]=dgdx[i**ndesi+inode];
+         rhs[inode]=dgdx[iobject**ndesi+inode];
       }  
             
       if(*isolver==0){
@@ -410,8 +400,7 @@ void filterbackwardmain(double *co, double *dgdxglob, ITG *nobject,
       /* copying of normalized sensitivities in dgdxglob */
   
       icopy=1;
-      FORTRAN(copysens,(rhs,dgdxglob,&iobject,&icopy,nk,ndesi,nodedesi,
-                        nobjectstart));
+      FORTRAN(copysens,(rhs,dgdxglob,&iobject,&icopy,nk,ndesi,nodedesi));
 
     }
     
@@ -554,8 +543,7 @@ void filterbackwardmain(double *co, double *dgdxglob, ITG *nobject,
       /* copying of normalized sensitivities in dgdxglob */
   
       icopy=1;
-      FORTRAN(copysens,(rhs,dgdxglob,&iobject,&icopy,nk,ndesi,nodedesi,
-                        nobjectstart));
+      FORTRAN(copysens,(rhs,dgdxglob,&iobject,&icopy,nk,ndesi,nodedesi));
 
     }
     
@@ -611,8 +599,8 @@ void *mafillmmmt(ITG *i){
   nsurfb=(*i+1)*nsurfdelta;
   if(nsurfb>nsurfsdesi1) nsurfb=nsurfsdesi1;
 
-  FORTRAN(mafillmm,(ndesi1,nodedesi1,co1,nodedesiinv1,iregion1,&au1[indexau],
-		    &ad1[indexad],&aub1[indexau],&adb1[indexad],irow1,icol1,
+  FORTRAN(mafillmm,(co1,nodedesiinv1,iregion1,&au1[indexau],
+		    &ad1[indexad],&aub1[indexau],&adb1[indexad],irow1,
 		    jq1,ipkonfa1,konfa1,lakonfa1,nodedesipos1,ipkonfadesi1,
 		    &nsurfa,&nsurfb,&area1[indexad]));	    
 

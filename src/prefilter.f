@@ -25,11 +25,9 @@
 !
       character*81 objectset(5,*)
 !
-      integer nodedesi(*),ndesi,m,nx(ndesi),istat,ny(ndesi),
-     &   nz(ndesi),kflag
+      integer nodedesi(*),ndesi,m,istat,nx(*),ny(*),nz(*),kflag
 !
-      real*8 xo(ndesi),yo(ndesi),zo(ndesi),filterrad,x(ndesi),
-     &   y(ndesi),z(ndesi),co(3,*)
+      real*8 xo(*),yo(*),zo(*),filterrad,x(*),y(*),z(*),co(3,*)
 !   
 !     Create set of designnodes and perform the sorting
 !     needed for near3d_se
@@ -53,12 +51,6 @@
 !     assinging the filterradius
 !
       read(objectset(2,1)(21:40),'(f20.0)',iostat=istat) filterrad     
-!
-!     For the GAUSS filter search in the 3sigma distance
-! 
-      if(objectset(2,1)(1:5).eq.'GAUSS') then
-         filterrad=3*filterrad
-      endif
 !
       return        
       end
