@@ -2545,26 +2545,30 @@ vice versa. This sensitivity may be postprocessed by using a filter. In the
 present input deck (opt1.inp) the following filter is applied:
 
 \begin{verbatim}
-*FILTER,TYPE=LINEAR,EDGE PRESERVATION=YES,DIRECTION WEIGHTING=YES
+*FILTER,TYPE=EXPLICIT,EDGE PRESERVATION=YES,DIRECTION WEIGHTING=YES
 3.
 \end{verbatim}
 
 \begin{figure}
+  \centering
 \epsfig{file=opt3.eps,width=6cm}
 \caption{\label{opt3}Stress sensitivity before filtering}
 \end{figure}
 
 \begin{figure}
+  \centering
 \epsfig{file=opt4.eps,width=6cm}
 \caption{\label{opt4}Stress sensitivity after filtering}
 \end{figure}
 
 \begin{figure}
+  \centering
 \epsfig{file=opt5.eps,width=6cm}
 \caption{\label{opt5}Mass sensitivity after filtering}
 \end{figure}
  
-The filter is linear with a radius of 3 (it can be visualized as a cone at each design variable
+The filter chosen to be explicit. For the filter, which is by default linear,
+a radius of 3 has been selected (it can be visualized as a cone at each design variable
 in which the sensitivity is integrated and subsequently smeared), sharp
 corners should be kept (EDGE PRESERVATION=YES, cf. \htmlref{*FILTER}{filter})
 and surfaces with a clearly different orientation (e.g. orthogonal) are not
@@ -2573,9 +2577,10 @@ DIRECTION WEIGHTING=YES). The filtering is applied to each design response separ
 sensitivity before filtering, Figure \ref{opt4} the stress sensitivity after
 filtering and Figure \ref{opt5} the mass sensitivity after filtering. All of
 this information is obtained by requesting SEN underneath the *NODE FILE
-card. Notice that the sensitivity is normalized after filtering.
+card. 
 
 \begin{figure}
+  \centering
 \epsfig{file=opt6.eps,width=6cm}
 \caption{\label{opt6}Stress sensitivity taking the mass constraint into account}
 \end{figure}
@@ -2616,11 +2621,13 @@ increasing distance from the free surface. Before running opt1.equ it is
 copied by script opt1.sh into opt2.inp.
 
 \begin{figure}
+  \centering
 \epsfig{file=opt7.eps,width=6cm}
 \caption{\label{opt7}Deformed mesh after one iteration}
 \end{figure}
 
 \begin{figure}
+  \centering
 \epsfig{file=opt8.eps,width=10cm}
 \caption{\label{opt8}Mises stress after one iteration}
 \end{figure}
@@ -2633,7 +2640,7 @@ the deformation calculated based on opt2.inp is superimposed on the
 coordinates (by a call to opt2.fbl in script opt1.sh) and stored as opt3.inc. This file is included in input deck
 opt3.inp, which apart from the coordinates is a copy of opt1.inp. The resulting von Mises stresses are shown in Figure
 \ref{opt8}. The von Mises stress in the middle of the lower surface of the
-beam has indeed decreased from 114 to about 80 (MPa if the selected units were
+beam has indeed decreased from 114 to about 83 (MPa if the selected units were
 mm, N, s and K). Further improvements can be obtained by running several iterations.
 
 \subsection{Mesh refinement of a curved cantilever beam}
