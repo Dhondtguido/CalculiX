@@ -73,7 +73,7 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
     *ialdesi=NULL;
          
   double *objnorm=NULL,*dgdxglob=NULL,*stn=NULL,ptime=0.,*gradproj=NULL,
-    *extnorini=NULL,*extnor=NULL,distmin,*feasdir=NULL,*tinc;
+    *extnorini=NULL,*extnor=NULL,*feasdir=NULL,*tinc;
        
   objectset=*objectsetp;dgdxglob=*dgdxglobp;ipkon=*ipkonp;lakon=*lakonp;
   kon=*konp;ielmat=*ielmatp;
@@ -139,7 +139,7 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
   NNEW(ipoface,ITG,*nk);
   NNEW(nodface,ITG,5*6**ne);
   NNEW(konfa,ITG,8*6**ne);
-  NNEW(ipkonfa,ITG,6**ne);
+  NNEW(ipkonfa,ITG,6**ne+1);
   NNEW(lakonfa,char,8*6**ne);
   
   FORTRAN(findextsurface,(nodface,ipoface,ne,ipkon,lakon,kon,
@@ -147,8 +147,8 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
         		  &ifreemax,&ifree));
   
   RENEW(nodface,ITG,5*ifreemax);
-  RENEW(konfa,ITG,8*nsurfs);
-  RENEW(ipkonfa,ITG,nsurfs);
+  RENEW(konfa,ITG,ifree);
+  RENEW(ipkonfa,ITG,nsurfs+1);
   RENEW(lakonfa,char,8*nsurfs);
 
   NNEW(iponoelfa,ITG,*nk);

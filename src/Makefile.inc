@@ -329,7 +329,6 @@ filterbackward_exp.f \
 filterbackward_imp.f \
 filterforward_exp.f \
 filterforward_imp.f \
-filtermatrix.f \
 filters.f \
 findextsurface.f \
 findslavcfd.f \

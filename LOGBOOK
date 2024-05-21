@@ -5389,3 +5389,5 @@ Dec 2002        - started to work on single crystal plasticity
                 - included string.h in each file with memcpy
 
  17 May 2024    - inserted implicit filtering for sensitivities
+
+ 21 May 2024    - corrected errors in feasibledirection.c
