@@ -19,7 +19,7 @@
       subroutine greens(inpc,textpart,nmethod,
      &  mei,iperturb,istep,istat,n,iline,ipol,inl,
      &  ipoinp,inp,ithermal,isolver,xboun,nboun,ipoinpc,
-     &  ier)
+     &  ier,fei)
 !
 !     reading the input deck: *GREEN
 !
@@ -33,9 +33,10 @@
      &  n,key,iline,ipol,inl,ipoinp(2,*),inp(3,*),ithermal(*),isolver,
      &  ipoinpc(0:*)
 !
-      real*8 xboun(*)
+      real*8 xboun(*),fei(4)
 !
       mei(4)=0
+      fei(4)=0.d0
 !
       if(istep.lt.1) then
          write(*,*) 

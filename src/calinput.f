@@ -772,7 +772,7 @@ c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
         call greens(inpc,textpart,nmethod,
      &       mei,iperturb,istep,istat,n,iline,ipol,inl,
      &       ipoinp,inp,ithermal,isolver,xboun,nboun,ipoinpc,
-     &       ier)
+     &       ier,fei)
 !     
       elseif(textpart(1)(1:4).eq.'*HCF') then
         call hcfs(inpc,textpart,istep,istat,n,iline,ipol,inl,ipoinp,

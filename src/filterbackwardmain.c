@@ -69,7 +69,7 @@ void filterbackwardmain(double *co, double *dgdxglob, ITG *nobject,
      
   double *xo=NULL,*yo=NULL,*zo=NULL,*x=NULL,*y=NULL,*z=NULL,filterrad,
     *weighting=NULL,*ad=NULL,*adb=NULL,*au=NULL,*aub=NULL,sigma=0,
-    *rhs=NULL,*adb2=NULL,*aub2=NULL,*adf=NULL,*auf=NULL,*temparray=NULL,
+    *rhs=NULL,*adf=NULL,*auf=NULL,*temparray=NULL,
     *area=NULL;
     
   /* variables for multithreading procedure */
@@ -132,14 +132,15 @@ void filterbackwardmain(double *co, double *dgdxglob, ITG *nobject,
   /*--------------------------------------------------------------------------*/
 
   
-  /* Determine position of designvariables in nodedesi */
+  /* nodedesipos: indicates for those nodes, which are design variables, their 
+     location in nodedesi */
   
   NNEW(nodedesipos,ITG,*nk);
   for(i=0;i<*ndesi;i++){
     nodedesipos[nodedesi[i]-1]=i+1;
   }
 
-  /* Catalogue all external faces containing design variables */
+  /* Catalogue all external design faces: must contain enough design nodes */
   
   NNEW(ipkonfadesi,ITG,*nsurfs+1);
   
@@ -226,6 +227,14 @@ void filterbackwardmain(double *co, double *dgdxglob, ITG *nobject,
   SFREE(ad1);SFREE(au1);SFREE(aub1);SFREE(adb1);SFREE(nodedesipos);
   SFREE(ipkonfadesi);SFREE(area1);    
 
+  /* copying of unfiltered sensitivities in dgdxglob */
+  
+  icopy=0;        
+  for(iobject=*nobjectstart;iobject<*nobject;iobject++){
+    FORTRAN(copysens,(&dgdx[iobject**ndesi],dgdxglob,&iobject,&icopy,nk,
+		      ndesi,nodedesi));
+  }
+
   /*--------------------------------------------------------------------------*/
   /* Explicit Filtering                                                       */
   /*--------------------------------------------------------------------------*/
@@ -233,14 +242,6 @@ void filterbackwardmain(double *co, double *dgdxglob, ITG *nobject,
   if(strcmp1(&objectset[89],"E")==0){
   
     printf(" Calculation of backward filtered sensitivities with explicit method\n\n");
-
-    /* copying of unfiltered sensitivities in dgdxglob */
-  
-    icopy=0;        
-    for(iobject=*nobjectstart;iobject<*nobject;iobject++){
-      FORTRAN(copysens,(&dgdx[iobject**ndesi],dgdxglob,&iobject,&icopy,nk,
-                        ndesi,nodedesi));
-    }
 
     /* prepare for near3d_se */
     
@@ -294,32 +295,17 @@ void filterbackwardmain(double *co, double *dgdxglob, ITG *nobject,
 
     printf(" Calculation of backward filtered sensitivities with implicit method\n\n");
 
-    /* copying of unfiltered sensitivities in dgdxglob */
-  
-    icopy=0;        
-    for(iobject=*nobjectstart;iobject<*nobject;iobject++){
-      FORTRAN(copysens,(&dgdx[iobject**ndesi],dgdxglob,&iobject,&icopy,nk,
-                        ndesi,nodedesi));
-    }
-
     /* assembly of implicit filter matrix */
     
     FORTRAN(filterbackward_imp,(ndesi,au,ad,aub,adb,jq,objectset));
          
     /* Solve the system of equations */
-
-    NNEW(adb2,double,*ndesi);
-    NNEW(aub2,double,nzs); 
-
-    for(i=0;i<*ndesi;i++){
-      adb2[i]=1.0;
-    }
      
     /* LU decomposition of the left hand matrix */
 
     if(*isolver==0){
 #ifdef SPOOLES
-      spooles_factor(ad,au,adb2,aub2,&sigma,icol,irow,ndesi,&nzs,
+      spooles_factor(ad,au,adb,aub,&sigma,icol,irow,ndesi,&nzs,
                      &symmetryflag,&inputformat,&nzs);
 #else
       printf("*ERROR in filterbackward: the SPOOLES library is not linked\n\n");
@@ -329,7 +315,7 @@ void filterbackwardmain(double *co, double *dgdxglob, ITG *nobject,
     else if(*isolver==4){
 #ifdef SGI
       token=1;
-      sgi_factor(ad,au,adb2,aub2,&sigma,icol,irow,ndesi,&nzs,token);
+      sgi_factor(ad,au,adb,aub,&sigma,icol,irow,ndesi,&nzs,token);
 #else
       printf("*ERROR in filterbackward: the SGI library is not linked\n\n");
       FORTRAN(stop,());
@@ -337,7 +323,7 @@ void filterbackwardmain(double *co, double *dgdxglob, ITG *nobject,
     }
     else if(*isolver==5){
 #ifdef TAUCS
-      tau_factor(ad,&au,adb2,aub2,&sigma,icol,&irow,ndesi,&nzs);
+      tau_factor(ad,&au,adb,aub,&sigma,icol,&irow,ndesi,&nzs);
 #else
       printf("*ERROR in filterbackward: the TAUCS library is not linked\n\n");
       FORTRAN(stop,());
@@ -345,7 +331,7 @@ void filterbackwardmain(double *co, double *dgdxglob, ITG *nobject,
     }
     else if(*isolver==7){
 #ifdef PARDISO
-      pardiso_factor(ad,au,adb2,aub2,&sigma,icol,irow,ndesi,&nzs,
+      pardiso_factor(ad,au,adb,aub,&sigma,icol,irow,ndesi,&nzs,
                      &symmetryflag,&inputformat,jq,&nzs);
 #else
       printf("*ERROR in filterbackward: the PARDISO library is not linked\n\n");
@@ -354,7 +340,7 @@ void filterbackwardmain(double *co, double *dgdxglob, ITG *nobject,
     }
     else if(*isolver==8){
 #ifdef PASTIX
-      pastix_factor_main(ad,au,adb2,aub2,&sigma,icol,irow,ndesi,&nzs,
+      pastix_factor_main(ad,au,adb,aub,&sigma,icol,irow,ndesi,&nzs,
                          &symmetryflag,&inputformat,jq,&nzs);
 #else
       printf("*ERROR in filterbackward: the PASTIX library is not linked\n\n");
@@ -438,30 +424,14 @@ void filterbackwardmain(double *co, double *dgdxglob, ITG *nobject,
   }else{
 
     printf(" Scaling of sensitivties with mass matrix\n\n");
-
-    /* copying of unfiltered sensitivities in dgdxglob */
-  
-    icopy=0;        
-    for(iobject=*nobjectstart;iobject<*nobject;iobject++){
-      i=iobject-*nobjectstart;
-      FORTRAN(copysens,(&dgdx[i**ndesi],dgdxglob,&iobject,&icopy,nk,
-                        ndesi,nodedesi));
-    }
     
     /* Solve the system of equations */
-
-    NNEW(adb2,double,*ndesi);
-    NNEW(aub2,double,nzs); 
-
-    for(i=0;i<*ndesi;i++){
-      adb2[i]=1.0;
-    }
      
     /* LU decomposition of the left hand matrix */
 
     if(*isolver==0){
 #ifdef SPOOLES
-      spooles_factor(adb,aub,adb2,aub2,&sigma,icol,irow,ndesi,&nzs,
+      spooles_factor(adb,aub,ad,au,&sigma,icol,irow,ndesi,&nzs,
                      &symmetryflag,&inputformat,&nzs);
 #else
       printf("*ERROR in filterbackward: the SPOOLES library is not linked\n\n");
@@ -471,7 +441,7 @@ void filterbackwardmain(double *co, double *dgdxglob, ITG *nobject,
     else if(*isolver==4){
 #ifdef SGI
       token=1;
-      sgi_factor(adb,aub,adb2,aub2,&sigma,icol,irow,ndesi,&nzs,token);
+      sgi_factor(adb,aub,ad,au,&sigma,icol,irow,ndesi,&nzs,token);
 #else
       printf("*ERROR in filterbackward: the SGI library is not linked\n\n");
       FORTRAN(stop,());
@@ -479,7 +449,7 @@ void filterbackwardmain(double *co, double *dgdxglob, ITG *nobject,
     }
     else if(*isolver==5){
 #ifdef TAUCS
-      tau_factor(adb,&aub,adb2,aub2,&sigma,icol,&irow,ndesi,&nzs);
+      tau_factor(adb,&aub,ad,au,&sigma,icol,&irow,ndesi,&nzs);
 #else
       printf("*ERROR in filterbackward: the TAUCS library is not linked\n\n");
       FORTRAN(stop,());
@@ -487,7 +457,7 @@ void filterbackwardmain(double *co, double *dgdxglob, ITG *nobject,
     }
     else if(*isolver==7){
 #ifdef PARDISO
-      pardiso_factor(adb,aub,adb2,aub2,&sigma,icol,irow,ndesi,&nzs,
+      pardiso_factor(adb,aub,ad,au,&sigma,icol,irow,ndesi,&nzs,
                      &symmetryflag,&inputformat,jq,&nzs);
 #else
       printf("*ERROR in filterbackward: the PARDISO library is not linked\n\n");
@@ -496,7 +466,7 @@ void filterbackwardmain(double *co, double *dgdxglob, ITG *nobject,
     }
     else if(*isolver==8){
 #ifdef PASTIX
-      pastix_factor_main(adb,aub,adb2,aub2,&sigma,icol,irow,ndesi,&nzs,
+      pastix_factor_main(adb,aub,ad,au,&sigma,icol,irow,ndesi,&nzs,
                          &symmetryflag,&inputformat,jq,&nzs);
 #else
       printf("*ERROR in filterbackward: the PASTIX library is not linked\n\n");
@@ -509,9 +479,8 @@ void filterbackwardmain(double *co, double *dgdxglob, ITG *nobject,
     NNEW(rhs,double,*ndesi);
     
     for(iobject=*nobjectstart;iobject<*nobject;iobject++){
-      i=iobject-*nobjectstart;      
       for(inode=0;inode<*ndesi;inode++){
-         rhs[inode]=dgdx[i**ndesi+inode];
+         rhs[inode]=dgdx[iobject**ndesi+inode];
       }  
             
       if(*isolver==0){
@@ -579,7 +548,7 @@ void filterbackwardmain(double *co, double *dgdxglob, ITG *nobject,
   /* free the fields */
   
   SFREE(au),SFREE(ad);SFREE(aub);SFREE(adb);SFREE(irow);SFREE(jq);SFREE(icol);
-  SFREE(aub2);SFREE(adb2);SFREE(rhs);SFREE(area);
+  SFREE(rhs);SFREE(area);
    
   return;
     
