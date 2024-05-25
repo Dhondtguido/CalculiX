@@ -37,7 +37,7 @@
          feasdir(1,inode)=gradproj(3,inode)
       enddo
 !
-!     Explicit fitler matrix A consitst fo the following matrices:
+!     Explicit filter matrix A consitst fo the following matrices:
 !     A = V^(-1) * W * M
 !     V = weighting matrix to normailze the filter functions stored in 
 !         the field weighting(*)

@@ -24004,10 +24004,11 @@ before.
 There are four optional parameters: TYPE, BOUNDARY WEIGHTING, EDGE PRESERVATION and
 DIRECTION WEIGHTING.
 
-The filter itself is a monotonically decreasing function within a sphere at
+The TYPE of the filter can be either EXPLICIT or IMPLICIT. The explicit filter
+is a monotonically decreasing linear hat function within a sphere at
 the node at stake taking the value 1 at the center of the sphere and 0 at its
-boundary. The TYPE of filter can be LINEAR, QUADRATIC, CUBIC or GAUSS. If no TYPE is
-specified, no filtering will be active.
+boundary. Filtering can also be performed implicitly by solving an elliptic
+partial differential equation whose inverse operator is a local smoother based on the so-called Sobolev/Helmholtz operator. Default is the implicit filter.
 
 With BOUNDARY WEIGHTING=YES the sensitivities near the boundary between the design
 space and the nodes not belonging to the design space are gradually decreased
@@ -24032,7 +24033,7 @@ First line:
 \item *FILTER and any appropriate parameters.
 \end{itemize}
 
-Second line (only necessary if TYPE and/or BOUNDARY WEIGHTING was selected):
+Second line:
 \begin{itemize}
 \item the filter radius
 \item the boundary weighting distance
@@ -24041,11 +24042,11 @@ Second line (only necessary if TYPE and/or BOUNDARY WEIGHTING was selected):
 \begin{verbatim}
 Example:
 
-*FILTER,TYPE=LINEAR
+*FILTER,TYPE=IMPLICIT
 3.
 \end{verbatim}
 
-defines linear filter with a filter radius of 3 length units. Boundary weighting, edge
+defines an implicit filter with a filter radius of 3 length units. Boundary weighting, edge
 preservation and direction weighting are not active.
 
 \bigskip
@@ -35539,7 +35540,6 @@ The structure of the field objectset is as follows:
 \end{itemize}
 \item objectset(2,*)
 \begin{itemize}
-\item 1-5: filter type
 \item 6-8: BOU if boundary weighting is active, else empty
 \item 10-12: EDG if edge conservation is active, else empty
 \item 14-16: DIR if direction weighting is active, else empty
@@ -36037,11 +36037,6 @@ frd-file.
     \right) \left[ U_j^T \frac{\partial F_i}{\partial s} \right].
     \end{equation} 
 
-\item The THICKNESS objective can only be used as a constraint to another
-  objective function. For a LE constraint the sensitivity is 1 if the actual
-  thickness exceeds the reference thickness, else it is 0. For a GE constraint
-  the sensitivity is 1 if the actual thickness is less than the reference
-  thickness, else is is 0.
 
 \end{itemize}
 
@@ -36053,10 +36048,7 @@ postprocessing procedure is coded in sensi\_coor.c and feasibledirection.c and c
 following steps:
 
 \begin{itemize}
-\item Changing from a shape function smeared sensitivity representation to
-  local sensitivities (sensi\_coor.c).
-\item For quadratic elements: interpolating the sensitivities at the middle
-  nodes to the vertex nodes (sensi\_coor.c).
+\item Changing from a discrete gradient field to a continuous gradient field (sensi\_coor.c).
 \item Backward filtering the sensitivities (sensi\_coor.c).
 \item Calculating the geometrical constraints defined for the design
     variables (feasibledirection.c).
@@ -36074,19 +36066,31 @@ Now the steps are treated in more detail:
 The sensitivity for geometric design variables is calculated by moving each
 design variable an infinitesimal distance in a direction normal to the
 external surface. Through the shape functions this motion extends across an
-area consisting of all external faces to which the design node belongs. The
-sensitivity is localized through division by the integral of the shape
-functions taking the value 1 at the node at stake (distributesens.f).
-\item 
-For quadratic faces frequently a checkerboard pattern arises for the
-sensitivities. For this type of elements it has proven advantageous to disregard the sensitivities
-calculated at the vertex nodes. They are replaced by an interpolation of the
-values at the midnodes of all external design faces (quadraticsens.f).
+area consisting of all external faces to which the design node belongs. Now,
+the resulting discrete or continuous gradient field $d G/d \boldsymbol{s}$
+is transformed into a continuous gradient field $d g/d \boldsymbol{s}$ by
+
+\begin{equation}
+  \left( \frac{d G}{d s_k } \right)= \sum_{f:k \in f}
+  \int_{A_f} \varphi_k \varphi_l d A \left ( \frac{d g}{d s_l }
+  \right) .
+\end{equation}
+
+The continuous gradient field is the sensitivity with respect to a Dirac delta
+function perturbation of the design surface at the node at stake. Both fields are coupled by the surface mesh mass matrix $M_A$. Therefore, to
+get the continuous gradient field the calculated sensitivities are multiplied
+with the inverse of the surface mesh mass matrix:
+
+\begin{equation}
+  \label{discretecontinuous}
+  \frac{dg}{d \boldsymbol{s} } = M_A^{-1} \frac{dG}{ds}.
+\end{equation} 
+
 \item
 The filtering which is done after the sensitivity analysis and after the
-calculation of the feasible directino follows the idea of vertex
+calculation of the feasible direction follows the idea of vertex
 morphing. This means that conceptually an additional control field
-$z$, apart from the design varialbes $s$, is introduced with the size of the
+$z$, apart from the design variables $s$, is introduced with the size of the
 number of design variables on which the mathematical optimization problem is
 solved. This control field is connected with the design variables by the
 following formula
@@ -36102,7 +36106,7 @@ design response G, the partial derivative $\partial G/\partial z =0$. The
 expression $\partial s/\partial z$ can be regarded as a smoothing operator
 (filter) between the design variables and the control field. In vertex
 morphing this filtering operation has to be done twice. First, after the
-sensitivty analysis (sensi\_coor.c), called backward filtering, in order to
+sensitivity analysis (sensi\_coor.c), called backward filtering, in order to
 transform the sensitivities calculated at the design variables to the control
 field. The output in the frd file is the unfiltered sensitivity at the design
 variables as well as the filtered one, which can be interpreted as the
@@ -36112,13 +36116,79 @@ is done in feasibledirection.c. Again, two output fields are written in the frd
 file: the feasible direction calculated on the control field and the forward
 filtered feasible direction on the nodal design variables.
   
-The filtering itself is implemented as an explicit filter. Independent if
+For the filtering itself two different filters are available, an explicit and
+an implicit one. Ragarding the explicit filter, independent if
 backward or forward filtering is done, the sensitivity
 values at a given node are thereby replaced by a weighted sum of the
 sensitivities of the nodes within a sphere with a user-defined radius. The
 weighting function is 1 at the node at stake and decreases radially in a
-user-defined way to zero at the edge of the sphere. The available filter
-functions are linear, quadratic, cubic and gauss. If the parameter DIRECTION
+user-defined way to zero at the edge of the sphere:
+
+\begin{equation}
+  \label{exp_backward}
+  \frac{dG}{dz} = \frac{dG}{ds} \frac{ds}{dz} = \frac{dG}{ds} A = A^T
+  \frac{dG}{ds},
+\end{equation}
+
+where $A$ is the resulting smoothing matrix mapping field $z$ into a
+smoother field $s$.
+The filtering can also be performed implicitly by elliptic partial
+differential equations whose inverse operator is a local smoother:
+
+\begin{equation}
+  \label{imp_forward}
+  (\boldsymbol{I} - \epsilon \nabla^2) s = z,
+\end{equation}
+
+leading to (through the chain rule):
+
+\begin{equation}
+  \label{imp_backward}
+  (\boldsymbol{I} - \epsilon \nabla^2) \frac{dG}{dz} = \frac{dG}{ds}.
+\end{equation}
+
+Notice that field $s$ is smoother than field $z$ and, consequently, field
+$\frac{dG}{dz}$ is smoother than field $\frac{dG}{ds}$. $\epsilon$ is a scalar
+penalizing high spatial variations and is also called the filter radius. Applying a standard finite element
+discretization scheme leads to:
+
+\begin{equation}
+  \frac{dG}{dz} = M_A ( K_A+M_A)^{-1} \frac{dG}{ds},
+\end{equation}
+
+where
+
+\begin{equation}
+  (M_A)_{kl} =  \sum_{f:k \in f}
+  \int_{A_f} \varphi_k \varphi_l d A
+\end{equation}
+
+and
+
+\begin{equation}
+  (K_A)_{kl} =  \epsilon^2 \sum_{f:k \in f}
+  \int_{A_f} (\nabla \varphi_k)^T \cdot (\nabla \varphi_l) d A.
+\end{equation}
+
+The gradient is to be projected into the design faces. As in the explicit
+filter method, the filter radius is a user-defined parameter controlling the
+smoothness of the filtered sensitivities. A complete filtering cycle than
+consists of:
+
+\begin{enumerate}
+\item applying an explicit or implicit filter, respectively Equation
+  (\ref{exp_backward}) and Equation (\ref{imp_backward}), to obtain $dG/dz$
+  from $dG/ds$. This is called backward filtering.
+\item convert the discrete field $dG/dz$ into a continuous field $dg/dz$
+  by equation (\ref{discretecontinuous}).
+\item apply a scalar multiple of $dg/dz$ as mesh modification and revert
+  to the $s$-field using $s=A z$ in the explicit case or Equation
+  (\ref{imp_forward}) for the implicit case. This is called forward
+  filtering.
+\end{enumerate} 
+
+For the complete derivation of the
+explicit and implicit filtering methods the interested user is referred to \cite{Asl}. If the parameter DIRECTION
 WEIGHTING is active on the \htmlref{*FILTER}{filter} card the sensitivity
 values at a node i are replaced by a weighted sum of the sensitivities at the nodes j within
 the sphere multiplied by the scalar product of the normal vector at j and the
@@ -39075,6 +39145,11 @@ Inc., 1080 Main Street, Pawtucket, RI 02860-4847, U.S.A. (1997).
 
 \bibitem{Ashdown} Ashdown, I., \textit{Radiosity: A Programmer's
     Perspective}. Wiley, New York (1994).
+
+\bibitem{Asl} Asl, R.N. and Bletzinger, K.-U., The implicit bulk-surface
+  filtering method for node-based shape optimization and a comparison of
+  explicit and implicit filtering techniques. \textit{Structural and
+    Multidisciplinary Optimization} 66:111 (2023), https://doi.org/10.1007/s00158-023-03548-2.
 
 \bibitem{Barlow} Barlow, J., Optimal stress locations in finite element models. \textit{Int. J. Num. Meth. Engng.} \textbf{10} , 243-251 (1976).
 

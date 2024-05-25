@@ -27,7 +27,7 @@
       character*81 objectset(5,*)
 !
       integer jqf(*),irowf(*),ndesi,nodedesi(*),kk,jj,
-     &   inode1,inode2,ipos,actdir
+     &   node1,node2,irow,actdir
 !     
       real*8 auf(*),co(3,*),filterrad,dist,dx,dy,dz,distmin,
      &   weighting(*),scalar,xdesi(3,*),adf(*),filterval,
@@ -48,25 +48,25 @@
 !
 !     loop over all columns
       do kk=1,ndesi
-         inode1=nodedesi(kk)
+         node1=nodedesi(kk)
 ! 
 !        entry on main diagonal
-         weighting(kk)=weighting(kk)+area(kk)*1.0d0
+         weighting(kk)=weighting(kk)+area(kk)
          adf(kk)=1.0d0
 !
 !        loop over all rows of sub-diagonal
          do jj=jqf(kk),jqf(kk+1)-1
-            ipos=irowf(jj)
-            inode2=nodedesi(ipos)
+            irow=irowf(jj)
+            node2=nodedesi(irow)
 !
-            dx=co(1,inode1)-co(1,inode2)
-            dy=co(2,inode1)-co(2,inode2)
-            dz=co(3,inode1)-co(3,inode2)
+            dx=co(1,node1)-co(1,node2)
+            dy=co(2,node1)-co(2,node2)
+            dz=co(3,node1)-co(3,node2)
             dist=dsqrt(dx**2+dy**2+dz**2)
             if(actdir.eq.1) then
-               scalar=(xdesi(1,kk)*xdesi(1,ipos)
-     &                +xdesi(2,kk)*xdesi(2,ipos)
-     &                +xdesi(3,kk)*xdesi(3,ipos))/(distmin**2)
+               scalar=(xdesi(1,kk)*xdesi(1,irow)
+     &                +xdesi(2,kk)*xdesi(2,irow)
+     &                +xdesi(3,kk)*xdesi(3,irow))/(distmin**2)
                if(scalar.lt.0.d0) then
                   scalar=0.d0
                endif
@@ -75,15 +75,19 @@
             endif         
 !  
 !           Linear filter function
+!  
             filterval=max(0.d0,(filterrad-dist)/filterrad)
 !
 !           Entry caused by sub-diagonal
-            weighting(kk)=weighting(kk)+area(ipos)*filterval
+!  
+            weighting(kk)=weighting(kk)+area(irow)*filterval
 !
 !           Entry caused by top-diagonal as filter matrix is symmetric
-            weighting(ipos)=weighting(ipos)+area(kk)*filterval
+!  
+            weighting(irow)=weighting(irow)+area(kk)*filterval
 !
 !           Sparse matrix entry
+!  
             auf(jj)=filterval*scalar
 !
          enddo

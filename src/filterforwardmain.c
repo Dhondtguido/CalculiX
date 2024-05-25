@@ -51,7 +51,7 @@ static char *lakonfa1;
 
 static ITG *ndesi1,*nodedesi1,*nodedesiinv1,*iregion1,*irow1,*icol1,*jq1,nzs1,
   *nodedesi1,*ndesi1,num_cpus,*nodedesipos1,*nsurfs1,*konfa1,*ipkonfa1,
-  nsurfsdesi1,*ipkonfadesi1;
+  ndesifaces1,*idesiface1;
   
 static double *au1=NULL,*ad1=NULL,*aub1=NULL,*adb1=NULL,*co1,*area1=NULL;
 
@@ -73,7 +73,7 @@ void filterforwardmain(double *co,double *gradproj,ITG *nk,
   ITG *nx=NULL,*ny=NULL,*nz=NULL,i,j,*irow=NULL,*icol=NULL,
     *ipointer=NULL,nzs,symmetryflag=0,iflag,inputformat=0,nrhs=1,
     *mast=NULL,*nodedesipos=NULL,*jq=NULL,
-    *irowf=NULL,*icolf=NULL,*jqf=NULL,nsurfsdesi,*ipkonfadesi=NULL;
+    *irowf=NULL,*icolf=NULL,*jqf=NULL,ndesifaces,*idesiface=NULL;
         
   double *xo=NULL,*yo=NULL,*zo=NULL,*x=NULL,*y=NULL,*z=NULL,
     filterrad=0,*ad=NULL,*adb=NULL,*aub=NULL,*adb2=NULL,*aub2=NULL,
@@ -148,12 +148,12 @@ void filterforwardmain(double *co,double *gradproj,ITG *nk,
   
   /* Catalogue all external faces containing design variables */
   
-  NNEW(ipkonfadesi,ITG,*nsurfs);
+  NNEW(idesiface,ITG,*nsurfs);
   
-  FORTRAN(nodedesionface,(iregion,nsurfs,ipkonfa,lakonfa,konfa,&nsurfsdesi,
-  			  ipkonfadesi,nodedesiinv));
+  FORTRAN(identdesifaces,(iregion,nsurfs,ipkonfa,lakonfa,konfa,&ndesifaces,
+  			  idesiface,nodedesiinv));
   
-  RENEW(ipkonfadesi,ITG,nsurfsdesi);
+  RENEW(idesiface,ITG,ndesifaces);
   
   /* define the non-zero entries (both matrices have the same structure) */ 
 
@@ -185,7 +185,7 @@ void filterforwardmain(double *co,double *gradproj,ITG *nk,
   ndesi1=ndesi;nodedesi1=nodedesi;co1=co;iregion1=iregion;irow1=irow;
   nodedesiinv1=nodedesiinv;icol1=icol;jq1=jq;nzs1=nzs;nsurfs1=nsurfs;
   ipkonfa1=ipkonfa;konfa1=konfa;lakonfa1=lakonfa;nodedesipos1=nodedesipos;
-  ipkonfadesi1=ipkonfadesi;nsurfsdesi1=nsurfsdesi;
+  idesiface1=idesiface;ndesifaces1=ndesifaces;
   
   printf(" Using up to %" ITGFORMAT " cpu(s) for the mass matrix entries.\n\n", num_cpus);
   
@@ -230,7 +230,7 @@ void filterforwardmain(double *co,double *gradproj,ITG *nk,
   }
   
   SFREE(ad1);SFREE(au1);SFREE(aub1);SFREE(adb1);SFREE(nodedesipos);
-  SFREE(ipkonfadesi);SFREE(area1);
+  SFREE(idesiface);SFREE(area1);
 
   /*--------------------------------------------------------------------------*/
   /* Explicit Filtering                                                       */
@@ -292,7 +292,7 @@ void filterforwardmain(double *co,double *gradproj,ITG *nk,
   
     printf(" Calculation of forward filtered feasible direction with implicit method\n\n");
 
-    /* Multipliy the feasible direction with the mass matrix and copy to rhs */
+    /* Multiply the feasible direction with the mass matrix and copy to rhs */
 
     NNEW(rhs,double,*ndesi);
     iflag=0;
@@ -450,14 +450,14 @@ void *mafillmmmt2(ITG *i){
   indexad=*i**ndesi1;
   indexau=*i*nzs1;
     
-  nsurfdelta=(ITG)ceil(nsurfsdesi1/(double)num_cpus);
+  nsurfdelta=(ITG)ceil(ndesifaces1/(double)num_cpus);
   nsurfa=*i*nsurfdelta+1;
   nsurfb=(*i+1)*nsurfdelta;
-  if(nsurfb>nsurfsdesi1) nsurfb=nsurfsdesi1;
+  if(nsurfb>ndesifaces1) nsurfb=ndesifaces1;
 
   FORTRAN(mafillmm,(co1,nodedesiinv1,iregion1,&au1[indexau],
 		    &ad1[indexad],&aub1[indexau],&adb1[indexad],irow1,
-		    jq1,ipkonfa1,konfa1,lakonfa1,nodedesipos1,ipkonfadesi1,
+		    jq1,ipkonfa1,konfa1,lakonfa1,nodedesipos1,idesiface1,
 		    &nsurfa,&nsurfb,&area1[indexad]));	    
 
   return NULL;

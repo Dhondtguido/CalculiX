@@ -239,7 +239,6 @@ distattach_1d_cracklength.f \
 distattach_2d.f \
 distattach_3d.f \
 distattachline.f \
-distributesens.f \
 distributingcouplings.f \
 distributions.f \
 dKdm.f \
@@ -425,6 +424,7 @@ hyperfoams.f \
 ident2.f \
 identamta.f \
 ident.f \
+identdesifaces.f \
 identifytiedface.f \
 identifytransform.f \
 includefilename.f \
@@ -592,7 +592,6 @@ nonlinmpc.f \
 normals.f \
 writeinputdeck.f \
 writeinputdeck2.f \
-nodedesionface.f \
 normalsoninterface.f \
 normalsonsurface_robust.f \
 normalsonsurface_se.f \

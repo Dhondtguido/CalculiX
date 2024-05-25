@@ -2035,6 +2035,10 @@ void gradientprojection(ITG *nobject,char *objectset,double *dgdxglob,
 void FORTRAN(identamta,(double *amta,double *reftime,ITG *istart,ITG *iend,
                ITG *id));
 
+void FORTRAN(identdesifaces,(ITG *iregion,ITG *nsurfs,ITG *ipkonfa,
+			      char *lakonfa,ITG *konfa,ITG *ndesifaces,
+			      ITG *idesiface,ITG *nodedesiinv));
+
 void FORTRAN(identifytiedface,(char *tieset,ITG *ntie,char *set,ITG *nset,
                                ITG *faceslave,char *kind));
 
@@ -2471,7 +2475,7 @@ void FORTRAN(mafillmm,(double *co,ITG *nodedesiinv,
 		       ITG *iregion,double *au,double *ad,double *aub,
 		       double *adb,ITG *irow,ITG *jq,ITG *ipkonfa,
 		       ITG *konfa,char *lakonfa,ITG *nodedesipos,
-		       ITG *ipkonfadesi,ITG *nsurfa,ITG *nsurfb,double *area));
+		       ITG *idesiface,ITG *nsurfa,ITG *nsurfb,double *area));
 
 void *mafillmmmt(ITG *i);
 
@@ -3185,10 +3189,6 @@ void FORTRAN(nidentll,(long long *x,long long *px,ITG *n,ITG *id));
 void FORTRAN(nmatrix,(double *ad,double *au,ITG *jqs,ITG *irows,ITG *ndesi,
 		      ITG *nodedesi,double *dgdxglob,ITG *nactive,ITG *nobject,
 		      ITG *nnlconst,ITG *ipoacti,ITG *nk));         
-
-void FORTRAN(nodedesionface,(ITG *iregion,ITG *nsurfs,ITG *ipkonfa,
-			      char *lakonfa,ITG *konfa,ITG *nsurfsdesi,
-			      ITG *ipkonfadesi,ITG *nodedesiinv));
 
 void FORTRAN(nodesperface,(ITG *ipkonf,ITG *konf,char *lakonf,ITG *nface,
 			   ITG *ielfa,ITG *iponofa,ITG *inofa));

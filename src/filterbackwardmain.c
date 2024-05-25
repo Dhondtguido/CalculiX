@@ -47,7 +47,7 @@ static char *lakonfa1;
 static ITG num_cpus;
 
 static ITG *ndesi1,*nodedesi1,*nodedesiinv1,*iregion1,*irow1,*icol1,*jq1,
-  nzs1,*nsurfs1,*ipkonfa1,*konfa1,*nodedesipos1,nsurfsdesi1,*ipkonfadesi1;
+  nzs1,*nsurfs1,*ipkonfa1,*konfa1,*nodedesipos1,ndesifaces1,*idesiface1;
    
 static double *au1=NULL,*ad1=NULL,*aub1=NULL,*adb1=NULL,*area1=NULL,*co1;
 
@@ -64,8 +64,8 @@ void filterbackwardmain(double *co, double *dgdxglob, ITG *nobject,
 
   ITG *nx=NULL,*ny=NULL,*nz=NULL,i,j,*mast=NULL,*irow=NULL,*icol=NULL,*jq=NULL,
     *ipointer=NULL,nzs,symmetryflag=0,inputformat=0,nrhs=1,iobject,inode,icopy,
-    *nodedesipos=NULL,*irowf=NULL,*icolf=NULL,*jqf=NULL,nsurfsdesi,
-    *ipkonfadesi=NULL;
+    *nodedesipos=NULL,*irowf=NULL,*icolf=NULL,*jqf=NULL,ndesifaces,
+    *idesiface=NULL;
      
   double *xo=NULL,*yo=NULL,*zo=NULL,*x=NULL,*y=NULL,*z=NULL,filterrad,
     *weighting=NULL,*ad=NULL,*adb=NULL,*au=NULL,*aub=NULL,sigma=0,
@@ -142,12 +142,12 @@ void filterbackwardmain(double *co, double *dgdxglob, ITG *nobject,
 
   /* Catalogue all external design faces: must contain enough design nodes */
   
-  NNEW(ipkonfadesi,ITG,*nsurfs+1);
+  NNEW(idesiface,ITG,*nsurfs+1);
   
-  FORTRAN(nodedesionface,(iregion,nsurfs,ipkonfa,lakonfa,konfa,&nsurfsdesi,
-  			  ipkonfadesi,nodedesiinv));
+  FORTRAN(identdesifaces,(iregion,nsurfs,ipkonfa,lakonfa,konfa,&ndesifaces,
+  			  idesiface,nodedesiinv));
   
-  RENEW(ipkonfadesi,ITG,nsurfsdesi+1);
+  RENEW(idesiface,ITG,ndesifaces+1);
   
   /* define the non-zero entries (both matrices have the same structure) */ 
 
@@ -180,7 +180,7 @@ void filterbackwardmain(double *co, double *dgdxglob, ITG *nobject,
   ndesi1=ndesi;nodedesi1=nodedesi;co1=co;iregion1=iregion;irow1=irow;
   nodedesiinv1=nodedesiinv;icol1=icol;jq1=jq;nzs1=nzs;nsurfs1=nsurfs;
   ipkonfa1=ipkonfa;konfa1=konfa;lakonfa1=lakonfa;nodedesipos1=nodedesipos;
-  ipkonfadesi1=ipkonfadesi;nsurfsdesi1=nsurfsdesi;
+  idesiface1=idesiface;ndesifaces1=ndesifaces;
   
   printf(" Using up to %" ITGFORMAT " cpu(s) for the mass matrix entries.\n\n", num_cpus);
   
@@ -225,7 +225,7 @@ void filterbackwardmain(double *co, double *dgdxglob, ITG *nobject,
   }
   
   SFREE(ad1);SFREE(au1);SFREE(aub1);SFREE(adb1);SFREE(nodedesipos);
-  SFREE(ipkonfadesi);SFREE(area1);    
+  SFREE(idesiface);SFREE(area1);    
 
   /* copying of unfiltered sensitivities in dgdxglob */
   
@@ -563,14 +563,14 @@ void *mafillmmmt(ITG *i){
   indexad=*i**ndesi1;
   indexau=*i*nzs1;
     
-  nsurfdelta=(ITG)ceil(nsurfsdesi1/(double)num_cpus);
+  nsurfdelta=(ITG)ceil(ndesifaces1/(double)num_cpus);
   nsurfa=*i*nsurfdelta+1;
   nsurfb=(*i+1)*nsurfdelta;
-  if(nsurfb>nsurfsdesi1) nsurfb=nsurfsdesi1;
+  if(nsurfb>ndesifaces1) nsurfb=ndesifaces1;
 
   FORTRAN(mafillmm,(co1,nodedesiinv1,iregion1,&au1[indexau],
 		    &ad1[indexad],&aub1[indexau],&adb1[indexad],irow1,
-		    jq1,ipkonfa1,konfa1,lakonfa1,nodedesipos1,ipkonfadesi1,
+		    jq1,ipkonfa1,konfa1,lakonfa1,nodedesipos1,idesiface1,
 		    &nsurfa,&nsurfb,&area1[indexad]));	    
 
   return NULL;

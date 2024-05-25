@@ -34,7 +34,7 @@ void mastructmm(ITG *icol,ITG *jq,ITG **mastp,ITG **irowp,
 
   ITG i,j,jj,k,index,idof2,idof1,nmast,ifree,kflag,isize,
       *mast=NULL,*irow=NULL,*next=NULL,jstart,inode1,inode2,
-      istart,nope,ielem,nopesurf[9],indexe,inode2pos;
+      istart,nope,iface,nodeface[9],indexe,inode2pos;
 
   /* the indices in the comments follow FORTRAN convention, i.e. the
      fields start with 1 */
@@ -66,24 +66,24 @@ void mastructmm(ITG *icol,ITG *jq,ITG **mastp,ITG **irowp,
      
      do{
        
-       ielem=inoelfa[3*(index-1)];             
+       iface=inoelfa[3*(index-1)];             
        index=inoelfa[3*(index-1)+3-1];
        
-       if (strcmp1(&lakonfa[8*(ielem-1)+1],"4")==0){nope=4;}
-       else if (strcmp1(&lakonfa[8*(ielem-1)+1],"8")==0){nope=8;}
-       else if (strcmp1(&lakonfa[8*(ielem-1)+1],"3")==0){nope=3;}
-       else if (strcmp1(&lakonfa[8*(ielem-1)+1],"6")==0){nope=6;}
+       if (strcmp1(&lakonfa[8*(iface-1)+1],"4")==0){nope=4;}
+       else if (strcmp1(&lakonfa[8*(iface-1)+1],"8")==0){nope=8;}
+       else if (strcmp1(&lakonfa[8*(iface-1)+1],"3")==0){nope=3;}
+       else if (strcmp1(&lakonfa[8*(iface-1)+1],"6")==0){nope=6;}
        
-       indexe=ipkonfa[ielem-1];
+       indexe=ipkonfa[iface-1];
        for(jj=0;jj<nope;jj++){
-          nopesurf[jj]=konfa[indexe+jj];
+          nodeface[jj]=konfa[indexe+jj];
        }
 
        /* loop over all nodes on surface */
      
        for(j=0;j<nope;j++){
          
-	 inode2=nopesurf[j];
+	 inode2=nodeface[j];
 	 inode2pos=nodedesipos[inode2-1]-1; 
          
 	 if(nodedesiinv[inode2-1]==0)continue;

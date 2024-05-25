@@ -35,6 +35,7 @@
       istart=iobject+1
 !
 !     copy unfiltered sensitivities
+!
       if(icopy.eq.0) then
          do idesvar=1,ndesi
             inode=nodedesi(idesvar)
