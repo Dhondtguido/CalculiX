@@ -776,7 +776,7 @@ int readfrd( char *datin, Summen *anz, Nodes **nptr, Elements **eptr, Datasets *
 
           if( lcase[anz->l].irtype > 2 )
           {
-            printf(" Found ELEMENT DATA, this is not suported!\n");
+            printf(" Found ELEMENT DATA, this is not supported!\n");
             anz->l--;
             goto next;
           }
@@ -1384,12 +1384,12 @@ int readfrd( char *datin, Summen *anz, Nodes **nptr, Elements **eptr, Datasets *
 
   if ( e_nmax > (anz->nmax) )
   {
-    printf ("\nWARNING: element requestes a nodename higher than allocated\n\n");
+    printf ("\nWARNING: element requests a nodename higher than allocated\n\n");
     printf (" e_nmax=%d e_nmin=%d\n", e_nmax, e_nmin );
   }
   if ( e_nmin < 1 )
   {
-    printf ("\nWARNING: element requestes a nodename lower than allocated\n\n");
+    printf ("\nWARNING: element requests a nodename lower than allocated\n\n");
     printf (" e_nmax=%d e_nmin=%d\n", e_nmax, e_nmin );
   }
 
@@ -1436,7 +1436,7 @@ int readfrdblock(int lc, Summen *anz,   Nodes     *node, Datasets *lcase )
 
   if( lcase[lc].irtype > 2 )
   {
-    printf(" ERROR: Found ELEMENT DATA, this is not suported!\n");
+    printf(" ERROR: Found ELEMENT DATA, this is not supported!\n");
     return(-1);
   }
 
@@ -1719,7 +1719,7 @@ int readOneNode( int lc, Summen *anz, Datasets *lcase, int nodenr, double **vptr
 
   if( lcase[lc].irtype > 2 )
   {
-    printf(" ERROR: Found ELEMENT DATA, this is not suported!\n");
+    printf(" ERROR: Found ELEMENT DATA, this is not supported!\n");
     return(-1);
   }
 
