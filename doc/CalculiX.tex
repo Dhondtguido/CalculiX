@@ -10225,6 +10225,16 @@ $\{F_b(t^k)\}$ , $\dot{g}_0(t^k)$, $\{U_i\}^k$, $\{U_b\}^{k-1}$, $\{\lambda \}^{
 In the first increment (k=1) $\{U_i\}^1$, $\{U_b\}^{0}$ and
 $\{V_i\}^{\frac{1}{2}}$ have to be known.
 
+Right now, the following limitations apply to the massless contact method:
+
+\begin{itemize}
+\item If NLGEOM is active on the *STEP card selective mass scaling is not reliable
+  and should not be applied, i.e. the user should not specify a minimum
+  increment size underneath the *DYNAMIC card.
+\item If NLGEOM is active on the *STEP card large rotations will lead to wrong
+  results.
+\end{itemize}
+
 \subsection{Materials}
 
 A material definition starts with a \htmlref{*MATERIAL}{material} key
@@ -33744,7 +33754,7 @@ At first the degrees of freedom needed to set up the $[W_b]$ matrix
   neqtot:=3*nslavs+3*nmasts.
 \end{itemize}
 
-Furthermore, in the same routine the friction coefficientin each slave node is
+Furthermore, in the same routine the friction coefficient in each slave node is
 stored in field fric(1...nslavs).
 
 Then, the matrices in between the big brackets in Equation (\ref{eqg6}) are
@@ -33768,20 +33778,24 @@ Now, the increment loop can start. The following actions are performed:
   degrees of freedom of the nodes of the opposite master face in global
   coordinates. The matrix is stored using fields auw, jqw, iroww and
   nzsw. Vector auw contains the nonzero values column by column, the
-  corresponding row number is stored in jqw, in total there are nzsw
+  corresponding row number is stored in iroww, in total there are nzsw
   entries. The first entry in each column is stored in jqw(i),
-  i=1,..3*nslavs+1. 
+  i=1,..3*nslavs+1. [for linear calculations (i.e. without geometric and
+    material nonlinearities; characterized by masslesslinear $>$ 0) $[W_b]$ is calculated only once at the start of
+    the step.]
 \item contrary to penalty dynamic calculations, no extrapolation from the
   previous result is done, i.e. prediction.c is skipped.
 \item contrary to penalty dynamic calculations, the stiffness matrix is
-  assembled in mafillsmmain.c.
+  assembled in mafillsmmain.c. [For linear calculations the stiffness matrix
+    is calculated only once at the start of the step.]
 \item contrary to penalty dynamic calculations, no residual is calculated in
   calcresidual.c. Instead, routine massless.c is called with the following actions:
   \begin{itemize}
     \item The rows in $[W_b]$ are rearranged; in gencontelem\_n2f.f the order
       is such that first the slave nodes are treated, followed by the master
       nodes. In routine expand\_auw the new row order is the one dictated by
-      field nactdof.
+      field nactdof. [For linear calculations this is done only once at the
+        start of the step.]
 \item In routine extract\_matrices $[K_{bb}]$,  $[K_{bi}]$,$[K_{ib}]$ and
   $[K_{ii}]$ are extracted from the global stiffness matrix. Matrix
   $[K_{bb}]$ is stored using fields jqbb, aubb, adbb, irowbb and icolbb (the
@@ -33794,11 +33808,18 @@ Now, the increment loop can start. The following actions are performed:
   nslavs columns (any entries not belonging to the contact nodes are set to
   zero; this does not blow up the storage, since only non-zeros are stored). Mutatis mutandis this also applies to  $[K_{bi}]$. Matrix
   $[K_{ii}]$ is actually not extracted, the entries of matrices  $[K_{bi}]$,
-  $[K_{ib}]$ and  $[K_{bb}]$ are set to zero (off-diagonal) or one (diagonal).
+  $[K_{ib}]$ and  $[K_{bb}]$ are set to zero (off-diagonal) or one
+  (diagonal). [For linear calculations this is done only once at the start of
+    the step.]
 \item Calculation of $\{F_b(t^k)\} - [K_{bi}]\{U_i\}^k$ in resforccont.f. This
   is the residual force due to external forces and forces from the internal
-  nodes in the absence of contact forces $\{\lambda\}^k$.
-\item factorizing $[K_{bb}]$ and premultiplying the residual force with
+  nodes in the absence of contact forces $\{\lambda\}^k$. For linear
+  calculations the external force due to distributed loads (e.g. centrifugal
+  forces) is calculated only once at the start of the step (only if the
+  distributed load does not change in the step). Concentrated loads are added
+  on an increment basis.
+\item factorizing $[K_{bb}]$ (for linear calculations this is done only once
+  at the start of the step) and premultiplying the residual force with
   $[K_{bb}]^{-1}$ by solving a linear equation system. The result is stored
   in field gapdisp and is the displacement field at the boundary nodes in
   global coordinates assuming zero contact force.
@@ -33808,7 +33829,12 @@ Now, the increment loop can start. The following actions are performed:
   is nacti, the corresponding entries in iacti(j),j=1...3*nlavs are
   numbered in ascending order, the nonactive degrees in iacti are set to zero.
 \item calculate $[G]$ and $\{c\}$ (using gapdisp) and storing them in
-  gmatrix(1..nacti,1..nacti) and cvec(1..nacti).
+  gmatrix(1..nacti,1..nacti) and cvec(1..nacti). For linear calculations a
+  maximal $[G]$ matrix (stored in fullgmatrix) is calculated once at the start of the
+  step assuming all contact degrees of freedom do be active. it is
+  appropriately condensed to the right size in each increment based on the
+  truly active degrees of freedom. In the same way a maximal relaxation vector
+  fullr is calculated.
 \item solving the inclusion problem in auglag\_inclusion.f. Field
   alglob(1..neqtot) contains $[W_b]\{\lambda\}$, i.e. the contact forces in
   slave and master nodes in global coordinates, field al(1..3*nslavs)
