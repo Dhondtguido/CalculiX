@@ -5391,3 +5391,6 @@ Dec 2002        - started to work on single crystal plasticity
  17 May 2024    - inserted implicit filtering for sensitivities
 
  21 May 2024    - corrected errors in feasibledirection.c
+
+ 15 July 2024   - corrected examples channel2 and channel2a (included
+                  the conductivity)
