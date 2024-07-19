@@ -1811,7 +1811,7 @@ void frdgeneralvector(double *v,ITG *iset,ITG *ntrans,char * filabl,
                ITG *nkcoords,
                ITG *inum,char *m1,ITG *inotr,double *trab,double *co,
                ITG *istartset,ITG *iendset,ITG *ialset,ITG *mi,ITG *ngraph,
-               FILE *f1,char *output,char *m3);
+	       FILE *f1,char *output,char *m3,ITG *ioutall);
 
 void frdheader(ITG *icounter,double *oner,double *time,double *pi,
                ITG *noddiam,double *cs,ITG *null,ITG *mode,
@@ -1834,7 +1834,7 @@ void frdset(char *filabl,char *set,ITG *iset,ITG *istartset,ITG *iendset,
 void frdvector(double *v,ITG *iset,ITG *ntrans,char * filabl,ITG *nkcoords,
                ITG *inum,char *m1,ITG *inotr,double *trab,double *co,
                ITG *istartset,ITG *iendset,ITG *ialset,ITG *mi,ITG *ngraph,
-               FILE *f1,char *output,char *m3);
+               FILE *f1,char *output,char *m3,ITG *ioutall);
 
 void FORTRAN(frictionheating,(ITG *ne0,ITG *ne,ITG *ipkon,char *lakon,ITG *ielmat,
                      ITG *mi,double *elcon,ITG *ncmat_,ITG *ntmat_,

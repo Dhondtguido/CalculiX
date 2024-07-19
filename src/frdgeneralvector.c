@@ -25,7 +25,7 @@ void frdgeneralvector(double *v,ITG *iset,ITG *ntrans,char * filabl,
                ITG *nkcoords,
                ITG *inum,char *m1,ITG *inotr,double *trab,double *co,
                ITG *istartset,ITG *iendset,ITG *ialset,ITG *mi,ITG *ngraph,
-               FILE *f1,char *output,char *m3){
+	       FILE *f1,char *output,char *m3,ITG *ioutall){
 
     ITG i,j,k,l,nksegment,*inodeset=NULL,nnodeset,nnodeset_,
     *iy=NULL,kflag;
@@ -37,7 +37,11 @@ void frdgeneralvector(double *v,ITG *iset,ITG *ntrans,char * filabl,
   if(*iset==0){
     if((*ntrans==0)||(strcmp1(&filabl[5],"G")==0)){
       for(i=0;i<*nkcoords;i++){
-	if(inum[i]<=0) continue;
+	if(*ioutall==0){
+	  if(inum[i]<=0) continue;
+	}else{
+	  if(inum[i]<0) continue;
+	}
 	if(strcmp1(output,"asc")==0){
 	    if(mi[1]==4){
 		fprintf(f1,"%3s%10" ITGFORMAT "%12.5E%12.5E%12.5E%12.5E\n",m1,i+1,
@@ -69,7 +73,11 @@ void frdgeneralvector(double *v,ITG *iset,ITG *ntrans,char * filabl,
       }
     }else{
       for(i=0;i<*nkcoords;i++){
-	if(inum[i]<=0) continue;
+	if(*ioutall==0){
+	  if(inum[i]<=0) continue;
+	}else{
+	  if(inum[i]<0) continue;
+	}
 	if(inotr[2*i]==0){
 	  if(strcmp1(output,"asc")==0){
 	    if(mi[1]==4){
@@ -152,7 +160,11 @@ void frdgeneralvector(double *v,ITG *iset,ITG *ntrans,char * filabl,
     for(l=0;l<*ngraph;l++){
       for(k=0;k<nnodeset;k++){
 	i=inodeset[k]+l*nksegment-1;
-	if(inum[i]<=0) continue;
+	if(*ioutall==0){
+	  if(inum[i]<=0) continue;
+	}else{
+	  if(inum[i]<0) continue;
+	}
 	if((*ntrans==0)||(strcmp1(&filabl[5],"G")==0)||(inotr[2*i]==0)){
 	  if(strcmp1(output,"asc")==0){
 	    if(mi[1]==4){

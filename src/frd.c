@@ -200,7 +200,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
     fprintf(f1,"%5sUHOST                                                              \n",p1);
     fprintf(f1,"%5sUPGM               CalculiX                                        \n",p1);
     fprintf(f1,"%5sUVERSION           Version DEVELOPMENT                             \n",p1);
-    fprintf(f1,"%5sUCOMPILETIME       Sat May 25 17:29:40 CEST 2024                    \n",p1);
+    fprintf(f1,"%5sUCOMPILETIME       Fri Jul 19 17:08:48 CEST 2024                    \n",p1);
     fprintf(f1,"%5sUDIR                                                               \n",p1);
     fprintf(f1,"%5sUDBN                                                               \n",p1);
     
@@ -855,7 +855,8 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	fprintf(f1," -5  ALL         1    2    0    0    1ALL\n");
       
 	frdvector(v,&iset,ntrans,filab,&nkcoords,inum,m1,inotr,
-		  trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3);
+		  trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3,
+		  &ioutall);
 
       }else if((mi[1]>3)&&(mi[1]<7)){
 
@@ -869,7 +870,8 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	fprintf(f1," -5  ALL         1    2    0    0    1ALL\n");
 
 	frdgeneralvector(v,&iset,ntrans,filab,&nkcoords,inum,m1,inotr,
-			 trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3);
+			 trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,
+			 m3,&ioutall);
       }else{
 	printf(" *WARNING in frd:\n");
 	printf("          for output purposes only 4, 5 or 6\n");
@@ -897,7 +899,8 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
       fprintf(f1," -5  ALL         1    2    0    0    1ALL\n");
       
       frdvector(&v[*nk*mt],&iset,ntrans,filab,&nkcoords,inum,m1,inotr,
-		trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3);
+		trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3,
+		&ioutall);
     }
   }
 
@@ -922,7 +925,8 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
       fprintf(f1," -5  ALL         1    2    0    0    1ALL\n");
       
       frdvector(v,&iset,ntrans,filab,&nkcoords,inum,m1,inotr,
-		trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3);
+		trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3,
+		&ioutall);
     }
   }
 
@@ -945,7 +949,8 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
     fprintf(f1," -5  ALL         1    2    0    0    1ALL\n");
 
     frdvector(veold,&iset,ntrans,&filab[1740],&nkcoords,inum,m1,inotr,
-	      trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3);
+	      trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3,
+	      &ioutall);
   }
 
   /* storing the temperatures in the nodes */
@@ -1492,7 +1497,8 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
   
 	if((iaxial==1)&&(strcmp1(&filab[352],"I")==0)){for(i=0;i<*nk;i++){fn[1+i*mt]*=180.;fn[2+i*mt]*=180.;fn[3+i*mt]*=180.;}}
 	frdvector(fn,&iset,ntrans,&filab[348],&nkcoords,inum,m1,inotr,
-		  trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3);
+		  trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3,
+		  &ioutall);
 	if((iaxial==1)&&(strcmp1(&filab[352],"I")==0)){for(i=0;i<*nk;i++){fn[1+i*mt]/=180.;fn[2+i*mt]/=180.;fn[3+i*mt]/=180.;}}
 
       }else if((mi[1]>3)&&(mi[1]<7)){
@@ -1507,7 +1513,8 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	fprintf(f1," -5  ALL         1    2    0    0    1ALL\n");
 
 	frdgeneralvector(fn,&iset,ntrans,&filab[348],&nkcoords,inum,m1,inotr,
-			 trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3);
+			 trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,
+			 m3,&ioutall);
       }else{
 	printf(" *WARNING in frd:\n");
 	printf("          for output purposes only 4, 5 or 6\n");
@@ -1546,10 +1553,12 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
       
       if(*noddiam>=0){
 	frdvector(&fn[*nk*mt],&iset,ntrans,filab,&nkcoords,inum,m1,inotr,
-		  trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3);
+		  trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3,
+		  &ioutall);
       }else{
 	frdvector(fn,&iset,ntrans,filab,&nkcoords,inum,m1,inotr,
-		  trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3);
+		  trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3,
+		  &ioutall);
       }
     }
   }

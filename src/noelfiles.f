@@ -265,11 +265,11 @@
      &'*WARNING reading *NODE/EL/CONTACT FILE: OUTPUT=3D has no'
               write(*,*) '         effect in all but the first step'
            endif
-        elseif(textpart(ii)(1:13).eq.'SECTIONFORCES') then
-              filab(3)(5:5)='M'
-           elseif(textpart(ii)(1:9).eq.'OUTPUTALL') then
-              output(4:4)='a'
-        elseif(textpart(ii)(1:11).eq.'TIMEPOINTS=') then
+         elseif(textpart(ii)(1:13).eq.'SECTIONFORCES') then
+           filab(3)(5:5)='M'
+         elseif(textpart(ii)(1:9).eq.'OUTPUTALL') then
+           output(4:4)='a'
+         elseif(textpart(ii)(1:11).eq.'TIMEPOINTS=') then
            timepointsname=textpart(ii)(12:91)
            do i=1,nam
               if(amname(i).eq.timepointsname) then
