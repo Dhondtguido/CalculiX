@@ -200,7 +200,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
     fprintf(f1,"%5sUHOST                                                              \n",p1);
     fprintf(f1,"%5sUPGM               CalculiX                                        \n",p1);
     fprintf(f1,"%5sUVERSION           Version DEVELOPMENT                             \n",p1);
-    fprintf(f1,"%5sUCOMPILETIME       Fri Jul 19 17:08:48 CEST 2024                    \n",p1);
+    fprintf(f1,"%5sUCOMPILETIME       Wed Jul 24 12:34:33 PM CEST 2024                    \n",p1);
     fprintf(f1,"%5sUDIR                                                               \n",p1);
     fprintf(f1,"%5sUDBN                                                               \n",p1);
     
@@ -403,7 +403,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	    nemax++;
 	    if(strcmp1(output,"asc")==0){
 	      fprintf(f1,"%3s%10" ITGFORMAT "%5s%5s%5" ITGFORMAT "\n%3s",
-		      m1,nemax,p4,p0,imat,m2);
+		      m1,nemax,p4,p0,ielmat[i*mi[2]+k],m2);
 	      for(j=0;j<10;j++)fprintf(f1,"%10" ITGFORMAT "",kon[indexe+28+20*k+j]);
 	      fprintf(f1,"\n%3s",m2);
 	      for(j=10;j<12;j++)fprintf(f1,"%10" ITGFORMAT "",kon[indexe+28+20*k+j]);
@@ -415,7 +415,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	      iw=(int)nemax;fwrite(&iw,sizeof(int),1,f1);
 	      iw=(int)ip4;fwrite(&iw,sizeof(int),1,f1);
 	      iw=(int)ip0;fwrite(&iw,sizeof(int),1,f1);
-	      iw=(int)imat;fwrite(&iw,sizeof(int),1,f1);
+	      iw=(int)ielmat[i*mi[2]+k];fwrite(&iw,sizeof(int),1,f1);
 	      for(j=0;j<10;j++){iw=(int)kon[indexe+28+20*k+j];
 		fwrite(&iw,sizeof(int),1,f1);}
 	      for(j=10;j<12;j++){iw=(int)kon[indexe+28+20*k+j];
