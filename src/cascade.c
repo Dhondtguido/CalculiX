@@ -216,10 +216,10 @@ void cascade(ITG *ipompc, double **coefmpcp, ITG **nodempcp, ITG *nmpc,
 		    
 	  index1=ipompc[i];
 	  if(fabs(coefmpc[index1-1])<1.e-10){
-	    printf(" *ERROR in cascade: zero coefficient on the\n");
-	    printf("        dependent side of an equation\n");
-	    printf("        dependent node: %" ITGFORMAT "",nodempc[3*index1-3]);
-	    printf("        direction: %" ITGFORMAT "\n\n",nodempc[3*index1-2]);
+	    printf(" *WARNING in cascade: zero coefficient on the\n");
+	    printf("          dependent side of an equation\n");
+	    printf("          dependent node: %" ITGFORMAT "",nodempc[3*index1-3]);
+	    printf("          direction: %" ITGFORMAT "\n\n",nodempc[3*index1-2]);
 	    coefmpc[index1-1]=1.e-5*coefmin;
 	    printf(" new coefficient = %e\n",1.e-5*coefmin);
 	    //	    FORTRAN(stop,());

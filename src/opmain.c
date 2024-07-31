@@ -75,7 +75,7 @@ void opmain(ITG *n,double *x,double *y,double *ad,double*au,ITG *jq,ITG *irow){
     }
   }
 
-  // next line is to be inserted in a similar way for all other paralell parts
+  // next line is to be inserted in a similar way for all other parallel parts
 
   if(*n<num_cpus) num_cpus=*n;
 

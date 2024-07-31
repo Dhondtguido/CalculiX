@@ -77,7 +77,7 @@ void resforccont(double *vold,ITG *nk,ITG *mi,double *aubi,ITG *irowbi,
     }
   }
 
-  // next line is to be inserted in a similar way for all other paralell parts
+  // next line is to be inserted in a similar way for all other parallel parts
 
   if(*nk<num_cpus) num_cpus=*nk;
 

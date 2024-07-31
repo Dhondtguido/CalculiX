@@ -87,7 +87,7 @@ void mulmatvec_asymmain(double *au,ITG *jq,ITG *irow,ITG *ncol,double *x,
     }
   }
 
-  // next line is to be inserted in a similar way for all other paralell parts
+  // next line is to be inserted in a similar way for all other parallel parts
 
   if(*ncol<num_cpus) num_cpus=*ncol;
 

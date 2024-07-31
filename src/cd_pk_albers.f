@@ -42,7 +42,7 @@
       cd=1.d0
 
       write(*,*) '*WARNING while using subroutine cd_pk_albers.f'
-      write(*,*) 'cd implicitely taken equal to 1'
+      write(*,*) 'cd implicitly taken equal to 1'
 !
       return
       end
