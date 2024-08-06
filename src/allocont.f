@@ -64,9 +64,6 @@
 !
 !           determining the master surface
 !
-c            do j=1,nset
-c               if(set(j).eq.mastset) exit
-c            enddo
             call cident81(set,mastset,nset,id)
             j=nset+1
             if(id.gt.0) then

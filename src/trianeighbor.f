@@ -83,7 +83,6 @@
                   if(ime(1,index1).eq.node2) then
                      imastop(ipos,j)=ime(2,index1)
                      imastop(ime(3,index1),ime(2,index1))=j
-c                     ime(4,index1old)=ime(4,index1)
                      exit
                   endif
                   index1old=index1

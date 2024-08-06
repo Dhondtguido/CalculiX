@@ -892,7 +892,6 @@ umat_abaqus.f \
 umat_abaqusnl.f \
 umat_abaqusnl_total.f \
 umat_aniso_creep.f \
-umat_aniso_plas.f \
 umat_ciarlet_el.f \
 umat_compression_only.f \
 umat_def_plas.f \
