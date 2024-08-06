@@ -160,9 +160,10 @@ void FORTRAN(allocation_rfn,(ITG *nk_,ITG *ne_,ITG *nkon_,ITG *ipoinp,
 			    ITG *ipoinpc,char *inpc,ITG *inp));
 
 void FORTRAN(allocont,(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,
-             char *set,ITG *istartset,ITG *iendset,ITG *ialset,
-             char *lakon,ITG *ncone,double *tietol,ITG *ismallsliding,
-             char *kind1,char *kind2,ITG *mortar,ITG *istep));
+		       char *set,ITG *istartset,ITG *iendset,ITG *ialset,
+		       char *lakon,ITG *ncone,double *tietol,ITG *ismallsliding,
+		       char *kind1,char *kind2,ITG *mortar,ITG *istep,
+		       ITG *ipkon));
 
 void FORTRAN(applybounfem,(ITG *nodeboun,ITG *ndirboun,
 			   double *xbounact,ITG *nk,double *vold,

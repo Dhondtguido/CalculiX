@@ -18,10 +18,14 @@
 !
       subroutine allocont(ncont,ntie,tieset,nset,set,istartset,
      &  iendset,ialset,lakon,ncone,tietol,ismallsliding,kind1,kind2,
-     &  mortar,istep)
+     &  mortar,istep,ipkon)
 !
 !     counting the number of triangles needed for the 
-!     triangulation of the contact master surfaces
+!     triangulation of the contact master surfaces,
+!     all contact pairs are taken into account (no matter
+!     whether deactivated or not), however, only faces of 
+!     existing elements (in particular non-deactivated) are
+!     considered.
 !
 !     ismallsliding = 0: large sliding
 !                   = 1: small sliding
@@ -36,7 +40,7 @@
 !
       integer ncont,ntie,i,j,k,nset,istartset(*),iendset(*),ialset(*),
      &  imast,nelem,jface,ncone,islav,ismallsliding,ipos,mortar,istep,
-     &  kflag,idummy,jact,id
+     &  kflag,idummy,jact,id,ipkon(*)
 !
       real*8 tietol(4,*)
 !
@@ -100,7 +104,8 @@
 !
             do j=istartset(imast),iendset(imast)
 !     
-               nelem=int(ialset(j)/10.d0)
+              nelem=int(ialset(j)/10.d0)
+              if(ipkon(nelem).lt.0) cycle
                jface=ialset(j)-10*nelem
 !     
                if(lakon(nelem)(4:5).eq.'20') then
