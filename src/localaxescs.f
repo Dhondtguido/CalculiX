@@ -25,7 +25,7 @@
 !
       integer mcs,i,imax
 !
-      real*8 cs(17,*),xn(3),e1(3),e2(3),xmax,dd
+      real*8 cs(18,*),xn(3),e1(3),e2(3),xmax,dd
 !
 !     xn: axis direction; first cyclic symmetry definition is taken
 !

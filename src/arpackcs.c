@@ -487,7 +487,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
   
   ngraph=1;
   for(j=0;j<*mcs;j++){
-    if(cs[17*j+4]>ngraph) ngraph=cs[17*j+4];
+    if(cs[18*j+4]>ngraph) ngraph=cs[18*j+4];
   }
   
   /* assigning nodes and elements to sectors */
@@ -501,9 +501,9 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
   }
   
   for(i=0;i<*mcs;i++){
-    is=cs[17*i+4];
+    is=cs[18*i+4];
     if((is==1)&&(*mcs==1)) continue;
-    ielset=cs[17*i+12];
+    ielset=cs[18*i+12];
     if(ielset==0) continue;
     if(ielset<0){
       iel=-ielset;
@@ -1255,10 +1255,11 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     FORTRAN(rectcyl,(cot,v,fn,stn,qfn,een,cs,nk,&icntrl,t,filab,&imag,mi,emn));
       
     for(jj=0;jj<*mcs;jj++){
-      is=cs[17*jj+4];
+      is=cs[18*jj+4];
       for(i=1;i<is;i++){
 	      
-	theta=i*2.*pi/cs[17*jj];
+	//	theta=i*2.*pi/cs[18*jj];
+	theta=i*2.*pi/cs[18*jj+17];
 	      
 	for(l=0;l<*nk;l++){
 	  if(inocs[l]==jj){
@@ -1504,11 +1505,11 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	      if(k==0) {
 		if(fabs(xreal)<1.e-30)xreal=1.e-30;
 		coefmpcnew[index]=coefmpc[index]*
-		  (cs[17*(icomplex-1)+14]+ximag/xreal*cs[17*(icomplex-1)+15]);}
+		  (cs[18*(icomplex-1)+14]+ximag/xreal*cs[18*(icomplex-1)+15]);}
 	      else {
 		if(fabs(ximag)<1.e-30)ximag=1.e-30;
 		coefmpcnew[index]=coefmpc[index]*
-		  (cs[17*(icomplex-1)+14]-xreal/ximag*cs[17*(icomplex-1)+15]);}
+		  (cs[18*(icomplex-1)+14]-xreal/ximag*cs[18*(icomplex-1)+15]);}
 	    }
 	    else{coefmpcnew[index]=coefmpc[index];}
 	  }
@@ -2010,14 +2011,14 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	for(l=0;l<6**nk;l++){cdnt[l+6**nk*ngraph]=cdn[l+6**nk];}}
 
       for(jj=0;jj<*mcs;jj++){
-	ilength=cs[17*jj+3];
-	is=cs[17*jj+4];
-	lprev=cs[17*jj+13];
+	ilength=cs[18*jj+3];
+	is=cs[18*jj+4];
+	lprev=cs[18*jj+13];
 	for(i=1;i<is;i++){
         
 	  for(l=0;l<*nk;l++){inumt[l+i**nk]=inum[l];}
         
-	  theta=i*nm*2.*pi/cs[17*jj];
+	  theta=i*nm*2.*pi/cs[18*jj];
 	  ctl=cos(theta);
 	  stl=sin(theta);
         
@@ -2371,14 +2372,14 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
       /* internal energy calculation */
 
       for(jj=0;jj<*mcs;jj++){
-	ilength=cs[17*jj+3];
-	is=cs[17*jj+4];
-	lprev=cs[17*jj+13];
+	ilength=cs[18*jj+3];
+	is=cs[18*jj+4];
+	lprev=cs[18*jj+13];
 	for(i=1;i<is;i++){
         
 	  for(l=0;l<*nk;l++){inumt[l+i**nk]=inum[l];}
         
-	  theta=i*nm*2.*pi/cs[17*jj];
+	  theta=i*nm*2.*pi/cs[18*jj];
 	  ctl=cos(theta);
 	  stl=sin(theta);
 

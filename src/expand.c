@@ -143,9 +143,9 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
     if(*mcs==1) csmass[0]=1.;
     
     for(i=0;i<*mcs;i++){
-	is=cs[17*i];
+	is=cs[18*i];
 	//	if(is==1) continue;
-	ielset=cs[17*i+12];
+	ielset=cs[18*i+12];
 	if(ielset==0) continue;
 	for(i1=istartset[ielset-1]-1;i1<iendset[ielset-1];i1++){
 	    if(ialset[i1]>0){
@@ -252,10 +252,10 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
     FORTRAN(rectcyl,(co,v,fn,stn,qfn,een,cs,nk,&icntrl,t,filabt,&imag,mi,emn));
     
     for(jj=0;jj<*mcs;jj++){
-	is=(ITG)(cs[17*jj]+0.5);
+	is=(ITG)(cs[18*jj]+0.5);
 	for(i=1;i<is;i++){
 	    
-	    theta=i*2.*pi/cs[17*jj];
+	    theta=i*2.*pi/cs[18*jj];
 	    
 	    for(l=0;l<*nk;l++){
 		if(inocs[l]==jj){
@@ -387,9 +387,9 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	/* calculating the cosine and sine of the phase angle */
 
 	for(jj=0;jj<*mcs;jj++){
-	    theta=nm[j]*2.*pi/cs[17*jj];
-	    cs[17*jj+14]=cos(theta);
-	    cs[17*jj+15]=sin(theta);
+	    theta=nm[j]*2.*pi/cs[18*jj];
+	    cs[18*jj+14]=cos(theta);
+	    cs[18*jj+15]=sin(theta);
 	}
 	
 	/* generating the cyclic MPC's (needed for nodal diameters
@@ -438,13 +438,13 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 			if(k==0) {
 			    if(fabs(xreal)<1.e-30)xreal=1.e-30;
 			    coefmpcnew[index]=coefmpc[index]*
-				(cs[17*(icomplex-1)+14]+
-                                 ximag/xreal*cs[17*(icomplex-1)+15]);}
+				(cs[18*(icomplex-1)+14]+
+                                 ximag/xreal*cs[18*(icomplex-1)+15]);}
 			else {
 			    if(fabs(ximag)<1.e-30)ximag=1.e-30;
 			    coefmpcnew[index]=coefmpc[index]*
-				(cs[17*(icomplex-1)+14]-
-                                 xreal/ximag*cs[17*(icomplex-1)+15]);}
+				(cs[18*(icomplex-1)+14]-
+                                 xreal/ximag*cs[18*(icomplex-1)+15]);}
 		    }
 		    else{coefmpcnew[index]=coefmpc[index];}
 		}
@@ -499,11 +499,11 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	/* other sectors */
 
 	for(jj=0;jj<*mcs;jj++){
-	    ilength=cs[17*jj+3];
-	    lprev=cs[17*jj+13];
+	    ilength=cs[18*jj+3];
+	    lprev=cs[18*jj+13];
 	    for(i=1;i<*nsectors;i++){
 		
-		theta=i*nm[j]*2.*pi/cs[17*jj];
+		theta=i*nm[j]*2.*pi/cs[18*jj];
 		ctl=cos(theta);
 		stl=sin(theta);
 		
@@ -573,10 +573,10 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	sum=0.;
 	summass=0.;
 	for(i=0;i<*mcs;i++){
-	  if (nm[j]==0||(nm[j]==(ITG)((cs[17*i]/2))&&(fmod(cs[17*i],2.)==0.))){
-	    sum+=cs[17*i]*csmass[i];
+	  if (nm[j]==0||(nm[j]==(ITG)((cs[18*i]/2))&&(fmod(cs[18*i],2.)==0.))){
+	    sum+=cs[18*i]*csmass[i];
 	  }else{
-	    sum+=cs[17*i]*csmass[i]/2.;
+	    sum+=cs[18*i]*csmass[i]/2.;
 	  }
 	  summass+=csmass[i];
 	}
@@ -622,8 +622,8 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	/* other sectors */
 	
 	for(jj=0;jj<*mcs;jj++){
-	    ilength=cs[17*jj+3];
-	    lprev=cs[17*jj+13];
+	    ilength=cs[18*jj+3];
+	    lprev=cs[18*jj+13];
 	    for(i=1;i<*nsectors;i++){
 		
 		for(ll=0;ll<nznode;ll++){

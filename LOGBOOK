@@ -5400,3 +5400,7 @@ Dec 2002        - started to work on single crystal plasticity
 
  31 July 2024   - corrected some spelling errors
                 - removed an error in frd.c (composites)
+
+ 5 Aug 2024     - posted version 2.22
+
+ 8 Aug 2024     - allowed for oversampling in multistage MPC's

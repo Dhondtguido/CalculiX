@@ -716,11 +716,11 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		    if(k==0) {
 		      if(fabs(xreal)<1.e-30)xreal=1.e-30;
 		      coefmpcnew[index]=coefmpc[index]*
-			(cs[17*(icomplex-1)+14]+ximag/xreal*cs[17*(icomplex-1)+15]);}
+			(cs[18*(icomplex-1)+14]+ximag/xreal*cs[18*(icomplex-1)+15]);}
 		    else {
 		      if(fabs(ximag)<1.e-30)ximag=1.e-30;
 		      coefmpcnew[index]=coefmpc[index]*
-			(cs[17*(icomplex-1)+14]-xreal/ximag*cs[17*(icomplex-1)+15]);}
+			(cs[18*(icomplex-1)+14]-xreal/ximag*cs[18*(icomplex-1)+15]);}
 		  }
 		  else{coefmpcnew[index]=coefmpc[index];}
 		}

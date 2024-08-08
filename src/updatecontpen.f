@@ -40,7 +40,7 @@
 !     
       real*8 co(3,*),vold(0:mi(2),*),cg(3,*),straight(16,*),col(3,3),
      &     xmastnor(3,*),xl2m(3,9),xi,et,dd,xsj2(3),shp2(7,9),
-     &     xs2(3,2),xnor(3,3),cs(17,*),xquad(2,9),xtri(2,7)
+     &     xs2(3,2),xnor(3,3),cs(18,*),xquad(2,9),xtri(2,7)
 !     
 !     nodes per face for hex elements
 !     

@@ -21087,10 +21087,16 @@ in a cyclic symmetric structure for use in a cyclic symmetry calculation
 must be preceded by two *SURFACE cards defining the nodes belonging to the
 left and right boundary of the sector and a *TIE card linking those surfaces. The axis of symmetry is defined by two points a and b, defined in global Cartesian coordinates.
 
-For structural calculations there are six parameters, N, NGRAPH, TIE, ELSET,
+For structural calculations there are seven parameters, N, NPHYS, NGRAPH, TIE, ELSET,
 MATRIX and CHECK. The parameter N,
-specifying the number of sectors, is required, TIE is required if more than
-one cyclic symmetry tie is defined.
+specifying the number of (numerical) sectors, is required, TIE is required if more than
+one cyclic symmetry tie is defined. The number of sectors can exceed the
+number of physical sectors (NPHYS), so--called oversampling, which means that the waves along the
+circumference will not be closed. The same applies if N is a non-integer,
+which is also allowed. The number of physical sectors can be specified with
+the parameter NPHYS. If not, NPHYS is set equal to N. Specifying NPHYS is important
+in case of oversampling if NGRAPH $>$ 1 or if 
+multistage MPC's are defined (cf. \htmlref{*TIE}{tie}).
 
 The parameter NGRAPH is optional and indicates for how many sectors the
 solutions should be stored in .frd format. Setting NGRAPH=N for N sectors
@@ -21115,7 +21121,7 @@ substructure with the name TEST. The parameters ELSET and
 MATRIX are mutually exclusive.
 
 The last parameter, CHECK, specifies whether CalculiX should compare the
-sector angle based on its geometry with its value based on N. If the deviation
+sector angle based on its geometry with its value based on NPHYS. If the deviation
 exceeds 0.01 radians the program issues an error message and stops. If CHECK=NO is
 specified, the check is not performed, else it is. If the user wants to find
 eigenmodes with fractional nodal diameters, i.e. vibrations for which the
@@ -33385,7 +33391,9 @@ scheme depends on the beam section.
 Contact is triggered by the keyword card \htmlref{*CONTACT
  PAIR}{contactpair}. It defines an interaction between a nodal or element face
 slave surface and a element face 
- master surface. The master surface is triangulated using standard
+ master surface. The master surface is triangulated (in fact, all master
+ surfaces, no matter whether deactivated or not; however, only master faces
+ belonging to existing, not deactivated elements are considered) using standard
  triangulation schemes for the different kind of faces (3-node, 4-node,
  6-node or 8-node). This is done in subroutines allocont.f, 
  triangucont.f and trianeighbor.f. This triangulation is a topological one and does not depend

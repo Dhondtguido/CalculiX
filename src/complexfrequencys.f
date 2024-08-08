@@ -32,7 +32,7 @@
      &  n,key,iline,ipol,inl,ipoinp(2,*),inp(3,*),nev,ithermal(*),
      &  ipoinpc(0:*),mcs,cyclicsymmetry,ier
 !
-      real*8 xboun(*),cs(17,*)
+      real*8 xboun(*),cs(18,*)
 !
       mei(4)=0
 !

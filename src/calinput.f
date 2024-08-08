@@ -137,7 +137,7 @@
      &     shcon(0:3,ntmat_,*),cocon(0:6,ntmat_,*),timepar(*),
      &     ctrl(*),vold(0:mi(2),*),xbounold(*),xforcold(*),
      &     xloadold(*),t1old(*),eme(*),sti(*),ener(*),
-     &     xstate(nstate_,mi(1),*),ttime,qaold(2),cs(17,*),tietol(4,*),
+     &     xstate(nstate_,mi(1),*),ttime,qaold(2),cs(18,*),tietol(4,*),
      &     xbody(7,*),xbodyold(7,*),t0g(2,*),t1g(2,*),
      &     fei(4),tinc,tper,xmodal(*),tmin,tmax,tincf,
      &     alpha(*),physcon(*),coefmpcref(*),vel(nef,*),velo(*),

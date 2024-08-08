@@ -50,7 +50,7 @@
      &  nmpc,nmpc_,ikmpc(*),ilmpc(*),mpcfree,nset,mcs,ipoinpc(0:*),
      &  nef,iaxial,nelcon(2,*),nmat,ier,j,k,l,ilen
 !
-      real*8 tinc,tper,tmin,tmax,cs(17,*),coefmpc(*),ttime
+      real*8 tinc,tper,tmin,tmax,cs(18,*),coefmpc(*),ttime
 !
       idrct=0
       tinc=0.d0

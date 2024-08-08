@@ -61,7 +61,7 @@
      &  physcon(*),prop(*),xstate(nstate_,mi(1),*),xcos,xsin,
      &  xstateini(nstate_,mi(1),*),alzero(*),orab(7,*),valuer,
      &  xbody(7,*),cgr(4,*),plicon(0:2*npmat_,ntmat_,*),
-     &  plkcon(0:2*npmat_,ntmat_,*),xstiff(27,mi(1),*),cs(17,*),
+     &  plkcon(0:2*npmat_,ntmat_,*),xstiff(27,mi(1),*),cs(18,*),
      &  veold(0:mi(2),*),om,dtime,ttime,time,thicke(mi(3),*),
      &  doubleglob(*),clearini(3,9,*),pslavsurf(3,*),valuei,
      &  pmastsurf(6,*),distmin,dfl(20,120),waluer,waluei,

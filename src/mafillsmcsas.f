@@ -68,7 +68,7 @@
      &     ff(60),smscale(1),
      &     sti(6,mi(1),*),sm(60,60),stx(6,mi(1),*),adb(*),aub(*),
      &     elcon(0:ncmat_,ntmat_,*),rhcon(0:1,ntmat_,*),xloadold(2,*),
-     &     alcon(0:6,ntmat_,*),cs(17,*),alzero(*),orab(7,*),reltime,
+     &     alcon(0:6,ntmat_,*),cs(18,*),alzero(*),orab(7,*),reltime,
      &     springarea(2,*),plicon(0:2*npmat_,ntmat_,*),prop(*),
      &     plkcon(0:2*npmat_,ntmat_,*),thicke(mi(3),*),doubleglob(*),
      &     xstiff(27,mi(1),*),pi,theta,ti,tr,veold(0:mi(2),*),om,

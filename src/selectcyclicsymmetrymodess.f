@@ -38,7 +38,7 @@
      &  mpc,iline,ipol,inl,ipoinp(2,*),inp(3,*),mcs,lprev,ij,nmethod
 !
       real*8 coefmpc(*),csab(7),x1(2),x2(2),x3,x4,x5,dd,xn,yn,zn,
-     &  cs(17,*)
+     &  cs(18,*)
 !
 !     irepeat indicates whether the step was preceded by another
 !     cyclic symmetry step (irepeat=1) or not (irepeat=0)

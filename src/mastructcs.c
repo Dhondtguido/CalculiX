@@ -255,8 +255,8 @@ void mastructcs(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 		}
 		else if(strcmp1(&labmpc[(id1-1)*20],"SUBCYCLIC")==0){
                   for(ij=0;ij<*mcs;ij++){
-                    ilength=cs[17*ij+3];
-                    lprev=cs[17*ij+13];
+                    ilength=cs[18*ij+3];
+                    lprev=cs[18*ij+13];
                     FORTRAN(nident,(&ics[lprev],&inode,&ilength,&id));
                     if(id>0){
                       if(ics[lprev+id-1]==inode){
@@ -312,8 +312,8 @@ void mastructcs(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 		}
 		else if(strcmp1(&labmpc[(id1-1)*20],"SUBCYCLIC")==0){
                   for(ij=0;ij<*mcs;ij++){
-                    ilength=cs[17*ij+3];
-                    lprev=cs[17*ij+13];
+                    ilength=cs[18*ij+3];
+                    lprev=cs[18*ij+13];
                     FORTRAN(nident,(&ics[lprev],&inode1,&ilength,&id));
                     if(id>0){
                       if(ics[lprev+id-1]==inode1){
@@ -333,8 +333,8 @@ void mastructcs(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 		  }
 		  else if(strcmp1(&labmpc[(id1-1)*20],"SUBCYCLIC")==0){
                     for(ij=0;ij<*mcs;ij++){
-                      ilength=cs[17*ij+3];
-                      lprev=cs[17*ij+13];
+                      ilength=cs[18*ij+3];
+                      lprev=cs[18*ij+13];
                       FORTRAN(nident,(&ics[lprev],&inode2,&ilength,&id));
                       if(id>0){
                         if(ics[lprev+id-1]==inode2){
@@ -378,8 +378,8 @@ void mastructcs(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 		}
 		else if(strcmp1(&labmpc[(id1-1)*20],"SUBCYCLIC")==0){
                   for(ij=0;ij<*mcs;ij++){
-                    ilength=cs[17*ij+3];
-                    lprev=cs[17*ij+13];
+                    ilength=cs[18*ij+3];
+                    lprev=cs[18*ij+13];
                     FORTRAN(nident,(&ics[lprev],&inode1,&ilength,&id));
                     if(id>0){
                       if(ics[lprev+id-1]==inode1){
@@ -405,8 +405,8 @@ void mastructcs(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 		  }
 		  else if(strcmp1(&labmpc[(id2-1)*20],"SUBCYCLIC")==0){
                     for(ij=0;ij<*mcs;ij++){
-                      ilength=cs[17*ij+3];
-                      lprev=cs[17*ij+13];
+                      ilength=cs[18*ij+3];
+                      lprev=cs[18*ij+13];
                       FORTRAN(nident,(&ics[lprev],&inode2,&ilength,&id));
                       if(id>0){
                         if(ics[lprev+id-1]==inode2){

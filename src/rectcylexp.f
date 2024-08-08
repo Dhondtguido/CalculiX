@@ -38,7 +38,7 @@
       integer i,j,nkt,icntrl,imag,mi(*),iznode(*),nznode,nsectors,nk,
      &  ii,jj,node
       real*8 co(3,*),v(0:mi(2),*),fn(0:mi(2),*),stn(6,*),een(6,*),
-     &  a(3,3),xr,xt,xz,b(3,3),cs(17,*),t(3),qfn(3,*),csab(7),emn(6,*)
+     &  a(3,3),xr,xt,xz,b(3,3),cs(18,*),t(3),qfn(3,*),csab(7),emn(6,*)
 !
       do i=1,7
          csab(i)=cs(5+i,1)

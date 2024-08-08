@@ -158,7 +158,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Tue Aug  6 17:35:16 CEST 2024\n");
+  printf("You are using an executable made on Thu Aug  8 18:09:38 CEST 2024\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -451,7 +451,7 @@ int main(int argc,char *argv[])
       if(ntie_>0){
 	NNEW(tieset,char,243*ntie_);
 	NNEW(tietol,double,4*ntie_);
-	NNEW(cs,double,17*ntie_*maxsectors_);
+	NNEW(cs,double,18*ntie_*maxsectors_);
       }
 
       /* objectives for sensitivity analysis */
@@ -580,7 +580,7 @@ int main(int argc,char *argv[])
       NNEW(sti,double,6*mi[0]*ne);
       NNEW(eme,double,6*mi[0]*ne);
       if(nener==1)NNEW(ener,double,2*mi[0]*ne);
-      if(mcs>ntie_) RENEW(cs,double,17*mcs);
+      if(mcs>ntie_) RENEW(cs,double,18*mcs);
       if(mortar==1){
 	NNEW(pslavsurf,double,3*nintpoint);
 	NNEW(clearini,double,3*9*ifacecount);
@@ -907,7 +907,7 @@ int main(int argc,char *argv[])
       }
 
       if(mcs>0){
-	RENEW(cs,double,17*mcs);
+	RENEW(cs,double,18*mcs);
       }else{
 	SFREE(cs);
       }

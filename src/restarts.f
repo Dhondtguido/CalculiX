@@ -76,7 +76,7 @@
      &  vold(*),xbounold(*),xforcold(*),xloadold(*),t1old(*),eme(*),
      &  xnor(*),thicke(*),offset(*),t0g(*),t1g(*),clearini(*),
      &  shcon(*),cocon(*),sti(*),ener(*),xstate(*),prop(*),edc(*),
-     &  ttime,qaold(2),cs(17,*),physcon(*),pslavsurf(*),coeffc(*),
+     &  ttime,qaold(2),cs(18,*),physcon(*),pslavsurf(*),coeffc(*),
      &  ctrl(*),fmpc(*),xbody(*),xbodyold(*),vel(*),velo(*),veloo(*),
      &  xmodal(*)
 !

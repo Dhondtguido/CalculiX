@@ -38,7 +38,7 @@
      &  ipoinpc(0:*),nforc,nload,nbody,iprestr,ithermal(*),j,nk,ipos,
      &  cyclicsymmetry,ier,ibody(3,*)
 !
-      real*8 fmin,fmax,bias,tmin,tmax,xmodal(*),cs(17,*),t0(*),t1(*)
+      real*8 fmin,fmax,bias,tmin,tmax,xmodal(*),cs(18,*),t0(*),t1(*)
 !
       iexpl=0
       iperturb(2)=0

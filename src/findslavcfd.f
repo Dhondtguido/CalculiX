@@ -31,7 +31,7 @@
      &  islav(*),inoslav(*),inomast(*),nodemast,ics(*),imast(*),
      &  nmast,inomat(*),nr(*),nz(*),noden(1),nneigh,ncs,kflag,node
 !
-      real*8 cs(17,*),co(3,*),xa(3),xn(3),rcs(*),zcs(*),rcs0(*),
+      real*8 cs(18,*),co(3,*),xa(3),xn(3),rcs(*),zcs(*),rcs0(*),
      &  zcs0(*),rp,zp,xap,yap,zap,dd
 !
       nslav=0

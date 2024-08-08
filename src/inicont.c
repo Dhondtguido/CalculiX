@@ -52,7 +52,7 @@ void inicont(ITG * nk,ITG *ncont, ITG *ntie, char *tieset, ITG *nset, char *set,
 
   FORTRAN(allocont,(ncont,ntie,tieset,nset,set,istartset,iendset,
 	  ialset,lakon,&ncone,tietol,ismallsliding,kind1,kind2,mortar,
-          istep));
+	  istep,ipkon));
   if(*ncont==0) return;
 
   NNEW(itietri,ITG,2**ntie);

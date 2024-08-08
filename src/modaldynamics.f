@@ -38,7 +38,7 @@
      &  idrct,nforc,nload,nbody,iprestr,ithermal(*),j,nk,ipos,nset,
      &  mi(*),cyclicsymmetry,ier
 !
-      real*8 tinc,tper,cs(17,*),ctrl(*),tmin,tmax,t0(*),t1(*),
+      real*8 tinc,tper,cs(18,*),ctrl(*),tmin,tmax,t0(*),t1(*),
      &  vold(0:mi(2),*),veold(0:mi(2),*),xmodal(*)
 !
       iexpl=0

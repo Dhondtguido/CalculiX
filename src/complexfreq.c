@@ -405,13 +405,13 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     /* determining the maximum amount of segments */
 
     for(i=0;i<*mcs;i++){
-      if(cs[17*i]>nsectors) nsectors=(ITG)(cs[17*i]+0.5);
+      if(cs[18*i]>nsectors) nsectors=(ITG)(cs[18*i]+0.5);
     }
 
     /* determining the maximum number of sectors to be plotted */
 
     for(j=0;j<*mcs;j++){
-      if(cs[17*j+4]>ngraph) ngraph=(ITG)cs[17*j+4];
+      if(cs[18*j+4]>ngraph) ngraph=(ITG)cs[18*j+4];
     }
     nkg=*nk*ngraph;
     neg=*ne*ngraph;
@@ -437,9 +437,9 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     }
     
     for(i=0;i<*mcs;i++){
-      is=cs[17*i+4];
+      is=cs[18*i+4];
       if((is==1)&&(*mcs==1)) continue;
-      ielset=cs[17*i+12];
+      ielset=cs[18*i+12];
       if(ielset==0) continue;
       for(i1=istartset[ielset-1]-1;i1<iendset[ielset-1];i1++){
 	if(ialset[i1]>0){
@@ -1266,10 +1266,10 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     FORTRAN(rectcyl,(cot,v,fn,stn,qfn,een,cs,nk,&icntrl,t,filab,&imag,mi,emn));
     
     for(jj=0;jj<*mcs;jj++){
-      is=cs[17*jj+4];
+      is=cs[18*jj+4];
       for(i=1;i<is;i++){
 	
-	theta=i*2.*pi/cs[17*jj];
+	theta=i*2.*pi/cs[18*jj];
 	
 	for(l=0;l<*nk;l++){
 	  if(inocs[l]==jj){
@@ -1384,9 +1384,9 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     /* calculating the cosine and sine */
 
     for(k=0;k<*mcs;k++){
-      theta=nm[j]*2.*pi/cs[17*k];
-      cs[17*k+14]=cos(theta);
-      cs[17*k+15]=sin(theta);
+      theta=nm[j]*2.*pi/cs[18*k];
+      cs[18*k+14]=cos(theta);
+      cs[18*k+15]=sin(theta);
     }
 
     if(*nprint>0)FORTRAN(writehe,(&j));
@@ -1443,11 +1443,11 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
             if(k==0) {
               if(fabs(xreal)<1.e-30)xreal=1.e-30;
 	      coefmpcnew[index]=coefmpc[index]*
- 		(cs[17*(icomplex-1)+14]+ximag/xreal*cs[17*(icomplex-1)+15]);}
+ 		(cs[18*(icomplex-1)+14]+ximag/xreal*cs[18*(icomplex-1)+15]);}
 	    else {
               if(fabs(ximag)<1.e-30)ximag=1.e-30;
               coefmpcnew[index]=coefmpc[index]*
-		(cs[17*(icomplex-1)+14]-xreal/ximag*cs[17*(icomplex-1)+15]);}
+		(cs[18*(icomplex-1)+14]-xreal/ximag*cs[18*(icomplex-1)+15]);}
           }
 	  else{coefmpcnew[index]=coefmpc[index];}
 	}
@@ -1554,14 +1554,14 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     if(cyclicsymmetry){
 
       for(jj=0;jj<*mcs;jj++){
-	ilength=cs[17*jj+3];
-	is=cs[17*jj+4];
-	lprev=cs[17*jj+13];
+	ilength=cs[18*jj+3];
+	is=cs[18*jj+4];
+	lprev=cs[18*jj+13];
 	for(i=1;i<is;i++){
 	  
 	  for(l=0;l<*nk;l++){inumt[l+i**nk]=inum[l];}
 	  
-	  theta=i*nm[j]*2.*pi/cs[17*jj];
+	  theta=i*nm[j]*2.*pi/cs[18*jj];
 	  ctl=cos(theta);
 	  stl=sin(theta);
 	  

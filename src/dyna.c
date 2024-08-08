@@ -545,14 +545,14 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
     /* determining the maximum amount of segments */
 
     for(i=0;i<*mcs;i++){
-      //	  if(cs[17*i]>nsectors) nsectors=cs[17*i];
-      if(cs[17*i]>nsectors) nsectors=(ITG)(cs[17*i]+0.5);
+      //	  if(cs[18*i]>nsectors) nsectors=cs[18*i];
+      if(cs[18*i]>nsectors) nsectors=(ITG)(cs[18*i]+0.5);
     }
 
     /* determining the maximum number of sectors to be plotted */
 
     for(j=0;j<*mcs;j++){
-      if(cs[17*j+4]>ngraph) ngraph=(ITG)cs[17*j+4];
+      if(cs[18*j+4]>ngraph) ngraph=(ITG)cs[18*j+4];
     }
     nkg=*nk*ngraph;
     neg=*ne*ngraph;

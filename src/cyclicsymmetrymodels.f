@@ -32,7 +32,7 @@
 !     same model; for each part there must be a *CYCLIC SYMMETRY MODEL
 !     card
 !     
-!     cs(1,mcs): # segments in 360 degrees
+!     cs(1,mcs): # numerical segments in 360 degrees (N= in the input deck)
 !     cs(2,mcs): minimum node diameter
 !     cs(3,mcs): maximum node diameter
 !     cs(4,mcs): # nodes on the independent side (for fluids: upper bound)
@@ -50,6 +50,7 @@
 !     cs(15,mcs): cos(angle); angle = 2*pi/cs(1,mcs)
 !     cs(16,mcs): sin(angle)
 !     cs(17,mcs): number of tie constraint
+!     cs(18,mcs): # physical segments in 360 degrees (NPHYS= in the input deck)
 !     
 !     notice that in this routine ics, zcs and rcs start for 1 for
 !     each *cyclic symmetry model card (look at the pointer in
@@ -81,11 +82,11 @@
      &     ilen,ielem
 !     
       real*8 tolloc,co(3,*),coefmpc(*),rcs(*),zcs(*),rcs0(*),zcs0(*),
-     &     csab(7),xn,yn,zn,dd,xap,yap,zap,tietol(4,*),cs(17,*),
+     &     csab(7),xn,yn,zn,dd,xap,yap,zap,tietol(4,*),cs(18,*),
      &     gsectors,x3,y3,z3,phi,rcscg(*),rcs0cg(*),zcscg(*),zcs0cg(*),
      &     straight(9,*),x1,y1,z1,x2,y2,z2,zp,rp,dist,trab(7,*),rpd,zpd,
      &     vold(0:mi(2),*),calculated_angle,user_angle,xsectors,
-     &     axdistmin
+     &     axdistmin,psectors
 !     
 !     nodes per face for hex elements
 !     
@@ -129,7 +130,8 @@
       endif
 !     
       check=.true.
-      gsectors=1
+      gsectors=1.d0
+      psectors=-1.d0
       elset='
      &'
       tie='
@@ -148,6 +150,13 @@
           check=.false.
         elseif(textpart(i)(1:7).eq.'NGRAPH=') then
           read(textpart(i)(8:27),'(f20.0)',iostat=istat) gsectors
+          if(istat.gt.0) then
+            call inputerror(inpc,ipoinpc,iline,
+     &           "*CYCLIC SYMMETRY MODEL%",ier)
+            return
+          endif
+        elseif(textpart(i)(1:6).eq.'NPHYS=') then
+          read(textpart(i)(7:26),'(f20.0)',iostat=istat) psectors
           if(istat.gt.0) then
             call inputerror(inpc,ipoinpc,iline,
      &           "*CYCLIC SYMMETRY MODEL%",ier)
@@ -237,21 +246,29 @@
         ier=1
         return
       endif
+      if(psectors.lt.0.d0) then
+        write(*,*) '*WARNING reading *CYCLIC SYMMETRY MODEL:'
+        write(*,*) '         no # of physical sectors (NPHYS) defined;'
+        write(*,*) '         the # of numerical sectors (N) is'
+        write(*,*) '         assumed to be the # of physical sectors'
+        write(*,*)
+        psectors=xsectors
+      endif
       if(gsectors.lt.1) then
         write(*,*) '*WARNING reading *CYCLIC SYMMETRY MODEL:'
         write(*,*) '         cannot plot less than'
         write(*,*) '         one sector: one sector will be plotted'
         write(*,*)
-        gsectors=1
+        gsectors=1.d0
       endif
-      if(gsectors.gt.xsectors) then
+      if(nint(gsectors).gt.nint(psectors)) then
         write(*,*) '*WARNING reading *CYCLIC SYMMETRY MODEL:'
         write(*,*) '         cannot plot more than'
-        write(*,*) '         ',xsectors,'sectors;',
-     &       xsectors,' sectors will'
+        write(*,*) '         ',nint(psectors),'sectors;',
+     &       nint(psectors),' sectors will'
         write(*,*) '       be plotted'
         write(*,*)
-        gsectors=xsectors
+        gsectors=psectors
       endif
 !     
       maxsectors=max(maxsectors,int(xsectors+0.5d0))
@@ -259,6 +276,7 @@
       cs(1,mcs)=xsectors
       cs(5,mcs)=gsectors+0.5d0
       cs(17,mcs)=itie+0.5d0
+      cs(18,mcs)=psectors
       depset=tieset(2,itie)
       indepset=tieset(3,itie)
       tolloc=tietol(1,itie)
@@ -754,7 +772,7 @@
      &           dacos(x2*x3+y2*y3+z2*z3)
             if(check) then
               calculated_angle=dacos(x2*x3+y2*y3+z2*z3)
-              user_angle=6.28318531d0/cs(1,mcs)
+              user_angle=6.28318531d0/cs(18,mcs)
               if(dabs(calculated_angle-user_angle)/
      &             calculated_angle.gt.0.01d0) then
                 write(*,*) 
@@ -848,7 +866,7 @@
      &           dacos(x2*x3+y2*y3+z2*z3)
             if(check) then
               calculated_angle=dacos(x2*x3+y2*y3+z2*z3)
-              user_angle=6.28318531d0/cs(1,mcs)
+              user_angle=6.28318531d0/cs(18,mcs)
               if(dabs(calculated_angle-user_angle)
      &             /calculated_angle.gt.0.01d0) then
                 write(*,*) 

@@ -55,7 +55,7 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
 
   ngraph=1;
   for(j=0;j<*mcs;j++){
-    if(cs[17*j+4]>ngraph) ngraph=cs[17*j+4];
+    if(cs[18*j+4]>ngraph) ngraph=cs[18*j+4];
   }
 
   /* assigning nodes and elements to sectors */
@@ -74,9 +74,9 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
   }
 
   for(i=0;i<*mcs;i++){
-    is=cs[17*i+4];
+    is=cs[18*i+4];
     if(is==1) continue;
-    ielset=cs[17*i+12];
+    ielset=cs[18*i+12];
     if(ielset==0) continue;
     for(i1=istartset[ielset-1]-1;i1<iendset[ielset-1];i1++){
       if(ialset[i1]>0){
@@ -184,10 +184,10 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
   FORTRAN(rectcyl,(cot,v,fn,stn,qfn,een,cs,nk,&icntrl,t,filab,&imag,mi,emn));
   
   for(jj=0;jj<*mcs;jj++){
-    is=cs[17*jj+4];
+    is=cs[18*jj+4];
     for(i=1;i<is;i++){
       
-      theta=i*2.*pi/cs[17*jj];
+      theta=i*2.*pi/cs[18*jj];
       
       for(l=0;l<*nk;l++){
         if(inocs[l]==jj){
@@ -264,7 +264,7 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
     for(l=0;l<6**nk;l++){emnt[l]=emn[l];};
   
   for(jj=0;jj<*mcs;jj++){
-    is=cs[17*jj+4];
+    is=cs[18*jj+4];
     for(i=1;i<is;i++){
     
       for(l=0;l<*nk;l++){inumt[l+i**nk]=inum[l];}
