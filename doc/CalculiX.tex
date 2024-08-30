@@ -4171,7 +4171,7 @@ Notice that three-node network elements are one-dimensional and can account for 
 three-dimensional effects in the fluid flow only to a limited degree.
 
 A special kind of network element is one in which one of the corner nodes is
-zero (also called a dummy network element). This type is element is used at those locations where mass flow enters
+zero (also called a dummy network element). This type of element is used at those locations where mass flow enters
 or leaves the network. In this case the corner node which is not connected to any
 other network element gets the label zero. This node has no degrees of
 freedom. The degree of freedom 1 of the midside node corresponds to the entering or
@@ -4311,7 +4311,7 @@ sense to extend the force-elongation curve to negative elongation values
  
 \subsubsection{One-node coupling element (DCOUP3D)}
 
-This type is element is used to define the reference node of a distributing
+This type of element is used to define the reference node of a distributing
 coupling constraint (cf. \htmlref{*DISTRIBUTING COUPLING}{distributingcoupling}). The node should not belong to any other element. The
 coordinates of this node are immaterial.
  
@@ -5853,7 +5853,7 @@ conditions are observed at the end of a converged calculation, the result may
 not be correct.
 
 Although the rotating pipe is adiabatic, i.e. no heat is transported to the
-envoronment, the total temperature changes due to conversion of rotational
+environment, the total temperature changes due to conversion of rotational
 energy into heat or vice versa. Centrifugal motion leads to a total
 temperature increase, centripetal motion to a decrease. The change in total
 temperature amounts to \cite{Greitzer}:
@@ -11387,7 +11387,7 @@ Following line:
 Repeat this line if needed to define complete temperature
 dependence.
 
-For a compression-only materials the name of the material has to start with
+For compression-only materials the name of the material has to start with
 ''COMPRESSION\_ONLY'' (maximum 64 characters left to be chosen by the user)
 and the second constant is the maximum allowed tension. Examples are
 leifer2 and concretebeam in the test example suite. 
@@ -13719,7 +13719,7 @@ special, the application field is rather large. Flow starting from rest is
 irrotational since the initial field is irrotational. Flow at speeds below 0.3
 times the speed of sound can be considered to be incompressible. Finally, the
 flow outside the tiny boundary layer around an object is inviscid. A favorite
-examples is the flow around a wing profile. However, if the boundary
+example is the flow around a wing profile. However, if the boundary
 layer separates and vortices arise the above theory cannot be used any
 more. For further applications see \cite{Kundu}.
 
@@ -18680,7 +18680,7 @@ The TYPE parameter can take the string DISPLACEMENT or ACCELERATION. Default
 is ACCELERATION. Acceleration boundary conditions can only be used for
 harmonic steady state dynamics calculations, displacements can be used for any
 modal dynamic or steady state dynamic calculation. Since only three degrees of
-freedom are at the user's disposal, defining more than three *base motion
+freedom are at the user's disposal, defining more than three *BASE MOTION
 cards does not make sense.
 
 The *BASE MOTION card is more restrictive than the *BOUNDARY card in the sense
@@ -21374,7 +21374,7 @@ This option defines the elasto-plastic behavior of a material by means of the ge
 \begin{equation}
 E\epsilon=\sigma + \alpha \left( \frac {\left| \sigma \right| }{\sigma_0} \right)^{n-1}\sigma
 \end{equation}
-where $\epsilon$ is the logarithmic strain and $\sigma$ the Cauchy stress. In the present implementation, the Eulerian strain is used, which is very similar to the logarithmic strain (about 1.3 \% difference dat 20 \% engineering strain). All coefficients may be temperature dependent.
+where $\epsilon$ is the logarithmic strain and $\sigma$ the Cauchy stress. In the present implementation, the Eulerian strain is used, which is very similar to the logarithmic strain (about 1.3 \% difference for 20 \% engineering strain). All coefficients may be temperature dependent.
 \bigskip
 
 First line:
@@ -21960,7 +21960,7 @@ equation. This leads to a large, fully populated submatrix in the system of
 equations leading to long solution times. Therefore, it is recommended not to
 include more than maybe 50 nodes in a distributing coupling condition.
 
-The first node underneath the keyword card is taken as dependent node n the
+The first node underneath the keyword card is taken as dependent node in the
 MPC. Therefore, this node should not be repeated in any other MPC or at the
 first location in any other distributing coupling definition. It can be used
 as independent node in another distributing coupling (all but the first
@@ -23128,7 +23128,7 @@ Keyword type: step
 
 This option is used to save selected element variables averaged at the nodal
 points in a frd file (extension .frd) for subsequent viewing by CalculiX
-GraphiX. The following element variables can be selected (the label is square
+GraphiX. The following element variables can be selected (the label in square
 brackets [] is the one used in the .frd file; for frequency calculations with
 cyclic symmetry both a real and an imaginary part may be stored, in all other cases only the
 real part is stored):
@@ -27976,7 +27976,7 @@ is used as the rotation about the x-axis of the rigid body, the second
 as the the rotation about the y-axis and the third as the rotation
 about the z-axis. The
 rotational node can be defined explicitly using the parameter ROT
-NODE. In that case, this node must be been assigned coordinates (their value
+NODE. In that case, this node must be assigned coordinates (their value
 is irrelevant) and
 should not belong to any element of the structure.
 
@@ -29373,7 +29373,7 @@ CONDUCTANCE card defining the thermal conductance across the contact elements.
 The tied pressure-overclosure behavior simulates a truly linear relationship
 between the pressure and the overclosure for positive and negative
 pressures. At zero overclosure the pressure is zero. It can only be used for 
-face-to-face penalty contact and similates tied contact between the slave and master
+face-to-face penalty contact and simulates tied contact between the slave and master
 face. Notice that all slave faces will be tied to opposite master faces, if
 any, irrespective whether there is a gap between them or not. The only parameter is the slope of the pressure-overclosure
 relationship. However, tied contact requires the specification of the stick
@@ -29401,7 +29401,7 @@ Following line if PRESSURE-OVERCLOSURE=EXPONENTIAL:
 Following line if PRESSURE-OVERCLOSURE=LINEAR:
 \begin{itemize}
 \item slope $K$ of the pressure-overclosure curve ($> 0$).
-\item $\sigma_{\infty}$ ($> 0$, irrelevant vor face-to-face contact).
+\item $\sigma_{\infty}$ ($> 0$, irrelevant for face-to-face contact).
 \item $c_0$ ($>0$, irrelevant for face-to-face contact, optional for
   node-to-face contact)
 \end{itemize}
@@ -29482,7 +29482,7 @@ elements, temperature gradients within a purely mechanical *STEP definition.
 thermomechanical analysis. In these types of analysis the 
 \htmlref{*BOUNDARY}{boundary} card for degree of freedom 11 should be used instead.  
 
-Optional parameter are OP, AMPLITUDE, TIME DELAY, USER, SUBMODEL, STEP, DATA
+Optional parameters are OP, AMPLITUDE, TIME DELAY, USER, SUBMODEL, STEP, DATA
 SET, FILE, BSTEP and LINTEMP. OP can take the value NEW or
 MOD. OP=MOD is default and implies that thermal load in different
 nodes is accumulated over all steps starting from the last
