@@ -720,9 +720,9 @@ eigenmode. Notice that if the scales on the x- and y-axis in Figure
 It might surprise that both increasing straight lines correspond to one and
 the same eigenmode. For instance, for a shaft speed of 5816 rad/s one and the
 same eigenmode occurs at an eigenfrequency of 0 and 11632 rad/s. Remember,
-however, that the eigenmodes are calculated in the rotating system, i.e. as
-observed by an observer rotating with the shaft. To obtain the frequencies for
-a fixed observer the frequencies have to be considered relative to a
+however, that the eigenmodes apply to the fixed coordinate system, i.e. as
+observed by a non--rotating observer. To obtain the frequencies for
+a rotating observer the frequencies have to be considered relative to a
 $45^\circ$ straight line through the origin and bisecting the diagram. This
 observer will see one and the same eigenmode at 5816 rad/s and -5816 rad/s, so
 cw and ccw.
@@ -29633,9 +29633,9 @@ face based surfaces allowed) each of which
 belongs to a different datum sector. In that way two axially neighboring datum
 sectors can be tied. In this case, the order in which the user specifies the
 surfaces is not relevant: the surface belonging to the smallest datum sector
-is taken as master surface. The larger datum sector should not extend the
-smaller datum sector by more than once the smaller datum sector, no matter in
-what circumferential direction (clockwise or counterclockwise). This option
+is taken as master surface. The larger datum sector should completely
+encompass the smaller datum sector, i.e. it should extend beyond the smaller
+datum sector in both directions, clockwise and counterclockwise. This option
 should not be used in the presence of network elements.
 
 The parameter NAME is needed if more than one *TIE constraint is defined. It
@@ -29672,7 +29672,7 @@ defines a datum sector with slave surface left and master surface
 right, and defines a position tolerance of 0.01 length units.
 
 \bigskip
-Example files: segment, fullseg.
+Example files: segment, fullseg, multistage.
 
 \subsection{\label{timepoints}*TIME POINTS}
 
