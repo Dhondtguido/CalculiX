@@ -185,7 +185,7 @@
             irefnode=node
             nk=nk+1
             if(nk.gt.nk_) then
-              write(*,*) '*ERROR in rigidbodies: increase nk_'
+              write(*,*) '*ERROR in gen3dboun: increase nk_'
               call exit(201)
             endif
             irotnode=nk
@@ -194,7 +194,7 @@
             write(27,*)
             nk=nk+1
             if(nk.gt.nk_) then
-              write(*,*) '*ERROR in rigidbodies: increase nk_'
+              write(*,*) '*ERROR in gen3dboun: increase nk_'
               call exit(201)
             endif
             iexpnode=nk

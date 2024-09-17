@@ -291,15 +291,24 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
   NNEW(gapnorm,double,*nslavs);
   NNEW(iacti,ITG,*neqtot);
 
+  /* new! */
+  
+  NNEW(gapdisp,double,*neqtot);
+  for(i=0;i<*neqtot;i++){
+    gapdisp[i]=volddof[ktot[i]-1];
+  }
+
   /* premultiply g by Wb^T and add g0 => determine active degrees => 
      reduce g to c */
 
     FORTRAN(detectactivecont,(gapnorm,gapdisp0,auw,iroww,jqw,nslavs,springarea,
-      iacti,&nacti));
-    /* FORTRAN(detectactivecont,(gapnorm,gapdisp,auw,iroww,jqw,nslavs,springarea,
-			    iacti,&nacti));
+      iacti,&nacti,aloc));
+    /*FORTRAN(detectactivecont,(gapnorm,gapdisp,auw,iroww,jqw,nslavs,springarea,
+      iacti,&nacti,aloc));*/
+  SFREE(gapdisp);
 
-			    SFREE(gapdisp);*/
+  /* end new! */
+			    
   DMEMSET(alglob,0,*neqtot,0.);
   
   /* reduced the gap dimension to the active dofs */

@@ -1221,7 +1221,8 @@ void  FORTRAN(resforccont,(double *vold,ITG *nk,ITG *mi,double *aubi,
 
 void FORTRAN(detectactivecont,(double *gapnorm,double *gapdisp,double *auw,
 			       ITG *iroww,ITG *jqw,ITG *nslavs,
-			       double *springarea,ITG *iacti,ITG *nacti));
+			       double *springarea,ITG *iacti,ITG *nacti,
+			       double *aloc));
 
 void FORTRAN(determineextern,(ITG *ifac,ITG *itetfa,ITG *iedg,ITG *ipoed,
                               ITG *iexternedg,ITG *iexternfa,ITG *iexternnode,
