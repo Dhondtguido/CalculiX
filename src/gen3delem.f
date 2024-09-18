@@ -26,7 +26,7 @@
      &     iperturb,tinc,tper,tmin,tmax,ctrl,typeboun,nmethod,nset,set,
      &     istartset,iendset,ialset,prop,ielprop,vold,mi,nkon,ielmat,
      &     icomposite,t0g,t1g,idefforc,iamt1,orname,orab,norien,norien_,
-     &     ielorien,jobnamec,ne2boun)
+     &     ielorien,jobnamec,ne2boun,veold)
 !     
 !     generates three-dimensional elements:
 !     for plane stress
@@ -60,7 +60,7 @@
       real*8 coefmpc(*),thicke(mi(3),*),xnor(*),thickn(2,*),tinc,
      &     tper,tmin,t0g(2,*),t1g(2,*),e1(3),e2(3),xt1(3),orab(7,*),
      &     tmax,offset(2,*),t0(*),t1(*),xforc(*),trab(7,*),co(3,*),
-     &     xboun(*),pi,ctrl(*),prop(*),vold(0:mi(2),*),
+     &     xboun(*),pi,ctrl(*),prop(*),vold(0:mi(2),*),veold(0:mi(2),*),
      &     coloc(3,8)
 !     
       data neigh /1,9,2,12,4,17,5,2,9,1,10,3,18,6,
@@ -476,7 +476,7 @@ c     endif
         if(ithermal(1).gt.0) then
           call gen3dtemp(iponoel,inoel,iponoelmax,kon,ipkon,lakon,ne,
      &         iponor,xnor,knor,t0,t1,thicke,offset,rig,nk,nk_,co,
-     &         istep,ithermal,vold,mi,t0g,t1g,nam,iamt1)
+     &         istep,ithermal,vold,mi,t0g,t1g,nam,iamt1,veold)
         endif
 !     
 !     updating the concentrated loading
