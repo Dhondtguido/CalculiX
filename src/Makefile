@@ -1,8 +1,9 @@
+SPOOLESDIR=../../spooles-2.2
 
-CFLAGS = -Wall -g  -I ../../SPOOLES.2.2 -DARCH="Linux" -DSPOOLES -DARPACK -DMATRIXSTORAGE -DNETWORKOUT
-FFLAGS = -Wall -g -cpp 
+CFLAGS = -Wall -g  -I $(SPOOLESDIR)/include/spooles -DARCH="Linux" -DSPOOLES -DARPACK -DMATRIXSTORAGE -DNETWORKOUT
+FFLAGS = -Wall -g
 
-CC=cc
+CC=gcc
 FC=gfortran
 
 .c.o :
@@ -18,15 +19,14 @@ OCCXF = $(SCCXF:.f=.o)
 OCCXC = $(SCCXC:.c=.o)
 OCCXMAIN = $(SCCXMAIN:.c=.o)
 
-DIR=../../SPOOLES.2.2
 
-LIBS = \
-       $(DIR)/spooles.a \
-	../../ARPACK/libarpack_INTEL.a \
+LIBS = -L$(NIX_LDFLAGS_FOR_TARGET) \
+       $(SPOOLESDIR)/lib/libspooles.a \
+	   -larpack -lopenblas \
        -lpthread -lm -lc
 
-CalculiX: $(OCCXMAIN) CalculiX.a  $(LIBS)
-	./date.pl; $(CC) $(CFLAGS) -c CalculiX.c; $(FC)  -Wall -g -o $@ $(OCCXMAIN) CalculiX.a $(LIBS) -fopenmp
+CalculiX: $(OCCXMAIN) CalculiX.a 
+	$(CC) $(CFLAGS) -c CalculiX.c; $(FC)  -Wall -g -o $@ $(OCCXMAIN) CalculiX.a $(LIBS) -fopenmp
 
 CalculiX.a: $(OCCXF) $(OCCXC)
 	ar vr $@ $?
