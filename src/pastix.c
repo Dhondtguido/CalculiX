@@ -106,8 +106,8 @@ char firstIter = 1;
 char forceRedo = 0;
 
 // Use double or mixed precision
-char mixed = 1;
-char globDoublePrecision = 0;
+char mixed = 0;
+char globDoublePrecision = 1;
 
 // This is set to one, when to many iterations with mixed precision did not converge
 char stickToDouble = 0;
@@ -181,17 +181,17 @@ void pastix_init(double *ad, double *au, double *adb, double *aub,
 			ITG *neq, ITG *nzs, ITG *symmetryflag, ITG *inputformat,
 			ITG *jq, ITG *nzs3){
 	// if reusing, only update the value pointer of the sparse matrix
-	if(!redo){
-	    pastixResetSteps(pastix_data);
-        if(spm->values != aupastix && spm->values != NULL ) free(spm->values);
-		spm->values = aupastix;
+	//if(!redo){
+	//    // pastixResetSteps(pastix_data);
+    //    if(spm->values != aupastix && spm->values != NULL ) free(spm->values);
+	//	spm->values = aupastix;
 
-		printf("\n");
-		spmPrintInfo( spm, stdout );
-		printf("\n");
-		
-		return;
-	}
+	//	printf("\n");
+	//	spmPrintInfo( spm, stdout );
+	//	printf("\n");
+	//	
+	//	return;
+	//}
 
 	ITG nthread, nthread_v;
 	char *env;
@@ -231,25 +231,26 @@ void pastix_init(double *ad, double *au, double *adb, double *aub,
         piparm[IPARM_SCHEDULER] 			= PastixSchedStatic;
     }
     else{
-        piparm[IPARM_SCHEDULER] 			= PastixSchedParsec;
+        piparm[IPARM_SCHEDULER] 			= PastixSchedStatic;
+//        //piparm[IPARM_SCHEDULER] 			= PastixSchedStarpu;
     }
 	piparm[IPARM_THREAD_NBR]				= nthread_mkl;
-	piparm[IPARM_GPU_NBR]   				= (int) gpu;
-	piparm[IPARM_FLOAT]			 		= globDoublePrecision ? 3 : 2;
-	piparm[IPARM_MIN_BLOCKSIZE] 			= 1024;
-	piparm[IPARM_MAX_BLOCKSIZE] 			= 2048;
-	piparm[IPARM_FACTORIZATION] 			= PastixFactLU;
-	piparm[IPARM_TASKS2D_WIDTH] 			= globDoublePrecision ? 256 : 128;
-    piparm[IPARM_REFINEMENT]             = PastixRefineGMRES;
-
-
-	piparm[IPARM_REUSE_LU] 				= firstIter ? 0 : 1;
-	piparm[IPARM_REUSE_LU] 				= forceRedo ? 2 : 1;
-	
-    piparm[IPARM_GPU_MEMORY_PERCENTAGE] 	= 95;
-    piparm[IPARM_GPU_MEMORY_BLOCK_SIZE] 	= 64 * 1024;
-
-
+////	piparm[IPARM_GPU_NBR]   				= (int) gpu;
+////	piparm[IPARM_FLOAT]		    	 		= globDoublePrecision ? 3 : 2;
+////	piparm[IPARM_MIN_BLOCKSIZE] 			= 1024;
+////	piparm[IPARM_MAX_BLOCKSIZE] 			= 2048;
+//	piparm[IPARM_FACTORIZATION] 			= PastixFactLU;
+////	piparm[IPARM_TASKS2D_WIDTH] 			= globDoublePrecision ? 256 : 128;
+    piparm[IPARM_REFINEMENT]             		= PastixRefineGMRES;
+//
+//
+////	piparm[IPARM_REUSE_LU] 				= firstIter ? 0 : 1;
+////	piparm[IPARM_REUSE_LU] 				= forceRedo ? 2 : 1;
+//	
+////    piparm[IPARM_GPU_MEMORY_PERCENTAGE] 	= 95;
+////    piparm[IPARM_GPU_MEMORY_BLOCK_SIZE] 	= 64 * 1024;
+//
+//
     char usage_call = MULTI_SOLVE
     if( usage == usage_call ){
         pdparm[DPARM_EPSILON_REFINEMENT] 	= 1e-12;
@@ -265,8 +266,8 @@ void pastix_init(double *ad, double *au, double *adb, double *aub,
 	// Initialize sparse matrix
 	spm = malloc( sizeof( spmatrix_t ) );
 	spmInit(spm);
-    spm->flttype = globDoublePrecision ? SpmDouble : SpmFloat;
-    if(spm->values != aupastix && spm->values != NULL ) free(spm->values);
+    //spm->flttype = globDoublePrecision ? SpmDouble : SpmFloat;
+    //if(spm->values != aupastix && spm->values != NULL ) free(spm->values);
 	spm->values = aupastix;
 	spm->fmttype = SpmCSC;
 	spm->nexp = spm->gNexp = spm->gN = spm->n = *neq;
@@ -278,7 +279,7 @@ void pastix_init(double *ad, double *au, double *adb, double *aub,
     }
 	spm->colptr = (spm_int_t*) icolpastix;
 	spm->rowptr = (spm_int_t*) irowpastix;
-
+    spm->baseval = 1;
 
 	// initialize pastix
 	pastixInit( &pastix_data, MPI_COMM_WORLD, piparm, pdparm );
@@ -286,10 +287,27 @@ void pastix_init(double *ad, double *au, double *adb, double *aub,
 	printf("\n");
 	spmPrintInfo( spm, stdout );
 	printf("\n");
+//    FILE *f=fopen("spm.out","w");
+//    fprintf(f,"\n\nMatrix\n");
+//    spmPrint( spm, f);
+//    fclose(f);
+//    spmatrix_t spm2;
+//    int rc = spmCheckAndCorrect( spm, &spm2 );
+//    if( rc != 0 ) {
+//        printf("spm corrected!\n");
+//        spmExit( spm );
+//        *spm = spm2;
+//    };
 	
 	// perform reordering, analysis and symbolic factorization if it's more than 1 equation
     if(spm->n > 1){
-	    pastix_task_analyze( pastix_data, spm );
+      //pastix_subtask_order( pastix_data, spm, NULL );
+      //pastix_subtask_symbfact( pastix_data );
+      //pastix_subtask_reordering( pastix_data );
+      //pastix_subtask_blend( pastix_data );
+      pastix_task_analyze( pastix_data, spm );
+      //double normA = spmNorm ( SpmFrobeniusNorm, spm );
+      //spmScal( 1./normA, spm );
     }
 }
 
@@ -297,6 +315,34 @@ void pastix_csc_conversion(double *ad, double *au, double *adb, double *aub,
 double *sigma,ITG *icol, ITG *irow, 
 		ITG *neq, ITG *nzs, ITG *symmetryflag, ITG *inputformat,
 		ITG *jq, ITG *nzs3){
+
+//    FILE *f=fopen("spm_orig.out","w");
+//    fprintf(f,"neq %d\nnnz %d\nnzs3 %d\ninputformat %d\nsymmetryflag %d\n",*neq,*nzs,*nzs3,*inputformat,*symmetryflag);
+//    fprintf(f,"\n\nMatrix\n");
+//    int counter = 0;
+//    for(int neq2=1;neq2<=*neq;neq2++){
+//      for(int i=0;i<icol[neq2-1];i++){
+//          fprintf(f,"%d %d %.6e\n",irow[counter],neq2,au[counter]);
+//          counter++;
+//      }
+//      fprintf(f,"%d %d %.6e\n",neq2,neq2,ad[neq2-1]);
+//    }
+//    for(int neq2=0;neq2<*neq;neq2++){
+//        fprintf(f,"%d jq %d\n",neq2,jq[neq2]);
+//    }
+//    for(int neq2=0;neq2<*neq;neq2++){
+//        fprintf(f,"%d ad %.6e\n",neq2,ad[neq2]);
+//    }
+//    for(int neq2=0;neq2<*neq;neq2++){
+//        fprintf(f,"%d icol %d\n",neq2,icol[neq2]);
+//    }
+//    for(int neq2=0;neq2<*nzs;neq2++){
+//        fprintf(f,"%d irow %d\n",neq2,irow[neq2]);
+//    }
+//    for(int neq2=0;neq2<*nzs;neq2++){
+//        fprintf(f,"%d au %.6e\n",neq2,au[neq2]);
+//    }
+//    fclose(f);
 	
 	ITG i,j;
     char merged=0;
@@ -516,8 +562,8 @@ double *sigma,ITG *icol, ITG *irow,
 			if((nzsTotal * 2 + *neq) > pastix_nnzBound){
 				// perform the call with PaStiX because pinned memory allocation via CUDA is performed if gpu is activated
                 if( !firstIter && aupastix == spm->values ) spm->values = NULL;
-				pastixAllocMemory((void**)&aupastix, sizeof(double) * 1.1 * (nzsTotal * 2 + *neq), gpu);
-				pastix_nnzBound = 1.1 * (nzsTotal * 2 + *neq);
+                		aupastix = malloc(sizeof(double) * (nzsTotal * 2 + *neq));
+				        pastix_nnzBound = (nzsTotal * 2 + *neq);
 			}
             if(irowpastix != NULL ){
                 SFREE(irowpastix);
@@ -653,8 +699,8 @@ double *sigma,ITG *icol, ITG *irow,
             // allocate memory for the PaStiX arrays and free the old ones if necessary
        		if((nzsTotal + *neq) > pastix_nnzBound){
                 if( !firstIter && aupastix == spm->values ) spm->values = NULL;
-            	pastixAllocMemory((void**)&aupastix, sizeof(double) * 1.1 * (nzsTotal + *neq), gpu);
-   				pastix_nnzBound = 1.1 * (nzsTotal + *neq);
+                		aupastix = malloc(sizeof(double) * (nzsTotal + *neq));
+   				pastix_nnzBound = (nzsTotal + *neq);
             }
 
             memset( aupastix, 0, sizeof(double) * pastix_nnzBound );
@@ -826,28 +872,29 @@ ITG pastix_solve_generic(double *x, ITG *neq,ITG *symmetryflag,ITG *nrhs){
 	//Copy the b so that we can modify x without losing b
 	NNEW(b,double,*nrhs**neq);
 	memcpy(b, x, sizeof(double) * (*nrhs) * (*neq));
+    	//spmScalMat( 1./normA, spm, nrhs, x, spm->nexp );
 	
 
 	// If we are in mixed precision mode, cast double x to float x and call solve. Afterwards upcast the solution.
-	if(!globDoublePrecision){
-		NNEW(buffer,float,*nrhs**neq);
-		#pragma omp parallel for
-		for(i = 0; i < (*nrhs) * (*neq); i++){ 
-			buffer[i] = (float) x[i];
-        }
-		
-		rc = pastix_task_solve( pastix_data, *nrhs, buffer, spm->n );
+	//if(!globDoublePrecision){
+	//	NNEW(buffer,float,*nrhs**neq);
+	//	#pragma omp parallel for
+	//	for(i = 0; i < (*nrhs) * (*neq); i++){ 
+	//		buffer[i] = (float) x[i];
+    //    }
+	//	
+	//	rc = pastix_task_solve( pastix_data, spm->n, *nrhs, buffer, spm->n );
 
-		#pragma omp parallel for
-		for(i = 0; i < (*nrhs) * (*neq); i++){
-			x[i] = (double) buffer[i];
-        }
-		SFREE(buffer);
-        buffer = NULL;
-	}
-	else{
-		rc = pastix_task_solve( pastix_data, *nrhs, x, spm->n );
-	}
+	//	#pragma omp parallel for
+	//	for(i = 0; i < (*nrhs) * (*neq); i++){
+	//		x[i] = (double) buffer[i];
+    //    }
+	//	SFREE(buffer);
+    //    buffer = NULL;
+	//}
+	//else{
+		rc = pastix_task_solve( pastix_data, spm->n, *nrhs, x, spm->n );
+	//}
 
     // check for NaN in the solution
     if( x[0] != x[0] ){
@@ -937,15 +984,15 @@ ITG pastix_solve_cp(double *x, ITG *neq,ITG *symmetryflag,ITG *nrhs){
 // Invokes pastixFinalize and spmExit which frees everything but the dense LU array and parsec pointer
 void pastix_cleanup(ITG *neq,ITG *symmetryflag){
 	if( redo && !firstIter ){
-        if(spm->values == aupastix) spm->values = NULL;
-        if(spm->values == spm->valuesGPU) spm->valuesGPU = NULL;
-        if(spm->colptr == icolpastix) spm->colptr = NULL;
-        if(spm->rowptr == irowpastix) spm->rowptr = NULL;
+//        if(spm->values == aupastix) spm->values = NULL;
+////        if(spm->values == spm->valuesGPU) spm->valuesGPU = NULL;
+//        if(spm->colptr == icolpastix) spm->colptr = NULL;
+//        if(spm->rowptr == irowpastix) spm->rowptr = NULL;
 		spmExit( spm );
-		if(spm != NULL){
-            free( spm );
-            spm = NULL;
-        }
+//		if(spm != NULL){
+//            free( spm );
+//            spm = NULL;
+//        }
 			
 		pastixFinalize( &pastix_data );
 	}
@@ -969,6 +1016,8 @@ void pastix_main_generic(double *ad, double *au, double *adb, double *aub,
 	 ITG *neq, ITG *nzs,ITG *symmetryflag,ITG *inputformat,
 	 ITG *jq, ITG *nzs3,ITG *nrhs){
 		 
+    forceRedo = 1;
+    globDoublePrecision = 1;
 		 
 	if(*neq==0){
         return;
@@ -978,6 +1027,8 @@ void pastix_main_generic(double *ad, double *au, double *adb, double *aub,
     }
 
     pastix_set_globals( mode );	
+    globDoublePrecision = 1;
+    noScale=1;
 	
 	const char* pastix_gpu = getenv("PASTIX_GPU");
 	if(pastix_gpu)
