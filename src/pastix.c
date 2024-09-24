@@ -232,7 +232,7 @@ void pastix_init(double *ad, double *au, double *adb, double *aub,
     }
     else{
         piparm[IPARM_SCHEDULER] 			= PastixSchedStatic;
-//        //piparm[IPARM_SCHEDULER] 			= PastixSchedStarpu;
+        //piparm[IPARM_SCHEDULER] 			= PastixSchedStarPU;
     }
 	piparm[IPARM_THREAD_NBR]				= nthread_mkl;
 ////	piparm[IPARM_GPU_NBR]   				= (int) gpu;
@@ -241,7 +241,7 @@ void pastix_init(double *ad, double *au, double *adb, double *aub,
 ////	piparm[IPARM_MAX_BLOCKSIZE] 			= 2048;
 //	piparm[IPARM_FACTORIZATION] 			= PastixFactLU;
 ////	piparm[IPARM_TASKS2D_WIDTH] 			= globDoublePrecision ? 256 : 128;
-    piparm[IPARM_REFINEMENT]             		= PastixRefineGMRES;
+        piparm[IPARM_REFINEMENT]             		= PastixRefineGMRES;
 //
 //
 ////	piparm[IPARM_REUSE_LU] 				= firstIter ? 0 : 1;
@@ -279,7 +279,7 @@ void pastix_init(double *ad, double *au, double *adb, double *aub,
     }
 	spm->colptr = (spm_int_t*) icolpastix;
 	spm->rowptr = (spm_int_t*) irowpastix;
-    spm->baseval = 1;
+        spm->baseval = 1;
 
 	// initialize pastix
 	pastixInit( &pastix_data, MPI_COMM_WORLD, piparm, pdparm );
@@ -562,8 +562,8 @@ double *sigma,ITG *icol, ITG *irow,
 			if((nzsTotal * 2 + *neq) > pastix_nnzBound){
 				// perform the call with PaStiX because pinned memory allocation via CUDA is performed if gpu is activated
                 if( !firstIter && aupastix == spm->values ) spm->values = NULL;
-                		aupastix = malloc(sizeof(double) * (nzsTotal * 2 + *neq));
-				        pastix_nnzBound = (nzsTotal * 2 + *neq);
+			aupastix = malloc(sizeof(double) * (nzsTotal * 2 + *neq));
+			pastix_nnzBound = (nzsTotal * 2 + *neq);
 			}
             if(irowpastix != NULL ){
                 SFREE(irowpastix);
@@ -699,8 +699,8 @@ double *sigma,ITG *icol, ITG *irow,
             // allocate memory for the PaStiX arrays and free the old ones if necessary
        		if((nzsTotal + *neq) > pastix_nnzBound){
                 if( !firstIter && aupastix == spm->values ) spm->values = NULL;
-                		aupastix = malloc(sizeof(double) * (nzsTotal + *neq));
-   				pastix_nnzBound = (nzsTotal + *neq);
+			aupastix = malloc(sizeof(double) * (nzsTotal + *neq));
+			pastix_nnzBound = (nzsTotal + *neq);
             }
 
             memset( aupastix, 0, sizeof(double) * pastix_nnzBound );
@@ -916,11 +916,11 @@ ITG pastix_solve_generic(double *x, ITG *neq,ITG *symmetryflag,ITG *nrhs){
         // invoke iterative refinement in double precision
         rc = pastix_task_refine( pastix_data, spm->n, *nrhs, (void*)b, spm->n, (void*)x, spm->n );
 
-    	piparm[IPARM_GPU_NBR] 		   = 0;
+    	piparm[IPARM_GPU_NBR]		= 0;
         pdparm[DPARM_EPSILON_MAGN_CTRL] = 1e-14;
         piparm[IPARM_ITERMAX]           = 50;
-  	    rc = pastix_task_refine( pastix_data, spm->n, *nrhs, (void*)b, spm->n, (void*)x, spm->n );
-    	piparm[IPARM_GPU_NBR] 		   = (int) gpu;
+  	rc = pastix_task_refine( pastix_data, spm->n, *nrhs, (void*)b, spm->n, (void*)x, spm->n );
+    	piparm[IPARM_GPU_NBR]		= (int) gpu;
         piparm[IPARM_ITERMAX]           = 70;
     } else{
         rc = pastix_task_refine( pastix_data, spm->n, *nrhs, (void*)b, spm->n, (void*)x, spm->n );
@@ -945,7 +945,7 @@ ITG pastix_solve_generic(double *x, ITG *neq,ITG *symmetryflag,ITG *nrhs){
 //
 //    fclose(f);
 
-	SFREE(b);
+    SFREE(b);
     b = NULL;
 
     modePrev = mode;

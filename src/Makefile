@@ -1,7 +1,7 @@
 PASTIXDIR=../../pastix-6.4.0
 
 #CFLAGS = -Wall -g $(NIX_CFLAGS_COMPILE) -I $(SPOOLESDIR)/include/spooles  -I $(PASTIXDIR)/include -DARCH="Linux" -DSPOOLES -DARPACK -DMATRIXSTORAGE -DNETWORKOUT -DPASTIX
-CFLAGS = -Wall -O0 -g $(NIX_CFLAGS_COMPILE) -DARCH="Linux" -DARPACK -DMATRIXSTORAGE -DNETWORKOUT -DPASTIX -DINTSIZE64
+CFLAGS = -Wall -O0 -g -fopenmp $(NIX_CFLAGS_COMPILE) -DARCH="Linux" -DARPACK -DMATRIXSTORAGE -DNETWORKOUT -DPASTIX -DINTSIZE64
 FFLAGS = -Wall -O0 -g -fdefault-integer-8
 
 CC=gcc
@@ -22,7 +22,7 @@ OCCXMAIN = $(SCCXMAIN:.c=.o)
 
 
 LIBS = $(NIX_LDFLAGS_FOR_TARGET) \
-	   -lpastix -lpastix_kernels -lspm -lhwloc -lscotch -lscotcherrexit \
+	   -lpastix -lpastix_starpu -lpastix -lpastix_kernels -lspm -lstarpu-1.4 -lhwloc -lscotch -lscotcherrexit \
 	   -larpack -lblas \
        -lpthread -lm -lc
 	   #-L$(PASTIXDIR)/lib -lpastix -lpastix_kernels -lspm -lhwloc -lscotch -lscotcherrexit \
