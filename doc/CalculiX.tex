@@ -17841,7 +17841,7 @@ flow, the pressure and the geometry. It amounts to the equation:
 
 \noindent where $c_{2*}$ takes the value $c_{2t}$, $c_{2f}$, $c_{2p}$ and $c_{2a}$ for
 the temperature, the mass flow, the pressure and the geometry,
-respectively. In addition, an aboslute check can be performed in the form
+respectively. In addition, an absolute check can be performed in the form
 
 \begin{equation}
 {c}^{\alpha}_{i,max} \le a_{2*},
@@ -18863,7 +18863,7 @@ directions coincide with the global ones. Notice that a *TRANSFORM card is not
 allowed for nodes in which boundary conditions are applied to rotations.
 
 Optional parameters are OP, AMPLITUDE, TIME DELAY, LOAD CASE, USER, MASS FLOW,
-FIXED, SUBMODEL, STEP and DATA SET. OP can take the value NEW or
+FIXED, SUBMODEL, STEP, DATA SET and LINTEMP. OP can take the value NEW or
 MOD. OP=MOD is default and implies that previously prescribed
 displacements remain active in subsequent steps. Specifying a
 displacement in the same node and direction for which a displacement
@@ -18900,10 +18900,10 @@ The MASS FLOW parameter specifies that the *BOUNDARY keyword is used
 to define mass flow rates in convective problems. A mass flow rate can only be
 applied to the first degree of freedom of the midside node of network elements. 
 
-Next, the FIXED parameter freezes the deformation from the previous step,
+The FIXED parameter freezes the deformation from the previous step,
 or, if there is no previous step, sets it to zero.
 
-Finally, the SUBMODEL parameter specifies that the displacements in the nodes
+Next, the SUBMODEL parameter specifies that the displacements in the nodes
 listed underneath will be obtained by interpolation from a global model. To
 this end these nodes have to be part of a
 \htmlref{*SUBMODEL}{submodel},TYPE=NODE card. On the latter card the result
@@ -18933,13 +18933,23 @@ interpolated, inherit the coordinate system in which the displacements of the
 global model were stored. The SUBMODEL parameter and the AMPLITUDE parameter
 are mutually exclusive.
 
+Finally, the LINTEMP parameter can be used to define a linear temperature
+boundary condition in between two parallel planes in a heat transfer
+calculation. The user defines the planes by their normalized common normal $(a,b,c)$ and
+inhomogeneous coefficients $d_1$ and $d_2$ in the equations $ax+by+cz=d_1$ and
+$ax+by+cz=d_2$ in global rectangular coordinates, and the prevailing
+temperatures $t_1$ and $t_2$ in these planes. Subsequently, all nodes in the
+model between and on these planes are identified and a linearly interpolated
+temperature is assigned. 
+
 If more than one *BOUNDARY card occurs in the input deck, the following rule
 applies: if the *BOUNDARY is applied to the same node AND in the same
 direction as in a previous application then the previous value and previous
 amplitude are replaced.
 
 A distinction is made whether the conditions are homogeneous (fixed
-conditions),  inhomogeneous (prescribed displacements) or of the submodel type.
+conditions),  inhomogeneous (prescribed displacements), of the submodel type
+or of the LINTEMP type.
 
 \subsubsection{Homogeneous Conditions}
 
@@ -19043,6 +19053,41 @@ Example:
 
 specifies that all displacements in node 73 should be obtained by
 interpolation from the global model. 
+
+\bigskip
+Example files: beamfsubmodel.
+
+\subsubsection{Linear temperature function}
+
+Linear temperature function conditions can be defined between a *STEP card and an *END STEP card only. 
+\bigskip
+
+First line:
+\begin{itemize}
+\item *BOUNDARY,LINTEMP
+\end{itemize}
+
+Following line:
+\begin{itemize}
+\item $a$ (global x-coefficient of normal; normal should be normalized)
+\item $b$ (global y-coefficient of normal; normal should be normalized)
+\item $c$ (global z-coefficient of normal; normal should be normalized)
+\item $d_1$
+\item $t_1$
+\item $d_2$
+\item $t_2$
+\end{itemize}
+Repeat this line if needed.
+
+\begin{verbatim}
+Example:
+
+*BOUNDARY,LINTEMP
+1.,0.,0.,.1,300.,.55,650.
+\end{verbatim}
+
+specifies a linear temperature function between a plane with equation $x=0.1$
+(at temperature 300.) and a plane with equation $x=0.55$ (at temperature 650.). 
 
 \bigskip
 Example files: .
@@ -29438,7 +29483,7 @@ thermomechanical analysis. In these types of analysis the
 \htmlref{*BOUNDARY}{boundary} card for degree of freedom 11 should be used instead.  
 
 Optional parameter are OP, AMPLITUDE, TIME DELAY, USER, SUBMODEL, STEP, DATA
-SET, FILE and BSTEP. OP can take the value NEW or
+SET, FILE, BSTEP and LINTEMP. OP can take the value NEW or
 MOD. OP=MOD is default and implies that thermal load in different
 nodes is accumulated over all steps starting from the last
 perturbation step. Specifying the temperature for a node for which a
@@ -29504,7 +29549,7 @@ If more than one *TEMPERATURE card occurs in an input deck, the following
 rules apply: if a *TEMPERATURE is applied to the same node as in a previous
 application then the previous value and previous amplitude are replaced.
 
-Finally, temperatures can also be read from an .frd file. The file name has to
+Temperatures can also be read from an .frd file. The file name has to
 be specified with the FILE parameter, the step within this file from which the
 temperatures are to be read can be specified with the BSTEP parameter, default
 is 1. All temperatures for that step available in the .frd file will be read
@@ -29520,10 +29565,18 @@ matter the order in which the *TEMPERATURE cards are defined in the input deck):
   \item nodes for which the temperature is supposed to be defined by a user
     routine will get the file value for this node, if any.
 \end{itemize}
-    
+
+Finally, the LINTEMP parameter can be used to define a linear temperature
+boundary condition in between two parallel planes. The user defines the planes by their normalized common normal $(a,b,c)$ and
+inhomogeneous coefficients $d_1$ and $d_2$ in the equations $ax+by+cz=d_1$ and
+$ax+by+cz=d_2$ in global rectangular coordinates, and the prevailing
+temperatures $t_1$ and $t_2$ in these planes. Subsequently, all nodes in the
+model between and on these planes are identified and a linearly interpolated
+temperature is assigned. 
+
 \bigskip
 
-\noindent The format is as following:
+\noindent The format is as following if LINTEMP is not used:
 
 First line:
 \begin{itemize}
@@ -29561,6 +29614,40 @@ will read the temperatures from step 4 in file ``temperatures.frd''.
 
 \bigskip
 Example files: beam8t, beam20t, beamnlt, beamt4, beamfrdread.
+
+\bigskip
+
+\noindent If LINTEMP is used, the format looks as follows: 
+
+First line:
+\begin{itemize}
+\item *TEMPERATURE,LINTEMP
+\end{itemize}
+
+Following line:
+\begin{itemize}
+\item $a$ (global x-coefficient of normal; normal should be normalized)
+\item $b$ (global y-coefficient of normal; normal should be normalized)
+\item $c$ (global z-coefficient of normal; normal should be normalized)
+\item $d_1$
+\item $t_1$
+\item $d_2$
+\item $t_2$
+\end{itemize}
+Repeat this line if needed.
+
+\begin{verbatim}
+Example:
+
+*TEMPERATURE,LINTEMP
+1.,0.,0.,.1,300.,.55,650.
+\end{verbatim}
+
+specifies a linear temperature function between a plane with equation $x=0.1$
+(at temperature 300.) and a plane with equation $x=0.55$ (at temperature 650.). 
+
+\bigskip
+Example files: segmentlintemp.
 
 
 \subsection{\label{tie}*TIE}

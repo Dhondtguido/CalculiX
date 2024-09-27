@@ -5406,3 +5406,7 @@ Dec 2002        - started to work on single crystal plasticity
  8 Aug 2024     - allowed for oversampling in multistage MPC's
 
  17 Sep 2024    - made some corrections in gen3dforc.f for knots
+
+ 27 Sep 2024    - introduced a linear temperature distribution for the
+                  +BOUNDARY and *TEMPERATURE keywords
+		  

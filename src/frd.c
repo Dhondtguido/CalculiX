@@ -200,7 +200,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
     fprintf(f1,"%5sUHOST                                                              \n",p1);
     fprintf(f1,"%5sUPGM               CalculiX                                        \n",p1);
     fprintf(f1,"%5sUVERSION           Version DEVELOPMENT                             \n",p1);
-    fprintf(f1,"%5sUCOMPILETIME       Wed Sep 18 22:12:03 CEST 2024                    \n",p1);
+    fprintf(f1,"%5sUCOMPILETIME       Fri Sep 27 19:05:52 CEST 2024                    \n",p1);
     fprintf(f1,"%5sUDIR                                                               \n",p1);
     fprintf(f1,"%5sUDBN                                                               \n",p1);
     

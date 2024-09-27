@@ -823,17 +823,6 @@ c
           enddo
         endif
 !     
-!     check whether the user has specified rotational degrees
-!     of freedom (in that case rig(i)=-1 was assigned in 
-!     subroutine gen3delem); if so, a rigid MPC must be defined
-!     
-c     if(rig(i).ne.0) then
-c     rig(i)=0
-c     if(nexp.le.1) then
-c     nexp=2
-c     endif
-c     endif
-!     
 !     storing the expanded nodes
 !     
 !     generate rigid MPC's if necessary
