@@ -581,8 +581,9 @@ double *sigma,ITG *icol, ITG *irow,
         // allocate space for the matrix and the utility arrays
         if(redo) {
         	// We allocate 10% more space for the values than required so that we have to perform the expensive cudaMallocHost only once, even when the size of the matrix increases slightly
-        	if((nzsTotal * 2 + *neq) > pastix_nnzBound) {
+            if((nzsTotal * 2 + *neq) > pastix_nnzBound) {
                 // perform the call with PaStiX because pinned memory allocation via CUDA is performed if gpu is activated
+		SFREE(aupastix);
                 if( !firstIter && aupastix == spm->values ) spm->values = NULL;
     
                 aupastix = malloc(sizeof(double) * (nzsTotal * 2 + *neq));
@@ -726,7 +727,9 @@ double *sigma,ITG *icol, ITG *irow,
         
             // allocate memory for the PaStiX arrays and free the old ones if necessary
             if((nzsTotal + *neq) > pastix_nnzBound) {
+		SFREE(aupastix);
                 if( !firstIter && aupastix == spm->values ) spm->values = NULL;
+
                 aupastix = malloc(sizeof(double) * (nzsTotal + *neq));
                 pastix_nnzBound = (nzsTotal + *neq);
             }
@@ -988,21 +991,23 @@ ITG pastix_solve_cp(double *x, ITG *neq,ITG *symmetryflag,ITG *nrhs){
 
 // Invokes pastixFinalize and spmExit which frees everything but the dense LU array and parsec pointer
 void pastix_cleanup(ITG *neq,ITG *symmetryflag){
-	if( redo && !firstIter ){
-//        if(spm->values == aupastix) spm->values = NULL;
-////        if(spm->values == spm->valuesGPU) spm->valuesGPU = NULL;
-//        if(spm->colptr == icolpastix) spm->colptr = NULL;
-//        if(spm->rowptr == irowpastix) spm->rowptr = NULL;
-		spmExit( spm );
-//		if(spm != NULL){
-//            free( spm );
-//            spm = NULL;
-//        }
-			
-		pastixFinalize( &pastix_data );
-	}
+    if( redo && !firstIter ) {
+        if(spm->values == aupastix) spm->values = NULL;
+        //if(spm->values == spm->valuesGPU) spm->valuesGPU = NULL;
+        if(spm->colptr == icolpastix) spm->colptr = NULL;
+        if(spm->rowptr == irowpastix) spm->rowptr = NULL;
+        
+        spmExit( spm );
+        
+        if(spm != NULL) {
+            free( spm );
+            spm = NULL;
+        }
+
+	pastixFinalize( &pastix_data );
+    }
 	
-	return;
+    return;
 }
 
 void pastix_cleanup_as(ITG *neq,ITG *symmetryflag){
