@@ -266,13 +266,12 @@ void pastix_init(double *ad, double *au, double *adb, double *aub,
 
     char usage_call = MULTI_SOLVE
     if( usage == usage_call ){
-        pdparm[DPARM_EPSILON_REFINEMENT] 	= 1e-12;
+        pdparm[DPARM_EPSILON_REFINEMENT] 	= 1e-10;
         piparm[IPARM_ITERMAX]            	= 50;
         piparm[IPARM_GMRES_IM]            	= 50;
     }
     else {
-        pdparm[DPARM_EPSILON_REFINEMENT] 	= 1e-12;
-        pdparm[DPARM_EPSILON_MAGN_CTRL]  	= 0.;
+        pdparm[DPARM_EPSILON_REFINEMENT] 	= 1e-10;
         piparm[IPARM_ITERMAX]            	= 70;
         piparm[IPARM_GMRES_IM]            	= 70;
     }
@@ -915,26 +914,15 @@ ITG pastix_solve_generic(double *x, ITG *neq,ITG *symmetryflag,ITG *nrhs){
         }
     }
 	
-	// invoke iterative refinement in double precision
-    //pdparm[DPARM_EPSILON_MAGN_CTRL] = 1e-4;
-    //piparm[IPARM_ITERMAX]           = 3;
-
+    // invoke iterative refinement in double precision
     char usage_call = SINGLE_SOLVE
     if( usage == usage_call || rc != 0 ){
-        // invoke iterative refinement in double precision
-        rc = pastix_task_refine( pastix_data, spm->n, *nrhs, (void*)b, spm->n, (void*)x, spm->n );
-
     	piparm[IPARM_GPU_NBR]		= 0;
-        pdparm[DPARM_EPSILON_MAGN_CTRL] = 1e-14;
-        piparm[IPARM_ITERMAX]           = 50;
   	rc = pastix_task_refine( pastix_data, spm->n, *nrhs, (void*)b, spm->n, (void*)x, spm->n );
     	piparm[IPARM_GPU_NBR]		= (int) gpu;
-        piparm[IPARM_ITERMAX]           = 70;
     } else{
         rc = pastix_task_refine( pastix_data, spm->n, *nrhs, (void*)b, spm->n, (void*)x, spm->n );
     }
-    //    pdparm[DPARM_EPSILON_MAGN_CTRL] = 1e-14;
-    //    piparm[IPARM_ITERMAX]           = 70;
 //    FILE *f=fopen("spm.out","a");
 //    fprintf(f,"\n\nMatrix\n");
 //    spmConvert(SpmCSR, spm);
@@ -1154,8 +1142,7 @@ void pastix_main_generic(double *ad, double *au, double *adb, double *aub,
         }
     
         // make sure that we switch to double and do not reuse in the next iteration
-        pdparm[DPARM_EPSILON_REFINEMENT] 	= 1e-12;
-        pdparm[DPARM_EPSILON_MAGN_CTRL]  	= .0;
+        pdparm[DPARM_EPSILON_REFINEMENT] 	= 1e-10;
         piparm[IPARM_ITERMAX]            	= 70;
         piparm[IPARM_GMRES_IM]            	= 70;
         
