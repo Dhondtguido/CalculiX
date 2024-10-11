@@ -421,8 +421,8 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 			icomplex=atoi(&labmpc[20*i+6]);}
 		    else if(strcmp1(&labmpc[20*i],"SUBCYCLIC")==0){
 			for(ij=0;ij<*mcs;ij++){
-			    lprev=cs[ij*17+13];
-			    ilength=cs[ij*17+3];
+			    lprev=cs[18*ij+13];
+			    ilength=cs[18*ij+3];
 			    FORTRAN(nident,(&ics[lprev],&inode,&ilength,&id));
 			    if(id!=0){
 				if(ics[lprev+id-1]==inode){icomplex=ij+1;break;}
@@ -808,8 +808,8 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		    nodenew=node+i**nk;
 		    if(strcmp1(&labmpcold[20*j],"SUBCYCLIC")==0){
 			for(ij=0;ij<*mcs;ij++){
-			    lprev=cs[ij*17+13];
-			    ilength=cs[ij*17+3];
+			    lprev=cs[18*ij+13];
+			    ilength=cs[18*ij+3];
 			    FORTRAN(nident,(&ics[lprev],&node,&ilength,&id));
 			    if(id!=0){
 				if(ics[lprev+id-1]==node){

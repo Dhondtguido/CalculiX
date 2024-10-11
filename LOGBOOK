@@ -5409,4 +5409,9 @@ Dec 2002        - started to work on single crystal plasticity
 
  27 Sep 2024    - introduced a linear temperature distribution for the
                   +BOUNDARY and *TEMPERATURE keywords
-		  
+
+ 4 Oct 2024     - got rid of the "call system" calls in restartwrite.f (the
+                  system calls do not work in Windows).
+
+ 11 Oct 2024    - corrected errors in the dimension of cs in arpackcs.c,
+                  complexfreq.c, expand.c and objectivemain_se.c
