@@ -152,17 +152,5 @@
       write(5,'(a7,6(2x,e14.7))') '       ',(toteffmass(j),j=1,6)
       write(5,*)
 !
-!     writing the fraction of the total effective modal mass
-!     and the total effective mass into the .dat-file
-!
-      write(5,*)
-      write(5,*) '    F R A C T I O N   O F   T O T A L S'
-      write(5,*)
-      write(5,100)
-      write(5,*)
-      write(5,'(a7,6(2x,e14.7))') '       ',
-     &  (toteffmodmass(j)/toteffmass(j),j=1,6)
-      write(5,*)
-!
       return
       end

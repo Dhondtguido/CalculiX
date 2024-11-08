@@ -299,7 +299,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
     printf("CalculiX Version DEVELOPMENT, Copyright(C) 1998-2015 Guido Dhondt\n");
     printf("CalculiX comes with ABSOLUTELY NO WARRANTY. This is free\n");
     printf("software, and you are welcome to redistribute it under\n");
-    printf("certain conditions, see LICENSE.\n\n");
+    printf("certain conditions, see gpl.htm\n\n");
     printf("************************************************************\n\n");
     printf("You are using an executable made on Fri Oct 11 18:12:01 CEST 2024\n");
     fflush(stdout);
