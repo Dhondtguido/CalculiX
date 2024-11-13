@@ -28,7 +28,8 @@
      &  nev
 !
       real*8 x(neq(2)),y(neq(2)),adb(*),aub(*),z(*),part(nev,6),
-     &  toteffmass(6),effmodmass(nev,6),toteffmodmass(6),co(3,*)
+     &     toteffmass(6),effmodmass(nev,6),toteffmodmass(6),co(3,*),
+     &     fraction(6)
 !
 !     translations in x, y and z
 !
@@ -150,6 +151,25 @@
       write(5,100)
       write(5,*)
       write(5,'(a7,6(2x,e14.7))') '       ',(toteffmass(j),j=1,6)
+      write(5,*)
+!
+!     writing the fraction of the total effective modal mass
+!     and the total effective mass into the .dat-file
+!
+      do j=1,6
+        if(toteffmass(j).le.0.d0) then
+          fraction(j)=1.d0
+        else
+          fraction(j)=toteffmodmass(j)/toteffmass(j)
+        endif
+      enddo
+      write(5,*)
+      write(5,*) '    F R A C T I O N   O F   T O T A L S'
+      write(5,*)
+      write(5,100)
+      write(5,*)
+      write(5,'(a7,6(2x,e14.7))') '       ',
+     &  (fraction(j),j=1,6)
       write(5,*)
 !
       return
