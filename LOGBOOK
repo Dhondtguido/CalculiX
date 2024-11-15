@@ -5415,3 +5415,9 @@ Dec 2002        - started to work on single crystal plasticity
 
  11 Oct 2024    - corrected errors in the dimension of cs in arpackcs.c,
                   complexfreq.c, expand.c and objectivemain_se.c
+
+ 13 Nov 2024    - corrected effectivemodalmass
+
+ 15 Nov 2024    - got rid of the "rename" statement in restartwrite.f (is
+                  not standard FORTRAN)
+                - corrected an error in precontact.c
