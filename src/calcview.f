@@ -50,13 +50,10 @@
      &     fform,pl(2,3),epsabs,epsrel,abserr,q(3,3),
      &     rdata(21),factor,argument
 !
-c      real*8 vertex(3,3),vertexl(2,3),unitvec(3,3)
-!
       external fform
 !     
       nzsradv(3)=nzsrad
 !     
-c      ng=160
       dint=2.d0/ng
       anglemin=dacos((ng/2.d0-1.d0)/(ng/2.d0))
 !
@@ -100,12 +97,6 @@ c      ng=160
          pl(1,3)=p31(1)*e1(1,i)+p31(2)*e1(2,i)+p31(3)*e1(3,i)
          pl(2,3)=p31(1)*e2(1,i)+p31(2)*e2(2,i)+p31(3)*e2(3,i)
 !     
-c         do k=1,3
-c            unitvec(k,1)=e1(k,i)
-c            unitvec(k,2)=e2(k,i)
-c            unitvec(k,3)=e3(k,i)
-c         enddo
-!     
 !     checking which triangles face triangle i
 !     
          ndist=0
@@ -126,10 +117,6 @@ c         enddo
      &           pmid(3,j)*e3(3,i)+e3(4,i))/distance.le.anglemin) cycle
             if((pmid(1,i)*e3(1,j)+pmid(2,i)*e3(2,j)+
      &           pmid(3,i)*e3(3,j)+e3(4,j))/distance.le.anglemin) cycle
-c            if(pmid(1,j)*e3(1,i)+pmid(2,j)*e3(2,i)+
-c     &           pmid(3,j)*e3(3,i)+e3(4,i).le.sidemean/800.d0) cycle
-c            if(pmid(1,i)*e3(1,j)+pmid(2,i)*e3(2,j)+
-c     &           pmid(3,i)*e3(3,j)+e3(4,j).le.sidemean/800.d0) cycle
 !     
             idj=kontri(4,j)
             if(sideload(nloadtr(idi))(18:20).ne.
@@ -137,9 +124,6 @@ c     &           pmid(3,i)*e3(3,j)+e3(4,j).le.sidemean/800.d0) cycle
 !     
             ndist=ndist+1
             dist(ndist)=distance
-c            dist(ndist)=dsqrt((pmid(1,j)-pmid(1,i))**2+
-c     &           (pmid(2,j)-pmid(2,i))**2+
-c     &           (pmid(3,j)-pmid(3,i))**2)
             idist(ndist)=j
          enddo
          if(ndist.eq.0) cycle
@@ -157,11 +141,8 @@ c     &           (pmid(3,j)-pmid(3,i))**2)
 !
          ncovered=0
          do i1=1,ng
-c            x=((i1-0.5d0)*dint-1.d0)**2
             x=xy(i1)
             do j1=1,ng
-c               y=((j1-0.5d0)*dint-1.d0)**2
-c               y=xy(j1)
                if(x+xy(j1).gt.1.d0) then
                   covered(i1,j1)='T'
                   ncovered=ncovered+1
@@ -215,30 +196,9 @@ c               y=xy(j1)
             xq(3)=r(1,3)*e1(1,i)+r(2,3)*e1(2,i)+r(3,3)*e1(3,i)
             yq(3)=r(1,3)*e2(1,i)+r(2,3)*e2(2,i)+r(3,3)*e2(3,i)
 !
-c            do l=1,3
-c               do k=1,3
-c                  vertex(k,l)=co(k,kontri(l,j))-pmid(k,i)
-c               enddo
-c               dd=dsqrt(vertex(1,l)**2+vertex(2,l)**2+
-c     &              vertex(3,l)**2)
-c               do k=1,3
-c                  vertex(k,l)=vertex(k,l)/dd
-c               enddo
-c               vertexl(1,l)=vertex(1,l)*e1(1,i)+
-c     &              vertex(2,l)*e1(2,i)+
-c     &              vertex(3,l)*e1(3,i)
-c               vertexl(2,l)=vertex(1,l)*e2(1,i)+
-c     &              vertex(2,l)*e2(2,i)+
-c     &              vertex(3,l)*e2(3,i)
-c            enddo
-!     
 !     determining the center of gravity of the projected
 !     triangle
 !     
-c            do k=1,2
-c               dirloc(k)=(vertexl(k,1)+vertexl(k,2)+
-c     &              vertexl(k,3))/3.d0
-c            enddo
             dirloc(1)=(xq(1)+xq(2)+xq(3))/3.d0
             dirloc(2)=(yq(1)+yq(2)+yq(3))/3.d0
 !     
@@ -312,38 +272,6 @@ c            enddo
                ftij=ftij/2.d0
             endif
 !     
-!     updating the coverage matrix
-!     
-c            do k=1,3
-c               r(k,1)=co(k,kontri(1,j))+vold(k,kontri(1,j))-pmid(k,i)
-c            enddo
-c            ddd(1)=dsqrt(r(1,1)*r(1,1)+r(2,1)*r(2,1)+r(3,1)*r(3,1))
-c            do k=1,3
-c               r(k,1)=r(k,1)/ddd(1)
-c            enddo
-c            xq(1)=r(1,1)*e1(1,i)+r(2,1)*e1(2,i)+r(3,1)*e1(3,i)
-c            yq(1)=r(1,1)*e2(1,i)+r(2,1)*e2(2,i)+r(3,1)*e2(3,i)
-c!     
-c            do k=1,3
-c               r(k,2)=co(k,kontri(2,j))+vold(k,kontri(2,j))-pmid(k,i)
-c            enddo
-c            ddd(2)=dsqrt(r(1,2)*r(1,2)+r(2,2)*r(2,2)+r(3,2)*r(3,2))
-c            do k=1,3
-c               r(k,2)=r(k,2)/ddd(2)
-c            enddo
-c            xq(2)=r(1,2)*e1(1,i)+r(2,2)*e1(2,i)+r(3,2)*e1(3,i)
-c            yq(2)=r(1,2)*e2(1,i)+r(2,2)*e2(2,i)+r(3,2)*e2(3,i)
-c!     
-c            do k=1,3
-c               r(k,3)=co(k,kontri(3,j))+vold(k,kontri(3,j))-pmid(k,i)
-c            enddo
-c            ddd(3)=dsqrt(r(1,3)*r(1,3)+r(2,3)*r(2,3)+r(3,3)*r(3,3))
-c            do k=1,3
-c               r(k,3)=r(k,3)/ddd(3)
-c            enddo
-c            xq(3)=r(1,3)*e1(1,i)+r(2,3)*e1(2,i)+r(3,3)*e1(3,i)
-c            yq(3)=r(1,3)*e2(1,i)+r(2,3)*e2(2,i)+r(3,3)*e2(3,i)
-!     
             if(dabs(xq(2)-xq(1)).lt.1.d-5) xq(2)=xq(1)+1.d-5
             if(dabs(xq(2)-xq(1)).lt.1.d-5) xq(2)=xq(1)+1.d-5
 !     
@@ -367,8 +295,6 @@ c            yq(3)=r(1,3)*e2(1,i)+r(2,3)*e2(2,i)+r(3,3)*e2(3,i)
 !     
                   argument=
      &                 r(1,k)*r(1,l)+r(2,k)*r(2,l)+r(3,k)*r(3,l)
-c     &                 (r(1,k)*r(1,l)+r(2,k)*r(2,l)+r(3,k)*r(3,l))/
-c     &                 (ddd(k)*ddd(l))
                   if(dabs(argument).gt.1.d0) then
                      if(argument.gt.0.d0) then
                         argument=1.d0
