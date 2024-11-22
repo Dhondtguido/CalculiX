@@ -43,9 +43,9 @@
 !     
       real*8 w(239),vold(0:mi(2),*),co(3,*),xn(3),xxn,xy(ng),
      &     pmid(3,*),e3(4,*),e1(3,*),e2(3,*),p1(3),p2(3),p3(3),
-     &     x,y,porigin(3),yqmin,yqmax,xqmin,anglemin,distance,
-     &     xxmid,xqmax,dummy,a(3,3),b(3,3),c(3,3),ddd(3),p31(3),
-     &     xq(3),yq(3),ftij,adview(*),auview(*),dint,dir(3),
+     &     x,y,porigin(3),etmin,etmax,ximin,anglemin,distance,
+     &     ximid,ximax,dummy,a(3,3),b(3,3),c(3,3),ddd(3),p31(3),
+     &     xi(3),et(3),ftij,adview(*),auview(*),dxi,dir(3),
      &     dirloc(3),dist(*),area(*),dd,p21(3),sidemean,r(3,3),
      &     fform,pl(2,3),epsabs,epsrel,abserr,q(3,3),
      &     rdata(21),factor,argument
@@ -54,7 +54,11 @@
 !     
       nzsradv(3)=nzsrad
 !     
-      dint=2.d0/ng
+!     dxi is the grid size in xi- and et-direction     
+!     
+!     -1.le.xi.le.1 and -1.le.et.le.1  
+!     
+      dxi=2.d0/ng
       anglemin=dacos((ng/2.d0-1.d0)/(ng/2.d0))
 !
 !     factor determines when the numerical integration using cubtri
@@ -136,7 +140,7 @@
 !     initializing the coverage matrix
 !  
          do i1=1,ng
-            xy(i1)=((i1-0.5d0)*dint-1.d0)**2
+            xy(i1)=((i1-0.5d0)*dxi-1.d0)**2
          enddo
 !
          ncovered=0
@@ -161,7 +165,7 @@
 !           r is the connection of cg of triangle i with the
 !           vertices of triangle j
 !
-!           xq and yq are the local coordinates in the local 
+!           xi and et are the local coordinates in the local 
 !           coordinate system attached of triangle i of the projection
 !           of the vertices of triangle j on the base of the hemisphere
 !           at triangle i
@@ -173,8 +177,8 @@
             do k=1,3
                r(k,1)=r(k,1)/ddd(1)
             enddo
-            xq(1)=r(1,1)*e1(1,i)+r(2,1)*e1(2,i)+r(3,1)*e1(3,i)
-            yq(1)=r(1,1)*e2(1,i)+r(2,1)*e2(2,i)+r(3,1)*e2(3,i)
+            xi(1)=r(1,1)*e1(1,i)+r(2,1)*e1(2,i)+r(3,1)*e1(3,i)
+            et(1)=r(1,1)*e2(1,i)+r(2,1)*e2(2,i)+r(3,1)*e2(3,i)
 !     
             do k=1,3
                r(k,2)=co(k,kontri(2,j))+vold(k,kontri(2,j))-pmid(k,i)
@@ -183,8 +187,8 @@
             do k=1,3
                r(k,2)=r(k,2)/ddd(2)
             enddo
-            xq(2)=r(1,2)*e1(1,i)+r(2,2)*e1(2,i)+r(3,2)*e1(3,i)
-            yq(2)=r(1,2)*e2(1,i)+r(2,2)*e2(2,i)+r(3,2)*e2(3,i)
+            xi(2)=r(1,2)*e1(1,i)+r(2,2)*e1(2,i)+r(3,2)*e1(3,i)
+            et(2)=r(1,2)*e2(1,i)+r(2,2)*e2(2,i)+r(3,2)*e2(3,i)
 !     
             do k=1,3
                r(k,3)=co(k,kontri(3,j))+vold(k,kontri(3,j))-pmid(k,i)
@@ -193,19 +197,19 @@
             do k=1,3
                r(k,3)=r(k,3)/ddd(3)
             enddo
-            xq(3)=r(1,3)*e1(1,i)+r(2,3)*e1(2,i)+r(3,3)*e1(3,i)
-            yq(3)=r(1,3)*e2(1,i)+r(2,3)*e2(2,i)+r(3,3)*e2(3,i)
+            xi(3)=r(1,3)*e1(1,i)+r(2,3)*e1(2,i)+r(3,3)*e1(3,i)
+            et(3)=r(1,3)*e2(1,i)+r(2,3)*e2(2,i)+r(3,3)*e2(3,i)
 !
 !     determining the center of gravity of the projected
 !     triangle
 !     
-            dirloc(1)=(xq(1)+xq(2)+xq(3))/3.d0
-            dirloc(2)=(yq(1)+yq(2)+yq(3))/3.d0
+            dirloc(1)=(xi(1)+xi(2)+xi(3))/3.d0
+            dirloc(2)=(et(1)+et(2)+et(3))/3.d0
 !     
 !     check whether this direction was already covered
 !     
-            ix=int((dirloc(1)+1.d0)/dint)+1
-            iy=int((dirloc(2)+1.d0)/dint)+1
+            ix=int((dirloc(1)+1.d0)/dxi)+1
+            iy=int((dirloc(2)+1.d0)/dxi)+1
             if(covered(ix,iy).eq.'T') then
                cycle
             endif
@@ -271,9 +275,13 @@
      &              w,nw,idata,rdata,ier)
                ftij=ftij/2.d0
             endif
-!     
-            if(dabs(xq(2)-xq(1)).lt.1.d-5) xq(2)=xq(1)+1.d-5
-            if(dabs(xq(2)-xq(1)).lt.1.d-5) xq(2)=xq(1)+1.d-5
+!
+!     ftij is the viewfactor between triangle i and j. In the end
+!     the viewfactor between the parent faces is needed. This
+!     transformation, and the division by pi is performed in postview.f
+!
+c            if(dabs(xi(2)-xi(1)).lt.1.d-5) xi(2)=xi(1)+1.d-5
+c            if(dabs(xi(2)-xi(1)).lt.1.d-5) xi(2)=xi(1)+1.d-5
 !     
 !     if the surfaces are far enough away, one-point
 !     integration is used
@@ -315,18 +323,22 @@
             i0=0
             call add_sm_st_as(auview,adview,jqrad,irowrad,
      &           idi,idj,ftij,i0,i0,nzsradv)          
+!
+!     ftij is the viewfactor between triangle i and j. In the end
+!     the viewfactor between the parent faces is needed. This
+!     transformation, and the division by pi is performed in postview.f
 !     
 !     determining maxima and minima
 !     
-            xqmin=2.d0
-            xqmax=-2.d0
+            ximin=2.d0
+            ximax=-2.d0
             do k=1,3
-               if(xq(k).lt.xqmin) then
-                  xqmin=xq(k)
+               if(xi(k).lt.ximin) then
+                  ximin=xi(k)
                   imin=k
                endif
-               if(xq(k).gt.xqmax) then
-                  xqmax=xq(k)
+               if(xi(k).gt.ximax) then
+                  ximax=xi(k)
                   imax=k
                endif
             enddo
@@ -334,41 +346,41 @@
             if(((imin.eq.1).and.(imax.eq.2)).or.
      &           ((imin.eq.2).and.(imax.eq.1))) then
                imid=3
-               xxmid=xq(3)
+               ximid=xi(3)
             elseif(((imin.eq.2).and.(imax.eq.3)).or.
      &              ((imin.eq.3).and.(imax.eq.2))) then
                imid=1
-               xxmid=xq(1)
+               ximid=xi(1)
             else
                imid=2
-               xxmid=xq(2)
+               ximid=xi(2)
             endif
 !     
 !     check for equal x-values
 !     
-            if(xxmid-xqmin.lt.1.d-5) then
-               xqmin=xqmin-1.d-5
-               xq(imin)=xqmin
+            if(ximid-ximin.lt.1.d-5) then
+               ximin=ximin-1.d-5
+               xi(imin)=ximin
             endif
-            if(xqmax-xxmid.lt.1.d-5) then
-               xqmax=xqmax+1.d-5
-               xq(imax)=xqmax
+            if(ximax-ximid.lt.1.d-5) then
+               ximax=ximax+1.d-5
+               xi(imax)=ximax
             endif
 !     
 !     equation of the straight lines connecting the
 !     triangle vertices in the local x-y plane
 !     
-            a(1,2)=yq(2)-yq(1)
-            b(1,2)=xq(1)-xq(2)
-            c(1,2)=yq(1)*xq(2)-xq(1)*yq(2)
+            a(1,2)=et(2)-et(1)
+            b(1,2)=xi(1)-xi(2)
+            c(1,2)=et(1)*xi(2)-xi(1)*et(2)
 !     
-            a(2,3)=yq(3)-yq(2)
-            b(2,3)=xq(2)-xq(3)
-            c(2,3)=yq(2)*xq(3)-xq(2)*yq(3)
+            a(2,3)=et(3)-et(2)
+            b(2,3)=xi(2)-xi(3)
+            c(2,3)=et(2)*xi(3)-xi(2)*et(3)
 !     
-            a(3,1)=yq(1)-yq(3)
-            b(3,1)=xq(3)-xq(1)
-            c(3,1)=yq(3)*xq(1)-xq(3)*yq(1)
+            a(3,1)=et(1)-et(3)
+            b(3,1)=xi(3)-xi(1)
+            c(3,1)=et(3)*xi(1)-xi(3)*et(1)
 !     
             a(2,1)=a(1,2)
             b(2,1)=b(1,2)
@@ -379,39 +391,51 @@
             a(1,3)=a(3,1)
             b(1,3)=b(3,1)
             c(1,3)=c(3,1)
-!     
-            istart=int((xqmin+1.d0+dint/2.d0)/dint)+1
-            iend=int((xxmid+1.d0+dint/2.d0)/dint)
+!
+!           xmin.le.xi.le.xmid
+!
+            istart=int((ximin+1.d0+dxi/2.d0)/dxi)+1
+            iend=int((ximid+1.d0+dxi/2.d0)/dxi)
             do i1=istart,iend
-               x=dint*(i1-0.5d0)-1.d0
-               yqmin=-(a(imin,imid)*x+c(imin,imid))/b(imin,imid)
-               yqmax=-(a(imin,imax)*x+c(imin,imax))/b(imin,imax)
-               if(yqmin.gt.yqmax) then
-                  dummy=yqmin
-                  yqmin=yqmax
-                  yqmax=dummy
-               endif
-               jstart=int((yqmin+1.d0+dint/2.d0)/dint)+1
-               jend=int((yqmax+1.d0+dint/2.d0)/dint)
+               x=dxi*(i1-0.5d0)-1.d0
+               etmin=-(a(imin,imid)*x+c(imin,imid))/b(imin,imid)
+               etmax=-(a(imin,imax)*x+c(imin,imax))/b(imin,imax)
+               if(etmin.gt.etmax) then
+                  dummy=etmin
+                  etmin=etmax
+                  etmax=dummy
+                endif
+!
+!              et is between lower line and upper line
+!              lower and upper line connect ximin with ximid or ximax
+!
+               jstart=int((etmin+1.d0+dxi/2.d0)/dxi)+1
+               jend=int((etmax+1.d0+dxi/2.d0)/dxi)
                do j1=jstart,jend
                   covered(i1,j1)='T'
                enddo
                ncovered=ncovered+jend-jstart+1
             enddo
-!     
-            istart=int((xxmid+1.d0+dint/2.d0)/dint)+1
-            iend=int((xqmax+1.d0+dint/2.d0)/dint)
+!
+!           xmid.le.xi.le.xmax
+!
+            istart=int((ximid+1.d0+dxi/2.d0)/dxi)+1
+            iend=int((ximax+1.d0+dxi/2.d0)/dxi)
             do i1=istart,iend
-               x=dint*(i1-0.5d0)-1.d0
-               yqmin=-(a(imid,imax)*x+c(imid,imax))/b(imid,imax)
-               yqmax=-(a(imin,imax)*x+c(imin,imax))/b(imin,imax)
-               if(yqmin.gt.yqmax) then
-                  dummy=yqmin
-                  yqmin=yqmax
-                  yqmax=dummy
+               x=dxi*(i1-0.5d0)-1.d0
+               etmin=-(a(imid,imax)*x+c(imid,imax))/b(imid,imax)
+               etmax=-(a(imin,imax)*x+c(imin,imax))/b(imin,imax)
+               if(etmin.gt.etmax) then
+                  dummy=etmin
+                  etmin=etmax
+                  etmax=dummy
                endif
-               jstart=int((yqmin+1.d0+dint/2.d0)/dint)+1
-               jend=int((yqmax+1.d0+dint/2.d0)/dint)
+!
+!              et is between lower line and upper line
+!              lower and upper line connect xmin or xmid with ximax
+!
+               jstart=int((etmin+1.d0+dxi/2.d0)/dxi)+1
+               jend=int((etmax+1.d0+dxi/2.d0)/dxi)
                do j1=jstart,jend
                   covered(i1,j1)='T'
                enddo
