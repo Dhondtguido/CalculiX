@@ -190,7 +190,7 @@
             endif
             irotnode=nk
             rig(node)=irotnode
-            inotr(1,irotnode)=inotr(1,node)
+            if(ntrans.gt.0) inotr(1,irotnode)=inotr(1,node)
             write(27,*) 'a KNOT was generated in node ',node
             write(27,*)
             nk=nk+1

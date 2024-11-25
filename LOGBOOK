@@ -5421,3 +5421,5 @@ Dec 2002        - started to work on single crystal plasticity
  15 Nov 2024    - got rid of the "rename" statement in restartwrite.f (is
                   not standard FORTRAN)
                 - corrected an error in precontact.c
+
+ 25 Nov 2024    - removed an error in gen3dboun.f and frequencys.f
