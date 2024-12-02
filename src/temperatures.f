@@ -80,8 +80,12 @@
 !     
       if(ithermal(1).ne.1) then
         write(*,*) '*ERROR reading *TEMPERATURE: a *TEMPERATURE'
-        write(*,*) '  card is detected but no thermal'
-        write(*,*) '  *INITIAL CONDITIONS are given'
+        write(*,*) '       card is detected but'
+        write(*,*) 
+     &    '       - no thermal *INITIAL CONDITIONS are given OR'
+        write(*,*) 
+     &    '       - this is a *HEAT TRANSFER or (UN)COUPLED TEMPERATURE-
+     &DISPLACEMENT analysis'
         ier=1
         return
       endif

@@ -5423,3 +5423,6 @@ Dec 2002        - started to work on single crystal plasticity
                 - corrected an error in precontact.c
 
  25 Nov 2024    - removed an error in gen3dboun.f and frequencys.f
+
+ 2 Dec 2024     - checked the use of a submodel in a *HEAT TRANSFER analysi
+                  added a test example
