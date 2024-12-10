@@ -33,7 +33,7 @@ static ITG *nk1,*nodedesi1,*ndesi1,*nx1,*ny1,*nz1,*neighbor1=NULL,num_cpus;
 /* y1 had to be replaced by yy1, else the following compiler error
    popped up: 
 
-   filtermain_forward.c:42: error: ‘y1’ redeclared as different kind of symbol */
+   filtermain_forward.c:42: error: 'y1' redeclared as different kind of symbol */
 
 
 static double *gradproj1,*xo1,*yo1,*zo1,*x1,*yy1,*z1,*r1=NULL,*xdesi1,

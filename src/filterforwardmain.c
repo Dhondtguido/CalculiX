@@ -58,7 +58,7 @@ static double *au1=NULL,*ad1=NULL,*aub1=NULL,*adb1=NULL,*co1,*area1=NULL;
 /* y1 had to be replaced by yy1, else the following compiler error
    popped up: 
 
-   filterforwardmain.c:42: error: ‘y1’ redeclared as different kind of symbol */
+   filterforwardmain.c:42: error: 'y1' redeclared as different kind of symbol */
 
 void filterforwardmain(double *co,double *gradproj,ITG *nk,
                 ITG *nodedesi,ITG *ndesi,char *objectset,double *xdesi,

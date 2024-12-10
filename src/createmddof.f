@@ -141,10 +141,10 @@ c            enddo
                   write(*,*) '       Justification: in a steady state'
                   write(*,*) '       dynamics calculation with cyclic'
                   write(*,*) '       symmetry the segment is expanded'
-                  write(*,*) '       into 360 °. Storing results for'
-                  write(*,*) '       this expansion may lead to huge'
-                  write(*,*) '       frd-files. Specifying a set can'
-                  write(*,*) '       reduce this output.'
+                  write(*,*) '       into 360 degrees. Storing results'
+                  write(*,*) '       for this expansion may lead to'
+                  write(*,*) '       huge frd-files. Specifying a set'
+                  write(*,*) '       can reduce this output.'
                   call exit(201)
                endif
                nmdnode=0

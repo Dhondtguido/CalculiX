@@ -119,7 +119,7 @@
             write(*,*)
      &           '*ERROR in checkinputvaluesnet: '
             write(*,*) '       the chamfer angle of an ',
-     &           'orifice must not exceed 90°'
+     &           'orifice must not exceed 90 degrees'
             write(*,*) '       element number: ',nelem
             call exit(201)
           endif
@@ -179,7 +179,7 @@
           if(prop(index+2).gt.90.d0) then
             write(*,*) '*ERROR in checkinputvaluesnet:'
             write(*,*) '       theta (preswirl nozzle) ',
-     &           'must not exceed 90°'
+     &           'must not exceed 90 degrees'
             write(*,*) '       element number: ',nelem
             call exit(201)
           endif

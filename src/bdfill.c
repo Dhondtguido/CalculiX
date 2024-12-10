@@ -1046,7 +1046,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	  if(imn<0){
 	    
 	    /* hier muss mpc2 rein,da Slavemittelknoten auf ind seite
-	       vorkommen können */
+	       vorkommen koennen */
 	      
 	    for(jj=nmastmpc[2*(-imn-1)];jj<nmastmpc[2*(-imn-1)+1];jj++){
 	      ist=imastmpc[jj];
@@ -1259,7 +1259,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
   RENEW(irowddinv,ITG,nzsddinv);
   NNEW(mast1,ITG,nzsddinv);
   
-  // gehe über alle Ties (ok, da kein aktiver slaveknoten in 2 Ties)
+  // gehe ueber alle Ties (ok, da kein aktiver slaveknoten in 2 Ties)
   
   for( i=0; i<*ntie; i++){    
     if(tieset[i*(81*3)+80]=='C'){ 

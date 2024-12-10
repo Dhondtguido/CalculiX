@@ -619,7 +619,7 @@ c            write(*,*) 'gen3dfrom2d xnor',(xnor(l),l=1,3)
             dd=a(1,1)*xno(1)+a(2,1)*xno(2)+a(3,1)*xno(3)
 c            write(*,*) 'gen3dfrom2d ',i,dd
 !
-!           check whether e1 is within 0.1° from n
+!           check whether e1 is within 0.1 degrees from n
 !           e1 is the local 1-direction in the shell plane
 !
             if(dabs(dd).gt.0.999999999536d0) then

@@ -28,7 +28,7 @@
 !                vold
 !
 !     nk: number of nodes in one segment
-!     nkt: number of nodes in 360°
+!     nkt: number of nodes in 360 degrees
 !
       implicit none
 !

@@ -26,11 +26,11 @@
 !     for a disc stator system with either centrifugal or centripetal
 !     flow.
 !     Theoretical explanations can be found in
-!     "Untersuchung dfes radialen Druckverlaufes und des übertragenen
-!     drehmomentes im Radseitenraum von Kreiselpumpen bei glatter,
-!     ebene Radwand und bei Anvendung von Rückenschaufeln"
-!     Uwe Klaus Möhring , Dissertation, 
-!     An der Üniversität Carolo-Wilhelmina zu Braunschweig 1976
+!     "Untersuchung des radialen Druckverlaufes und des uebertragenen
+!     Drehmomentes im Radseitenraum von Kreiselpumpen bei glatter,
+!     ebene Radwand und bei Anwendung von Rueckenschaufeln"
+!     Uwe Klaus Moehring, Dissertation,
+!     An der Universitaet Carolo-Wilhelmina zu Braunschweig 1976
 !
 !     author: Yannick Muller
 !     
@@ -84,7 +84,7 @@
      &     (1.d0+0.5d0*(kappa-1.d0))**(-0.5d0*(kappa+1.d0)/(kappa-1.d0))
 !     
 !     Because there is no explicit expression relating massflow
-!     to pressure loss for möhrings
+!     to pressure loss for Moehrings
 !     initial mass flow is set to arbitrarily
 !     with consideration to flow direction
 !     
@@ -402,7 +402,7 @@
          lrw=160
          liw=60
 !
-!     solving the differential equation Möhring 3.35
+!     solving the differential equation Moehring 3.35
 !     dK/dX=f(K(X))
 !
          if(dabs(xflow).gt.1d-6) then
@@ -569,8 +569,8 @@
 !     
       lrw=160
       liw=60
-!     
-!     solving the differential equation Möhring 3.35
+!
+!     solving the differential equation Moehring 3.35
 !     dK/dX=f(K(X))
 !     
       call ddeabm(dKdm,neq,t,y,x,info,rtol,atol,idid,
@@ -625,8 +625,8 @@
 !     
       lrw=160
       liw=60
-!     
-!     solving the differential equation Möhring 3.35
+!
+!     solving the differential equation Moehring 3.35
 !     dK/dX=f(K(X))
 !     
       call ddeabm(dKdX,neq,t,y,x,info,rtol,atol,idid,

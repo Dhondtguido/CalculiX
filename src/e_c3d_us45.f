@@ -251,7 +251,7 @@
       intent(inout) s,sm,ff,xload,nmethod
       indexe=ipkon(nelem)
       !         
-      ! Gauß points(4):
+      ! Gauss points(4):
       g_p(1,1) = -0.577350269189626
       g_p(2,1) = +0.577350269189626       
       g_p(3,1) = +0.577350269189626 

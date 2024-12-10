@@ -228,7 +228,7 @@
      &     Ethm(3),Ethf(3),tau(2),Smf(3),ti,ftherm(24),Kshell(24,24),
      &     kdmax,Kb(24,24),Ks(24,24),fintg(24)
 !     
-!     gauß points 2x2
+!     gauss points 2x2
 !     
       g_p(1,1)=-0.577350269189626
       g_p(2,1)=+0.577350269189626       
