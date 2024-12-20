@@ -19,6 +19,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
+#include <locale.h>
 #include "CalculiX.h"
 
 void frdvector(double *v,ITG *iset,ITG *ntrans,char * filabl,ITG *nkcoords,
@@ -34,6 +35,8 @@ void frdvector(double *v,ITG *iset,ITG *ntrans,char * filabl,ITG *nkcoords,
   float fl;
   
   double a[9],db;
+
+  setlocale(LC_NUMERIC, "C");
 
   if(*iset==0){
     if((*ntrans==0)||(strcmp1(&filabl[5],"G")==0)){
