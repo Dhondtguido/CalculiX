@@ -19,6 +19,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#include <locale.h>
 #include "CalculiX.h"
 #ifdef SPOOLES
 #include "spooles.h"
@@ -148,6 +149,8 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 #ifdef SGI
   ITG token;
 #endif
+
+  setlocale(LC_NUMERIC, "C");
 
   num_cpus=0;
   sys_cpus=0;
