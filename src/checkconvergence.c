@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <locale.h>
 #include "CalculiX.h"
 #ifdef SPOOLES 
    #include "spooles.h"
@@ -66,6 +67,8 @@ void checkconvergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	*stni=NULL,*vmax=NULL,*stnmax=NULL,*cs=NULL,c1[2],c2[2],reftime,
         *fn=NULL,*eenmax=NULL,*fnr=NULL,*fni=NULL,*qfx=NULL,*cdn=NULL,
         *cdnr=NULL,*cdni=NULL,tmp, maxdecay=0.0, r_rel,cetol;
+
+    setlocale(LC_NUMERIC, "C");
 
     /* reset ialeatoric to zero */
 
