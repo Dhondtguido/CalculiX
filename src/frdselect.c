@@ -19,6 +19,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
+#include <locale.h>
 #include "CalculiX.h"
 
 #define min(a,b) ((a) <= (b) ? (a) : (b))
@@ -46,6 +47,8 @@ void frdselect(double *field1,double *field2,ITG *iset,ITG *nkcoords,ITG *inum,
   int iw;
 
   float fl;
+
+  setlocale(LC_NUMERIC, "C");
 
   if(strcmp1(&output[3],"a")==0) ioutall=1;
   
