@@ -19,6 +19,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#include <locale.h>
 
 #ifdef SPOOLES
 #include <misc.h>
@@ -62,6 +63,8 @@ void cascade(ITG *ipompc, double **coefmpcp, ITG **nodempcp, ITG *nmpc,
 
   double coef,*coefmpc=NULL,coefmin;
 
+  setlocale(LC_NUMERIC, "C");	
+	
   nodempc=*nodempcp;
   coefmpc=*coefmpcp;
     
