@@ -232,15 +232,41 @@ void pastix_init(double *ad, double *au, double *adb, double *aub,
     // Init integer and double parameters with default values
     pastixInitParam( piparm, pdparm );
 	
-    // Set best PaStiX parameters for CalculiX usage
-    piparm[IPARM_ORDERING]  				= PastixOrderScotch;
+    // Set best PaStiX parameters for CalculiX usage	
+    const char* pastix_ordering = getenv("PASTIX_ORDERING");
+    if(atoi(pastix_ordering) == 1) {
+	
+	piparm[IPARM_ORDERING]  				= PastixOrderMetis;
+    }		
+    else {	
+	
+	piparm[IPARM_ORDERING]  				= PastixOrderScotch;
+    }
     if( mode == AS || mode == CP ){
-        piparm[IPARM_SCHEDULER] 			= PastixSchedStatic;
+	    piparm[IPARM_SCHEDULER] 			= PastixSchedStatic;
     }
     else{
-        piparm[IPARM_SCHEDULER] 			= PastixSchedStatic;
-        //piparm[IPARM_SCHEDULER] 			= PastixSchedDynamic;
-        //piparm[IPARM_SCHEDULER] 			= PastixSchedStarPU;
+	const char* pastix_scheduler = getenv("PASTIX_SCHEDULER");
+	if(atoi(pastix_scheduler) == 1) {
+		
+	    piparm[IPARM_SCHEDULER] 			= PastixSchedStarPU;
+	}
+	else if(atoi(pastix_scheduler) == 2) {
+		
+	    piparm[IPARM_SCHEDULER] 			= PastixSchedParsec;
+	}
+	else if(atoi(pastix_scheduler) == 3) {
+		
+	    piparm[IPARM_SCHEDULER] 			= PastixSchedDynamic;
+	}
+	else if(atoi(pastix_scheduler) == 4) {
+		
+	    piparm[IPARM_SCHEDULER] 			= PastixSchedSequential;
+	}
+	else {
+		
+	    piparm[IPARM_SCHEDULER] 			= PastixSchedStatic;
+	}
     }
 
     piparm[IPARM_THREAD_NBR]			= nthread_mkl;
