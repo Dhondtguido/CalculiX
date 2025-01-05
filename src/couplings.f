@@ -428,14 +428,13 @@
             endif
           endif
           if(ibounend.gt.3) then
-            write(*,*) '*ERROR reading *KINEMATIC'
-            write(*,*) '       final degree of freedom cannot'
-            write(*,*) '       exceed 3'
+            write(*,*) '*WARNING reading *KINEMATIC'
+            write(*,*) '       resetting final degree of freedom'
+            write(*,*) '       to its maximum allowed value of 3'
             write(*,*) '  '
-            call inputerror(inpc,ipoinpc,iline,
-     &           "*KINEMATIC%",ier)
-            return
-          elseif(ibounend.lt.ibounstart) then
+            ibounend=3
+          endif
+          if(ibounend.lt.ibounstart) then
             write(*,*) '*ERROR reading *KINEMATIC'
             write(*,*) '       initial degree of freedom cannot'
             write(*,*) '       exceed final degree of freedom'
