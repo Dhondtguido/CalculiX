@@ -659,7 +659,7 @@ c        itranslation=0
           read(textpart(1)(1:10),'(i10)',iostat=istat) ibounstart
           if(istat.gt.0) then
             call inputerror(inpc,ipoinpc,iline,
-     &           "*BOUNDARY%",ier)
+     &           "*DISTRIBUTING%",ier)
             exit
           endif
 !     
@@ -669,7 +669,7 @@ c        itranslation=0
             read(textpart(2)(1:10),'(i10)',iostat=istat) ibounend
             if(istat.gt.0) then
               call inputerror(inpc,ipoinpc,iline,
-     &             "*BOUNDARY%",ier)
+     &             "*DISTRIBUTING%",ier)
               exit
             endif
           endif
@@ -1512,7 +1512,7 @@ c     !
           read(textpart(1)(1:10),'(i10)',iostat=istat) ibounstart
           if(istat.gt.0) then
             call inputerror(inpc,ipoinpc,iline,
-     &           "*BOUNDARY%",ier)
+     &           "*KINEMATIC%",ier)
             exit
           endif
 !     
@@ -1522,7 +1522,7 @@ c     !
             read(textpart(2)(1:10),'(i10)',iostat=istat) ibounend
             if(istat.gt.0) then
               call inputerror(inpc,ipoinpc,iline,
-     &             "*BOUNDARY%",ier)
+     &             "*KINEMATIC%",ier)
               exit
             endif
           endif

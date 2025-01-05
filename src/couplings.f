@@ -170,7 +170,7 @@
 !     
       if(name(1:1).eq.' ') then
         write(*,*)
-     &       '*ERROR reading *COUPLING: no CONTRAINT NAME given'
+     &       '*ERROR reading *COUPLING: no CONSTRAINT NAME given'
         write(*,*) '  '
         call inputerror(inpc,ipoinpc,iline,
      &       "*COUPLING%",ier)
@@ -423,7 +423,7 @@
             read(textpart(2)(1:10),'(i10)',iostat=istat) ibounend
             if(istat.gt.0) then
               call inputerror(inpc,ipoinpc,iline,
-     &             "*BOUNDARY%",ier)
+     &             "*KINEMATIC%",ier)
               return
             endif
           endif
