@@ -1513,23 +1513,23 @@ c     !
             ibounstart=1
             ibounend=3
           else
-          read(textpart(1)(1:10),'(i10)',iostat=istat) ibounstart
-          if(istat.gt.0) then
-            call inputerror(inpc,ipoinpc,iline,
-     &           "*KINEMATIC%",ier)
-            exit
-          endif
-!     
-          if(textpart(2)(1:1).eq.' ') then
-            ibounend=ibounstart
-          else
-            read(textpart(2)(1:10),'(i10)',iostat=istat) ibounend
+            read(textpart(1)(1:10),'(i10)',iostat=istat) ibounstart
             if(istat.gt.0) then
               call inputerror(inpc,ipoinpc,iline,
      &             "*KINEMATIC%",ier)
               exit
             endif
-          endif
+!     
+            if(textpart(2)(1:1).eq.' ') then
+              ibounend=ibounstart
+            else
+              read(textpart(2)(1:10),'(i10)',iostat=istat) ibounend
+              if(istat.gt.0) then
+                call inputerror(inpc,ipoinpc,iline,
+     &               "*KINEMATIC%",ier)
+                exit
+              endif
+            endif
           endif
           ibound=ibounend-ibounstart+1
           ibound=max(1,ibound)

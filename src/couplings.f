@@ -405,48 +405,48 @@
             ibounstart=1
             ibounend=3
           else
-          read(textpart(1)(1:10),'(i10)',iostat=istat) ibounstart
-          if(istat.gt.0) then
-            call inputerror(inpc,ipoinpc,iline,
-     &           "*KINEMATIC%",ier)
-            return
-          endif
-          if(ibounstart.lt.1) then
-            write(*,*) '*ERROR reading *KINEMATIC'
-            write(*,*) '       starting degree of freedom cannot'
-            write(*,*) '       be less than 1'
-            write(*,*) '  '
-            call inputerror(inpc,ipoinpc,iline,
-     &           "*KINEMATIC%",ier)
-            return
-          endif
-!     
-          if(textpart(2)(1:1).eq.' ') then
-            ibounend=ibounstart
-          else
-            read(textpart(2)(1:10),'(i10)',iostat=istat) ibounend
+            read(textpart(1)(1:10),'(i10)',iostat=istat) ibounstart
             if(istat.gt.0) then
               call inputerror(inpc,ipoinpc,iline,
      &             "*KINEMATIC%",ier)
               return
             endif
-          endif
-          if(ibounend.gt.3) then
-            write(*,*) '*WARNING reading *KINEMATIC'
-            write(*,*) '       resetting final degree of freedom'
-            write(*,*) '       to its maximum allowed value of 3'
-            write(*,*) '  '
-            ibounend=3
-          endif
-          if(ibounend.lt.ibounstart) then
-            write(*,*) '*ERROR reading *KINEMATIC'
-            write(*,*) '       initial degree of freedom cannot'
-            write(*,*) '       exceed final degree of freedom'
-            write(*,*) '  '
-            call inputerror(inpc,ipoinpc,iline,
-     &           "*KINEMATIC%",ier)
-            return
-          endif
+            if(ibounstart.lt.1) then
+              write(*,*) '*ERROR reading *KINEMATIC'
+              write(*,*) '       starting degree of freedom cannot'
+              write(*,*) '       be less than 1'
+              write(*,*) '  '
+              call inputerror(inpc,ipoinpc,iline,
+     &             "*KINEMATIC%",ier)
+              return
+            endif
+!     
+            if(textpart(2)(1:1).eq.' ') then
+              ibounend=ibounstart
+            else
+              read(textpart(2)(1:10),'(i10)',iostat=istat) ibounend
+              if(istat.gt.0) then
+                call inputerror(inpc,ipoinpc,iline,
+     &               "*KINEMATIC%",ier)
+                return
+              endif
+            endif
+            if(ibounend.gt.3) then
+              write(*,*) '*WARNING reading *KINEMATIC'
+              write(*,*) '       resetting final degree of freedom'
+              write(*,*) '       to its maximum allowed value of 3'
+              write(*,*) '  '
+              ibounend=3
+            endif
+            if(ibounend.lt.ibounstart) then
+              write(*,*) '*ERROR reading *KINEMATIC'
+              write(*,*) '       initial degree of freedom cannot'
+              write(*,*) '       exceed final degree of freedom'
+              write(*,*) '  '
+              call inputerror(inpc,ipoinpc,iline,
+     &             "*KINEMATIC%",ier)
+              return
+            endif
           endif
 !     
 !     generating the MPCs
