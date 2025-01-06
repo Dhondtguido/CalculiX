@@ -962,11 +962,18 @@ c        write(*,*) e1(1)*e2(1)+e1(2)*e2(2)+e1(3)*e2(3)
 !
 !     reading the degrees of freedom
 !     
+        ibounstart=0
         do
           call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &         ipoinp,inp,ipoinpc)
-          if((istat.lt.0).or.(key.eq.1)) return
-!     
+          if((istat.lt.0).or.(key.eq.1)) then
+            if(ibounstart.gt.0) return
+            write(*,*) '*ERROR reading *DISTRIBUTING'
+            write(*,*) '       degrees of freedom must be specified'
+            write(*,*) '  '
+            ier=1
+            return
+          endif
           read(textpart(1)(1:10),'(i10)',iostat=istat) ibounstart
           if(istat.gt.0) then
             call inputerror(inpc,ipoinpc,iline,
