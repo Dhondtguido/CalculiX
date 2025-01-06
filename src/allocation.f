@@ -1504,11 +1504,15 @@ c     !
           nboun_=nboun_+3*numnodes
         endif
 !     
+        ibounstart=0
         do
           call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &         ipoinp,inp,ipoinpc)
-          if((istat.lt.0).or.(key.eq.1)) exit
-!     
+          if((istat.lt.0).or.(key.eq.1)) then
+            if(ibounstart.gt.0) exit
+            ibounstart=1
+            ibounend=3
+          else
           read(textpart(1)(1:10),'(i10)',iostat=istat) ibounstart
           if(istat.gt.0) then
             call inputerror(inpc,ipoinpc,iline,
@@ -1526,6 +1530,7 @@ c     !
               exit
             endif
           endif
+          endif
           ibound=ibounend-ibounstart+1
           ibound=max(1,ibound)
           ibound=min(3,ibound)
@@ -1539,6 +1544,7 @@ c     !
             nmpc_=nmpc_+ibound*numnodes
             memmpc_=memmpc_+ibound*6*numnodes
           endif
+          if((istat.lt.0).or.(key.eq.1)) exit
         enddo
       elseif(textpart(1)(1:21).eq.'*MAGNETICPERMEABILITY') then
         ntmatl=0

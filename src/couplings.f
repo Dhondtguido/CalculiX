@@ -396,11 +396,15 @@
 !     
 !     reading the degrees of freedom
 !     
+        ibounstart=0
         do
           call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &         ipoinp,inp,ipoinpc)
-          if((istat.lt.0).or.(key.eq.1)) return
-!     
+          if((istat.lt.0).or.(key.eq.1)) then
+            if(ibounstart.gt.0) return
+            ibounstart=1
+            ibounend=3
+          else
           read(textpart(1)(1:10),'(i10)',iostat=istat) ibounstart
           if(istat.gt.0) then
             call inputerror(inpc,ipoinpc,iline,
@@ -443,6 +447,7 @@
      &           "*KINEMATIC%",ier)
             return
           endif
+          endif
 !     
 !     generating the MPCs
 !     
@@ -472,6 +477,7 @@
      &             iorientation)
             enddo
           endif
+          if((istat.lt.0).or.(key.eq.1)) return
         enddo
       elseif(textpart(1)(2:13).eq.'DISTRIBUTING') then
         if(surfkind.eq.'S') then
