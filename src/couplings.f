@@ -402,12 +402,8 @@
      &         ipoinp,inp,ipoinpc)
           if((istat.lt.0).or.(key.eq.1)) then
             if(ibounstart.gt.0) return
-            write(*,*) '*WARNING reading *KINEMATIC'
-            write(*,*) '       default degrees of freedom are'
-            write(*,*) '       assumed to be all translational'
-            write(*,*) '  '
             ibounstart=1
-            ibounend=3
+            ibounend=6
           else
             read(textpart(1)(1:10),'(i10)',iostat=istat) ibounstart
             if(istat.gt.0) then
@@ -435,22 +431,23 @@
                 return
               endif
             endif
-            if(ibounend.gt.3) then
-              write(*,*) '*WARNING reading *KINEMATIC'
-              write(*,*) '       resetting final degree of freedom'
-              write(*,*) '       to its maximum allowed value of 3'
-              write(*,*) '  '
-              ibounend=3
-            endif
-            if(ibounend.lt.ibounstart) then
-              write(*,*) '*ERROR reading *KINEMATIC'
-              write(*,*) '       initial degree of freedom cannot'
-              write(*,*) '       exceed final degree of freedom'
-              write(*,*) '  '
-              call inputerror(inpc,ipoinpc,iline,
-     &             "*KINEMATIC%",ier)
-              return
-            endif
+          endif
+          if(ibounend.gt.3) then
+            write(*,*) '*WARNING reading *KINEMATIC'
+            write(*,*) '       only translation degrees of'
+            write(*,*) '       freedom are supported'
+            write(*,*) '  '
+            if(ibounstart.gt.3) cycle
+            ibounend=3
+          endif
+          if(ibounend.lt.ibounstart) then
+            write(*,*) '*ERROR reading *KINEMATIC'
+            write(*,*) '       initial degree of freedom cannot'
+            write(*,*) '       exceed final degree of freedom'
+            write(*,*) '  '
+            call inputerror(inpc,ipoinpc,iline,
+     &           "*KINEMATIC%",ier)
+            return
           endif
 !     
 !     generating the MPCs
