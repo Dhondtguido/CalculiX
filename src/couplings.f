@@ -402,6 +402,10 @@
      &         ipoinp,inp,ipoinpc)
           if((istat.lt.0).or.(key.eq.1)) then
             if(ibounstart.gt.0) return
+            write(*,*) '*WARNING reading *KINEMATIC'
+            write(*,*) '       default degrees of freedom are'
+            write(*,*) '       assumed to be all translational'
+            write(*,*) '  '
             ibounstart=1
             ibounend=3
           else
