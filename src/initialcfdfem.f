@@ -23,10 +23,10 @@
      &     matname,inomat,mi,ithermal,dhel,jyy,ifreesurface,
      &     nbody,ipobody,ibody,xbody,depth,nodfreesurf,dgravity,xg)
 !     
-!     initial calculations for cfd applicatons:
+!     initial calculations for cfd applications:
 !     - determine the distance from the nearest solid surface
 !     (stored in yy and corresponding wall node in jyy)
-!     - determing the distance from the nearest in-flow node
+!     - determining the distance from the nearest in-flow node
 !     for solid surface nodes (stored in xsolidsurf)
 !     - determine the adjacent element height for each node 
 !     (stored in field dh)

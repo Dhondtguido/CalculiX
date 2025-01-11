@@ -346,7 +346,7 @@ void pardiso_solve_cp(double *b, ITG *neq,ITG *symmetryflag,ITG *inputformat,
   }
   iparmcp[1]=3;
   
-  /* pardiso_factor_cp has been called befor, MKL_NUM_THREADS=mthread_mkl_cp is set*/
+  /* pardiso_factor_cp has been called before, MKL_NUM_THREADS=mthread_mkl_cp is set */
 
   //printf(" number of threads =% d\n\n",mthread_mkl_cp);
 

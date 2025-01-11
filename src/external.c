@@ -145,7 +145,7 @@ static void treatExternalBehaviour(const char *n,
   check(ptr!=NULL,n,"unable to load function");
   if(calculix_searchExternalBehaviour(n)==NULL){
 #ifdef CALCULIX_EXTERNAL_BEHAVIOUR_DEBUG
-    fprintf(stdout,"treatExternalBehaviour: registring material (library '%s', function '%s')\n",l,f);
+    fprintf(stdout,"treatExternalBehaviour: registering material (library '%s', function '%s')\n",l,f);
 #endif
     RENEW(*rf,CalculixExternalBehaviour,*nrf+1);
     char *nn = malloc(81*sizeof(char));;
@@ -158,7 +158,7 @@ static void treatExternalBehaviour(const char *n,
     *nrf+=1;
 #ifdef CALCULIX_EXTERNAL_BEHAVIOUR_DEBUG
   } else {
-    fprintf(stdout,"searchExternalBehaviour: material is already registred\n");
+    fprintf(stdout,"searchExternalBehaviour: material is already registered\n");
 #endif
   }
 }
@@ -208,7 +208,7 @@ calculix_searchExternalBehaviour(const char* n){
     ++i;
   }
 #ifdef CALCULIX_EXTERNAL_BEHAVIOUR_DEBUG
-  fprintf(stdout,"searchExternalBehaviour: material not registred yet\n");
+  fprintf(stdout,"searchExternalBehaviour: material not registered yet\n");
 #endif
   return NULL;
 }
