@@ -36,7 +36,7 @@
 !
 !     INPUT:
 !
-!     x(3,n)             Carthesian coordinates of the nodes in the
+!     x(3,n)             Cartesian coordinates of the nodes in the
 !                        user mpc.
 !     u(3,n)             Actual displacements of the nodes in the
 !                        user mpc.     

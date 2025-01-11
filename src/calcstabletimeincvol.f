@@ -26,7 +26,7 @@
 !     **************
 !     ------------Wavespeed calculation------------------------CARLO MT
 !     Calculates the propagation wave speed in a material, selecting
-!     appropiate procedure between isotropic, single crystals, and
+!     appropriate procedure between isotropic, single crystals, and
 !     anisotropic materials. All other cases of orthotropy are treated
 !     as anisotropic.
 !     

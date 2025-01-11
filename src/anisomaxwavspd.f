@@ -37,8 +37,8 @@
 !             
 !        rho: double - Density of the material
 !        
-!       iorth: INTEGER - if the value is 1 : material is iorthtropic
-!                        for other vaules:   material is anisotropic
+!       iorth: INTEGER - if the value is 1:  material is iorthtropic
+!                        for other values:   material is anisotropic
 !                        
 !       OUTPUT:
 !       
