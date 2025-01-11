@@ -29,7 +29,7 @@
 !
 !
 !     lists which external faces have enough design variables on it
-!     ndesifaces       number of surfaces containing design varibales
+!     ndesifaces       number of surfaces containing design variables
 !     idesiface(i)   pointer to surface in ipkonfa(*)
 !
       ndesifaces=0

@@ -96,7 +96,7 @@
      &     2,3,6,5,8,15,11,14,
      &     3,1,4,6,9,13,12,15/
 !     
-!     new added data for the local coodinates for nodes
+!     new added data for the local coordinates for nodes
 !     
       data xquad /-1.d0,-1.d0,
      &     1.d0,-1.d0,

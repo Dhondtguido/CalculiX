@@ -143,7 +143,7 @@
         enddo
       enddo
 !
-!     deactivating the inner trangles of the crack mesh
+!     deactivating the inner triangles of the crack mesh
 !
       do j=1,ntri
 !

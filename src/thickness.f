@@ -20,7 +20,7 @@
      &     xo,yo,zo,x,y,z,nx,ny,nz,co,ifree,ndesia,ndesib,
      &     iobject,dgdxglob,nk,extnor,g0,coini)                       
 !!     
-!     calcualtion of the actual wall thickness      
+!     calculation of the actual wall thickness      
 !     
       implicit none
 !     
@@ -84,9 +84,9 @@
            endif
 !
 !          Calculate the normalized objective function and check if vectors
-!          of actual and inital design variable position still point in the
-!          same direction --> measure that both points lie on the same side
-!          of the bound verifiying that the bound has not been crossed 
+!          of actual and initial design variable position still point in
+!          the same direction --> measure that both points lie on the same 
+!          side of the bound verifying that the bound has not been crossed 
 !          (only relevant for minmembersize)
 !     
            if(objectset(1,iobject)(1:13).eq.'MINMEMBERSIZE') then

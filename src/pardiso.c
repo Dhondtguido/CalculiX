@@ -332,7 +332,7 @@ void pardiso_solve(double *b, ITG *neq,ITG *symmetryflag,ITG *inputformat,
   }
   iparm[1]=3;
   
-  /* pardiso_factor has been called befor, MKL_NUM_THREADS=mthread_mkl is set*/
+  /* pardiso_factor has been called before, MKL_NUM_THREADS=mthread_mkl is set */
 
   //  printf(" number of threads =% d\n\n",mthread_mkl);
 

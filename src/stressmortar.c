@@ -584,7 +584,7 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
   
   if(keepset==0){
     
-    /* relative convergence critera for semi-smooth Newton */
+    /* relative convergence criteria for semi-smooth Newton */
     
     if(max_ncf_n>1.e-3){*iflagact=1;}
     if((max_ncf_t[0]/((lm_t1_av+0.001)/(nstick+nslip+0.001))>9.e-4 ||

@@ -154,7 +154,7 @@ c            write(*,*) node
 !     to the structure)
 !
 !     if subsurface crack:
-!     node is an arbitary node belonging to the crack front
+!     node is an arbitrary node belonging to the crack front
 !     
 !     finding the relative node number
 !     

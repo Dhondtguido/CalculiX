@@ -17,7 +17,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
 !
-!     function to evaluate shape funciton dual shape funciton for
+!     function to evaluate shape function dual shape function for
 !     quad-quad mortar method \f$ shape(\xi,\eta) \f$
 !     see phd-thesis Sitzmann Chapter 4.1.
 !      

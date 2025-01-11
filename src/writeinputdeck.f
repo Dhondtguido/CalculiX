@@ -877,7 +877,7 @@ c     enddo
 !
 !             looking for a dependent component which is different
 !             from the dependent component (= inor(1)) for the condition in
-!             sensitivity direction (which is writting in routine
+!             sensitivity direction (which is writing in routine
 !             writeinputdeck2.f from the feasible direction procedure)
 !
               do j=1,3

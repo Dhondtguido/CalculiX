@@ -421,7 +421,7 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
     // than what is shown in Studer 2009.
     // For full FE it should play a big role in performance, unless the total of contact DOF is very high.
     // We control this parameter with OMEGA. Recommended is 100% (no modification) No more than 200% or less than 100%.
-    // should not be necesary to decrease it < 100%
+    // should not be necessary to decrease it < 100%
     
     omega=1.0;
 

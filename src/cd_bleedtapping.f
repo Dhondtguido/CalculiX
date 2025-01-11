@@ -105,7 +105,7 @@
             write(*,*) 'the calculation will proceed with DAB=100.'
          endif
 !     
-!     determination of cd with the caracteristics
+!     determination of cd with the characteristics
 !     
          call ident(cdx,dab,index,id)
          if(id.eq.0) then

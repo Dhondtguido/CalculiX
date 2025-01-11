@@ -540,7 +540,7 @@ c                write(*,*) '       zero elements'
             else
 !     
 !     no new mesh, only numbers may have changed:
-!     necav elemetns
+!     necav elements
 !     
               do i=1,necav
                 iel=inewel(i)
