@@ -145,7 +145,7 @@ c     enddo
 !     
       if(ndesi.eq.0) then
         write(*,*) '*ERROR reading *GEOMETRIC TOLERANCE:'
-        write(*,*) '     no nodes for the compuation of '
+        write(*,*) '     no nodes for the computation of '
         write(*,*) '     the random field have been defined.'
         call inputerror(inpc,ipoinpc,iline,
      &       "*GEOMETRIC TOLERANCE%",ier)

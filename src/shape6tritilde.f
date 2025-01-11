@@ -17,7 +17,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
 !
-!     function to evaluate transformed shape funciton \f$ shape(\xi,\eta) \f$
+!     function to evaluate transformed shape function \f$ shape(\xi,\eta) \f$
 !     for quad-quad mortar method, see phd-thesis Sitzmann Chapter 4.1.
 !     
 !     Author: Saskia Sitzmann
