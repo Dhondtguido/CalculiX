@@ -23,7 +23,7 @@
      &     istartset,iendset,ialset,nset,iturbulent,inomat,ielmat,
      &     ipface,nknew)
 !     
-!     preliminary calculations for cfd applicatons:
+!     preliminary calculations for cfd applications:
 !     - determining the external faces of the mesh and storing
 !     them in fields nelemface and sideface
 !     - determining the nodes belonging to solid surfaces and
@@ -502,7 +502,7 @@
         call nident(nelemface,i,nface,ipface(i))
       enddo
 !     
-!     filling inomat: asigns a material to fluid nodes. 
+!     filling inomat: assigns a material to fluid nodes. 
 !     (a fluid nodes is not assumed to be part of two
 !     different fluids)
 !     

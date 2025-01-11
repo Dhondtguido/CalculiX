@@ -38,7 +38,7 @@
 !     cs(4,mcs): # nodes on the independent side (for fluids: upper bound)
 !     cs(5,mcs): # sectors to be plotted
 !     cs(6..8,mcs): first point on cyclic symmetry axis
-!     cs(9..11,mcs): second point on cylic symmetry axis; turning
+!     cs(9..11,mcs): second point on cyclic symmetry axis; turning
 !     the slave surface clockwise about the cyclic symmetry axis
 !     while looking from the first point to the second point one
 !     arrives at the master surface without leaving the body

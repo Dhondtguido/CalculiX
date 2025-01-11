@@ -45,7 +45,7 @@ performed in a parallel way. In CalculiX one can
   default is 1. If both are set, CCX\_NPROC\_STIFFNESS takes
   precedence. The maximum number of cores is detected automatically by CalculiX
   by using
-  the sysconf(\_SC\_NPROCESSORS\_CONF) function. It can be overriden by the
+  the sysconf(\_SC\_NPROCESSORS\_CONF) function. It can be overridden by the
   user by means of environment variable NUMBER\_OF\_CPUS.
 
   Notice that older GNU-compiler versions (e.g. gcc 4.2.1) may have problems with this
@@ -81,7 +81,7 @@ performed in a parallel way. In CalculiX one can
   default is 1. If both are set, CCX\_NPROC\_RESULTS takes
   precedence. The maximum number of cores is detected automatically by CalculiX
   by using
-  the sysconf(\_SC\_NPROCESSORS\_CONF) function. It can be overriden by the
+  the sysconf(\_SC\_NPROCESSORS\_CONF) function. It can be overridden by the
   user by means of environment variable NUMBER\_OF\_CPUS. Notice that if a
   material user subroutine (Sections \ref{user} and \ref{thuser}) is used, certain rules have to be complied with in
   order to allow parallelization. These include (this list is possibly not exhaustive):
@@ -95,20 +95,20 @@ performed in a parallel way. In CalculiX one can
 \item calculate the viewfactors for thermal radiation computations in parallel. No special compilation flag is needed. At execution
   time the environment variable OMP\_NUM\_THREADS or the environment variable CCX\_NPROC\_VIEWFACTOR must be set to the number of cores,
   default is 1. If both are set, CCX\_NPROC\_VIEWFACTOR takes precedence. The maximum number of cores is detected automatically by CalculiX by using
-  the sysconf(\_SC\_NPROCESSORS\_CONF) function. It can be overriden by the
+  the sysconf(\_SC\_NPROCESSORS\_CONF) function. It can be overridden by the
   user by means of environment variable NUMBER\_OF\_CPUS.
 
 \item perform several operations in CFD calculations (computational fluid
   dynamics) in parallel. No special compilation flag is needed. At execution
   time the environment variable OMP\_NUM\_THREADS or the environment variable CCX\_NPROC\_CFD must be set to the number of cores,
   default is 1. If both are set, CCX\_NPROC\_CFD takes precedence. The maximum number of cores is detected automatically by CalculiX by using
-  the sysconf(\_SC\_NPROCESSORS\_CONF) function. It can be overriden by the
+  the sysconf(\_SC\_NPROCESSORS\_CONF) function. It can be overridden by the
   user by means of environment variable NUMBER\_OF\_CPUS.
 
 \item Calculate the magnetic intensity by use of the Biot-Savart law in parallel. No special compilation flag is needed. At execution
   time the environment variable OMP\_NUM\_THREADS or the environment variable CCX\_NPROC\_BIOTSAVART must be set to the number of cores,
   default is 1. If both are set, CCX\_NPROC\_BIOTSAVART takes precedence. The maximum number of cores is detected automatically by CalculiX by using
-  the sysconf(\_SC\_NPROCESSORS\_CONF) function. It can be overriden by the
+  the sysconf(\_SC\_NPROCESSORS\_CONF) function. It can be overridden by the
   user by means of environment variable NUMBER\_OF\_CPUS.
 
 \item Perform several vector and matrix operations needed by the SLATEC
@@ -633,7 +633,7 @@ pu
 
 This is an example for a complex frequency calculation. A disk with an outer
 diameter of 10, an inner diameter of 2 and a thickness of 0.25 is mounted on a hollow shaft with
-outer diamter 2 and inner diameter 1 (example rotor.inp in het test
+outer diameter 2 and inner diameter 1 (example rotor.inp in het test
 examples). The disk is mounted in het middle of the shaft, the ends of which
 are fixed in all directions. The length of the shaft on either side of the
 disk is 50. The input deck for this example is shown above. 
@@ -1611,7 +1611,7 @@ specific heat is mandatory. Inviscid flow is triggered by the definition of a
 zero viscosity and a zero thermal conductivity (therefore, the viscous terms
 in the conservation of momentum and conservation of energy equation disappear). Slip boundary conditions at the airfoil surface are
 realized through
-equations. The specific gas constant is defined with the appopriate keyword. It
+equations. The specific gas constant is defined with the appropriate keyword. It
 only depends on the kind of gas and not on the temperature. The physical
 constants card is used to define absolute zero for the temperature scale. This
 information is needed since the temperature in the gas equation must be specified in
@@ -1668,7 +1668,7 @@ The smoothing coefficient may be further reduced by choosing smaller CFD
 subincrements. The fifth entry underneath the *CFD-card is the factor by which
 the CFD increment size calculated based on physical parameters such as
 viscosity and local velocity is divided. Default is 1.25 for compressible
-calculatons and 1. for incompressible calculations. The factor cannot be
+calculations and 1. for incompressible calculations. The factor cannot be
 less than the default. For instance, a factor of 5. implies that the time
 increment is chosen as 20 \% of the physically based time increment. Larger
 factors will decrease the need for shock smoothing but also linearly increase
@@ -1746,7 +1746,7 @@ closest node near the wall at L=1 from
 the inlet, where $y^+=u_{\tau}y/\nu$ and $u_{\tau}=\sqrt{\tau/\rho}$; $y$ is
 the distance from the wall and $\tau$ is the shear stress parallel to the wall ). The Mach number is shown in Figure \ref{carterm}. The shock wave
 emanating from the front of the plate and the separation and reattachment
-compression fan at the kink in the plate are cleary visible. One also observes
+compression fan at the kink in the plate are clearly visible. One also observes
 the thickening of the boundary layer near the kink leading to a recirculation
 zone. Figure \ref{carteru} shows the velocity component parallel to the inlet
 plate orientation across a line perpendicular to a plate at unit length from
@@ -1784,7 +1784,7 @@ airfoil. Results for this problem were reported by \cite{Mittal}. The entrance
 Mach number is 0.85, the Reynolds number is 2000. Of interest is the steady
 state solution. In CalculiX this is obtained by performing a transient
 CFD-calculation up to steady state. The input deck for this example is called
-naca012\_visc\_mach0.85.inp and can be found amoung the CFD test
+naca012\_visc\_mach0.85.inp and can be found among the CFD test
 examples. Basing the Reynolds number on the unity chord length of the airfoil,
 a unit entrance velocity
 and a unit entrance density leads to a dynamic viscosity of $\mu=5 \times
@@ -3196,7 +3196,7 @@ interpolated linearly within the C3D10T element.
 
 Notice that the linear interpolation of the initial temperatures is standard
 for the C3D20 and C3D20R element. For the C3D10 element it is not to keep the
-compatibily with ABAQUS.
+compatibility with ABAQUS.
  
 \subsubsection{Six-node wedge element (C3D6 and F3D6)}
 The C3D6 element is a general purpose wedge element (2 integration points). The shape functions can be found in \cite{ABAQUS}. The node numbering follows the convention of Figure \ref{sixnode}.
@@ -4405,7 +4405,7 @@ contain at most 256 nodes and only translational degrees of freedom (=dof) are
 allowed (dof 1 for the global x-axis, dof 2 for the global y-axis and dof 3
 for the global z-axis). In addition, the matrix should
  receive a name containing at most 4 characters. Names of existing user
- elements exluding the ``U'' in front should not be used, such as ``S3''. The nodes belonging to the element may be subject to Single Point Constraints, Multiple Point
+ elements excluding the ``U'' in front should not be used, such as ``S3''. The nodes belonging to the element may be subject to Single Point Constraints, Multiple Point
  Constraints or point loads, but not to distributed loading (neither facial
  nor volumetric). Since the location of any integration points is not known,
  no element values such as stresses or strains are calculated. Only nodal
@@ -4758,7 +4758,7 @@ $\rho v A=$ constant can be written in the following differential form:
 
 \noindent Since $\sqrt{\frac{dp}{d \rho}}$ is the speed of sound (use the
 isentropic relation $p \propto \rho^{\kappa}$ and the ideal gas equation
-$p=\rho r T$ to arrive at $dp/d\rho = \kappa r T = c^2$), one arives at:
+$p=\rho r T$ to arrive at $dp/d\rho = \kappa r T = c^2$), one arrives at:
 
 \begin{equation}
 \frac{d A}{A}=\frac{d p}{\rho v^2}
@@ -5190,7 +5190,7 @@ runs like
 \end{equation}
 
 \noindent for $n>1$ is called the carry-over factor. The meaning of the
-paramters $n, s$ and $t$ is explained underneath. Equation
+parameters $n, s$ and $t$ is explained underneath. Equation
 (\ref{eqlabyrinth}) has a similar form as the orifice equation, i.e. for small
 downstream pressures the flow becomes supersonic and choking occurs. To
 determine the pressure ration $x=\frac{p_{t_2}}{p_{t_1}}$ at which choking occurs the following
@@ -6697,7 +6697,7 @@ For the free vortex the value of the circumferential velocity $C_t$ of the gas a
 parameter. It can be defined by specifying the number $n$ of the preceding
 element, usually a preswirl nozzle or another vortex, imparting the circumferential
 velocity. In that case the value $N$ is not used. For centrifugal flow the value of the imparted
-circumferential velocity $C_{t,theorical,i}$ can be further modified by the swirl loss factor $K_1$
+circumferential velocity $C_{t,theoretical,i}$ can be further modified by the swirl loss factor $K_1$
 defined by
 
 \begin{equation}
@@ -6974,9 +6974,9 @@ doing so requires the following steps:
   chamber-connecting-like (i.e. the element connects large chambers and the
   total and static temperatures at the end nodes are equal).
 \item choose a type name. For a pipe-like element the name has to start with
-  ``UP'' followed by 5 characters to be choosen freely by the user (UPxxxxx). For a
+  ``UP'' followed by 5 characters to be chosen freely by the user (UPxxxxx). For a
   chamber-connecting-like element it has to start with ``U'', followed by a
-  character unequal to ``P'' and followed by 5 characters to be choosen freely
+  character unequal to ``P'' and followed by 5 characters to be chosen freely
   by the user (Uyxxxxx, y unequal to ``P'').
 \item decide on the number of constants to describe the element. This number
   has to be specified on the \htmlref{*FLUID SECTION}{fluidsection} card with
@@ -7540,7 +7540,7 @@ Q=b h_c \sqrt{2 g (h-h_c \sqrt{1 - S_0^2})},
 \end{equation}
 
 where $h_c$ is the critical depth. The critical depth is the value of $h_c$ in
-the above equation for which $Q$ is maximal. For a rectangular cross secton
+the above equation for which $Q$ is maximal. For a rectangular cross section
 $h_c=2h/3$. If the gate door touches the water and the water curve is a backwater curve
 (governed by downstream boundary conditions, curve B in Figure  \ref{sluicegate})) the volumetric flow is given by
 
@@ -7746,7 +7746,7 @@ scaled by a factor exceeding one). This point will be connected to the original
 frontwater curve ahead of the contraction by a hydraulic jump.
 
 Another way of looking at this is by realizing that the increased specific
-energy needed to accomodate the given flow within the contraction can only be
+energy needed to accommodate the given flow within the contraction can only be
 obtained by
 decreasing the energy loss upstream of the contraction. This is done by a
 decrease of the friction, obtained by lifting the supercritical flow to a
@@ -7918,7 +7918,7 @@ line beneath the *FLUID SECTION,TYPE=DISCONTINUOUS SLOPE card:
   topology of the element; for this element the slope must be given
   explicitly and is not calculated from the
   coordinates of the end nodes belonging to the element).
-\item the slope $S_0 = \sin \phi, -1<S_0<1$ at node 2 (thrid node in the
+\item the slope $S_0 = \sin \phi, -1<S_0<1$ at node 2 (third node in the
   topology of the element; for this element the slope must be given
   explicitly and is not calculated from the
   coordinates of the end nodes belonging to the element).
@@ -8000,7 +8000,7 @@ In a single point constraint one or more degrees of freedom are fixed for a
 given node. The prescribed value can be zero or nonzero. Nonzero SPC's cannot
 be defined outside a step. Zero SPC's can be defined inside or outside a
 step. SPC's are defined with the keyword \htmlref{*BOUNDARY}{boundary}. The
-mechanical degrees of freedom are labeld 1 through 6 (1 = translation in x, 2
+mechanical degrees of freedom are labelled 1 through 6 (1 = translation in x, 2
 = translation in y, 3 = translation in z, 4 = rotation about x, 5 = rotation
 about y, 6 = rotation about z), the thermal degree of freedom is labeled
 11. Rotational degrees of freedom can be applied to beam and shell elements
@@ -8722,7 +8722,7 @@ a_p=\sum _{i=1} ^N  A_i/{n_s}_i.
 The minus sign in Equation (\ref{forcn2f}) stems from the fact that the
 internal force is minus the external force (the external force is the force
 the master face exerts on the slave node). Replacing the normal in  Equation
-(\ref{forcn2f}) by the Jacobian vector devided by its norm and taking the
+(\ref{forcn2f}) by the Jacobian vector divided by its norm and taking the
 derivative w.r.t. $\boldsymbol{ u_i}$, where $i$ can be the slave node or any node belonging
 to the master face one obtains:
 
@@ -9705,7 +9705,7 @@ using Mortar contact:
   \item The mortar method cannot be combined with the penalty method in one
     input file. 
   \item Using the \htmlref{*CYCLIC SYMMETRY MODEL}{cyclicsymmetrymodel} option, one has
-    to make sure that a one-to-one connection is made if hte slave surface
+    to make sure that a one-to-one connection is made if the slave surface
     touches the cyclic symmetry boundary. If non-matching meshes are used, one
     has to make sure that the contact surfaces touching the cyclic symmetry
     boundary are removed from the slave surface definition.
@@ -9724,13 +9724,13 @@ using Mortar contact:
     defined and consequently no contact is found)
   \item Make sure that you choose a small first increment in the step if you
     expect large relative displacements in tangential direction. A minimum of
-    four increments is recommeded. Recall that the direction of the normal and
+    four increments is recommended. Recall that the direction of the normal and
     tangential directions and the surface segmentation is only performed once
     per increment.
   \item Shrink is always active in CalculiX, i.e. overlaps are resolved
     increment-wise across the step.
-  \item Sometimes the adpative time stepping using mortar contact is too
-    senstive. Try *STEP,DIRECT in that case.
+  \item Sometimes the adaptive time stepping using mortar contact is too
+    sensitive. Try *STEP,DIRECT in that case.
 \end{itemize}
 
 \subsubsection{\label{masslesscontact}Massless Node-to-Face Contact}
@@ -9978,7 +9978,7 @@ normal contact force $\lambda$ one can write:
 
 which turns a set relationship into a nonlinear equation, which is easier to
 solve. Notice that solving for
-a proximal point usually boils down to a projection on the admissable set.
+a proximal point usually boils down to a projection on the admissible set.
 
 If friction is present the feasible domain consists of the positive real
 numbers (including zero) for the normal contact, and a disk with a radius
@@ -10291,7 +10291,7 @@ can simulate this behavior. In fact, the material coded as an example in
 umat\_abaqusnl.f is exactly such material.
 
 For finite strain (visco)plasticity, triggered by the keywords *PLASTIC and/or
-*CREEP in combination with the paramter NLGEOM on the *STATIC card, a
+*CREEP in combination with the parameter NLGEOM on the *STATIC card, a
 hyperelastic-type potential is used for the elastic range. For details the
 reader is referred to \cite{Dhondt}, Section 6.3.1.
 
@@ -10414,7 +10414,7 @@ $\boldmath{F}=\boldmath{R}\boldmath{U}$, where $\boldmath{R}$ is the rotation te
 good for? In some applications (e.g. in linear elastic fracture mechanics) you
 need linear strains exhibiting the appropriate stress and strain
 singularities (e.g. at the crack tip). However, you would still like to include
-appications with large rotations. The above formulation takes care of exactly
+applications with large rotations. The above formulation takes care of exactly
 these requirements.
 
 In order to apply this formulation in CalculiX, the user has to specify the
@@ -10820,7 +10820,7 @@ looking in the direction of $(-1,-1,-1)$. In the sectors of interest the
 normal to the surface $\boldsymbol{a}$ is shown. For sector 1 this is
 immediately clear from Equation (\ref{yieldmc}) which can be written as
 $(k,0,-1) \cdot (\sigma_1,\sigma_2,\sigma_3) -2c \sqrt{k} =0$. A vector along
-the interection lines of the pyramid faces is obtained by taking the cross
+the intersection lines of the pyramid faces is obtained by taking the cross
 product of the normal of the neighboring faces,e.g. $\boldsymbol{r_6} =
 \boldsymbol{a_6} \times \boldsymbol{a_1}$. The apex of the pyramid is obtained
 by substituting $\sigma_1=\sigma_3$ in  Equation (\ref{yieldmc}): it yields
@@ -11072,7 +11072,7 @@ yield surface (characterized by the equation $\boldsymbol{s_a} +\lambda
   (\boldsymbol{s_1} \times \boldsymbol{s_2}) \le 0.
 \end{equation}
 
-and is called region II of sector 1. Similary for the space in between region
+and is called region II of sector 1. Similarly for the space in between region
 I and sector 6 and underneath the apex satisfying
 
 \begin{equation}
@@ -11360,7 +11360,7 @@ Equation(\ref{prescleareq}) and Figure (\ref{contact_lin}). Replacing
 ``overclosure'' and ``pressure'' by ``principal strain'' and ``principal
 stress'' in that figure yields the function f. Although compressive stresses
 are suppressed, they are not zero altogether. The maximum allowed compressive
-stress (in absolute value) amounts to $E \epsilon / \pi$. Instead of chosing $E$ and $\epsilon$ the
+stress (in absolute value) amounts to $E \epsilon / \pi$. Instead of choosing $E$ and $\epsilon$ the
 user defines $E$ and the maximum allowed compressive stress, from which
 $\epsilon$ is determined.
 
@@ -11398,7 +11398,7 @@ leifer2 and concretebeam in the test example suite.
 This is a model which was conceived by G. Holzapfel et al. \cite{Holzapfel}
 to model arterial walls. It is an anisotropic hyperelastic model,
 consisting of an isotropic neo-Hooke potential for the base material,
-complemented by exponential strenghtening terms in fiber
+complemented by exponential strenghthening terms in fiber
 direction. The mathematical form of the potential satisfies:
  
 \begin{equation}
@@ -12370,7 +12370,7 @@ for nodal diameters 0 or 1 must be performed in separate steps.
 The mass normalization of a sector subject to cyclic symmetry is done based on
 the mass of the sector itself. If the normalization were done based on
 360$^\circ$ the modes corresponding to a nodal diameter of 0 and M/2 (if M is
-even) would have to be devided by $\sqrt{M}$, the others by $\sqrt{M/2}$.  
+even) would have to be divided by $\sqrt{M}$, the others by $\sqrt{M/2}$.  
 
 \begin{figure}
 \epsfig{file=multistage.eps,width=10cm}
@@ -12819,7 +12819,7 @@ does not make sense here, i.e. LOAD CASE = 1 by default.
 A steady state dynamic analysis can also be performed for a cyclic symmetric
 structure. To this end, the eigenmodes must have been determined for all
 relevant modal diameters. For a cyclic steady state dynamic analysis the
-following limiations apply:
+following limitations apply:
 
 \begin{enumerate}
 \item Nonzero boundary conditions are not allowed.
@@ -12913,7 +12913,7 @@ element. For an isotropic material $c$ satisfies \cite{Monjaraz}:
 
 It corresponds to the wave speed of longitudinal waves, which are faster than
 transversal waves, for which the speed amounts to $\sqrt{\mu/\rho }$.  For the special case of single crystal materials, which are anistropic
-materials characterized by three independent elastic contants, the derivation
+materials characterized by three independent elastic constants, the derivation
 is more intricate \cite{Monjaraz}. Here, the derivation will be given for
 general anisotropic materials.
 
@@ -13017,7 +13017,7 @@ one obtains the following form for the equation of motion:
   \Sigma_{ijkl} u_{k,li} = \rho \ddot{u}_j.
 \end{equation}
 
-Sustitution of the wave equation now yields:
+Substitution of the wave equation now yields:
 
 \begin{equation}
   - \Sigma_{ijkl}k_l k_i p_k = - \rho \omega^2 p_j.
@@ -13229,7 +13229,7 @@ To accelerate explicit dynamic calculations selective mass scaling can be used
 Thesis \cite{Czech}. Applying selective mass scaling the time increment can be
 increased, which reduces the overall computational time. The selective mass
 scaling procedure starts from the lumped mass matrix, which for linear
-elements and one global coordinate direction looks like (examplary for a C3D8-element):
+elements and one global coordinate direction looks like (exemplary for a C3D8-element):
 
 \begin{equation}
   M=\frac{m^e}{8} \boldsymbol{I},
@@ -13293,12 +13293,12 @@ can be appropriately visualized. If the mass of too many elements is
 redistributed, the lowest eigenfrequencies might be affected, leading to wrong
 results. Therefore, the maximum allowed time increment should be limited by a
 maximum allowed change of the lowest eigenfrequency by, e.g. 1 \%. It is the
-responsability of the user to check this by performing a
+responsibility of the user to check this by performing a
 \htmlref{*FREQUENCY}{frequency} calculation in which the desired time step is
 provided as the fourth entry underneath the *FREQUENCY card. In addition, the
 value of $\alpha$ can also be specified.
 
-For spring elements the mimimum time
+For spring elements the minimum time
 increment specified by the user is obtained by reducing the spring
 stiffness. CalculiX stores the maximum spring stiffness reduction to standard
 output. 
@@ -14390,7 +14390,7 @@ is 340 m/s) and $c_p$ for gases is usually lower.
 
 The turbulent flow in open channels can be approximated by one-dimensional
 network calculations. For the theoretical background the reader is referred to
-\cite{Chanson} and expecially \cite{Berlamont2} (in Dutch). \cite{Crossley}
+\cite{Chanson} and especially \cite{Berlamont2} (in Dutch). \cite{Crossley}
 contains information on the solution
 of transient problems and (transient and steady state) analytical examples. The governing
 equation is the Bresse equation, which is a special form of the Bernoulli
@@ -14513,7 +14513,7 @@ both the denominator and numerator are negative, so the slope of $dh/ds$ is
 positive. For high enough values of $h$ both are positive, which also leads to
 a positive slope for $dh/ds$. Only for values of $h$ in between the normal and critical
 depth the slope $dh/ds$ is negative. For low values of $S_0$ the normal depth
-exceeds the critical depth and the corresopnding channel slope (slope of the
+exceeds the critical depth and the corresponding channel slope (slope of the
 bottom) is called weak. The corresponding water curves are denoted by A1, A2 and A3 depending on whether the curve is above
 the normal depth, in between normal depth and critical depth or below the
 critical depth, respectively. For high values of $S_0$ the critical
@@ -14767,7 +14767,7 @@ pursued up to steady state or up to the number of iterations specified by the
 user.
 
 The input deck format for CFD-calculations is very similar to structural
-calculations. Noticable differences are:
+calculations. Noticeable differences are:
 
 \begin{itemize}
 \item boundary conditions are specified by the *BOUNDARY card. The velocity
@@ -15771,7 +15771,7 @@ leading to:
   h \overline{f_i}   , \;\;\;\;\;  i=1,2    
 \end{align}
 
-were an artifical pressure $\overline{p}$ has been defined by:
+were an artificial pressure $\overline{p}$ has been defined by:
 
 \begin{equation} 
 \overline{p} :=  \frac{g(h^2 -H^2)}{2}.
@@ -15883,7 +15883,7 @@ $\mu=\lambda=0$. No specific gas constant has to be defined. The parameter
 COMPRESSIBLE on the \htmlref{*CFD}{cfd} card has to be replaced by the SHALLOW
 WATER parameter. The pressure initial and boundary conditions have to be
 replaced by conditions for $\overline{p}=g(h^2-H^2)/2$. If $H$ corresponds to
-the fluid surface in rest, the initial conditions ususally reduce to
+the fluid surface in rest, the initial conditions usually reduce to
 $\overline{p}=0$. 
 
 \subsubsection{Substructure Generation \label{substructure}}
@@ -16056,8 +16056,8 @@ In what follows the references \cite{Silvester} and \cite{Kuczmann} have been
 used. In inductive heating applications the domain of interest
 consists of the objects to be heated (= workpiece), the surrounding air and the coils
 providing the current leading to the induction. It will be assumed that the
-coils can be considered seperately as a driving force without feedback from
-the system. This requires the coils to be equiped with a regulating system
+coils can be considered separately as a driving force without feedback from
+the system. This requires the coils to be equipped with a regulating system
 counteracting any external influence trying to modify the current as intended
 by the user. 
 
@@ -16299,7 +16299,7 @@ normal component of $\boldsymbol{A}$ has to vanish along $\Gamma_{12}$ \cite{Sil
 To obtain the weak formulation of the above equations they are multiplied with
 trial functions and integrated. The trial functions will be denoted by
 $\delta \boldsymbol{A}, \delta V$ and $\delta P$.  Starting with Equation(\ref{meq4}) one obtains
-after multiplication with $\boldsymbol{\delta A}$ and taking the vector identies
+after multiplication with $\boldsymbol{\delta A}$ and taking the vector identities
 
 \begin{equation}
 \nabla \cdot (\boldsymbol{a} \times \boldsymbol{b})=(\nabla \times
@@ -16734,7 +16734,7 @@ to induce the skin effect in structures \cite{Fitzpatrick}, i.e. the electric fi
 concentrated in a thin layer underneath the surface. To order to capture this
 effect a sufficiently fine mesh is needed in that area.
 
-Experience has shown that the matrices inthe above systems of equations are
+Experience has shown that the matrices in the above systems of equations are
 not always well conditioned, especially if the temperature is included and a
 coupled thermal-electromagnetic system is solved. To improve the conditiono a
 scaling of the diagonal terms can be introduced. For a diagonal term $a_{ii}$
@@ -16836,7 +16836,7 @@ or
     s}-\frac{\partial K}{\partial s}  \cdot U \right).
 \end{equation}
 
-Consequently one arives at the equation:
+Consequently one arrives at the equation:
 
 \begin{equation}
 \label{sensitivityeq}
@@ -16847,7 +16847,7 @@ Consequently one arives at the equation:
 For the speed-up of the calculations it is important to perform the
 calculation of the term $\frac{\partial K}{\partial s}  \cdot U$ on element
 level and to calculate the term $\frac{\partial G}{\partial U} K^{-1}$ before
-multiplying with the last term in brackets. Furhermore,  $\frac{\partial
+multiplying with the last term in brackets. Furthermore,  $\frac{\partial
   G}{\partial U} K^{-1}$ should be calculated by solving an equation system
 and not by inverting $K$.
 
@@ -17053,7 +17053,7 @@ p=N(N^T N)^{-1} N^T b.
 \end{equation}
 
 The complement of the projection vector is $I-N(N^T N)^{-1} N^T$. Denoting
-$A=(N^T N)^{-1}$, the constrained sensitivies $c$ are obtained from the
+$A=(N^T N)^{-1}$, the constrained sensitivities $c$ are obtained from the
 unconstrained sensitivities $b$ by:
 
 \begin{equation}
@@ -17430,7 +17430,7 @@ and
    increment.
  \item If it does not lead to HCF propagation, LCF propagation is
    considered for the static loading in which the LCF loading of the
-   step to which HCF applies is repaced by LCF+HCF loading. The
+   step to which HCF applies is replaced by LCF+HCF loading. The
    propagation is calculated as usual.
  \end{itemize}
 
@@ -17866,7 +17866,7 @@ In CalculiX, implicit dynamics is implemented using the $\alpha$-method
 \cite{Dhondt}. The method is unconditionally stable and second order
 accurate. The parameter $\alpha \in [-1/3,0]$ represents high frequency
 damping. The lower the value, the more high frequency dissipation is
-introduced. This is frequently desired in order to reduce noice. However, it
+introduced. This is frequently desired in order to reduce noise. However, it
 also leads to energy loss. 
 
 An analysis has shown that the usual static convergence criteria have to be
@@ -18726,7 +18726,7 @@ The parameter SECTION defines the
 cross section of the beam and takes the value RECT for a
 rectangular cross section, CIRC for an elliptical cross section, PIPE for a pipe cross
 section, BOX for a box cross section and GENERAL for a section defined by its
-area and moments of intertia. A
+area and moments of inertia. A
 rectangular cross section is defined by its thickness in two
 perpendicular directions, an elliptical cross section is defined by
 the length of its principal axes. These directions are defined by
@@ -19967,7 +19967,7 @@ away from the actual maximum. The target stress must be positive.
 \item EQUIVALENT PLASTIC STRAIN: the maximum equivalent plastic strain of the total structure or of a
   subset if a node set is defined. The maximum is approximated by the
   Kreisselmeier-Steinhauser function. The target equivalent plastic strain
-  must be postive.
+  must be positive.
 \end{itemize}
 
 \bigskip
@@ -20478,7 +20478,7 @@ procedure is approximated by a linear connection between:
   the solution correction in the present iteration (corresponds to a line
   search parameter of one).
 \end{itemize}
-For details of the line seach algorithm the reader is referred to \cite{Zienkiewicz}.
+For details of the line search algorithm the reader is referred to \cite{Zienkiewicz}.
 
 With the NETWORK parameter the convergence criteria for network
 iterations can be changed. The parameters $c_{1t}$, $c_{1f}$ and $c_{1p}$
@@ -20491,7 +20491,7 @@ temperature, mass flow, pressure and geometry change in the actual network
 iteration is not allowed to exceed, respectively. The same applies to the
 parameters $a_{1t}$, $a_{1f}$, $a_{1p}$, $a_{2t}$, $a_{2f}$, $a_{2p}$ and
 $a_{2a}$, except that they are absolute values and not
-fractions, e.g. the mean enery balance residual should not exceed $a_{1t}$ etc. Therefore they have appropriate units.
+fractions, e.g. the mean energy balance residual should not exceed $a_{1t}$ etc. Therefore they have appropriate units.
 
 With the CFD parameter the maximum number of iterations in certain
 fluid loops can be influenced. A fluid calculation within CalculiX is
@@ -20523,7 +20523,7 @@ convergence (delcon). The corresponding absolute difference, which may not be
 exceeded is defined as the number of contact elements in the previous
 iteration times delcon.
 \item the fraction of contact elements which is removed in an
-aleatoric way before repeting an increment in case of a local mimimum in the
+aleatoric way before repeating an increment in case of a local minimum in the
 solution (alea)
 \item the integer factor by which the normal spring stiffness (in
 case of linear pressure-overclosure) and stick slope are reduced in case of
@@ -20901,7 +20901,7 @@ system to the coupling constraint. Notice that this does not induce a change
 of coordinate system in the reference node (for this a *TRANSFORM card is
 needed). For distributing couplings only rectangular local systems are
 allowed, for kinematic couplings both rectangular and cylindrical systems are
-alllowed, cf. \htmlref{*ORIENTATION}{orientation}.
+allowed, cf. \htmlref{*ORIENTATION}{orientation}.
 
 For *DISTRIBUTING couplings it is not recommended to apply any other forces
 but the forces and/or moments in the reference node to any node belonging to
@@ -21521,7 +21521,7 @@ away from the actual maximum. The target stress must be positive.
 \item EQUIVALENT PLASTIC STRAIN: the maximum equivalent plastic strain of the total structure or of a
   subset if a node set is defined. The maximum is approximated by the
   Kreisselmeier-Steinhauser function. The target equivalent plastic strain
-  must be postive.
+  must be positive.
 
 \end{itemize}
 
@@ -21541,7 +21541,7 @@ and for TYPE=ORIENTATION design variables:
 \end{itemize}
 
 There is one parameter NAME which is
-compulsary for TYPE=COORDINATE design variables and not used for
+compulsory for TYPE=COORDINATE design variables and not used for
 TYPE=ORIENTATION design variables. It is used for the sake of
 choosing design responses for the objective and/or constraints in an
 optimization. It should not be longer than 80 characters.
@@ -21742,7 +21742,7 @@ For body generated flux (energy per unit of time per unit of volume) the
 distributed flux type label is BF for uniform flux and BFNUy for
 nonuniform flux. For nonuniform flux the user subroutine dflux must be
 provided. Here too, y can be used to distinguish different nonuniform body
-flux patters (maximum 16 characters).
+flux patterns (maximum 16 characters).
 
 Optional parameters are OP, AMPLITUDE and TIME DELAY. OP takes the value NEW or MOD.  OP=MOD is default and implies that the surface fluxes on different faces in previous steps are kept.  Specifying a
 distributed flux on a face for which such a flux was defined in a
@@ -21940,7 +21940,7 @@ Keyword type: model definition
 This option is used to apply translational loading (force or displacement) on a set of nodes
 in a global sense (for rotations and/or moments the reader is referred to the
 mean rotation MPC, Section \ref{meanrotationmpc}). There is one required parameter: ELSET. With the
-parameter ELSET an element set is referred to, which should contain exacty one
+parameter ELSET an element set is referred to, which should contain exactly one
 element of type DCOUP3D. This type of element contains only one node, which is
 taken as the reference node of the distributing coupling.
  This node should not be used elsewhere in the model. In
@@ -22308,7 +22308,7 @@ already applied before, then
 If a *DLOAD with label CENTRIF is applied to the same set AND with the same 
 rotation axis as in a previous application, then
 \begin{itemize}
-\item If the prevous application was in the same step, the CENTRIF value is 
+\item If the previous application was in the same step, the CENTRIF value is 
 added, else it is replaced
 \item the new amplitude (including none) overwrites the previous amplitude
 \end{itemize}
@@ -22316,7 +22316,7 @@ added, else it is replaced
 If a *DLOAD with label GRAV is applied to the same set AND with the same 
 gravity direction vector as in a previous application, then
 \begin{itemize}
-\item If the prevous application was in the same step, the GRAV value is 
+\item If the previous application was in the same step, the GRAV value is 
 added, else it is replaced
 \item the new amplitude (including none) overwrites the previous amplitude
 \end{itemize}
@@ -23996,7 +23996,7 @@ flux type label is left out.
 
 If more than one *FILM card occurs in the input deck the following rules
 apply: if the *FILM is applied to the same node and the same face as in a
-previous application then the prevous value and previous amplitude (including
+previous application then the previous value and previous amplitude (including
 film amplitude) are replaced.
 
 \bigskip
@@ -24183,7 +24183,7 @@ VORTEX can be used for gases and liquids. Default is gas. If they are used for
 liquids the parameter LIQUID should be used on the *FLUID SECTION card.
 
 Finally, for elements of the liquid channel type friction is by default
-modeled with the White-Colebrook law. If the Manning coeffient is preferred,
+modeled with the White-Colebrook law. If the Manning coefficient is preferred,
 the parameter MANNING should be used.
 \bigskip
 
@@ -27088,8 +27088,8 @@ response function defined in a previous \htmlref{*SENSITIVITY}{sensitivity}
 step. It is referred to by using its name given on the \htmlref{*DESIGN
   RESPONSE}{designresponse} line.
 
-There is one optional parameter TARGET. If TARGET=MIN (= default) the sensivity is
-calculated for a minization of the objective, if TARGET=MAX for a
+There is one optional parameter TARGET. If TARGET=MIN (= default) the sensitivity is
+calculated for a minimization of the objective, if TARGET=MAX for a
 maximization. The difference comes into play when determining which
 constraints are active.  Exactly one *OBJECTIVE keyword is required in a
 *FEASIBLE DIRECTION step. This keyword has to be followed by exactly one
@@ -27663,7 +27663,7 @@ radiation flux type label is left out.
 
 If more than one *RADIATE card occurs in the input deck the following rules
 apply: if a *RADIATE applies to the same node and the same face as in a
-previous application then the prevous value and previous amplitude (including
+previous application then the previous value and previous amplitude (including
 radiation amplitude) are replaced.
 
 \bigskip
@@ -28244,8 +28244,8 @@ w.r.t. the design variables is performed based on:
 \end{itemize}
 
 It makes sense to include NLGEOM if it was used on a previous static step and
-not to include it if it was not used on a prevous static step or in the
-absense of any prevous static step.
+not to include it if it was not used on a previous static step or in the
+absence of any previous static step.
 
 The parameters READ and WRITE are mutually exclusive and can only be used if
 the coordinates are the design variables. If WRITE is selected,
@@ -29381,7 +29381,7 @@ slope on a \htmlref{*FRICTION}{friction} card.
 
 Hard pressure-overclosure behavior is internally reduced to linear
 pressure-overclosure behavior with the default constants. In case of mortar
-contact true hard behavior can be simulated by omiting the *SURFACE BEHAVIOR
+contact true hard behavior can be simulated by omitting the *SURFACE BEHAVIOR
 card within the *SURFACE INTERACTION card. 
 
 \bigskip
@@ -29667,7 +29667,7 @@ dependent nodes in other SPC's or MPC's. Only nodes on an axis of
 cyclic symmetry can belong to both the slave as well as to the master
 surface. 
 
-Default (i.e. in the absense of the CYCLIC SYMMETRY and the MULTISTAGE
+Default (i.e. in the absence of the CYCLIC SYMMETRY and the MULTISTAGE
 parameter) is a tie of two adjacent surfaces in a structural calculation. This is also called tied
 contact. In that case MPC's are generated connecting the slave nodes with the
 master faces, provided the orthogonal distance between the nodes and the adjacent face 
@@ -29694,7 +29694,7 @@ referred to on the  \htmlref{*CYCLIC
 The parameter CYCLIC SYMMETRY is used to tie two surfaces bounding one and the
 same datum sector in circumferential direction. Both the slave and the master
 surface can be node or face based. For face based surfaces the nodes belonging
-to the face are identied at the start of the algorithm which generates the
+to the face are identified at the start of the algorithm which generates the
 cyclic multiple point constraints.
 For each slave node, a master node is determined which
 matches the slave node within a tolerance specified by the parameter
@@ -29971,7 +29971,7 @@ switched off. The increments will have the fixed length specified by the user
 on the second line.
 
 The parameter ALPHA takes an argument between -1/3 and 0. It controls the
-dissipation of the high frequency responce: lower numbers lead to increased
+dissipation of the high frequency response: lower numbers lead to increased
 numerical damping (\cite{Miranda}). The default value is -0.05.
 
 The parameter STEADY STATE indicates that only the steady state should be
@@ -31227,7 +31227,7 @@ The header and input/output variables of the umat\_user routine are as follows:
 !     calculates stiffness and stresses for a user defined material
 !     law
 !
-!     icmd=3: calcutates stress at mechanical strain
+!     icmd=3: calculates stress at mechanical strain
 !     else: calculates stress at mechanical strain and the stiffness
 !           matrix
 !
@@ -31510,7 +31510,7 @@ into three parts, separated by the \texttt{\_} character:
 \item The name of the interface (ABAQUS or ABAQUSNL).
 \item The base name of the library (see below).
 \item The name of the function implementing the behavior. If the
-  function's name is ommitted, the ``umat\_'' function name is used.
+  function's name is omitted, the ``umat\_'' function name is used.
 \end{itemize}
 
 For instance, if we want to call a small strain behavior in a linear
@@ -32043,7 +32043,7 @@ contribute to CalculiX, I expect you to adhere to these rules.
 Starting with version 2.8 the environment variable
 CCX\_LOG\_ALLOC has been introduced. If set to 1 (default is zero) one gets
 detailed information on all allocated, reallocated and deallocated fields
-during the executation of CalculiX. This may be particularly important during
+during the execution of CalculiX. This may be particularly important during
 debugging of segmentation faults.
 
 \section{Program structure.}
@@ -32537,7 +32537,7 @@ the boundary condition, its number $n$ is stored in the one-dimensional field
 iamboun: $\text{iamboun}(m)=n$.  
 
 The SPC type is stored in the one-dimensional field typeboun. SPC's can be of
-different types, depending on whether the were defined by a genuin *BOUNDARY
+different types, depending on whether the were defined by a genuine *BOUNDARY
 CARD, or introduced for other reasons. The field typeboun is a
 one-dimensional character*1 field. Other reasons to introduce SPC's are:
 
@@ -33688,7 +33688,7 @@ each new increment. Its purpose is:
 
 \begin{figure}
 \epsfig{file=contact_n2f_kon.eps,width=12cm}
-\caption{\label{contactn2fkon}Topology of the node-to-face contact elemetns}
+\caption{\label{contactn2fkon}Topology of the node-to-face contact elements}
 \end{figure}
 
 \begin{figure}
@@ -34947,7 +34947,7 @@ follows (focussing at first on one channel consisting of one line of elements):
 
 \begin{itemize}
 \item Determine the upstream element of the channel (usually a sluice gate or weir)
-\item Assume supercritical flow, i.e. the flow is controled by upstream
+\item Assume supercritical flow, i.e. the flow is controlled by upstream
   conditions
 \item Proceeding from upstream to downstream, calculate the fluid depth.
 \item If for some reason supercritical flow is not feasible (e.g. the critical
@@ -35449,7 +35449,7 @@ In subroutine initialcfdfem.f the following fields are calculated:
   then $\rho v_1$ and so on..., since they are solved for separately (so a
   single pointer suffices to switch between the fields). The physical
   variables are the static temperature $T$, the velocity components $v_i$, 
-  the static pressue $p$ and the turbulence parameters $k$ and $\omega$. They
+  the static pressure $p$ and the turbulence parameters $k$ and $\omega$. They
   are stored in field vold(0..mi(2),1..nk) in the way conventional to
   structural calculations, i.e. first all parameters for node 1, then for node 2....
 \end{itemize}
@@ -35791,7 +35791,7 @@ For orientation design variables the following steps are performed:
 
 \begin{itemize}
 \item Storage of the orientation design variables in the jobname.dat
-  file. Each local orientation leads to exacty three design variables, which
+  file. Each local orientation leads to exactly three design variables, which
   are the components of the rotation vector describing the orientation
   (writedesi.f).
 
@@ -35829,7 +35829,7 @@ variable according to Figure \ref{sens4} (desiperelem.f).
   nonzero. The nonzero's are stored column by column according to ascending
   row numbers for each column. Field irows contains the
   corresponding row numbers (size = total number of nonzero's), field jqs(i)
-  contains the location of the first entry in irows beloning to column i.
+  contains the location of the first entry in irows belonging to column i.
 
 \item Each degree of freedom in field df corresponds to a specific direction
   in a specific node. In gennactdofinv.f field nactdofinv(i) is determined
@@ -36087,7 +36087,7 @@ S=f(U(s),s),
 
 i.e. the stress S is in general a direct function of the design variables and an indirect
 function through the displacements. Indeed, the stress is the result of the
-``multiplication'' of the material contants with the derivative of the
+``multiplication'' of the material constants with the derivative of the
 displacements with respect to the geometry.
 
 For geometrical design variables both terms $\partial S/\partial s$ and
@@ -36106,7 +36106,7 @@ Section \ref{sectionsensitivity} from left to right, i.e. first calculating
 $(\partial G/\partial s) K^{-1}$ before continuing with the expression in
 brackets.
 
-For orientation design variables the sensivity can be written as
+For orientation design variables the sensitivity can be written as
 
 \begin{equation}
 \frac{\partial S}{\partial s} \approx \frac{S(U(s+\Delta s),s+\Delta
@@ -36531,7 +36531,7 @@ first the following routines are called (in this section ``element'' and
 \paragraph{cattet.f}
 
 In this routine the unrefined tetrahedral mesh is catalogued. It consists of
-the folowing tasks:
+the following tasks:
 
 \begin{itemize}
 \item initialize kontet (take non-tet elements into account, close the
@@ -36990,7 +36990,7 @@ subdivided into 8 linear tetrahedrons. This measure seems to be more
 appropriate than using $Q_i^*$ during the optimization and leads to better
 shaped tetrahedrons. So basically the first term optimizes the volume of the 8
 linear subtetrahedra of the quadratic tetrahedron. The second term avoids the presence of negative Jacobian determinants at the
-integration points (abreviated as ip in the above formula).
+integration points (abbreviated as ip in the above formula).
 
 \subsubsection{Modifying the boundary conditions}
 
@@ -37153,7 +37153,7 @@ the interpolation procedure). Therefore, all rearranged equations are
 characterized by a nonpositive coefficient of the dependent terms.
 
 The procedure may not be fool proof (especially if a lot of SPC's or MPC's
-contrain the unrefined mesh). If, due to the rearrangement of other
+constrain the unrefined mesh). If, due to the rearrangement of other
 equations no independent node in an equation not treated yet remains, an error
 message is issued and the program stops.
 
@@ -37228,7 +37228,7 @@ Subsequently, in each iteration the following actions are taken:
   given point to the interpolation location. If this distance is really small
   (a cut-off of $10^{-6}$ is used),
   the boundary node is a front node, else it is not. The front nodes are
-  stored in ascending order in field ifront(1..nfront), the corrosponding
+  stored in ascending order in field ifront(1..nfront), the corresponding
   boundary node location (i.e. the row in field ibounnod) is stored in
   ifrontrel(1..nfront), cf. Figure \ref{ifrontbefore}. The coordinates of the interpolation locations are
   stored in costruc(3,1..nbounnod) and the interpolated stresses and
@@ -38169,7 +38169,7 @@ nuel & number of different user element types \\
 
       \textbf{For user element i} & \\
      iuel(1,i)  & type number of the user element \\
-     iuel(2,i)  & number of itegration points \\
+     iuel(2,i)  & number of integration points \\
      iuel(3,i)  & max degree of freedom in any of the nodes \\
      iuel 4,i)  & number of nodes belonging to the element\\
 
@@ -38776,7 +38776,7 @@ nuel & number of different user element types \\
                       increment \\
 
       b(i) &           right hand side of the equation system : difference
-                      between fext and f in nonlinear calcultions; for linear
+                      between fext and f in nonlinear calculations; for linear
                       calculations, b=finc. \\
 
       fn(i,j) &        actual force at node j in direction i \\
@@ -39010,7 +39010,7 @@ jmax(2) &              maximum number of CFD increments \\
       whether the node is a midside node or corner node of a network element: \\
       & j=0 and corner node: conservation of energy \\
       & j=1 and corner node: conservation of mass \\
-      & j=2 and midside node: convervation of momentum \\
+      & j=2 and midside node: conservation of momentum \\
       ineighe(i) & only for gas network nodes (no liquids): \\
        & if 0: itg(i) is a midside node \\
        & if -1: itg(i) is a chamber \\
@@ -39170,7 +39170,7 @@ jmax(2) &              maximum number of CFD increments \\
       camp[0] & largest correction to gas pressure \\
       camp[1] & node corresponding to camt[0] \\
       iflagact & 0: number of contact elements did not significantly change
-      between present and prevous iteration \\
+      between present and previous iteration \\
                & 1: else (i.e. did significantly change) \\
 
 \hline
@@ -39308,7 +39308,7 @@ flow over a two-dimensional compression corner. \textit{NASA TR R-385 Report}
 
 \bibitem{Chen} Chen, L., Bletzinger, K.-U., Geiser, A. and W\"uchner, R., A
   modified search direction method for ineauality constrained optimization
-  problems using the singular-value decomposition of normalized resopnse
+  problems using the singular-value decomposition of normalized response
   gradients. \textit{Structural and Multidisciplinary Optimization}. https://doi.org/10.1007/s00158-019-02320-9.
  
 \bibitem{Ciarlet} Ciarlet, P.G., \textit{ Mathematical Elasticity, Volume I: Three-dimensional Elasticty}. North Holland, New York (1988). 

@@ -60,7 +60,7 @@ The (preconditioned) conjugate gradient solver
            niter   maximum number of iterations -> number of iterations  
            precFlg preconditioning flag                                  
 
-The compact row oriented storage of sparse quadratic matrices is decsribed in
+The compact row oriented storage of sparse quadratic matrices is described in
 H.R. Schwarz: FORTRAN-Programme zur Methode der finiten Elemente, pp.66-67, 
 Teubner, 1981
  
@@ -354,7 +354,7 @@ void MatVecProduct (double *A, double *p, ITG neq, ITG *ia, ITG *iz,
 /*--Partial Cholesky decomposition of scaled matrix A. The off-diagonal matrix   --	*/
 /*--elements are divided by 1/(1+alpha) until a decomposition of the positive    --	*/
 /*--definit matrix A exists. C is obtained by ignoring the fill-in during the    --	*/
-/*--decomposition. In case of successfull decomposition the preconditioning      --	*/
+/*--decomposition. In case of successful decomposition the preconditioning       --	*/
 /*--matrix C is returned. Otherwise the function is called again with new alpha. --	*/
 /*--alpha has to be chosen as small as possible, because preconditioning effect  --	*/
 /*--decreases with increasing alpha.-----------------------------------------------	*/
@@ -446,7 +446,7 @@ void Mrhor (double *C, ITG neq, ITG *ia, ITG *iz, double *r, double *rho)
 {
 	ITG				i=0, j=0, jlo=0, jup=0;
 	double			s=0.0;
-/*..solve equation sytem by forward/backward substitution..........................	*/
+/*..solve equation system by forward/backward substitution.........................	*/
 	rho[0] = r[0];
 	for (i=1; i<neq; i++)
 	{
