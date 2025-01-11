@@ -15,7 +15,7 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-!     This subroutines enables to caclulate a correction term linked to with the radius 
+!     This subroutines enables to calculate a correction term linked to with the radius 
 !     of the spike as a function of r/s (radius/gap)
 !     the parameter Hst ( height of the step ) enable to select either the table for a
 !     straight labyrinth (Hst=0) or for a stepped labyrinth

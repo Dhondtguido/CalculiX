@@ -136,7 +136,7 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       }
   }
   
-  /* in robust design anaylsis "edge preservation" option is always active */
+  /* in robust design analysis "edge preservation" option is always active */
   iregion=1;
   
   /* determining the elements belonging to a given node */

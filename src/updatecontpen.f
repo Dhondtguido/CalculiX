@@ -76,7 +76,7 @@
 !     
       data iflag /2/
 !     
-!     new added data for the local coodinates for nodes
+!     new added data for the local coordinates for nodes
 !     
       data xquad /-1.d0,-1.d0,
      &     1.d0,-1.d0,

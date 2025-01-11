@@ -200,7 +200,7 @@
             p(3)=p_(1)
           endif
         else
-          write(*,*) 'ERROR: calcualtion of principal stresses as'
+          write(*,*) 'ERROR: calculation of principal stresses as'
           write(*,*) '       input for the KS-function failed'
           call exit(201)
         endif

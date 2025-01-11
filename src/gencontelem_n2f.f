@@ -683,7 +683,7 @@ c     write(*,*)'ix@jqw',(jbasis+m2),'jqw(ix)',(nzsw+1)
 !     
             enddo
 c       following line is obsolete? 
-            if(mortar.ne.-1) cycle ! ommitted to capture clearances???
+            if(mortar.ne.-1) cycle ! omitted to capture clearances???
           endif
 !     
 !     distance from surface along normal (= clearance)
