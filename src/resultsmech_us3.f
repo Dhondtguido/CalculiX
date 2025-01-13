@@ -380,7 +380,7 @@
 ! matrix 
         kode=2
         call linel(kode,mattyp,beta,eme,stre,stiff,elconloc,
-     &       iorien,orab,pgauss,ncmat_)
+     &       iorien,orab,pgauss,ncmat_,nalcon,imat)
         do m1=1,21
           xstiff(m1,jjj,i)=stiff(m1) ! elas for each gp saved in xstiff    
         enddo

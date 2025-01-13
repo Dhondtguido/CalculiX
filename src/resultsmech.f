@@ -72,7 +72,7 @@
      &     thicke(mi(3),*),emeini(6,mi(1),*),clearini(3,9,*),
      &     pslavsurf(3,*),pmastsurf(6,*),smscale(*),sum1,sum2,
      &     scal,enerscal,elineng(6),t0g(2,*),t1g(2,*),aut(*),
-     &     aute(96),shptil(4,20)
+     &     aute(96),shptil(4,20),xthi(3,3),vthj
 !     
       include "gauss.f"
 !
@@ -935,12 +935,13 @@ c            endif
      &         stiff,rho,i,ithermal,alzero,mattyp,t0l,t1l,ihyper,
      &         istiff,elconloc,eth,kode,plicon,nplicon,
      &         plkcon,nplkcon,npmat_,plconloc,mi(1),dtime,jj,
-     &         xstiff,ncmat_)
+     &         xstiff,ncmat_,iperturb)
 !     
 !     determining the mechanical strain
 !     
           if(ithermal(1).ne.0) then
-            call calcmechstrain(vkl,vokl,emec,eth,iperturb)
+            call calcmechstrain(vkl,vokl,emec,eth,iperturb,nalcon,imat,
+     &           xthi,vthj)
           else
             do m1=1,6
               emec(m1)=eloc(m1)
@@ -978,7 +979,16 @@ c            endif
      &         amat,t1l,dtime,time,ttime,i,jj,nstate_,mi(1),
      &         iorien,pgauss,orab,eloc,mattyp,qa(3),istep,iinc,
      &         ipkon,nmethod,iperturb,qa(4),nlgeom_undo,physcon,
-     &         ncmat_)
+     &         ncmat_,nalcon,imat)
+!
+!     modifying the stress and stiffness for a multiplicative
+!     decomposition of the deformation gradient in a mechanical and
+!     a thermal part
+!
+          if((ithermal(1).ne.0).and.(iperturb(2).eq.1)) then
+            call modifystressstiff(stre,stiff,mattyp,eth,nalcon,imat,
+     &     xthi,vthj)
+          endif
 !     
           if(((nmethod.ne.4).or.(iperturb(1).ne.0)).and.
      &         (nmethod.ne.5).and.(icmd.ne.3)) then

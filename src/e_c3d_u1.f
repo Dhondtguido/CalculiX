@@ -421,7 +421,7 @@ c      write(*,*) 'u1 trans3 ',e3(1),e3(2),e3(3)
      &     ihyper,istiff,elconloc,eth,kode,plicon,
      &     nplicon,plkcon,nplkcon,npmat_,
      &     plconloc,mi(1),dtime,kk,
-     &     xstiff,ncmat_)
+     &     xstiff,ncmat_,iperturb)
 !     
       if(mattyp.eq.1) then
          e=elconloc(1)

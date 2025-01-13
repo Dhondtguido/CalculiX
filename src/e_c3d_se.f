@@ -902,7 +902,7 @@ c         if((iperturb(1).ne.0).and.stiffness.and.(.not.buckling))
      &        ihyper,istiff,elconloc,eth,kode,plicon,
      &        nplicon,plkcon,nplkcon,npmat_,
      &        plconloc,mi(1),dtime,kk,
-     &        xstiff,ncmat_)
+     &        xstiff,ncmat_,iperturb)
          else
             idir=idesvar-3*((idesvar-1)/3)
             call materialdata_me(elcon,nelcon,rhcon,nrhcon,alcon,nalcon,
@@ -911,7 +911,7 @@ c         if((iperturb(1).ne.0).and.stiffness.and.(.not.buckling))
      &        ihyper,istiff,elconloc,eth,kode,plicon,
      &        nplicon,plkcon,nplkcon,npmat_,
      &        plconloc,mi(1),dtime,kk,
-     &        dxstiff(1,1,1,idir),ncmat_)
+     &        dxstiff(1,1,1,idir),ncmat_,iperturb)
          endif
 !
          if(mattyp.eq.1) then

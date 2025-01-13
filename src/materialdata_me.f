@@ -19,7 +19,7 @@
      &     imat,amat,iorien,pgauss,orab,ntmat_,stiff,rho,iel,ithermal,
      &     alzero,mattyp,t0l,t1l,ihyper,istiff,elconloc,eth,kode,plicon,
      &     nplicon,plkcon,nplkcon,npmat_,plconloc,mi,dtime,iint,
-     &     xstiff,ncmat_)
+     &     xstiff,ncmat_,iperturb)
 !     
       implicit none
 !     
@@ -31,7 +31,7 @@
 !     
       character*80 amat
 !     
-      integer nelcon(2,*),nrhcon(*),nalcon(2,*),
+      integer nelcon(2,*),nrhcon(*),nalcon(2,*),iperturb(*),
      &     imat,iorien,ithermal(*),j,k,mattyp,kal(2,6),j1,j2,j3,j4,
      &     jj,ntmat_,istiff,nelconst,ihyper,kode,itemp,kin,nelas,
      &     iel,iint,mi(*),ncmat_,id,two,seven,
@@ -55,7 +55,21 @@
       if(istiff.eq.1) then
 
         nelas=nelcon(1,imat)
-        if((nelas.lt.0).or.((nelas.ne.2).and.(iorien.ne.0))) nelas=21
+c     if((nelas.lt.0).or.((nelas.ne.2).and.(iorien.ne.0))) nelas=21
+        if(nelas.lt.0) then
+          nelas=21
+        elseif((nelas.eq.2).and.(iperturb(2).eq.1)) then
+          if(nalcon(1,imat).eq.3) then
+            nelas=9
+          elseif(nalcon(1,imat).eq.6) then
+            nelas=21
+          endif
+        elseif(nelas.eq.9) then
+          if((iorien.ne.0).or.
+     &         ((iperturb(2).eq.1).and.(nalcon(1,imat).eq.6))) then
+            nelas=21
+          endif
+        endif
 !     
 !     calculating the density (needed for the mass matrix and
 !     gravity or centrifugal loading)

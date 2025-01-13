@@ -548,6 +548,7 @@ modaldynamics.f \
 modelchanges.f \
 modf.f \
 modifympc.f \
+modifystressstiff.f \
 moehring.f \
 mohrcoulomb.f \
 mohrcoulombhardenings.f \

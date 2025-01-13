@@ -460,7 +460,7 @@ void FORTRAN(calcstabletimeincvol,(ITG *ne0,double *elcon,ITG *nelcon,
 				   double *co,ITG *kon,double *dtvol,
 				   double *alpha,double *smscale,double *dtset,
 				   ITG *mscalmethod,ITG *mortar,
-				   char *jobnamef));
+				   char *jobnamef,ITG *iperturb));
 
 void FORTRAN(calcstressheatfluxfem,(ITG *kon,char *lakon,ITG *ipkon,ITG *ielmat,
              ITG *ntmat_,double *vold,char *matname,ITG *mi,double *shcon,

@@ -57,7 +57,7 @@
      &     elcon(0:ncmat_,ntmat_,*),rhcon(0:1,ntmat_,*),xs2(3,7),
      &     alcon(0:6,ntmat_,*),vini(0:mi(2),*),thickness,
      &     alzero(*),orab(7,*),stiff(21),rho,fn(0:mi(2),*),
-     &     fnl(3,10),skl(3,3),beta(6),xl2(3,8),qa(4),
+     &     fnl(3,10),skl(3,3),beta(6),xl2(3,8),qa(4),xthi(3,3),
      &     vkl(0:3,3),t0(*),t1(*),prestr(6,mi(1),*),eme(6,mi(1),*),
      &     ckl(3,3),vold(0:mi(2),*),eloc(9),veold(0:mi(2),*),
      &     springarea(2,*),elconloc(ncmat_),eth(6),xkl(3,3),
@@ -68,7 +68,7 @@
      &     xsj,vj,t0l,t1l,dtime,weight,pgauss(3),vij,time,ttime,
      &     plicon(0:2*npmat_,ntmat_,*),plkcon(0:2*npmat_,ntmat_,*),
      &     xstiff(27,mi(1),*),xstate(nstate_,mi(1),*),plconloc(802),
-     &     vokl(3,3),xstateini(nstate_,mi(1),*),vikl(3,3),
+     &     vokl(3,3),xstateini(nstate_,mi(1),*),vikl(3,3),vthj,
      &     gs(8,4),a,reltime,tlayer(4),dlayer(4),xlayer(mi(3),4),
      &     thicke(mi(3),*),emeini(6,mi(1),*),clearini(3,9,*),
      &     pslavsurf(3,*),pmastsurf(6,*),sti(6,mi(1),*),physcon(*),
@@ -993,7 +993,7 @@ c            endif
      &         stiff,rho,i,ithermal,alzero,mattyp,t0l,t1l,ihyper,
      &         istiff,elconloc,eth,kode,plicon,nplicon,
      &         plkcon,nplkcon,npmat_,plconloc,mi(1),dtime,jj,
-     &         xstiff,ncmat_)
+     &         xstiff,ncmat_,iperturb)
 !     
 !     determining the mechanical strain
 !     
@@ -1031,7 +1031,16 @@ c     emec0(m1)=emeini(m1,jj,i)
      &         amat,t1l,dtime,time,ttime,i,jj,nstate_,mi(1),
      &         iorien,pgauss,orab,eloc,mattyp,qa(3),istep,iinc,
      &         ipkon,nmethod,iperturb,qa(4),nlgeom_undo,physcon,
-     &         ncmat_)
+     &         ncmat_,nalcon,imat)
+!
+!     modifying the stress and stiffness for a multiplicative
+!     decomposition of the deformation gradient in a mechanical and
+!     a thermal part
+!
+          if(iperturb(2).eq.1) then
+            call modifystressstiff(stre,stiff,mattyp,eth,nalcon,imat,
+     &     xthi,vthj)
+          endif
 !     
           if(((nmethod.ne.4).or.(iperturb(1).ne.0)).and.
      &         (nmethod.ne.5)) then

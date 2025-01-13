@@ -17,9 +17,10 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine umat_undo_nlgeom_lin_el(amat,iel,iint,kode,
-     &        elconloc,emec,emec0,beta,xokl,voj,xkl,vj,ithermal,t1l,
-     &        dtime,time,ttime,icmd,ielas,mi,nstate_,xstateini,xstate,
-     &        stre,stiff,iorien,pgauss,orab,eloc,nlgeom_undo,ncmat_)
+     &     elconloc,emec,emec0,beta,xokl,voj,xkl,vj,ithermal,t1l,
+     &     dtime,time,ttime,icmd,ielas,mi,nstate_,xstateini,xstate,
+     &     stre,stiff,iorien,pgauss,orab,eloc,nlgeom_undo,ncmat_,
+     &     nalcon,imat)
 !
 !     calculates stiffness and stresses for a linear elastic isotropic
 !     material with special modification of the strain tensor
@@ -141,7 +142,8 @@
       character*80 amat
 !
       integer ithermal(*),icmd,kode,ielas,iel,iint,nstate_,mi(*),iorien,
-     &  i,j,k,nlgeom_undo,n,matz,ier,nconstants,mattyp,ncmat_
+     &     i,j,k,nlgeom_undo,n,matz,ier,nconstants,mattyp,ncmat_,
+     &     nalcon(2,*),imat
 !
       real*8 elconloc(*),stiff(21),emec(6),emec0(6),beta(6),stre(6),
      &  vj,t1l,dtime,xkl(3,3),xokl(3,3),voj,pgauss(3),orab(7,*),
@@ -231,7 +233,7 @@ c      write(*,*) 'umat_undo_nlgeom_lin_el ielas=',ielas
 !     calculating the stress and the linear elastic material data
 !
       call linel(nconstants,mattyp,beta,emec,stre,stiff,elconloc,
-     &     iorien,orab,pgauss,ncmat_)
+     &     iorien,orab,pgauss,ncmat_,nalcon,imat)
 !
 c      do i=1,6
 c         write(*,*) 'umat...lin_el',time,iel,iint,elin(i),stre(i)

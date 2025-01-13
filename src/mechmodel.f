@@ -20,7 +20,8 @@
      &     icmd,beta,stre,xkl,ckl,vj,xikl,vij,plconloc,xstate,xstateini,
      &     ielas,amat,t1l,dtime,time,ttime,iel,iint,nstate_,mi,
      &     iorien,pgauss,orab,eloc,mattyp,pnewdt,istep,iinc,ipkon,
-     &     nmethod,iperturb,depvisc,nlgeom_undo,physcon,ncmat_)
+     &     nmethod,iperturb,depvisc,nlgeom_undo,physcon,ncmat_,nalcon,
+     &     imat)
 !
 !     kode=-1: Arruda-Boyce
 !          -2: Mooney-Rivlin
@@ -53,7 +54,7 @@
 !
       integer kode,ithermal(*),icmd,ielas,iel,iint,nstate_,mi(*),iorien,
      &     mattyp,istep,iinc,ipkon(*),nmethod,iperturb(*),nlgeom_undo,
-     &     ncmat_,j
+     &     ncmat_,j,nalcon(2,*),imat
 !
       real*8 elconloc(*),stiff(21),emec(*),emec0(*),beta(*),stre(*),
      &  ckl(*),vj,plconloc(802),t1l,xkl(*),xikl(*),vij,depvisc,
@@ -65,7 +66,7 @@
 !
       if(kode.gt.0) then
          call linel(kode,mattyp,beta,emec,stre,stiff,elconloc,
-     &  iorien,orab,pgauss,ncmat_)
+     &  iorien,orab,pgauss,ncmat_,nalcon,imat)
       elseif(kode.gt.-50) then
          mattyp=3
          call rubber(elconloc,stiff,emec,kode,didc,d2idc2,
@@ -128,7 +129,7 @@ c     &     ckl,vj,xstate,nstate_,iel,iint,mi)
      &         xikl,vij,xkl,vj,ithermal,t1l,dtime,time,ttime,icmd,ielas,
      &         mi,nstate_,xstateini,xstate,stre,stiff,iorien,pgauss,
      &         orab,pnewdt,istep,iinc,ipkon,nmethod,iperturb,depvisc,
-     &         eloc,nlgeom_undo,physcon,ncmat_,plconloc)
+     &         eloc,nlgeom_undo,physcon,ncmat_,plconloc,nalcon,imat)
       endif
 !
       return

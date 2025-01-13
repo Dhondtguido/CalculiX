@@ -386,7 +386,7 @@ c      write(*,*) 'u1 element ',i
      &     ihyper,istiff,elconloc,eth,kode,plicon,
      &     nplicon,plkcon,nplkcon,npmat_,
      &     plconloc,mi(1),dtime,kk,
-     &     xstiff,ncmat_)
+     &     xstiff,ncmat_,iperturb)
 !     
 !     correcting the thermal strains
 !     

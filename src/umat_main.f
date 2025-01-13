@@ -21,7 +21,7 @@
      &     icmd,ielas,mi,nstate_,xstateini,xstate,stre,stiff,
      &     iorien,pgauss,orab,pnewdt,istep,iinc,ipkon,nmethod,
      &     iperturb,depvisc,eloc,nlgeom_undo,physcon,ncmat_,
-     &     plconloc)
+     &     plconloc,nalcon,imat)
 !     
 !     calculates stiffness and stresses for a user defined material
 !     law
@@ -31,7 +31,8 @@
       character*80 amat,amatloc
 !     
       integer ithermal(*),icmd,kode,ielas,iel,iint,nstate_,mi(*),iorien,
-     &     istep,iinc,ipkon(*),nmethod,iperturb(*),nlgeom_undo,ncmat_,j
+     &     istep,iinc,ipkon(*),nmethod,iperturb(*),nlgeom_undo,ncmat_,j,
+     &     nalcon(2,*),imat
 !     
       real*8 elconloc(*),stiff(21),emec(6),emec0(6),beta(6),stre(6),
      &     vj,t1l,dtime,xkl(3,3),xikl(3,3),vij,pgauss(3),orab(7,*),
@@ -216,7 +217,7 @@ c     &       iorien,pgauss,orab,nmethod,pnewdt)
      &       elconloc,emec,emec0,
      &       beta,xikl,vij,xkl,vj,ithermal,t1l,dtime,time,ttime,
      &       icmd,ielas,mi(1),nstate_,xstateini,xstate,stre,stiff,
-     &       iorien,pgauss,orab,eloc,nlgeom_undo,ncmat_)
+     &       iorien,pgauss,orab,eloc,nlgeom_undo,ncmat_,nalcon,imat)
 !     
       elseif(amat(1:22).eq.'UNDO_NLGEOM_LIN_ISO_EL') then
 !     

@@ -253,7 +253,7 @@ c     Bernhardi end
      &        ihyper,istiff,elconloc,eth,kode,plicon,
      &        nplicon,plkcon,nplkcon,npmat_,
      &        plconloc,mi(1),dtime,kk,
-     &        xstiff,ncmat_)
+     &        xstiff,ncmat_,iperturb)
 !
 !
 !           initialisation for the body forces

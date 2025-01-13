@@ -470,7 +470,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 				  xstiff,ncmat_,vold,ielmat,t0,t1,matname,
 				  lakon,wavespeed,nmat,ipkon,co,kon,&dtvol,
 				  alpha,smscale,&dtset,&mscalmethod,mortar,
-				  jobnamef));
+				  jobnamef,iperturb));
 
       printf(" Explicit time integration: Volumetric COURANT initial stable time increment:%e\n\n",dtvol);
       if(dtset<dtvol){dtset=dtvol;}
