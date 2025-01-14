@@ -397,6 +397,8 @@ c     &   (lakon(nelel)(1:1).eq.'F')) then
             endif
 !
             if(iorien.eq.0) then
+c               write(*,'(i10,1x,i3,1p,6(1x,e13.6))') nelem,j,
+c     &              (stx(k,j,nelel),k=1,6)
                write(5,'(i10,1x,i3,1p,6(1x,e13.6))') nelem,j,
      &              (stx(k,j,nelel),k=1,6)
             else

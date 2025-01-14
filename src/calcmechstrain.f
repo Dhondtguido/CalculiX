@@ -20,7 +20,7 @@
      &     xthi,vthj)
 !
 !     calculates the mechanical strain from the displacement gradients
-!     and the thermal stretches
+!     and the thermal stretches (only called if ithermal(1).ne.0
 !
       implicit none
 !

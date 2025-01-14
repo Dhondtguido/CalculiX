@@ -768,28 +768,6 @@ c     Bernhardi end
             vj=xkl(1,1)*(xkl(2,2)*xkl(3,3)-xkl(2,3)*xkl(3,2))
      &           -xkl(1,2)*(xkl(2,1)*xkl(3,3)-xkl(2,3)*xkl(3,1))
      &           +xkl(1,3)*(xkl(2,1)*xkl(3,2)-xkl(2,2)*xkl(3,1))
-c!     
-c!     inversion of the deformation gradient (only for
-c!     deformation plasticity)
-c!     
-c            if(kode.eq.-50) then
-c!     
-c              ckl(1,1)=(xkl(2,2)*xkl(3,3)-xkl(2,3)*xkl(3,2))/vj
-c              ckl(2,2)=(xkl(1,1)*xkl(3,3)-xkl(1,3)*xkl(3,1))/vj
-c              ckl(3,3)=(xkl(1,1)*xkl(2,2)-xkl(1,2)*xkl(2,1))/vj
-c              ckl(1,2)=(xkl(1,3)*xkl(3,2)-xkl(1,2)*xkl(3,3))/vj
-c              ckl(1,3)=(xkl(1,2)*xkl(2,3)-xkl(2,2)*xkl(1,3))/vj
-c              ckl(2,3)=(xkl(2,1)*xkl(1,3)-xkl(1,1)*xkl(2,3))/vj
-c              ckl(2,1)=(xkl(3,1)*xkl(2,3)-xkl(2,1)*xkl(3,3))/vj
-c              ckl(3,1)=(xkl(2,1)*xkl(3,2)-xkl(2,2)*xkl(3,1))/vj
-c              ckl(3,2)=(xkl(3,1)*xkl(1,2)-xkl(1,1)*xkl(3,2))/vj
-c!     
-c!     converting the Lagrangian strain into Eulerian
-c!     strain (only for deformation plasticity)
-c!     
-c              cauchy=0
-c              call str2mat(eloc,ckl,vj,cauchy)
-c            endif
 !     
           endif
 !     
@@ -947,6 +925,7 @@ c            endif
               emec(m1)=eloc(m1)
             enddo
           endif
+c          write(*,*) 'resultsmech1 ',i,jj,(emec(m1),m1=1,6)
           if(kode.le.-100) then
             do m1=1,6
               emec0(m1)=emeini(m1,jj,i)
@@ -980,6 +959,8 @@ c            endif
      &         iorien,pgauss,orab,eloc,mattyp,qa(3),istep,iinc,
      &         ipkon,nmethod,iperturb,qa(4),nlgeom_undo,physcon,
      &         ncmat_,nalcon,imat)
+c          write(*,*) 'resultsmech2 ',i,jj,(stre(m1),m1=1,6)
+c          write(*,*) 'resultsmech3 ',i,jj,(stiff(m1),m1=1,21)
 !
 !     modifying the stress and stiffness for a multiplicative
 !     decomposition of the deformation gradient in a mechanical and
@@ -989,6 +970,7 @@ c            endif
             call modifystressstiff(stre,stiff,mattyp,eth,nalcon,imat,
      &     xthi,vthj)
           endif
+c          write(*,*) 'resultsmech4 ',i,jj,(stre(m1),m1=1,6)
 !     
           if(((nmethod.ne.4).or.(iperturb(1).ne.0)).and.
      &         (nmethod.ne.5).and.(icmd.ne.3)) then

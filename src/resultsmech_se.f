@@ -998,14 +998,14 @@ c            endif
 !     determining the mechanical strain
 !     
           if(ithermal(1).ne.0) then
-            do m1=1,6
-              emec(m1)=eloc(m1)-eth(m1)
-c     emec0(m1)=emeini(m1,jj,i)
-            enddo
+            call calcmechstrain(vkl,vokl,emec,eth,iperturb,nalcon,imat,
+     &           xthi,vthj)
+c            do m1=1,6
+c              emec(m1)=eloc(m1)-eth(m1)
+c            enddo
           else
             do m1=1,6
               emec(m1)=eloc(m1)
-c     emec0(m1)=emeini(m1,jj,i)
             enddo
           endif
           if(kode.le.-100) then
@@ -1037,7 +1037,7 @@ c     emec0(m1)=emeini(m1,jj,i)
 !     decomposition of the deformation gradient in a mechanical and
 !     a thermal part
 !
-          if(iperturb(2).eq.1) then
+          if((ithermal(1).ne.0).and.(iperturb(2).eq.1)) then
             call modifystressstiff(stre,stiff,mattyp,eth,nalcon,imat,
      &     xthi,vthj)
           endif

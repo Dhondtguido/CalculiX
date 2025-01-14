@@ -975,7 +975,7 @@ c     enddo
 !     decomposition of the deformation gradient in a mechanical and
 !     a thermal part
 !
-          if(iperturb(2).eq.1) then
+          if((ithermal(1).ne.0).and.(iperturb(2).eq.1)) then
             call modifystressstiff(stre,stiff,mattyp,eth,nalcon,imat,
      &     xthi,vthj)
           endif

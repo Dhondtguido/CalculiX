@@ -118,7 +118,7 @@
           stiff(19)=stiff(19)/fth2
           stiff(20)=stiff(20)/fth3
           stiff(21)=stiff(21)*fth1/(fth2*fth3)
-        else  
+        elseif(nalcon(1,imat).eq.6) then  
           skl(1,1)=stre(1)
           skl(2,2)=stre(2)
           skl(3,3)=stre(3)

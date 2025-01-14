@@ -233,7 +233,7 @@ c      write(*,*) 'umat_undo_nlgeom_lin_el ielas=',ielas
 !     calculating the stress and the linear elastic material data
 !
       call linel(nconstants,mattyp,beta,emec,stre,stiff,elconloc,
-     &     iorien,orab,pgauss,ncmat_,nalcon,imat)
+     &     iorien,orab,pgauss,ncmat_,nalcon,imat,ithermal)
 !
 c      do i=1,6
 c         write(*,*) 'umat...lin_el',time,iel,iint,elin(i),stre(i)
