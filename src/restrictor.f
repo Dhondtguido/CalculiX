@@ -488,7 +488,7 @@
         endif
         pt1pt2=pt1/pt2
 !     
-!     Match number calculation
+!     Mach number calculation
 !     
         M1=dsqrt(2d0/km1*(Tt1/T1-1.d0))
         if((1.d0-M1).le.1.d-6) then
