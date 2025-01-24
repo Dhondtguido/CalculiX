@@ -153,7 +153,7 @@
 !                        to be calculated from the PK2 stresses
 !     nener              if 0: internal energy calculation is not required
 !                        else: internal energy is required on output
-!     ikin               if 0: kinetic energy calculation is not requred
+!     ikin               if 0: kinetic energy calculation is not required
 !                        else: kinetic energy is required on output
 !     ne0                largest element number without contact elements (are
 !                        stored after all other elements)
@@ -498,11 +498,11 @@
         enddo
       endif        
 !
-! Internal forces based on displacments
+! Internal forces based on displacements
 !
       if(calcul_fn.eq.1)then     
 !
-!   stiffness matirx
+!   stiffness matrix
 !
 !
 ! stiffness and mass matrix
@@ -512,7 +512,7 @@
         call us4_Km(x,Dm,Kmem) 
 !
         Kshell=Kmem+Kb+Ks
-! artifical drilling stiffness (Krotz) in orede to avoid singularities 
+! artificial drilling stiffness (Krotz) in order to avoid singularities 
         kdmax=0.d0      
         do k=1,24
           if(kdmax.LT.abs(Kshell(k,k))) then

@@ -351,7 +351,7 @@
          enddo
       enddo 
       !
-      ! element frame & tranformation matrix tm (e1,e2,e3)T              
+      ! element frame & transformation matrix tm (e1,e2,e3)T              
       call us4_csys(xg,tm,tmg)
       ! nodal coordinates in element frame:
       x(1,:) = matmul(tm,xg(1,:))
@@ -402,7 +402,7 @@
       call us4_M(x,h,rho,Mshell)
       !
       Kshell = Kmem + Kb + Ks
-      ! artifical drilling stiffness (Krotz) in orede to avoid singularities 
+      ! artificial drilling stiffness (Krotz) in order to avoid singularities 
       kdmax = 0.d0      
       do k = 1,24
         if(kdmax.LT.abs(Kshell(k,k))) then

@@ -48,10 +48,10 @@
 
 /* memory allocation, reallocation, freeing */
 
-/* allocating memory for double reals and initializing it to zero (parallell) */
+/* allocating memory for double reals and initializing it to zero (parallel) */
 #define DNEW(a,b,c) {a=(b *)u_malloc((c)*sizeof(b),__FILE__,__LINE__,#a); \
         DOUMEMSET(a,0,c,0.);}
-/* allocating memory for ITG and initializing it to zero (parallell) */
+/* allocating memory for ITG and initializing it to zero (parallel) */
 #define INEW(a,b,c) {a=(b *)u_malloc((c)*sizeof(b),__FILE__,__LINE__,#a); \
         ITGMEMSET(a,0,c,0);}
 /* allocating memory without initialization */
@@ -5387,7 +5387,7 @@ typedef struct
   const void* ptr;
 }  CalculixExternalBehaviour;
 /*!
- * \return the description of an external beahviour
+ * \return the description of an external behaviour
  * \param[in] n : external behaviour name
  */
 const CalculixExternalBehaviour*

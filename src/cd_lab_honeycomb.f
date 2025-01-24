@@ -16,7 +16,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
 !     This subroutine enables to calculate the correction factor for a labyrinth seal
-!     wit a honeycomb stator
+!     with a honeycomb stator
 !     s= gap, hl= width of a honeycomb cell
 !     the correction factors are interpolated from a table 
 !     
