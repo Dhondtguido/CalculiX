@@ -506,13 +506,13 @@ c     call system("rm -f temporaryrestartfile")
 c     call system("rm -f "//fnrstrt(1:ipos+4))
         open(15,file=fnrstrt(1:ipos+4),status='old',iostat=istat)
         if(istat.eq.0) close(15,status='delete')
-        call system("mv temporaryrestartfile "//fnrstrt(1:ipos+4))
-c        istat=rename('temporaryrestartfile',fnrstrt(1:ipos+4))
-c        if(istat.ne.0) then
-c          write(*,*) '*ERROR in restartwrite:'
-c          write(*,*) '       Temporary restart file with name'
-c          write(*,*) '       temporaryrestartfile cannot be renamed'
-c        endif
+c     call system("mv temporaryrestartfile "//fnrstrt(1:ipos+4))
+        call move('temporaryrestartfile',fnrstrt(1:ipos+4), istat)
+        if(istat.ne.0) then
+          write(*,*) '*ERROR in restartwrite:'
+          write(*,*) '       Temporary restart file with name'
+          write(*,*) '       temporaryrestartfile cannot be renamed'
+        endif
       endif
 !     
       return
