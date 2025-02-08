@@ -92,7 +92,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *iponoel=NULL,*inoel=NULL,
     *ielorien=NULL,network=0,nrhs=1,iperturbsav,mscalmethod=0,*jqw=NULL,
     *iroww=NULL,nzsw,*islavquadel=NULL,*irowt=NULL,*jqt=NULL,
-    mortartrafoflag=0;
+    mortartrafoflag=0,nmethodold=*nmethod;
 
   double *stn=NULL,*v=NULL,*een=NULL,cam[5],*xstiff=NULL,*stiini=NULL,*tper,
     *f=NULL,*fn=NULL,qa[4],*fext=NULL,*epn=NULL,*xstateini=NULL,
@@ -908,7 +908,8 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,ielprop,
 	prop,sti);
     if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
-    SFREE(inum);FORTRAN(stop,());
+    SFREE(inum);
+    if(nmethodold==0){FORTRAN(stopwithout201,());}else{FORTRAN(stop,());}
 
   }
 

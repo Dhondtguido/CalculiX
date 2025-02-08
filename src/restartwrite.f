@@ -57,7 +57,7 @@
       character*80 orname(*),amname(*),matname(*),version
       character*81 set(*),prset(*),tieset(*),cbody(*)
       character*87 filab(*)
-      character*132 fnrstrt,jobnamec(*)
+      character*132 fnrstrt,jobnamec(*),fntemp
 !     
       integer nset,nload,nforc,nboun,nk,ne,nmpc,nalset,nmat,istat,
      &     ntmat_,npmat_,norien,nam,nprint,mi(*),ntrans,ncs_,
@@ -507,7 +507,12 @@ c     call system("rm -f "//fnrstrt(1:ipos+4))
         open(15,file=fnrstrt(1:ipos+4),status='old',iostat=istat)
         if(istat.eq.0) close(15,status='delete')
 c     call system("mv temporaryrestartfile "//fnrstrt(1:ipos+4))
-        call move('temporaryrestartfile',fnrstrt(1:ipos+4),istat)
+        fntemp(1:20)='temporaryrestartfile'
+        do i=21,132
+          fntemp(i:i)=' '
+        enddo
+        call move(fntemp,fnrstrt(1:ipos+4),istat)
+c        call move('temporaryrestartfile',fnrstrt(1:ipos+4),istat)
         if(istat.ne.0) then
           write(*,*) '*ERROR in restartwrite:'
           write(*,*) '       Temporary restart file with name'

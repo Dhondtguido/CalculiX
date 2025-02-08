@@ -138,7 +138,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *kslav=NULL,*lslav=NULL,*ktot=NULL,*ltot=NULL,nmasts,neqtot,
     intpointvarm,calcul_fn,calcul_f,calcul_qa,calcul_cauchy,ikin,
     intpointvart,*jqbi=NULL,*irowbi=NULL,*jqib=NULL,*irowib=NULL,
-    idispfrdonly,*inumcp=NULL;
+    idispfrdonly,*inumcp=NULL,nmethodold=*nmethod;
 
   double *stn=NULL,*v=NULL,*een=NULL,cam[5],*epn=NULL,*cg=NULL,
     *cdn=NULL,*pslavsurfold=NULL,*fextload=NULL,
@@ -1110,7 +1110,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 #ifdef COMPANY
       FORTRAN(uout,(v,mi,ithermal,filab,kode,output,jobnamec));
 #endif	  
-      FORTRAN(stop,());
+      if(nmethodold==0){FORTRAN(stopwithout201,());}else{FORTRAN(stop,());}
 	  
     }
 
@@ -2772,7 +2772,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 #ifdef COMPANY
 	FORTRAN(uout,(v,mi,ithermal,filab,kode,output,jobnamec));
 #endif
-	SFREE(inum);FORTRAN(stop,());
+	SFREE(inum);
+	if(nmethodold==0){FORTRAN(stopwithout201,());}else{FORTRAN(stop,());}
 	  
       }
       
