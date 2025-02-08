@@ -507,7 +507,7 @@ c     call system("rm -f "//fnrstrt(1:ipos+4))
         open(15,file=fnrstrt(1:ipos+4),status='old',iostat=istat)
         if(istat.eq.0) close(15,status='delete')
 c     call system("mv temporaryrestartfile "//fnrstrt(1:ipos+4))
-        call move('temporaryrestartfile',fnrstrt(1:ipos+4), istat)
+        call move('temporaryrestartfile',fnrstrt(1:ipos+4),istat)
         if(istat.ne.0) then
           write(*,*) '*ERROR in restartwrite:'
           write(*,*) '       Temporary restart file with name'

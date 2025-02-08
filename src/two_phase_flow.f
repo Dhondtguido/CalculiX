@@ -214,7 +214,7 @@
 !                "Proposed correlation of data for 
 !                 isothermal two-phase two-component
 !                 flow in pipes"
-!                 Chemical Engineering Progress vol.45, No1
+!                 Chemical Engineering Progress vol.45, N°1
 !
       elseif((lakon(nelem)(2:5).eq.'GAPF')
      &        .or.((lakon(nelem)(2:7).ne.'REBEMI')
