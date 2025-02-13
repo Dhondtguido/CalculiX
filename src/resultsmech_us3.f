@@ -324,7 +324,7 @@
       Db(:,:)=0.d0
       Ds(:,:)=0.d0
 !
-      do jjj=1,3              ! ----  start loop gauß points ----
+      do jjj=1,3              ! ----  start loop gauss points ----
 !
 ! natural coordinates z-dirc. -1,0,1
 !
@@ -440,7 +440,7 @@
         stre(5)=tau(1)        ! tyz
         stre(6)=tau(2)        ! txz
 !
-      enddo                     ! ----  end loop gauß points ----
+      enddo                     ! ----  end loop gauss points ----
 !
 ! Thermal loads
 !   
