@@ -875,7 +875,7 @@
       !
       Kb = matmul(matmul(L,Qin),transpose(L))/V
       !
-      ! trasformation hierachical rotations
+      ! transformation hierarchical rotations
       !
       T0(1,1) = x32/A4
       T0(1,2) = y32/A4      
@@ -1076,7 +1076,7 @@
       L(9,3) = h2*(x23*y32-x31*y13)*2.d0*ab 
       !
       !
-      ! trasformation hierachical rotations
+      ! transformation hierarchical rotations
       !
       T0(1,1) = x32/A4
       T0(1,2) = y32/A4      
