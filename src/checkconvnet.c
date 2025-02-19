@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <locale.h>
 #include "CalculiX.h"
 #ifdef SPOOLES
    #include "spooles.h"
@@ -44,7 +45,9 @@ void checkconvnet(ITG *icutb, ITG *iin,
   
   double c2t,c2f,c2p,c2a,c1t,c1f,c1p,a2t,a2f,a2p,a2a,a1t,a1f,a1p,qamp=1.,
          df,dc,db,dd,ran,can,rap,ea,cae,ral;
-
+	
+  setlocale(LC_NUMERIC, "C");
+	
   i0=ctrl[0];ir=ctrl[1];ip=ctrl[2];ic=ctrl[3];il=ctrl[4];ig=ctrl[5];ia=ctrl[7];
   df=ctrl[10];dc=ctrl[11];db=ctrl[12];dd=ctrl[16];ran=ctrl[18];can=ctrl[19];
   rap=ctrl[22];ea=ctrl[23];cae=ctrl[24];ral=ctrl[25];c1t=ctrl[32];c1f=ctrl[33];

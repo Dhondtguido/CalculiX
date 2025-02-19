@@ -19,6 +19,7 @@
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>
+#include <locale.h>
 #include "CalculiX.h"
 #include "mortar.h"
 #ifdef SPOOLES
@@ -250,6 +251,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *Dd=NULL,*Ddtil=NULL,*Bdtil=NULL,*auc2=NULL,*adc2=NULL,*aubd=NULL,
     *audd=NULL,*auddtil=NULL,*auddtil2=NULL,*auddinv=NULL,*bhat=NULL,
     *aubdtil=NULL,*aubdtil2=NULL;
+
+  setlocale(LC_NUMERIC, "C");
 
   /* end of declarations for mortar contact */
 
