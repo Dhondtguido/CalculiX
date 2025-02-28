@@ -155,6 +155,7 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
 			  network,nlabel,iuel,&nuel_,ielmat,inpc,iperturb,
 			  iprestr,nk,nk_,ntie,tieset,iparentel,tietol));
 
+    SFREE(inp);SFREE(inpc);SFREE(ipoinp);SFREE(ipoinpc);
     RENEW(iparentel,ITG,*ne);
 
     /* transferring the material and orientation information from the

@@ -5431,3 +5431,6 @@ Dec 2002        - started to work on single crystal plasticity
                 - included masterIIa.frd and masterhcf.frd in the
 		  repository
                 - replaced the stop call by a stopwithout201 for *no analysis
+
+ 28 Feb 2024    - correction of the c3d8I-element (provided by Otto-Ernst
+                  Bernhardi)

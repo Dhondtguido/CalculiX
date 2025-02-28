@@ -615,6 +615,10 @@ void getglobalresults (char *masterfile,ITG **integerglobp,double **doubleglobp,
       freeDatasets(lcase,j);
     }
     SFREE(lcase);lcase=NULL;
+
+    /* added on Feb 13th, 2025 (suggested by Christopher Woelfle) */
+
+    //    for(i=0;i<anz->u;i++) SFREE(anz->uheader[i]);SFREE(anz->uheader);
     
     /* storing the global data in a common block */
     
