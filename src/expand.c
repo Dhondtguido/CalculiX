@@ -802,7 +802,7 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 
 		    /* check whether SUBCYCLIC MPC: if the current node
                        is an independent node of a CYCLIC MPC, the
-                       node in the new MPC should be the cylic previous
+                       node in the new MPC should be the cyclic previous
                        one */
 
 		    nodenew=node+i**nk;
@@ -914,7 +914,7 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	}
       }
       tint++;*/
-      /* now append and expand the contact definitons*/
+      /* now append and expand the contact definitions*/
 /*      NNEW(tchar1,char,81);
       NNEW(tchar2,char,81);
       NNEW(tchar3,char,81);

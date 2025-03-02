@@ -175,7 +175,7 @@ pastix_data_object pastix_mode_cp = {
     };
 
 
-// Initializes and configurates PaStiX environment. Also forwards the sparse matrix pointers
+// Initializes and configures PaStiX environment. Also forwards the sparse matrix pointers
 void pastix_init(double *ad, double *au, double *adb, double *aub, 
 	        double *sigma,ITG *icol, ITG *irow, 
 			ITG *neq, ITG *nzs, ITG *symmetryflag, ITG *inputformat,
@@ -1004,7 +1004,7 @@ void pastix_main_generic(double *ad, double *au, double *adb, double *aub,
 		globDoublePrecision = 1;
     }
 
-    // use double precision for inputformat 3 like mortar (better perfromance and convergence)
+    // use double precision for inputformat 3 like mortar (better performance and convergence)
     if( pastix_mixed == NULL && *inputformat == 3 ){
         globDoublePrecision = 1;
         forceRedo = 0;
@@ -1174,7 +1174,7 @@ void pastix_main_generic(double *ad, double *au, double *adb, double *aub,
 	stepCleanUp = (stepCleanUp + (stepCleanUpEnd.tv_nsec - stepCleanUpStart.tv_nsec)) * 1e-9;
 	
 	
-	// upate iteration timer
+	// update iteration timer
 	totalIterations++;
 	if(!redo)
 		totalReused++;

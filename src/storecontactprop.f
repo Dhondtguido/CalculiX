@@ -29,12 +29,12 @@
 !     
 !     Main variables and meaning
 !     
-!     temax       : max. natural period of oscillation 
-!     stx      : vector containig results (from results.c)
+!     temax    : max. natural period of oscillation 
+!     stx      : vector containing results (from results.c)
 !     springmm : average mass of master surface
 !     springms : average mass of slave surface
-!     xk : spring stiffness between the surfaces
-!     xmacont : mass of the actual node of the element
+!     xk       : spring stiffness between the surfaces
+!     xmacont  : mass of the actual node of the element
 !     areaslav : area of the slave surface (stiffness comp)
 !     
 !     Proposed by Matteo Pacher

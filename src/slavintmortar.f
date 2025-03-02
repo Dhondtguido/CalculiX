@@ -392,7 +392,7 @@
 c     if(id.ne.0 .and. icoveredmelem(id).eq.nelemm)then
         if(id.gt.0) then
 !     
-!     master elment was already threated
+!     master element was already treated
 !     
           if(icoveredmelem(id).eq.nelemm) cycle
         endif
@@ -745,7 +745,7 @@ c     if(id .gt. 0 .and. icoveredmelem(id).eq.nelemm)then
         if(id.gt.0) then
           if(icoveredmelem(id).eq.nelemm) then
 !     
-!     master elment was already threated
+!     master element was already treated
 !     
             nactiveline=nactiveline-1
             do il=1,nactiveline
