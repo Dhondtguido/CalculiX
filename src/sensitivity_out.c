@@ -19,6 +19,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
+#include <locale.h>
 #include "CalculiX.h"
 
 void sensitivity_out(char *jobnamec,double *dgdxglob,ITG *neq,ITG *nobject,
@@ -29,6 +30,8 @@ void sensitivity_out(char *jobnamec,double *dgdxglob,ITG *neq,ITG *nobject,
   ITG i=0,iobject=0;
       
   FILE *f1;
+
+  setlocale(LC_NUMERIC, "C");
            		 
   /* writing the sensitivities in the sen-file for optimizer */
         	
