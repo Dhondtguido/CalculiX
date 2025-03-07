@@ -296,7 +296,7 @@
 !
          call nident(icoveredmelem,nelemm,ncoveredmelem,id)
          if(id.ne.0 .and. icoveredmelem(id).eq.nelemm)then
-!     master element was already threated
+!     master element was already treated
             cycle
          else
 !     add master element to covered elements
@@ -611,7 +611,7 @@
          call nident(icoveredmelem,nelemm,ncoveredmelem,id)
          if(id .gt. 0 .and. icoveredmelem(id).eq.nelemm)then
 !
-!     master elment was already threated
+!     master element was already treated
 !
             nactiveline=nactiveline-1
             do il=1,nactiveline

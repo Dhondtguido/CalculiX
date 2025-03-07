@@ -764,7 +764,7 @@ c         enddo
          if(dabs(v(1,nodem)).eq.1.d-30) v(1,nodem)=0.d0
       enddo
 !
-!     check the pressures: set pressures to zero (i.e. no initial condtion)
+!     check the pressures: set pressures to zero (i.e. no initial condition)
 !     which lie in between the neighboring pressures (i.e. at least one
 !     neighbor has a lower pressure and at least one neighbor has a higher
 !     pressure) => Laplace method is applied in initialnet

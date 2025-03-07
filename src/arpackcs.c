@@ -2512,7 +2512,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 
       if(igreen==1) *nmethod=13;
 
-      /* change on 20210510: if the nodal diameter exeeds half the
+      /* change on 20210510: if the nodal diameter exceeds half the
          number of segments change the sign of the axis */
       
       //      if(nm>cs[0]/2){
