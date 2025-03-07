@@ -24,7 +24,8 @@
      &     ntie_,nbody_,nprop_,ipoinpc,nevdamp_,npt_,nslavs,nkon_,mcs,
      &     mortar,ifacecount,nintpoint,infree,nheading_,nobject_,
      &     iuel,iprestr,nstam,ndamp,nef,nbounold,nforcold,nloadold,
-     &     nbodyold,mpcend,irobustdesign,nfc_,ndc_,maxsectors_)
+     &     nbodyold,mpcend,irobustdesign,nfc_,ndc_,maxsectors_,
+     &     ndam)
 !     
 !     calculates a conservative estimate of the size of the 
 !     fields to be allocated
@@ -56,7 +57,7 @@
      &     ibounstart,ibounend,ibound,ntrans_,ntmatl,npmatl,ityp,l,
      &     ielset,nope,nteller,nterm,ialset(16),ncs_,rmeminset(*),
      &     islavset,imastset,namtot_,ncmat_,nconstants,memmpc_,j,ipos,
-     &     maxrmeminset,ne1d,ne2d,necper,necpsr,necaxr,nesr,
+     &     maxrmeminset,ne1d,ne2d,necper,necpsr,necaxr,nesr,ndam,
      &     neb32,nn,nflow,nradiate,irestartread,irestartstep,icntrl,
      &     irstrt(*),ithermal(*),nener,nstate_,ipoinp(2,*),inp(3,*),
      &     ntie_,nbody_,nprop_,ipoinpc(0:*),nevdamp_,npt_,nentries,
@@ -507,6 +508,33 @@
           call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &         ipoinp,inp,ipoinpc)
           if((istat.lt.0).or.(key.eq.1)) exit
+        enddo
+      elseif(textpart(1)(1:9).eq.'*DAMAGEMODEL') then
+        ndam=1
+        nmat_=nmat_+1
+!
+        do i=2,n
+          if(textpart(i)(1:5).eq.'TYPE=') then
+            if(textpart(i)(6:15).eq.'RICETRACEY') then
+              nconstants=3
+              ncmat_=max(3,ncmat_)
+            elseif(textpart(i)(6:16).eq.'JOHNSONCOOK') then
+              nconstants=10
+              ncmat_=max(10,ncmat_)
+            endif
+          endif
+        enddo
+!
+        do
+          call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
+     &         ipoinp,inp,ipoinpc)
+          if((istat.lt.0).or.(key.eq.1)) exit
+          ntmatl=ntmatl+1
+          ntmat_=max(ntmatl,ntmat_)
+          do i=2,nconstants/8+1
+            call getnewline(inpc,textpart,istat,n,key,iline,ipol,
+     &           inl,ipoinp,inp,ipoinpc)
+          enddo
         enddo
       elseif(textpart(1)(1:8).eq.'*DAMPING') then
         do i=2,n

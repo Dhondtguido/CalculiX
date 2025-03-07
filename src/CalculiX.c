@@ -52,7 +52,7 @@ int main(int argc,char *argv[])
     *nactdof=NULL,*icol=NULL,*ics=NULL,itempuser[3],
     *jq=NULL,*mast1=NULL,*irow=NULL,*rig=NULL,*idefbody=NULL,
     *ikmpc=NULL,*ilmpc=NULL,*ikboun=NULL,*ilboun=NULL,
-    *nreorder=NULL,*ipointer=NULL,*idefload=NULL,
+    *nreorder=NULL,*ipointer=NULL,*idefload=NULL,*ieldam=NULL,
     *istartset=NULL,*iendset=NULL,*ialset=NULL,*ielmat=NULL,
     *ielorien=NULL,*nrhcon=NULL,*nodebounold=NULL,*ndirbounold=NULL,
     *nelcon=NULL,*nalcon=NULL,*iamforc=NULL,*iamload=NULL,
@@ -69,7 +69,7 @@ int main(int argc,char *argv[])
     nforcold,nloadold,nbody,nbody_,nbodyold,network,nheading_,
     k,nzs[3],nmpc_,nload_,nforc_,istep,istat,nboun_,nintpoint,
     iperturb[2],nmat,ntmat_,norien,ithermal[2]={0,0},nmpcold,
-    iprestr,kode,isolver,nslavs,nkon_,ne1,nkon0,mortar,
+    iprestr,kode,isolver,nslavs,nkon_,ne1,nkon0,mortar,ndam,
     jout[2],nlabel,nkon,idrct,jmax[2],iexpl,nevtot,ifacecount,
     iplas,npmat_,mi[3],ntrans,mpcend,namtot_,iheading,
     icascade,maxlenmpc,mpcinfo[4],ne1d,ne2d,infree[4],
@@ -158,7 +158,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Fri Feb 28 16:09:03 CET 2025\n");
+  printf("You are using an executable made on Fri Mar  7 18:41:46 CET 2025\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -189,7 +189,7 @@ int main(int argc,char *argv[])
 	  &ntrans_,&ncs_,&nstate_,&ncmat_,&memmpc_,&nprint_,energy,ctrl,alpha,
 	  qaold,physcon,&istep,&istat,&iprestr,&kode,&nload,&nbody,&nforc,
 	  &nboun,&nk,&nmpc,&nam,&nzs_,&nlabel,&ttime,&iheading,&nfc,&nfc_,&ndc,
-	  &ndc_);
+	  &ndc_,&ndam);
   
   NNEW(set,char,81*nset_);
   NNEW(meminset,ITG,nset_);
@@ -205,7 +205,7 @@ int main(int argc,char *argv[])
 		      &mortar,&ifacecount,&nintpoint,infree,&nheading_,
 		      &nobject_,iuel,&iprestr,&nstam,&ndamp,&nef,&nbounold,
 		      &nforcold,&nloadold,&nbodyold,&mpcend,irobustdesign,
-		      &nfc_,&ndc_,&maxsectors_));
+		      &nfc_,&ndc_,&maxsectors_,&ndam));
 
   SFREE(meminset);SFREE(rmeminset);mt=mi[1]+1;
   NNEW(heading,char,66*nheading_);
@@ -441,6 +441,7 @@ int main(int argc,char *argv[])
       NNEW(veloo,double,8*nef);
 
       NNEW(ielmat,ITG,mi[2]*ne_);
+      if(ndam==1)NNEW(ieldam,ITG,mi[2]*ne_);
 
       NNEW(matname,char,80*nmat);
 
@@ -636,7 +637,7 @@ int main(int argc,char *argv[])
 		      &mpcfreeref,&maxlenmpcref,&memmpc_,&isens,&namtot,&nstam,
 		      dacon,vel,&nef,velo,veloo,ne2boun,itempuser,
 		      irobustdesign,irandomtype,randomval,&nfc,&nfc_,coeffc,
-		      ikdc,&ndc,&ndc_,edc,coini));
+		      ikdc,&ndc,&ndc_,edc,coini,&ndam,ieldam));
     
     SFREE(idefforc);SFREE(idefload);SFREE(idefbody);
 
@@ -1663,7 +1664,7 @@ int main(int argc,char *argv[])
 		    &nobject_,&objectset,&nmethod,iperturb,&irefineloop,
 		    &iparentel,&iprfn,&konrfn,&ratiorfn,&heading,
 		    &nodedesi,&dgdxglob,&g0,&nuel_,&xdesi,&nfc,&coeffc,
-		    &ikdc,&edc,&coini);
+		    &ikdc,&edc,&coini,&ndam,&ieldam);
 
 	/* closing and reopening the output files */
 	
@@ -1684,7 +1685,7 @@ int main(int argc,char *argv[])
 		&ncs_,&nstate_,&ncmat_,&memmpc_,&nprint_,energy,ctrl,alpha,
 		qaold,physcon,&istep,&istat,&iprestr,&kode,&nload,&nbody,&nforc,
 		&nboun,&nk,&nmpc,&nam,&nzs_,&nlabel,&ttime,&iheading,&nfc,
-		&nfc_,&ndc,&ndc_);
+		&nfc_,&ndc,&ndc_,&ndam);
   
 	NNEW(set,char,81*nset_);
 	NNEW(meminset,ITG,nset_);
@@ -1701,7 +1702,7 @@ int main(int argc,char *argv[])
 			    &mortar,&ifacecount,&nintpoint,infree,&nheading_,
 			    &nobject_,iuel,&iprestr,&nstam,&ndamp,&nef,
 			    &nbounold,&nforcold,&nloadold,&nbodyold,&mpcend,
-			    irobustdesign,&nfc_,&ndc_,&maxsectors_));
+			    irobustdesign,&nfc_,&ndc_,&maxsectors_,&ndam));
 
 	SFREE(meminset);SFREE(rmeminset);mt=mi[1]+1;
 	NNEW(heading,char,66*nheading_);
@@ -1897,7 +1898,7 @@ int main(int argc,char *argv[])
 	      &nobject_,&objectset,&nmethod,iperturb,&irefineloop,
 	      &iparentel,&iprfn,&konrfn,&ratiorfn,&heading,
 	      &nodedesi,&dgdxglob,&g0,&nuel_,&xdesi,&nfc,&coeffc,
-	      &ikdc,&edc,&coini);
+	      &ikdc,&edc,&coini,&ndam,&ieldam);
   
 #ifdef CALCULIX_MPI
   MPI_Finalize();

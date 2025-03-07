@@ -10590,7 +10590,7 @@ $\sigma_0$, $n$ and $\alpha$ directly (by plotting a Cauchy stress versus logari
 \subsubsection{\label{incplas}Incremental (visco)plasticity: multiplicative decomposition}
 
 The implementation of incremental plasticity for nonlinear geometrical
-calculations in CalculiX follows the algorithms in \cite{Simo3} and \cite{Simo4} and is based on the notion of an intermediate stress-free configuration. The deformation is viewed as a plastic flow due to dislocation motion followed by elastic stretching and rotation of the crystal lattice. This is synthesized by a local multiplicative decomposition of the deformation gradient $\textbf{F}=\textbf{F}^e \textbf{F}^p$ where $F_{kK}=x_{k,K}$ in Cartesian coordinates.
+calculations in CalculiX (routine incplas.f) follows the algorithms in \cite{Simo3} and \cite{Simo4} and is based on the notion of an intermediate stress-free configuration. The deformation is viewed as a plastic flow due to dislocation motion followed by elastic stretching and rotation of the crystal lattice. This is synthesized by a local multiplicative decomposition of the deformation gradient $\textbf{F}=\textbf{F}^e \textbf{F}^p$ where $F_{kK}=x_{k,K}$ in Cartesian coordinates.
 
 In the present implementation, the elastic response is isotropic and is deduced from a stored-energy function (hyperelastic response). Furthermore, the plastic flow is isochoric (the volume is conserved) and the classical von Mises-Huber yield condition applies. This condition can be visualized as a sphere in principal deviatoric stress space. 
 
@@ -10641,7 +10641,7 @@ stress is set to zero by means of a *CHANGE MATERIAL and *CHANGE PLASTIC card.
 \subsubsection{\label{incplasa}Incremental (visco)plasticity: additive decomposition}
 
 The implementation of incremental plasticity for linear geometrical
-calculations in CalculiX follows the algorithms in \cite{Dhondt}, section
+calculations in CalculiX (routine: incplas\_lin.f) follows the algorithms in \cite{Dhondt}, section
 5.3 and is based on an additive decomposition of the strain tensor into an
 elastic and a plastic part. In CalculiX, it is used in the absence of the
 NLGEOM parameter on the \htmlref{*STEP}{step} card. The internal variables are
@@ -10653,7 +10653,8 @@ may also be attributable to the general nonlinear geometrical setup).
 \subsubsection{\label{johnsoncook}Plasticity with Johnson-Cook hardening.}
 
 In some sense this is a special case of the previous section, however, since
-it has been implemented as a Abaqus Material User Subroutine in CalculiX,
+it has been implemented as a Abaqus Material User Subroutine in CalculiX
+(in routine umat\_abaqusnl\_total),
 establishing a relationship between the corotational Cauchy stress and the
 corotational logarithmic strain it can also be used for large deformations.
 
@@ -11312,6 +11313,11 @@ transformed into the global system by:
 \begin{equation}
   \boldsymbol{\sigma '} = \boldsymbol{A}^T \cdot \boldsymbol{\sigma }.
 \end{equation}
+
+In CalculiX, the routine has been implemented for linear strains. As soon as
+NLGEOM is activated, however, the material law is applied to the Cauchy stress
+vs. the logarithmic strain (in routine umat\_abaqusnl\_total.f) yielding good
+results for large deformations too.
 
 
 \subsubsection{Tension-only and compression-only materials.}

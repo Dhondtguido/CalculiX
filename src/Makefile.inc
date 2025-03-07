@@ -210,6 +210,8 @@ cubic.f \
 cubtri.f \
 cyclichardenings.f \
 cyclicsymmetrymodels.f \
+damagemodels.f \
+damagesections.f \
 dampings.f \
 dashdamp.f \
 dashpots.f \

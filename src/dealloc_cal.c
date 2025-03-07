@@ -66,7 +66,8 @@ void dealloc_cal(ITG *ncs_,ITG **icsp,ITG *mcs,double **csp,
 		 ITG **konrfnp,double **ratiorfnp,char **headingp,
 		 ITG **nodedesip,double **dgdxglobp,double **g0p,
 		 ITG *nuel_,double **xdesip,ITG *nfc,double **coeffcp,
-		 ITG **ikdcp,double **edcp,double **coinip){
+		 ITG **ikdcp,double **edcp,double **coinip,ITG *ndam,
+		 ITG **ieldamp){
 
   char *tieset=NULL,*lakon=NULL,*typeboun=NULL,*labmpc=NULL,*sideload=NULL,
     *cbody=NULL,*amname=NULL,*set=NULL,*orname=NULL,*prlab=NULL,*prset=NULL,
@@ -82,7 +83,7 @@ void dealloc_cal(ITG *ncs_,ITG **icsp,ITG *mcs,double **csp,
     *nplicon=NULL,*nplkcon=NULL,*ielorien=NULL,*inotr=NULL,*iamt1=NULL,
     *irandomtype=NULL,*ielmat=NULL,*iponor=NULL,*knor=NULL,*iponoel=NULL,
     *inoel=NULL,*ne2boun=NULL,*islavsurf=NULL,*rig=NULL,*iparentel=NULL,
-    *iprfn=NULL,*konrfn=NULL,*nodedesi=NULL,*ikdc=NULL;
+    *iprfn=NULL,*konrfn=NULL,*nodedesi=NULL,*ikdc=NULL,*ieldam=NULL;
 
   double *cs=NULL,*tietol=NULL,*co=NULL,*xboun=NULL,*xbounold=NULL,
     *fmpc=NULL,*coefmpc=NULL,*coefmpcref=NULL,*xforc=NULL,*xforcold=NULL,
@@ -123,6 +124,7 @@ void dealloc_cal(ITG *ncs_,ITG **icsp,ITG *mcs,double **csp,
   ikmpcref=*ikmpcrefp;iprfn=*iprfnp;konrfn=*konrfnp;ratiorfn=*ratiorfnp;
   heading=*headingp;nodedesi=*nodedesip;g0=*g0p;dgdxglob=*dgdxglobp;
   xdesi=*xdesip;coeffc=*coeffcp;ikdc=*ikdcp;edc=*edcp;coini=*coinip;
+  ieldam=*ieldamp;
 								 
   /* deallocating all fields except the *inp fields */
 			 
@@ -178,6 +180,7 @@ void dealloc_cal(ITG *ncs_,ITG **icsp,ITG *mcs,double **csp,
   SFREE(prlab);SFREE(prset);SFREE(filab);SFREE(xmodal);
 
   SFREE(ielmat);SFREE(matname);
+  if(*ndam==1)SFREE(ieldam);
 
   SFREE(sti);SFREE(eme);SFREE(ener);SFREE(xstate);
 
@@ -236,6 +239,7 @@ void dealloc_cal(ITG *ncs_,ITG **icsp,ITG *mcs,double **csp,
   *ikmpcrefp=ikmpcref;*iprfnp=iprfn;*konrfnp=konrfn;*ratiorfnp=ratiorfn;
   *headingp=heading;*nodedesip=nodedesi;*dgdxglobp=dgdxglob;*g0p=g0;
   *xdesip=xdesi;*coeffcp=coeffc;*ikdcp=ikdc;*edcp=edc;*coinip=coini;
+  *ieldamp=ieldam;
   
   return;
 }

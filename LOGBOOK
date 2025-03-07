@@ -5427,10 +5427,13 @@ Dec 2002        - started to work on single crystal plasticity
  2 Dec 2024     - checked the use of a submodel in a *HEAT TRANSFER analysi
                   added a test example
 
- 8 Feb 2024     - confirmed new move procedure for *RESTART,WRITE,OVERLAY
+ 8 Feb 2025     - confirmed new move procedure for *RESTART,WRITE,OVERLAY
                 - included masterIIa.frd and masterhcf.frd in the
 		  repository
                 - replaced the stop call by a stopwithout201 for *no analysis
 
- 28 Feb 2024    - correction of the c3d8I-element (provided by Otto-Ernst
+ 28 Feb 2025    - correction of the c3d8I-element (provided by Otto-Ernst
                   Bernhardi)
+
+ 7 March 2025   - started the implementation of damage calculations for
+                  (visco)plastic materials

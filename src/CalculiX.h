@@ -154,7 +154,7 @@ void FORTRAN(allocation,(ITG *nload_,ITG *nforc_,ITG *nboun_,
 			 ITG *iuel,ITG *iprestr,ITG *nstam,ITG *ndamp,ITG *nef,
 			 ITG *nbounold,ITG *nforcold,ITG *nloadold,
 			 ITG *nbodyold,ITG *mpcend,ITG *irobustdesign,
-			 ITG *nfc_,ITG *ndc_,ITG *maxsectors_));
+			 ITG *nfc_,ITG *ndc_,ITG *maxsectors_,ITG *ndam));
 
 void FORTRAN(allocation_rfn,(ITG *nk_,ITG *ne_,ITG *nkon_,ITG *ipoinp,
 			    ITG *ipoinpc,char *inpc,ITG *inp));
@@ -571,7 +571,8 @@ void FORTRAN(calinput,(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		       double *velo,double *veloo,ITG *ne2boun,ITG *itempuser,
 		       ITG *irobustdesign,ITG *irandomtype,double *randomval,
 		       ITG *nfc,ITG *nfc_,double *coeffc,ITG *idck,ITG *ndc,
-		       ITG *ndc_,double *edc,double *coini));
+		       ITG *ndc_,double *edc,double *coini,ITG *ndam,
+		       ITG *ieldam));
 
 void FORTRAN(calinput_rfn,(double *co,char *filab,char *set,ITG *istartset,
 			   ITG *iendset,ITG *ialset,ITG *nset,ITG *nset_,
@@ -1206,7 +1207,7 @@ void dealloc_cal(ITG *ncs_,ITG **icsp,ITG *mcs,double **csp,
 		 double **ratiorfnp,char **headingp,ITG **nodedesip,
 		 double **dgdxglobp,double **g0p,ITG *nuel_,double **xdesip,
 		 ITG *nfc,double **coeffcp,ITG **idckp,double **edcp,
-		 double **coinip);
+		 double **coinip,ITG *ndam,ITG **ieldamp);
 
 void FORTRAN(desiperelem,(ITG *ndesi,ITG *istartdesi,ITG *ialdesi,
                           ITG *ipoeldi,ITG *ieldi,ITG *ne,
@@ -2143,7 +2144,7 @@ void ini_cal(char *jobnamec,char *output,char *fneig,char *kind1,char *kind2,
 	     ITG *istep,ITG *istat,ITG *iprestr,ITG *kode,ITG *nload,
 	     ITG *nbody,ITG *nforc,ITG *nboun,ITG *nk,ITG *nmpc,ITG *nam,
 	     ITG *nzs_,ITG *nlabel,double *ttime,ITG *iheading,ITG *nfc,
-	     ITG *nfc_,ITG *ndc,ITG *ndc_);
+	     ITG *nfc_,ITG *ndc,ITG *ndc_,ITG *ndam);
 
 void insert_cmatrix(ITG *ipointer,ITG **mast1p,ITG **nextp,ITG *i1,
 		    ITG *i2,ITG *ifree,ITG *nzs_);

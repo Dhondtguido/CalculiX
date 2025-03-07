@@ -48,7 +48,7 @@
      &     mpcfreeref,maxlenmpcref,memmpc_,isens,namtot,nstam,dacon,
      &     vel,nef,velo,veloo,ne2boun,itempuser,irobustdesign,
      &     irandomtype,randomval,nfc,nfc_,coeffc,ikdc,ndc,ndc_,edc,
-     &     coini)
+     &     coini,ndam,ieldam)
 !     
       implicit none
 !     
@@ -106,7 +106,7 @@
      &     iponor(2,*),knor(*),ikforc(*),ilforc(*),iponoel(*),
      &     inoel(3,*),infree(4),ixfree,ikfree,inoelfree,iponoelmax,
      &     rig(*),nshcon(*),ncocon(2,*),nodebounold(*),ielprop(*),nprop,
-     &     nprop_,maxsectors,irestartread,
+     &     nprop_,maxsectors,irestartread,ndam,ieldam(mi(3),*),
      &     ndirbounold(*),ipoinp(2,*),inp(3,*),nintpoint,ifacecount,
      &     ianisoplas,ifile_output,ichangefriction,nslavs,
      &     nalset,nalset_,nmat,nmat_,ntmat_,norien,norien_,
@@ -223,7 +223,6 @@
         nmethod=0
 !     
         ne=0
-c        nset=0
         nalset=0
         nmat=0
         norien=0
@@ -234,6 +233,10 @@ c        nset=0
 !     
         imat=0
         lprev=0
+!     
+!       at the end of calinput ndam=1 if there exists an element with a damage model assigned.    
+!     
+        ndam=0
 !     
         do i=1,ne_
           ipkon(i)=-1
@@ -529,6 +532,17 @@ c
      &       ics(16*ncs_+1),ics(18*ncs_+1),ipoinpc,
      &       maxsectors,trab,ntrans,ntrans_,jobnamec,vold,nef,mi,
      &       iaxial,ier)
+!     
+      elseif(textpart(1)(1:12).eq.'*DAMAGEMODEL') then
+        call damagemodels(inpc,textpart,matname,nmat,nmat_,
+     &       irstrt,istep,istat,n,iline,ipol,inl,ipoinp,inp,
+     &       ipoinpc,imat,ier,elcon,nelcon,ntmat_,ncmat_)
+!     
+      elseif(textpart(1)(1:14).eq.'*DAMAGESECTION') then
+        call damagesections(inpc,textpart,set,istartset,iendset,
+     &       ialset,nset,ieldam,matname,nmat,ndam,
+     &       lakon,kon,ipkon,irstrt,istep,istat,n,iline,
+     &       ipol,inl,ipoinp,inp,ipoinpc,mi,co,ier)
 !     
       elseif(textpart(1)(1:8).eq.'*DAMPING') then
         call dampings(inpc,textpart,xmodal,istep,
@@ -1393,6 +1407,39 @@ c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
         enddo
         nprint=ii
       endif
+!
+!     check whether damage calculations were only requested for materials
+!     for which the equivalent plastic strain is calculated:
+!     1) *DEFORMATION PLASTICITY
+!     2) *PLASTIC (isotropic or orthotropic elasticity,
+!        including Johnson Cook hardening)      
+!     3) *CREEP
+!     4) *MOHR COULOMB
+!
+      if(ndam.eq.1) then
+        ierror=0
+        do i=1,ne
+          do j=1,mi(3)
+            if(ieldam(j,i).ne.0) then
+              imat=ielmat(j,i)
+              if((((nelcon(1,imat).gt.51).or.(nelcon(1,imat).lt.-54)))
+     &             .and.
+     &             (matname(imat)(1:11).ne.'ANISO_CREEP')
+     &             .and.
+     &             (matname(imat)(1:11).ne.'JOHNSONCOOK')) then
+                ierror=1
+                write(*,*) '*ERROR in calinput: a damage calculation'
+                write(*,*) '       was requested for element',i,','
+                write(*,*) '       however, it consists of material'
+                write(*,*) '       ',matname(imat)
+                write(*,*) '       for which no equivalent strain is'
+                write(*,*) '       calculated.'
+              endif
+            endif
+          enddo
+        enddo
+        if(ierror.eq.1) call exit(201)
+      endif
 !     
 !     for frequency calculations no kinetic energy is calculated
 !     
@@ -1752,14 +1799,6 @@ c      write(*,*)
       timepar(5)=tincf
 !     
       if(istep.eq.1) ncs_=lprev
-c!     
-c      if(ier.ge.1) then
-c        write(*,*) '*ERROR in calinput: at least one fatal'
-c        write(*,*) '       error message while reading the'
-c        write(*,*) '       input deck: CalculiX stops.'
-c        write(*,*)
-c        call exit(201)
-c      endif
 !
 !     the step number is written in the .dat-file if data output
 !     was requested or if the procedure always leads to some
