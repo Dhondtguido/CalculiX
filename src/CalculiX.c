@@ -52,11 +52,11 @@ int main(int argc,char *argv[])
     *nactdof=NULL,*icol=NULL,*ics=NULL,itempuser[3],
     *jq=NULL,*mast1=NULL,*irow=NULL,*rig=NULL,*idefbody=NULL,
     *ikmpc=NULL,*ilmpc=NULL,*ikboun=NULL,*ilboun=NULL,
-    *nreorder=NULL,*ipointer=NULL,*idefload=NULL,*ieldam=NULL,
+    *nreorder=NULL,*ipointer=NULL,*idefload=NULL,
     *istartset=NULL,*iendset=NULL,*ialset=NULL,*ielmat=NULL,
     *ielorien=NULL,*nrhcon=NULL,*nodebounold=NULL,*ndirbounold=NULL,
     *nelcon=NULL,*nalcon=NULL,*iamforc=NULL,*iamload=NULL,
-    *iamt1=NULL,*namta=NULL,*ipkon=NULL,*iamboun=NULL,
+    *iamt1=NULL,*namta=NULL,*ipkon=NULL,*iamboun=NULL,*ndmcon=NULL,
     *nplicon=NULL,*nplkcon=NULL,*inotr=NULL,*iponor=NULL,*knor=NULL,
     *ikforc=NULL,*ilforc=NULL,*iponoel=NULL,*inoel=NULL,*nshcon=NULL,
     *ncocon=NULL,*ibody=NULL,*ielprop=NULL,*islavsurf=NULL,
@@ -69,7 +69,7 @@ int main(int argc,char *argv[])
     nforcold,nloadold,nbody,nbody_,nbodyold,network,nheading_,
     k,nzs[3],nmpc_,nload_,nforc_,istep,istat,nboun_,nintpoint,
     iperturb[2],nmat,ntmat_,norien,ithermal[2]={0,0},nmpcold,
-    iprestr,kode,isolver,nslavs,nkon_,ne1,nkon0,mortar,ndam,
+    iprestr,kode,isolver,nslavs,nkon_,ne1,nkon0,mortar,ndmat_,
     jout[2],nlabel,nkon,idrct,jmax[2],iexpl,nevtot,ifacecount,
     iplas,npmat_,mi[3],ntrans,mpcend,namtot_,iheading,
     icascade,maxlenmpc,mpcinfo[4],ne1d,ne2d,infree[4],
@@ -89,7 +89,7 @@ int main(int argc,char *argv[])
     
   double *co=NULL,*xboun=NULL,*coefmpc=NULL,*xforc=NULL,*clearini=NULL,
     *xload=NULL,*xbounold=NULL,*xforcold=NULL,*randomval=NULL,
-    *vold=NULL,*sti=NULL,*xloadold=NULL,*xnor=NULL,
+    *vold=NULL,*sti=NULL,*xloadold=NULL,*xnor=NULL,*dmcon=NULL,
     *reorder=NULL,*dcs=NULL,*thickn=NULL,*thicke=NULL,*offset=NULL,
     *elcon=NULL,*rhcon=NULL,*alcon=NULL,*alzero=NULL,*t0=NULL,*t1=NULL,
     *prestr=NULL,*orab=NULL,*amta=NULL,*veold=NULL,*accold=NULL,
@@ -158,7 +158,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Fri Mar  7 18:41:46 CET 2025\n");
+  printf("You are using an executable made on Mon Mar 10 21:57:50 CET 2025\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -189,7 +189,7 @@ int main(int argc,char *argv[])
 	  &ntrans_,&ncs_,&nstate_,&ncmat_,&memmpc_,&nprint_,energy,ctrl,alpha,
 	  qaold,physcon,&istep,&istat,&iprestr,&kode,&nload,&nbody,&nforc,
 	  &nboun,&nk,&nmpc,&nam,&nzs_,&nlabel,&ttime,&iheading,&nfc,&nfc_,&ndc,
-	  &ndc_,&ndam);
+	  &ndc_,&ndmat_);
   
   NNEW(set,char,81*nset_);
   NNEW(meminset,ITG,nset_);
@@ -205,7 +205,7 @@ int main(int argc,char *argv[])
 		      &mortar,&ifacecount,&nintpoint,infree,&nheading_,
 		      &nobject_,iuel,&iprestr,&nstam,&ndamp,&nef,&nbounold,
 		      &nforcold,&nloadold,&nbodyold,&mpcend,irobustdesign,
-		      &nfc_,&ndc_,&maxsectors_,&ndam));
+		      &nfc_,&ndc_,&maxsectors_,&ndmat_));
 
   SFREE(meminset);SFREE(rmeminset);mt=mi[1]+1;
   NNEW(heading,char,66*nheading_);
@@ -336,6 +336,13 @@ int main(int argc,char *argv[])
       NNEW(elcon,double,(ncmat_+1)*ntmat_*nmat);
       NNEW(nelcon,ITG,2*nmat);
 
+      /* damage constants */
+
+      if(ndmat_>0){
+	NNEW(dmcon,double,(ndmat_+1)*ntmat_*nmat);
+	NNEW(ndmcon,ITG,2*nmat);
+      }
+
       /* density */
 
       NNEW(rhcon,double,2*ntmat_*nmat);
@@ -441,7 +448,6 @@ int main(int argc,char *argv[])
       NNEW(veloo,double,8*nef);
 
       NNEW(ielmat,ITG,mi[2]*ne_);
-      if(ndam==1)NNEW(ieldam,ITG,mi[2]*ne_);
 
       NNEW(matname,char,80*nmat);
 
@@ -637,7 +643,7 @@ int main(int argc,char *argv[])
 		      &mpcfreeref,&maxlenmpcref,&memmpc_,&isens,&namtot,&nstam,
 		      dacon,vel,&nef,velo,veloo,ne2boun,itempuser,
 		      irobustdesign,irandomtype,randomval,&nfc,&nfc_,coeffc,
-		      ikdc,&ndc,&ndc_,edc,coini,&ndam,ieldam));
+		      ikdc,&ndc,&ndc_,edc,coini,&ndmat_,ndmcon,dmcon));
     
     SFREE(idefforc);SFREE(idefload);SFREE(idefbody);
 
@@ -1664,7 +1670,7 @@ int main(int argc,char *argv[])
 		    &nobject_,&objectset,&nmethod,iperturb,&irefineloop,
 		    &iparentel,&iprfn,&konrfn,&ratiorfn,&heading,
 		    &nodedesi,&dgdxglob,&g0,&nuel_,&xdesi,&nfc,&coeffc,
-		    &ikdc,&edc,&coini,&ndam,&ieldam);
+		    &ikdc,&edc,&coini,&ndmat_,&ndmcon,&dmcon);
 
 	/* closing and reopening the output files */
 	
@@ -1685,7 +1691,7 @@ int main(int argc,char *argv[])
 		&ncs_,&nstate_,&ncmat_,&memmpc_,&nprint_,energy,ctrl,alpha,
 		qaold,physcon,&istep,&istat,&iprestr,&kode,&nload,&nbody,&nforc,
 		&nboun,&nk,&nmpc,&nam,&nzs_,&nlabel,&ttime,&iheading,&nfc,
-		&nfc_,&ndc,&ndc_,&ndam);
+		&nfc_,&ndc,&ndc_,&ndmat_);
   
 	NNEW(set,char,81*nset_);
 	NNEW(meminset,ITG,nset_);
@@ -1702,7 +1708,7 @@ int main(int argc,char *argv[])
 			    &mortar,&ifacecount,&nintpoint,infree,&nheading_,
 			    &nobject_,iuel,&iprestr,&nstam,&ndamp,&nef,
 			    &nbounold,&nforcold,&nloadold,&nbodyold,&mpcend,
-			    irobustdesign,&nfc_,&ndc_,&maxsectors_,&ndam));
+			    irobustdesign,&nfc_,&ndc_,&maxsectors_,&ndmat_));
 
 	SFREE(meminset);SFREE(rmeminset);mt=mi[1]+1;
 	NNEW(heading,char,66*nheading_);
@@ -1898,7 +1904,7 @@ int main(int argc,char *argv[])
 	      &nobject_,&objectset,&nmethod,iperturb,&irefineloop,
 	      &iparentel,&iprfn,&konrfn,&ratiorfn,&heading,
 	      &nodedesi,&dgdxglob,&g0,&nuel_,&xdesi,&nfc,&coeffc,
-	      &ikdc,&edc,&coini,&ndam,&ieldam);
+	      &ikdc,&edc,&coini,&ndmat_,&ndmcon,&dmcon);
   
 #ifdef CALCULIX_MPI
   MPI_Finalize();

@@ -48,7 +48,7 @@
      &     mpcfreeref,maxlenmpcref,memmpc_,isens,namtot,nstam,dacon,
      &     vel,nef,velo,veloo,ne2boun,itempuser,irobustdesign,
      &     irandomtype,randomval,nfc,nfc_,coeffc,ikdc,ndc,ndc_,edc,
-     &     coini,ndam,ieldam)
+     &     coini,ndmat_,ndmcon,dmcon)
 !     
       implicit none
 !     
@@ -100,13 +100,13 @@
      &     nodeforc(2,*),ndirforc(*),nelemload(2,*),iaxial,j,mi(*),
      &     istartset(*),iendset(*),ialset(*),ipkon(*),ics(*),nodedep,
      &     nelcon(2,*),nrhcon(*),nalcon(2,*),ielmat(mi(3),*),nodeind,
-     &     ielorien(mi(3),*),icomposite,nsubmodel,mortar,
+     &     ielorien(mi(3),*),icomposite,nsubmodel,mortar,ndmcon(2,*),
      &     namta(3,*),iamforc(*),iamload(2,*),iamt1(*),ipoinpc(0:*),
      &     iamboun(*),inotr(2,*),ikboun(*),ilboun(*),ikmpc(*),ilmpc(*),
      &     iponor(2,*),knor(*),ikforc(*),ilforc(*),iponoel(*),
      &     inoel(3,*),infree(4),ixfree,ikfree,inoelfree,iponoelmax,
      &     rig(*),nshcon(*),ncocon(2,*),nodebounold(*),ielprop(*),nprop,
-     &     nprop_,maxsectors,irestartread,ndam,ieldam(mi(3),*),
+     &     nprop_,maxsectors,irestartread,ndmat_,
      &     ndirbounold(*),ipoinp(2,*),inp(3,*),nintpoint,ifacecount,
      &     ianisoplas,ifile_output,ichangefriction,nslavs,
      &     nalset,nalset_,nmat,nmat_,ntmat_,norien,norien_,
@@ -141,7 +141,8 @@
      &     xbody(7,*),xbodyold(7,*),t0g(2,*),t1g(2,*),
      &     fei(4),tinc,tper,xmodal(*),tmin,tmax,tincf,
      &     alpha(*),physcon(*),coefmpcref(*),vel(nef,*),velo(*),
-     &     veloo(*),randomval(2,*),coeffc(0:6,*),edc(12,*),coini(3,*)
+     &     veloo(*),randomval(2,*),coeffc(0:6,*),edc(12,*),coini(3,*),
+     &     dmcon(0:ndmat_,ntmat_,*)
 !     
       save solid,ianisoplas,out3d,pretension
 !     
@@ -233,10 +234,6 @@
 !     
         imat=0
         lprev=0
-!     
-!       at the end of calinput ndam=1 if there exists an element with a damage model assigned.    
-!     
-        ndam=0
 !     
         do i=1,ne_
           ipkon(i)=-1
@@ -533,16 +530,10 @@ c
      &       maxsectors,trab,ntrans,ntrans_,jobnamec,vold,nef,mi,
      &       iaxial,ier)
 !     
-      elseif(textpart(1)(1:12).eq.'*DAMAGEMODEL') then
-        call damagemodels(inpc,textpart,matname,nmat,nmat_,
+      elseif(textpart(1)(1:17).eq.'*DAMAGEINITIATION') then
+        call damageinitiations(inpc,textpart,matname,nmat,nmat_,
      &       irstrt,istep,istat,n,iline,ipol,inl,ipoinp,inp,
-     &       ipoinpc,imat,ier,elcon,nelcon,ntmat_,ncmat_)
-!     
-      elseif(textpart(1)(1:14).eq.'*DAMAGESECTION') then
-        call damagesections(inpc,textpart,set,istartset,iendset,
-     &       ialset,nset,ieldam,matname,nmat,ndam,
-     &       lakon,kon,ipkon,irstrt,istep,istat,n,iline,
-     &       ipol,inl,ipoinp,inp,ipoinpc,mi,co,ier)
+     &       ipoinpc,imat,ier,dmcon,ndmcon,ntmat_,ndmat_)
 !     
       elseif(textpart(1)(1:8).eq.'*DAMPING') then
         call dampings(inpc,textpart,xmodal,istep,
@@ -1416,27 +1407,23 @@ c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
 !     3) *CREEP
 !     4) *MOHR COULOMB
 !
-      if(ndam.eq.1) then
+      if(ndmat_.gt.0) then
         ierror=0
-        do i=1,ne
-          do j=1,mi(3)
-            if(ieldam(j,i).ne.0) then
-              imat=ielmat(j,i)
+        do imat=1,nmat
+            if(ndmcon(1,imat).gt.0) then
               if((((nelcon(1,imat).gt.51).or.(nelcon(1,imat).lt.-54)))
      &             .and.
      &             (matname(imat)(1:11).ne.'ANISO_CREEP')
      &             .and.
      &             (matname(imat)(1:11).ne.'JOHNSONCOOK')) then
                 ierror=1
-                write(*,*) '*ERROR in calinput: a damage calculation'
-                write(*,*) '       was requested for element',i,','
-                write(*,*) '       however, it consists of material'
-                write(*,*) '       ',matname(imat)
+                write(*,*) '*ERROR in calinput: a damage initiation'
+                write(*,*) '       model was defined for material',
+     &               matname(imat)
                 write(*,*) '       for which no equivalent strain is'
                 write(*,*) '       calculated.'
               endif
             endif
-          enddo
         enddo
         if(ierror.eq.1) call exit(201)
       endif

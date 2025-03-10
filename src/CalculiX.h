@@ -571,8 +571,8 @@ void FORTRAN(calinput,(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		       double *velo,double *veloo,ITG *ne2boun,ITG *itempuser,
 		       ITG *irobustdesign,ITG *irandomtype,double *randomval,
 		       ITG *nfc,ITG *nfc_,double *coeffc,ITG *idck,ITG *ndc,
-		       ITG *ndc_,double *edc,double *coini,ITG *ndam,
-		       ITG *ieldam));
+		       ITG *ndc_,double *edc,double *coini,ITG *ndmat_,
+		       ITG *ndmcon,double *dmcon));
 
 void FORTRAN(calinput_rfn,(double *co,char *filab,char *set,ITG *istartset,
 			   ITG *iendset,ITG *ialset,ITG *nset,ITG *nset_,
@@ -1207,7 +1207,7 @@ void dealloc_cal(ITG *ncs_,ITG **icsp,ITG *mcs,double **csp,
 		 double **ratiorfnp,char **headingp,ITG **nodedesip,
 		 double **dgdxglobp,double **g0p,ITG *nuel_,double **xdesip,
 		 ITG *nfc,double **coeffcp,ITG **idckp,double **edcp,
-		 double **coinip,ITG *ndam,ITG **ieldamp);
+		 double **coinip,ITG *ndmat_,ITG **ndmconp,double **dmconp);
 
 void FORTRAN(desiperelem,(ITG *ndesi,ITG *istartdesi,ITG *ialdesi,
                           ITG *ipoeldi,ITG *ieldi,ITG *ne,

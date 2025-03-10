@@ -4344,7 +4344,9 @@ The user can define his/her own elements. In order to do so he/she has to:
 \item write a FORTRAN subroutine extrapolate\_uxxxx.f calculating the value of
   the secondary variables (usually strains, stresses..) at the nodes based on
   their values at the integration points within the element. Add a call to
-  this routine in extrapolate\_u.f
+  this routine in extrapolate\_u.
+\item include the name of your element in the if constructs in mastruct.c (2 instances, look for
+  ``user element''.
 \end{itemize}
  
 \subsubsection{User Element: 3D Timoshenko beam element (U1)}
@@ -11315,8 +11317,8 @@ transformed into the global system by:
 \end{equation}
 
 In CalculiX, the routine has been implemented for linear strains. As soon as
-NLGEOM is activated, however, the material law is applied to the Cauchy stress
-vs. the logarithmic strain (in routine umat\_abaqusnl\_total.f) yielding good
+NLGEOM is activated, however, the material law is applied to the corotational Cauchy stress
+vs. the corotational logarithmic strain (in routine umat\_abaqusnl\_total.f) yielding good
 results for large deformations too.
 
 
@@ -11910,10 +11912,11 @@ These variables are accessible through the \htmlref{*EL
 PRINT}{elprint} (.dat file) and \htmlref{*EL FILE}{elfile} (.frd file)
 keywords in exactly this order (label SDV).
 
-This model is for small deformations (small strains and small
+This model (implemented in ortho\_plas.f) is for small deformations (small strains and small
 rotations). However, if NLGEOM is activated on the \htmlref{*STEP}{step} card
 this model is considered to be an Abaqus umat routine linking the corotational
-Cauchy stress to the corotational mechanical logarithmic strain. In this way, the routine
+Cauchy stress to the corotational mechanical logarithmic strain (by calling
+ortho\_plas.f from umat\_abaqusnl\_total.f). In this way, the routine
 can also be used for large deformations.
 
 \begin{verbatim}
@@ -12002,10 +12005,11 @@ routine is the equivalent deviatoric creep strain, the output is the von Mises
 stress and the derivative of the equivalent deviatoric creep strain increment
 w.r.t. the von Mises stress.
 
-This model is for small deformations (small strains and small
+This model (implemented in umat\_aniso\_creep.f) is for small deformations (small strains and small
 rotations). However, if NLGEOM is activated on the \htmlref{*STEP}{step} card
 this model is considered to be an Abaqus umat routine linking the corotational
-Cauchy stress to the corotational mechanical logarithmic strain. In this way, the routine
+Cauchy stress to the corotational mechanical logarithmic strain (by calling
+umat\_aniso\_creep.f from umat\_abaqusnl\_total.f). In this way, the routine
 can also be used for large deformations.
 
 \begin{verbatim}

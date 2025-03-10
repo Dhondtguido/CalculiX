@@ -25,7 +25,7 @@
      &     mortar,ifacecount,nintpoint,infree,nheading_,nobject_,
      &     iuel,iprestr,nstam,ndamp,nef,nbounold,nforcold,nloadold,
      &     nbodyold,mpcend,irobustdesign,nfc_,ndc_,maxsectors_,
-     &     ndam)
+     &     ndmat_)
 !     
 !     calculates a conservative estimate of the size of the 
 !     fields to be allocated
@@ -57,7 +57,7 @@
      &     ibounstart,ibounend,ibound,ntrans_,ntmatl,npmatl,ityp,l,
      &     ielset,nope,nteller,nterm,ialset(16),ncs_,rmeminset(*),
      &     islavset,imastset,namtot_,ncmat_,nconstants,memmpc_,j,ipos,
-     &     maxrmeminset,ne1d,ne2d,necper,necpsr,necaxr,nesr,ndam,
+     &     maxrmeminset,ne1d,ne2d,necper,necpsr,necaxr,nesr,ndmat_,
      &     neb32,nn,nflow,nradiate,irestartread,irestartstep,icntrl,
      &     irstrt(*),ithermal(*),nener,nstate_,ipoinp(2,*),inp(3,*),
      &     ntie_,nbody_,nprop_,ipoinpc(0:*),nevdamp_,npt_,nentries,
@@ -509,18 +509,16 @@
      &         ipoinp,inp,ipoinpc)
           if((istat.lt.0).or.(key.eq.1)) exit
         enddo
-      elseif(textpart(1)(1:9).eq.'*DAMAGEMODEL') then
-        ndam=1
-        nmat_=nmat_+1
+      elseif(textpart(1)(1:17).eq.'*DAMAGEINITIATION') then
 !
         do i=2,n
-          if(textpart(i)(1:5).eq.'TYPE=') then
-            if(textpart(i)(6:15).eq.'RICETRACEY') then
+          if(textpart(i)(1:10).eq.'CRITERION=') then
+            if(textpart(i)(11:20).eq.'RICETRACEY') then
               nconstants=3
-              ncmat_=max(3,ncmat_)
-            elseif(textpart(i)(6:16).eq.'JOHNSONCOOK') then
+              ndmat_=max(3,ndmat_)
+            elseif(textpart(i)(11:21).eq.'JOHNSONCOOK') then
               nconstants=10
-              ncmat_=max(10,ncmat_)
+              ndmat_=max(10,ndmat_)
             endif
           endif
         enddo

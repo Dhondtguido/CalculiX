@@ -66,8 +66,8 @@ void dealloc_cal(ITG *ncs_,ITG **icsp,ITG *mcs,double **csp,
 		 ITG **konrfnp,double **ratiorfnp,char **headingp,
 		 ITG **nodedesip,double **dgdxglobp,double **g0p,
 		 ITG *nuel_,double **xdesip,ITG *nfc,double **coeffcp,
-		 ITG **ikdcp,double **edcp,double **coinip,ITG *ndam,
-		 ITG **ieldamp){
+		 ITG **ikdcp,double **edcp,double **coinip,ITG *ndmat_,
+		 ITG **ndmconp,double **dmconp){
 
   char *tieset=NULL,*lakon=NULL,*typeboun=NULL,*labmpc=NULL,*sideload=NULL,
     *cbody=NULL,*amname=NULL,*set=NULL,*orname=NULL,*prlab=NULL,*prset=NULL,
@@ -83,7 +83,7 @@ void dealloc_cal(ITG *ncs_,ITG **icsp,ITG *mcs,double **csp,
     *nplicon=NULL,*nplkcon=NULL,*ielorien=NULL,*inotr=NULL,*iamt1=NULL,
     *irandomtype=NULL,*ielmat=NULL,*iponor=NULL,*knor=NULL,*iponoel=NULL,
     *inoel=NULL,*ne2boun=NULL,*islavsurf=NULL,*rig=NULL,*iparentel=NULL,
-    *iprfn=NULL,*konrfn=NULL,*nodedesi=NULL,*ikdc=NULL,*ieldam=NULL;
+    *iprfn=NULL,*konrfn=NULL,*nodedesi=NULL,*ikdc=NULL,*ndmcon=NULL;
 
   double *cs=NULL,*tietol=NULL,*co=NULL,*xboun=NULL,*xbounold=NULL,
     *fmpc=NULL,*coefmpc=NULL,*coefmpcref=NULL,*xforc=NULL,*xforcold=NULL,
@@ -94,7 +94,8 @@ void dealloc_cal(ITG *ncs_,ITG **icsp,ITG *mcs,double **csp,
     *randomval=NULL,*xmodal=NULL,*sti=NULL,*eme=NULL,*ener=NULL,*xstate=NULL,
     *vold=NULL,*veold=NULL,*vel=NULL,*velo=NULL,*veloo=NULL,*xnor=NULL,
     *thicke=NULL,*offset=NULL,*pslavsurf=NULL,*clearini=NULL,*ratiorfn=NULL,
-    *dgdxglob=NULL,*g0=NULL,*xdesi=NULL,*coeffc=NULL,*edc=NULL,*coini=NULL;
+    *dgdxglob=NULL,*g0=NULL,*xdesi=NULL,*coeffc=NULL,*edc=NULL,*coini=NULL,
+    *dmcon=NULL;
 
   ics=*icsp;cs=*csp;tieset=*tiesetp;tietol=*tietolp;co=*cop;kon=*konp;
   ipkon=*ipkonp;lakon=*lakonp;nodeboun=*nodebounp;ndirboun=*ndirbounp;
@@ -124,7 +125,7 @@ void dealloc_cal(ITG *ncs_,ITG **icsp,ITG *mcs,double **csp,
   ikmpcref=*ikmpcrefp;iprfn=*iprfnp;konrfn=*konrfnp;ratiorfn=*ratiorfnp;
   heading=*headingp;nodedesi=*nodedesip;g0=*g0p;dgdxglob=*dgdxglobp;
   xdesi=*xdesip;coeffc=*coeffcp;ikdc=*ikdcp;edc=*edcp;coini=*coinip;
-  ieldam=*ieldamp;
+  ndmcon=*ndmconp;dmcon=*dmconp;
 								 
   /* deallocating all fields except the *inp fields */
 			 
@@ -161,6 +162,7 @@ void dealloc_cal(ITG *ncs_,ITG **icsp,ITG *mcs,double **csp,
   SFREE(elcon);SFREE(nelcon);SFREE(rhcon);SFREE(nrhcon);SFREE(shcon);
   SFREE(nshcon);
   SFREE(cocon);SFREE(ncocon);SFREE(alcon);SFREE(nalcon);SFREE(alzero);
+  if(*ndmat_>0){SFREE(ndmcon);SFREE(dmcon);}
   if(*nprop>0){SFREE(ielprop);SFREE(prop);}
   if(*npmat_>0){SFREE(plicon);SFREE(nplicon);SFREE(plkcon);SFREE(nplkcon);}
   if(*ndamp>0){SFREE(dacon);}
@@ -180,7 +182,6 @@ void dealloc_cal(ITG *ncs_,ITG **icsp,ITG *mcs,double **csp,
   SFREE(prlab);SFREE(prset);SFREE(filab);SFREE(xmodal);
 
   SFREE(ielmat);SFREE(matname);
-  if(*ndam==1)SFREE(ieldam);
 
   SFREE(sti);SFREE(eme);SFREE(ener);SFREE(xstate);
 
@@ -239,7 +240,7 @@ void dealloc_cal(ITG *ncs_,ITG **icsp,ITG *mcs,double **csp,
   *ikmpcrefp=ikmpcref;*iprfnp=iprfn;*konrfnp=konrfn;*ratiorfnp=ratiorfn;
   *headingp=heading;*nodedesip=nodedesi;*dgdxglobp=dgdxglob;*g0p=g0;
   *xdesip=xdesi;*coeffcp=coeffc;*ikdcp=ikdc;*edcp=edc;*coinip=coini;
-  *ieldamp=ieldam;
+  *ndmconp=ndmcon;*dmconp=dmcon;
   
   return;
 }
