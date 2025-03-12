@@ -695,7 +695,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
       
       if(nev+2>neq[1]){
 	printf(" *ERROR in arpack: too many eigenvalues requested\n");
-	printf("                   number is reduced to: %d\n\n",neq[1]-2);
+	printf("                   number is reduced to: %" ITGFORMAT "\n\n",neq[1]-2);
 	nev=neq[1]-2;
       }
       if(ncv<nev+2){
@@ -713,7 +713,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
       
       if(nev+1>neq[1]){
 	printf(" *ERROR in arpack: too many eigenvalues requested\n");
-	printf("                   number is reduced to: %d\n\n",neq[1]-1);
+	printf("                   number is reduced to: %" ITGFORMAT "\n\n",neq[1]-1);
 	nev=neq[1]-1;
       }
       if(ncv<nev+1){
@@ -884,7 +884,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
       }
       sum=0;
       for(k=0;k<neq[1];k++){sum+=z[kref+k]*temp_array[k];}
-      printf("U^T*M*U=%f for eigenmode %d\n",sum,j+1);
+      printf("U^T*M*U=%f for eigenmode %" ITGFORMAT "\n",sum,j+1);
       
       if(fabs(sum-1.)>1.e-5){
 	printf("sum=%e\n",sum);
@@ -1041,7 +1041,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
       /* check whether degree of freedom is active */
       
       if(nactdof[mt*(node-1)+idir]==0){
-	printf(" *ERROR in linstatic: degree of freedom corresponding to node %d \n and direction %d is not active: no unit force can be applied\n",node,idir);
+	printf(" *ERROR in linstatic: degree of freedom corresponding to node %" ITGFORMAT " \n and direction %" ITGFORMAT " is not active: no unit force can be applied\n",node,idir);
 	FORTRAN(stop,());
       }
       

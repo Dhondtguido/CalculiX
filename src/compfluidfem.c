@@ -203,7 +203,7 @@ void compfluidfem(double **cop,ITG *nk,ITG **ipkonp,ITG **konp,char **lakonp,
   
   if(*ne<num_cpus) num_cpus=*ne;
   
-  printf(" Using up to %d cpu(s) for CFD.\n", num_cpus);
+  printf(" Using up to %" ITGFORMAT " cpu(s) for CFD.\n", num_cpus);
   
   pthread_t tid[num_cpus];
   
@@ -543,9 +543,9 @@ void compfluidfem(double **cop,ITG *nk,ITG **ipkonp,ITG **konp,char **lakonp,
 	
 	if(*nmethod==1) ipower*=2;
 	if(iexplicit){
-	  printf("iteration %d shock coefficient %e\n",iit,shockcoef);
+	  printf("iteration %" ITGFORMAT " shock coefficient %e\n",iit,shockcoef);
 	}else{
-	  printf("iteration %d\n",iit);
+	  printf("iteration %" ITGFORMAT "\n",iit);
 	}
       }
 

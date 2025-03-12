@@ -676,7 +676,7 @@ void checkconvergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		    (*icutb)++;
 		    if(*mortar==1){
 			*kscale=kscalemax;
-			printf("\n reducing the constant stiffnesses by a factor of %d \n\n",*kscale);
+			printf("\n reducing the constant stiffnesses by a factor of %" ITGFORMAT " \n\n",*kscale);
 		    }
 
                     /* check whether too many cutbacks */
@@ -786,7 +786,7 @@ void checkconvergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		    (*icutb)++;
 		    if(*mortar==1){
 			*kscale=kscalemax;
-			printf("\n reducing the constant stiffnesses by a factor of %d \n\n",*kscale);
+			printf("\n reducing the constant stiffnesses by a factor of %" ITGFORMAT " \n\n",*kscale);
 		    }
 //		    if(*mortar==1) *kscale=100;
 

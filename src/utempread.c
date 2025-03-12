@@ -117,7 +117,7 @@ void utempread (double *t1,ITG *istep,char *jobnamec)
 	    t1[nodenr-1]=lcase[loadcase].dat[0][nodenr];
 	}
     }else{
-	printf("INFO in utempread: no temperature data\n was found for step %d in the temperature frd-file\n\n",*istep);
+	printf("INFO in utempread: no temperature data\n was found for step %" ITGFORMAT " in the temperature frd-file\n\n",*istep);
     }
     
     for(j=0;j<anz->l;j++){

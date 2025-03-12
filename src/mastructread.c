@@ -57,10 +57,9 @@ void mastructread(ITG *ipompc,ITG *nodempc,ITG *nmpc,ITG *nactdof,
     exit(0);
   }
   do{
-    if(fscanf(f1,"%d,%d,%d,%d,%lf\n",&node1,&k,&node2,&m,&val)==5){
+    if(fscanf(f1,"%" ITGFORMAT ",%" ITGFORMAT ",%" ITGFORMAT ",%" ITGFORMAT ",%lf\n",&node1,&k,&node2,&m,&val)==5){
       mastructmatrix(ipompc,nodempc,nmpc,nactdof,jq,&mast1,neq,ipointer,nzs_,
 		     nmethod,iperturb,mi,&next,&node1,&k,&node2,&m,ifree);
-      //      printf("%d,%d,%d,%d,%e\n",node1,k,node2,m,val);
     }else{
       break;
     }

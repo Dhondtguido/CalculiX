@@ -176,7 +176,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
   
   static ITG *nodeboun=NULL,*ndirboun=NULL,*ipompc=NULL,
     *nodempc=NULL,*nodeforc=NULL,*ndirforc=NULL,
-    im,*inodesd=NULL,nload1,*idefforc=NULL,*ieldam=NULL,
+    im,*inodesd=NULL,nload1,*idefforc=NULL,
     *nactdof=NULL,*icol=NULL,*ics=NULL,itempuser[3],
     *jq=NULL,*mast1=NULL,*irow=NULL,*rig=NULL,*idefbody=NULL,
     *ikmpc=NULL,*ilmpc=NULL,
@@ -301,7 +301,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
     printf("software, and you are welcome to redistribute it under\n");
     printf("certain conditions, see gpl.htm\n\n");
     printf("************************************************************\n\n");
-    printf("You are using an executable made on Mon Mar 10 21:57:50 CET 2025\n");
+    printf("You are using an executable made on Wed Mar 12 15:35:38 CET 2025\n");
     fflush(stdout);
 
     NNEW(ipoinp,ITG,2*nentries);
@@ -1332,7 +1332,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
       NNEW(jq,ITG,mt**nk+1);
       NNEW(ipointer,ITG,mt**nk);
       
-      if((icascade==0)&&((*nmethod<8)||(*nmethod>10))){
+      if(((icascade==0)&&((*nmethod<8)||(*nmethod>10)))||(*nmethod==12)){
 	if((*nmethod==11)||(*nmethod==13)){nmethodl=2;}else{nmethodl=*nmethod;}
 	mastruct(nk,kon,ipkon,lakon,ne,nodeboun,ndirboun,nboun,ipompc,
 		 nodempc,&nmpc,nactdof,icol,jq,&mast1,&irow,&isolver,neq,

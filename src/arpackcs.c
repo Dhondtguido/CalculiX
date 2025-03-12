@@ -991,7 +991,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	}
 	sum=0;
 	for(k=0;k<neq[1];k++){sum+=z[kref+k]*temp_array[k];}
-	printf("U^T*M*U=%f for eigenmode %d\n",sum,j+1);
+	printf("U^T*M*U=%f for eigenmode %" ITGFORMAT "\n",sum,j+1);
 
 	/* normalizing the eigenmode (if not yet normalized by ARPACK */
 
@@ -1025,7 +1025,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	}
 	  
 	if(kmax2<kmax1){
-	  printf("exchange mode %d and mode %d!\n",j+1,j+2);
+	  printf("exchange mode %" ITGFORMAT " and mode %" ITGFORMAT "!\n",j+1,j+2);
 	  NNEW(zstorage,double,neq[1]);
 	  memcpy(zstorage,&z[j*neq[1]],sizeof(double)*neq[1]);
 	  memcpy(&z[j*neq[1]],&z[(j+1)*neq[1]],sizeof(double)*neq[1]);
@@ -1390,7 +1390,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	/* check whether degree of freedom is active */
 	    
 	if(nactdof[mt*(node-1)+idir]==0){
-	  printf(" *ERROR in linstatic: degree of freedom corresponding to node %d \n and direction %d is not active: no unit force can be applied\n",node,idir);
+	  printf(" *ERROR in linstatic: degree of freedom corresponding to node %" ITGFORMAT " \n and direction %" ITGFORMAT " is not active: no unit force can be applied\n",node,idir);
 	  FORTRAN(stop,());
 	}
       

@@ -381,23 +381,27 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 	  nope=lakon[8*i+7];
 	}else{
 
-	  /* substructure (superelement) */
+	  /* substructure (superelement) 
+             only for mechanical isothermal calculations */
 	  
-	  nope=-1;
+	  mastructread(ipompc,nodempc,nmpc,nactdof,jq,&mast1,neq,ipointer,
+		       &nzs_,nmethod,iperturb,mi,&next,&ifree,&i,ielmat,
+		       matname);
+	  continue;
 	}
       }else continue;
 
-      if(nope==-1){
+      //     if(nope==-1){
 
 	  /* substructure (superelement) 
              only for mechanical isothermal calculations */
 	
-	mastructread(ipompc,nodempc,nmpc,nactdof,jq,&mast1,neq,ipointer,
+      /*	mastructread(ipompc,nodempc,nmpc,nactdof,jq,&mast1,neq,ipointer,
 		     &nzs_,nmethod,iperturb,mi,&next,&ifree,&i,ielmat,
 		     matname);
 	  
 	continue;
-      }
+	}*/
       
       for(jj=0;jj<ndof*nope;++jj){
 	
@@ -754,7 +758,7 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
   
   if(neq[1]<num_cpus) num_cpus=neq[1];
   
-  printf(" Using up to %d cpu(s) for setting up the structure of the matrix.\n", num_cpus);
+  printf(" Using up to %" ITGFORMAT " cpu(s) for setting up the structure of the matrix.\n", num_cpus);
   
   pthread_t tid[num_cpus];
 
@@ -830,7 +834,7 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
   
     if((neq[2]-neq[1])<num_cpus) num_cpus=neq[2]-neq[1];
 
-    printf(" Using up to %d cpu(s) for setting up the structure of the matrix.\n", num_cpus);
+    printf(" Using up to %" ITGFORMAT " cpu(s) for setting up the structure of the matrix.\n", num_cpus);
   
     pthread_t tid[num_cpus];
 

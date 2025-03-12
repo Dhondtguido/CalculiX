@@ -5437,3 +5437,7 @@ Dec 2002        - started to work on single crystal plasticity
 
  7 March 2025   - started the implementation of damage calculations for
                   (visco)plastic materials
+
+ 12 March 2025  - made a correction for sensitivity analyses in combination
+                  with NLGEOM just before the call of matruct in CalculiX.c
+                - replaced %d by %" ITGFORMAT " where appropriate.

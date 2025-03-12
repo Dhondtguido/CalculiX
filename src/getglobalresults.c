@@ -462,7 +462,7 @@ void getglobalresults (char *masterfile,ITG **integerglobp,double **doubleglobp,
 	    field[13*(nodenr-1)]=lcase[loadcase].dat[0][nodenr];
 	}
     }else{
-	printf(" *INFO in getglobalresults: no temperature data\n was found for step %d in the global model\n\n",istep);
+	printf(" *INFO in getglobalresults: no temperature data\n was found for step %" ITGFORMAT " in the global model\n\n",istep);
     }
     
     /* reading the displacements */
@@ -510,7 +510,7 @@ void getglobalresults (char *masterfile,ITG **integerglobp,double **doubleglobp,
 	    field[13*(nodenr-1)+3]=lcase[loadcase].dat[2][nodenr];
 	}
     }else{
-	printf(" *INFO in getglobalresults: no displacement data\n was found for step %d in the global model\n\n",istep);
+	printf(" *INFO in getglobalresults: no displacement data\n was found for step %" ITGFORMAT " in the global model\n\n",istep);
     }
     
     /* reading the stresses */
@@ -560,7 +560,7 @@ void getglobalresults (char *masterfile,ITG **integerglobp,double **doubleglobp,
 	    field[13*(nodenr-1)+9]=lcase[loadcase].dat[5][nodenr];
 	}
     }else{
-	printf(" *INFO in getglobalresults: no stress data\n was found for step %d in the global model\n\n",istep);
+	printf(" *INFO in getglobalresults: no stress data\n was found for step %" ITGFORMAT " in the global model\n\n",istep);
     }
     
     /* reading the forces */
@@ -606,7 +606,7 @@ void getglobalresults (char *masterfile,ITG **integerglobp,double **doubleglobp,
 	    field[13*(nodenr-1)+12]=lcase[loadcase].dat[2][nodenr];
 	}
     }else{
-	printf(" *INFO in getglobalresults: no force data\n was found for step %d in the global model\n\n",istep);
+	printf(" *INFO in getglobalresults: no force data\n was found for step %" ITGFORMAT " in the global model\n\n",istep);
     }
     
     SFREE(kontet);SFREE(inodfa);

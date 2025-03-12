@@ -647,7 +647,7 @@ double *sigma,ITG *icol, ITG *irow,
                 }
             }
 
-            printf("added %d entries to the matrix\n",countnew);
+            printf("added %" ITGFORMAT " entries to the matrix\n",countnew);
             nzsTotal += countnew;
 
             // allocate memory for the PaStiX arrays and free the old ones if necessary

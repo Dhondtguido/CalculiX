@@ -154,7 +154,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
   
   for(iinc=0;iinc<jmax[0];iinc++){
 
-    printf("Increment %d\n\n",iinc+1);
+    printf("Increment %" ITGFORMAT "\n\n",iinc+1);
 
     nkinc=*nk;
   
@@ -404,8 +404,8 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
     if(mei[0]>0){
       
       if(mei[1]>nstep){
-	printf(" *ERROR in crackpropagation.c: HCF mission step %d\n",mei[1]);
-	printf("        exceeds the number of LCF steps %d\n\n",nstep);
+	printf(" *ERROR in crackpropagation.c: HCF mission step %" ITGFORMAT "\n",mei[1]);
+	printf("        exceeds the number of LCF steps %" ITGFORMAT "\n\n",nstep);
 	FORTRAN(stop,());
       }
 
@@ -507,7 +507,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 	}else{
 	  printf(" *WARNING: Exit because an error occurred in crackrate.f \n");
 	}
-	printf("           Number of iteration= %d\n\n" ,(iinc+1));
+	printf("           Number of iteration= %" ITGFORMAT "\n\n" ,(iinc+1));
 	
 	SFREE(xkeq);SFREE(phi);SFREE(xk1);SFREE(xk2);SFREE(xk3);
 	SFREE(xkeqf);SFREE(phif);SFREE(xk1f);SFREE(xk2f);SFREE(xk3f);
@@ -596,7 +596,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 	}else{
 	  printf(" *WARNING: Exit because an error occurred in crackrate.f \n");
 	}
-	printf("           Number of iteration= %d\n\n" ,(iinc+1));
+	printf("           Number of iteration= %" ITGFORMAT "\n\n" ,(iinc+1));
 	
 	SFREE(xkeq);SFREE(phi);SFREE(xk1);SFREE(xk2);SFREE(xk3);
 	SFREE(crconloc);SFREE(xn);SFREE(xa);
@@ -770,11 +770,11 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 
     if(icritic>0){
 	printf(" *WARNING: Exit because crack propagation occurred due to the modal loading \n");
-	printf("           Number of iteration= %d\n\n" ,(iinc+1));
+	printf("           Number of iteration= %" ITGFORMAT "\n\n" ,(iinc+1));
 	break;
     }else if(icritic<0){
 	printf(" *WARNING: Exit because no crack propagation anywhere along the crack front \n");
-	printf("           Number of iteration= %d\n\n" ,(iinc+1));
+	printf("           Number of iteration= %" ITGFORMAT "\n\n" ,(iinc+1));
 	break;
     }
 

@@ -389,7 +389,7 @@ void predgmres_struct_mt(double *ad, double **aup, double *adb, double *aub,
 	     iwork,nestart,&num_cpus,&dgmrestol);
 
   if(ierr>0){
-      printf(" *WARNING in predgmres_struct_mt: error message from dgmresmain =%d\n\n",ierr);
+      printf(" *WARNING in predgmres_struct_mt: error message from dgmresmain =%" ITGFORMAT "\n\n",ierr);
   }
 
   memcpy(&b[0],&x[0],sizeof(double)**neq);
