@@ -37,7 +37,8 @@
      &  ipoinp,inp,fmpc,tieset,ntie,tietol,ipoinpc,nslavs,t0g,t1g,nprop,
      &  ielprop,prop,mortar,nintpoint,ifacecount,islavsurf,pslavsurf,
      &  clearini,ier,vel,nef,velo,veloo,ne2boun,heading,network,
-     &  irestartread,nfc,ndc,coeffc,ikdc,edc,xmodal)
+     &  irestartread,nfc,ndc,coeffc,ikdc,edc,xmodal,ndmat_,ndmcon,
+     &  dmcon,dam)
 !
       implicit none
 !
@@ -68,7 +69,7 @@
      &  nener,irestartstep,irestartread,irstrt(*),istat,n,i,key,
      &  iprestr,mcs,maxlenmpc,iline,ipol,inl,nfc,ndc,ikdc(*),
      &  ipoinp(2,*),inp(3,*),ntie,ibody(*),nbody,nslavs,nef,
-     &  ne2boun(2,*)
+     &  ne2boun(2,*),ndmat_,ndmcon(*)
 !
       real*8 co(*),xboun(*),coefmpc(*),xforc(*),xload(*),elcon(*),
      &  rhcon(*),alcon(*),alzero(*),plicon(*),plkcon(*),orab(*),
@@ -78,7 +79,7 @@
      &  shcon(*),cocon(*),sti(*),ener(*),xstate(*),prop(*),edc(*),
      &  ttime,qaold(2),cs(18,*),physcon(*),pslavsurf(*),coeffc(*),
      &  ctrl(*),fmpc(*),xbody(*),xbodyold(*),vel(*),velo(*),veloo(*),
-     &  xmodal(*)
+     &  xmodal(*),dmcon(*),dam(*)
 !
       irestartstep=0
 !
@@ -135,7 +136,8 @@
      &  output,physcon,ctrl,typeboun,fmpc,tieset,ntie,tietol,nslavs,
      &  t0g,t1g,nprop,ielprop,prop,mortar,nintpoint,ifacecount,
      &  islavsurf,pslavsurf,clearini,irstrt,vel,nef,velo,veloo,
-     &  ne2boun,heading,network,nfc,ndc,coeffc,ikdc,edc,xmodal)
+     &  ne2boun,heading,network,nfc,ndc,coeffc,ikdc,edc,xmodal,
+     &  ndmat_,ndmcon,dmcon,dam)
       endif
 !
       call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,

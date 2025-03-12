@@ -37,7 +37,7 @@
      &     nprop,ielprop,prop,mortar,nintpoint,ifacecount,islavsurf,
      &     pslavsurf,clearini,irstrt,vel,nef,velo,veloo,ne2boun,
      &     memmpc_,heading,nheading_,network,nfc,ndc,coeffc,ikdc,edc,
-     &     xmodal)
+     &     xmodal,ndmat_,ndmcon,dmcon,dam)
 !     
 !     writes all information needed for a restart to file
 !     
@@ -74,7 +74,7 @@
      &     nshcon(*),ncocon(*),ics(*),infree(*),i,ipos,nfc,ndc,
      &     nener,iprestr,istepnew,maxlenmpc,mcs,ntie,ikdc(*),
      &     ibody(*),nbody,mt,nslavs,namtot,nef,ne2boun(*),
-     &     memmpc_,nheading_,network,nevdamp_
+     &     memmpc_,nheading_,network,nevdamp_,ndmat_,ndmcon(*)
 !     
       real*8 co(*),xboun(*),coefmpc(*),xforc(*),xload(*),elcon(*),
      &     rhcon(*),alcon(*),alzero(*),plicon(*),plkcon(*),orab(*),
@@ -84,7 +84,7 @@
      &     shcon(*),cocon(*),sti(*),ener(*),xstate(*),pslavsurf(*),
      &     qaold(2),cs(*),physcon(*),ctrl(*),prop(*),coeffc(*),
      &     ttime,fmpc(*),xbody(*),xbodyold(*),vel(*),velo(*),veloo(*),
-     &     edc(*),xmodal(*)
+     &     edc(*),xmodal(*),dmcon(*),dam(*)
 !     
       mt=mi(2)+1
 !     
@@ -169,6 +169,7 @@ c     call system("rm -f temporaryrestartfile")
       write(15)ntmat_
       write(15)npmat_
       write(15)ncmat_
+      write(15)ndmat_
 !     
 !     property info
 !     
@@ -323,6 +324,14 @@ c     call system("rm -f temporaryrestartfile")
 !     
       write(15)(elcon(i),i=1,(ncmat_+1)*ntmat_*nmat)
       write(15)(nelcon(i),i=1,2*nmat)
+!     
+!     damage constants
+!
+      if(ndmat_.gt.0) then
+        write(15)(dmcon(i),i=1,(ndmat_+1)*ntmat_*nmat)
+        write(15)(ndmcon(i),i=1,2*nmat)
+        write(15)(dam(i),i=1,mi(1)*ne)
+      endif
 !     
 !     density
 !     

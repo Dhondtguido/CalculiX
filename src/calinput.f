@@ -48,7 +48,7 @@
      &     mpcfreeref,maxlenmpcref,memmpc_,isens,namtot,nstam,dacon,
      &     vel,nef,velo,veloo,ne2boun,itempuser,irobustdesign,
      &     irandomtype,randomval,nfc,nfc_,coeffc,ikdc,ndc,ndc_,edc,
-     &     coini,ndmat_,ndmcon,dmcon)
+     &     coini,ndmat_,ndmcon,dmcon,dam)
 !     
       implicit none
 !     
@@ -142,7 +142,7 @@
      &     fei(4),tinc,tper,xmodal(*),tmin,tmax,tincf,
      &     alpha(*),physcon(*),coefmpcref(*),vel(nef,*),velo(*),
      &     veloo(*),randomval(2,*),coeffc(0:6,*),edc(12,*),coini(3,*),
-     &     dmcon(0:ndmat_,ntmat_,*)
+     &     dmcon(0:ndmat_,ntmat_,*),dam(mi(1),*)
 !     
       save solid,ianisoplas,out3d,pretension
 !     
@@ -1028,7 +1028,7 @@ c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
      &       t0g,t1g,nprop,ielprop,prop,mortar,nintpoint,ifacecount,
      &       islavsurf,pslavsurf,clearini,ier,vel,nef,velo,veloo,
      &       ne2boun,heading,network,irestartread,nfc,ndc,coeffc,
-     &       ikdc,edc,xmodal)
+     &       ikdc,edc,xmodal,ndmat_,ndmcon,dmcon,dam)
 !     
       elseif(textpart(1)(1:18).eq.'*RETAINEDNODALDOFS') then
         call retainednodaldofss(inpc,textpart,set,istartset,

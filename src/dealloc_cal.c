@@ -67,7 +67,7 @@ void dealloc_cal(ITG *ncs_,ITG **icsp,ITG *mcs,double **csp,
 		 ITG **nodedesip,double **dgdxglobp,double **g0p,
 		 ITG *nuel_,double **xdesip,ITG *nfc,double **coeffcp,
 		 ITG **ikdcp,double **edcp,double **coinip,ITG *ndmat_,
-		 ITG **ndmconp,double **dmconp){
+		 ITG **ndmconp,double **dmconp,double **damp){
 
   char *tieset=NULL,*lakon=NULL,*typeboun=NULL,*labmpc=NULL,*sideload=NULL,
     *cbody=NULL,*amname=NULL,*set=NULL,*orname=NULL,*prlab=NULL,*prset=NULL,
@@ -95,7 +95,7 @@ void dealloc_cal(ITG *ncs_,ITG **icsp,ITG *mcs,double **csp,
     *vold=NULL,*veold=NULL,*vel=NULL,*velo=NULL,*veloo=NULL,*xnor=NULL,
     *thicke=NULL,*offset=NULL,*pslavsurf=NULL,*clearini=NULL,*ratiorfn=NULL,
     *dgdxglob=NULL,*g0=NULL,*xdesi=NULL,*coeffc=NULL,*edc=NULL,*coini=NULL,
-    *dmcon=NULL;
+    *dmcon=NULL,*dam=NULL;
 
   ics=*icsp;cs=*csp;tieset=*tiesetp;tietol=*tietolp;co=*cop;kon=*konp;
   ipkon=*ipkonp;lakon=*lakonp;nodeboun=*nodebounp;ndirboun=*ndirbounp;
@@ -125,7 +125,7 @@ void dealloc_cal(ITG *ncs_,ITG **icsp,ITG *mcs,double **csp,
   ikmpcref=*ikmpcrefp;iprfn=*iprfnp;konrfn=*konrfnp;ratiorfn=*ratiorfnp;
   heading=*headingp;nodedesi=*nodedesip;g0=*g0p;dgdxglob=*dgdxglobp;
   xdesi=*xdesip;coeffc=*coeffcp;ikdc=*ikdcp;edc=*edcp;coini=*coinip;
-  ndmcon=*ndmconp;dmcon=*dmconp;
+  ndmcon=*ndmconp;dmcon=*dmconp;dam=*damp;
 								 
   /* deallocating all fields except the *inp fields */
 			 
@@ -162,7 +162,7 @@ void dealloc_cal(ITG *ncs_,ITG **icsp,ITG *mcs,double **csp,
   SFREE(elcon);SFREE(nelcon);SFREE(rhcon);SFREE(nrhcon);SFREE(shcon);
   SFREE(nshcon);
   SFREE(cocon);SFREE(ncocon);SFREE(alcon);SFREE(nalcon);SFREE(alzero);
-  if(*ndmat_>0){SFREE(ndmcon);SFREE(dmcon);}
+  if(*ndmat_>0){SFREE(ndmcon);SFREE(dmcon);SFREE(dam);}
   if(*nprop>0){SFREE(ielprop);SFREE(prop);}
   if(*npmat_>0){SFREE(plicon);SFREE(nplicon);SFREE(plkcon);SFREE(nplkcon);}
   if(*ndamp>0){SFREE(dacon);}
@@ -240,7 +240,7 @@ void dealloc_cal(ITG *ncs_,ITG **icsp,ITG *mcs,double **csp,
   *ikmpcrefp=ikmpcref;*iprfnp=iprfn;*konrfnp=konrfn;*ratiorfnp=ratiorfn;
   *headingp=heading;*nodedesip=nodedesi;*dgdxglobp=dgdxglob;*g0p=g0;
   *xdesip=xdesi;*coeffcp=coeffc;*ikdcp=ikdc;*edcp=edc;*coinip=coini;
-  *ndmconp=ndmcon;*dmconp=dmcon;
+  *ndmconp=ndmcon;*dmconp=dmcon;*damp=dam;
   
   return;
 }

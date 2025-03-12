@@ -220,7 +220,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
     *sti=NULL,*xloadold=NULL,*xnor=NULL,*dmcon=NULL,
     *reorder=NULL,*dcs=NULL,*thickn=NULL,*thicke=NULL,*offset=NULL,
     *elcon=NULL,*rhcon=NULL,*alcon=NULL,*alzero=NULL,*t0=NULL,*t1=NULL,
-    *prestr=NULL,*orab=NULL,*amta=NULL,
+    *prestr=NULL,*orab=NULL,*amta=NULL,*dam=NULL,
     *t1old=NULL,*eme=NULL,*plicon=NULL,*pslavsurf=NULL,*plkcon=NULL,
     *xstate=NULL,*trab=NULL,*ener=NULL,*shcon=NULL,*cocon=NULL,
     *cs=NULL,*tietol=NULL,*fmpc=NULL,*prop=NULL,*t0g=NULL,*t1g=NULL,
@@ -301,7 +301,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
     printf("software, and you are welcome to redistribute it under\n");
     printf("certain conditions, see gpl.htm\n\n");
     printf("************************************************************\n\n");
-    printf("You are using an executable made on Wed Mar 12 16:30:01 CET 2025\n");
+    printf("You are using an executable made on Wed Mar 12 18:46:33 CET 2025\n");
     fflush(stdout);
 
     NNEW(ipoinp,ITG,2*nentries);
@@ -493,6 +493,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
       if(ndmat_>0){
 	NNEW(dmcon,double,(ndmat_+1)*ntmat_*nmat);
 	NNEW(ndmcon,ITG,2*nmat);
+	NNEW(dam,double,mi[0]*ne_);
       }
 
       /* density */
@@ -814,7 +815,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 			&nstam,
 			dacon,vel,&nef,velo,veloo,ne2boun,itempuser,
 			irobustdesign,irandomtype,randomval,&nfc,&nfc_,coeffc,
-			ikdc,&ndc,&ndc_,edc,coini,&ndmat_,ndmcon,dmcon));
+			ikdc,&ndc,&ndc_,edc,coini,&ndmat_,ndmcon,dmcon,dam));
 
 
       // start change DLR
@@ -1002,6 +1003,12 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 
       RENEW(elcon,double,(ncmat_+1)*ntmat_*nmat);
       RENEW(nelcon,ITG,2*nmat);
+
+      if(ndmat_>0){
+	RENEW(dmcon,double,(ndmat_+1)*ntmat_*nmat);
+	RENEW(ndmcon,ITG,2*nmat);
+	RENEW(dam,double,mi[0]**ne);
+      }
 
       RENEW(rhcon,double,2*ntmat_*nmat);
       RENEW(nrhcon,ITG,nmat);
@@ -1440,7 +1447,8 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 		    &nintpoint,&mortar,&ifacecount,typeboun,&islavsurf,
 		    &pslavsurf,&clearini,&nmat,xmodal,&iaxial,&inext,&nprop,
 		    &network,orname,vel,&nef,velo,veloo,energy,itempuser,
-		    ipobody,&inewton,t0g,t1g,&ifreebody,nlabel);
+		    ipobody,&inewton,t0g,t1g,&ifreebody,nlabel,&ndmat_,ndmcon,
+		    dmcon,dam);
 
 	  memmpc_=mpcinfo[0];mpcfree=mpcinfo[1];icascade=mpcinfo[2];
 	  maxlenmpc=mpcinfo[3];
@@ -1815,7 +1823,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 		    &nobject_,&objectset,nmethod,iperturb,&irefineloop,
 		    &iparentel,&iprfn,&konrfn,&ratiorfn,&heading,
 		    &nodedesi,&dgdxglob,&g0,&nuel_,&xdesi,&nfc,&coeffc,
-		    &ikdc,&edc,&coini,&ndmat_,&ndmcon,&dmcon);
+		    &ikdc,&edc,&coini,&ndmat_,&ndmcon,&dmcon,&dam);
 
 	/* closing and reopening the output files */
 	
@@ -1987,7 +1995,8 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 			      &mortar,&nintpoint,&ifacecount,islavsurf,
 			      pslavsurf,clearini,irstrt,vel,&nef,velo,veloo,
 			      ne2boun,&memmpc_,heading,&nheading_,&network,
-			      &nfc,&ndc,coeffc,ikdc,edc,xmodal));
+			      &nfc,&ndc,coeffc,ikdc,edc,xmodal,&ndmat_,ndmcon,
+			      dmcon,dam));
       }
     } 
 
@@ -2052,7 +2061,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 	      &nobject_,&objectset,nmethod,iperturb,&irefineloop,
 	      &iparentel,&iprfn,&konrfn,&ratiorfn,&heading,
 	      &nodedesi,&dgdxglob,&g0,&nuel_,&xdesi,&nfc,&coeffc,
-	      &ikdc,&edc,&coini,&ndmat_,&ndmcon,&dmcon);
+	      &ikdc,&edc,&coini,&ndmat_,&ndmcon,&dmcon,&dam);
   
 #ifdef CALCULIX_MPI
   MPI_Finalize();

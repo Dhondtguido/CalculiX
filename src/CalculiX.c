@@ -98,7 +98,7 @@ int main(int argc,char *argv[])
     *cs=NULL,*tietol=NULL,*fmpc=NULL,*prop=NULL,*t0g=NULL,*t1g=NULL,
     *xbody=NULL,*xbodyold=NULL,*coefmpcref=NULL,*dacon=NULL,*vel=NULL,
     *velo=NULL,*veloo=NULL,energy[5],*ratiorfn=NULL,*dgdxglob=NULL,
-    *g0=NULL,*xdesi=NULL,*coeffc=NULL,*edc=NULL,*coini=NULL;
+    *g0=NULL,*xdesi=NULL,*coeffc=NULL,*edc=NULL,*coini=NULL,*dam=NULL;
     
   double ctrl[57];
 
@@ -158,7 +158,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Wed Mar 12 16:30:01 CET 2025\n");
+  printf("You are using an executable made on Wed Mar 12 18:46:33 CET 2025\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -341,6 +341,7 @@ int main(int argc,char *argv[])
       if(ndmat_>0){
 	NNEW(dmcon,double,(ndmat_+1)*ntmat_*nmat);
 	NNEW(ndmcon,ITG,2*nmat);
+	NNEW(dam,double,mi[0]*ne_);
       }
 
       /* density */
@@ -643,7 +644,7 @@ int main(int argc,char *argv[])
 		      &mpcfreeref,&maxlenmpcref,&memmpc_,&isens,&namtot,&nstam,
 		      dacon,vel,&nef,velo,veloo,ne2boun,itempuser,
 		      irobustdesign,irandomtype,randomval,&nfc,&nfc_,coeffc,
-		      ikdc,&ndc,&ndc_,edc,coini,&ndmat_,ndmcon,dmcon));
+		      ikdc,&ndc,&ndc_,edc,coini,&ndmat_,ndmcon,dmcon,dam));
     
     SFREE(idefforc);SFREE(idefload);SFREE(idefbody);
 
@@ -823,6 +824,12 @@ int main(int argc,char *argv[])
 
       RENEW(elcon,double,(ncmat_+1)*ntmat_*nmat);
       RENEW(nelcon,ITG,2*nmat);
+
+      if(ndmat_>0){
+	RENEW(dmcon,double,(ndmat_+1)*ntmat_*nmat);
+	RENEW(ndmcon,ITG,2*nmat);
+	RENEW(dam,double,mi[0]*ne);
+      }
 
       RENEW(rhcon,double,2*ntmat_*nmat);
       RENEW(nrhcon,ITG,nmat);
@@ -1289,7 +1296,8 @@ int main(int argc,char *argv[])
 		    &nintpoint,&mortar,&ifacecount,typeboun,&islavsurf,
 		    &pslavsurf,&clearini,&nmat,xmodal,&iaxial,&inext,&nprop,
 		    &network,orname,vel,&nef,velo,veloo,energy,itempuser,
-		    ipobody,&inewton,t0g,t1g,&ifreebody,&nlabel);
+		    ipobody,&inewton,t0g,t1g,&ifreebody,&nlabel,&ndmat_,ndmcon,
+		    dmcon,dam);
 
 	  memmpc_=mpcinfo[0];mpcfree=mpcinfo[1];icascade=mpcinfo[2];
 	  maxlenmpc=mpcinfo[3];
@@ -1670,7 +1678,7 @@ int main(int argc,char *argv[])
 		    &nobject_,&objectset,&nmethod,iperturb,&irefineloop,
 		    &iparentel,&iprfn,&konrfn,&ratiorfn,&heading,
 		    &nodedesi,&dgdxglob,&g0,&nuel_,&xdesi,&nfc,&coeffc,
-		    &ikdc,&edc,&coini,&ndmat_,&ndmcon,&dmcon);
+		    &ikdc,&edc,&coini,&ndmat_,&ndmcon,&dmcon,&dam);
 
 	/* closing and reopening the output files */
 	
@@ -1858,7 +1866,8 @@ int main(int argc,char *argv[])
 			      &mortar,&nintpoint,&ifacecount,islavsurf,
 			      pslavsurf,clearini,irstrt,vel,&nef,velo,veloo,
 			      ne2boun,&memmpc_,heading,&nheading_,&network,
-			      &nfc,&ndc,coeffc,ikdc,edc,xmodal));
+			      &nfc,&ndc,coeffc,ikdc,edc,xmodal,&ndmat_,ndmcon,
+			      dmcon,dam));
       }
     } 
 	  
@@ -1904,7 +1913,7 @@ int main(int argc,char *argv[])
 	      &nobject_,&objectset,&nmethod,iperturb,&irefineloop,
 	      &iparentel,&iprfn,&konrfn,&ratiorfn,&heading,
 	      &nodedesi,&dgdxglob,&g0,&nuel_,&xdesi,&nfc,&coeffc,
-	      &ikdc,&edc,&coini,&ndmat_,&ndmcon,&dmcon);
+	      &ikdc,&edc,&coini,&ndmat_,&ndmcon,&dmcon,&dam);
   
 #ifdef CALCULIX_MPI
   MPI_Finalize();

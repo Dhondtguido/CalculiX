@@ -572,7 +572,7 @@ void FORTRAN(calinput,(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		       ITG *irobustdesign,ITG *irandomtype,double *randomval,
 		       ITG *nfc,ITG *nfc_,double *coeffc,ITG *idck,ITG *ndc,
 		       ITG *ndc_,double *edc,double *coini,ITG *ndmat_,
-		       ITG *ndmcon,double *dmcon));
+		       ITG *ndmcon,double *dmcon,double *dam));
 
 void FORTRAN(calinput_rfn,(double *co,char *filab,char *set,ITG *istartset,
 			   ITG *iendset,ITG *ialset,ITG *nset,ITG *nset_,
@@ -1207,7 +1207,8 @@ void dealloc_cal(ITG *ncs_,ITG **icsp,ITG *mcs,double **csp,
 		 double **ratiorfnp,char **headingp,ITG **nodedesip,
 		 double **dgdxglobp,double **g0p,ITG *nuel_,double **xdesip,
 		 ITG *nfc,double **coeffcp,ITG **idckp,double **edcp,
-		 double **coinip,ITG *ndmat_,ITG **ndmconp,double **dmconp);
+		 double **coinip,ITG *ndmat_,ITG **ndmconp,double **dmconp,
+		 double **damp);
 
 void FORTRAN(desiperelem,(ITG *ndesi,ITG *istartdesi,ITG *ialdesi,
                           ITG *ipoeldi,ITG *ieldi,ITG *ne,
@@ -3252,7 +3253,8 @@ void nonlingeo(double **co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	       ITG *network,char *orname,double *vel,ITG *nef,
 	       double *velo,double *veloo,double *energy,ITG *itempuser,
 	       ITG *ipobody,ITG *inewton,double *t0g,double *t1g,
-	       ITG *ifreebody,ITG *nlabel);
+	       ITG *ifreebody,ITG *nlabel,ITG *ndmat_,ITG *ndmcon,
+	       double *dmcon,double *dam);
 
 void FORTRAN(nonlinmpc,(double *co,double *vold,ITG *ipompc,ITG *nodempc,
 			double *coefmpc,char *labmpc,ITG *nmpc,ITG *ikboun,
@@ -4064,7 +4066,8 @@ void FORTRAN(restartshort,(ITG *nset,ITG *nload,ITG *nbody,ITG *nforc,
 			   ITG *ntie,ITG *nslavs,ITG *nkon,ITG *mcs,ITG *nprop,
 			   ITG *mortar,ITG *ifacecount,ITG *nintpoint,
 			   ITG *infree,ITG *nef,ITG *mpcend,ITG *nheading_,
-			   ITG *network,ITG *nfc,ITG *ndc,ITG *iprestr));
+			   ITG *network,ITG *nfc,ITG *ndc,ITG *iprestr,
+			   ITG *ndmat_));
 
 void FORTRAN(restartwrite,(ITG *istep,ITG *nset,ITG*nload,ITG *nforc,
   ITG * nboun,ITG *nk,ITG *ne,ITG *nmpc,ITG *nalset,ITG *nmat,ITG *ntmat_,
@@ -4101,7 +4104,7 @@ void FORTRAN(restartwrite,(ITG *istep,ITG *nset,ITG*nload,ITG *nforc,
   double *clearini,ITG *irstrt,double *vel,ITG *nef,double *velo,
   double *veloo,ITG *ne2boun,ITG *memmpc_,char *heading,ITG *nheading_,
   ITG *network,ITG *nfc,ITG *ndc,double *coeffc,ITG *ikdc,double *edc,
-  double *xmodal));
+  double *xmodal,ITG *ndmat_,ITG *ndmcon,double *dmcon,double *dam));
 
 void FORTRAN(resultnet,(ITG *itg,ITG *ieg,ITG *ntg,
                         double *bc,ITG *nload,char *sideload,

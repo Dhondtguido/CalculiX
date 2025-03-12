@@ -5443,3 +5443,4 @@ Dec 2002        - started to work on single crystal plasticity
                 - replaced %d by %" ITGFORMAT " where appropriate.
                 - made corrections in mastruct.c and mastructcs.c for
 		  substructures
+                - continued to work on damage

@@ -1974,7 +1974,8 @@ c     !
      &         ne1d,ne2d,nflow,set,meminset,rmeminset,jobnamec,
      &         irestartstep,icntrl,ithermal,nener,nstate_,ntie_,
      &         nslavs,nkon_,mcs,nprop_,mortar,ifacecount,nintpoint,
-     &         infree,nef,mpcend,nheading_,network,nfc_,ndc_,iprestr)
+     &         infree,nef,mpcend,nheading_,network,nfc_,ndc_,iprestr,
+     &         ndmat_)
           irstrt(1)=-1
           nbounold=nboun_
           nforcold=nforc_

@@ -87,7 +87,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	       ITG *network,char *orname,double *vel,ITG *nef,
 	       double *velo,double *veloo,double *energy,ITG *itempuser,
 	       ITG *ipobody,ITG *inewton,double *t0g,double *t1g,
-	       ITG *ifreebody,ITG *nlabel){
+	       ITG *ifreebody,ITG *nlabel,ITG *ndmat_,ITG *ndmcon,
+	       double *dmcon,double *dam){
 
   char description[13]="            ",*lakon=NULL,jobnamef[396]="",
     *sideface=NULL,*labmpc=NULL,*lakonf=NULL,*env,*envsys,fneig[132]="",

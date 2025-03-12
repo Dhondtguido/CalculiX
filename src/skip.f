@@ -22,7 +22,7 @@
      &     nprint,nlabel,ncs_,ne1d,ne2d,infree,nmethod,
      &     iperturb,nener,ithermal,nstate_,iprestr,mcs,ntie,
      &     nslavs,nprop,mortar,ifacecount,nintpoint,nef,nheading_,
-     &     nfc,ndc)
+     &     nfc,ndc,ndmat_)
 !     
       implicit none
 !     
@@ -31,7 +31,7 @@
      &     nprint,nlabel,ncs_,ne1d,ne2d,infree(4),i,mt,nprop,mortar,
      &     nmethod,iperturb(*),nener,ithermal(*),nstate_,iprestr,i4,
      &     maxamta,mcs,ntie,nbody,nslavs,nintpoint,ifacecount,nef,
-     &     nheading_,nfc,ndc,ir8
+     &     nheading_,nfc,ndc,ir8,ndmat_
 !     
       character*1 c1
       character*3 c3
@@ -137,6 +137,14 @@
 !     
       read(15)(r8,i=1,(ncmat_+1)*ntmat_*nmat)
       read(15)(i4,i=1,2*nmat)
+!     
+!     damage constants
+!
+      if(ndmat_.gt.0) then
+        write(15)(r8,i=1,(ndmat_+1)*ntmat_*nmat)
+        write(15)(i4,i=1,2*nmat)
+        write(15)(r8,i=1,mi(1)*ne)
+      endif
 !     
 !     density
 !     
