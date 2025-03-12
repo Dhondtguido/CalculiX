@@ -43,7 +43,7 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
   char lakonl[2]=" \0";
 
   ITG i,j,k,l,jj,ll,id,index,jdof1,jdof2,idof1,idof2,mpc1,mpc2,id1,id2,
-    ist1,ist2,node1,node2,nmast,ifree,
+    ist1,ist2,node1,node2,nmast,ifree,icalcnactdof,
     index1,index2,m,node,nzs_,ist,kflag,indexe,nope,*mast1=NULL,
     *irow=NULL,icolumn,nmastboun,mt=mi[1]+1,*next=NULL,nopeold=0,
     indexeold,identical,jstart,iatleastonenonzero,idof,ndof,*ithread=NULL;
@@ -109,6 +109,8 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 
   if((*iit<0)||(*icascade!=0)){
 
+    icalcnactdof=1;
+
     /* initialisation of nactdof */
       
     for(i=0;i<mt**nk;++i){
@@ -124,13 +126,27 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 	if(strcmp1(&lakon[8*i],"F")==0)continue;
 	indexe=ipkon[i];
 	if(strcmp1(&lakon[8*i],"U")==0){
+	  if((strcmp1(&lakon[8*i+1],"1")==0)||
+	     (strcmp1(&lakon[8*i+1],"S45")==0)||
+	     (strcmp1(&lakon[8*i+1],"S3")==0)){
+	  
+	    /* user element
+	       number of dofs: 7th entry of label
+	       number of nodes: 8th entry of label */
+	  
+	    ndof=lakon[8*i+6];
+	    nope=lakon[8*i+7];
+	  }else{
 
-	  /* user element
-	     number of dofs: 7th entry of label
-	     number of nodes: 8th entry of label */
-
-	  ndof=lakon[8*i+6];
-	  nope=lakon[8*i+7];}
+	    /* substructure (superelement) 
+	       only for mechanical isothermal calculations */
+	  
+	    mastructread(ipompc,nodempc,nmpc,nactdof,jq,&mast1,neq,ipointer,
+			 &nzs_,nmethod,iperturb,mi,&next,&ifree,&i,ielmat,
+			 matname,&icalcnactdof);
+	    continue;
+	  }
+	}
 	/* Bernhardi start */
 	else if (strcmp1(&lakon[8*i+3],"8I")==0){nope=11;ndof=3;}
 	else if(strcmp1(&lakon[8*i+3],"20")==0){nope=20;ndof=3;}
@@ -173,6 +189,8 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 	}
       }
     }
+
+    icalcnactdof=0;
       
     /* determining the thermal active degrees of freedom due to elements */
       
@@ -338,8 +356,30 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
       if(ipkon[i]<0) continue;
       if(strcmp1(&lakon[8*i],"F")==0)continue;
       indexe=ipkon[i];
+      if(strcmp1(&lakon[8*i],"U")==0){
+	if((strcmp1(&lakon[8*i+1],"1")==0)||
+	   (strcmp1(&lakon[8*i+1],"S45")==0)||
+	   (strcmp1(&lakon[8*i+1],"S3")==0)){
+	  
+	  /* user element
+	     number of dofs: 7th entry of label
+	     number of nodes: 8th entry of label */
+	  
+	  ndof=lakon[8*i+6];
+	  nope=lakon[8*i+7];
+	}else{
+
+	  /* substructure (superelement) 
+             only for mechanical isothermal calculations */
+	  
+	  mastructread(ipompc,nodempc,nmpc,nactdof,jq,&mast1,neq,ipointer,
+		       &nzs_,nmethod,iperturb,mi,&next,&ifree,&i,ielmat,
+		       matname,&icalcnactdof);
+	  continue;
+	}
+      }
       /* Bernhardi start */
-      if (strcmp1(&lakon[8*i+3],"8I")==0){nope=11;ndof=3;}
+      else if (strcmp1(&lakon[8*i+3],"8I")==0){nope=11;ndof=3;}
       else if(strcmp1(&lakon[8*i+3],"20")==0){nope=20;ndof=3;}
       /* Bernhardi end */
       else if (strcmp1(&lakon[8*i+3],"8")==0){nope=8;ndof=3;}
@@ -368,40 +408,7 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 	  nope=atoi(lakonl)+1;
 	  ndof=3;
 	}
-      }else if(strcmp1(&lakon[8*i],"U")==0){
-	if((strcmp1(&lakon[8*i+1],"1")==0)||
-	   (strcmp1(&lakon[8*i+1],"S45")==0)||
-	   (strcmp1(&lakon[8*i+1],"S3")==0)){
-	  
-	/* user element
-	   number of dofs: 7th entry of label
-	   number of nodes: 8th entry of label */
-	  
-	  ndof=lakon[8*i+6];
-	  nope=lakon[8*i+7];
-	}else{
-
-	  /* substructure (superelement) 
-             only for mechanical isothermal calculations */
-	  
-	  mastructread(ipompc,nodempc,nmpc,nactdof,jq,&mast1,neq,ipointer,
-		       &nzs_,nmethod,iperturb,mi,&next,&ifree,&i,ielmat,
-		       matname);
-	  continue;
-	}
       }else continue;
-
-      //     if(nope==-1){
-
-	  /* substructure (superelement) 
-             only for mechanical isothermal calculations */
-	
-      /*	mastructread(ipompc,nodempc,nmpc,nactdof,jq,&mast1,neq,ipointer,
-		     &nzs_,nmethod,iperturb,mi,&next,&ifree,&i,ielmat,
-		     matname);
-	  
-	continue;
-	}*/
       
       for(jj=0;jj<ndof*nope;++jj){
 	

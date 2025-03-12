@@ -26,7 +26,7 @@ void mastructreadcs(ITG *ipompc,ITG *nodempc,ITG *nmpc,ITG *nactdof,
 		    ITG *jq,ITG **mast1p,ITG *neq,ITG *ipointer, ITG *nzs_, 
 		    ITG *nmethod,ITG *mi,ITG **nextp,
 		    ITG *ifree,ITG *i,ITG *ielmat,char *matname,char *labmpc,
-		    ITG *mcs,double *cs,ITG *ics){
+		    ITG *mcs,double *cs,ITG *ics,ITG *icalcnactdof){
 
   /* reading stiffness and/or mass matrix of substructure
      (superelement) */
@@ -61,7 +61,7 @@ void mastructreadcs(ITG *ipompc,ITG *nodempc,ITG *nmpc,ITG *nactdof,
     if(fscanf(f1,"%" ITGFORMAT ",%" ITGFORMAT ",%" ITGFORMAT ",%" ITGFORMAT ",%lf\n",&node1,&k,&node2,&m,&val)==5){
       mastructmatrixcs(ipompc,nodempc,nmpc,nactdof,jq,&mast1,neq,ipointer,nzs_,
 		       nmethod,mi,&next,&node1,&k,&node2,&m,ifree,labmpc,
-		       mcs,cs,ics);
+		       mcs,cs,ics,icalcnactdof);
     }else{
       break;
     }

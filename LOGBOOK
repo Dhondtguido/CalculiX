@@ -5441,3 +5441,5 @@ Dec 2002        - started to work on single crystal plasticity
  12 March 2025  - made a correction for sensitivity analyses in combination
                   with NLGEOM just before the call of matruct in CalculiX.c
                 - replaced %d by %" ITGFORMAT " where appropriate.
+                - made corrections in mastruct.c and mastructcs.c for
+		  substructures
