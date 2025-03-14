@@ -5444,3 +5444,5 @@ Dec 2002        - started to work on single crystal plasticity
                 - made corrections in mastruct.c and mastructcs.c for
 		  substructures
                 - continued to work on damage
+
+ 14 March 2025  - continued damage programming

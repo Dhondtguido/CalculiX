@@ -361,6 +361,13 @@ void FORTRAN(boundarymesh,(ITG *nbounedg,ITG *ibounedg,ITG *ieled,ITG *ibounel,
 			   char *lakon,ITG *ncenter,ITG *nkon,ITG *kon,
 			   ITG *mastelnr,ITG *ntri));
 
+void FORTRAN(calcdamage,(ITG *ipkon,char *lakon,ITG *kon,double *co,ITG *mi,
+			 double *thicke,ITG *ielmat,ITG *ielprop,
+			 double *prop,ITG *ne0,ITG *ndmat_,ITG *ntmat_,
+			 ITG *ndmcon,double *dmcon,double *dam,double *dtime,
+			 double *sti,ITG *ithermal,double *t1,double *xstate,
+			 double *xstateini,ITG *nstate_,double *vold));
+
 void FORTRAN(calcdatarget,(ITG *ifront,double *co,ITG *nnfront,
 			   ITG *istartfront,ITG *iendfront,ITG *isubsurffront,
 			   double *tinc,double *datarget,double *acrack,

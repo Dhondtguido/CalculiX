@@ -57,6 +57,7 @@ boundarymesh.f \
 boundarys.f \
 bsort.f \
 buckles.f \
+calcdamage.f \
 calcdatarget.f \
 calcdev.f \
 calcdhds.f \

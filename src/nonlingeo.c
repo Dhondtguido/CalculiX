@@ -3502,6 +3502,13 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		  &allwk,&dampwk,&ea,&energym,&energymold,&jnz,&mscalmethod,
 		  mortar,mi);
 
+      if(*ndmat_>0){
+	FORTRAN(calcdamage,(ipkon,lakon,kon,co,mi,thicke,
+			    ielmat,ielprop,prop,&ne0,ndmat_,ntmat_,
+			    ndmcon,dmcon,dam,&dtime,sti,ithermal,t1,xstate,
+			    xstateini,nstate_,vold));
+      }
+
     }
 
     if(uncoupled){
