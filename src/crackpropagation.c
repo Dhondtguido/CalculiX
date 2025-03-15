@@ -294,7 +294,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
     SFREE(ifront2);SFREE(ifrontrel2);SFREE(ibounnod2);SFREE(iedno2);
     SFREE(stress2);SFREE(temp2);SFREE(costruc2);
 
-    /* adjusting the projection on the structre of the external
+    /* adjusting the projection on the structure of the external
        front nodes */
 
     FORTRAN(checkcrosssections,(co,doubleglob,integerglob,stress,

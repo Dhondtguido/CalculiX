@@ -50,7 +50,7 @@
 !     Array which shows where the properties of a given element
 !     begin in prop
      &ielprop(*),
-!     Contains the nodes where the dependant varibles for this 
+!     Contains the nodes where the dependant variables for this 
 !     element are
      &nodef(*),
 !     Contains the type of the dependant variables

@@ -86,7 +86,7 @@ void freeDatasets(Datasets *lcase, int nr)
   lcase[nr].fileptr=NULL;
   lcase[nr].loaded=0;
 
-  /* edat not propper implemented or deleted */
+  /* edat not properly implemented or deleted */
   // for(i=0; i<3; i++) for(e=0; e<anz->e; e++) SFREE(lcase[nr].edat[i][e]);
 }
 
@@ -1610,7 +1610,7 @@ char *getRecord(FILE *handle, int n, int x0 )
 
 
 /* return -1 if failure */
-/* return 0 if successfull */
+/* return 0 if successful */
 int readOneNode( int lc, Summen *anz, Datasets *lcase, int nodenr, double **vptr, long *byte_offset )
 {
   register int i=0,j, n;
