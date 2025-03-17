@@ -19,6 +19,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
+#include <locale.h>
 #include "CalculiX.h"
 
 #define min(a,b) ((a) <= (b) ? (a) : (b))
@@ -87,6 +88,8 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
   float fl;
 
   double pi,oner,*errn=NULL,*ethn=NULL;
+
+  setlocale(LC_NUMERIC, "C");
 
   strcpy2(fneig,jobnamec,132);
   strcat(fneig,".frd");

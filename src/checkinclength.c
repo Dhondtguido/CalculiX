@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <locale.h>
 #include "CalculiX.h"
 #ifdef SPOOLES
    #include "spooles.h"
@@ -44,6 +45,8 @@ void checkinclength(double *time,double *ttime,double *theta, double *dtheta,
     ran=ctrl[18];can=ctrl[19];rap=ctrl[22];
     ea=ctrl[23];cae=ctrl[24];ral=ctrl[25];
 
+    setlocale(LC_NUMERIC, "C");
+	
     /* check whether the new increment size is not too big */
     
     if(*dtheta>*tmax){

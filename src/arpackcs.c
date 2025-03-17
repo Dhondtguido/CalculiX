@@ -21,6 +21,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#include <locale.h>
 #include "CalculiX.h"
 #ifdef SPOOLES
 #include "spooles.h"
@@ -139,7 +140,9 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 #ifdef SGI
   ITG token;
 #endif
-  
+
+  setlocale(LC_NUMERIC, "C");
+
   irow=*irowp;xstate=*xstatep;ipkon=*ipkonp;lakon=*lakonp;
   kon=*konp;ielmat=*ielmatp;ielorien=*ielorienp;
 
