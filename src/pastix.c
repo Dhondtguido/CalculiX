@@ -1005,7 +1005,7 @@ void pastix_main_generic(double *ad, double *au, double *adb, double *aub,
     }
 
     // use double precision for inputformat 3 like mortar (better perfromance and convergence)
-    if( pastix_mixed == NULL && *inputformat == 3 ){
+    if( *inputformat == 3 ){
         globDoublePrecision = 1;
         forceRedo = 0;
         stickToDouble = 1;
@@ -1094,24 +1094,26 @@ void pastix_main_generic(double *ad, double *au, double *adb, double *aub,
 	clock_gettime(CLOCK_MONOTONIC, &stepSolveStart); 
 	
 	// if solve does not converge
-    ITG rc = pastix_solve_generic(b,neq,symmetryflag,nrhs);
-	if( rc == -1){
+        ITG rc = pastix_solve_generic(b,neq,symmetryflag,nrhs);
+    if( rc == -1){
 		
 		// Give up, if we tried it with double precision, use backup b otherwise
-		if(globDoublePrecision == 1){
+        if(globDoublePrecision == 1 && noScale){
             printf("PaStiX could not converge to a valid result\n");
             exit(5);
         }
         else{
-		    memcpy(b, b_backup, sizeof(double) * (*nrhs)*(*neq));
+            memcpy(b, b_backup, sizeof(double) * (*nrhs)*(*neq));
             printf("falling back to double precision\n");
             globDoublePrecision = 1;
             forceRedo = 1;
-    	    stickToDouble = 1;
-    	    mixedFailed++;
+            stickToDouble = 1;
+            // for inputformat==3 noScale only triggers a restart
+            noScale = 0;
+            mixedFailed++;
         	
-        	// call pastix_main recursively, but now in double precision
-        	pastix_main_generic(ad, au, adb, aub, sigma, b, icol, irow, neq, nzs, symmetryflag, inputformat, jq, nzs3, nrhs);
+            // call pastix_main recursively, but now in double precision
+            pastix_main_generic(ad, au, adb, aub, sigma, b, icol, irow, neq, nzs, symmetryflag, inputformat, jq, nzs3, nrhs);
         }
         
         // make sure that we switch to double and do not reuse in the next iteration
@@ -1129,7 +1131,7 @@ void pastix_main_generic(double *ad, double *au, double *adb, double *aub,
 		return;
 	}
     else if( rc == -2){
-	    memcpy(b, b_backup, sizeof(double) * (*nrhs)*(*neq));
+        memcpy(b, b_backup, sizeof(double) * (*nrhs)*(*neq));
         printf("turning diagonal scaling off\n");
         forceRedo = 1;
         noScale = 1;
