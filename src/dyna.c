@@ -118,7 +118,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
     *bact=NULL,*bmin=NULL,*co=NULL,*xboun=NULL,*xbounold=NULL,*vold=NULL,
     *eme=NULL,*ener=NULL,*coefmpc=NULL,*fmpc=NULL,*coefmpcold,*veold=NULL,
     *xini=NULL,*rwork=NULL,*adc=NULL,*auc=NULL,*zc=NULL,*rpar=NULL,
-    setnull,deltmx,fextmax,dd,dtheta,dthetaref,
+    setnull,deltmx,fextmax,dd,dtheta,dthetaref,*dam=NULL,*damn=NULL,
     theta,*vini=NULL,*bcont=NULL,*vr=NULL,*vi=NULL,
     *stnr=NULL,*stni=NULL,*vmax=NULL,*stnmax=NULL,precision,resultmaxprev,
     resultmax,func,funcp,fexp,fexm,fcos,fsin,sump,*bp=NULL,h14,
@@ -1774,7 +1774,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 	      inoel,nener,orname,&network,ipobody,xbodyact,ibody,typeboun,
 	      itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
 	      islavquadel,aut,irowt,jqt,&mortartrafoflag,
-	      &intscheme,physcon);
+	      &intscheme,physcon,dam,damn);
 
       /* restoring */
 
@@ -1807,7 +1807,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	  thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,ielprop,
-	  prop,sti);
+	  prop,sti,damn);
 	
       if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
     }

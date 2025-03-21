@@ -449,7 +449,7 @@ c        call exit(201)
      &       nodefile_flag,elfile_flag,ifile_output,nener,ithermal,
      &       istep,istat,n,iline,ipol,inl,ipoinp,inp,out3d,nlabel,
      &       amname,nam,itpamp,idrct,ipoinpc,nef,contactfile_flag,
-     &       set,nset,xmodal,ier,physcon,output)
+     &       set,nset,xmodal,ier,physcon,output,ndmat_)
         contactfile_flag=.true.
 !     
       elseif(textpart(1)(1:12).eq.'*CONTACTPAIR') then
@@ -531,9 +531,9 @@ c
      &       iaxial,ier)
 !     
       elseif(textpart(1)(1:17).eq.'*DAMAGEINITIATION') then
-        call damageinitiations(inpc,textpart,matname,nmat,nmat_,
+        call damageinitiations(inpc,textpart,matname,nmat,
      &       irstrt,istep,istat,n,iline,ipol,inl,ipoinp,inp,
-     &       ipoinpc,imat,ier,dmcon,ndmcon,ntmat_,ndmat_)
+     &       ipoinpc,ier,dmcon,ndmcon,ntmat_,ndmat_)
 !     
       elseif(textpart(1)(1:8).eq.'*DAMPING') then
         call dampings(inpc,textpart,xmodal,istep,
@@ -659,7 +659,7 @@ c
      &       nodefile_flag,elfile_flag,ifile_output,nener,ithermal,
      &       istep,istat,n,iline,ipol,inl,ipoinp,inp,out3d,nlabel,
      &       amname,nam,itpamp,idrct,ipoinpc,nef,contactfile_flag,
-     &       set,nset,xmodal,ier,physcon,output)
+     &       set,nset,xmodal,ier,physcon,output,ndmat_)
         elfile_flag=.true.
 !     
       elseif(textpart(1)(1:8).eq.'*ELPRINT') then
@@ -926,7 +926,7 @@ c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
      &       nodefile_flag,elfile_flag,ifile_output,nener,ithermal,
      &       istep,istat,n,iline,ipol,inl,ipoinp,inp,out3d,nlabel,
      &       amname,nam,itpamp,idrct,ipoinpc,nef,contactfile_flag,
-     &       set,nset,xmodal,ier,physcon,output)
+     &       set,nset,xmodal,ier,physcon,output,ndmat_)
         nodefile_flag=.true.
 !     
       elseif(textpart(1)(1:10).eq.'*NODEPRINT') then
@@ -1410,21 +1410,30 @@ c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
       if(ndmat_.gt.0) then
         ierror=0
         do imat=1,nmat
-            if(ndmcon(1,imat).gt.0) then
-              if((((nelcon(1,imat).gt.51).or.(nelcon(1,imat).lt.-54)))
-     &             .and.
-     &             (matname(imat)(1:11).ne.'ANISO_CREEP')
-     &             .and.
-     &             (matname(imat)(1:11).ne.'JOHNSONCOOK')) then
-                ierror=1
-                write(*,*) '*ERROR in calinput: a damage initiation'
-                write(*,*) '       model was defined for material',
-     &               matname(imat)
-                write(*,*) '       for which no equivalent strain is'
-                write(*,*) '       calculated.'
-              endif
+          if(ndmcon(1,imat).gt.0) then
+            if((((nelcon(1,imat).gt.-51).or.(nelcon(1,imat).lt.-54)))
+     &           .and.
+     &           (matname(imat)(1:11).ne.'ANISO_CREEP')
+     &           .and.
+     &           (matname(imat)(1:11).ne.'JOHNSONCOOK')) then
+              ierror=1
+              write(*,*) '*ERROR in calinput: a damage initiation'
+              write(*,*) '       model was defined for material',
+     &             matname(imat)
+              write(*,*) '       for which no equivalent strain is'
+              write(*,*) '       calculated.'
             endif
+          endif
         enddo
+        if(((nmethod.ne.1).and.(nmethod.ne.4)).or.
+     &       (iperturb(1).lt.2)) then
+          ierror=1
+          write(*,*) '*ERROR in calinput: a damage initiation'
+          write(*,*) '       model was defined for a calculation'
+          write(*,*) '       which is neither nonlinear static'
+          write(*,*) '       (*STATIC) nor nonlinear dynamic'
+          write(*,*) '       (*DYNAMIC).'
+        endif
         if(ierror.eq.1) call exit(201)
       endif
 !     

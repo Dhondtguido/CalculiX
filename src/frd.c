@@ -39,7 +39,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	 double *eenmax,double *fnr,double *fni,double *emn,
 	 double *thicke,char *jobnamec,char *output,double *qfx,
          double *cdn,ITG *mortar,double *cdnr,double *cdni,ITG *nmat,
-         ITG *ielprop,double *prop,double *sti){
+         ITG *ielprop,double *prop,double *sti,double *damn){
 
   /* stores the results in frd format
 
@@ -200,7 +200,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
     fprintf(f1,"%5sUHOST                                                              \n",p1);
     fprintf(f1,"%5sUPGM               CalculiX                                        \n",p1);
     fprintf(f1,"%5sUVERSION           Version DEVELOPMENT                             \n",p1);
-    fprintf(f1,"%5sUCOMPILETIME       Fri Mar 14 15:49:30 CET 2025                    \n",p1);
+    fprintf(f1,"%5sUCOMPILETIME       Fri Mar 21 17:57:38 CET 2025                    \n",p1);
     fprintf(f1,"%5sUDIR                                                               \n",p1);
     fprintf(f1,"%5sUDBN                                                               \n",p1);
     
@@ -1579,6 +1579,27 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
     fprintf(f1," -5  PE          1    1    0    0\n");
 
     frdselect(epn,epn,&iset,&nkcoords,inum,m1,istartset,iendset,
+	      ialset,ngraph,&ncompscalar,ifieldscalar,icompscalar,
+	      nfieldscalar,&iselect,m2,f1,output,m3);
+
+  }
+
+  /* storing the ductile damage initiation in the nodes */
+  
+  if((strcmp1(&filab[4785],"DUCT")==0)&&(*ithermal!=2)){
+    iselect=1;
+    
+    frdset(&filab[4785],set,&iset,istartset,iendset,ialset,
+	   inum,&noutloc,&nout,nset,&noutmin,&noutplus,&iselect,
+	   ngraph);
+    
+    frdheader(&icounter,&oner,time,&pi,noddiam,cs,&null,mode,
+	      &noutloc,description,kode,nmethod,f1,output,istep,iinc);
+
+    fprintf(f1," -4  DAM         1    1\n");
+    fprintf(f1," -5  DAM         1    1    0    0\n");
+
+    frdselect(damn,damn,&iset,&nkcoords,inum,m1,istartset,iendset,
 	      ialset,ngraph,&ncompscalar,ifieldscalar,icompscalar,
 	      nfieldscalar,&iselect,m2,f1,output,m3);
 

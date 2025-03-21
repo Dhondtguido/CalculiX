@@ -40,7 +40,7 @@
      &     svm,triax,t1l,dmcon(0:ndmat_,ntmat_,*),dam(mi(1),*),
      &     dpeq,dpeqdt,dtime,ef,sti(6,mi(1),*),t1(*),vold(0:mi(2),*),
      &     xstate(nstate_,mi(1),*),xstateini(nstate_,mi(1),*),
-     &     dmconloc(ndmat_)
+     &     dmconloc(ndmat_),That
 !     
       include "gauss.f"
 !     
@@ -74,6 +74,10 @@
 !     material
 !     
         if(lakonl(7:8).ne.'LC') then
+!     
+!         no composite material: one material per element, all
+!         integration points correspond to the same material
+!     
           imat=ielmat(1,i)
           if(ndmcon(2,imat).eq.0) cycle
 !     
@@ -223,10 +227,6 @@
 !     
         do jj=1,mint3d
 !     
-!     the calculation of the integration point coordinates and the
-!     shape functions is only needed for models with temperature-dependent
-!     data (Johnson-Cook).
-!     
           if(lakonl(4:5).eq.'8R') then
             xi=gauss3d1(1,jj)
             et=gauss3d1(2,jj)
@@ -333,7 +333,7 @@
 !     determining the material model for this layer
 !     (for composites only)
 !     
-          if(lakonl(7:8).ne.'LC') then
+          if(lakonl(7:8).eq.'LC') then
             if(int(dmcon(1,1,imat)).eq.1) then
 !     
 !     Rice-Tracey model
@@ -411,9 +411,11 @@
 !     
           triax=shy/svm
 !     
-!     calculate the temperature
+!         calculate the temperature (only needed for the Johnson-Cook
+!         model
 !     
           if(int(dmcon(1,1,imat)).eq.2) then
+            t1l=Ttrans
             if(ithermal(1).ge.1) then
               t1l=0.d0
               if(ithermal(1).eq.1) then
@@ -494,31 +496,42 @@
 !     
 !     change in equivalent plastic strain
 !     
-          dpeq=xstate(1,j,i)-xstateini(1,j,i)
+          dpeq=xstate(1,jj,i)-xstateini(1,jj,i)
           dpeqdt=dpeq/dtime
+          if(dpeq.gt.0.d0) then
 !     
-          if(int(dmcon(1,1,imat)).eq.1) then
+            if(int(dmcon(1,1,imat)).eq.1) then
 !     
 !     Rice-Tracey model
 !     
-            ef=1.65d0*eps0RT*dexp(-3.d0*triax/2.d0)
-            xlimit=dmcon(3,2,imat)
+              ef=1.65d0*eps0RT*dexp(-3.d0*triax/2.d0)
 !     
-          elseif(int(dmcon(1,1,imat)).eq.2) then
+            elseif(int(dmcon(1,1,imat)).eq.2) then
 !     
 !     Johnson-Cook model
-!     
-            ef=(d1+d2*dexp(d3*triax))*(1.d0+d4*dlog(dpeqdt/eps0p))*
-     &           (1.d0+d5*(t1l-Ttrans)/(Tmelt-Ttrans))
-          endif
+!
+              if(dpeqdt.lt.eps0p) dpeq=0.d0
+!              
+              if(t1l.lt.Ttrans) then
+                That=0.d0
+              elseif(t1l.gt.Tmelt) then
+                That=1.d0
+              else
+                That=(t1l-Ttrans)/(Tmelt-Ttrans)
+              endif
+!
+              ef=(d1+d2*dexp(-d3*triax))*(1.d0+d4*dlog(dpeqdt/eps0p))*
+     &             (1.d0+d5*That)
+            endif
 !     
 !     damage
 !     
-          dam(j,i)=dam(j,i)+dpeq/ef
+            dam(jj,i)=dam(jj,i)+dpeq/ef
 !     
-          if(dam(j,i).gt.xlimit) then
-            ipkon(i)=-ipkon(i)-2
-            exit
+            if(dam(jj,i).gt.xlimit) then
+              ipkon(i)=-ipkon(i)-2
+              exit
+            endif
           endif
         enddo
       enddo

@@ -115,7 +115,7 @@ void premortar(ITG *nzs,ITG *nzsc2,
   double alpha,*auc2=NULL,*adc2=NULL,*aubd=NULL,*aux2=NULL,*cv=NULL,
     *aubdtil=NULL,*aubdtil2=NULL,*f=NULL,*fext=NULL,*cvini=NULL,
     *audd=NULL,*auddtil=NULL,*auddinv=NULL,*auddtil2=NULL,*v=NULL,
-    *stx=NULL,*fn=NULL,*fini=NULL,*fextini=NULL,
+    *stx=NULL,*fn=NULL,*fini=NULL,*fextini=NULL,*dam=NULL,*damn=NULL,
     *fmpc2=NULL,*aub=NULL,*adb=NULL,
     *adc=NULL,*auc=NULL,*volddummy=NULL,
     *vectornull=NULL,*f_cs=NULL,*f_cm=NULL,*fnext=NULL;
@@ -238,7 +238,7 @@ void premortar(ITG *nzs,ITG *nzsc2,
 	    inoel,nener,orname,network,ipobody,xbodyact,ibody,typeboun,
 	    itiefac,tieset,smscale,mscalmethod,nbody,t0g,t1g,
 	    islavquadel,aut,irowt,jqt,&mortartrafoflag,
-	    intscheme,physcon);
+	    intscheme,physcon,dam,damn);
   
     SFREE(v);SFREE(stx);SFREE(fn);SFREE(inum);SFREE(fmpc2);
     *iout=0;	    

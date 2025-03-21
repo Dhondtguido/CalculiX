@@ -76,7 +76,7 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 	     ITG *itiefac,char *tieset,double *smscale,ITG *mscalmethod,
 	     ITG *nbody,double *t0g,double *t1g,ITG *islavquadel,double *aut,
 	     ITG *irowt,ITG *jqt,ITG *mortartrafoflag,
-	     ITG *intscheme,double *physcon){
+	     ITG *intscheme,double *physcon,double *dam,double *damn){
 
   ITG intpointvarm,calcul_fn,calcul_f,calcul_qa,calcul_cauchy,ikin,
     intpointvart,mt=mi[1]+1,i,j;
@@ -467,7 +467,7 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 			  islavnode,nslavnode,ntie,islavsurf,time,ielprop,prop,
 			  veold,ne0,nmpc,ipompc,nodempc,labmpc,energyini,energy,
 			  orname,xload,itiefac,pmastsurf,springarea,tieset,
-			  ipobody,ibody,xbody,nbody,iinc));
+			  ipobody,ibody,xbody,nbody,iinc,dam,damn));
   }
   
   return;

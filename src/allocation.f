@@ -510,6 +510,7 @@
           if((istat.lt.0).or.(key.eq.1)) exit
         enddo
       elseif(textpart(1)(1:17).eq.'*DAMAGEINITIATION') then
+        ntmatl=0
 !
         do i=2,n
           if(textpart(i)(1:10).eq.'CRITERION=') then

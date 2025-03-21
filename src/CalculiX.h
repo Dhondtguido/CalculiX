@@ -1755,7 +1755,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
          double *eenmax,double *fnr,double *fni,double *emn,
          double *thicke,char *jobnamec,char *output,double *qfx,
          double *cdn,ITG *mortar,double *cdnr,double *cdni,ITG *nmat,
-         ITG *ielprop,double *prop,double *sti);
+         ITG *ielprop,double *prop,double *sti,double *damn);
 
 void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v,
             double *stn,ITG *inum,ITG *nmethod,ITG *kode,char *filab,
@@ -1768,7 +1768,7 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
             ITG *ielorien,ITG *norien,double *sti,double *veold,ITG *noddiam,
             char *set,ITG *nset,double *emn,double *thicke,char *jobnamec,
             ITG *ne0,double *cdn,ITG *mortar,ITG *nmat,double *qfx,
-            ITG *ielprop,double *prop);
+            ITG *ielprop,double *prop,double *damn);
 
 void frd_norm_se(double *co,ITG *nk,double *stn,ITG *inum,ITG *nmethod,
          ITG *kode,char *filab,double *fn,double *time,ITG *nstate_,
@@ -4177,7 +4177,7 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
              double *smscale,ITG *mscalmethod,ITG *nbody,double *t0g,
 	     double *t1g,ITG *islavelinv,double *aut,ITG *irowt,
 	     ITG *jqt,ITG *mortartrafoflag,ITG *intscheme,
-	     double *physcon);
+	     double *physcon,double *dam,double *damn);
 
 void FORTRAN(resultsem,(double *co,ITG *kon,ITG *ipkon,char *lakon,
              double *v,double *elcon,ITG *nelcon,ITG *ielmat,ITG *ntmat_,
@@ -4299,7 +4299,7 @@ void  FORTRAN(resultsprint,(double *co,ITG *nk,ITG *kon,ITG *ipkon,
        char *labmpc,double *energyini,double *energy,char *orname,
        double *xload,ITG *itiefac,double *pmastsurf,double *springarea,
        char *tieset,ITG *ipobody,ITG *ibody,double *xbody,ITG *nbody,
-       ITG *iinc));
+       ITG *iinc,double *dam,double *damn));
 
 void resultsstr(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
              ITG *ne,double *v,double *stn,ITG *inum,

@@ -92,7 +92,8 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
       *coefright=NULL,coef,a[9],ratio,reltime,*physcon=NULL,
       *shcon=NULL,*springarea=NULL,*z=*zp, *zdof=NULL, *thicke=NULL,
       *sumi=NULL,*vti=NULL,*pslavsurf=NULL,*pmastsurf=NULL,*cdn=NULL,
-      *energyini=NULL,*energy=NULL,*smscale=NULL,*aut=NULL;
+      *energyini=NULL,*energy=NULL,*smscale=NULL,*aut=NULL,
+      *dam=NULL,*damn=NULL;
     
     /* dummy arguments for the results call */
     
@@ -115,7 +116,7 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
     NNEW(inum,ITG,*nk);
     NNEW(stx,double,6*mi[0]**ne);
     
-    nlabel=55;
+    nlabel=56;
     NNEW(filabt,char,87*nlabel);
     for(i=1;i<87*nlabel;i++) filabt[i]=' ';
     filabt[0]='U';
@@ -471,7 +472,7 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	      inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 	      itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
 	      islavquadel,aut,irowt,jqt,&mortartrafoflag,
-	      &intscheme,physcon);
+	      &intscheme,physcon,dam,damn);
 	    
 	}
 	//	SFREE(eei);

@@ -86,10 +86,10 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 
   double *d=NULL,*z=NULL,*stiini=NULL,*cc=NULL,*v=NULL,*zz=NULL,*emn=NULL,
     *stn=NULL,*stx=NULL,*een=NULL,*adb=NULL,*xstiff=NULL,*cdn=NULL,
-    *aub=NULL,*f=NULL,*fn=NULL,*epn=NULL,*xstateini=NULL,
+    *aub=NULL,*f=NULL,*fn=NULL,*epn=NULL,*xstateini=NULL,*damn=NULL,
     *enern=NULL,*xstaten=NULL,*eei=NULL,*enerini=NULL,*qfn=NULL,
     *qfx=NULL,*cgr=NULL,*au=NULL,dtime,reltime,*t0=NULL,*t1=NULL,*t1old=NULL,
-    sum,qa[4],cam[5],accold[1],bet,gam,*ad=NULL,alpham,betam,
+    sum,qa[4],cam[5],accold[1],bet,gam,*ad=NULL,alpham,betam,*dam=NULL,
     *co=NULL,*xboun=NULL,*xbounold=NULL,*vold=NULL,*emeini=NULL,
     *eme=NULL,*ener=NULL,*coefmpc=NULL,*fmpc=NULL,*veold=NULL,
     *adc=NULL,*auc=NULL,*zc=NULL,*fnr=NULL,*fni=NULL,setnull,deltmx,dd,
@@ -1475,7 +1475,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 		itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
 		islavquadel,aut,irowt,jqt,&mortartrafoflag,
-		&intscheme,physcon);}
+		&intscheme,physcon,dam,damn);}
       else{
 	results(co,nk,kon,ipkon,lakon,ne,&v[kkv],&stn[kk6],inum,
 		&stx[kkx],elcon,
@@ -1498,7 +1498,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 		itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
 		islavquadel,aut,irowt,jqt,&mortartrafoflag,
-		&intscheme,physcon);
+		&intscheme,physcon,dam,damn);
       }
 
     }
@@ -1917,7 +1917,8 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	ntrans,orab,ielorien,norien,description,ipneigh,neigh,
 	mi,stxt,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&net,
 	cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emnt,
-	thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,ielprop,prop,sti);
+	thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,ielprop,prop,
+	sti,damn);
     if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
     
   }   // end loop over the eigenfrequencies

@@ -44,7 +44,7 @@ void writenewmesh(ITG *nktet,ITG *netet_,double *cotet,ITG *iquad,
     *orab=NULL,*stx=NULL,*vr=NULL,*vi=NULL,*stnr=NULL,*stni=NULL,
     *vmax=NULL,*stnmax=NULL,*veold=NULL,*ener=NULL,*cs=NULL,*eenmax=NULL,
     *fnr=NULL,*fni=NULL,*emn=NULL,*thicke=NULL,*qfx=NULL,*cdn=NULL,
-    *cdnr=NULL,*cdni=NULL,*prop=NULL,*sti=NULL;
+    *cdnr=NULL,*cdni=NULL,*prop=NULL,*sti=NULL,*damn=NULL;
 
   strcpy2(fnewmesh,jobnamec,132);
   strcat(fnewmesh,".rfn");
@@ -114,7 +114,7 @@ void writenewmesh(ITG *nktet,ITG *netet_,double *cotet,ITG *iquad,
       mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&nenew,
       cs,set,&nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
       thicke,fnewmesh,outputnew,qfx,cdn,&mortar,cdnr,cdni,nmat,ielprop,
-      prop,sti);
+      prop,sti,damn);
   
   strcat(fnewmesh,".frd");
   if((f1=fopen(fnewmesh,"ab"))==NULL){

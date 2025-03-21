@@ -78,7 +78,7 @@ void resultsstr(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
   ITG intpointvarm,calcul_fn,calcul_f,calcul_qa,calcul_cauchy,ikin,
     mt=mi[1]+1,i,j,*itiefac=NULL;
 
-  double *t0g=NULL,*t1g=NULL;
+  double *t0g=NULL,*t1g=NULL,*dam=NULL,*damn=NULL;
 
   /*
 
@@ -263,7 +263,7 @@ void resultsstr(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 			islavnode,nslavnode,ntie,islavsurf,time,ielprop,prop,
 			veold,ne0,nmpc,ipompc,nodempc,labmpc,energyini,energy,
 			orname,xload,itiefac,pmastsurf,springarea,tieset,
-			ipobody,ibody,xbody,nbody,iinc));
+			ipobody,ibody,xbody,nbody,iinc,dam,damn));
   
   return;
 

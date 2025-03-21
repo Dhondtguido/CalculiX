@@ -16,7 +16,7 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-      subroutine damageinitiations(inpc,textpart,matname,nmat,nmat_,
+      subroutine damageinitiations(inpc,textpart,matname,nmat,
      &  irstrt,istep,istat,n,iline,ipol,inl,ipoinp,inp,ipoinpc,
      &  ier,dmcon,ndmcon,ntmat_,ndmat_)
 !
@@ -28,11 +28,11 @@
       character*80 matname(*)
       character*132 textpart(16)
 !
-      integer nmat,nmat_,istep,istat,n,key,i,irstrt(*),iline,ipol,inl,
-     &     ipoinp(2,*),inp(3,*),ipoinpc(0:*),imat,ier,ndmcon(2,*),
-     &     ntmat_,ncmat_,j,nconstants,isum,imax,ntmat,ndmat_
+      integer nmat,istep,istat,n,key,i,irstrt(*),iline,ipol,inl,
+     &     ipoinp(2,*),inp(3,*),ipoinpc(0:*),ier,ndmcon(2,*),
+     &     ntmat_,j,nconstants,isum,imax,ntmat,ndmat_,itype
 !
-      real*8 type,dmcon(0:ndmat_,ntmat_,*)
+      real*8 dmcon(0:ndmat_,ntmat_,*)
 !
       ntmat=0
 !
@@ -47,10 +47,10 @@
       do i=2,n
         if(textpart(i)(1:10).eq.'CRITERION=') then
           if(textpart(i)(11:20).eq.'RICETRACEY') then
-            type=1.5
+            itype=1
             nconstants=3
           elseif(textpart(i)(11:21).eq.'JOHNSONCOOK') then
-            type=2.5
+            itype=2
             nconstants=10
           else
             write(*,*) 
@@ -75,7 +75,7 @@
       ndmcon(1,nmat)=nconstants
 !
       do
-        do j=1,(nconstants)/8+1
+        do j=1,(nconstants-1)/8+1
           if(j.eq.1) then
             call getnewline(inpc,textpart,istat,n,key,iline,ipol,
      &           inl,ipoinp,inp,ipoinpc)
@@ -89,7 +89,7 @@
               return
             endif
             isum=1
-            dmcon(1,ntmat,nmat)=type
+            dmcon(1,ntmat,nmat)=itype+0.5d0
           else
             call getnewline(inpc,textpart,istat,n,key,iline,ipol,
      &           inl,ipoinp,inp,ipoinpc)
@@ -103,7 +103,7 @@
             endif
           endif
           imax=8
-          if(isum.gt.nconstants+1) then
+          if(isum+imax.gt.nconstants+1) then
             imax=nconstants-isum+1
           endif
           do i=1,imax
@@ -121,6 +121,22 @@
             endif
           enddo
           isum=isum+imax
+!
+!         check constants for Johnson-Cook
+!
+          if(isum.eq.nconstants+1) then
+            if(itype.eq.2) then
+              if(dmcon(7,ntmat,nmat).le.dmcon(8,ntmat,nmat)) then
+                write(*,*) '*ERROR reading *DAMAGE INITIATION'
+                write(*,*) '       melt temperarature for material',
+     &               matname(nmat)
+                write(*,*)
+     &               '       does not exceed transition temperature'
+                ier=1
+                return
+              endif
+            endif
+          endif
 !     
         enddo
       enddo

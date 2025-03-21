@@ -123,7 +123,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     *doubleglob=NULL,*shcon=NULL,*veold=NULL,*xmr=NULL,*xmi=NULL,*eig=NULL,
     *ax=NULL,*bx=NULL,*pslavsurf=NULL,*pmastsurf=NULL,xnull=0.,
     *cdnr=NULL,*cdni=NULL,*energyini=NULL,*energy=NULL,*v=NULL,*b=NULL,
-    *cco=NULL,*smscale=NULL,*aut=NULL,
+    *cco=NULL,*smscale=NULL,*aut=NULL,*dam=NULL,*damn=NULL,
     *umubr=NULL,*umubi=NULL,*fnext=NULL;
 
   /* dummy arguments for the call of expand*/
@@ -1205,7 +1205,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		inoel,nener,orname,&network,ipobody,xbodyact,ibody,typeboun,
 		itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
 		islavquadel,aut,irowt,jqt,&mortartrafoflag,
-		&intscheme,physcon);
+		&intscheme,physcon,dam,damn);
 	SFREE(v);SFREE(f);
 	if(intpointvar!=1){SFREE(fn);SFREE(stx);}
 	iout=2;
@@ -2001,7 +2001,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		inoel,nener,orname,&network,ipobody,xbodyact,ibody,
 		typeboun,itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
 		islavquadel,aut,irowt,jqt,&mortartrafoflag,
-		&intscheme,physcon);}
+		&intscheme,physcon,dam,damn);}
       else{
       
 	/* calculating displacements/temperatures */
@@ -2033,7 +2033,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		iponoel,inoel,nener,orname,&network,ipobody,xbodyact,
 		ibody,typeboun,itiefac,tieset,smscale,&mscalmethod,nbody,
 		t0g,t1g,islavquadel,aut,irowt,jqt,&mortartrafoflag,
-		&intscheme,physcon);
+		&intscheme,physcon,dam,damn);
 	      
 	if(nmdnode==0){
 	  DMEMSET(br,0,neq[1],0.);
@@ -2059,7 +2059,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&neg,
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	  thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
-	  ielprop,prop,sti);
+	  ielprop,prop,sti,damn);
 
       if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
 
@@ -2096,7 +2096,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		inoel,nener,orname,&network,ipobody,xbodyact,ibody,
 		typeboun,itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
 		islavquadel,aut,irowt,jqt,&mortartrafoflag,
-		&intscheme,physcon);}
+		&intscheme,physcon,dam,damn);}
       else{ 
       
 	/* calculating displacements/temperatures */
@@ -2128,7 +2128,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		iponoel,inoel,nener,orname,&network,ipobody,xbodyact,
 		ibody,typeboun,itiefac,tieset,smscale,&mscalmethod,nbody,
 		t0g,t1g,islavquadel,aut,irowt,jqt,&mortartrafoflag,
-		&intscheme,physcon);
+		&intscheme,physcon,dam,damn);
 
 	if(nmdnode==0){
 	  DMEMSET(bi,0,neq[1],0.);
@@ -2278,7 +2278,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	  mi,stx,va,vp,stna,stnp,vmax,stnmax,&ngraph,veold,ener,&neg,
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	  thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
-	  ielprop,prop,sti);
+	  ielprop,prop,sti,damn);
 
       if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
 
@@ -2703,7 +2703,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		  inoel,nener,orname,&network,ipobody,xbodyact,ibody,typeboun,
 		  itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
 		  islavquadel,aut,irowt,jqt,&mortartrafoflag,
-		  &intscheme,physcon);
+		  &intscheme,physcon,dam,damn);
 	  SFREE(v);SFREE(f);
 	  if(intpointvar!=1){SFREE(fn);SFREE(stx);}
 	  iout=2;
@@ -3304,7 +3304,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		inoel,nener,orname,&network,ipobody,xbodyact,ibody,
 		typeboun,itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
 		islavquadel,aut,irowt,jqt,&mortartrafoflag,
-		&intscheme,physcon);
+		&intscheme,physcon,dam,damn);
 	  
 	(*kode)++;
 	mode=-1;
@@ -3321,7 +3321,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	    mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&neg,
 	    cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	    thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
-	    ielprop,prop,sti);
+	    ielprop,prop,sti,damn);
 
 	if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
 

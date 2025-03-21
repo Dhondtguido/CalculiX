@@ -192,7 +192,7 @@ void ini_cal(char *jobnamec,char *output,char *fneig,char *kind1,char *kind2,
      - change the dimension of label in geomview.f
      - change the documentation (tex-file)  */
 
-  *nlabel=55;
+  *nlabel=56;
   *nprint_=0;
   *nprint=0;
   *kode=0;

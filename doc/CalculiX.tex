@@ -12251,7 +12251,25 @@ the resulting tangent matrix is performed, leading to 21 constants instead of
 36 constants. The above procedure was implemented in umat\_abaqusnl.f and
 umat\_abaqusnl\_total.f. It is used for those material models, which were only
 formulated for small strains, such as isotropic plasticity for an elastically
-orthotropic material, Johnson\_Cook plasticity and Mohr\_Coulomb plasticity.
+orthotropic material, Johnson-Cook plasticity and Mohr-Coulomb plasticity.
+
+\subsubsection{Damage initiation models \label{daminit}}
+
+These are models which predict the onset of damage based on the accumulated
+equivalent plastic strain. They can only be used for models for which the
+equivalent plastic strain is calculated, i.e. \htmlref{*DEFORMATION
+  PLASTICITY}{deformationplasticity}, \htmlref{*PLASTIC}{plastic} (with isotropic
+or orthotropic elasticity, including Johnson-Cook hardening),
+\htmlref{*CREEP}{creep} and \htmlref{*MOHR COULOMB}{mohrcoulomb}. Damage is
+initiated if the damage initiation criterion $\omega_D$ reaches a limit
+provided by the user,usually 1. $\omega_D$ is calculated as the sum of the change in
+equivalent plastic strain in each increment divided by the equivalent plastic
+strain at the onset of damage ${\epsilon }_D^{\text{peq}}$:
+
+\begin{equation}
+  \omega_D = \sum \frac{\Delta \epsilon^{\text{peq}}
+  }{\epsilon_D^{\text{peq}}}.
+  \end{equation} 
 
 \subsection{Types of analysis}
 
@@ -21234,6 +21252,63 @@ defines a cyclic symmetric structure consisting of $30^\circ$ sectors and axis o
 
 \bigskip
 Example files: segment, fullseg, couette1per, couettecyl4.
+
+\subsection{\label{damageinitiation}*DAMAGE INITIATION}
+
+Keyword type: model definition, material
+
+This option is used to define the properties of a damage initiation model. There
+is one required parameter CRITERION. Two criteria are available: RICE TRACEY
+and JOHNSON COOK, cf. Section \ref{daminit}.
+
+\bigskip
+
+First line:
+\begin{itemize}
+\item *DAMAGE INITIATION
+\item Enter the CRITERION parameter and its value
+\end{itemize}
+
+Following line for CRITERION=RICE TRACEY:
+\begin{itemize}
+\item $\epsilon_0^{RT}$.
+\item value of the damage initiation criterion $\omega_D$ at the onset of damage.
+\end{itemize}
+
+Following lines for CRITERION=JOHNSON COOK:
+
+First line of pair:
+\begin{itemize}
+\item $d_1$
+\item $d_2$
+\item $d_3$
+\item $d_4$
+\item $d_5$
+\item $T_{\text{melt}}$ (melt temperature)
+\item $T_{\text{trans}}$ (transition temperature $< T_{\text{melt}}$)
+\item $\dot{\epsilon}_{\text{ref}}$ (reference strain rate $>0$)
+\end{itemize}
+  
+Second line of pair:
+\begin{itemize}
+\item value of the damage initiation criterion $\omega_D$ at the onset of damage.
+\end{itemize}
+
+
+\begin{verbatim}
+Example:
+
+*DAMAGE INITIATION,CRITERION=JOHNSON COOK
+1.,1.,-1.,0.,1.,1000.,500.,1.E-2,
+0.045
+\end{verbatim}
+
+defines a damage initiation model according to the Johnson--Cook model with
+$d_1=d_2=d_5=1$, $d_3=-1$, $d_4=0$, $ T_{\text{melt}}=1000.$,
+$T_{\text{trans}}=500.$, $\dot{\epsilon}_{\text{ref}}=0.01$ and $\omega_{d,\text{limit}}=0.045$.
+
+\bigskip
+Example files: damage1, damage2.
 
 \subsection{\label{damping}*DAMPING}
 
@@ -38972,7 +39047,7 @@ jmax(2) &              maximum number of CFD increments \\
        filab(46)='PCON', filab(47)=SEN ', filab(48)='RM  ' (the latter
        refers to mesh refinement), filab(49)='DEPF', filab(50)='DTF ',
        filab(51)='SNEG',filab(52)='SMID',filab(53)='SPOS',
-       filab(54)='KEQ ',filab(55)='THE '. Results are stored for the complete mesh. A field is not selected if
+       filab(54)='KEQ ',filab(55)='THE ',filab(56)='DUCT'. Results are stored for the complete mesh. A field is not selected if
       the first 4 characters are blank, e.g. the stress is not stored if
       filab(3)(1:4)='    '.  An exception to this rule is formed for filab(1): here, only
       the first two characters are used and should be either 'U ' or '  ',

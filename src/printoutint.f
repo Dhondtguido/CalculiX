@@ -18,7 +18,7 @@
 !
       subroutine printoutint(prlab,ipkon,lakon,stx,eei,xstate,ener,
      &  mi,nstate_,ii,nelem,qfx,orab,ielorien,norien,co,konf,
-     &  ielmat,thicke,eme,ielprop,prop,nelel,ithermal,orname)
+     &  ielmat,thicke,eme,ielprop,prop,nelel,ithermal,orname,dam)
 !
 !     stores integration point results for element "nelem" in the .dat file
 !
@@ -43,7 +43,7 @@
      &  coords(3,27),weight,orab(7,*),co(3,*),a(3,3),b(3,3),c(3,3),
      &  qfxl(3),thicke(mi(3),*),xsj2(3),shp2(7,8),xl2(3,8),xs2(3,7),
      &  thickness,tlayer(4),dlayer(4),xlayer(mi(3),4),eme(6,mi(1),*),
-     &  prop(*)
+     &  prop(*),dam(mi(1),*)
 !
       include "gauss.f"
 !
@@ -554,6 +554,11 @@ c     &              (stx(k,j,nelel),k=1,6)
          do j=1,mint3d
             write(5,'(i10,1x,i3,1p,6(1x,e13.6))') nelem,j,
      &           ener(1,j,nelel)
+         enddo
+      elseif(prlab(ii)(1:4).eq.'DUCT') then
+         do j=1,mint3d
+            write(5,'(i10,1x,i3,1p,6(1x,e13.6))') nelem,j,
+     &           dam(j,nelel)
          enddo
       elseif(prlab(ii)(1:4).eq.'SDV ') then
          do j=1,mint3d

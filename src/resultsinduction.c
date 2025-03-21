@@ -81,7 +81,8 @@ void resultsinduction(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
         intpointvart,mt=mi[1]+1,i,j,*ithread=NULL,*islavsurf=NULL,
       sys_cpus,mortar=0,*islavact=NULL,*itiefac=NULL;
 
-    double *pmastsurf=NULL,*clearini=NULL,*pslavsurf=NULL,*cdn=NULL;
+    double *pmastsurf=NULL,*clearini=NULL,*pslavsurf=NULL,*cdn=NULL,*dam=NULL,
+      *damn=NULL;
 
     /*
 
@@ -316,7 +317,7 @@ void resultsinduction(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
        cdn,&mortar,islavnode,nslavnode,ntie,islavsurf,time,ielprop,prop,
        veold,ne0,nmpc,ipompc,nodempc,labmpc,energyini,energy,orname,
        xload,itiefac,pmastsurf,springarea,tieset,ipobody,ibody,xbody,
-       nbody,iinc));
+       nbody,iinc,dam,damn));
   
   return;
 
