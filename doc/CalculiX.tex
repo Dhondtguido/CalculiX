@@ -12269,7 +12269,48 @@ strain at the onset of damage ${\epsilon }_D^{\text{peq}}$:
 \begin{equation}
   \omega_D = \sum \frac{\Delta \epsilon^{\text{peq}}
   }{\epsilon_D^{\text{peq}}}.
-  \end{equation} 
+\end{equation}
+
+\noindent According to the Rice-Tracey model ${\epsilon }_D^{\text{peq}}$ satisfies:
+
+\begin{equation}
+  {\epsilon }_D^{\text{peq}}=1.65 \epsilon _0^{RT} \exp \left( - \frac{3
+    \sigma_{hy}}{2 \sigma_{vm}} \right),
+\end{equation}
+
+\noindent where $\sigma_{hy}$ is the hydrostatic stress and $\sigma_{vm}$ the
+von Mises stress. The ratio of both is called the triaxiality
+$\eta=\sigma_{hy}/\sigma_{vm}$. For a one-dimensional tensile test it takes the
+value 1/3.
+
+\noindent According to the Johnson-Cook model  ${\epsilon }_D^{\text{peq}}$ is
+determined by:
+
+\begin{equation}
+ {\epsilon }_D^{\text{peq}}= (d_1 + d_2 \exp ( -d_3 \eta )) ( 1 + d_4 \ln
+ \left ( \frac{\dot{\epsilon }^{\text{peq}}}{\dot{\epsilon }_0 } \right) \left
+        [1-(T^*)^m \right ],
+\end{equation}
+
+where
+
+\begin{eqnarray}
+  T^* &=& 0  \;\;\;  \text{for} \; T<T_0 \nonumber \\
+  T^* &=& \left(\frac{T-T_0}{T_m-T_0}\right) \;\;\; \text{for}\; T_0 \le T \le T_m
+  \nonumber \\
+  T^* &=& 1  \;\;\; \text{for}\; T>T_m
+\end{eqnarray}
+
+Here, $d_1, d_2, d_3, d_4, d_5,\dot{\epsilon_0},T_0$ and $T_m$ are material constants. The
+constant $T_0$ has the physical meaning of transition temperature, i.e. the
+temperature above which the equivalent strain at the onset of damage starts to
+increase and $T_m$ has the
+physical meaning of melt temperature, i.e. the temperature above which
+${\epsilon }_D^{\text{peq}}$ remains constant. The model is meant to describe
+highly dynamic phenomena.
+
+As soon as the damage initiation criterion reaches the user-defined limit in
+any integration point within this element, the element is deleted. 
 
 \subsection{Types of analysis}
 
@@ -21284,9 +21325,9 @@ First line of pair:
 \item $d_3$
 \item $d_4$
 \item $d_5$
-\item $T_{\text{melt}}$ (melt temperature)
-\item $T_{\text{trans}}$ (transition temperature $< T_{\text{melt}}$)
-\item $\dot{\epsilon}_{\text{ref}}$ (reference strain rate $>0$)
+\item $T_m$ (melt temperature)
+\item $T_0$ (transition temperature $< T_m$)
+\item $\dot{\epsilon}_0$ (reference strain rate $>0$)
 \end{itemize}
   
 Second line of pair:
@@ -21304,8 +21345,8 @@ Example:
 \end{verbatim}
 
 defines a damage initiation model according to the Johnson--Cook model with
-$d_1=d_2=d_5=1$, $d_3=-1$, $d_4=0$, $ T_{\text{melt}}=1000.$,
-$T_{\text{trans}}=500.$, $\dot{\epsilon}_{\text{ref}}=0.01$ and $\omega_{d,\text{limit}}=0.045$.
+$d_1=d_2=d_5=1$, $d_3=-1$, $d_4=0$, $ T_m=1000.$,
+$T_0=500.$, $\dot{\epsilon}_0=0.01$ and $\omega_{d,\text{limit}}=0.045$.
 
 \bigskip
 Example files: damage1, damage2.
