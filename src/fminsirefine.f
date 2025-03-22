@@ -83,11 +83,11 @@ C       Local dimensions currently require N <= 128
 C X(N) ... vector of variables. When calling FMINSI the user has to
 C       provide the starting point of the minimization, i.e. an
 C       assumed or previously determined estimate of the location
-C       of a mimimum.
+C       of a minimum.
 C       After completion of FMINSI X contains the best approximation
-C       found for the loacation of a local minimum of the objective
+C       found for the location of a local minimum of the objective
 C       function.
-C FU(N,X) ... REAL FUNCTION, ojective function to be miminized,
+C FU(N,X) ... REAL FUNCTION, objective function to be miminmized,
 C       need neither be differentiable nor steady.
 C       FU has to declared as "EXTERNAL" in the calling program.
 C EPS ... vector of desired absolute accuracy for the single components
@@ -198,7 +198,7 @@ C
 C
 C Starting value of the expansion factor. The factor is dynamically
 C adjusted. It is reduced if successive expansion steps fail.
-C Following successul expansion steps it is restored.
+C Following successful expansion steps it is restored.
 C
       GAMMD = GAMMA
 C
@@ -730,7 +730,7 @@ C
         NSUCC = 0
       ELSE
 C
-C Increase counter for unsucessful contractions
+C Increase counter for unsuccessful contractions
 C
         NSUCC = NSUCC + 1
       ENDIF

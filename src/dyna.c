@@ -1083,7 +1083,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
     }
 
     if(*idrct!=1){
-      printf(" *ERROR in dyna: variable increment length is not allwed in combination with prescribed boundaries\n");
+      printf(" *ERROR in dyna: variable increment length is not allowed in combination with prescribed boundaries\n");
       FORTRAN(stop,());
     }
       
@@ -1973,7 +1973,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 
     RENEW(ialset,ITG,nalset_);
 
-    /* restore the infomration in istartset and iendset */
+    /* restore the information in istartset and iendset */
 
     for(j=0; j<*nset; j++){
       istartset[j]=istartset_[j];

@@ -236,7 +236,7 @@ void checkconvergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	      // deactivated on 22.03.2019
 	      // energy/work may not be calculated correctly for forced BC
 	      // (example: shaft)
-	      // following line deactiveted on 16.07.2021
+	      // following line deactivated on 16.07.2021
 	      //      		idivergence=1;
 	    }else{
 		
@@ -255,7 +255,7 @@ void checkconvergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 
     if((*nmethod==4)&&(*ithermal<2)&&(*uncoupled==0)&&(iconvergence==1)&&((*ne!=*ne0)||(*neini!=*ne0))){
 
-	/* store temporarly the value of emax: in case of forced divergence 
+	/* store temporarily the value of emax: in case of forced divergence 
 	   emax has to be reset. */
 
 	tmp=*emax;

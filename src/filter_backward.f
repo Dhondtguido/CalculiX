@@ -30,7 +30,7 @@
 !     
       real*8 au(*),dgdxglob(2,nk,*)
 !  
-!     loop over all colums
+!     loop over all columns
       do kk=1,ndesi
          inode1=nodedesi(kk)
 !
