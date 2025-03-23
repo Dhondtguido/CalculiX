@@ -200,7 +200,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
     fprintf(f1,"%5sUHOST                                                              \n",p1);
     fprintf(f1,"%5sUPGM               CalculiX                                        \n",p1);
     fprintf(f1,"%5sUVERSION           Version DEVELOPMENT                             \n",p1);
-    fprintf(f1,"%5sUCOMPILETIME       Fri Mar 21 17:57:38 CET 2025                    \n",p1);
+    fprintf(f1,"%5sUCOMPILETIME       Sun Mar 23 14:40:57 CET 2025                    \n",p1);
     fprintf(f1,"%5sUDIR                                                               \n",p1);
     fprintf(f1,"%5sUDBN                                                               \n",p1);
     
@@ -1596,8 +1596,8 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
     frdheader(&icounter,&oner,time,&pi,noddiam,cs,&null,mode,
 	      &noutloc,description,kode,nmethod,f1,output,istep,iinc);
 
-    fprintf(f1," -4  DAM         1    1\n");
-    fprintf(f1," -5  DAM         1    1    0    0\n");
+    fprintf(f1," -4  DUCT        1    1\n");
+    fprintf(f1," -5  DUCT        1    1    0    0\n");
 
     frdselect(damn,damn,&iset,&nkcoords,inum,m1,istartset,iendset,
 	      ialset,ngraph,&ncompscalar,ifieldscalar,icompscalar,

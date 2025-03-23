@@ -18483,6 +18483,7 @@ DEPT & fluid depth (in direction of the gravity vector) & nodal & DEPTH & \\
  &  in a channel network &  &  & \\
 DTF & fluid time increment in 3D fluids & nodal & DTIMF & \\
 DRAG & stress on surface & surface & & x \\
+DUCT & damage initiation criterion & int.point & DUCT & x \\
 \hline
 E & Lagrange strain & int.point & TOSTRAIN & x \\
  &  &  & TOSTRAII & x \\
@@ -23263,6 +23264,7 @@ real part is stored):
 \item CEEQ [PE]: equivalent creep strain (is converted internally into PEEQ
   since the viscoplastic theory does not distinguish between the two;
   consequently, the user will find PEEQ in the frd file, not CEEQ)
+\item DUCT [DUCT]: damage initiation criterion.
 \item E [TOSTRAIN (real),TOSTRAII (imaginary)]: strain. This is the total Lagrangian strain for (hyper)elastic
 materials and incremental plasticity and the total Eulerian strain for deformation plasticity.
 \item ECD [CURR]: electrical current density. This only applies to electromagnetic calculations.
@@ -23511,30 +23513,32 @@ The following  variables can be selected:
 \item Integration point variables
 
 \begin{itemize}
-\item true (Cauchy) stress in structures (key=S). 
-\item viscous stress in CFD calculations (key=SVF). 
-\item strain (key=E). This is the total Lagrangian strain for (hyper)elastic
-materials and incremental plasticity and the total Eulerian strain for deformation plasticity.
-\item strain (key=ME). This is the mechanical Lagrangian strain for (hyper)elastic
-materials and incremental plasticity and the mechanical Eulerian strain for
-deformation plasticity (mechanical strain = total strain - thermal strain).
-\item equivalent plastic strain (key=PEEQ)
 \item equivalent creep strain (key=CEEQ; is converted internally into PEEQ
   since the viscoplastic theory does not distinguish between the two;
   consequently, the user will find PEEQ in the dat file, not CEEQ)
+\item global coordinates (key=COORD).
+\item damage initiation criterion (key=DUCT).
+\item strain (key=E). This is the total Lagrangian strain for (hyper)elastic
+materials and incremental plasticity and the total Eulerian strain for deformation plasticity.
 \item the energy density (key=ENER)
-\item the internal state variables (key=SDV)
+\item strain (key=ME). This is the mechanical Lagrangian strain for (hyper)elastic
+materials and incremental plasticity and the mechanical Eulerian strain for
+deformation plasticity (mechanical strain = total strain - thermal strain).
 \item heat flux for structures (key=HFL). 
 \item heat flux in CFD calculations(key=HFLF).
-\item global coordinates (key=COORD).
+\item equivalent plastic strain (key=PEEQ)
+\item true (Cauchy) stress in structures (key=S). 
+\item the internal state variables (key=SDV)
+\item viscous stress in CFD calculations (key=SVF). 
 \end{itemize}
 
 \item Whole element variables
 
 \begin{itemize}
-\item the internal energy (key=ELSE)
+\item the rotational speed square ($\omega^2$) (key=CENT)
+\item the heating power (key=EBHE)
 \item the kinetic energy (key=ELKE)
-\item the volume (key=EVOL)
+\item the internal energy (key=ELSE)
 \item the mass and the mass moments of inertia about the global axes $I_{xx}$,
   $I_{yy}$, $I_{zz}$, $I_{xy}$, $I_{xz}$ and $I_{yz}$, where
 
@@ -23546,8 +23550,7 @@ and similar for the other expressions. If TOTALS=YES or TOTALS=ONLY is
 selected the center of gravity and the mass moments of inertia about the
 global axes through the center of gravity are calculated too (key=EMAS).
 
-\item the heating power (key=EBHE)
-\item the rotational speed square ($\omega^2$) (key=CENT)
+\item the volume (key=EVOL)
 \end{itemize}
 
 \end{itemize}
