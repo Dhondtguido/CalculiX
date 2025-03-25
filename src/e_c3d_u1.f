@@ -241,7 +241,7 @@
      &  plicon(0:2*npmat_,ntmat_,*),plkcon(0:2*npmat_,ntmat_,*),
      &  xstiff(27,mi(1),*),plconloc(802),dtime,ttime,time,tmg(12,12),
      &  a,xi11,xi12,xi22,xk,e1(3),offset1,offset2,y1,y2,y3,z1,z2,z3,
-     &  sg(12,12),elcon(0:ncmat_,ntmat_,*)
+     &  smg(12,12),sg(12,12),elcon(0:ncmat_,ntmat_,*),dxl(3),detj
 !
       indexe=ipkon(nelem)
 !
@@ -260,6 +260,7 @@
       else
          ihyper=0
       endif
+      rho=rhcon(1,imat,1)
 !
 !     properties of the cross section
 !
@@ -353,20 +354,21 @@ c      write(*,*) 'u1 trans3 ',e3(1),e3(2),e3(3)
          write(*,*) '       calculation for this type of element'
          call exit(201)
       endif
-!
-!     initialisation of sm
-!
-      if((mass.eq.1).or.(buckling.eq.1).or.(coriolis.eq.1)) then
-         write(*,*) '*ERROR in e_c3d_u1: no dynamic or buckling'
+!      
+!      if((mass.eq.1).or.(buckling.eq.1).or.(coriolis.eq.1)) then
+      if((coriolis.eq.1)) then
+!         write(*,*) '*ERROR in e_c3d_u1: no dynamic or buckling'
+         write(*,*) '*ERROR in e_c3d_u1: no coriolis'
          write(*,*) '       calculation for this type of element'
          call exit(201)
       endif
 !
-!     initialisation of s
+!     initialisation of s and sm
 !
       do i=1,ndof*nope
         do j=1,ndof*nope
           s(i,j)=0.d0
+          sm(i,j)=0.d0
         enddo
       enddo
 !
@@ -517,11 +519,40 @@ c      write(*,*) 'u1 trans3 ',e3(1),e3(2),e3(3)
             s(11,11)=z3/(dl*z2)
             s(12,12)=y3/(dl*y2)
 !
+!           mass  matrix SM' in local coordinates
+!           jacobian (dx = detJ*dxi)
+            do i=1,3
+              dxl(i)=xl(i,2)-xl(i,1)
+c              write(*,'(a4,i1,a2,f3.1)') 'dxl(',i,')=',dxl(i)
+            enddo
+            detj=0.50*(dxl(1)**2+dxl(2)**2+dxl(3)**2)**0.5d0
+
+            sm(1,1)=2.d0/3.d0*rho*a*detj
+            sm(2,2)=2.d0/3.d0*rho*a*detj
+            sm(3,3)=2.d0/3.d0*rho*a*detj
+            sm(4,4)=2.d0/3.d0*rho*(xi11+xi22)*detj
+            sm(5,5)=2.d0/3.d0*rho*xi22*detj
+            sm(6,6)=2.d0/3.d0*rho*xi11*detj
+            sm(7,7)=2.d0/3.d0*rho*a*detj
+            sm(8,8)=2.d0/3.d0*rho*a*detj
+            sm(9,9)=2.d0/3.d0*rho*a*detj
+            sm(10,10)=2.d0/3.d0*rho*(xi11+xi22)*detj
+            sm(11,11)=2.d0/3.d0*rho*xi22*detj
+            sm(12,12)=2.d0/3.d0*rho*xi11*detj
+            sm(1,7)=1.d0/3.d0*rho*a*detj
+            sm(2,8)=1.d0/3.d0*rho*a*detj
+            sm(3,9)=1.d0/3.d0*rho*a*detj
+            sm(4,10)=1.d0/3.d0*rho*(xi11+xi22)*detj
+            sm(5,11)=1.d0/3.d0*rho*xi22*detj
+            sm(6,12)=1.d0/3.d0*rho*xi11*detj
+c            write(*,*) 'rho, A, I11, I22, detj',rho,a,xi11,xi22,detj
+!
 !           completing the symmetric part
 ! 
             do i=1,12
                do j=1,i
                   s(i,j)=s(j,i)
+                  sm(i,j)=sm(j,i)
                enddo
             enddo
 !
@@ -552,8 +583,10 @@ c            enddo
             do i=1,12
                do j=1,12
                   sg(i,j)=0.d0
+                  smg(i,j)=0.d0
                   do k=1,12
                      sg(i,j)=sg(i,j)+s(i,k)*tmg(k,j)
+                     smg(i,j)=smg(i,j)+sm(i,k)*tmg(k,j)
                   enddo
                enddo
             enddo
@@ -563,10 +596,13 @@ c            enddo
             do i=1,12
                do j=i,12
                   s(i,j)=0.d0
+                  sm(i,j)=0.d0
                   do k=1,12
                      s(i,j)=s(i,j)+tmg(k,i)*sg(k,j)
+                     sm(i,j)=sm(i,j)+tmg(k,i)*smg(k,j)
                    enddo
 c                   write(*,*) 'u1 stiffness',i,j,s(i,j)
+c                   write(*,'(i2,a1,i3,a1,e12.5)') i,',',j,',',s(i,j)
                enddo
             enddo
 !

@@ -2,6 +2,8 @@
 \usepackage{epsfig,html,amsmath,amssymb,lscape,longtable,pstricks,hyperref}
 \pagestyle{headings}
 \markboth{}{}
+%--------------------------fette-schrift----------------------------
+\newcommand{\bm}[1]{\mbox{\boldmath $#1$}}  
 \begin{document}
 \title{CalculiX CrunchiX USER'S MANUAL development version}
 \author{Guido Dhondt}
@@ -4357,10 +4359,324 @@ calculations and small deformations) according to \cite{Yunhua} is
 implemented as element ``U1'' in CalculiX. It is used in example userbeam.inp
 in the test suite. The reader is referred to files resultsmech\_u1.f,
 e\_c3d\_u1.f and extrapolate\_u1.f for details on how a user elements is coded.
+
+\noindent
+In addition to \cite{Yunhua} the current implementation also 
+contains a mass matrix for dynamic analyses, which has been 
+derived based on the assumptions, that 
+\begin{itemize}
+  \item the cross-section does not change over the length of the beam element
+  \item the deformations are small, such that geometrically linear theory can be used, 
+    where all inertia terms are uncoupled (e.g. pure torsion does not activate shear inertia
+    forces).
+\end{itemize}
+
+\paragraph{Differential intertia terms in  a local main axis coordinate frame}\mbox{} \\
  
+\noindent
+At first all intertia terms are derived in a local coordinate frame $X_i$, which axes  
+$X_2$, $X_3$ correspond to the main axes of the cross-section, i.e. where
+the deviation moment $I_{23}=0$.
+%
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{u1_mass_derivation}
+  \put(-190,112){\textcolor{red}{$\textrm{d}J^S_{1} \ddot{\varphi}_1$}}
+  \put(-60,140){\textcolor{red}{$\textrm{d}J^S_{22} \ddot{\varphi}_2$}}
+  \put(-130,140){\textcolor{red}{$\textrm{d}J^S_{33} \ddot{\varphi}_3$}}
+  \put(-139, 90){\textcolor{red}{$\textrm{d}m \ddot{u}_1$}}
+  \put(-80,110){\textcolor{red}{$\textrm{d}m \ddot{u}_2$}}
+  \put(-114,120){\textcolor{red}{$\textrm{d}m \ddot{u}_3$}}
+  \put(-285,0){$\hat X_1$}
+  \put(-340,47){$\hat X_2$}
+  \put(-345,12){$\hat X_3$}
+  \put(-110,75){$S$}
+  \put(-240,25){$\hat{\bm{X}}_S$}
+  \put(-17,48){\textcolor{red}{$X_1$}}
+  \put(-162,50){\textcolor{red}{$X_2$}}
+  \put(-70,50){\textcolor{red}{$X_3$}}
+  \caption{Cylindrical beam with arbitrary cross-section (main cross-section axes $X_2$, $X_3$)}
+\end{figure}
+%
+\noindent
+With the differential cross-section quantities
+%
+\begin{eqnarray}
+  \textrm{d}m & = & \rho  \textrm{d}A \textrm{d}X_1  \nonumber \\
+  \textrm{d}J^S_{33} & =&  \rho  X_2^2 \textrm{d}A \textrm{d}X_1  \nonumber \\
+  \textrm{d}J^S_{22} & =&  \rho  X_3^2 \textrm{d}A \textrm{d}X_1  \nonumber \\
+  \textrm{d}J^S_m & = & \rho  (X_2^2 + X_3^2) \textrm{d}A \textrm{d}X_1
+\end{eqnarray}
+%
+\noindent
+the intertia forces of a differential cross-section $\textrm{d}M = \rho A \textrm{d}X_1$ can be derived
+by integration of the above quantities over $A$:
+%
+\noindent
+\begin{eqnarray}
+  \textrm{d}F_1  & = & -\int_A  \ddot{u}_1 \textrm{d}m = -\rho A \ddot{u}_1 \textrm{d}x \nonumber \\
+  \textrm{d}F_2  & = & -\int_A  \ddot{u}_2 \textrm{d}m = -\rho A \ddot{u}_2 \textrm{d}x \nonumber \\
+  \textrm{d}F_3  & = & -\int_A  \ddot{u}_3 \textrm{d}m = -\rho A \ddot{u}_3 \textrm{d}x \nonumber \\
+  \textrm{d}M_1  & = & -\int_A  \ddot{\varphi}_1 \rho  (X_2^2 + X_3^2) \textrm{d}A \textrm{d}X_1 = -\rho I_{p} \ddot{\varphi}_1 \textrm{d}X_1 \nonumber \\
+  \textrm{d}M_2  & = & -\int_A  \ddot{\varphi}_2 \rho  X_3^2 \textrm{d}A \textrm{d}X_1 = -\rho I_1 \ddot{\varphi}_2 \textrm{d}X_1 \nonumber \\
+  \textrm{d}M_3  & = & -\int_A  \ddot{\varphi}_3 \rho  X_2^2 \textrm{d}A \textrm{d}X_1 = -\rho I_2 \ddot{\varphi}_3 \textrm{d}X_1
+\end{eqnarray}
+%
+%
+\paragraph{Discretization of inertia terms (main axis coordinate frame)}\mbox{} \\
+%
+\noindent
+A Bubnov-Galerkin discretization of the (virtual) displacements and rotations $\bm{u}$ 
+%
+%
+\begin{equation}
+  \bm{u} \approx \bm{u}^h = \left[
+    \begin{array}{c}
+      u_x(\xi) \\
+      u_1(\xi) \\
+      u_2(\xi) \\
+      \varphi_x(\xi) \\
+      \varphi_1(\xi) \\
+      \varphi_2(\xi) 
+    \end{array}
+    \right]
+  = \bm{N} \bm{d}
+  \quad  \textrm{and} \quad 
+  \delta \bm{u} \approx \delta \bm{u}^h = \left[
+    \begin{array}{c}
+      \delta u_x(\xi) \\
+      \delta u_1(\xi) \\
+      \delta u_2(\xi) \\
+      \delta \varphi_x(\xi) \\
+      \delta \varphi_1(\xi) \\
+      \delta \varphi_2(\xi) 
+    \end{array}
+    \right]
+  = \bm{N} \delta \bm{d}
+\end{equation}
+%
+\noindent
+leads along with the nodal (virtual) displacements and rotations
+%
+\begin{equation}
+  \bm{d} = 
+   \left[
+    \begin{array}{c}
+      d_1 \\
+      d_2 \\
+        : \\
+      d_{12}
+    \end{array}
+    \right]
+  \quad  \textrm{and} \quad 
+  \delta \bm{d} = 
+   \left[
+    \begin{array}{c}
+      d_1 \\
+      d_2 \\
+        : \\
+      d_{12}
+    \end{array}
+    \right]
+\end{equation}
+%
+\noindent
+and the with isoparametric shape functions
+$\bm{N}(\xi)$ 
+%
+\begin{equation}
+  \bm{N} = 
+    \left[
+        \begin{array}{cccccccccccc}
+            N_1 &   0 & 0   & 0   & 0   & 0&  N_2 &   0 & 0   & 0   & 0   & 0 \\
+              0 & N_1 & 0   & 0   & 0   & 0&    0 & N_2 & 0   & 0   & 0   & 0 \\
+              0 &   0 & N_1 & 0   & 0   & 0&    0 &   0 & N_2 & 0   & 0   & 0 \\
+              0 & 0   & 0   & N_1 & 0   & 0&    0 & 0   & 0   & N_2 & 0   & 0 \\
+              0 & 0   & 0   & 0   & N_1 & 0&    0 & 0   & 0   & 0   & N_2 & 0 \\
+              0 & 0   & 0   & 0   & 0 & N_1&    0 & 0   & 0   & 0   & 0 & N_2 
+        \end{array}
+    \right]
+\end{equation}
+%
+\noindent
+where 
+%
+\begin{equation}
+  N_1(\xi) = \frac{1}{2}(1-\xi) \ ,  N_2(\xi) = \frac{1}{2}(1+\xi)
+\end{equation}
+%
+%
+\noindent
+to the following weak formulation of the inertia terms:
+%
+%
+\begin{equation}
+  \int_x \delta \bm{u} \cdot 
+    \left[\begin{array}{c}
+        \textrm{d}F_1 \\
+        \textrm{d}F_2\\
+        \textrm{d}F_3  \\
+        \textrm{d}M_1 \\
+        \textrm{d}M_2 \\
+        \textrm{d}M_3 
+  \end{array}
+  \right]  \textrm{d}X_1 = 
+   \delta \bm{d}^T \bm{M} \ddot{\bm{d}} 
+\end{equation}
+%
+\noindent
+Requiring a constant cross-section along the entire element thus yields constant material
+parameters, which can be pulled out of the above integration of $\bm{M}$ over $X_1$.
+Thus  the integration of the product of the shape functions  can be performed analytically
+(under consideration of the transformation of the length differential $\textrm{d}X_1$ to 
+ $\textrm{d}\xi$ according to
+%
+%
+\begin{equation}
+  \textrm{d}X_1 =  \textrm{det}\bm{J} \textrm{d}\xi =   \frac{1}{2}(X_2 - X_1)\textrm{d}\xi
+\end{equation}
+%
+\begin{equation}
+  \int_L N_i N_j \textrm{d}X_1 = \frac{1}{2}(X_2 - X_1)\int_{-\frac{1}{2}}^\frac{1}{2}  N_i N_j \textrm{d}\xi 
+  =  \left\{
+   \begin{array}{c}
+      \frac{1}{3}(X_2 - X_1) \ , \quad i = j\\
+      \frac{1}{6}(X_2 - X_1) \ , \quad i \ne j 
+  \end{array}
+    \right.
+\end{equation}
+%
+
+\paragraph{Mass matrix in (local) main axis coordinate frame}\mbox{} \\
+ 
+\noindent
+Thus the mass matrix becomes in the main axis coordinates
+%
+%
+\begin{equation}
+  \bm{M}
+        = \left[
+           \begin{array}{cc}
+             \bm{M}_D & \bm{M}_{ND} \\
+             \bm{M}^T_{ND} & \bm{M}_D 
+           \end{array}
+    \right]
+\end{equation}
+%
+\noindent
+with
+\begin{equation}
+  \bm{M}_D = 
+    \frac{1}{3}(X_2 - X_1)
+    \left[
+        \begin{array}{cccccc}
+            \rho A & 0 & 0 & 0 & 0 & 0 \\
+            0 & \rho A & 0 & 0 & 0 & 0  \\
+            0 & 0 & \rho A & 0 & 0 & 0 \\
+            0 & 0 & 0 & \rho I_p & 0 & 0 \\
+            0 & 0 & 0 & 0 & \rho I_1 & 0  \\
+            0 & 0 & 0 & 0 & 0 & \rho I_2
+        \end{array}
+    \right]
+\end{equation}
+%
+\noindent
+and
+\begin{equation}
+  \bm{M}_{ND} = 
+    \frac{1}{6}(X_2 - X_1)
+    \left[
+        \begin{array}{cccccc}
+          \rho A & 0 & 0 & 0 & 0 & 0\\
+            0 & \rho A & 0 & 0 & 0 &0  \\
+            0 & 0 & \rho A & 0 & 0 & 0 \\
+            0 & 0 & 0 & \rho I_p & 0 & 0 \\
+            0 & 0 & 0 & 0 & \rho I_1 & 0  \\
+            0 & 0 & 0 & 0 & 0 & \rho I_2
+        \end{array}
+    \right]
+\end{equation}
+%
+%
+\paragraph{ Mass matrix in global coordinate frame}\mbox{} \\
+
+\noindent
+Transformation of a vector $\bm{a}$ %$\delta \bm{u}^h$ and $\bm{u}^h$ 
+from local  coordinate frame
+$\bm{e}_i$ into global coordinate frame $\hat{\bm{e}}_i$ 
+yields
+%
+\begin{eqnarray}
+  a^i \hat{\bm{e}}_i & = & a^j \bm{e}_j \quad \vert \cdot \hat{\bm{e}}^k \\
+  a^i \delta_i^{\ k} & =&  a^j \bm{e}_j \cdot \hat{\bm{e}}^k \\
+  a^k & = & \hat T_j^{\ k} a^j =  T^k_{\ j} a^j 
+\end{eqnarray}
+%
+\noindent
+I.e. with the transformation matrix 
+%
+\begin{equation}
+  \bm{T} = \left[  T^k_{\ j} \right] 
+    = \left[
+        \begin{array}{ccc}
+          - & \bm{e}_1 & - \\
+          - & \bm{e}_2 & - \\
+          - & \bm{e}_3 & -
+        \end{array}
+      \right]
+\end{equation}
+%
+\noindent
+and the (virtual) displacements 
+%
+\begin{equation}
+  \delta \hat{\bm{u}}^h = \bm{T} \delta \bm{u}^h =  \bm{T} ( \bm{N} \delta \bm{d}^h)
+  \quad \textrm{and} \quad 
+  \hat{\bm{u}}^h = \bm{T} \bm{u}^h =  \bm{T}   (\bm{N}\bm{d}^h)
+\end{equation}
+%
+\noindent
+the variation of the kinetic energy becomes
+%
+\begin{equation}
+  \delta \bm{d}^T \bm{T}^T \bm{M} \bm{T} \bm{d}
+\end{equation}
+%
+\noindent
+and thus the final mass matrix in global coordinate frame $\hat{\bm{e}}_i$
+%
+\begin{equation}
+  \hat{\bm{M}} =  \bm{T}^T \bm{M} \bm{T}
+\end{equation}
+ 
+\paragraph{Input deck syntax}\mbox{} \\
+
+\noindent
+Declare the usage of a user element:
+\begin{verbatim}
+*USER ELEMENT,TYPE=U1,NODES=2,INTEGRATION POINTS=2,MAXDOF=6
+\end{verbatim}
+Specify its properties
+\begin{verbatim}
+*BEAM SECTION, SECTION=GENERAL, ELSET=<elset_label>, MATERIAL=<Material>
+\end{verbatim}
+%
+\noindent
+{\bf First line}\\
+cross-section area $A$, \\
+2nd order moment $I_{22}$, \\
+2nd order deviation moment $I_{12}$ (must be zero!), \\
+2nd order moment $I_{33}$, \\
+shear correction factor $\kappa$.\\[2mm]
+{\bf Second line}\\
+Global $\hat X$-coordinate of local cross-section main axis $X_2$, \\
+Global $\hat Y$-coordinate of local cross-section main axis $X_2$,\\
+Global $\hat Z$-coordinate of local cross-section main axis $X_2$.\\
+
+
 \subsubsection{User Element: 3-node shell element (US3)}
 
-\begin{figure}
+\begin{figure}[htbp]
   \centering
 \epsfig{file=rama.eps,width=5cm}
 \caption{\label{us3}Definition of the US3 element}

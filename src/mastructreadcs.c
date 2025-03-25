@@ -36,7 +36,7 @@ void mastructreadcs(ITG *ipompc,ITG *nodempc,ITG *nmpc,ITG *nactdof,
   char filestiff[81]=" ";
   
   ITG id,index,jdof1,jdof2,idof1,idof2,mpc1,mpc2,id1,id2,ist1,ist2,
-    index1,index2,ist,*mast1=NULL,icolumn,mt=mi[1]+1,*next=NULL,
+    index1,index2,ist,*mast1=NULL,icolumn,*next=NULL,
     imat,node1,node2,j,k,m;
 
   double val;
@@ -66,7 +66,8 @@ void mastructreadcs(ITG *ipompc,ITG *nodempc,ITG *nmpc,ITG *nactdof,
       break;
     }
   }while(1);
-  
+
+  fclose(f1);
   *mast1p=mast1;*nextp=next;
   
   return;
