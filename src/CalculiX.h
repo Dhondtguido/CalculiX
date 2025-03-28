@@ -3142,7 +3142,7 @@ void FORTRAN(midexternalfaces,(ITG *iexternfa,ITG *nexternfa,ITG *ifacext,
                                ITG *ipoed,ITG *iedg,ITG *iexternedg));
 
 void FORTRAN(modifympc,(ITG *inodestet,ITG *nnodestet,double *co,
-			double *doubleglob,ITG *integerglob,ITG *ipompc,
+		        ITG *ipompc,
 			ITG *nodempc,double *coefmpc,ITG *nmpc,ITG *nmpc_,
 			char *labmpc,ITG *mpcfree,ITG *ikmpc,ITG *ilmpc,
 			ITG *jq,ITG *irow,ITG *icol,

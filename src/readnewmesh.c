@@ -275,6 +275,7 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
       FORTRAN(genratio,(co,doubleglob,integerglob,&nkold,nk,iprfn,konrfn,
 			ratiorfn));
 
+      SFREE(integerglob);SFREE(doubleglob);
       RENEW(konrfn,ITG,iprfn[*nk-nkold]);
       RENEW(ratiorfn,double,iprfn[*nk-nkold]);
 
@@ -309,7 +310,7 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
   NNEW(jqt,ITG,*nk+1);
   NNEW(inodestet,ITG,nnodestet);
 
-  FORTRAN(modifympc,(inodestet,&nnodestet,co,doubleglob,integerglob,ipompc,
+  FORTRAN(modifympc,(inodestet,&nnodestet,co,ipompc,
 		     nodempc,coefmpc,nmpc,nmpc_,labmpc,mpcfree,ikmpc,ilmpc,
 		     jq,irow,icol,loc,irowt,jqt,itemp,au,ixcol,ikboun,
 		     nboun,nodeboun,&mpcrfna,&mpcrfnb,nodempcref,coefmpcref,

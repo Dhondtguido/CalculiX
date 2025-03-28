@@ -301,7 +301,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
     printf("software, and you are welcome to redistribute it under\n");
     printf("certain conditions, see gpl.htm\n\n");
     printf("************************************************************\n\n");
-    printf("You are using an executable made on Fri Mar 28 18:20:29 CET 2025\n");
+    printf("You are using an executable made on Fri Mar 28 19:01:41 CET 2025\n");
     fflush(stdout);
 
     NNEW(ipoinp,ITG,2*nentries);
@@ -1790,7 +1790,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 
     /* check whether refinement was active */
 
-    //          if(irefineloop==20){
+    //    if(irefineloop>0){irefineloop++;}
     if(strcmp1(&filab[4089],"RM")==0){
       irefineloop++;
 
