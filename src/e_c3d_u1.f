@@ -232,7 +232,7 @@
      &  nplkcon(0:ntmat_,*),npmat_
 !
       real*8 co(3,*),xl(3,20),veold(0:mi(2),*),rho,s(60,60),bodyfx(3),
-     &  ff(60),elconloc(ncmat_),coords(3),p1(3),
+     &  ff(60),elconloc(ncmat_),coords(3),p1(3),c1,c2,
      &  p2(3),eth(6),rhcon(0:1,ntmat_,*),reltime,prop(*),tm(3,3),
      &  alcon(0:6,ntmat_,*),alzero(*),orab(7,*),t0(*),t1(*),
      &  xloadold(2,*),vold(0:mi(2),*),xload(2,*),omx,e,un,um,tt,
@@ -241,7 +241,7 @@
      &  plicon(0:2*npmat_,ntmat_,*),plkcon(0:2*npmat_,ntmat_,*),
      &  xstiff(27,mi(1),*),plconloc(802),dtime,ttime,time,tmg(12,12),
      &  a,xi11,xi12,xi22,xk,e1(3),offset1,offset2,y1,y2,y3,z1,z2,z3,
-     &  smg(12,12),sg(12,12),elcon(0:ncmat_,ntmat_,*),dxl(3),detj
+     &  sg(12,12),elcon(0:ncmat_,ntmat_,*),smg(12,12),dxl(3),detj
 !
       indexe=ipkon(nelem)
 !
@@ -354,21 +354,30 @@ c      write(*,*) 'u1 trans3 ',e3(1),e3(2),e3(3)
          write(*,*) '       calculation for this type of element'
          call exit(201)
       endif
-!      
-!      if((mass.eq.1).or.(buckling.eq.1).or.(coriolis.eq.1)) then
-      if((coriolis.eq.1)) then
-!         write(*,*) '*ERROR in e_c3d_u1: no dynamic or buckling'
+!
+!     check for Coriolis
+!
+      if(coriolis.eq.1) then
          write(*,*) '*ERROR in e_c3d_u1: no coriolis'
          write(*,*) '       calculation for this type of element'
          call exit(201)
       endif
+!     
+!     initialisation of sm
+!     
+      if((mass.eq.1).or.(buckling.eq.1)) then
+        do i=1,ndof*nope
+          do j=i,ndof*nope
+            sm(i,j)=0.d0
+          enddo
+        enddo
+      endif
 !
-!     initialisation of s and sm
+!     initialisation of s
 !
       do i=1,ndof*nope
-        do j=1,ndof*nope
+        do j=i,ndof*nope
           s(i,j)=0.d0
-          sm(i,j)=0.d0
         enddo
       enddo
 !
@@ -519,41 +528,55 @@ c      write(*,*) 'u1 trans3 ',e3(1),e3(2),e3(3)
             s(11,11)=z3/(dl*z2)
             s(12,12)=y3/(dl*y2)
 !
-!           mass  matrix SM' in local coordinates
-!           jacobian (dx = detJ*dxi)
-            do i=1,3
-              dxl(i)=xl(i,2)-xl(i,1)
-c              write(*,'(a4,i1,a2,f3.1)') 'dxl(',i,')=',dxl(i)
-            enddo
-            detj=0.50*(dxl(1)**2+dxl(2)**2+dxl(3)**2)**0.5d0
-
-            sm(1,1)=2.d0/3.d0*rho*a*detj
-            sm(2,2)=2.d0/3.d0*rho*a*detj
-            sm(3,3)=2.d0/3.d0*rho*a*detj
-            sm(4,4)=2.d0/3.d0*rho*(xi11+xi22)*detj
-            sm(5,5)=2.d0/3.d0*rho*xi22*detj
-            sm(6,6)=2.d0/3.d0*rho*xi11*detj
-            sm(7,7)=2.d0/3.d0*rho*a*detj
-            sm(8,8)=2.d0/3.d0*rho*a*detj
-            sm(9,9)=2.d0/3.d0*rho*a*detj
-            sm(10,10)=2.d0/3.d0*rho*(xi11+xi22)*detj
-            sm(11,11)=2.d0/3.d0*rho*xi22*detj
-            sm(12,12)=2.d0/3.d0*rho*xi11*detj
-            sm(1,7)=1.d0/3.d0*rho*a*detj
-            sm(2,8)=1.d0/3.d0*rho*a*detj
-            sm(3,9)=1.d0/3.d0*rho*a*detj
-            sm(4,10)=1.d0/3.d0*rho*(xi11+xi22)*detj
-            sm(5,11)=1.d0/3.d0*rho*xi22*detj
-            sm(6,12)=1.d0/3.d0*rho*xi11*detj
-c            write(*,*) 'rho, A, I11, I22, detj',rho,a,xi11,xi22,detj
+!           setting up the mass matrix
+! 
+            if((mass.eq.1).or.(buckling.eq.1)) then
+!     
+!             mass  matrix SM' in local coordinates
+!             jacobian (dx = detJ*dxi)
+!              
+              do i=1,3
+                dxl(i)=xl(i,2)-xl(i,1)
+              enddo
+              detj=0.50*(dxl(1)**2+dxl(2)**2+dxl(3)**2)**0.5d0
+!
+              c1=1.d0/3.d0*rho*detj
+              c2=2.d0*c1
+!
+              sm(1,1)=a*c2
+              sm(2,2)=a*c2
+              sm(3,3)=a*c2
+              sm(4,4)=(xi11+xi22)*c2
+              sm(5,5)=xi22*c2
+              sm(6,6)=xi11*c2
+              sm(7,7)=a*c2
+              sm(8,8)=a*c2
+              sm(9,9)=a*c2
+              sm(10,10)=(xi11+xi22)*c2
+              sm(11,11)=xi22*c2
+              sm(12,12)=xi11*c2
+              sm(1,7)=a*c1
+              sm(2,8)=a*c1
+              sm(3,9)=a*c1
+              sm(4,10)=(xi11+xi22)*c1
+              sm(5,11)=xi22*c1
+              sm(6,12)=xi11*c1
+            endif
 !
 !           completing the symmetric part
 ! 
-            do i=1,12
-               do j=1,i
-                  s(i,j)=s(j,i)
+            if((mass.eq.1).or.(buckling.eq.1)) then
+              do i=1,12
+                do j=1,i
                   sm(i,j)=sm(j,i)
-               enddo
+                enddo
+              enddo
+            endif
+!            
+            do i=1,12
+              do j=1,i
+                s(i,j)=s(j,i)
+              enddo
             enddo
 !
 !           12 x 12 transformation matrix
@@ -571,22 +594,39 @@ c            write(*,*) 'rho, A, I11, I22, detj',rho,a,xi11,xi22,detj
                   tmg(i+9,j+9)=tm(i,j)
                enddo
             enddo
+!     
+            if((mass.eq.1).or.(buckling.eq.1)) then
+!     
+!             mass matrix in global coordinates: S = T^T*S'*T
+!     
+              do i=1,12
+                do j=1,12
+                  sg(i,j)=0.d0
+                  do k=1,12
+                    sg(i,j)=sg(i,j)+sm(i,k)*tmg(k,j)
+                  enddo
+                enddo
+              enddo
+!     
+!             only upper triangular matrix
+!     
+              do i=1,12
+                do j=i,12
+                  sm(i,j)=0.d0
+                  do k=1,12
+                    sm(i,j)=sm(i,j)+tmg(k,i)*sg(k,j)
+                  enddo
+                enddo
+              enddo
+            endif
 !
 !           stiffness matrix in global coordinates: S = T^T*S'*T
 !
-c            do i=1,12
-c              do j=1,12
-c                write(*,*) 'u1 lstiffness',i,j,s(i,j)
-c              enddo
-c            enddo
-!                
             do i=1,12
                do j=1,12
                   sg(i,j)=0.d0
-                  smg(i,j)=0.d0
                   do k=1,12
                      sg(i,j)=sg(i,j)+s(i,k)*tmg(k,j)
-                     smg(i,j)=smg(i,j)+sm(i,k)*tmg(k,j)
                   enddo
                enddo
             enddo
@@ -596,13 +636,9 @@ c            enddo
             do i=1,12
                do j=i,12
                   s(i,j)=0.d0
-                  sm(i,j)=0.d0
                   do k=1,12
                      s(i,j)=s(i,j)+tmg(k,i)*sg(k,j)
-                     sm(i,j)=sm(i,j)+tmg(k,i)*smg(k,j)
                    enddo
-c                   write(*,*) 'u1 stiffness',i,j,s(i,j)
-c                   write(*,'(i2,a1,i3,a1,e12.5)') i,',',j,',',s(i,j)
                enddo
             enddo
 !

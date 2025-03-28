@@ -2,8 +2,6 @@
 \usepackage{epsfig,html,amsmath,amssymb,lscape,longtable,pstricks,hyperref}
 \pagestyle{headings}
 \markboth{}{}
-%--------------------------fette-schrift----------------------------
-\newcommand{\bm}[1]{\mbox{\boldmath $#1$}}  
 \begin{document}
 \title{CalculiX CrunchiX USER'S MANUAL development version}
 \author{Guido Dhondt}
@@ -4391,7 +4389,7 @@ the deviation moment $I_{23}=0$.
   \put(-340,47){$\hat X_2$}
   \put(-345,12){$\hat X_3$}
   \put(-110,75){$S$}
-  \put(-240,25){$\hat{\bm{X}}_S$}
+  \put(-240,25){$\hat{\boldsymbol{X}}_S$}
   \put(-17,48){\textcolor{red}{$X_1$}}
   \put(-162,50){\textcolor{red}{$X_2$}}
   \put(-70,50){\textcolor{red}{$X_3$}}
@@ -4426,11 +4424,11 @@ by integration of the above quantities over $A$:
 \paragraph{Discretization of inertia terms (main axis coordinate frame)}\mbox{} \\
 %
 \noindent
-A Bubnov-Galerkin discretization of the (virtual) displacements and rotations $\bm{u}$ 
+A Bubnov-Galerkin discretization of the (virtual) displacements and rotations $\boldsymbol{u}$ 
 %
 %
 \begin{equation}
-  \bm{u} \approx \bm{u}^h = \left[
+  \boldsymbol{u} \approx \boldsymbol{u}^h = \left[
     \begin{array}{c}
       u_x(\xi) \\
       u_1(\xi) \\
@@ -4440,9 +4438,9 @@ A Bubnov-Galerkin discretization of the (virtual) displacements and rotations $\
       \varphi_2(\xi) 
     \end{array}
     \right]
-  = \bm{N} \bm{d}
+  = \boldsymbol{N} \boldsymbol{d}
   \quad  \textrm{and} \quad 
-  \delta \bm{u} \approx \delta \bm{u}^h = \left[
+  \delta \boldsymbol{u} \approx \delta \boldsymbol{u}^h = \left[
     \begin{array}{c}
       \delta u_x(\xi) \\
       \delta u_1(\xi) \\
@@ -4452,14 +4450,14 @@ A Bubnov-Galerkin discretization of the (virtual) displacements and rotations $\
       \delta \varphi_2(\xi) 
     \end{array}
     \right]
-  = \bm{N} \delta \bm{d}
+  = \boldsymbol{N} \delta \boldsymbol{d}
 \end{equation}
 %
 \noindent
 leads along with the nodal (virtual) displacements and rotations
 %
 \begin{equation}
-  \bm{d} = 
+  \boldsymbol{d} = 
    \left[
     \begin{array}{c}
       d_1 \\
@@ -4469,7 +4467,7 @@ leads along with the nodal (virtual) displacements and rotations
     \end{array}
     \right]
   \quad  \textrm{and} \quad 
-  \delta \bm{d} = 
+  \delta \boldsymbol{d} = 
    \left[
     \begin{array}{c}
       d_1 \\
@@ -4482,10 +4480,10 @@ leads along with the nodal (virtual) displacements and rotations
 %
 \noindent
 and the with isoparametric shape functions
-$\bm{N}(\xi)$ 
+$\boldsymbol{N}(\xi)$ 
 %
 \begin{equation}
-  \bm{N} = 
+  \boldsymbol{N} = 
     \left[
         \begin{array}{cccccccccccc}
             N_1 &   0 & 0   & 0   & 0   & 0&  N_2 &   0 & 0   & 0   & 0   & 0 \\
@@ -4511,7 +4509,7 @@ to the following weak formulation of the inertia terms:
 %
 %
 \begin{equation}
-  \int_x \delta \bm{u} \cdot 
+  \int_x \delta \boldsymbol{u} \cdot 
     \left[\begin{array}{c}
         \textrm{d}F_1 \\
         \textrm{d}F_2\\
@@ -4521,19 +4519,19 @@ to the following weak formulation of the inertia terms:
         \textrm{d}M_3 
   \end{array}
   \right]  \textrm{d}X_1 = 
-   \delta \bm{d}^T \bm{M} \ddot{\bm{d}} 
+   \delta \boldsymbol{d}^T \boldsymbol{M} \ddot{\boldsymbol{d}} 
 \end{equation}
 %
 \noindent
 Requiring a constant cross-section along the entire element thus yields constant material
-parameters, which can be pulled out of the above integration of $\bm{M}$ over $X_1$.
+parameters, which can be pulled out of the above integration of $\boldsymbol{M}$ over $X_1$.
 Thus  the integration of the product of the shape functions  can be performed analytically
 (under consideration of the transformation of the length differential $\textrm{d}X_1$ to 
  $\textrm{d}\xi$ according to
 %
 %
 \begin{equation}
-  \textrm{d}X_1 =  \textrm{det}\bm{J} \textrm{d}\xi =   \frac{1}{2}(X_2 - X_1)\textrm{d}\xi
+  \textrm{d}X_1 =  \textrm{det}\boldsymbol{J} \textrm{d}\xi =   \frac{1}{2}(X_2 - X_1)\textrm{d}\xi
 \end{equation}
 %
 \begin{equation}
@@ -4554,11 +4552,11 @@ Thus the mass matrix becomes in the main axis coordinates
 %
 %
 \begin{equation}
-  \bm{M}
+  \boldsymbol{M}
         = \left[
            \begin{array}{cc}
-             \bm{M}_D & \bm{M}_{ND} \\
-             \bm{M}^T_{ND} & \bm{M}_D 
+             \boldsymbol{M}_D & \boldsymbol{M}_{ND} \\
+             \boldsymbol{M}^T_{ND} & \boldsymbol{M}_D 
            \end{array}
     \right]
 \end{equation}
@@ -4566,7 +4564,7 @@ Thus the mass matrix becomes in the main axis coordinates
 \noindent
 with
 \begin{equation}
-  \bm{M}_D = 
+  \boldsymbol{M}_D = 
     \frac{1}{3}(X_2 - X_1)
     \left[
         \begin{array}{cccccc}
@@ -4583,7 +4581,7 @@ with
 \noindent
 and
 \begin{equation}
-  \bm{M}_{ND} = 
+  \boldsymbol{M}_{ND} = 
     \frac{1}{6}(X_2 - X_1)
     \left[
         \begin{array}{cccccc}
@@ -4601,14 +4599,14 @@ and
 \paragraph{ Mass matrix in global coordinate frame}\mbox{} \\
 
 \noindent
-Transformation of a vector $\bm{a}$ %$\delta \bm{u}^h$ and $\bm{u}^h$ 
+Transformation of a vector $\boldsymbol{a}$ %$\delta \boldsymbol{u}^h$ and $\boldsymbol{u}^h$ 
 from local  coordinate frame
-$\bm{e}_i$ into global coordinate frame $\hat{\bm{e}}_i$ 
+$\boldsymbol{e}_i$ into global coordinate frame $\hat{\boldsymbol{e}}_i$ 
 yields
 %
 \begin{eqnarray}
-  a^i \hat{\bm{e}}_i & = & a^j \bm{e}_j \quad \vert \cdot \hat{\bm{e}}^k \\
-  a^i \delta_i^{\ k} & =&  a^j \bm{e}_j \cdot \hat{\bm{e}}^k \\
+  a^i \hat{\boldsymbol{e}}_i & = & a^j \boldsymbol{e}_j \quad \vert \cdot \hat{\boldsymbol{e}}^k \\
+  a^i \delta_i^{\ k} & =&  a^j \boldsymbol{e}_j \cdot \hat{\boldsymbol{e}}^k \\
   a^k & = & \hat T_j^{\ k} a^j =  T^k_{\ j} a^j 
 \end{eqnarray}
 %
@@ -4616,12 +4614,12 @@ yields
 I.e. with the transformation matrix 
 %
 \begin{equation}
-  \bm{T} = \left[  T^k_{\ j} \right] 
+  \boldsymbol{T} = \left[  T^k_{\ j} \right] 
     = \left[
         \begin{array}{ccc}
-          - & \bm{e}_1 & - \\
-          - & \bm{e}_2 & - \\
-          - & \bm{e}_3 & -
+          - & \boldsymbol{e}_1 & - \\
+          - & \boldsymbol{e}_2 & - \\
+          - & \boldsymbol{e}_3 & -
         \end{array}
       \right]
 \end{equation}
@@ -4630,23 +4628,23 @@ I.e. with the transformation matrix
 and the (virtual) displacements 
 %
 \begin{equation}
-  \delta \hat{\bm{u}}^h = \bm{T} \delta \bm{u}^h =  \bm{T} ( \bm{N} \delta \bm{d}^h)
+  \delta \hat{\boldsymbol{u}}^h = \boldsymbol{T} \delta \boldsymbol{u}^h =  \boldsymbol{T} ( \boldsymbol{N} \delta \boldsymbol{d}^h)
   \quad \textrm{and} \quad 
-  \hat{\bm{u}}^h = \bm{T} \bm{u}^h =  \bm{T}   (\bm{N}\bm{d}^h)
+  \hat{\boldsymbol{u}}^h = \boldsymbol{T} \boldsymbol{u}^h =  \boldsymbol{T}   (\boldsymbol{N}\boldsymbol{d}^h)
 \end{equation}
 %
 \noindent
 the variation of the kinetic energy becomes
 %
 \begin{equation}
-  \delta \bm{d}^T \bm{T}^T \bm{M} \bm{T} \bm{d}
+  \delta \boldsymbol{d}^T \boldsymbol{T}^T \boldsymbol{M} \boldsymbol{T} \boldsymbol{d}
 \end{equation}
 %
 \noindent
-and thus the final mass matrix in global coordinate frame $\hat{\bm{e}}_i$
+and thus the final mass matrix in global coordinate frame $\hat{\boldsymbol{e}}_i$
 %
 \begin{equation}
-  \hat{\bm{M}} =  \bm{T}^T \bm{M} \bm{T}
+  \hat{\boldsymbol{M}} =  \boldsymbol{T}^T \boldsymbol{M} \boldsymbol{T}
 \end{equation}
  
 \paragraph{Input deck syntax}\mbox{} \\
@@ -4672,11 +4670,10 @@ shear correction factor $\kappa$.\\[2mm]
 Global $\hat X$-coordinate of local cross-section main axis $X_2$, \\
 Global $\hat Y$-coordinate of local cross-section main axis $X_2$,\\
 Global $\hat Z$-coordinate of local cross-section main axis $X_2$.\\
-
-
+ 
 \subsubsection{User Element: 3-node shell element (US3)}
 
-\begin{figure}[htbp]
+\begin{figure}
   \centering
 \epsfig{file=rama.eps,width=5cm}
 \caption{\label{us3}Definition of the US3 element}

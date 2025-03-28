@@ -68,6 +68,7 @@ void mastructreadcs(ITG *ipompc,ITG *nodempc,ITG *nmpc,ITG *nactdof,
   }while(1);
 
   fclose(f1);
+  
   *mast1p=mast1;*nextp=next;
   
   return;

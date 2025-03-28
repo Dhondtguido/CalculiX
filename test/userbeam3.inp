@@ -1,3 +1,8 @@
+**
+**   Structure: cantilever beam.
+**   Test objective: user beam element U1
+**                   mass matrix (frequency calculation)
+**
 *NODE, NSET=NALL
 1,    0.0000000,    0.0000000,    0.0000000
 2,    0.2165064,    0.1250000,    0.0000000
