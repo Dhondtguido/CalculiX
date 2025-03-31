@@ -18,6 +18,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#include <locale.h>
 #include "CalculiX.h"
 
 void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
@@ -111,6 +112,8 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 #ifdef SGI
   ITG token;
 #endif
+
+  setlocale(LC_NUMERIC, "C");
 
   pi=4.*atan(1.);
   constant=180./pi;
