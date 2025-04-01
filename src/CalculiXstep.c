@@ -301,7 +301,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
     printf("software, and you are welcome to redistribute it under\n");
     printf("certain conditions, see gpl.htm\n\n");
     printf("************************************************************\n\n");
-    printf("You are using an executable made on Fri Mar 28 19:01:41 CET 2025\n");
+    printf("You are using an executable made on Tue Apr  1 16:25:20 CEST 2025\n");
     fflush(stdout);
 
     NNEW(ipoinp,ITG,2*nentries);
@@ -844,7 +844,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
       RENEW(ipobody,ITG,2*(ifreebody-1));
     }
     
-    if(irefineloop==1) {
+    if(irefineloop>1) {
       readnewmesh(jobnamec,nboun,nodeboun,iamboun,xboun,nload,sideload,
 		  iamload,&nforc,nodeforc,iamforc,xforc,ithermal,nk,&t1,&iamt1,
 		  ne,&lakon,&ipkon,&kon,istartset,iendset,ialset,set,&nset,
@@ -1790,84 +1790,82 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 
     /* check whether refinement was active */
 
-    //    if(irefineloop>0){irefineloop++;}
+    if(irefineloop>0){irefineloop++;}
     if(strcmp1(&filab[4089],"RM")==0){
-      irefineloop++;
+      irefineloop=1;
 
-      if(irefineloop==1){
-	memcpy(ipoinp,ipoinp_sav,sizeof(ITG)*2*nentries);
-	memcpy(inp,inp_sav,sizeof(ITG)*inp_size);
+      memcpy(ipoinp,ipoinp_sav,sizeof(ITG)*2*nentries);
+      memcpy(inp,inp_sav,sizeof(ITG)*inp_size);
 
-	/* deallocating fields */
+      /* deallocating fields */
 
-	dealloc_cal(&ncs_,&ics,&mcs,&cs,&tieset,&tietol,&co,
-		    &kon,&ipkon,&lakon,&nodeboun,&ndirboun,&typeboun,&xboun,
-		    &ikboun,&ilboun,&nodebounold,&ndirbounold,&xbounold,&ipompc,
-		    &labmpc,&ikmpc,&ilmpc,&fmpc,&nodempc,&coefmpc,&nodempcref,
-		    &coefmpcref,&ikmpcref,&nodeforc,&ndirforc,&xforc,
-		    &ikforc,&ilforc,&xforcold,&nelemload,&sideload,&xload,
-		    &xloadold,&cbody,&ibody,&xbody,&xbodyold,&nam,
-		    &iamboun,&iamforc,&iamload,&amname,&amta,&namta,&set,
-		    &istartset,&iendset,&ialset,&elcon,&nelcon,&rhcon,
-		    &nrhcon,&shcon,&nshcon,&cocon,&ncocon,&alcon,
-		    &nalcon,&alzero,&nprop,&ielprop,&prop,&npmat_,
-		    &plicon,&nplicon,&plkcon,&nplkcon,&ndamp,&dacon,&norien,
-		    &orname,&orab,&ielorien,&ntrans,&trab,&inotr,&iprestr,
-		    &prestr,ithermal,&t0,&t1,&t1old,&iamt1,&ne1d,
-		    &ne2d,&t0g,&t1g,irobustdesign,&irandomtype,
-		    &randomval,&prlab,&prset,&filab,&xmodal,&ielmat,
-		    &matname,&sti,&eme,&ener,&xstate,&vold,
-		    &veold,&vel,&velo,&veloo,&iponor,&xnor,
-		    &knor,&thicke,&offset,&iponoel,&inoel,&rig,
-		    &ne2boun,&islavsurf,&mortar,&pslavsurf,&clearini,
-		    &nobject_,&objectset,nmethod,iperturb,&irefineloop,
-		    &iparentel,&iprfn,&konrfn,&ratiorfn,&heading,
-		    &nodedesi,&dgdxglob,&g0,&nuel_,&xdesi,&nfc,&coeffc,
-		    &ikdc,&edc,&coini,&ndmat_,&ndmcon,&dmcon,&dam);
+      dealloc_cal(&ncs_,&ics,&mcs,&cs,&tieset,&tietol,&co,
+		  &kon,&ipkon,&lakon,&nodeboun,&ndirboun,&typeboun,&xboun,
+		  &ikboun,&ilboun,&nodebounold,&ndirbounold,&xbounold,&ipompc,
+		  &labmpc,&ikmpc,&ilmpc,&fmpc,&nodempc,&coefmpc,&nodempcref,
+		  &coefmpcref,&ikmpcref,&nodeforc,&ndirforc,&xforc,
+		  &ikforc,&ilforc,&xforcold,&nelemload,&sideload,&xload,
+		  &xloadold,&cbody,&ibody,&xbody,&xbodyold,&nam,
+		  &iamboun,&iamforc,&iamload,&amname,&amta,&namta,&set,
+		  &istartset,&iendset,&ialset,&elcon,&nelcon,&rhcon,
+		  &nrhcon,&shcon,&nshcon,&cocon,&ncocon,&alcon,
+		  &nalcon,&alzero,&nprop,&ielprop,&prop,&npmat_,
+		  &plicon,&nplicon,&plkcon,&nplkcon,&ndamp,&dacon,&norien,
+		  &orname,&orab,&ielorien,&ntrans,&trab,&inotr,&iprestr,
+		  &prestr,ithermal,&t0,&t1,&t1old,&iamt1,&ne1d,
+		  &ne2d,&t0g,&t1g,irobustdesign,&irandomtype,
+		  &randomval,&prlab,&prset,&filab,&xmodal,&ielmat,
+		  &matname,&sti,&eme,&ener,&xstate,&vold,
+		  &veold,&vel,&velo,&veloo,&iponor,&xnor,
+		  &knor,&thicke,&offset,&iponoel,&inoel,&rig,
+		  &ne2boun,&islavsurf,&mortar,&pslavsurf,&clearini,
+		  &nobject_,&objectset,nmethod,iperturb,&irefineloop,
+		  &iparentel,&iprfn,&konrfn,&ratiorfn,&heading,
+		  &nodedesi,&dgdxglob,&g0,&nuel_,&xdesi,&nfc,&coeffc,
+		  &ikdc,&edc,&coini,&ndmat_,&ndmcon,&dmcon,&dam);
 
-	/* closing and reopening the output files */
+      /* closing and reopening the output files */
 	
-	FORTRAN(openfile,(jobnamef));
+      FORTRAN(openfile,(jobnamef));
 
-	/* initialization of the variables */
+      /* initialization of the variables */
   
-	ini_cal(jobnamec,output,fneig,kind1,kind2,itempuser,irobustdesign,
-		&nprint,neq,&mpcfree,&nbounold,&nforcold,&nloadold,&nbody_,
-		&nbodyold,&network,&nheading_,&nmpc_,&nload_,&nforc_,&nboun_,
-		&nintpoint,iperturb,&ntmat_,ithermal,&isolver,&nslavs,&nkon_,
-		&mortar,jout,&nkon,&nevtot,&ifacecount,&iplas,&npmat_,mi,
-		&mpcend,&namtot_,&icascade,&ne1d,&ne2d,infree,&nflow,
-		irstrt,&nener,&jrstrt,&ntie_,&mcs,&nprop_,&nprop,&itpamp,
-		&nevdamp_,&npt_,&iaxial,&inext,&icontact,&nobject,&nobject_,
-		&iit,&mpcfreeref,&isens,&namtot,&nstam,&ndamp,&nef,
-		&nk_,&ne_,&nalset_,&nmat_,&norien_,&nam_,&ntrans_,
-		&ncs_,&nstate_,&ncmat_,&memmpc_,&nprint_,energy,ctrl,alpha,
-		qaold,physcon,&istep,&istat,&iprestr,&kode,nload,&nbody,&nforc,
-		nboun,nk,&nmpc,&nam,&nzs_,nlabel,&ttime,&iheading,&nfc,&nfc_,
-		&ndc,&ndc_,&ndmat_);
+      ini_cal(jobnamec,output,fneig,kind1,kind2,itempuser,irobustdesign,
+	      &nprint,neq,&mpcfree,&nbounold,&nforcold,&nloadold,&nbody_,
+	      &nbodyold,&network,&nheading_,&nmpc_,&nload_,&nforc_,&nboun_,
+	      &nintpoint,iperturb,&ntmat_,ithermal,&isolver,&nslavs,&nkon_,
+	      &mortar,jout,&nkon,&nevtot,&ifacecount,&iplas,&npmat_,mi,
+	      &mpcend,&namtot_,&icascade,&ne1d,&ne2d,infree,&nflow,
+	      irstrt,&nener,&jrstrt,&ntie_,&mcs,&nprop_,&nprop,&itpamp,
+	      &nevdamp_,&npt_,&iaxial,&inext,&icontact,&nobject,&nobject_,
+	      &iit,&mpcfreeref,&isens,&namtot,&nstam,&ndamp,&nef,
+	      &nk_,&ne_,&nalset_,&nmat_,&norien_,&nam_,&ntrans_,
+	      &ncs_,&nstate_,&ncmat_,&memmpc_,&nprint_,energy,ctrl,alpha,
+	      qaold,physcon,&istep,&istat,&iprestr,&kode,nload,&nbody,&nforc,
+	      nboun,nk,&nmpc,&nam,&nzs_,nlabel,&ttime,&iheading,&nfc,&nfc_,
+	      &ndc,&ndc_,&ndmat_);
   
-	NNEW(set,char,81*nset_);
-	NNEW(meminset,ITG,nset_);
-	NNEW(rmeminset,ITG,nset_);
-	NNEW(iuel,ITG,4*nuel_);
+      NNEW(set,char,81*nset_);
+      NNEW(meminset,ITG,nset_);
+      NNEW(rmeminset,ITG,nset_);
+      NNEW(iuel,ITG,4*nuel_);
 
-	FORTRAN(allocation,(&nload_,&nforc_,&nboun_,&nk_,&ne_,&nmpc_,&nset_,
-			    &nalset_,&nmat_,&ntmat_,&npmat_,&norien_,&nam_,
-			    &nprint_,mi,&ntrans_,set,meminset,rmeminset,&ncs_,
-			    &namtot_,&ncmat_,&memmpc_,&ne1d,&ne2d,&nflow,
-			    jobnamec,irstrt,ithermal,&nener,&nstate_,&istep,
-			    inpc,ipoinp,inp,&ntie_,&nbody_,
-			    &nprop_,ipoinpc,&nevdamp_,&npt_,&nslavs,&nkon_,&mcs,
-			    &mortar,&ifacecount,&nintpoint,infree,&nheading_,
-			    &nobject_,iuel,&iprestr,&nstam,&ndamp,&nef,
-			    &nbounold,&nforcold,&nloadold,&nbodyold,&mpcend,
-			    irobustdesign,&nfc_,&ndc_,&maxsectors_,&ndmat_));
+      FORTRAN(allocation,(&nload_,&nforc_,&nboun_,&nk_,&ne_,&nmpc_,&nset_,
+			  &nalset_,&nmat_,&ntmat_,&npmat_,&norien_,&nam_,
+			  &nprint_,mi,&ntrans_,set,meminset,rmeminset,&ncs_,
+			  &namtot_,&ncmat_,&memmpc_,&ne1d,&ne2d,&nflow,
+			  jobnamec,irstrt,ithermal,&nener,&nstate_,&istep,
+			  inpc,ipoinp,inp,&ntie_,&nbody_,
+			  &nprop_,ipoinpc,&nevdamp_,&npt_,&nslavs,&nkon_,&mcs,
+			  &mortar,&ifacecount,&nintpoint,infree,&nheading_,
+			  &nobject_,iuel,&iprestr,&nstam,&ndamp,&nef,
+			  &nbounold,&nforcold,&nloadold,&nbodyold,&mpcend,
+			  irobustdesign,&nfc_,&ndc_,&maxsectors_,&ndmat_));
 
-	SFREE(meminset);SFREE(rmeminset);mt=mi[1]+1;
-	NNEW(heading,char,66*nheading_);
+      SFREE(meminset);SFREE(rmeminset);mt=mi[1]+1;
+      NNEW(heading,char,66*nheading_);
 
-	continue;
-      }
+      continue;
     }
 
     /* reset tempuserflag */

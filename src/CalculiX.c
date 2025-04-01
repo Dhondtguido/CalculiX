@@ -158,7 +158,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Fri Mar 28 19:01:41 CET 2025\n");
+  printf("You are using an executable made on Tue Apr  1 16:25:20 CEST 2025\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -663,7 +663,7 @@ int main(int argc,char *argv[])
       RENEW(ipobody,ITG,2*(ifreebody-1));
     }
     
-    if(irefineloop==1){
+    if(irefineloop>0){
 
       /* in the last step refinement was requested and the mesh
          was appropriately refined; this mesh has to be read */
@@ -1639,11 +1639,12 @@ int main(int argc,char *argv[])
 
     /* check whether refinement was active */
 
-    //    if(irefineloop>0){irefineloop++;}
+    if(irefineloop>0){irefineloop++;}
     if(strcmp1(&filab[4089],"RM")==0){
-      irefineloop++;
+      //      irefineloop++;
+      irefineloop=1;
 
-      if(irefineloop==1){
+      //      if(irefineloop==1){
 
 	/* refinement was requested in the step which was just
 	   finished and a refined mesh was created and stored.
@@ -1722,7 +1723,7 @@ int main(int argc,char *argv[])
 	NNEW(heading,char,66*nheading_);
 
 	continue;
-      }
+	//      }
     }
 
     /* reset tempuserflag */
