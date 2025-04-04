@@ -349,7 +349,7 @@ c            endif
 !
 !                 dependent node of MPC should not have the same
 !                 sign as the corresponding dof of the translational
-!                 degrees of freedom: avoids the occurence of a
+!                 degrees of freedom: avoids the occurrence of a
 !                 zero coefficient of the dependent term if both
 !                 rotational and translational dofs are suppressed
 !

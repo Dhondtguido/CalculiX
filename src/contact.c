@@ -45,7 +45,7 @@ void contact(ITG *ncont, ITG *ntie, char *tieset,ITG *nset,char *set,
 
     /* next call is only for node-to-face penalty contact
        setting up bordering planes for the master triangles;
-       these planes are common between neighboring traingles */
+       these planes are common between neighboring triangles */
 
     if(*mortar<=0){
 

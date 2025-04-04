@@ -35,11 +35,11 @@
 !     iforceincsize : flag to set "dtheta=sizemaxinc" in 
 !                       checkconvergence.
 !     cstate        : vector containing contact data
-!     temax            : max. natural period of oscillation 
-!     icase         : flag to print debug informations
+!     temax         : max. natural period of oscillation 
+!     icase         : flag to print debug information
 !     emax          : maximum energy of the system over the ti-
 !                       me history
-!     r         : energy residual before contact (or re-
+!     r             : energy residual before contact (or re-
 !                       adapted)
 !     delta         : eneres normalized
 !     fact          : factor to set sizemaxinc according to the  

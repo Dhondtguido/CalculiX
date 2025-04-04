@@ -232,7 +232,7 @@
 !
 !     if any of the compressibility coefficients is zero (incompressible
 !     material), it is replaced. The lowest order coefficient is replaced
-!     such that it corresponds to a Poisson coeffient of 0.475, the 
+!     such that it corresponds to a Poisson coefficient of 0.475, the 
 !     following ones are replaced by a power of the first one
 !
       do j=1,ntmat
