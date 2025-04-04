@@ -480,24 +480,17 @@ c     write(*,*)
 !     
 !     evaluation of the yield surface
 !     
-         ec(1)=eeq
-         decra(1)=c0*dg
-         call creep(decra,deswa,xstateini(1,iint,iel),serd,ec,
-     &        esw,p,svm,t1l,dtemp,predef,dpred,timeabq,dtime,
-     &        amat,leximp,lend,pgauss,nstate_,iel,iint,layer,kspt,
-     &        kstep,kinc)
+        ec(1)=eeq
+        if(dg.le.0.d0) then
+          decra(1)=c0*1.d-10
+        else
+          decra(1)=c0*dg
+        endif
+        call creep(decra,deswa,xstateini(1,iint,iel),serd,ec,
+     &       esw,p,svm,t1l,dtemp,predef,dpred,timeabq,dtime,
+     &       amat,leximp,lend,pgauss,nstate_,iel,iint,layer,kspt,
+     &       kstep,kinc)
 !
-!        if the creep routine returns an increased value of decra(1)
-!        it means that there is a lower cut-off for decra(1);
-!        if the routine stays in a range lower than this cut-off,
-!        it will never leave it and the exit conditions are
-!        assumed to be satisfied.
-!
-c         if(decra(1).gt.c0*dg) then
-c            dg=decra(1)/c0
-c            if(iloop.gt.1) exitcriterion=1
-c         endif
-!     
          htri=dsg-c0*svm
 !
         do i=1,6
@@ -657,14 +650,14 @@ c         if(exitcriterion.eq.1) exit
 !     
 !     calculating the creep contribution
 !     
-        if(dg.le.0.d0) then
-          ec(1)=eeq
-          decra(1)=c0*1.d-10
-          call creep(decra,deswa,xstateini(1,iint,iel),serd,ec,
-     &         esw,p,svm,t1l,dtemp,predef,dpred,timeabq,dtime,
-     &         amat,leximp,lend,pgauss,nstate_,iel,iint,layer,kspt,
-     &         kstep,kinc)
-        endif
+c        if(dg.le.0.d0) then
+c          ec(1)=eeq
+c          decra(1)=c0*1.d-10
+c          call creep(decra,deswa,xstateini(1,iint,iel),serd,ec,
+c     &         esw,p,svm,t1l,dtemp,predef,dpred,timeabq,dtime,
+c     &         amat,leximp,lend,pgauss,nstate_,iel,iint,layer,kspt,
+c     &         kstep,kinc)
+c        endif
         gcreep=c1/decra(5)
 !
 !     calculating the correction to the consistency parameter
