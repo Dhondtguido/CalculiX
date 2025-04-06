@@ -149,6 +149,10 @@
       c0=dsqrt(2.d0/3.d0)
       c1=2.d0/3.d0
       c2=-1.d0/3.d0
+!
+      lend=3
+      timeabq(1)=time
+      timeabq(2)=ttime+time
 !     
 !     elastic constants
 !     
