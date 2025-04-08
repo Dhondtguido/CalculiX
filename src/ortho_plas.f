@@ -564,7 +564,7 @@ c        write(*,*) 'ortho_plas plastic'
       do
 !     
         iloop=iloop+1
-        if(iloop.gt.100) then
+c        if(iloop.gt.100) then
 c     NOTE: write statements cause problems for
 c     parallellized execution
 c     write(*,*) '*WARNING in umat_aniso_plas: material loop'
@@ -572,9 +572,9 @@ c     write(*,*) '         did not converge in integration'
 c     write(*,*) '         point',iint,'in element',iel,';'
 c     write(*,*) '         the increment size is reduced'
 c     write(*,*)
-          pnewdt=0.25d0
-          return
-        endif
+c          pnewdt=0.25d0
+c          return
+c        endif
 !
 !       for iloop=1 the values were calculated before the loop
 !
@@ -731,16 +731,26 @@ c     write(*,*)
         if(iloop.gt.1) then
           if((dabs(htri).le.1.d-5).or.(dabs(ddg).lt.1.d-3*dabs(dg)))
      &         then
-          dd=0.d0
-          do i=1,13
-            dd=dd+r(i)*r(i)
-          enddo
-          dd=sqrt(dd)
-          if(dd.le.1.d-10) then
+            dd=0.d0
+            do i=1,13
+              dd=dd+r(i)*r(i)
+            enddo
+            dd=sqrt(dd)
+            if(dd.le.1.d-10) then
+              exit
+            endif
+          endif
+          if(iloop.eq.99) then
+            if(dabs(ddg).gt.1.d-7) then
+              write(*,*) '*WARNING in ortho_plas: convergence'
+              write(*,*) '         not satisfactory: change in'
+              write(*,*) '         consistency parameter exceeds'
+              write(*,*) '         1.d-7; value: ',ddg
+              write(*,*) '         in element:',iel
+            endif
             exit
           endif
         endif
-      endif
 !     
 !     determining b.x
 !     

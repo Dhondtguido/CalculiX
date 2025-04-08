@@ -19,7 +19,7 @@
       subroutine creeps(inpc,textpart,nelcon,nmat,ntmat_,npmat_,
      &     plicon,nplicon,elcon,iplas,iperturb,nstate_,ncmat_,
      &     matname,irstrt,istep,istat,n,iline,ipol,inl,ipoinp,inp,
-     &     ipoinpc,ianisoplas,ier)
+     &     ipoinpc,ier)
 !     
 !     reading the input deck: *CREEP
 !     
@@ -34,7 +34,7 @@
       integer nelcon(2,*),nmat,ntmat_,ntmat,istep,npmat_,nstate_,
      &     n,key,i,j,iplas,iperturb(*),istat,nplicon(0:ntmat_,*),ncmat_,
      &     k,id,irstrt(*),iline,ipol,inl,ipoinp(2,*),inp(3,*),
-     &     ipoinpc(0:*),ianisoplas,ier
+     &     ipoinpc(0:*),ier
 !     
       real*8 temperature,elcon(0:ncmat_,ntmat_,*),t1l,
      &     plicon(0:2*npmat_,ntmat_,*)
@@ -76,7 +76,7 @@
           return
         endif
 !     
-        ianisoplas=1
+        iplas=1
 !     
         if(nelcon(1,nmat).ne.-54) then
 !     

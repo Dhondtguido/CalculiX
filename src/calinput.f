@@ -108,7 +108,7 @@
      &     rig(*),nshcon(*),ncocon(2,*),nodebounold(*),ielprop(*),nprop,
      &     nprop_,maxsectors,irestartread,ndmat_,
      &     ndirbounold(*),ipoinp(2,*),inp(3,*),nintpoint,ifacecount,
-     &     ianisoplas,ifile_output,ichangefriction,nslavs,
+     &     ifile_output,ichangefriction,nslavs,
      &     nalset,nalset_,nmat,nmat_,ntmat_,norien,norien_,
      &     islavsurf(2,*),
      &     nmethod,nk,ne,nboun,nmpc,nmpc_,mpcfree,i,istat,n,
@@ -144,7 +144,7 @@
      &     veloo(*),randomval(2,*),coeffc(0:6,*),edc(12,*),coini(3,*),
      &     dmcon(0:ndmat_,ntmat_,*),dam(mi(1),*)
 !     
-      save solid,ianisoplas,out3d,pretension
+      save solid,out3d,pretension
 !     
       integer nentries
       parameter(nentries=19)
@@ -252,7 +252,6 @@
         endif
 !     
         solid=.false.
-        ianisoplas=0
         pretension=.false.
 !     
       endif
@@ -504,7 +503,7 @@ c        call exit(201)
         call creeps(inpc,textpart,nelcon,imat,ntmat_,npmat_,
      &       plicon,nplicon,elcon,iplas,iperturb,nstate_,ncmat_,
      &       matname,irstrt,istep,istat,n,iline,ipol,inl,ipoinp,inp,
-     &       ipoinpc,ianisoplas,ier)
+     &       ipoinpc,ier)
 !     
       elseif(textpart(1)(1:16).eq.'*CYCLICHARDENING') then
         call cyclichardenings(inpc,textpart,nelcon,imat,ntmat_,
@@ -874,7 +873,7 @@ c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
         call mohrcoulombhardenings(inpc,textpart,nelcon,nmat,
      &       plicon,nplicon,plkcon,nplkcon,iplas,iperturb,nstate_,
      &       ncmat_,elcon,matname,irstrt,istep,istat,n,iline,ipol,
-     &       inl,ipoinp,inp,ipoinpc,ianisoplas,ier,ntmat_,npmat_)
+     &       inl,ipoinp,inp,ipoinpc,ier,ntmat_,npmat_)
 !     
       elseif(textpart(1)(1:12).eq.'*MOHRCOULOMB') then
         call mohrcoulombs(inpc,textpart,elcon,nelcon,nmat,
@@ -970,7 +969,7 @@ c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
         call plastics(inpc,textpart,nelcon,imat,ntmat_,npmat_,
      &       plicon,nplicon,plkcon,nplkcon,iplas,iperturb,nstate_,
      &       ncmat_,elcon,matname,irstrt,istep,istat,n,iline,ipol,
-     &       inl,ipoinp,inp,ipoinpc,ianisoplas,ier)
+     &       inl,ipoinp,inp,ipoinpc,ier)
 !     
       elseif(textpart(1)(1:19).eq.'*PRE-TENSIONSECTION') then
         call pretensionsections(inpc,textpart,ipompc,nodempc,
@@ -1377,7 +1376,7 @@ c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
         endif
       endif
 !     
-      if(((iplas.eq.0).and.(ianisoplas.eq.0)).or.(nmethod.eq.2)) then
+      if((iplas.eq.0).or.(nmethod.eq.2)) then
         if(filab(6)(1:4).eq.'PEEQ') then
           write(*,*) '*WARNING in calinput: PEEQ-output requested'
           write(*,*) '         yet no (visco)plastic calculation'

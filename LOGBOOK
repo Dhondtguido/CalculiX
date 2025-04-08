@@ -5453,4 +5453,6 @@ Dec 2002        - started to work on single crystal plasticity
                 - removed some errors concerning mesh refinement
 
  4 April 2025   - extended ortho_plas.f für user creep
- 
+
+ 8 April 2025   - worked on ortho_plas
+                - removed parameter ianisoplas in calinput.f
