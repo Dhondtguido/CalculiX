@@ -31,6 +31,8 @@
       integer istat,n,key,iline,ipol,inl,ipoinp(2,*),inp(3,*),
      &  ipoinpc(0:*),i,j,nentries,nheading,istep,irstrt(*),ier
 !
+      parameter(nentries=19)
+
       if((istep.gt.0).and.(irstrt(1).ge.0)) then
          write(*,*) '*ERROR reading *HEADING: *HEADING should be placed'
          write(*,*) '       before all step definitions'
