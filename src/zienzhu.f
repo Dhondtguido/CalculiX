@@ -148,7 +148,7 @@
 !        case 1: element type not supported
 !            
          if(itypflag.eq.0) then
-            write(*,*) '*WARINING in estimator: Elements of node',
+            write(*,*) '*WARNING in estimator: Elements of node',
      &           nodebase,' cannot be used for error estimation.'
             do j=1,6
                scpav(j,nodebase)=stn(j,nodebase)

@@ -28,17 +28,17 @@
  * 
  *  [in] au_1		sparse matrix A
  *  [in] irow_1           row numbers for matrix A
- *  [in] jq_1             colum numbers for matrix A
+ *  [in] jq_1             column numbers for matrix A
  *  [in] n_1              # rows  for matrix A 
  *  [in] m_1              # columns  for matrix A
  *  [in] au_2		sparse matrix B
  *  [in] irow_2           row numbers for matrix B
- *  [in] jq_2             colum numbers for matrix B
+ *  [in] jq_2             column numbers for matrix B
  *  [in] n_2              # rows  for matrix B
  *  [in] m_2              # columns  for matrix B
  *  [out] au_rp		sparse matrix C
- *  [out] irow_rp          row numbers for matrix C
- *  [out] jq_r            colum numbers for matrix C
+ *  [out] irow_rp         row numbers for matrix C
+ *  [out] jq_r            column numbers for matrix C
  *  [out] nzs             # nonzero entries in C 
  *
 */
