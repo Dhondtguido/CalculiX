@@ -2588,7 +2588,7 @@ c     !
           if((istat.lt.0).or.(key.eq.1)) exit
           ntmatl=ntmatl+1
           ntmat_=max(ntmatl,ntmat_)
-          do i=2,nconstants/8+1
+          do i=2, int((nconstants-1)/8)+1
             call getnewline(inpc,textpart,istat,n,key,iline,ipol,
      &           inl,ipoinp,inp,ipoinpc)
           enddo
