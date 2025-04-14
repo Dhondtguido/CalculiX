@@ -83,7 +83,7 @@
 !
          do
             isum=0
-            do j=1,(nconstants)/8+1
+            do j=1, int((nconstants-1)/8)+1
                if(j.eq.1) then
                   call getnewline(inpc,textpart,istat,n,key,iline,ipol,
      &                 inl,ipoinp,inp,ipoinpc)
