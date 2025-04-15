@@ -579,7 +579,7 @@ void FORTRAN(calinput,(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		       ITG *irobustdesign,ITG *irandomtype,double *randomval,
 		       ITG *nfc,ITG *nfc_,double *coeffc,ITG *idck,ITG *ndc,
 		       ITG *ndc_,double *edc,double *coini,ITG *ndmat_,
-		       ITG *ndmcon,double *dmcon,double *dam));
+		       ITG *ndmcon,double *dmcon,double *dam,ITG *irefineloop));
 
 void FORTRAN(calinput_rfn,(double *co,char *filab,char *set,ITG *istartset,
 			   ITG *iendset,ITG *ialset,ITG *nset,ITG *nset_,
@@ -628,7 +628,7 @@ void FORTRAN(cattet,(ITG *kontet,ITG *netet_,ITG *ifac,ITG *ne,ITG *ipkon,
                      ITG *ifreeln,char *lakon,ITG *kontetor,ITG *iquad,
 		     ITG *istartset,ITG *iendset,ITG *ialset,char *set,
 		     ITG *nset,char *filab,ITG *jfix,ITG *iparentel,
-		     char *jobnamec));
+		     char *jobnamec,ITG *nelemload,ITG *nload,char *sideload));
 
 void FORTRAN(cattri,(ITG *ne,char *lakon,ITG *ipkon,ITG *kon,ITG *kontri,
 		     ITG *ntri,ITG *mastelnr));
@@ -699,7 +699,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
           double *energy,double *allwk,double *energyref,
           double *emax,double *enres,double *enetoll,double *energyini,
           double *allwkini,double *temax,double *reswk,ITG *ne0,
-          ITG *neini,double *dampwk,double *dampwkini,double *energystartstep);
+	  ITG *neini,double *dampwk,double *dampwkini,double *energystartstep);
 
 void checkconvnet(ITG *icutb,ITG *iin,
                   double *cam1t,double *cam1f,double *cam1p,
@@ -1755,7 +1755,8 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
          double *eenmax,double *fnr,double *fni,double *emn,
          double *thicke,char *jobnamec,char *output,double *qfx,
          double *cdn,ITG *mortar,double *cdnr,double *cdni,ITG *nmat,
-         ITG *ielprop,double *prop,double *sti,double *damn);
+         ITG *ielprop,double *prop,double *sti,double *damn,
+	 ITG *nelemload,ITG *nload,char *sideload);
 
 void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v,
             double *stn,ITG *inum,ITG *nmethod,ITG *kode,char *filab,
@@ -1768,7 +1769,8 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
             ITG *ielorien,ITG *norien,double *sti,double *veold,ITG *noddiam,
             char *set,ITG *nset,double *emn,double *thicke,char *jobnamec,
             ITG *ne0,double *cdn,ITG *mortar,ITG *nmat,double *qfx,
-            ITG *ielprop,double *prop,double *damn);
+            ITG *ielprop,double *prop,double *damn,
+	    ITG *nelemload,ITG *nload,char *sideload);
 
 void frd_norm_se(double *co,ITG *nk,double *stn,ITG *inum,ITG *nmethod,
          ITG *kode,char *filab,double *fn,double *time,ITG *nstate_,
@@ -3861,7 +3863,8 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
 		 ITG *ikboun,ITG *ifreebody,ITG **ipobodyp,ITG *nbody,
 		 ITG **iprfnp,ITG **konrfnp,double **ratiorfnp,ITG *nodempcref,
 		 double *coefmpcref,ITG *memmpcref_,ITG *mpcfreeref,
-		 ITG *maxlenmpcref,ITG *maxlenmpc,ITG *norien,double *tietol);
+		 ITG *maxlenmpcref,ITG *maxlenmpc,ITG *norien,double *tietol,
+		 ITG *ntrans,ITG *nam);
 
 void FORTRAN(readsen,(double *g0,double *dgdx,ITG *ndesi,ITG *nobject,
                        ITG *nodedesi,char *jobnamef));
@@ -3926,7 +3929,8 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
                 double *errn,char *filab,ITG *mi,char *lakon,
                 char *jobnamec,ITG *istartset,ITG *iendset,ITG *ialset,
 		char *set,ITG *nset,char *matname,ITG *ithermal,
-		char *output,ITG *nmat);
+		char *output,ITG *nmat,ITG *nelemload,ITG *nload,
+		char *sideload);
 
 void FORTRAN(reinit_mesh,(ITG *kontet,ITG *ifac,ITG *netet_,ITG *newsize,
 	     ITG *ifatet,ITG *itetfa));

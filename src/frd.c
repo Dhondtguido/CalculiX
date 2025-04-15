@@ -39,7 +39,8 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	 double *eenmax,double *fnr,double *fni,double *emn,
 	 double *thicke,char *jobnamec,char *output,double *qfx,
          double *cdn,ITG *mortar,double *cdnr,double *cdni,ITG *nmat,
-         ITG *ielprop,double *prop,double *sti,double *damn){
+         ITG *ielprop,double *prop,double *sti,double *damn,
+	 ITG *nelemload,ITG *nload,char *sideload){
 
   /* stores the results in frd format
 
@@ -200,7 +201,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
     fprintf(f1,"%5sUHOST                                                              \n",p1);
     fprintf(f1,"%5sUPGM               CalculiX                                        \n",p1);
     fprintf(f1,"%5sUVERSION           Version DEVELOPMENT                             \n",p1);
-    fprintf(f1,"%5sUCOMPILETIME       Tue Apr  8 22:47:53 CEST 2025                    \n",p1);
+    fprintf(f1,"%5sUCOMPILETIME       Tue Apr 15 18:08:46 CEST 2025                    \n",p1);
     fprintf(f1,"%5sUDIR                                                               \n",p1);
     fprintf(f1,"%5sUDBN                                                               \n",p1);
     
@@ -2242,7 +2243,8 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
   if(strcmp1(&filab[4089],"RM")==0){
     refinemesh(nk,ne,co,ipkon,kon,v,veold,stn,een,emn,epn,enern,
 	       qfn,errn,filab,mi,lakon,jobnamec,istartset,iendset,
-	       ialset,set,nset,matname,ithermal,output,nmat);
+	       ialset,set,nset,matname,ithermal,output,nmat,
+	       nelemload,nload,sideload);
   }
 
   /* remove auxiliary field for the error estimator at the nodes */  

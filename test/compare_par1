@@ -31,6 +31,16 @@ for i in *.inp; do
 	then
 	    continue
 	fi
+	
+	if [ $i = segmentsmooth2.rfn.inp ]
+	then
+	    continue
+	fi
+	
+	if [ $i = beam10psmooth.rfn.inp ]
+	then
+	    continue
+	fi
 
 #
 #       executing CalculiX and generating the .dat and

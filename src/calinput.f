@@ -48,7 +48,7 @@
      &     mpcfreeref,maxlenmpcref,memmpc_,isens,namtot,nstam,dacon,
      &     vel,nef,velo,veloo,ne2boun,itempuser,irobustdesign,
      &     irandomtype,randomval,nfc,nfc_,coeffc,ikdc,ndc,ndc_,edc,
-     &     coini,ndmat_,ndmcon,dmcon,dam)
+     &     coini,ndmat_,ndmcon,dmcon,dam,irefineloop)
 !     
       implicit none
 !     
@@ -106,7 +106,7 @@
      &     iponor(2,*),knor(*),ikforc(*),ilforc(*),iponoel(*),
      &     inoel(3,*),infree(4),ixfree,ikfree,inoelfree,iponoelmax,
      &     rig(*),nshcon(*),ncocon(2,*),nodebounold(*),ielprop(*),nprop,
-     &     nprop_,maxsectors,irestartread,ndmat_,
+     &     nprop_,maxsectors,irestartread,ndmat_,irefineloop,
      &     ndirbounold(*),ipoinp(2,*),inp(3,*),nintpoint,ifacecount,
      &     ifile_output,ichangefriction,nslavs,
      &     nalset,nalset_,nmat,nmat_,ntmat_,norien,norien_,
@@ -1027,7 +1027,7 @@ c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
      &       t0g,t1g,nprop,ielprop,prop,mortar,nintpoint,ifacecount,
      &       islavsurf,pslavsurf,clearini,ier,vel,nef,velo,veloo,
      &       ne2boun,heading,network,irestartread,nfc,ndc,coeffc,
-     &       ikdc,edc,xmodal,ndmat_,ndmcon,dmcon,dam)
+     &       ikdc,edc,xmodal,ndmat_,ndmcon,dmcon,dam,irefineloop)
 !     
       elseif(textpart(1)(1:18).eq.'*RETAINEDNODALDOFS') then
         call retainednodaldofss(inpc,textpart,set,istartset,

@@ -34,8 +34,6 @@
      &     epn(*),enern(*),qfn(3,*),errn(6,*),h(*),targetsize,size,d(*),
      &     dmin,cotet(3,*)
 !     
-!     
-!     
       label(1:4)=filab(48)(3:6)
 !     
       read(filab(48)(7:26),'(f20.0)',iostat=istat) targetsize

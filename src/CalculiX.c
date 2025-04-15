@@ -158,7 +158,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Tue Apr  8 22:47:53 CEST 2025\n");
+  printf("You are using an executable made on Tue Apr 15 18:08:46 CEST 2025\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -644,7 +644,8 @@ int main(int argc,char *argv[])
 		      &mpcfreeref,&maxlenmpcref,&memmpc_,&isens,&namtot,&nstam,
 		      dacon,vel,&nef,velo,veloo,ne2boun,itempuser,
 		      irobustdesign,irandomtype,randomval,&nfc,&nfc_,coeffc,
-		      ikdc,&ndc,&ndc_,edc,coini,&ndmat_,ndmcon,dmcon,dam));
+		      ikdc,&ndc,&ndc_,edc,coini,&ndmat_,ndmcon,dmcon,dam,
+		      &irefineloop));
     
     SFREE(idefforc);SFREE(idefload);SFREE(idefbody);
 
@@ -680,7 +681,8 @@ int main(int argc,char *argv[])
 		  &network,&nlabel,iuel,iperturb,&iprestr,&ntie,tieset,
 		  &iparentel,ikboun,&ifreebody,&ipobody,&nbody,&iprfn,
 		  &konrfn,&ratiorfn,nodempcref,coefmpcref,&memmpcref_,
-		  &mpcfreeref,&maxlenmpcref,&maxlenmpc,&norien,tietol);
+		  &mpcfreeref,&maxlenmpcref,&maxlenmpc,&norien,tietol,
+		  &ntrans,&nam);
     }
 
 #ifdef CALCULIX_EXTERNAL_BEHAVIOURS_SUPPORT

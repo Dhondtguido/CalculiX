@@ -27,7 +27,8 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
 		double *errn,char *filab,ITG *mi,char *lakon,
                 char *jobnamec,ITG *istartset,ITG *iendset,
 		ITG *ialset,char *set,ITG *nset,char *matname,
-		ITG *ithermal,char *output,ITG *nmat){
+		ITG *ithermal,char *output,ITG *nmat,ITG *nelemload,
+		ITG *nload,char *sideload){
 
   /* refinement of tetrahedral meshes as a function of a field
      variable */
@@ -54,12 +55,13 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
     *hnewnodes=NULL,*qualityjac=NULL;
 
   /* storing the unrefined mesh (needed for interpolation 
-     purposes of the temperature in the refined mesh) */
+     purposes of the temperature, displacements, velocities,..
+     in the refined mesh) */
 
-  if(ithermal[0]>0){
+  //  if(ithermal[0]>0){
     writeoldmesh(nk,ne,co,ipkon,kon,lakon,mi,matname,ithermal,jobnamec,
 	       output,nmat);
-  }
+    //  }
   
   /* in kon the original elements are kept;
      the new elements are inserted in kontet either:
@@ -96,7 +98,8 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
   FORTRAN(cattet,(kontet,&netet_,ifac,ne,ipkon,kon,ifatet,&ifreetet,
 		  bc,itetfa,&ifreefa,planfa,ipofa,cotet,cg,ipoeln,
 		  ieln,&ifreeln,lakon,kontetor,&iquad,istartset,iendset,
-		  ialset,set,nset,filab,jfix,iparentel,jobnamec));
+		  ialset,set,nset,filab,jfix,iparentel,jobnamec,
+		  nelemload,nload,sideload));
   
   /* catalogueing the edges of the tetrahedral elements */
 

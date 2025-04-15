@@ -28198,8 +28198,12 @@ C3D10 elements is refined according to certain criteria and the
 calculation is automatically restarted with the refined mesh. Temperatures,
 volumetric distributed loading (e.g. centrifugal forces), point loads and
 single point constraints are automatically modified. This does not apply to
-facial distributed loads and multiple point constraints. These should not be
-applied to the part of the mesh to be refined. To determine the temperatures
+multiple point constraints. These should not be
+applied to the part of the mesh to be refined. If the temperatures in the
+domain to be refined are applied using an amplitude (*AMPLITUDE), this
+amplitude should not vary within this domain. Faces on which pressure
+(*DLOAD) is applied are allowed but are not refined. To determine the
+temperatures, initial displacements and initial velocities
 in the new mesh interpolation based on the unrefined mesh is done. For the
 point forces and single point constraints the definition in the unrefined mesh
 is kept and multiple point constraints are constructed between the concerned
@@ -28208,7 +28212,8 @@ are located.
 
 The refinement is done in the step in which *REFINE MESH is used and is based
 on the results calculated in that step. The keyword should occur at most once
-in the complete input deck.
+in the complete input deck. It is not allowed in a restart calculation
+(characterized by *RESTART,READ).
 
 For the refinement the available criteria are the size of the displacements
 (label U), the velocity (label V), the stress (label S), the total strain

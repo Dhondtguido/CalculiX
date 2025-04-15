@@ -56,6 +56,8 @@ void checkdivergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	  double *temax, double *sizemaxinc, ITG* ne0, ITG* neini,
 	  double *dampwk, double *dampwkini, double *energystartstep) {
 
+    char *sideload=NULL;
+
     ITG ia,ngraph=1,k,*ipneigh=NULL,*neigh=NULL,*inum=NULL,mt=mi[1]+1,kscalemax;
 
     double *vr=NULL,*vi=NULL,*stnr=NULL,*damn=NULL,
@@ -96,6 +98,10 @@ void checkdivergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	    ++*kode;
 	    
 	    (*ttime)+=(*time);
+
+	    /* no mesh refinement */
+	  
+	    strcpy1(&filab[4089],"  ",2);
 	    frd(co,nk,kon,ipkon,lakon,ne,vold,stn,inum,nmethod,
 		kode,filab,een,t1act,fn,ttime,epn,ielmat,matname,enern,
 		xstaten,nstate_,istep,iinc,ithermal,qfn,mode,noddiam,
@@ -103,7 +109,8 @@ void checkdivergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		ipneigh,neigh,mi,sti,vr,vi,stnr,stni,vmax,stnmax,
 		&ngraph,veold,ener,ne,cs,set,nset,istartset,iendset,
 		ialset,eenmax,fnr,fni,emn,thicke,jobnamec,output,qfx,cdn,
-		mortar,cdnr,cdni,nmat,ielprop,prop,sti,damn);
+		mortar,cdnr,cdni,nmat,ielprop,prop,sti,damn,nelemload,
+		nload,sideload);
 	    
 	    FORTRAN(stop,());
 	}
@@ -127,6 +134,10 @@ void checkdivergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	    ++*kode;
 	    
 	    (*ttime)+=(*time);
+
+	    /* no mesh refinement */
+	  
+	    strcpy1(&filab[4089],"  ",2);
 	    frd(co,nk,kon,ipkon,lakon,ne,vold,stn,inum,nmethod,
 		kode,filab,een,t1act,fn,ttime,epn,ielmat,matname,enern,
 		xstaten,nstate_,istep,iinc,ithermal,qfn,mode,noddiam,
@@ -134,7 +145,8 @@ void checkdivergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		ipneigh,neigh,mi,sti,vr,vi,stnr,stni,vmax,stnmax,
 		&ngraph,veold,ener,ne,cs,set,nset,istartset,iendset,
 		ialset,eenmax,fnr,fni,emn,thicke,jobnamec,output,qfx,cdn,
-		mortar,cdnr,cdni,nmat,ielprop,prop,sti,damn);
+		mortar,cdnr,cdni,nmat,ielprop,prop,sti,damn,nelemload,
+		nload,sideload);
 	    
 	    FORTRAN(stop,());
 	}
