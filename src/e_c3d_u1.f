@@ -378,6 +378,7 @@ c      write(*,*) 'u1 trans3 ',e3(1),e3(2),e3(3)
       do i=1,ndof*nope
         do j=i,ndof*nope
           s(i,j)=0.d0
+          sm(i,j)=0.d0
         enddo
       enddo
 !
@@ -625,8 +626,10 @@ c      write(*,*) 'u1 trans3 ',e3(1),e3(2),e3(3)
             do i=1,12
                do j=1,12
                   sg(i,j)=0.d0
+                  smg(i,j)=0.d0
                   do k=1,12
                      sg(i,j)=sg(i,j)+s(i,k)*tmg(k,j)
+                     smg(i,j)=smg(i,j)+sm(i,k)*tmg(k,j)
                   enddo
                enddo
             enddo
@@ -636,8 +639,10 @@ c      write(*,*) 'u1 trans3 ',e3(1),e3(2),e3(3)
             do i=1,12
                do j=i,12
                   s(i,j)=0.d0
+                  sm(i,j)=0.d0
                   do k=1,12
                      s(i,j)=s(i,j)+tmg(k,i)*sg(k,j)
+                     sm(i,j)=sm(i,j)+tmg(k,i)*smg(k,j)
                    enddo
                enddo
             enddo
