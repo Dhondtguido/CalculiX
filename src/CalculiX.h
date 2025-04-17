@@ -628,7 +628,9 @@ void FORTRAN(cattet,(ITG *kontet,ITG *netet_,ITG *ifac,ITG *ne,ITG *ipkon,
                      ITG *ifreeln,char *lakon,ITG *kontetor,ITG *iquad,
 		     ITG *istartset,ITG *iendset,ITG *ialset,char *set,
 		     ITG *nset,char *filab,ITG *jfix,ITG *iparentel,
-		     char *jobnamec,ITG *nelemload,ITG *nload,char *sideload));
+		     char *jobnamec,ITG *nelemload,ITG *nload,char *sideload,
+		     ITG *nodeforc,ITG *nforc,ITG *nodeboun,ITG *nboun,
+		     ITG *nodempc,ITG *ipompc,ITG *nmpc));
 
 void FORTRAN(cattri,(ITG *ne,char *lakon,ITG *ipkon,ITG *kon,ITG *kontri,
 		     ITG *ntri,ITG *mastelnr));
@@ -1755,8 +1757,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
          double *eenmax,double *fnr,double *fni,double *emn,
          double *thicke,char *jobnamec,char *output,double *qfx,
          double *cdn,ITG *mortar,double *cdnr,double *cdni,ITG *nmat,
-         ITG *ielprop,double *prop,double *sti,double *damn,
-	 ITG *nelemload,ITG *nload,char *sideload);
+         ITG *ielprop,double *prop,double *sti,double *damn);
 
 void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v,
             double *stn,ITG *inum,ITG *nmethod,ITG *kode,char *filab,
@@ -1769,8 +1770,7 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
             ITG *ielorien,ITG *norien,double *sti,double *veold,ITG *noddiam,
             char *set,ITG *nset,double *emn,double *thicke,char *jobnamec,
             ITG *ne0,double *cdn,ITG *mortar,ITG *nmat,double *qfx,
-            ITG *ielprop,double *prop,double *damn,
-	    ITG *nelemload,ITG *nload,char *sideload);
+            ITG *ielprop,double *prop,double *damn);
 
 void frd_norm_se(double *co,ITG *nk,double *stn,ITG *inum,ITG *nmethod,
          ITG *kode,char *filab,double *fn,double *time,ITG *nstate_,
@@ -3746,7 +3746,7 @@ void FORTRAN(projectvertexnodes,(ITG *ipoed,ITG *iexternedg,ITG *iedgext,
 				 ITG *iedgextfa,ITG *ifacexted,double *co,
 				 ITG *idimsh,ITG *ipoeln,ITG *ieln,ITG *kontet,
 				 double *c1,ITG *iflag,ITG *ibadnodes,
-				 ITG *nbadnodes,ITG *iwrite));
+				 ITG *nbadnodes,ITG *iwrite,ITG *jfix));
                        
 void FORTRAN(propertynet,(ITG *ieg,ITG *nflow,double *prop,ITG *ielprop,
                           char *lakon,ITG *iin,double *prop_store,
@@ -3930,7 +3930,9 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
                 char *jobnamec,ITG *istartset,ITG *iendset,ITG *ialset,
 		char *set,ITG *nset,char *matname,ITG *ithermal,
 		char *output,ITG *nmat,ITG *nelemload,ITG *nload,
-		char *sideload);
+		char *sideload,
+		ITG *nodeforc,ITG *nforc,ITG *nodeboun,ITG *nboun,
+		ITG *nodempc,ITG *ipompc,ITG *nmpc);
 
 void FORTRAN(reinit_mesh,(ITG *kontet,ITG *ifac,ITG *netet_,ITG *newsize,
 	     ITG *ifatet,ITG *itetfa));
@@ -5319,7 +5321,8 @@ void FORTRAN(writeobj,(char *objectset,ITG *iobject,double *g0,
 void writeoldmesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,
 		  ITG *kon,char *lakon,ITG *mi,
 		  char *matname,ITG *ithermal,char *jobnamec,
-		  char *output,ITG *nmat);
+		  char *output,ITG *nmat,ITG *nelemload,
+		  ITG *nload,char *sideload);
 
 void FORTRAN(writepf,(double *d,double *bjr,double *bji,double *freq ,
                       ITG *nev,ITG *mode,ITG *nherm));

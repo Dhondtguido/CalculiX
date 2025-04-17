@@ -31,13 +31,13 @@ void writenewmesh(ITG *nktet,ITG *netet_,double *cotet,ITG *iquad,
   FILE *f1;
   
   char *lakonnew=NULL,filabnew[5]="    ",*description=NULL,*set=NULL,
-    fnewmesh[132]="",fneig[132]="",outputnew[5]="bin ",*sideload=NULL;
+    fnewmesh[132]="",fneig[132]="",outputnew[5]="bin ";
 
   ITG nknew,nenew,*ipkonnew=NULL,*konnew=NULL,i,j,netet,*inum=NULL,
     nmethod=0,kode=1,*ielmatnew=NULL,nstate_=0,istep,iinc,mode=-1,
     noddiam=-1,*inotr=NULL,ntrans,*ielorien=NULL,norien,*ipneigh=NULL,
     *neigh=NULL,ngraph,nset,*istartset=NULL,*iendset=NULL,*ialset=NULL,
-    mortar=0,*ielprop=NULL,*nelemload=NULL,*nload=NULL;
+    mortar=0,*ielprop=NULL;
 
   double *conew=NULL,*v=NULL,*stn=NULL,*een=NULL,*t1=NULL,*fn=NULL,
     time=0.,*epn=NULL,*enern=NULL,*xstaten=NULL,*qfn=NULL,*trab=NULL,
@@ -114,7 +114,7 @@ void writenewmesh(ITG *nktet,ITG *netet_,double *cotet,ITG *iquad,
       mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&nenew,
       cs,set,&nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
       thicke,fnewmesh,outputnew,qfx,cdn,&mortar,cdnr,cdni,nmat,ielprop,
-      prop,sti,damn,nelemload,nload,sideload);
+      prop,sti,damn);
   
   strcat(fnewmesh,".frd");
   if((f1=fopen(fnewmesh,"ab"))==NULL){

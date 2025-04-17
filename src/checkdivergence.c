@@ -58,7 +58,8 @@ void checkdivergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 
     char *sideload=NULL;
 
-    ITG ia,ngraph=1,k,*ipneigh=NULL,*neigh=NULL,*inum=NULL,mt=mi[1]+1,kscalemax;
+    ITG ia,ngraph=1,k,*ipneigh=NULL,*neigh=NULL,*inum=NULL,mt=mi[1]+1,
+      kscalemax;
 
     double *vr=NULL,*vi=NULL,*stnr=NULL,*damn=NULL,
 	*stni=NULL,*vmax=NULL,*stnmax=NULL,*cs=NULL,
@@ -109,8 +110,7 @@ void checkdivergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		ipneigh,neigh,mi,sti,vr,vi,stnr,stni,vmax,stnmax,
 		&ngraph,veold,ener,ne,cs,set,nset,istartset,iendset,
 		ialset,eenmax,fnr,fni,emn,thicke,jobnamec,output,qfx,cdn,
-		mortar,cdnr,cdni,nmat,ielprop,prop,sti,damn,nelemload,
-		nload,sideload);
+		mortar,cdnr,cdni,nmat,ielprop,prop,sti,damn);
 	    
 	    FORTRAN(stop,());
 	}
@@ -145,8 +145,7 @@ void checkdivergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		ipneigh,neigh,mi,sti,vr,vi,stnr,stni,vmax,stnmax,
 		&ngraph,veold,ener,ne,cs,set,nset,istartset,iendset,
 		ialset,eenmax,fnr,fni,emn,thicke,jobnamec,output,qfx,cdn,
-		mortar,cdnr,cdni,nmat,ielprop,prop,sti,damn,nelemload,
-		nload,sideload);
+		mortar,cdnr,cdni,nmat,ielprop,prop,sti,damn);
 	    
 	    FORTRAN(stop,());
 	}

@@ -312,7 +312,7 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
       cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
       thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
-      ielprop,prop,sti,damn,nelemload,nload,sideload);
+      ielprop,prop,sti,damn);
   
   frd_sen(co,nk,stn,inum,nmethod,kode,filab,&ptime,nstate_,
     	  istep,

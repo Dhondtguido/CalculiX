@@ -19,7 +19,8 @@
       subroutine cattet(kontet,netet_,ifac,ne,ipkon,kon,ifatet,ifreetet,
      &     bc,itetfa,ifreefa,planfa,ipofa,cotet,cg,ipoeln,ieln,ifreeln,
      &     lakon,kontetor,iquad,istartset,iendset,ialset,set,nset,filab,
-     &     jfix,iparentel,jobnamec,nelemload,nload,sideload)
+     &     jfix,iparentel,jobnamec,nelemload,nload,sideload,nodeforc,
+     &     nforc,nodeboun,nboun,nodempc,ipompc,nmpc)
 !     
 !     catalogueing the tetrahedral elements of the mesh
 !     
@@ -37,7 +38,8 @@
      &     ipoeln(*),ieln(2,*),node,ifreeln,kontetor(6,*),iquad,nset,
      &     istartset(*),iendset(*),ialset(*),indexe,k,nope,jfix(*),
      &     iparentel(*),id,ilen,ifreetetini,ifacet(6,4),nelemload(2,*),
-     &     nload,ig,nelem
+     &     nload,nelem,nodeforc(2,*),nforc,nodeboun(*),nboun,
+     &     nodempc(3,*),ipompc(*),nmpc
 !     
       real*8 bc(4,*),planfa(4,*),cotet(3,*),cg(3,*)
 !
@@ -157,13 +159,13 @@
         if((lakon(nelem)(1:5).ne.'C3D10').and.
      &         (lakon(nelem)(1:4).ne.'C3D4')) cycle
 !     
-!     determining the nodes of the face
+!       fixing the element number and its node numbers
 !
         indexe=ipkon(nelem)
-        read(sideload(i)(2:2),'(i1)') ig
         do k=1,4
-          jfix(kon(indexe+ifacet(k,ig)))=1
+          jfix(kon(indexe+k))=1
         enddo
+        lakon(nelem)(1:1)='A'
       enddo
 !     
 !     determine the first unused element

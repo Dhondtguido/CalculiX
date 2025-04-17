@@ -24,7 +24,8 @@
 void writeoldmesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,
 		  ITG *kon,char *lakon,ITG *mi,
 		  char *matname,ITG *ithermal,char *jobnamec,
-		  char *output,ITG *nmat){
+		  char *output,ITG *nmat,ITG *nelemload,
+		  ITG *nload,char *sideload){
 
   /* writing the old mesh in a mesh refinement calculation */
 
@@ -70,7 +71,7 @@ void writeoldmesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,
       mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
       cs,set,&nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
       thicke,foldmesh,output,qfx,cdn,&mortar,cdnr,cdni,nmat,ielprop,
-      prop,sti,damn);
+      prop,sti,damn,nelemload,nload,sideload);
   
   strcat(foldmesh,".frd");
   if((f1=fopen(foldmesh,"ab"))==NULL){

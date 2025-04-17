@@ -855,8 +855,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	     nstate_,istep,&iinc,iperturb,ener,mi,output,ithermal,
 	     qfn,ialset,istartset,iendset,trab,inotr,ntrans,orab,
 	     ielorien,norien,sti,veold,&noddiam,set,nset,emn,thicke,
-	     jobnamec,&ne0,cdn,mortar,nmat,qfx,ielprop,prop,damn,
-	     nelemload,nload,sideload);
+	     jobnamec,&ne0,cdn,mortar,nmat,qfx,ielprop,prop,damn);
     }
     else{
       if(strcmp1(&filab[1044],"ZZS")==0){
@@ -871,7 +870,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	  thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,ielprop,
-	  prop,sti,damn,nelemload,nload,sideload);
+	  prop,sti,damn);
       if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
     }
 
@@ -907,7 +906,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,ielprop,
-	prop,sti,damn,nelemload,nload,sideload);
+	prop,sti,damn);
     if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
     SFREE(inum);
     if(nmethodold==0){FORTRAN(stopwithout201,());}else{FORTRAN(stop,());}

@@ -19,7 +19,7 @@
       subroutine projectvertexnodes(ipoed,iexternedg,iedgext,cotet,
      &     nktet,iedg,iexternfa,ifacext,itreated,ilist,isharp,ipofa,
      &     ifac,iedgextfa,ifacexted,co,idimsh,ipoeln,ieln,kontet,c1,
-     &     jflag,ibadnodes,nbadnodes,iwrite)
+     &     jflag,ibadnodes,nbadnodes,iwrite,jfix)
 !     
 !     1. projects vertex nodes lying on external edges of the unrefined mesh
 !        on the parent external edges if these are sharp
@@ -34,7 +34,7 @@
      &     iexternfa(*),itreated(*),ii,node,isharp(*),idimsh(*),
      &     ilist(*),nlist,ifac(4,*),iedgextfa(2,*),ifacexted(3,*),
      &     id,isol,ipofa(*),ipoeln(*),ieln(2,*),kontet(4,*),jflag,
-     &     ibadnodes(*),nbadnodes,iwrite
+     &     ibadnodes(*),nbadnodes,iwrite,jfix(*)
 !     
       real*8 pneigh(3,9),cotet(3,*),pnode(3),ratio(9),dist,xi,et,
      &     pnodeproj(3),co(3,*),c1
@@ -44,7 +44,7 @@
 !     set all nodes on "non-treated"
 !      
       do i=1,nktet
-        itreated(i)=0
+        itreated(i)=jfix(i)
       enddo
 !     
 !     loop over all edges: projection on edges from the unrefined mesh 

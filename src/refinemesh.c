@@ -28,7 +28,9 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
                 char *jobnamec,ITG *istartset,ITG *iendset,
 		ITG *ialset,char *set,ITG *nset,char *matname,
 		ITG *ithermal,char *output,ITG *nmat,ITG *nelemload,
-		ITG *nload,char *sideload){
+		ITG *nload,char *sideload,
+		ITG *nodeforc,ITG *nforc,ITG *nodeboun,ITG *nboun,
+		ITG *nodempc,ITG *ipompc,ITG *nmpc){
 
   /* refinement of tetrahedral meshes as a function of a field
      variable */
@@ -60,7 +62,7 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
 
   //  if(ithermal[0]>0){
     writeoldmesh(nk,ne,co,ipkon,kon,lakon,mi,matname,ithermal,jobnamec,
-	       output,nmat);
+		 output,nmat,nelemload,nload,sideload);
     //  }
   
   /* in kon the original elements are kept;
@@ -99,7 +101,8 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
 		  bc,itetfa,&ifreefa,planfa,ipofa,cotet,cg,ipoeln,
 		  ieln,&ifreeln,lakon,kontetor,&iquad,istartset,iendset,
 		  ialset,set,nset,filab,jfix,iparentel,jobnamec,
-		  nelemload,nload,sideload));
+		  nelemload,nload,sideload,nodeforc,
+		  nforc,nodeboun,nboun,nodempc,ipompc,nmpc));
   
   /* catalogueing the edges of the tetrahedral elements */
 
@@ -625,7 +628,8 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
   FORTRAN(projectvertexnodes,(ipoed,iexternedg,iedgext,cotet,&nktet,iedg,
 			      iexternfa,ifacext,itreated,ilist,isharp,ipofa,
 			      ifac,iedgextfa,ifacexted,co,idimsh,ipoeln,ieln,
-			      kontet,&c1,&jflag,ibadnodes,&nbadnodes,&iwrite));
+			      kontet,&c1,&jflag,ibadnodes,&nbadnodes,&iwrite,
+			      jfix));
   
   /* optimizing the position of subsurface neighbors of vertices,
      which were not fully projected */
@@ -664,7 +668,7 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
 				iexternfa,ifacext,itreated,ilist,isharp,ipofa,
 				ifac,iedgextfa,ifacexted,co,idimsh,ipoeln,ieln,
 				kontet,&c1,&jflag,ibadnodes,&nbadnodes,
-				&iwrite));
+				&iwrite,jfix));
   
   /* optimizing the position of subsurface neighbors of vertices,
      which were not fully projected */
