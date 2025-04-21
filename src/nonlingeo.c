@@ -177,7 +177,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *coefmpcf=NULL,*xbounf=NULL,*xloadf=NULL,*xbounoldf=NULL,
     *xbounactf=NULL,*xloadoldf=NULL,*xloadactf=NULL,*auw=NULL,*volddof=NULL,
     *qb=NULL,*aloc=NULL,dtmin,*fric=NULL,*aubi=NULL,*auib=NULL,
-    *fullgmatrix=NULL,*fullr=NULL,*alglob=NULL,*damn=NULL;
+    *fullgmatrix=NULL,*fullr=NULL,*alglob=NULL,*damn=NULL,*errn=NULL;
 	 
   FILE *f1;
 
@@ -1105,7 +1105,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	  mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	  thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
-	  ielprop,prop,sti,damn);
+	  ielprop,prop,sti,damn,&errn);
 	  
       if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}      
 #ifdef COMPANY
@@ -2764,7 +2764,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	    mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	    cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	    thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
-	    ielprop,prop,sti,damn);
+	    ielprop,prop,sti,damn,&errn);
 
 	if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);} 
 #ifdef COMPANY
@@ -3692,7 +3692,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
                nstate_,istep,&iinc,iperturb,ener,mi,output,ithermal,qfn,
                ialset,istartset,iendset,trab,inotr,ntrans,orab,ielorien,
 	       norien,stx,veold,&noddiam,set,nset,emn,thicke,jobnamec,&ne0,
-               cdn,mortar,nmat,qfx,ielprop,prop,damn);
+               cdn,mortar,nmat,qfx,ielprop,prop,damn,&errn);
 
 	if(*mortar>1){
 	  mortar_postfrd(ne,nslavs,mi,nk,nkon,fn,cfs,cfm);      
@@ -3719,7 +3719,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	    mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	    cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	    thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,ielprop,
-	    prop,sti,damn);
+	    prop,sti,damn,&errn);
 	if(*mortar>1){
 	  mortar_postfrd(ne,nslavs,mi,nk,nkon,fn,cfs,cfm);      
 	}
@@ -3822,7 +3822,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
              nstate_,istep,&iinc,iperturb,ener,mi,output,ithermal,qfn,
              ialset,istartset,iendset,trab,inotr,ntrans,orab,ielorien,
 	     norien,stx,veold,&noddiam,set,nset,emn,thicke,jobnamec,&ne0,
-             cdn,mortar,nmat,qfx,ielprop,prop,damn);
+             cdn,mortar,nmat,qfx,ielprop,prop,damn,&errn);
       if(*mortar>1){
 	mortar_postfrd(ne,nslavs,mi,nk,nkon,fn,cfs,cfm);      
       }
@@ -3847,7 +3847,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	  thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,ielprop,
-	  prop,sti,damn);
+	  prop,sti,damn,&errn);
       if(*mortar>1){
 	mortar_postfrd(ne,nslavs,mi,nk,nkon,fn,cfs,cfm);      
       }

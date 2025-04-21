@@ -99,7 +99,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
     *emeini=NULL,*doubleglob=NULL,*au=NULL,*clearini=NULL,
     *ad=NULL,*b=NULL,*aub=NULL,*adb=NULL,*pslavsurf=NULL,*pmastsurf=NULL,
     *cdnr=NULL,*cdni=NULL,*energyini=NULL,*energy=NULL,*smscale=NULL,
-    *aut=NULL,*dam=NULL,*damn=NULL;
+    *aut=NULL,*dam=NULL,*damn=NULL,*errn=NULL;
 
   FILE *f1;
 
@@ -274,7 +274,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
-	ielprop,prop,sti,damn);
+	ielprop,prop,sti,damn,&errn);
     
     if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
     SFREE(inum);FORTRAN(stop,());
@@ -417,7 +417,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
       mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
       cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
       thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
-      ielprop,prop,sti,damn);
+      ielprop,prop,sti,damn,&errn);
 
   if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
   SFREE(v);SFREE(fn);SFREE(stn);SFREE(inum);
@@ -832,7 +832,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
-	ielprop,prop,sti,damn);
+	ielprop,prop,sti,damn,&errn);
 
     if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
   }

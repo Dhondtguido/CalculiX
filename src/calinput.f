@@ -1752,9 +1752,6 @@ c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
         endif
       endif
 !     
-c      write(*,*)
-c      write(*,*) 'STEP ',istep
-c      write(*,*)
       if(nmethod.eq.-1) then
         write(*,*) 'Visco analysis was selected'
       elseif(nmethod.eq.0) then

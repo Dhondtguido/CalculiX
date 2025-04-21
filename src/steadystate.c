@@ -124,7 +124,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     *ax=NULL,*bx=NULL,*pslavsurf=NULL,*pmastsurf=NULL,xnull=0.,
     *cdnr=NULL,*cdni=NULL,*energyini=NULL,*energy=NULL,*v=NULL,*b=NULL,
     *cco=NULL,*smscale=NULL,*aut=NULL,*dam=NULL,*damn=NULL,
-    *umubr=NULL,*umubi=NULL,*fnext=NULL;
+    *umubr=NULL,*umubi=NULL,*fnext=NULL,*errn=NULL;
 
   /* dummy arguments for the call of expand*/
 
@@ -2059,7 +2059,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&neg,
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	  thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
-	  ielprop,prop,sti,damn);
+	  ielprop,prop,sti,damn,&errn);
 
       if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
 
@@ -2278,7 +2278,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	  mi,stx,va,vp,stna,stnp,vmax,stnmax,&ngraph,veold,ener,&neg,
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	  thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
-	  ielprop,prop,sti,damn);
+	  ielprop,prop,sti,damn,&errn);
 
       if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
 
@@ -3321,7 +3321,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	    mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&neg,
 	    cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	    thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
-	    ielprop,prop,sti,damn);
+	    ielprop,prop,sti,damn,&errn);
 
 	if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
 

@@ -32,7 +32,8 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
 	    double *orab, ITG *ielorien, ITG *norien, double *sti,
             double *veold, ITG *noddiam,char *set,ITG *nset, double *emn,
             double *thicke,char* jobnamec,ITG *ne0,double *cdn,ITG *mortar,
-            ITG *nmat,double *qfx,ITG *ielprop,double *prop,double *damn){
+            ITG *nmat,double *qfx,ITG *ielprop,double *prop,double *damn,
+	    double **errnp){
 
   /* duplicates fields for static cyclic symmetric calculations */
 
@@ -47,7 +48,9 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
          *epnt=NULL,*enernt=NULL,*xstatent=NULL,theta,pi,t[3],*qfnt=NULL,
          *vr=NULL,*vi=NULL,*stnr=NULL,*stni=NULL,*vmax=NULL,*stnmax=NULL,
          *stit=NULL,*eenmax=NULL,*fnr=NULL,*fni=NULL,*emnt=NULL,
-         *cdnr=NULL,*cdni=NULL;
+    *cdnr=NULL,*cdni=NULL,*errn=NULL;
+
+  errn=*errnp;
 
   pi=4.*atan(1.);
 
@@ -387,7 +390,7 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
       mi,stit,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&net,
       cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emnt,
       thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,ielprop,
-      prop,sti,damn);
+      prop,sti,damn,&errn);
 
   if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
   
@@ -414,6 +417,9 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
   SFREE(kont);SFREE(ipkont);SFREE(lakont);SFREE(ielmatt);
   SFREE(inumt);SFREE(cot);if(*ntrans>0)SFREE(inotrt);
   SFREE(inocs);SFREE(ielcs);
+
+  *errnp=errn;
+  
   return;
 }
 

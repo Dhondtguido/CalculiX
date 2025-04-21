@@ -119,7 +119,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
     *eme=NULL,*ener=NULL,*coefmpc=NULL,*fmpc=NULL,*coefmpcold,*veold=NULL,
     *xini=NULL,*rwork=NULL,*adc=NULL,*auc=NULL,*zc=NULL,*rpar=NULL,
     setnull,deltmx,fextmax,dd,dtheta,dthetaref,*dam=NULL,*damn=NULL,
-    theta,*vini=NULL,*bcont=NULL,*vr=NULL,*vi=NULL,
+    theta,*vini=NULL,*bcont=NULL,*vr=NULL,*vi=NULL,*errn=NULL,
     *stnr=NULL,*stni=NULL,*vmax=NULL,*stnmax=NULL,precision,resultmaxprev,
     resultmax,func,funcp,fexp,fexm,fcos,fsin,sump,*bp=NULL,h14,
     *bv=NULL,*cstr=NULL,*aube=NULL,*adbe=NULL,*sti=*stip,time0=0.0,
@@ -1807,7 +1807,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	  thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,ielprop,
-	  prop,sti,damn);
+	  prop,sti,damn,&errn);
 	
       if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
     }

@@ -39,7 +39,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	 double *eenmax,double *fnr,double *fni,double *emn,
 	 double *thicke,char *jobnamec,char *output,double *qfx,
          double *cdn,ITG *mortar,double *cdnr,double *cdni,ITG *nmat,
-         ITG *ielprop,double *prop,double *sti,double *damn){
+         ITG *ielprop,double *prop,double *sti,double *damn,double **errnp){
 
   /* stores the results in frd format
 
@@ -87,6 +87,8 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
   float fl;
 
   double pi,oner,*errn=NULL,*ethn=NULL;
+
+  errn=*errnp;
 
   strcpy2(fneig,jobnamec,132);
   strcat(fneig,".frd");
@@ -200,7 +202,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
     fprintf(f1,"%5sUHOST                                                              \n",p1);
     fprintf(f1,"%5sUPGM               CalculiX                                        \n",p1);
     fprintf(f1,"%5sUVERSION           Version DEVELOPMENT                             \n",p1);
-    fprintf(f1,"%5sUCOMPILETIME       Thu Apr 17 18:23:38 CEST 2025                    \n",p1);
+    fprintf(f1,"%5sUCOMPILETIME       Mon Apr 21 14:04:07 CEST 2025                    \n",p1);
     fprintf(f1,"%5sUDIR                                                               \n",p1);
     fprintf(f1,"%5sUDBN                                                               \n",p1);
     
@@ -2247,13 +2249,18 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	       nforc,nodeboun,nboun,nodempc,ipompc,nmpc);
 	       }*/
 
-  /* remove auxiliary field for the error estimator at the nodes */  
+  /* remove auxiliary field for the error estimator at the nodes
+     if no mesh refinement was requested */  
 
-  if((*nmethod!=5)||(*mode==-1)){
-    if((strcmp1(&filab[1044],"ERR")==0)&&(*ithermal!=2)){
-      SFREE(errn);
+  if(strcmp1(&filab[4089],"RM")!=0){
+    if((*nmethod!=5)||(*mode==-1)){
+      if((strcmp1(&filab[1044],"ERR")==0)&&(*ithermal!=2)){
+	SFREE(errn);
+      }
     }
   }
+
+  //  if(((*nmethod!=5)||(*mode==-1)&&((strcmp1(&filab[1044],"ERR")==0)&&(*ithermal!=2))) SFREE(errn);
 
   /*  the remaining lines only apply to frequency calculations
       with cyclic symmetry, complex frequency and steady state calculations */
@@ -2522,6 +2529,9 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
   }
   
   fclose(f1);
+
+  *errnp=errn;
+  
   return;
   
 }

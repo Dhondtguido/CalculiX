@@ -78,7 +78,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
     *dkeq=NULL,*domphi=NULL,*xkeqminglob=NULL,*xkeqmaxglob=NULL,*cg=NULL,
     *domstepglob=NULL,*hcftemp=NULL,*xk1f=NULL,*xk2f=NULL,*xk3f=NULL,
     *xkeqf=NULL,*phif=NULL,*psif=NULL,*rglob=NULL,*r=NULL,*xplanecrack=NULL,
-    *t0=NULL,*t1=NULL,*t0g=NULL,*t1g=NULL,*t1old=NULL,*vold=NULL,
+    *t0=NULL,*t1=NULL,*t0g=NULL,*t1g=NULL,*t1old=NULL,*vold=NULL,*errn=NULL,
     *prestr=NULL,*offset=NULL,*eme=NULL,*xstate=NULL,*dam=NULL,*damn=NULL,
     *crackarea=NULL,*surfnor=NULL,*surfco=NULL,*resarea=NULL,*alambdapj=NULL;
 
@@ -866,7 +866,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
       mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
       cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
       thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
-      ielprop,prop,sti,damn);
+      ielprop,prop,sti,damn,&errn);
 
   /* storing the crack propagation fields in frd-format */
 

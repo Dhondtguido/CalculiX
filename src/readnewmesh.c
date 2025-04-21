@@ -235,17 +235,17 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
     /* get the nodes and topology of the refined mesh (i.e. the new mesh
        in the part which was refined) */
   
-    strcpy2(masterrfnfile,jobnamec,132);
+    /*cc   strcpy2(masterrfnfile,jobnamec,132);
     strcat(masterrfnfile,".rfn.frd");
   
     getglobalresults(masterrfnfile,&integerglob,&doubleglob,nboun,iamboun,xboun,
 		     nload,sideload,iamload,&iglob,nforc,iamforc,xforc,
-		     ithermal,nk,t1,iamt1,&sigma,&irefine);
+		     ithermal,nk,t1,iamt1,&sigma,&irefine);cc*/
 
     /* determine all nodes at the free surface of the part of the old
        mesh which is refined */
   
-    NNEW(inodestet,ITG,*nk);
+    /* cc NNEW(inodestet,ITG,*nk);
     NNEW(ipoface,ITG,*nk);
     NNEW(nodface,ITG,20**ne);
 
@@ -255,13 +255,13 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
 
     SFREE(ipoface);SFREE(nodface);
 
-    RENEW(inodestet,ITG,nnodestet);
+    RENEW(inodestet,ITG,nnodestet);cc*/
 
     //  for(i=0;i<nnodestet;i++) {printf("%d\n",inodestet[i]);}
 
     /* create MPC's for all surface nodes in the unrefined mesh */
   
-    *nmpc_+=3*nnodestet;
+    /*cc   *nmpc_+=3*nnodestet;
     RENEW(ipompc,ITG,*nmpc_);
     RENEW(labmpc,char,20**nmpc_+1);
     RENEW(ikmpc,ITG,*nmpc_);
@@ -299,14 +299,14 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
     FORTRAN(genmpc,(inodestet,&nnodestet,co,doubleglob,integerglob,ipompc,
 		    nodempc,coefmpc,nmpc,nmpc_,labmpc,mpcfree,ikmpc,ilmpc));
 
-    SFREE(inodestet);mpcrfnb=*nmpc;
+		    SFREE(inodestet);mpcrfnb=*nmpc;cc*/
     
     /*   for(i=0;i<*nmpc;i++){
       j=i+1;
       FORTRAN(writempc,(ipompc,nodempc,coefmpc,labmpc,&j));
       }*/
 
-    SFREE(integerglob);SFREE(doubleglob);
+    //cc  SFREE(integerglob);SFREE(doubleglob);
     
     /* create MPC's to determine the temperatures t0, t1, vold,
        and veold in the new mesh based on the values in the old mesh */
@@ -380,7 +380,7 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
      of the unrefined mesh to the nodes at the surface of the refined
      mesh in case some of the former are subject to SPC's or MPC's */
 
-  nnodestet=mpcrfnb-mpcrfna+1;
+  /*ccnnodestet=mpcrfnb-mpcrfna+1;
   NNEW(jq,ITG,nnodestet+1);
   NNEW(irow,ITG,10*nnodestet);
   NNEW(au,double,10*nnodestet);
@@ -400,14 +400,14 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
 		     istep));
 
   SFREE(jq);SFREE(irow);SFREE(icol);SFREE(loc);SFREE(irowt);SFREE(jqt);
-  SFREE(itemp);SFREE(au);SFREE(ixcol);SFREE(inodestet);
+  SFREE(itemp);SFREE(au);SFREE(ixcol);SFREE(inodestet);cc*/
     
   /*for(i=0;i<*nmpc;i++){
     j=i+1;
     FORTRAN(writempc,(ipompc,nodempc,coefmpc,labmpc,&j));
     }*/
 
-  /* transferring the body load information from the
+  /* transfering the body load information from the
      parent elements */
 
    if(*nbody>0){

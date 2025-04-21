@@ -80,7 +80,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
   double df,dc,db,dd,ran,can,rap,ea,cae,ral,da,*vr=NULL,*vi=NULL,*stnr=NULL,
     *stni=NULL,*vmax=NULL,*stnmax=NULL,*cs=NULL,c1[2],c2[2],reftime,
     *fn=NULL,*eenmax=NULL,*fnr=NULL,*fni=NULL,*qfx=NULL,*cdn=NULL,
-    *cdnr=NULL,*cdni=NULL,tmp,maxdecay=0.0,r_rel,cetol,*damn=NULL;
+    *cdnr=NULL,*cdni=NULL,tmp,maxdecay=0.0,r_rel,cetol,*damn=NULL,*errn=NULL;
 
   /* reset ialeatoric to zero */
 
@@ -402,7 +402,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	      ipneigh,neigh,mi,sti,vr,vi,stnr,stni,vmax,stnmax,
 	      &ngraph,veold,ener,ne,cs,set,nset,istartset,iendset,
 	      ialset,eenmax,fnr,fni,emn,thicke,jobnamec,output,qfx,
-	      cdn,mortar,cdnr,cdni,nmat,ielprop,prop,sti,damn);
+	      cdn,mortar,cdnr,cdni,nmat,ielprop,prop,sti,damn,&errn);
 
 	  FORTRAN(stop,());
 	}
@@ -527,7 +527,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	  ipneigh,neigh,mi,sti,vr,vi,stnr,stni,vmax,stnmax,
 	  &ngraph,veold,ener,ne,cs,set,nset,istartset,iendset,
 	  ialset,eenmax,fnr,fni,emn,thicke,jobnamec,output,qfx,cdn,
-	  mortar,cdnr,cdni,nmat,ielprop,prop,sti,damn);
+	  mortar,cdnr,cdni,nmat,ielprop,prop,sti,damn,&errn);
 
       FORTRAN(stop,());
     }	
@@ -633,7 +633,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		ipneigh,neigh,mi,sti,vr,vi,stnr,stni,vmax,stnmax,
 		&ngraph,veold,ener,ne,cs,set,nset,istartset,iendset,
 		ialset,eenmax,fnr,fni,emn,thicke,jobnamec,output,qfx,cdn,
-		mortar,cdnr,cdni,nmat,ielprop,prop,sti,damn);
+		mortar,cdnr,cdni,nmat,ielprop,prop,sti,damn,&errn);
 			
 	    FORTRAN(stop,());
 	  }
@@ -699,7 +699,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		ipneigh,neigh,mi,sti,vr,vi,stnr,stni,vmax,stnmax,
 		&ngraph,veold,ener,ne,cs,set,nset,istartset,iendset,
 		ialset,eenmax,fnr,fni,emn,thicke,jobnamec,output,qfx,cdn,
-		mortar,cdnr,cdni,nmat,ielprop,prop,sti,damn);
+		mortar,cdnr,cdni,nmat,ielprop,prop,sti,damn,&errn);
 
 	    FORTRAN(stop,());
 	  }
@@ -734,7 +734,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		ipneigh,neigh,mi,sti,vr,vi,stnr,stni,vmax,stnmax,
 		&ngraph,veold,ener,ne,cs,set,nset,istartset,iendset,
 		ialset,eenmax,fnr,fni,emn,thicke,jobnamec,output,qfx,cdn,
-		mortar,cdnr,cdni,nmat,ielprop,prop,sti,damn);
+		mortar,cdnr,cdni,nmat,ielprop,prop,sti,damn,&errn);
 
 	    FORTRAN(stop,());
 	  }
@@ -818,7 +818,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		ipneigh,neigh,mi,sti,vr,vi,stnr,stni,vmax,stnmax,
 		&ngraph,veold,ener,ne,cs,set,nset,istartset,iendset,
 		ialset,eenmax,fnr,fni,emn,thicke,jobnamec,output,qfx,cdn,
-		mortar,cdnr,cdni,nmat,ielprop,prop,sti,damn);
+		mortar,cdnr,cdni,nmat,ielprop,prop,sti,damn,&errn);
 
 	    FORTRAN(stop,());
 	  }
@@ -853,7 +853,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		ipneigh,neigh,mi,sti,vr,vi,stnr,stni,vmax,stnmax,
 		&ngraph,veold,ener,ne,cs,set,nset,istartset,iendset,
 		ialset,eenmax,fnr,fni,emn,thicke,jobnamec,output,qfx,cdn,
-		mortar,cdnr,cdni,nmat,ielprop,prop,sti,damn);
+		mortar,cdnr,cdni,nmat,ielprop,prop,sti,damn,&errn);
 
 	    FORTRAN(stop,());
 	  }

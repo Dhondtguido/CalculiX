@@ -62,7 +62,7 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
 
   //  if(ithermal[0]>0){
     writeoldmesh(nk,ne,co,ipkon,kon,lakon,mi,matname,ithermal,jobnamec,
-		 output,nmat,nelemload,nload,sideload);
+		 output,nmat);
     //  }
   
   /* in kon the original elements are kept;

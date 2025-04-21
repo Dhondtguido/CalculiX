@@ -107,7 +107,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *cdni=NULL,*submatrix=NULL,*xnoels=NULL,*cg=NULL,*straight=NULL,
     *areaslav=NULL,*xmastnor=NULL,theta=0.,*ener=NULL,*xstate=NULL,
     *fnext=NULL,*energyini=NULL,*energy=NULL,alea=0.1,*smscale=NULL,
-    *auw=NULL,*aut=NULL,*dam=NULL,*damn=NULL;
+    *auw=NULL,*aut=NULL,*dam=NULL,*damn=NULL,*errn=NULL;
 
   FILE *f1;
   
@@ -855,7 +855,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	     nstate_,istep,&iinc,iperturb,ener,mi,output,ithermal,
 	     qfn,ialset,istartset,iendset,trab,inotr,ntrans,orab,
 	     ielorien,norien,sti,veold,&noddiam,set,nset,emn,thicke,
-	     jobnamec,&ne0,cdn,mortar,nmat,qfx,ielprop,prop,damn);
+	     jobnamec,&ne0,cdn,mortar,nmat,qfx,ielprop,prop,damn,&errn);
     }
     else{
       if(strcmp1(&filab[1044],"ZZS")==0){
@@ -870,9 +870,24 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	  thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,ielprop,
-	  prop,sti,damn);
+	  prop,sti,damn,&errn);
       if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
     }
+
+    /* mesh refinement */
+  
+      if(strcmp1(&filab[4089],"RM")==0){
+	refinemesh(nk,ne,co,ipkon,kon,v,veold,stn,een,emn,epn,enern,
+		   qfn,errn,filab,mi,lakon,jobnamec,istartset,iendset,
+		   ialset,set,nset,matname,ithermal,output,nmat,
+		   nelemload,nload,sideload,nodeforc,
+		   nforc,nodeboun,nboun,nodempc,ipompc,nmpc);
+
+	/* free errn */
+	
+	if(((*nmethod!=5)||(mode==-1))&&
+	    ((strcmp1(&filab[1044],"ERR")==0)&&(*ithermal!=2))) SFREE(errn);
+      }
 
     /* updating the .sta file */
 
@@ -906,7 +921,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,ielprop,
-	prop,sti,damn);
+	prop,sti,damn,&errn);
     if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
     SFREE(inum);
     if(nmethodold==0){FORTRAN(stopwithout201,());}else{FORTRAN(stop,());}

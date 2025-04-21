@@ -125,7 +125,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     *b=NULL,*aub=NULL,*adb=NULL,*pslavsurf=NULL,*pmastsurf=NULL,
     *cdnt=NULL,*cdnr=NULL,*cdni=NULL,*eme=NULL,alea=0.1,sum,
     *pslavsurfold=NULL,*energyini=NULL,*energy=NULL,xn[3],e1[3],e2[3],
-    *smscale=NULL,*auw=NULL,*aut=NULL,*dam=NULL,*damn=NULL,
+    *smscale=NULL,*auw=NULL,*aut=NULL,*dam=NULL,*damn=NULL,*errn=NULL,
     *dstorage=NULL,*distorage=NULL,*physcon=NULL,dtvol,wavespeed[*nmat];
 
   FILE *f1;
@@ -665,7 +665,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	  mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	  thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
-	  ielprop,prop,sti,damn);
+	  ielprop,prop,sti,damn,&errn);
 	  
       if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
       SFREE(inum);FORTRAN(stop,());
@@ -2526,7 +2526,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	  mi,stxt,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&net,
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emnt,
 	  thicke,jobnamec,output,qfx,cdnt,mortar,cdnr,cdni,nmat,
-	  ielprop,prop,sti,damn);
+	  ielprop,prop,sti,damn,&errn);
       if(nm>cs[0]/2){
 	for(k=5;k<11;k++){cs[k]=-cs[k];}
       }
