@@ -1,8 +1,7 @@
 **
 **   Structure: disk segment
-**   Test objective: mesh smoothing (= refine mesh
-**                   with a high limit)
-**                   (cf. segmentunsmooth.inp)
+**   Test objective: mesh smoothing 
+**                   DLOAD on a face => face is not modified
 **                   
 *HEADING
 Model: segment
