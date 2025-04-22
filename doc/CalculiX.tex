@@ -2,6 +2,8 @@
 \usepackage{epsfig,html,amsmath,amssymb,lscape,longtable,pstricks,hyperref}
 \pagestyle{headings}
 \markboth{}{}
+%--------------------------fette-schrift----------------------------
+\newcommand{\bm}[1]{\mbox{\boldmath $#1$}}  
 \begin{document}
 \title{CalculiX CrunchiX USER'S MANUAL development version}
 \author{Guido Dhondt}
@@ -4356,7 +4358,11 @@ An example for a 3D Timoshenko beam element (for static linear elastic
 calculations and small deformations) according to \cite{Yunhua} is
 implemented as element ``U1'' in CalculiX. It is used in example userbeam.inp
 in the test suite. The reader is referred to files resultsmech\_u1.f,
-e\_c3d\_u1.f and extrapolate\_u1.f for details on how a user elements is coded.
+e\_c3d\_u1.f and extrapolate\_u1.f for details on how a user elements is coded. 
+It has to be stated here, that the 2nd order moment $I_T$, which is  
+used in the torsional stiffness, is such that it is assumed to be identical to
+the polar 2nd order moment $I_p$. This, however, restricts the application 
+of this element to beams with circular cross-sections.
 
 \noindent
 In addition to \cite{Yunhua} the current implementation also 
@@ -4673,7 +4679,7 @@ Global $\hat Z$-coordinate of local cross-section main axis $X_2$.\\
  
 \subsubsection{User Element: 3-node shell element (US3)}
 
-\begin{figure}
+\begin{figure}[htbp]
   \centering
 \epsfig{file=rama.eps,width=5cm}
 \caption{\label{us3}Definition of the US3 element}
