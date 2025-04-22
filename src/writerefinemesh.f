@@ -34,25 +34,25 @@
 !     a new node number in order to avoid collisions with the
 !     refined mesh
 !      
-      do i=1,netet_
-        if(kontet(1,i).ne.0) then
-          do j=1,4
-            node=kontet(j,i)
-            if((jfix(node).ne.1).and.(node.le.nk)) then
-              if(number(node).ne.0) then
-                kontet(j,i)=number(node)
-              else
-                nktet=nktet+1
-                number(node)=nktet
-                kontet(j,i)=nktet
-                do k=1,3
-                  cotet(k,nktet)=cotet(k,node)
-                enddo
-              endif
-            endif
-          enddo
-        endif
-      enddo
+c      do i=1,netet_
+c        if(kontet(1,i).ne.0) then
+c          do j=1,4
+c            node=kontet(j,i)
+c            if((jfix(node).ne.1).and.(node.le.nk)) then
+c              if(number(node).ne.0) then
+c                kontet(j,i)=number(node)
+c              else
+c                nktet=nktet+1
+c                number(node)=nktet
+c                kontet(j,i)=nktet
+c                do k=1,3
+c                  cotet(k,nktet)=cotet(k,node)
+c                enddo
+c              endif
+c            endif
+c          enddo
+c        endif
+c      enddo
 !
 !     stores the refined mesh in input format
 !

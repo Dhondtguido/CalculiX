@@ -790,8 +790,8 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
   /* store the refined mesh of the part of the mesh which was refined 
      to frd-file */
   
-  writenewmesh(&nktet,&netet_,cotet,&iquad,kontet,iedgmid,iedtet,mi,
-	       matname,ithermal,jobnamec,output,nmat);
+  /* writenewmesh(&nktet,&netet_,cotet,&iquad,kontet,iedgmid,iedtet,mi,
+     matname,ithermal,jobnamec,output,nmat);*/
    
   SFREE(iedgmid);
 
