@@ -17,7 +17,8 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine writerefinemesh(kontet,netet_,cotet,nktet,jobnamec,
-     &     iquad,iedtet,iedgmid,number,jfix,iparentel,nk,iwrite)
+     &     iquad,iedtet,iedgmid,number,jfix,iparentel,nk,iwrite,
+     &     maxnnewnodes,kontetor)
 !
       implicit none
 !
@@ -26,7 +27,8 @@
       character*256 fn
 !
       integer kontet(4,*),netet_,i,j,k,nktet,node,iquad,iedtet(6,*),
-     &     iedgmid(*),number(*),nk,jfix(*),iparentel(*),iwrite,ilen
+     &     iedgmid(*),number(*),nk,jfix(*),iparentel(*),iwrite,ilen,
+     &     nodeold,nodenew,kontetor(6,*),maxnnewnodes
 !
       real*8 cotet(3,*)
 !
@@ -68,67 +70,125 @@ c      enddo
 !
 !     storing the mesh in input format
 !
-      open(2,file=fnrfn(1:i+7),status='unknown',position='append')
+      if(maxnnewnodes.gt.0) then
 !
+!     new nodes were created: do not keep the original numbering
+!     of the midnodes
+!
+        open(2,file=fnrfn(1:i+7),status='unknown',position='append')
+!     
 !     storing the nodes
-!
-      write(2,102)
- 102  format('*NODE')
-      do i=1,nktet
-!
-!        setting too small numbers to zero (else the exponent in the
-!        output contains 3 digits and the letter "D" is omitted)
-!
-        do j=1,3
-          if(dabs(cotet(j,i)).lt.1.d-99) cotet(j,i)=0.d0
+!     
+        write(2,102)
+ 102    format('*NODE')
+        do i=1,nktet
+!     
+!     setting too small numbers to zero (else the exponent in the
+!     output contains 3 digits and the letter "D" is omitted)
+!     
+          do j=1,3
+            if(dabs(cotet(j,i)).lt.1.d-99) cotet(j,i)=0.d0
+          enddo
+          write(2,100) i,(cotet(j,i),j=1,3)
         enddo
-        write(2,100) i,(cotet(j,i),j=1,3)
-      enddo
 !     
 !     storing the tetrahedral elements
 !     
-      if(iquad.eq.0) then
-        do i=1,netet_
-          if(kontet(1,i).ne.0) then
+        if(iquad.eq.0) then
+          do i=1,netet_
+            if(kontet(1,i).ne.0) then
 !     
 !     keyword card
 !     
-            write(elestr,'(i10)') iparentel(i)
-            do k=1,10
-              if(elestr(k:k).ne.' ') exit
-            enddo
-            el_header='*ELEMENT,PARENT='//elestr(k:10)//
-     &           ',TYPE=C3D4'               
-            write(2,*) el_header(1:36-k+1)
+              write(elestr,'(i10)') iparentel(i)
+              do k=1,10
+                if(elestr(k:k).ne.' ') exit
+              enddo
+              el_header='*ELEMENT,PARENT='//elestr(k:10)//
+     &             ',TYPE=C3D4'               
+              write(2,*) el_header(1:36-k+1)
 !     
 !     topology
 !     
-            write(2,101) i,(kontet(j,i),j=1,4)
-          endif
-        enddo
+              write(2,101) i,(kontet(j,i),j=1,4)
+            endif
+          enddo
+        else
+          do i=1,netet_
+            if(kontet(1,i).ne.0) then
+!     
+!     keyword card
+!     
+              write(elestr,'(i10)') iparentel(i)
+              do k=1,11
+                if(elestr(k:k).ne.' ') exit
+              enddo
+              el_header='*ELEMENT,PARENT='//elestr(k:10)//
+     &             ',TYPE=C3D10'               
+              write(2,*) el_header(1:37-k+1)
+!     
+!     topology
+!     
+              write(2,101) i,(kontet(j,i),j=1,4),
+     &             (iedgmid(iedtet(j,i)),j=1,6)
+            endif
+          enddo
+        endif
+!     
+        close(2)
+!
       else
-        do i=1,netet_
-          if(kontet(1,i).ne.0) then
+!
+!       no new nodes were created: keep the original numbering
+!       of the midnodes (only smoothing)
+!
+        open(2,file=fnrfn(1:i+7),status='unknown',err=51)
+        close(2,status='delete',err=52)
+        open(2,file=fnrfn(1:i+7),status='unknown',err=51)
+!
+        write(2,102)
+        if(iquad.eq.0) then
+          do i=1,nktet
 !     
-!     keyword card
+!           setting too small numbers to zero (else the exponent in the
+!           output contains 3 digits and the letter "D" is omitted)
 !     
-            write(elestr,'(i10)') iparentel(i)
-            do k=1,11
-              if(elestr(k:k).ne.' ') exit
+            do j=1,3
+              if(dabs(cotet(j,i)).lt.1.d-99) cotet(j,i)=0.d0
             enddo
-            el_header='*ELEMENT,PARENT='//elestr(k:10)//
-     &           ',TYPE=C3D10'               
-            write(2,*) el_header(1:37-k+1)
+            write(2,100) i,(cotet(j,i),j=1,3)
+          enddo
+        else
 !     
-!     topology
+!         the modified midnodes (modified w.r.t. their location) got
+!         new node numbers. If only smoothing was performed, these
+!         modified coordinates should be attached to the orginal midnode
+!         numbers
 !     
-            write(2,101) i,(kontet(j,i),j=1,4),
-     &           (iedgmid(iedtet(j,i)),j=1,6)
-          endif
-        enddo
+          do i=1,netet_
+            if(kontet(1,i).ne.0) then
+c              write(*,*) i,(kontet(j,i),j=1,10)
+              do j=1,6
+                nodeold=kontetor(j,i)
+                nodenew=iedgmid(iedtet(j,i))
+c                write(*,*) 'writerefinemesh',nodeold,nodenew
+                do k=1,3
+                  cotet(k,nodeold)=cotet(k,nodenew)
+                enddo
+              enddo
+            endif
+          enddo
+!     
+!         writing the coordinates to file     
+!     
+          do i=1,nk
+            write(2,100) i,(cotet(j,i),j=1,3)
+          enddo
+        endif
+!     
+        close(2)
+!     
       endif
-!     
-      close(2)
 !     
  100  format(i10,',',e20.13,',',e20.13,',',e20.13)
  101  format(11(i10,','))
@@ -151,4 +211,11 @@ c      enddo
       endif
 !     
       return
+!
+ 51   write(*,*) '*ERROR in openfile: could not open file ',fnrfn(1:i+7)
+      call exit(201)
+ 52   write(*,*) '*ERROR in openfile: could not delete file ',
+     &  fnrfn(1:i+7)
+      call exit(201)
+!
       end

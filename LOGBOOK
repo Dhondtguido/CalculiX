@@ -5461,3 +5461,5 @@ Dec 2002        - started to work on single crystal plasticity
  
  22 April 2025  - excluded point forces, SPC's and dependent nodes of
                   MPC's from mesh modifications.
+
+ 23 April 2025  - kept midnode numbers while smoothing

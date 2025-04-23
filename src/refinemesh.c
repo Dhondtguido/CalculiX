@@ -47,7 +47,8 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
     *ialsete=NULL,nexternel,*iedgextfa=NULL,*ifacexted=NULL,
     *ilist=NULL,*isharp=NULL,*idimsh=NULL,ifreenn=1,*iponn=NULL,
     *inn=NULL,*n1newnodes=NULL,*n2newnodes=NULL,*jfix=NULL,*number=NULL,
-    *iparentel=NULL,jflag=0,*ibadnodes=NULL,nbadnodes,iwrite;
+    *iparentel=NULL,jflag=0,*ibadnodes=NULL,nbadnodes,iwrite,
+    maxnnewnodes=0;
 
   unsigned long unsiint,seed=184389;
 
@@ -154,7 +155,7 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
   RENEW(ifacext,ITG,6*nexternfa);
   RENEW(ifacexted,ITG,3*nexternfa);
   RENEW(ialsete,ITG,nexternel);
-  SFREE(kontetor);
+  //  SFREE(kontetor);
 
   NNEW(isharp,ITG,nexternedg);
   FORTRAN(checksharp,(&nexternedg,iedgextfa,cotet,ifacext,isharp));
@@ -182,7 +183,7 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
 	 subsequent interpolation purposes */
 
       getlocalresults(&integerglob,&doubleglob,&nktet_,cotet,h,&netet_,
-		      kontet,ifatet,planfa,kontetor);
+		      kontet,ifatet,planfa);
 
     }else{
       FORTRAN(updategeodata,(&nktet,&netet_,h,d,&dmin,ipoed,iedg,cotet,
@@ -202,6 +203,7 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
 
     FORTRAN(edgedivide,(&nnewnodes,&nktet_,ipoed,iexternedg,iedg,
 			d,h,n,r,&iext,jfix));
+    if(nnewnodes>maxnnewnodes){maxnnewnodes=nnewnodes;}
 
     /* determining new nodes in the edges to be divided */
 
@@ -401,6 +403,7 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
 
     FORTRAN(edgedivide,(&nnewnodes,&nktet_,ipoed,iexternedg,iedg,
 			d,h,n,r,&iext,jfix));
+    if(nnewnodes>maxnnewnodes){maxnnewnodes=nnewnodes;}
 
     /* determining new nodes in the edges to be divided */
 
@@ -782,9 +785,10 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
   NNEW(number,ITG,nktet);
   
   FORTRAN(writerefinemesh,(kontet,&netet_,cotet,&nktet,jobnamec,
-			   &iquad,iedtet,iedgmid,
-			   number,jfix,iparentel,nk,&iwrite));
+			   &iquad,iedtet,iedgmid,number,jfix,iparentel,
+			   nk,&iwrite,&maxnnewnodes,kontetor));
 
+  SFREE(kontetor);
   SFREE(number);
 
   /* store the refined mesh of the part of the mesh which was refined 

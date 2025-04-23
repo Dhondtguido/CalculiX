@@ -2009,7 +2009,7 @@ void getglobalresults (char *masterfile,ITG **integerglobp,double **doubleglobp,
 
 void getlocalresults(ITG **integerglobp,double **doubleglobp,ITG *nktet,
                      double *cotet,double *h,ITG *netet_,ITG *kontet,
-                     ITG *ifatet,double *planfa,ITG *kontetor);
+                     ITG *ifatet,double *planfa);
 
 void FORTRAN(getnodesinitetmesh,(ITG *ne,char *lakon,ITG *ipkon,ITG *kon,
 				 ITG *istartset,ITG *iendset,ITG *ialset,
@@ -5332,10 +5332,10 @@ void FORTRAN(writerandomfield,(double *d,double *relerr,ITG *imodes));
 void FORTRAN(writere,());
 
 void FORTRAN(writerefinemesh,(ITG *kontet,ITG *netet_,double *cotet,ITG *nktet,
-                              char *jobnamec,
-                              ITG *iquad,ITG *iedtet,ITG *iedgmid,
-                              ITG *number,ITG *jfix,ITG *iparentel,
-			      ITG *nk,ITG *iwrite));
+                              char *jobnamec,ITG *iquad,ITG *iedtet,
+			      ITG *iedgmid,ITG *number,ITG *jfix,ITG *iparentel,
+			      ITG *nk,ITG *iwrite,ITG *maxnnewnodes,
+			      ITG *kontetor));
 
 void FORTRAN(writesen,(double *g0,double *dgdx,ITG *ndesi,ITG *nobject,
                        ITG *nodedesi,char *jobnamef));
