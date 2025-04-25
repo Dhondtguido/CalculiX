@@ -5092,7 +5092,10 @@ void FORTRAN(temploadfem,(double *xforcold,double *xforc,double *xforcact,
                double *doubleglob,char *tieset,ITG *istartset,
                ITG *iendset,ITG *ialset,ITG *ntie,ITG *nmpc,ITG *ipompc,
                ITG *ikmpc,ITG *ilmpc,ITG *nodempc,double *coefmpc,
-	       char *set,ITG *nset));
+	       char *set,ITG *nset,double *cocon,ITG *ncocon,double *rhcon,
+	       ITG *nrhcon,double *shcon,ITG *nshcon,ITG *ielmat,ITG *ielprop,
+	       double *prop,ITG *iponoel,ITG *inoel,ITG *ipkon,ITG *kon,
+	       char *lakon,ITG *ipobody,ITG *ntmat_));
 
 void FORTRAN(temploadmodal,(double *amta,ITG *namta,ITG *nam,double *ampli,
          double *timemin,double *ttimemin,double *dtime,double *xbounold,

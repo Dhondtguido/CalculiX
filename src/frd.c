@@ -202,7 +202,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
     fprintf(f1,"%5sUHOST                                                              \n",p1);
     fprintf(f1,"%5sUPGM               CalculiX                                        \n",p1);
     fprintf(f1,"%5sUVERSION           Version DEVELOPMENT                             \n",p1);
-    fprintf(f1,"%5sUCOMPILETIME       Wed Apr 23 18:50:16 CEST 2025                    \n",p1);
+    fprintf(f1,"%5sUCOMPILETIME       Fri Apr 25 17:19:16 CEST 2025                    \n",p1);
     fprintf(f1,"%5sUDIR                                                               \n",p1);
     fprintf(f1,"%5sUDBN                                                               \n",p1);
     
@@ -2252,13 +2252,11 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
   /* remove auxiliary field for the error estimator at the nodes
      if no mesh refinement was requested */  
 
-  if(strcmp1(&filab[4089],"RM")!=0){
-    if((*nmethod!=5)||(*mode==-1)){
-      if((strcmp1(&filab[1044],"ERR")==0)&&(*ithermal!=2)){
-	SFREE(errn);
-      }
-    }
-  }
+  if((strcmp1(&filab[4089],"RM")!=0)&&
+     ((*nmethod!=5)||(*mode==-1))&&
+     ((strcmp1(&filab[1044],"ERR")==0)&&(*ithermal!=2))){
+    SFREE(errn);
+  }else{*errnp=errn;}
 
   //  if(((*nmethod!=5)||(*mode==-1)&&((strcmp1(&filab[1044],"ERR")==0)&&(*ithermal!=2))) SFREE(errn);
 
@@ -2529,8 +2527,6 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
   }
   
   fclose(f1);
-
-  *errnp=errn;
   
   return;
   

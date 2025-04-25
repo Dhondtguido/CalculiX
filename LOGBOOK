@@ -5463,3 +5463,9 @@ Dec 2002        - started to work on single crystal plasticity
                   MPC's from mesh modifications.
 
  23 April 2025  - kept midnode numbers while smoothing
+
+ 25 April 2025  - removed a line in initialconditionss.f
+                - corrected the arguments of utemp in temploadfem.f
+                - removed an error in frd.c concerning field errn
+                - included all MPC-vertexnodes as fixed in mesh refinement
+                - extended refinement to nonlingeo-calculations

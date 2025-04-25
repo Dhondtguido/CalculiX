@@ -124,8 +124,6 @@
      &  prop(*),shcon(0:3,ntmat_,*),rhcon(0:1,ntmat_,*),
      &  cocon(0:6,ntmat_,*)
 !
-!
-!
 !     In order to use this user subroutine:
 !       1. delete the next call to utemp_ccxlib
 !       2. write your own code replacing the line "temp(1)=293.d0"

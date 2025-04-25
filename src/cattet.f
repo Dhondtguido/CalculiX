@@ -168,7 +168,7 @@
         lakon(nelem)(1:1)='A'
       enddo
 !
-!     fixing all nodes in which SPC's, MPC's (only dependent nodes)
+!     fixing all nodes in which SPC's, MPC's
 !     or point loads were defined
 !
       do i=1,nforc
@@ -178,7 +178,12 @@
         jfix(nodeboun(i))=1
       enddo
       do i=1,nmpc
-        jfix(nodempc(1,ipompc(i)))=1
+        index1=ipompc(i)
+        do
+          if(index1.eq.0) exit
+          jfix(nodempc(1,index1))=1
+          index1=nodempc(3,index1)
+        enddo
       enddo
 !     
 !     determine the first unused element

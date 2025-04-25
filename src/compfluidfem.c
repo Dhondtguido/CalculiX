@@ -611,7 +611,9 @@ void compfluidfem(double **cop,ITG *nk,ITG **ipkonp,ITG **konp,char **lakonp,
 			       sideload,mi,ntrans,trab,inotr,vold,integerglob,
 			       doubleglob,tieset,istartset,iendset,ialset,ntie,
 			       nmpc,ipompc,ikmpc,ilmpc,nodempc,coefmpc,set,
-			       nset));
+			       nset,cocon,ncocon,rhcon,nrhcon,shcon,nshcon,
+			       ielmat,ielprop,prop,iponoel,inoel,ipkon,kon,
+			       lakon,ipobody,ntmat_));
 	}
 	  
       }else if(*nmethod==4){
@@ -628,7 +630,10 @@ void compfluidfem(double **cop,ITG *nk,ITG **ipkonp,ITG **konp,char **lakonp,
 			     nelemload,
 			     sideload,mi,ntrans,trab,inotr,vold,integerglob,
 			     doubleglob,tieset,istartset,iendset,ialset,ntie,
-			     nmpc,ipompc,ikmpc,ilmpc,nodempc,coefmpc,set,nset));
+			     nmpc,ipompc,ikmpc,ilmpc,nodempc,coefmpc,set,nset,
+			     cocon,ncocon,rhcon,nrhcon,shcon,nshcon,
+			     ielmat,ielprop,prop,iponoel,inoel,ipkon,kon,
+			     lakon,ipobody,ntmat_));
       }
 
       /* STEP 1: velocity correction */

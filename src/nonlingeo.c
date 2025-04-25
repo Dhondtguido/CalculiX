@@ -3729,6 +3729,21 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	FORTRAN(uout,(v,mi,ithermal,filab,kode,output,jobnamec));
 #endif
       }
+
+      /* mesh refinement */
+  
+      if(strcmp1(&filab[4089],"RM")==0){
+	refinemesh(nk,ne,co,ipkon,kon,v,veold,stn,een,emn,epn,enern,
+		   qfn,errn,filab,mi,lakon,jobnamec,istartset,iendset,
+		   ialset,set,nset,matname,ithermal,output,nmat,
+		   nelemload,nload,sideload,nodeforc,
+		   nforc,nodeboun,nboun,nodempc,ipompc,nmpc);
+
+	/* free errn */
+	
+	if(((*nmethod!=5)||(mode==-1))&&
+	   ((strcmp1(&filab[1044],"ERR")==0)&&(*ithermal!=2))) SFREE(errn);
+      }
       
       SFREE(v);SFREE(fn);SFREE(stn);SFREE(inum);SFREE(stx);
       if(*ithermal>1){SFREE(qfn);}
@@ -3856,6 +3871,21 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 #ifdef COMPANY
       FORTRAN(uout,(v,mi,ithermal,filab,kode,output,jobnamec));
 #endif
+    }
+
+    /* mesh refinement */
+  
+    if(strcmp1(&filab[4089],"RM")==0){
+      refinemesh(nk,ne,co,ipkon,kon,v,veold,stn,een,emn,epn,enern,
+		 qfn,errn,filab,mi,lakon,jobnamec,istartset,iendset,
+		 ialset,set,nset,matname,ithermal,output,nmat,
+		 nelemload,nload,sideload,nodeforc,
+		 nforc,nodeboun,nboun,nodempc,ipompc,nmpc);
+
+      /* free errn */
+	
+      if(((*nmethod!=5)||(mode==-1))&&
+	 ((strcmp1(&filab[1044],"ERR")==0)&&(*ithermal!=2))) SFREE(errn);
     }
 
     SFREE(v);SFREE(fn);SFREE(stn);SFREE(inum);SFREE(stx);

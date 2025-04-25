@@ -28201,23 +28201,25 @@ Keyword type: step
 
 With this keyword a user-defined part of the input mesh consisting of C3D4 and
 C3D10 elements is refined according to certain criteria and the
-calculation is automatically restarted with the refined mesh. Temperatures,
-volumetric distributed loading (e.g. centrifugal forces), point loads and
-single point constraints are automatically modified. This does not apply to
-multiple point constraints. These should not be
-applied to the part of the mesh to be refined. If the temperatures in the
+calculation is automatically restarted with the refined mesh. Temperatures, and
+volumetric distributed loading (e.g. centrifugal forces) are automatically
+modified. If the temperatures or volumetric distributed loading in the
 domain to be refined are applied using an amplitude (*AMPLITUDE), this
-amplitude should not vary within this domain. Faces on which pressure
-(*DLOAD) is applied are allowed but are not refined. To determine the
+amplitude should not vary within this domain. To determine the
 temperatures, initial displacements and initial velocities
-in the new mesh interpolation based on the unrefined mesh is done. For the
-point forces and single point constraints the definition in the unrefined mesh
-is kept and multiple point constraints are constructed between the concerned
-nodes in the old mesh and the tetrahedrons in the new mesh within which they
-are located.
+in the new mesh interpolation based on the unrefined mesh is done. Nodes
+belonging to single point or multiple point constraints, or in which a
+concentrated load is applied (using \htmlref{*CLOAD}{cload}) are not moved during
+refinement and the nodes numbers are kept. Faces on which pressure
+(\htmlref{*DLOAD}{dload}) is applied are allowed but are not refined. Their nodes or not moved
+ant their numbers are kept. This also applies to the element number to which
+the face belongs. Therefore, the *DLOAD card in the unrefined mesh remains valid.
 
 The refinement is done in the step in which *REFINE MESH is used and is based
-on the results calculated in that step. The keyword should occur at most once
+on the results calculated in that step. In particular, the user should take
+care that any node subject to a SPC, MPC, concentrated load or distributed
+facial load is subject to this constraint or loading in the mesh refinement
+step. If not, a fake loading of zero can be applied. The keyword *REFINE MESH should occur at most once
 in the complete input deck. It is not allowed in a restart calculation
 (characterized by *RESTART,READ).
 
@@ -28249,7 +28251,11 @@ With the parameter USER a new criterion for the refinement can be coded in
 user subroutine ucalculateh.f.
 
 If the tetrahedral mesh in the input deck contains at least one quadratic
-element, the refined mesh contains C3D10 elements only, else it is a pure C3D4 mesh.
+element, the refined mesh contains C3D10 elements only, else it is a pure C3D4
+mesh.
+
+Finally, *REFINE MESH is only available in a
+\htmlref{*STATIC}{static} or \htmlref{*DYNAMIC}{dynamic} step.
 
 \bigskip
 
@@ -36782,8 +36788,10 @@ normal vector at i.
 \subsection{Mesh refinement}
 
 The mesh refinement procedure starts from the mesh in the input deck. All
-elements which are not of type C3D4 or C3D10 are kept and their element
-numbers are not modified. All other elements are deleted and the gaps in the
+elements which are not of type C3D4 or C3D10 or which do not belong to the
+part of the mesh to be refined (the user can specify a set of elements to be
+refined) are kept and their element
+numbers are not modified. All other elements are deleted and the resulting gaps in the
 numbering between the elements which are not tetrahedral are filled from low
 to high by the newly generated tetrahedral elements. The procedure for the
 refinement is based on the book by P.-L. George and H. Borouchaki \cite{George}.
@@ -36821,7 +36829,7 @@ containing a specific node (Figure \ref{ieln}). For a node i the value
 ipoeln(i) points to an entry ieln(1,ipoeln(i)) containing an element to which
 the node belongs. If there are more such elements, the next element is stored
 in ieln(1,ieln(2,ipoeln(i))) and so on until
-ieln(2,ieln(2,ieln(2...,ipoeln(i))))=0. At any time during the scalar ifreeln contains the next
+ieln(2,ieln(2,ieln(2...,ipoeln(i))))=0. At any time the scalar ifreeln contains the next
 free position in ieln, whereas the entry ieln(2,j) for any not used position j
 in the field points to a next free position. 
 
@@ -36872,7 +36880,7 @@ requested. Finally, there is the field iexternedg(*) which takes the value:
 \begin{itemize}
 \item it is used as parent edge for at least one newly generated edge during
   mesh refinement AND
-\item the normals on the adjacent external faces have an angle of less than
+\item the normals on the adjacent external faces have an angle exceeding
   about 0.05$^\circ$.
 \end{itemize}
 Fields iedgeextfa, ifacext, ifacexted and isharp are static, the contents of
@@ -36887,7 +36895,7 @@ projectnodes.f. All of these fields are needed for the projection
 \end{figure}
 
 The last fields ipoeled(i) and ieled(2,*) point to the elements to which edge
-i belongs in the same way the element per node relationship is stored in
+i belongs (called the ``shell'' of the edge) in the same way the element per node relationship is stored in
 ipoeln(*) and ieln(2,*), Figure \ref{ieled}.
 
 \subsubsection{Face fields\label{facefields}}
@@ -36935,11 +36943,18 @@ The topology of the tetrahedral elements is stored in field
 kontet(1..4,*). This field is dynamically updated during mesh refinement. The
 next free entry in kontet is pointed to by ifreetet, the entries kontet(4,*)
 of entries in the field which have not been used yet point to a next free
-entry. The field kontet is special in the sense that element numbers in the unrefined
-mesh which are no tetrahedral elements cannot be used for newly generated
-tetrahedral elements, i.e. the element numbers of such elements are kept. At
-the start of the mesh refinement the tetrahedral elements are renumbered such
-that they occupy the lowest possible element numbers. The corresponding middle
+entry. The field kontet is used for the new refined mesh. Entries belonging to
+element numbers of the part of the mesh which is not refined are not available
+for the new tetrahedral elements since they are still part of the mesh after
+refinement. Also the element numbers of elements which are refined are kept
+(and are not available for the new, refined mesh)
+and considered as ``parent'' elements of the newly created elements. Therefore,
+at
+the start of the mesh refinement the tetrahedral elements in the part of the
+mesh to be refined are copied (and
+considered as the initial mesh in the refinement procedure) such
+that they occupy the lowest possible free element numbers, i.e. any numbers not
+used by any element of the unrefined mesh. The corresponding middle
 nodes of these elements, if any, are stored in field kontetor(1..6,*). The
 field kontetor is static, i.e. it only contains the middles nodes of the
 quadratic tetrahedral elements of the unrefined mesh. This field is used to
@@ -37004,7 +37019,7 @@ Notice that the tetrahedral elements are stored as if all of them were linear,
 ie. C3D4-elements. The only quadratic information of the unrefined mesh is
 stored in fields iedgext and ifacext, to be discussed below.
 
-\paragraph{catedges.f}
+\paragraph{catedges\_refine.f}
 
 This routine catalogues the edges. This includes:
 
@@ -37029,8 +37044,8 @@ first set to 1, else it is 0.
 
 \paragraph{midexternaledges.f}
 
-Nodes generated on external sharp edges of the unrefined mesh are after the
-refinement projected onto the unrefined external edges (in
+Nodes generated on external sharp edges of the unrefined mesh are projected after the
+refinement onto the unrefined external edges (in
 projectvertexnodes.f and projectmidnodes.f). These edges may be
 quadratic. In routine midexternaledges.f the external edges are stored in
 consecutive order (no gaps in the numbering) in field iedgext(1..3,*). The
@@ -37050,7 +37065,7 @@ Nodes generated on the exterior of the body and which do not belong to
 external sharp edges of the unrefined mesh are projected onto the unrefined surface
 at the end of the remeshing routine (in projectvertexnodes.f and projectmidnodes.f). To that end the
 external face information of the unrefined mesh is first copied from field
-iexternfa into iexternfaor (or for ``original''). Then, the value of 1 in
+iexternfa into iexternfaor (``or'' for ``original''). Then, the value of 1 in
 iexternfaor(i) for the external faces i is replaced by a value j, pointing to
 the entries ifacext(1..6,j) containing the six nodes of the face (node
 numbering as in Figure \ref{c2d6}. The number
@@ -37125,7 +37140,8 @@ divided into n(i)+1 edges satisfying:
 \end{equation}
 
 where int(x) is the integer smaller than or equal to the real number x. This
-creates at most 2 edges out of 1.
+creates at most 2 edges out of 1. In edgedivide.f n(i) is determined and
+stored. The actual splitting of the edges is done in cavityext\_refine.f.
 
 \paragraph{newnodes.f}
 
@@ -37138,7 +37154,7 @@ divided into two sub-edges the following actions are taken:
   stored in the scalar nnewnodes. Let us assume that edge i is the j-th edge
   to be subdivided, then the coordinates are stored in conewnodes(1..3,j)
 \item determine a base element to which the edge belongs (an arbitrary element
-  of the shell of the edge) and store the number in ibasenewnodes(j)
+  of the ``shell'' of the edge) and store the number in ibasenewnodes(j)
 \item store the edge number on which the nodes lies (i.e. here i) in field
   iedgnewnodes(*), i.e. iedgnewnodes(j)=i. 
 \item determine the value of the h-field in the new node by interpolation
@@ -37155,7 +37171,7 @@ surface nodes. Indeed, the insertion procedure explained in \cite{George} works
 only for nodes not lying on the external surface. The insertion of the new nodes is done one by one after
 reordering them in an aleatoric way.
 
-\paragraph{cavityext.f}
+\paragraph{cavityext\_refine.f}
 
 The insertion of each node is performed in cavityext in the following way:
 
@@ -37169,7 +37185,7 @@ The insertion of each node is performed in cavityext in the following way:
   they belong from the cavity
 \item restore the unperturbed coordinates of the new node
 \item connect the new node with each of the faces bordering the cavity and
-  check the quality of the ensueing element. If 
+  check the quality of the ensuing element. If 
 \begin{itemize}
 \item the volume is not extremely small AND
 \item at least one height (a tetrahedral element has 4 heights) is
@@ -37196,7 +37212,7 @@ base element.
   the original mesh of the cavity is restored
 \item since elements have been deleted and created the base element numbers of
   the nodes still to be inserted may not be correct any more: perform a check
-  on these nodes and correct the base element numbers if necessary.
+  on these nodes and correct the base element numbers in field ibasenewnodes(*) if necessary.
 \item label the newly generated faces and edges as external or not. Sub-edges
   of the edge on which the new node was inserted inherit the label from field
   iexternaledg
@@ -37215,7 +37231,7 @@ external edges. Here too routines edgedivide.f and newnodes.f are called. The
 new nodes are perturbed similarly as for the external edges and reordered in
 an aleatoric way. Just the insertion of the nodes in cavity.f is more simple:
 
-\paragraph{cavity.f}
+\paragraph{cavity\_refine.f}
 
 It is done in the following way:
 
@@ -37238,7 +37254,8 @@ It is done in the following way:
   the original mesh of the cavity is restored
 \item since elements have been deleted and created the base element numbers of
   the nodes still to be inserted may not be correct any more: perform a check
-  on these nodes and correct the base element numbers if necessary.
+  on these nodes and correct the base element numbers in field
+  ibasenewnodes(*) if necessary.
 \end{itemize}
 
 \paragraph{SMOOTHING THE MESH}
@@ -37257,7 +37274,7 @@ node i is a neighbor of node i if:
 
 \begin{itemize}
 \item node i is internal OR
-\item node is is external, node j is external and no sharp edges are
+\item node i is external, node j is external and no sharp edges are
   attached to node i OR
 \item node i is external, node j is external and the edge connecting both is sharp.
 \end{itemize}
@@ -37324,15 +37341,17 @@ the correct face is found (i.e. the condition that the projection lies
 inside the face). While applying the adjacency relations field isharp is
 used to assure that sharp edges are not crossed.
 
-Since projection may lead to bad elements it is performed in several loops. In
+Since projection may lead to bad (i.e. with non-positive Jacobian determinant) elements it is performed in several loops. In
 each loop an increasing fraction of the motion from the actual position of
 the node to its projection on the external surface is performed. Each time a
 node is moved, the Jacobian determinant of all elements belonging to its ball
 is checked for positivity. If any Jacobian is negative, the size of the motion
 for this node in this iteration
 is decreased by half. If after three reductions there is still an element with
-a negative Jacobian the node is not moved at all in this iteration. If any reduction
-took place all nodes belonging to the ball are listed as bad nodes for further
+a negative Jacobian the node is not moved at all in this iteration. If any
+reduction of the target motion
+took place (i.e. the projection of the external node on the surface was not
+successfull) all nodes belonging to the ball are listed as bad nodes for further
 treatment in smoothbadvertex.f.
 
 \paragraph{smoothbadvertex.f}
@@ -37395,7 +37414,7 @@ synonym for ``middle node''.
 
 Recall that the smoothed position of a vertex node is only accepted if the
 quality of its ball did not get worse. In analogy, the smoothed position of a
-mnidnode will only be accepted if the quality of its shell does not get
+midnode will only be accepted if the quality of its shell does not get
 worse. For the quality measure of a quadratic element the largest difference of the
 Jacobian determinant at the integration points will be taken as
 measure. Recall that the 10-node tetrahedral element has 4 integration
@@ -37416,7 +37435,7 @@ is negative.
 
 The smoothing of the midnodes is done in a similar way as for the vertex
 nodes (using the modified definition of ``neighbors'', ``quality measure''
-etc.
+etc.)
 
 \paragraph{projectmidnodes.f}
 
@@ -37446,175 +37465,41 @@ shaped tetrahedrons. So basically the first term optimizes the volume of the 8
 linear subtetrahedra of the quadratic tetrahedron. The second term avoids the presence of negative Jacobian determinants at the
 integration points (abreviated as ip in the above formula).
 
-\subsubsection{Modifying the boundary conditions}
+\subsubsection{Boundary conditions and loading}
 
-After refining the mesh the boundary conditions have to be moved from the old
-(= unrefined) mesh to the new (= refined) mesh. This includes both single point constraints (SPC's) and
-multiple point constraints (MPC's). The general approach is the following: the
-boundary conditions on the old mesh are kept and new equations are generated
-linking all surface nodes of the old mesh (i.e. the part which has been remeshed) to
-those of the new mesh. Subsurface nodes are not relevant, since boundary
-conditions are usually only applied to surface nodes.
+After refining the mesh the boundary conditions and the loading have to be moved from the old
+(= unrefined) mesh to the new (= refined) mesh. This includes SPC's, MPC's,
+point loads, distributed facial load, distributed volumentric load and
+temperature loading.
 
-So for each surface node in the old mesh three equations (in 3D) are generated linking
-the displacement of this node to nodes of the new mesh. The coefficients of
-the equations are obtained by a standard interpolation procedure. For a node
-``a'' in the old mesh linked to nodes 30, 58, 123 and 4009 in the new mesh
-such an equation looks like:
+In the past SPC's, MPC's and point loads were taken care of by creating MPC's
+connecting the old node in which the SPC, MPC or point load was applied with
+the nodes of the element in the new mesh within which the old node was
+located. This, however, let to high concentrated stresses in the new
+mesh. Therefore, it was decided these old nodes are not to be moved during
+mesh refinement. Furthermore, their node number is kept. Therefore, the
+*BOUNDARY, *EQUATION and *CLOAD cards in the unrefined mesh remain valid.
 
-\begin{equation}
-  u_a = x_1 u_{30} + x_2 u_{58} + x_3 u_{123} + x_4 u_{4009}
-\end{equation}
+The same applies to the faces loading by facial distributed loading: the nodes
+of such faces are not moved during mesh refinement, their numbers are kept as
+well as the element number of the adjacent element. Therefore, the *DLOAD card
+in the unrefined mesh remains valid.
 
-or
+The volumetric distributed loading (centrifugal loading, gravity) in an
+element of the refined mesh is inherited from its parent element. The same
+applies to the material properties. Therefore, mesh refinement should not be
+performed across a material border.
 
-\begin{equation}
-  u_a - x_1 u_{30} - x_2 u_{58} - x_3 u_{123} - x_4 u_{4009} = 0
-\end{equation}
+Temperatures in the refined mesh are interpolated within each step from the
+temperature for that step in the unrefined mesh.
 
-for the displacement component u in x-direction. Notice that the coefficient
-of the dependent node (first node in the equation; belongs to the old mesh) is
-1, the other nodes in the equations can be considered to be independent nodes
-and belong to the new mesh.
-
-\begin{figure}
-\epsfig{file=modbc1.eps,width=10cm}
-\caption{\label{modbc1}Matrix structure of the connecting equations}
-\end{figure}
-
-\begin{figure}
-\epsfig{file=modbc2.eps,width=12cm}
-\caption{\label{modbc2}Fields describing the matrix structure}
-\end{figure}
-
-These equations can be put in matrix form, with the columns corresponding to
-the dependent nodes (ordered in ascending order with a total of nnodestet
-nodes) and the rows corresponding to the global nodes numbers of the surface
-nodes of the refined mesh, Figure \ref{modbc1}. The maximum independent node
-number occurring is labeled maxrow. Notice that, since the equations are
-identical for the global x-, y- and z-direction, only one equation per dependent
-node is stored. The matrix structure is stored with fields which are partially
-similar to the general way in which the stiffness matrix is stored in
-CalculiX, i.e. (see also Figure \ref{modbc2}):
-
-\begin{itemize}
-\item au: stores the nonzero entries in the matrix (i.e. the ``x'' in
-  Figure \ref{modbc1}) column by column. Entries within each column are
-  ordered corresponding to the ascending row numbers.
-\item irow: corresponds to the row number (the global number of the
-  independent nodes in the connecting equations) of the entries in au.
-\item icol(i): number of nonzero entries in column i
-\item jq(i): entry in fields au and irow corresponding to the first nonzero
-  value in column i. The size of the field is nnodestet+1 in order to mark the
-  last entry in fields au and irow (corresponds to jq(nnodestet+1)-1).
-\item irowt: lists the column numbers in the matrix, row by row. Contrary to
-  field irow the entries within each row are not ordered. 
-\item jqt(i): entry in field irowt corresponding to the first nonzero value in
-  row i.
-\item loc: localizes each entry in field irowt within field irow and au,
-  i.e. entry irowt(i) corresponds with entry irow(loc(i)) and au(loc(i)).
-\item ixcol(i)= icol(i)*(nnodestet+1)+i.  
-\end{itemize}
-
-\begin{figure}
-\epsfig{file=modbc3.eps,width=12cm}
-\caption{\label{modbc3}Example for the fields defining the connecting equations}
-\end{figure}
-
-Figure \ref{modbc3} describes these fields for a simple example involving the
-following connecting equations:
-
-\begin{equation}
-  u_{22}+a u_6 + b u_{31}=0
-\end{equation}
-
-\begin{equation}
-  u_{134}+c u_{31} + d u_{59} + e u_{78} =0
-\end{equation}
-
-\begin{equation}
-  u_{202}+f u_3 + g u_6 =0
-\end{equation}
-
-
-The fields above are needed because the terms in the connecting equations have to
-be reordered for each SPC or MPC on the unrefined mesh. Indeed, assume that
-the displacement in x for node 22 above was set to zero in the unrefined mesh
-by a SPC of the form $u_{22}=0$. Then $u_{22}$ occurs as dependent degree of
-freedom in the SPC and the MPC above. This is not allowed in
-CalculiX: a node can occur at most once as dependent dof. Therefore, the MPC has to be reordered, e.g. in the form
-
-\begin{equation}
-  a u_6+u_{22}+ b u_{31}=0
-\end{equation}
-
-making node 6 of the refined mesh the dependent dof. This reordering has to be
-done for each node of the unrefined mesh used in a SPC or MPC. In order not to
-run out of independent refined mesh nodes which can be used as dependent
-nodes, the equations are reordered starting from the ones with fewest terms to
-the ones with most terms. To that end field icol, which contains the number of
-independent terms in each equations, can be used and ordered. However, in
-order to keep the information to which column (i.e. unrefined mesh node) the
-independent count belongs, the field ixcol is created. Notice that this field,
-when ordered, keeps the same ordering as field icol.
-
-Before ordering ixcol it is modified in such a way that all entries
-corresponding to unrefined mesh nodes which do not belong to SPC's or MPC's
-are set to zero (since they do not have to be reorderd). Let us assume that
-in the example in Figure \ref{modbc3} there is a SPC defined in node 22 and
-134, then ixcol is rewritten as $ixcol=[9 14 0]$, which yields after
-reordering $ixcol=[0 9 14]$. Then, the columns are treated from low to high in
-ixcol. The first nonzero entry is 9, which corresponds to column 1. For this
-column the largest coefficient (in absolute value) is identified and the corresponding term used
-as dependent dof. Let us assume that $|b|>|a|$, then the original equation
-
-\begin{equation}
-  u_{22}+a u_6 + b u_{31}=0
-\end{equation}
-
-is reordered as
-
-\begin{equation}
-   b u_{31}+u_{22}+a u_6 =0,
-\end{equation}
-
-and node 31 cannot be used as dependent term in any other equation. Therefore,
-all row entries in row 31 have to be deactivated. This is done by reverting
-the sign all ``31'' entries in field irow, by use of fields irowt, jqt and
-loc. Subsequently, entry ``9'' in field ixcol is set to zero, since the
-corresponding column has been rearranged. Now only entry 14 is left, which
-corresponds to column 2 in field au. For the determination of the maximum
-coefficients only positive entries in field irow are taken into account,
-therefore, only coefficients d and e are compared. If $|d| > |e|$ then the
-original equation
-
-\begin{equation}
-  u_{134}+c u_{31} + d u_{59} + e u_{78} =0
-\end{equation}
-
-is reordered as
-
-\begin{equation}
-   d u_{59} + u_{134}+c u_{31}  + e u_{78} =0
-\end{equation}
-
-and row 59 is deactivated for further equation rearrangement by switching its
-sign in field irow.
-
-Notice that all coefficients in matrix au are nonpositive since the shape
-function values for a linear or quadratic triangle are nonnegative (used in
-the interpolation procedure). Therefore, all rearranged equations are
-characterized by a nonpositive coefficient of the dependent terms.
-
-The procedure may not be fool proof (especially if a lot of SPC's or MPC's
-contrain the unrefined mesh). If, due to the rearrangement of other
-equations no independent node in an equation not treated yet remains, an error
-message is issued and the program stops.
-
-The procedure just described is repeated for each step, since the SPC's and
-MPC's can change from step to step. Before starting the procedure, however,
-the equations from the last step are reordered in their original form
-(i.e. with a leading coefficient of 1).
+If an input deck contains several steps, in one of which refinement is
+performed, the decision in which nodes are not to be moved is based on the
+boundary conditions and loading in that step. If in another step other nodes
+are loaded, the latter will not be loading leading to wrong
+results. Therefore, the user should take care to include any node loaded or
+constrained in any step of the input deck in the mesh refinement step, e.g. by
+applying a zero point load.
 
 \subsection{Crack propagation}
 
