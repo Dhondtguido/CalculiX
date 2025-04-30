@@ -588,6 +588,7 @@ nidentll.f \
 nmatrix.f \
 noanalysiss.f \
 nodalthicknesss.f \
+nodebelongstoel.f \
 nodeprints.f \
 nodes.f \
 nodestiedface.f \
@@ -595,8 +596,6 @@ noelfiles.f \
 noelsets.f \
 nonlinmpc.f \
 normals.f \
-writeinputdeck.f \
-writeinputdeck2.f \
 normalsoninterface.f \
 normalsonsurface_robust.f \
 normalsonsurface_se.f \
@@ -953,6 +952,8 @@ writeev.f \
 writehe.f \
 writeim.f \
 writeinput.f \
+writeinputdeck.f \
+writeinputdeck2.f \
 writelm.f \
 writemaccs.f \
 writemac.f \

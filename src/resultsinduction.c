@@ -26,8 +26,8 @@ static char *lakon1,*matname1,*sideload1;
 
 static ITG *kon1,*ipkon1,*ne1,*nelcon1,*nrhcon1,*nalcon1,*ielmat1,*ielorien1,
     *norien1,*ntmat1_,*ithermal1,*iperturb1,*iout1,*nmethod1,
-    *nplkcon1,*npmat1_,*mi1,*ncmat1_,*nstate1_,*ielprop1,*inoel1,
-    *istep1,*iinc1,calcul_fn1,calcul_qa1,*nplicon1,*iponoel1,
+    *nplkcon1,*npmat1_,*mi1,*ncmat1_,*nstate1_,*ielprop1,*inoeln1,
+    *istep1,*iinc1,calcul_fn1,calcul_qa1,*nplicon1,*iponoeln1,
     *nal=NULL,*ipompc1,*nodempc1,*nmpc1,*ncocon1,*ikmpc1,*ilmpc1,
     num_cpus,mt1,*nk1,*nshcon1,*nelemload1,*nload1,mortar1,
     *istartset1,*iendset1,*ialset1,*iactive1,*network1,*ipobody1,*ibody1,
@@ -70,7 +70,7 @@ void resultsinduction(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
        double *shcon,ITG *nshcon,char *sideload,double *xload,
        double *xloadold,ITG *icfd,ITG *inomat,double *h0,ITG *islavnode,
        ITG *nslavnode,ITG *ntie,ITG *ielprop,double *prop,ITG *iactive,
-       double *energyini,double *energy,ITG *iponoel,ITG *inoel,char *orname,
+       double *energyini,double *energy,ITG *iponoeln,ITG *inoeln,char *orname,
        ITG *network,ITG *ipobody,double *xbody,ITG *ibody,ITG *nbody){
       
     /* variables for multithreading procedure */
@@ -249,7 +249,7 @@ void resultsinduction(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
         sideload1=sideload;xload1=xload;xloadold1=xloadold;
         pslavsurf1=pslavsurf;pmastsurf1=pmastsurf;mortar1=mortar;
         clearini1=clearini;plicon1=plicon;nplicon1=nplicon;ielprop1=ielprop;
-        prop1=prop;iponoel1=iponoel;inoel1=inoel;network1=network;
+        prop1=prop;iponoeln1=iponoeln;inoeln1=inoeln;network1=network;
         ipobody1=ipobody;ibody1=ibody;xbody1=xbody;
 
 	/* calculating the heat flux */
@@ -369,7 +369,7 @@ void *resultsthermemmt(ITG *i){
 	   &calcul_fn1,&calcul_qa1,&nal[indexnal],&nea,&neb,ithermal1,
            nelemload1,nload1,nmethod1,reltime1,sideload1,xload1,xloadold1,
 	   pslavsurf1,pmastsurf1,&mortar1,clearini1,plicon1,nplicon1,
-	   ielprop1,prop1,iponoel1,inoel1,network1,ipobody1,xbody1,ibody1));
+	   ielprop1,prop1,iponoeln1,inoeln1,network1,ipobody1,xbody1,ibody1));
 
     return NULL;
 }

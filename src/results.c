@@ -31,7 +31,7 @@ static ITG *kon1,*ipkon1,*ne1,*nelcon1,*nrhcon1,*nalcon1,*ielmat1,*ielorien1,
   *istep1,*iinc1,calcul_fn1,calcul_qa1,calcul_cauchy1,*nener1,ikin1,
   *nal=NULL,*ipompc1,*nodempc1,*nmpc1,*ncocon1,*ikmpc1,*ilmpc1,
   num_cpus,mt1,*nk1,*ne01,*nshcon1,*nelemload1,*nload1,*mortar1,
-  *ielprop1,*kscale1,*iponoel1,*inoel1,*network1,*ipobody1,*ibody1,
+  *ielprop1,*kscale1,*iponoeln1,*inoeln1,*network1,*ipobody1,*ibody1,
   *neapar=NULL,*nebpar=NULL,*mscalmethod1,*irowt1,*jqt1,*islavquadel1,
   *mortartrafoflag1,*intscheme1;
 
@@ -71,12 +71,13 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 	     ITG *mortar,ITG *islavact,double *cdn,ITG *islavnode,
 	     ITG *nslavnode,ITG *ntie,double *clearini,ITG *islavsurf,
 	     ITG *ielprop,double *prop,double *energyini,double *energy,
-	     ITG *kscale,ITG *iponoel,ITG *inoel,ITG *nener,char *orname,
+	     ITG *kscale,ITG *iponoeln,ITG *inoeln,ITG *nener,char *orname,
 	     ITG *network,ITG *ipobody,double *xbody,ITG *ibody,char *typeboun,
 	     ITG *itiefac,char *tieset,double *smscale,ITG *mscalmethod,
 	     ITG *nbody,double *t0g,double *t1g,ITG *islavquadel,double *aut,
 	     ITG *irowt,ITG *jqt,ITG *mortartrafoflag,
-	     ITG *intscheme,double *physcon,double *dam,double *damn){
+	     ITG *intscheme,double *physcon,double *dam,double *damn,
+	     ITG *iponoel){
 
   ITG intpointvarm,calcul_fn,calcul_f,calcul_qa,calcul_cauchy,ikin,
     intpointvart,mt=mi[1]+1,i,j;
@@ -171,7 +172,7 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 	     xboun,nboun,ipompc,nodempc,coefmpc,labmpc,nmpc,nmethod,cam,neq,
 	     veold,accold,bet,gam,dtime,mi,vini,nprint,prlab,
 	     &intpointvarm,&calcul_fn,&calcul_f,&calcul_qa,&calcul_cauchy,
-	     &ikin,&intpointvart,typeboun,&num_cpus,mortar,nener,iponoel,
+	     &ikin,&intpointvart,typeboun,&num_cpus,mortar,nener,iponoeln,
 	     network);
 
   /* next statement allows for storing the displacements in each
@@ -338,7 +339,7 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
     sideload1=sideload;xload1=xload;xloadold1=xloadold;
     pslavsurf1=pslavsurf;pmastsurf1=pmastsurf;mortar1=mortar;
     clearini1=clearini;plicon1=plicon;nplicon1=nplicon;ne1=ne;
-    ielprop1=ielprop,prop1=prop;iponoel1=iponoel;inoel1=inoel;
+    ielprop1=ielprop,prop1=prop;iponoeln1=iponoeln;inoeln1=inoeln;
     network1=network;ipobody1=ipobody;ibody1=ibody;xbody1=xbody;
 
     /* calculating the heat flux */
@@ -390,7 +391,7 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 
   resultsforc(nk,f,fn,nactdof,ipompc,nodempc,
 	      coefmpc,labmpc,nmpc,mi,fmpc,&calcul_fn,&calcul_f,
-	      &num_cpus);
+	      &num_cpus,iponoel);
 
   /* calculating the total energy if
      - iout<=0 (no result output)
@@ -531,7 +532,7 @@ void *resultsthermmt(ITG *i){
 			&nea,&neb,ithermal1,nelemload1,nload1,nmethod1,
 			reltime1,sideload1,xload1,xloadold1,pslavsurf1,
 			pmastsurf1,mortar1,clearini1,plicon1,nplicon1,ielprop1,
-			prop1,iponoel1,inoel1,network1,ipobody1,xbody1,ibody1));
+			prop1,iponoeln1,inoeln1,network1,ipobody1,xbody1,ibody1));
 
   return NULL;
 }

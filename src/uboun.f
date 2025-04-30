@@ -17,7 +17,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine uboun(boun,kstep,kinc,time,node,idof,coords,vold,mi,
-     &                 iponoel,inoel,ipobody,xbody,ibody,ipkon,kon,
+     &                 iponoeln,inoeln,ipobody,xbody,ibody,ipkon,kon,
      &                 lakon,ielprop,prop,ielmat,
      &                 shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon)
 !
@@ -45,11 +45,11 @@
 !                        over all elements)
 !     mi(2)              max degree of freedomm per node (max over all
 !                        nodes) in fields like v(0:mi(2))...
-!     iponoel(i)         the network elements to which node i belongs
-!                        are stored in inoel(1,iponoel(i)),
-!                        inoel(1,inoel(2,iponoel(i)))...... until
-!                        inoel(2,inoel(2,inoel(2......)=0
-!     inoel(1..2,*)      field containing the network elements
+!     iponoeln(i)         the network elements to which node i belongs
+!                        are stored in inoeln(1,iponoeln(i)),
+!                        inoeln(1,inoeln(2,iponoeln(i)))...... until
+!                        inoeln(2,inoeln(2,inoeln(2......)=0
+!     inoeln(1..2,*)      field containing the network elements
 !     ipobody(1,i)       points to an entry in fields ibody and xbody 
 !                        containing the body load applied to element i, 
 !                        if any, else 0
@@ -118,7 +118,7 @@
 !
       character*8 lakon(*)
 !
-      integer kstep,kinc,node,idof,mi(*),iponoel(*),inoel(2,*),
+      integer kstep,kinc,node,idof,mi(*),iponoeln(*),inoeln(2,*),
      &  ipobody(2,*),ibody(3,*),ipkon(*),kon(*),ielprop(*),
      &  ielmat(mi(3),*),nshcon(*),nrhcon(*),ncocon(2,*),ntmat_
 ! 

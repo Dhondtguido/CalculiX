@@ -32,7 +32,7 @@
      &     xstateini,xstate,thicke,integerglob,doubleglob,tieset,
      &     istartset,iendset,ialset,ntie,nasym,pslavsurf,pmastsurf,
      &     mortar,clearini,ielprop,prop,ne0,fnext,nea,neb,kscale,
-     &     iponoel,inoel,network,smscale,mscalmethod,set,nset,
+     &     iponoeln,inoeln,network,smscale,mscalmethod,set,nset,
      &     islavquadel,aut,irowt,jqt,mortartrafoflag)
 !     
 !     filling the stiffness matrix in spare matrix format (sm)
@@ -59,7 +59,7 @@
      &     mpc1,mpc2,index1,index2,jdof,node1,node2,kflag,icalccg,
      &     ntmat_,indexe,nope,norien,iexpl,i0,ncmat_,istep,iinc,
      &     nplicon(0:ntmat_,*),nplkcon(0:ntmat_,*),npmat_,mortar,
-     &     nea,neb,kscale,iponoel(*),inoel(2,*),network,ndof,
+     &     nea,neb,kscale,iponoeln(*),inoeln(2,*),network,ndof,
      &     nset,islavquadel(*),jqt(*),irowt(*),ii,jqte(21),
      &     irowte(96),i1,j1,j2,konl(26),mortartrafoflag,ikmpc(*),
      &     mscalmethod,kk,imat,istiff,length
@@ -634,7 +634,7 @@ c 100          format(i10,",",i5,",",i10,",",i5,",",e20.13)
      &         xloadold,reltime,ipompc,nodempc,coefmpc,nmpc,ikmpc,ilmpc,
      &         springarea,plkcon,nplkcon,npmat_,ncmat_,elcon,nelcon,
      &         lakon,pslavsurf,pmastsurf,mortar,clearini,plicon,nplicon,
-     &         ipkon,ielprop,prop,iponoel,inoel,sti,xstateini,xstate,
+     &         ipkon,ielprop,prop,iponoeln,inoeln,sti,xstateini,xstate,
      &         nstate_,network,ipobody,xbody,ibody)
 !     
           do jj=1,nope

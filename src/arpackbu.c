@@ -84,8 +84,8 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
     rhsi=1, intscheme=0, noddiam=-1,*ipneigh=NULL,*neigh=NULL,ne0,
     *integerglob=NULL,ntie,icfd=0,*inomat=NULL,mortar=0,*islavnode=NULL,
     *islavact=NULL,*nslavnode=NULL,*islavsurf=NULL,kscale=1,
-    *iponoel=NULL,*inoel=NULL,network=0,nrhs=1,*itiefac=NULL,mscalmethod=0,
-    *islavquadel=NULL,*irowt=NULL,*jqt=NULL,mortartrafoflag=0;
+    *iponoeln=NULL,*inoeln=NULL,network=0,nrhs=1,*itiefac=NULL,mscalmethod=0,
+    *islavquadel=NULL,*irowt=NULL,*jqt=NULL,mortartrafoflag=0,*iponoel=NULL;
 
   double *stn=NULL,*v=NULL,*resid=NULL,*z=NULL,*workd=NULL,
     *workl=NULL,*d=NULL,sigma,*temp_array=NULL,*fnext=NULL,
@@ -112,6 +112,12 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 #ifdef SGI
   ITG token;
 #endif
+
+  /* determining whether a node belongs to at least one element
+     (needed in resultsforc.c) */
+  
+  NNEW(iponoel,ITG,*nk);
+  FORTRAN(nodebelongstoel,(iponoel,lakon,ipkon,kon,ne));
  
   ne0=*ne;
 
@@ -166,11 +172,11 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	    &reltime,&ne0,thicke,shcon,nshcon,
 	    sideload,xload,xloadold,&icfd,inomat,pslavsurf,pmastsurf,
 	    &mortar,islavact,cdn,islavnode,nslavnode,&ntie,clearini,
-	    islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
-	    inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
+	    islavsurf,ielprop,prop,energyini,energy,&kscale,iponoeln,
+	    inoeln,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 	    itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
 	    islavquadel,aut,irowt,jqt,&mortartrafoflag,
-	    &intscheme,physcon,dam,damn);
+	    &intscheme,physcon,dam,damn,iponoel);
   }else{
     results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,
 	    elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
@@ -188,11 +194,11 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	    &reltime,&ne0,thicke,shcon,nshcon,
 	    sideload,xload,xloadold,&icfd,inomat,pslavsurf,pmastsurf,
 	    &mortar,islavact,cdn,islavnode,nslavnode,&ntie,clearini,
-	    islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
-	    inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
+	    islavsurf,ielprop,prop,energyini,energy,&kscale,iponoeln,
+	    inoeln,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 	    itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
 	    islavquadel,aut,irowt,jqt,&mortartrafoflag,
-	    &intscheme,physcon,dam,damn);
+	    &intscheme,physcon,dam,damn,iponoel);
   }
   
   SFREE(eei);SFREE(stiini);SFREE(emeini);SFREE(vini);
@@ -223,7 +229,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		 ibody,xloadold,&reltime,veold,springarea,nstate_,
 		 xstateini,xstate,thicke,integerglob,doubleglob,
 		 tieset,istartset,iendset,ialset,&ntie,&nasym,pslavsurf,pmastsurf,
-		 &mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,iponoel,inoel,
+		 &mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,iponoeln,inoeln,
 		 &network,ntrans,inotr,trab,smscale,&mscalmethod,set,nset,
 		 islavquadel,aut,irowt,jqt,&mortartrafoflag);
   }
@@ -244,7 +250,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		 xstateini,xstate,thicke,integerglob,doubleglob,
 		 tieset,istartset,iendset,ialset,&ntie,&nasym,pslavsurf,
 		 pmastsurf,&mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
-		 iponoel,inoel,&network,ntrans,inotr,trab,smscale,&mscalmethod,
+		 iponoeln,inoeln,&network,ntrans,inotr,trab,smscale,&mscalmethod,
 		 set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag);
   }
 
@@ -371,11 +377,11 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	    &ne0,thicke,shcon,nshcon,
 	    sideload,xload,xloadold,&icfd,inomat,pslavsurf,pmastsurf,
 	    &mortar,islavact,cdn,islavnode,nslavnode,&ntie,clearini,
-	    islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
-            inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
+	    islavsurf,ielprop,prop,energyini,energy,&kscale,iponoeln,
+            inoeln,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 	    itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
 	    islavquadel,aut,irowt,jqt,&mortartrafoflag,
-	    &intscheme,physcon,dam,damn);}
+	    &intscheme,physcon,dam,damn,iponoel);}
   else{
     results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,
 	    stx,elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
@@ -393,11 +399,11 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	    &ne0,thicke,shcon,nshcon,
 	    sideload,xload,xloadold,&icfd,inomat,pslavsurf,pmastsurf,
 	    &mortar,islavact,cdn,islavnode,nslavnode,&ntie,clearini,
-	    islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
-            inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
+	    islavsurf,ielprop,prop,energyini,energy,&kscale,iponoeln,
+            inoeln,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 	    itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
 	    islavquadel,aut,irowt,jqt,&mortartrafoflag,
-	    &intscheme,physcon,dam,damn);
+	    &intscheme,physcon,dam,damn,iponoel);
   }
 
   for(k=0;k<mt**nk;++k){
@@ -455,7 +461,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		 xstateini,xstate,thicke,integerglob,doubleglob,
 		 tieset,istartset,iendset,ialset,&ntie,&nasym,pslavsurf,
 		 pmastsurf,&mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
-		 iponoel,inoel,&network,ntrans,inotr,trab,smscale,&mscalmethod,
+		 iponoeln,inoeln,&network,ntrans,inotr,trab,smscale,&mscalmethod,
 		 set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag);
   }
   else{
@@ -475,15 +481,13 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		 xstateini,xstate,thicke,integerglob,doubleglob,
 		 tieset,istartset,iendset,ialset,&ntie,&nasym,pslavsurf,
 		 pmastsurf,&mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
-		 iponoel,inoel,&network,ntrans,inotr,trab,smscale,&mscalmethod,
+		 iponoeln,inoeln,&network,ntrans,inotr,trab,smscale,&mscalmethod,
 		 set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag);
   }
 
   SFREE(stx);SFREE(fext);
 
-  //if(*nbody>0) SFREE(ipobody);
-
-  if(*nmethod==1){return;}
+  if(*nmethod==1){SFREE(iponoel);return;}
 
   /* loop checking the plausibility of the buckling factor
      if (5*sigma<buckling factor<50000*sigma) the solution is accepted,
@@ -789,11 +793,11 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	      &ne0,thicke,shcon,nshcon,
 	      sideload,xload,xloadold,&icfd,inomat,pslavsurf,pmastsurf,
 	      &mortar,islavact,cdn,islavnode,nslavnode,&ntie,clearini,
-	      islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
-              inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
+	      islavsurf,ielprop,prop,energyini,energy,&kscale,iponoeln,
+              inoeln,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 	      itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
 	      islavquadel,aut,irowt,jqt,&mortartrafoflag,
-	      &intscheme,physcon,dam,damn);}
+	      &intscheme,physcon,dam,damn,iponoel);}
     else{
       results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,
 	      stx,elcon,
@@ -812,11 +816,11 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	      &ne0,thicke,shcon,nshcon,
 	      sideload,xload,xloadold,&icfd,inomat,pslavsurf,pmastsurf,
 	      &mortar,islavact,cdn,islavnode,nslavnode,&ntie,clearini,
-	      islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
-              inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
+	      islavsurf,ielprop,prop,energyini,energy,&kscale,iponoeln,
+              inoeln,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 	      itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
 	      islavquadel,aut,irowt,jqt,&mortartrafoflag,
-	      &intscheme,physcon,dam,damn);
+	      &intscheme,physcon,dam,damn,iponoel);
     }
 
     ++*kode;
@@ -845,6 +849,8 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
   if(strcmp1(&filab[2697],"ME  ")==0) SFREE(emn);
   if(strcmp1(&filab[522],"ENER")==0) SFREE(enern);
 
+  SFREE(iponoel);
+  
   return;
 }
 

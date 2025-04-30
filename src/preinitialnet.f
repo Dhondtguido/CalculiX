@@ -17,7 +17,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine preinitialnet(ieg,lakon,v,ipkon,kon,nflow,prop,ielprop,
-     &     ielmat,ntmat_,shcon,nshcon,rhcon,nrhcon,mi,iponoel,inoel,
+     &     ielmat,ntmat_,shcon,nshcon,rhcon,nrhcon,mi,iponoeln,inoeln,
      &     itg,ntg)
 !
 !     determination of initial values based on the boundary conditions
@@ -40,7 +40,7 @@
 !           
       integer mi(*),ieg(*),nflow,i,ielmat(mi(3),*),ntmat_,node1,node2,
      &     nelem,index,nshcon(*),ipkon(*),kon(*),nodem,imat,ielprop(*),
-     &     nrhcon(*),neighbor,ichange,iponoel(*),inoel(2,*),indexe,
+     &     nrhcon(*),neighbor,ichange,iponoeln(*),inoeln(2,*),indexe,
      &     itg(*),ntg,node,imin,imax,iel,nodemnei,ierror,nelemnei,
      &     nodenei,ibranch,numel,noderef,nelemref,ierr,j
 !     
@@ -58,12 +58,12 @@
 !
       do i=1,ntg
          node=itg(i)
-         index=iponoel(node)
+         index=iponoeln(node)
 !
 !        node not connected to any element
 !
          if(index.eq.0) cycle
-         nelem=inoel(1,index)
+         nelem=inoeln(1,index)
 !
 !        midside node
 !
@@ -75,7 +75,7 @@
 !
 !        check whether node belongs to more than 1 element
 !
-         index=inoel(2,index)
+         index=inoeln(2,index)
          if(index.eq.0) then
             write(*,*) '*ERROR in preinitialnet:'
             write(*,*) '       node',node,
@@ -86,7 +86,7 @@
          endif
 !
          call networkneighbor(nelem,node,nelemnei,nodenei,ibranch,
-     &        iponoel,inoel,ipkon,kon)
+     &        iponoeln,inoeln,ipkon,kon)
          if(nodenei.eq.0) then
             write(*,*) '*ERROR in preinitialnet:'
             write(*,*) '       node',node,
@@ -96,7 +96,7 @@
             cycle
          endif
 !
-         index=inoel(2,index)
+         index=inoeln(2,index)
          if(index.ne.0) then
             write(*,*) '*ERROR in preinitialnet:'
             write(*,*) '       node',node,
@@ -324,24 +324,24 @@
                      if(v(2,node1).eq.0.d0) then
                         v(2,node1)=v(2,node2)*1.01d0
                         call networkneighbor(nelem,node1,nelemnei,
-     &                       nodenei,ibranch,iponoel,inoel,ipkon,kon)
+     &                       nodenei,ibranch,iponoeln,inoeln,ipkon,kon)
                         if(v(2,nodenei).le.v(2,node1)) ierror=1
                      else
                         v(2,node2)=v(2,node1)*0.99d0
                         call networkneighbor(nelem,node2,nelemnei,
-     &                       nodenei,ibranch,iponoel,inoel,ipkon,kon)
+     &                       nodenei,ibranch,iponoeln,inoeln,ipkon,kon)
                         if(v(2,nodenei).ge.v(2,node2)) ierror=2
                      endif
                   else
                      if(v(2,node1).eq.0.d0) then
                         v(2,node1)=v(2,node2)*0.99d0
                         call networkneighbor(nelem,node1,nelemnei,
-     &                       nodenei,ibranch,iponoel,inoel,ipkon,kon)
+     &                       nodenei,ibranch,iponoeln,inoeln,ipkon,kon)
                         if(v(2,nodenei).ge.v(2,node1)) ierror=1
                      else
                         v(2,node2)=v(2,node1)*1.01d0
                         call networkneighbor(nelem,node2,nelemnei,
-     &                       nodenei,ibranch,iponoel,inoel,ipkon,kon)
+     &                       nodenei,ibranch,iponoeln,inoeln,ipkon,kon)
                         if(v(2,nodenei).le.v(2,node2)) ierror=2
                      endif
                   endif
@@ -359,7 +359,7 @@
                      node=node1
                      do
                         call networkneighbor(nelem,node,nelemnei,
-     &                       nodenei,ibranch,iponoel,inoel,ipkon,kon)
+     &                       nodenei,ibranch,iponoeln,inoeln,ipkon,kon)
                         if((ibranch.eq.1).or.(nodenei.eq.0)) exit
                         node=nodenei
                         nelem=nelemnei
@@ -395,7 +395,7 @@
                      ierr=0
                      do
                         call networkneighbor(nelem,node,nelemnei,
-     &                       nodenei,ibranch,iponoel,inoel,ipkon,kon)
+     &                       nodenei,ibranch,iponoeln,inoeln,ipkon,kon)
                         if((ibranch.eq.1).or.(nodenei.eq.0)) exit
                         if(lakon(nelemnei)(2:3).eq.'VO') then
                            if((v(2,node).eq.0.d0).or.
@@ -438,7 +438,8 @@
 !
                         do
                            call networkneighbor(nelem,node,nelemnei,
-     &                          nodenei,ibranch,iponoel,inoel,ipkon,kon)
+     &                         nodenei,ibranch,iponoeln,inoeln,ipkon,
+     &                         kon)
                            if((ibranch.eq.1).or.(nodenei.eq.0)) exit
                            if(lakon(nelemnei)(2:3).eq.'VO') then
                               prefnew=v(2,nodenei)
@@ -492,16 +493,16 @@ c                              write(*,*) nodenei,v(2,nodenei)
                node1=kon(indexe+1)
 !
                if(node1.ne.0) then
-                  index=iponoel(node1)
+                  index=iponoeln(node1)
 !
-                  if(inoel(2,inoel(2,index)).eq.0) then
+                  if(inoeln(2,inoeln(2,index)).eq.0) then
 !
 !                 no branch nor joint; determine neighboring element
 !
-                     if(inoel(1,index).eq.nelem) then
-                        neighbor=inoel(1,inoel(2,index))
+                     if(inoeln(1,index).eq.nelem) then
+                        neighbor=inoeln(1,inoeln(2,index))
                      else
-                        neighbor=inoel(1,index)
+                        neighbor=inoeln(1,index)
                      endif
 !
 !                 initial mass flow in neighboring element
@@ -542,8 +543,8 @@ c                              write(*,*) nodenei,v(2,nodenei)
 !
                      fluxtot=0.d0
                      do
-                        if(inoel(1,index).ne.nelem) then
-                           iel=inoel(1,index)
+                        if(inoeln(1,index).ne.nelem) then
+                           iel=inoeln(1,index)
                            nodemnei=kon(ipkon(iel)+2)
                            if(dabs(v(1,nodemnei)).le.1.d-30) exit
 !
@@ -555,12 +556,12 @@ c                              write(*,*) nodenei,v(2,nodenei)
                               fluxtot=fluxtot+v(1,nodemnei)
                            endif
                         endif
-                        if(inoel(2,index).eq.0) then
+                        if(inoeln(2,index).eq.0) then
                            v(1,nodem)=fluxtot
                            ichange=1
                            cycle loop1
                         else
-                           index=inoel(2,index)
+                           index=inoeln(2,index)
                         endif
                      enddo
 !
@@ -572,16 +573,16 @@ c                              write(*,*) nodenei,v(2,nodenei)
                node2=kon(indexe+3)
 !
                if(node2.ne.0) then
-                  index=iponoel(node2)
+                  index=iponoeln(node2)
 !
-                  if(inoel(2,inoel(2,index)).eq.0) then
+                  if(inoeln(2,inoeln(2,index)).eq.0) then
 !
 !                 no branch nor joint; determine neighboring element
 !
-                     if(inoel(1,index).eq.nelem) then
-                        neighbor=inoel(1,inoel(2,index))
+                     if(inoeln(1,index).eq.nelem) then
+                        neighbor=inoeln(1,inoeln(2,index))
                      else
-                        neighbor=inoel(1,index)
+                        neighbor=inoeln(1,index)
                      endif
 !
 !                 initial mass flow in neighboring element
@@ -622,8 +623,8 @@ c                              write(*,*) nodenei,v(2,nodenei)
 !
                      fluxtot=0.d0
                      do
-                        if(inoel(1,index).ne.nelem) then
-                           iel=inoel(1,index)
+                        if(inoeln(1,index).ne.nelem) then
+                           iel=inoeln(1,index)
                            nodemnei=kon(ipkon(iel)+2)
                            if(dabs(v(1,nodemnei)).le.1.d-30) exit
 !
@@ -635,12 +636,12 @@ c                              write(*,*) nodenei,v(2,nodenei)
                               fluxtot=fluxtot+v(1,nodemnei)
                            endif
                         endif
-                        if(inoel(2,index).eq.0) then
+                        if(inoeln(2,index).eq.0) then
                            v(1,nodem)=fluxtot
                            ichange=1
                            cycle loop1
                         else
-                           index=inoel(2,index)
+                           index=inoeln(2,index)
                         endif
                      enddo
 !
@@ -775,8 +776,8 @@ c         enddo
 !        neighboring elements (excluding nodes which do not belong to
 !        any network element or just to one network element (middle nodes)
 !
-         index=iponoel(node)
-         if((index.eq.0).or.(inoel(2,index).eq.0)) cycle
+         index=iponoeln(node)
+         if((index.eq.0).or.(inoeln(2,index).eq.0)) cycle
 !
          imin=node
          imax=node
@@ -784,7 +785,7 @@ c         enddo
          xmax=v(2,node)
 !
          do
-            nelem=inoel(1,index)
+            nelem=inoeln(1,index)
             if((lakon(nelem)(2:3).eq.'VO').or.
      &         (lakon(nelem)(2:5).eq.'GAPR')) cycle loop
             indexe=ipkon(nelem)
@@ -808,7 +809,7 @@ c         enddo
                imax=neighbor
             endif
 !
-            index=inoel(2,index)
+            index=inoeln(2,index)
             if(index.eq.0) exit
          enddo
 !
@@ -825,8 +826,8 @@ c         enddo
 !
       do i=1,ntg
          node=itg(i)
-         index=iponoel(node)
-         if((index.eq.0).or.(inoel(2,index).eq.0)) cycle
+         index=iponoeln(node)
+         if((index.eq.0).or.(inoeln(2,index).eq.0)) cycle
 c         if(v(2,node).lt.0.d0) v(2,node)=0.d0
          if(v(2,node).lt.0.d0) v(2,node)=-v(2,node)
       enddo

@@ -101,7 +101,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     kmax1,kmax2,icfd=0,*inomat=NULL,*ipkon=NULL,*kon=NULL,*ielmat=NULL,
     *ielorien=NULL,*islavact=NULL,*islavsurfold=NULL,nslavs_prev_step,
     maxprevcontel,iflagact=0,*nmc=NULL,icutb=0,ialeatoric=0,
-    *iponoel=NULL,*inoel=NULL,network=0,ioffr,nrhs=1,
+    *iponoeln=NULL,*inoeln=NULL,network=0,ioffr,nrhs=1,*iponoel=NULL,
     ioffrl,igreen=0,mscalmethod=0,kref,*jqw=NULL,*iroww=NULL,nzsw,
     *islavquadel=NULL,*irowt=NULL,*jqt=NULL,mortartrafoflag=0;
 
@@ -144,6 +144,12 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
   kon=*konp;ielmat=*ielmatp;ielorien=*ielorienp;
 
   islavsurf=*islavsurfp;pslavsurf=*pslavsurfp;clearini=*clearinip;
+
+  /* determining whether a node belongs to at least one element
+     (needed in resultsforc.c) */
+  
+  NNEW(iponoel,ITG,*nk);
+  FORTRAN(nodebelongstoel,(iponoel,lakon,ipkon,kon,ne));
 
   if(*nmethod==13){
     *nmethod=2;
@@ -410,11 +416,11 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	    &reltime,&ne0,thicke,shcon,nshcon,
 	    sideload,xload,xloadold,&icfd,inomat,pslavsurf,pmastsurf,
 	    mortar,islavact,cdn,islavnode,nslavnode,ntie,clearini,
-	    islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
-	    inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
+	    islavsurf,ielprop,prop,energyini,energy,&kscale,iponoeln,
+	    inoeln,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 	    itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
 	    islavquadel,aut,irowt,jqt,&mortartrafoflag,
-	    &intscheme,physcon,dam,damn);
+	    &intscheme,physcon,dam,damn,iponoel);
   }else{
     results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,
 	    elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
@@ -432,11 +438,11 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	    &reltime,&ne0,thicke,shcon,nshcon,
 	    sideload,xload,xloadold,&icfd,inomat,pslavsurf,pmastsurf,
 	    mortar,islavact,cdn,islavnode,nslavnode,ntie,clearini,
-	    islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
-	    inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
+	    islavsurf,ielprop,prop,energyini,energy,&kscale,iponoeln,
+	    inoeln,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 	    itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
 	    islavquadel,aut,irowt,jqt,&mortartrafoflag,
-	    &intscheme,physcon,dam,damn);
+	    &intscheme,physcon,dam,damn,iponoel);
   }
   SFREE(eei);SFREE(stiini);SFREE(emeini);SFREE(vini);
   if(*nener==1) SFREE(enerini);
@@ -1535,11 +1541,11 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 		  &ne0,thicke,shcon,nshcon,
 		  sideload,xload,xloadold,&icfd,inomat,pslavsurf,pmastsurf,
 		  mortar,islavact,&cdn[kk6],islavnode,nslavnode,ntie,clearini,
-		  islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
-		  inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
+		  islavsurf,ielprop,prop,energyini,energy,&kscale,iponoeln,
+		  inoeln,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 		  itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
 		  islavquadel,aut,irowt,jqt,&mortartrafoflag,
-		  &intscheme,physcon,dam,damn);}
+		  &intscheme,physcon,dam,damn,iponoel);}
 	else{
 	  results(co,nk,kon,ipkon,lakon,ne,&v[kkv],&stn[kk6],inum,
 		  &stx[kkx],elcon,
@@ -1560,11 +1566,11 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 		  &ne0,thicke,shcon,nshcon,
 		  sideload,xload,xloadold,&icfd,inomat,pslavsurf,pmastsurf,
 		  mortar,islavact,&cdn[kk6],islavnode,nslavnode,ntie,clearini,
-		  islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
-		  inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
+		  islavsurf,ielprop,prop,energyini,energy,&kscale,iponoeln,
+		  inoeln,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 		  itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
 		  islavquadel,aut,irowt,jqt,&mortartrafoflag,
-		  &intscheme,physcon,dam,damn);
+		  &intscheme,physcon,dam,damn,iponoel);
 	}
 	      
       }
@@ -2695,6 +2701,8 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 
   *islavsurfp=islavsurf;*pslavsurfp=pslavsurf;*clearinip=clearini;
 
+  SFREE(iponoel);
+  
   return;
 }
 

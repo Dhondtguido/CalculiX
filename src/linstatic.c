@@ -89,7 +89,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *itiefac=NULL,*imastnode=NULL,*nmastnode=NULL,*imastop=NULL,iitsta,
     *iponoels=NULL,*inoels=NULL,*ipe=NULL,*ime=NULL,iit=-1,iflagact=0,
     icutb=0,*kon=NULL,*ipkon=NULL,*ielmat=NULL,ialeatoric=0,kscale=1,
-    *iponoel=NULL,*inoel=NULL,
+    *iponoeln=NULL,*inoeln=NULL,*iponoel=NULL,
     *ielorien=NULL,network=0,nrhs=1,iperturbsav,mscalmethod=0,*jqw=NULL,
     *iroww=NULL,nzsw,*islavquadel=NULL,*irowt=NULL,*jqt=NULL,
     mortartrafoflag=0,nmethodold=*nmethod;
@@ -121,6 +121,12 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
   irow=*irowp;ener=*enerp;xstate=*xstatep;ipkon=*ipkonp;lakon=*lakonp;
   kon=*konp;ielmat=*ielmatp;ielorien=*ielorienp;icol=*icolp;
+
+  /* determining whether a node belongs to at least one element
+     (needed in resultsforc.c) */
+  
+  NNEW(iponoel,ITG,*nk);
+  FORTRAN(nodebelongstoel,(iponoel,lakon,ipkon,kon,ne));
   
   for(k=0;k<3;k++){
     strcpy1(&jobnamef[k*132],&jobnamec[k*132],132);
@@ -132,7 +138,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   dtime=*tper;
 
   ne0=*ne;
-
+  
   /* determining the global values to be used as boundary conditions
      for a submodel */
 
@@ -164,23 +170,9 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     NNEW(t1act,double,*nk);
     for(k=0;k<*nk;++k){t1act[k]=t1old[k];}
   }
-  
-  /* assigning the body forces to the elements */ 
-
-  /*  if(*nbody>0){
-      ifreebody=*ne+1;
-      NNEW(ipobody,ITG,2*ifreebody**nbody);
-      for(k=1;k<=*nbody;k++){
-      FORTRAN(bodyforce,(cbody,ibody,ipobody,nbody,set,istartset,
-      iendset,ialset,&inewton,nset,&ifreebody,&k));
-      RENEW(ipobody,ITG,2*(*ne+ifreebody));
-      }
-      RENEW(ipobody,ITG,2*(ifreebody-1));
-      }*/
 
   /* contact conditions */
   
-  //  if(*icontact==1){
   if(*mortar>-2){
 
     memmpc_=mpcinfo[0];mpcfree=mpcinfo[1];icascade=mpcinfo[2];
@@ -329,7 +321,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		    co,vold,itg,&ntg,amname,ikboun,ilboun,nelemload,sideload,mi,
 		    ntrans,trab,inotr,veold,integerglob,doubleglob,tieset,istartset,
 		    iendset,ialset,ntie,nmpc,ipompc,ikmpc,ilmpc,nodempc,coefmpc,
-		    ipobody,iponoel,inoel,ipkon,kon,ielprop,prop,ielmat,
+		    ipobody,iponoeln,inoeln,ipkon,kon,ielprop,prop,ielmat,
 		    shcon,nshcon,rhcon,nrhcon,cocon,ncocon,ntmat_,lakon,
 		    set,nset));
 
@@ -372,11 +364,11 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	  &reltime,&ne0,thicke,shcon,nshcon,
 	  sideload,xloadact,xloadold,&icfd,inomat,pslavsurf,pmastsurf,
 	  mortar,islavact,cdn,islavnode,nslavnode,ntie,clearini,
-	  islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
-          inoel,nener,orname,&network,ipobody,xbodyact,ibody,typeboun,
+	  islavsurf,ielprop,prop,energyini,energy,&kscale,iponoeln,
+          inoeln,nener,orname,&network,ipobody,xbodyact,ibody,typeboun,
 	  itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
 	  islavquadel,aut,irowt,jqt,&mortartrafoflag,
-	  &intscheme,physcon,dam,damn);
+	  &intscheme,physcon,dam,damn,iponoel);
   SFREE(v);SFREE(fn);SFREE(stx);SFREE(inum);
   iout=1;
 
@@ -455,7 +447,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	       xstateini,xstate,thicke,integerglob,doubleglob,
 	       tieset,istartset,iendset,ialset,ntie,&nasym,pslavsurf,
 	       pmastsurf,mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
-	       iponoel,inoel,&network,ntrans,inotr,trab,smscale,&mscalmethod,
+	       iponoeln,inoeln,&network,ntrans,inotr,trab,smscale,&mscalmethod,
 	       set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag);
 
   /* check for negative Jacobians */
@@ -484,7 +476,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		   xstateini,xstate,thicke,
 		   integerglob,doubleglob,tieset,istartset,iendset,
 		   ialset,ntie,&nasym,pslavsurf,pmastsurf,mortar,clearini,
-		   ielprop,prop,&ne0,&kscale,iponoel,inoel,&network,set,nset);
+		   ielprop,prop,&ne0,&kscale,iponoeln,inoeln,&network,set,nset);
   }
 
   /* determining the right hand side */
@@ -606,11 +598,11 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	      &ne0,thicke,shcon,nshcon,
 	      sideload,xloadact,xloadold,&icfd,inomat,pslavsurf,pmastsurf,
 	      mortar,islavact,cdn,islavnode,nslavnode,ntie,clearini,
-	      islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
-	      inoel,nener,orname,&network,ipobody,xbodyact,ibody,typeboun,
+	      islavsurf,ielprop,prop,energyini,energy,&kscale,iponoeln,
+	      inoeln,nener,orname,&network,ipobody,xbodyact,ibody,typeboun,
 	      itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
 	      islavquadel,aut,irowt,jqt,&mortartrafoflag,
-	      &intscheme,physcon,dam,damn);
+	      &intscheme,physcon,dam,damn,iponoel);
 	      
       xbounact[iretain[i]-1]=0.;
 	      
@@ -670,7 +662,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       
     if(iglob!=0){SFREE(integerglob);SFREE(doubleglob);}
       
-    return;
+    SFREE(iponoel);return;
 
 
   }else if(*nmethod!=0){
@@ -831,11 +823,11 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
             &ne0,thicke,shcon,nshcon,
             sideload,xloadact,xloadold,&icfd,inomat,pslavsurf,pmastsurf,
             mortar,islavact,cdn,islavnode,nslavnode,ntie,clearini,
-	    islavsurf,ielprop,prop,energyini,energy,&kscale,iponoel,
-            inoel,nener,orname,&network,ipobody,xbodyact,ibody,typeboun,
+	    islavsurf,ielprop,prop,energyini,energy,&kscale,iponoeln,
+            inoeln,nener,orname,&network,ipobody,xbodyact,ibody,typeboun,
 	    itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
 	    islavquadel,aut,irowt,jqt,&mortartrafoflag,
-	    &intscheme,physcon,dam,damn);
+	    &intscheme,physcon,dam,damn,iponoel);
 
     SFREE(eei);
     if(*nener==1){
@@ -982,6 +974,8 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   *konp=kon;*ielmatp=ielmat;*ielorienp=ielorien;*icolp=icol;
 
   (*ttime)+=(*tper);
+  
+  SFREE(iponoel);
  
   return;
 }

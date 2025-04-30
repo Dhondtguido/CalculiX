@@ -100,7 +100,7 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
 		  double *accold,double *gam,double *cfsini,
 		  double *cfstil,double *plkcon,ITG *nplkcon,char *filab,
 		  double *f,double *fn,double *qa,ITG *nprint,char *prlab,
-		  double *xforc,ITG *nforc){
+		  double *xforc,ITG *nforc,ITG *iponoel){
   
   ITG i,j,l,jj,k,idof1,idof2,idof3,nodes,mt=mi[1]+1,nstick=0,nslip=0,ninacti=0,
     nnogap=0,nolm=0,ndiverg,nhelp,idof,node2,dirind,dirdep,index,ist,
@@ -676,7 +676,7 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
   }
   
   resultsforc(nk,f_cs,rc,nactdof,ipompc,nodempc,coefmpc,labmpc,nmpc,mi,fmpc,
-	      &calcul_fn,&calcul_f,&num_cpus);
+	      &calcul_fn,&calcul_f,&num_cpus,iponoel);
   SFREE(fmpc);
   
   /* print total contact force per contact tie for debugging purpose */

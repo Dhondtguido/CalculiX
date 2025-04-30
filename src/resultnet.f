@@ -27,7 +27,7 @@
      &     ipobody,ibody,xbodyact,nbody,dtheta,vold,xloadold,
      &     reltime,nmethod,set,mi,ineighe,cama,vamt,vamf,vamp,vama,
      &     nmpc,nodempc,ipompc,coefmpc,labmpc,iaxial,qat,qaf,ramt,
-     &     ramf,ramp,cocon,ncocon,iponoel,inoel,iplausi)
+     &     ramf,ramp,cocon,ncocon,iponoeln,inoeln,iplausi)
 !     
       implicit none
 !     
@@ -47,7 +47,7 @@
      &     nacteq(0:3,*),ielprop(*),nodef(8),iin,kflag,ibody(3,*),icase,
      &     inv, index2,nmethod,nelem0,nodem0,nelem1,nodem1,nelem2,
      &     nodem2,nelemswirl,nmpc,nodempc(3,*),ipompc(*),
-     &     iponoel(*),inoel(2,*),iplausi,indexe
+     &     iponoeln(*),inoeln(2,*),iplausi,indexe
 !     
       real*8 bc(*),xloadact(2,*),cp,h(2),physcon(*),r,dvi,rho,
      &     xl2(3,8),coords(3),dxsj2,temp,xi,et,weight,xsj2(3),
@@ -977,7 +977,7 @@ c          call nident(itg,node,ntg,id)
               call film(h,sinktemp,temp,istep,
      &             iinc,tvar,nelem,m,coords,jltyp,field,nfield,
      &             sideload(i),node,areaj,v,mi,ipkon,kon,lakon,
-     &             iponoel,inoel,ielprop,prop,ielmat,shcon,nshcon,
+     &             iponoeln,inoeln,ielprop,prop,ielmat,shcon,nshcon,
      &             rhcon,nrhcon,ntmat_,cocon,ncocon,
      &             ipobody,xbodyact,ibody,heatnod,heatfac)
             endif
@@ -1170,8 +1170,8 @@ c          call nident(itg,node,ntg,id)
 !     user-defined network equation
 !     
           call networkmpc_rhs(i,ipompc,nodempc,coefmpc,labmpc,
-     &         v,bc,j,mi,ipkon,kon,lakon,iponoel,
-     &         inoel,ielprop,prop,ielmat,
+     &         v,bc,j,mi,ipkon,kon,lakon,iponoeln,
+     &         inoeln,ielprop,prop,ielmat,
      &         shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon)
         endif
       enddo

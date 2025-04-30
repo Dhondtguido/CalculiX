@@ -95,9 +95,9 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
     *nslavnode=NULL,mortar=0,*imddof=NULL,nmddof,kchdep=0,
     *ikactmech=NULL,nactmech,iabsload=0,iprev=1,inonlinmpc=0,ielem,
     *imdnode=NULL,nmdnode,*imdboun=NULL,nmdboun,*imdmpc=NULL,
-    nmdmpc,intpointvar,*izdof=NULL,
-    nzdof,iload,iforc,*iponoel=NULL,*inoel=NULL,*imdelem=NULL,nmdelem,
-    nasym=0,*nshcon=NULL,nherm,icfd=0,*inomat=NULL,
+    nmdmpc,intpointvar,*izdof=NULL,*iponoelt=NULL,*inoelt=NULL,
+    nzdof,iload,iforc,*iponoeln=NULL,*inoeln=NULL,*imdelem=NULL,nmdelem,
+    nasym=0,*nshcon=NULL,nherm,icfd=0,*inomat=NULL,*iponoel=NULL,
     network=0,iperturbsav,mscalmethod=0,
     *islavquadel=NULL,*irowt=NULL,*jqt=NULL,mortartrafoflag=0;
 
@@ -161,6 +161,12 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
   vold=*voldp;eme=*emep;ener=*enerp;ipompc=*ipompcp;nodempc=*nodempcp;
   coefmpc=*coefmpcp;labmpc=*labmpcp;ikmpc=*ikmpcp;ilmpc=*ilmpcp;
   fmpc=*fmpcp;veold=*veoldp;iamt1=*iamt1p;t0=*t0p;t1=*t1p;t1old=*t1oldp;
+
+  /* determining whether a node belongs to at least one element
+     (needed in resultsforc.c) */
+  
+  NNEW(iponoel,ITG,*nk);
+  FORTRAN(nodebelongstoel,(iponoel,lakon,ipkon,kon,ne));
   
   for(k=0;k<3;k++){
     strcpy1(&jobnamef[k*132],&jobnamec[k*132],132);
@@ -321,9 +327,9 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 	  
     /* determining the elements belonging to a given node */
       
-    NNEW(iponoel,ITG,*nk);
-    NNEW(inoel,ITG,2**nkon);
-    FORTRAN(elementpernode,(iponoel,inoel,lakon,ipkon,kon,ne));
+    NNEW(iponoelt,ITG,*nk);
+    NNEW(inoelt,ITG,2**nkon);
+    FORTRAN(elementpernode,(iponoelt,inoelt,lakon,ipkon,kon,ne));
     NNEW(imdelem,ITG,*ne);
 
     /* storing the elements in which integration point results
@@ -334,12 +340,12 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 			  ikmpc,ilmpc,ipompc,nodempc,nmpc,imddof,&nmddof,
 			  nactdof,mi,imdmpc,&nmdmpc,imdboun,&nmdboun,
 			  ikboun,nboun,ilboun,ithermal,imdelem,&nmdelem,
-			  iponoel,inoel,prlab,prset,nprint,lakon,set,nset,
+			  iponoelt,inoelt,prlab,prset,nprint,lakon,set,nset,
 			  ialset,ipkon,kon,istartset,iendset,nforc,
 			  ikforc,ilforc));
 
     RENEW(imdelem,ITG,nmdelem);
-    SFREE(iponoel);SFREE(inoel);
+    SFREE(iponoelt);SFREE(inoelt);
   }
 
   /* if results are requested in too many nodes, it is faster to 
@@ -560,6 +566,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
     /* allocating field for the expanded structure */
 
     RENEW(co,double,3**nk*nsectors);
+    RENEW(iponoel,ITG,*nk*nsectors);
 
     /* next line is necessary for multiple cyclic symmetry
        conditions */
@@ -691,7 +698,8 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 	   &icole,&jqe,&irowe,isolver,nzse,&adbe,&aube,iexpl,
 	   ibody,xbody,nbody,cocon,ncocon,tieset,ntie,imddof,&nmddof,
 	   imdnode,&nmdnode,imdboun,&nmdboun,imdmpc,&nmdmpc,&izdof,&nzdof,
-	   &nherm,xmr,xmi,typeboun,ielprop,prop,orname,itiefac,t0g,t1g);
+	   &nherm,xmr,xmi,typeboun,ielprop,prop,orname,itiefac,t0g,t1g,
+	   iponoel);
 
     RENEW(imddof,ITG,nmddof);
     RENEW(imdnode,ITG,nmdnode);
@@ -1051,7 +1059,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 			&iabsload,
 			&iprescribedboundary,ntrans,trab,inotr,veold,nactdof,
 			bcont,
-			fn,ipobody,iponoel,inoel,ipkon,kon,lakon,ielprop,prop,
+			fn,ipobody,iponoeln,inoeln,ipkon,kon,lakon,ielprop,prop,
 			ielmat,
 			shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon));
 
@@ -1300,7 +1308,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 			  nelemload,sideload,mi,
 			  xforcdiff,xloaddiff,xbodydiff,t1diff,xboundiff,&iabsload,
 			  &iprescribedboundary,ntrans,trab,inotr,veold,nactdof,bcont,
-			  fn,ipobody,iponoel,inoel,ipkon,kon,lakon,ielprop,prop,ielmat,
+			  fn,ipobody,iponoeln,inoeln,ipkon,kon,lakon,ielprop,prop,ielmat,
 			  shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon));
 	      
     /* calculating the instantaneous loading vector */
@@ -1419,7 +1427,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 			      nelemload,sideload,mi,
 			      xforcdiff,xloaddiff,xbodydiff,t1diff,xboundiff,&iabsload,
 			      &iprescribedboundary,ntrans,trab,inotr,veold,nactdof,bcont,
-			      fn,ipobody,iponoel,inoel,ipkon,kon,lakon,ielprop,prop,ielmat,
+			      fn,ipobody,iponoeln,inoeln,ipkon,kon,lakon,ielprop,prop,ielmat,
 			      shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon));
 	      
 	/* calculating the instantaneous loading vector */
@@ -1770,11 +1778,11 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 	      thicke,shcon,nshcon,
 	      sideload,xload,xloadold,&icfd,inomat,pslavsurf,pmastsurf,
 	      &mortar,islavact,cdn,islavnode,nslavnode,ntie,clearini,
-	      islavsurf,ielprop,prop,energyini,energy,&iit,iponoel,
-	      inoel,nener,orname,&network,ipobody,xbodyact,ibody,typeboun,
+	      islavsurf,ielprop,prop,energyini,energy,&iit,iponoeln,
+	      inoeln,nener,orname,&network,ipobody,xbodyact,ibody,typeboun,
 	      itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
 	      islavquadel,aut,irowt,jqt,&mortartrafoflag,
-	      &intscheme,physcon,dam,damn);
+	      &intscheme,physcon,dam,damn,iponoel);
 
       /* restoring */
 
@@ -2081,6 +2089,8 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 
   (*ttime)+=(*tper);
 
+  SFREE(iponoel);
+  
   return;
 }
 

@@ -33,7 +33,7 @@ static ITG *nk1,*kon1,*ipkon1,*ne1,*nodeboun1,*ndirboun1,*nboun1,
   *mi1,*ncmat1_,*mass1,*stiffness1,*buckling1,*rhsi1,*intscheme1,
   *nshcon1,*ncocon1,*istep1,*iinc1,*coriolis1,*ibody1,*nstate1_,
   *integerglob1,*istartset1,*iendset1,*ialset1,*ntie1,*nasym1,
-  *mortar1,*ielprop1,*ne01,num_cpus,*kscale1,*iponoel1,*inoel1,
+  *mortar1,*ielprop1,*ne01,num_cpus,*kscale1,*iponoeln1,*inoeln1,
   *network1,*neapar=NULL,*nebpar=NULL,*mscalmethod1,*nset1,
   *irowt1,*jqt1,*islavquadel1,*mortartrafoflag1;
 
@@ -77,7 +77,7 @@ void mafillsmmain(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		  ITG *istartset,ITG *iendset,ITG *ialset,ITG *ntie,
 		  ITG *nasym,double *pslavsurf,double *pmastsurf,ITG *mortar,
 		  double *clearini,ITG *ielprop,double *prop,ITG *ne0,
-		  double *fnext,ITG *kscale,ITG *iponoel,ITG *inoel,
+		  double *fnext,ITG *kscale,ITG *iponoeln,ITG *inoeln,
 		  ITG *network,ITG *ntrans,ITG *inotr,double *trab,
 		  double *smscale,ITG *mscalmethod,char *set,ITG *nset,
 		  ITG *islavquadel,double *aut,ITG *irowt,ITG *jqt,
@@ -233,7 +233,7 @@ void mafillsmmain(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
   iendset1=iendset;ialset1=ialset;ntie1=ntie;nasym1=nasym;
   pslavsurf1=pslavsurf;pmastsurf1=pmastsurf;mortar1=mortar;
   clearini1=clearini;ielprop1=ielprop;prop1=prop;ne01=ne0;kscale1=kscale;
-  iponoel1=iponoel;inoel1=inoel;network1=network;
+  iponoeln1=iponoeln;inoeln1=inoeln;network1=network;
   smscale1=smscale;mscalmethod1=mscalmethod;set1=set;nset1=nset;
   islavquadel1=islavquadel;aut1=aut;irowt1=irowt;jqt1=jqt;
   mortartrafoflag1=mortartrafoflag; 
@@ -454,7 +454,7 @@ void *mafillsmmt(ITG *i){
 		    xstateini1,xstate1,thicke1,integerglob1,doubleglob1,
 		    tieset1,istartset1,iendset1,ialset1,ntie1,nasym1,pslavsurf1,
 		    pmastsurf1,mortar1,clearini1,ielprop1,prop1,ne01,
-		    &fnext1[indexfnext],&nea,&neb,kscale1,iponoel1,inoel1,
+		    &fnext1[indexfnext],&nea,&neb,kscale1,iponoeln1,inoeln1,
 		    network1,smscale1,mscalmethod1,set1,nset1,islavquadel1,
 		    aut1,irowt1,jqt1,mortartrafoflag1));
 

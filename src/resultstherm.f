@@ -26,7 +26,7 @@
      &  calcul_fn,calcul_qa,nal,nea,neb,ithermal,nelemload,nload,
      &  nmethod,reltime,sideload,xload,xloadold,pslavsurf,
      &  pmastsurf,mortar,clearini,plicon,nplicon,ielprop,prop,
-     &  iponoel,inoel,network,ipobody,xbody,ibody)
+     &  iponoeln,inoeln,network,ipobody,xbody,ibody)
 !
 !     calculates the heat flux and the material tangent at the integration
 !     points and the internal concentrated flux at the nodes
@@ -46,7 +46,7 @@
      &  nplkcon(0:ntmat_,*),npmat_,calcul_fn,calcul_qa,nea,neb,
      &  nelemload(2,*),nload,ithermal(*),nmethod,nopered,
      &  jfaces,node,nplicon(0:ntmat_,*),null,ielprop(*),
-     &  iponoel(*),inoel(2,*),network,ipobody(2,*),ibody(3,*)
+     &  iponoeln(*),inoeln(2,*),network,ipobody(2,*),ibody(3,*)
 !
       real*8 co(3,*),v(0:mi(2),*),shp(4,20),reltime,
      &  xl(3,20),vl(0:mi(2),20),elcon(0:ncmat_,ntmat_,*),
@@ -250,8 +250,8 @@ c            if(lakon(i)(7:7).eq.'C') konl(nope+1)=kon(indexe+nope+1)
                   call advecforc(nope,vl,ithermal,xl,nelemload,
      &                 i,nload,lakon,xload,istep,time,ttime,
      &                 dtime,sideload,v,mi,xloadold,reltime,nmethod,
-     &                 tnl,iinc,iponoel,inoel,ielprop,prop,ielmat,shcon,
-     &                 nshcon,rhcon,nrhcon,ntmat_,ipkon,kon,cocon,
+     &                 tnl,iinc,iponoeln,inoeln,ielprop,prop,ielmat,
+     &                 shcon,nshcon,rhcon,nrhcon,ntmat_,ipkon,kon,cocon,
      &                 ncocon,ipobody,xbody,ibody)
                endif
 !

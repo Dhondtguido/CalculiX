@@ -26,7 +26,7 @@
      &     ntrans,trab,inotr,veold,integerglob,doubleglob,tieset,
      &     istartset,
      &     iendset,ialset,ntie,nmpc,ipompc,ikmpc,ilmpc,nodempc,coefmpc,
-     &     ipobody,iponoel,inoel,ipkon,kon,ielprop,prop,ielmat,
+     &     ipobody,iponoeln,inoeln,ipkon,kon,ielprop,prop,ielmat,
      &     shcon,nshcon,rhcon,nrhcon,cocon,ncocon,ntmat_,lakon,
      &     set,nset)
 !     
@@ -51,7 +51,7 @@
      &     ipresboun,mi(*),ntrans,inotr(2,*),integerglob(*),
      &     istartset(*),iendset(*),ialset(*),ntie,iselect(1),
      &     nmpc,ikmpc(*),ilmpc(*),nodempc(3,*),k,ist,index,ipompc(*),
-     &     ipobody(2,*),iponoel(*),inoel(2,*),ipkon(*),kon(*),
+     &     ipobody(2,*),iponoeln(*),inoeln(2,*),ipkon(*),kon(*),
      &     ielprop(*),ielmat(mi(3),*),nshcon(*),nrhcon(*),ncocon(2,*),
      &     ntmat_,nset
 !     
@@ -148,13 +148,13 @@ c     coords(j)=co(j,node)+vold(j,node)
 !     
           if(ndirboun(i).eq.0) then
             call utemp(xbounact(i),msecpt,istep,iinc,abqtime,node,
-     &           coords,vold,mi,iponoel,inoel,
+     &           coords,vold,mi,iponoeln,inoeln,
      &           ipobody,xbodyact,ibody,ipkon,kon,
      &           lakon,ielprop,prop,ielmat,
      &           shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon)
           else
             call uboun(xbounact(i),istep,iinc,abqtime,node,
-     &           ndirboun(i),coords,vold,mi,iponoel,inoel,
+     &           ndirboun(i),coords,vold,mi,iponoeln,inoeln,
      &           ipobody,xbodyact,ibody,ipkon,kon,
      &           lakon,ielprop,prop,ielmat,
      &           shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon)
@@ -259,7 +259,7 @@ c     coords(j)=co(j,node)+vold(j,node)
             endif
 !     
             call cflux(xforcact(i),msecpt,istep,iinc,abqtime,node,
-     &           coords,vold,mi,ipkon,kon,lakon,iponoel,inoel,
+     &           coords,vold,mi,ipkon,kon,lakon,iponoeln,inoeln,
      &           ielprop,prop,ielmat,shcon,nshcon,rhcon,nrhcon,
      &           ntmat_,cocon,ncocon)
             cycle
@@ -421,7 +421,7 @@ c     coords(j)=co(j,i)+vold(j,i)
               coords(j)=co(j,i)
             enddo
             call utemp(t1act(i),msecpt,istep,iinc,abqtime,i,
-     &           coords,vold,mi,iponoel,inoel,
+     &           coords,vold,mi,iponoeln,inoeln,
      &           ipobody,xbodyact,ibody,ipkon,kon,
      &           lakon,ielprop,prop,ielmat,
      &           shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon)

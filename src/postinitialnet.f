@@ -17,8 +17,8 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine postinitialnet(ieg,lakon,v,ipkon,kon,nflow,prop,
-     &     ielprop,ielmat,ntmat_,shcon,nshcon,rhcon,nrhcon,mi,iponoel,
-     &     inoel,itg,ntg,nactdog)
+     &     ielprop,ielmat,ntmat_,shcon,nshcon,rhcon,nrhcon,mi,iponoeln,
+     &     inoeln,itg,ntg,nactdog)
 !
 !     this routine only applies to compressible networks
 !
@@ -41,7 +41,7 @@
 !           
       integer mi(*),ieg(*),nflow,i,ielmat(mi(3),*),ntmat_,node1,node2,
      &     nelem,index,nshcon(*),ipkon(*),kon(*),nodem,imat,ielprop(*),
-     &     nrhcon(*),neighbor,ichange,iponoel(*),inoel(2,*),indexe,
+     &     nrhcon(*),neighbor,ichange,iponoeln(*),inoeln(2,*),indexe,
      &     itg(*),ntg,j,nactdog(0:3,*)
 !     
       real*8 prop(*),shcon(0:3,ntmat_,*),xflow,v(0:mi(2),*),cp,r,
@@ -75,16 +75,16 @@ c      enddo
                node1=kon(indexe+1)
 !
                if(node1.ne.0) then
-                  index=iponoel(node1)
+                  index=iponoeln(node1)
 !
-                  if(inoel(2,inoel(2,index)).eq.0) then
+                  if(inoeln(2,inoeln(2,index)).eq.0) then
 !
 !                 no branch nor joint; determine neighboring element
 !
-                     if(inoel(1,index).eq.nelem) then
-                        neighbor=inoel(1,inoel(2,index))
+                     if(inoeln(1,index).eq.nelem) then
+                        neighbor=inoeln(1,inoeln(2,index))
                      else
-                        neighbor=inoel(1,index)
+                        neighbor=inoeln(1,index)
                      endif
 !
 !                 initial mass flow in neighboring element
@@ -118,16 +118,16 @@ c      enddo
                node2=kon(indexe+3)
 !
                if(node2.ne.0) then
-                  index=iponoel(node2)
+                  index=iponoeln(node2)
 !
-                  if(inoel(2,inoel(2,index)).eq.0) then
+                  if(inoeln(2,inoeln(2,index)).eq.0) then
 !
 !                 no branch nor joint; determine neighboring element
 !
-                     if(inoel(1,index).eq.nelem) then
-                        neighbor=inoel(1,inoel(2,index))
+                     if(inoeln(1,index).eq.nelem) then
+                        neighbor=inoeln(1,inoeln(2,index))
                      else
-                        neighbor=inoel(1,index)
+                        neighbor=inoeln(1,index)
                      endif
 !
 !                 initial mass flow in neighboring element

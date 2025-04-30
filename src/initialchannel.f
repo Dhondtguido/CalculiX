@@ -23,7 +23,7 @@
      &     ikboun,nboun,prop,ielprop,ndirboun,nodeboun,xbounact,
      &     ielmat,ntmat_,shcon,nshcon,physcon,rhcon,nrhcon,ipobody,
      &     ibody,xbodyact,co,nbody,network,vold,set,istep,iit,mi,
-     &     ineighe,ilboun,ttime,time,itreated,iponoel,inoel,istack,
+     &     ineighe,ilboun,ttime,time,itreated,iponoeln,inoeln,istack,
      &     sfr,hfr,sba,hba,ndata,jumpup,jumpdo,istackb,nelemload,
      &     ixnode,iyload,nload,sideload,xloadact,cocon,ncocon,iinc,
      &     nforc,ikforc,ilforc,xforcact)
@@ -39,8 +39,8 @@
      &     nboun,ielprop(*),ndirboun(*),nodeboun(*),ielmat(mi(3),*),
      &     ntmat_,nshcon(*),nrhcon(*),ipobody(2,*),ibody(3,*),nbody,
      &     network,istep,iit,ineighe(*),ilboun(*),i,j,nelem,indexe,
-     &     node1,node2,id,itreated(*),id1,id2,nup,index,iponoel(*),
-     &     inoel(2,*),nmid,ndo,inv,nelemio,nelup,node,imat,neldo,
+     &     node1,node2,id,itreated(*),id1,id2,nup,index,iponoeln(*),
+     &     inoeln(2,*),nmid,ndo,inv,nelemio,nelup,node,imat,neldo,
      &     istack(2,*),nstack,nel,ndata,jumpup(*),jumpdo(*),
      &     istackb(2,*),nstackb,nel1,nup1,nentry,newel,nelemload(2,*),
      &     ixnode(*),iyload(*),nload,kflag,ii,nelemwall,ncocon(2,*),
@@ -211,7 +211,7 @@
 !
 !         determine the upstream element nelup
 !
-          index=iponoel(nup)
+          index=iponoeln(nup)
           do
             if(index.eq.0) then
               write(*,*) '*ERROR: node',nup
@@ -220,11 +220,11 @@
               write(*,*)
               call exit(201)
             endif
-            if(inoel(1,index).ne.nelem) then
-              nelup=inoel(1,index)
+            if(inoeln(1,index).ne.nelem) then
+              nelup=inoeln(1,index)
               exit
             else
-              index=inoel(2,index)
+              index=inoeln(2,index)
             endif
           enddo
 !
@@ -255,10 +255,10 @@
 !     
 !     IO-element: determine the mass flow
 !     
-                index=iponoel(nup)
+                index=iponoeln(nup)
                 do
-                  if(inoel(1,index).ne.nelup) then
-                    nelemio=inoel(1,index)
+                  if(inoeln(1,index).ne.nelup) then
+                    nelemio=inoeln(1,index)
                     if(nup.eq.kon(ipkon(nelemio)+1)) then
                       v(1,kon(ipkon(nelemio)+2))=xflow
                     else
@@ -266,7 +266,7 @@
                     endif
                     cycle loop1
                   endif
-                  index=inoel(2,index)
+                  index=inoeln(2,index)
                   if(index.eq.0) then
                     write(*,*) '*ERROR in initialchannel: no IO'
                     write(*,*) '       element at end of branch'
@@ -282,16 +282,16 @@
 !     one "true" element connected downstream
 !     loop over all elements connected to nup
 !     
-                index=iponoel(nup)
+                index=iponoeln(nup)
                 do
-                  if(inoel(1,index).ne.nelup) then
-                    if(lakon(inoel(1,index))(6:7).ne.'IO') then
-                      nelem=inoel(1,index)
+                  if(inoeln(1,index).ne.nelup) then
+                    if(lakon(inoeln(1,index))(6:7).ne.'IO') then
+                      nelem=inoeln(1,index)
                     else
 !     
 !     add flow
 !     
-                      nelemio=inoel(1,index)
+                      nelemio=inoeln(1,index)
                       if((lakon(nelup)(6:7).eq.'SG').or.
      &                     (lakon(nelup)(6:7).eq.'WE')) then
                         write(*,*)
@@ -311,7 +311,7 @@
                       endif
                     endif
                   endif
-                  index=inoel(2,index)
+                  index=inoeln(2,index)
                   if(index.eq.0) exit
                 enddo
 !
@@ -328,7 +328,7 @@
                 call materialdata_tg(imat,ntmat_,temp,shcon,nshcon,cp,r,
      &               dvi,rhcon,nrhcon,rho)
 !     
-                call channeljointfront(nelem,nelup,nup,iponoel,inoel,
+                call channeljointfront(nelem,nelup,nup,iponoeln,inoeln,
      &               ielprop,prop,ipkon,kon,mi,v,g,dg,nstackb,istackb,
      &               rho,xflow,co,lakon)
 !
@@ -377,10 +377,10 @@
 !
 !              IO-element: determine the mass flow
 !     
-                index=iponoel(ndo)
+                index=iponoeln(ndo)
                 do
-                  if(inoel(1,index).ne.neldo) then
-                    nelemio=inoel(1,index)
+                  if(inoeln(1,index).ne.neldo) then
+                    nelemio=inoeln(1,index)
                     if(ndo.eq.kon(ipkon(nelemio)+3)) then
                       v(1,kon(ipkon(nelemio)+2))=xflow
                     else
@@ -388,7 +388,7 @@
                     endif
                     exit
                   endif
-                  index=inoel(2,index)
+                  index=inoeln(2,index)
                   if(index.eq.0) exit
                 enddo
 !
@@ -419,9 +419,9 @@
                 call materialdata_tg(imat,ntmat_,temp,shcon,nshcon,cp,r,
      &               dvi,rhcon,nrhcon,rho)
 !     
-                call channeljointback(neldo,ndo,iponoel,inoel,ipkon,kon,
-     &               mi,v,istackb,nstackb,co,ielprop,prop,g,dg,xflow,
-     &               rho)
+                call channeljointback(neldo,ndo,iponoeln,inoeln,ipkon,
+     &               kon,mi,v,istackb,nstackb,co,ielprop,prop,g,dg,
+     &               xflow,rho)
 !
 !               joint of more than three channels
 !
@@ -435,16 +435,16 @@
 !     if nelem is zero, neldo is known and nelem has to be
 !     determined
 !     
-              index=iponoel(ndo)
+              index=iponoeln(ndo)
               do
-                if(inoel(1,index).ne.neldo) then
-                  if(lakon(inoel(1,index))(6:7).ne.'IO') then
-                    nelem=inoel(1,index)
+                if(inoeln(1,index).ne.neldo) then
+                  if(lakon(inoeln(1,index))(6:7).ne.'IO') then
+                    nelem=inoeln(1,index)
                   else
 !     
 !     add flow
 !     
-                    nelemio=inoel(1,index)
+                    nelemio=inoeln(1,index)
                     if(lakon(nelup)(6:7).eq.'RE') then
                       write(*,*)
      &                     '*ERROR in initialchannel: no IO element'
@@ -461,7 +461,7 @@
                     endif
                   endif
                 endif
-                index=inoel(2,index)
+                index=inoeln(2,index)
                 if(index.eq.0) exit
               enddo
             endif
@@ -482,16 +482,16 @@
 !           in certain cases
 !     
             nelup=0
-            index=iponoel(nup)
+            index=iponoeln(nup)
             do
               if(index.eq.0) exit
-              if(inoel(1,index).ne.nelem) then
-                if(lakon(inoel(1,index))(6:7).ne.'IO') then
-                  nelup=inoel(1,index)
+              if(inoeln(1,index).ne.nelem) then
+                if(lakon(inoeln(1,index))(6:7).ne.'IO') then
+                  nelup=inoeln(1,index)
                   exit
                 endif
               endif
-              index=inoel(2,index)
+              index=inoeln(2,index)
             enddo
           endif
 !
@@ -658,19 +658,19 @@ c      if(i.eq.1) return
 !           one "true" element connected downstream
 !           loop over all elements connected to nup
 !     
-            index=iponoel(nup)
+            index=iponoeln(nup)
             do
-              if(inoel(1,index).ne.nelup) then
-                if(lakon(inoel(1,index))(6:7).ne.'IO') then
+              if(inoeln(1,index).ne.nelup) then
+                if(lakon(inoeln(1,index))(6:7).ne.'IO') then
 !     
 !                 actual element
 !     
-                  nelem=inoel(1,index)
+                  nelem=inoeln(1,index)
                 else
 !     
 !                 IO element
 !     
-                  nelemio=inoel(1,index)
+                  nelemio=inoeln(1,index)
 !
 !                 mass flow
 !
@@ -703,7 +703,7 @@ c      if(i.eq.1) return
                   heatflux=heatflux+cp*(temp-physcon(1))*xflowact
                 endif
               endif
-              index=inoel(2,index)
+              index=inoeln(2,index)
               if(index.eq.0) exit
             enddo
 !     
@@ -712,17 +712,17 @@ c      if(i.eq.1) return
           elseif(ineighe(id).eq.3) then
 !     
             nel1=0
-            index=iponoel(nup)
+            index=iponoeln(nup)
             do
-              if(inoel(1,index).eq.nelup) then
-                index=inoel(2,index)
+              if(inoeln(1,index).eq.nelup) then
+                index=inoeln(2,index)
                 if(index.eq.0) exit
                 cycle
               endif
 !
 !             element not equal to nelup
 !
-              newel=inoel(1,index)
+              newel=inoeln(1,index)
               indexe=ipkon(newel)
 !
 !             temperature at the end node of element newel which
@@ -739,7 +739,7 @@ c      if(i.eq.1) return
 !
               if(temp1-physcon(1).lt.0.d0) then
                 nelem=newel
-                index=inoel(2,index)
+                index=inoeln(2,index)
                 if(index.eq.0) exit
                 cycle
               endif
@@ -761,7 +761,7 @@ c      if(i.eq.1) return
               xflow=xflow+xflow1
               heatflux=heatflux+cp*(temp1-physcon(1))*xflow1
 !     
-              index=inoel(2,index)
+              index=inoeln(2,index)
               if(index.eq.0) exit
             enddo
 !     
@@ -977,7 +977,7 @@ c      if(i.eq.1) return
                           call film(h,temp,walltemp,istep,iinc,tvar,
      &                         nelemwall,m,coords,jltyp,field,nfield,
      &                         sideload(ii),node,areaj,v,mi,ipkon,
-     &                         kon,lakon,iponoel,inoel,ielprop,prop,
+     &                         kon,lakon,iponoeln,inoeln,ielprop,prop,
      &                         ielmat,shcon,nshcon,rhcon,nrhcon,ntmat_,
      &                         cocon,ncocon,ipobody,xbodyact,ibody,
      &                         heatnod,heatfac)

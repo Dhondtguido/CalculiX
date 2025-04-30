@@ -18,7 +18,7 @@
 !
       subroutine film(h,sink,temp,kstep,kinc,time,noel,npt,
      &  coords,jltyp,field,nfield,loadtype,node,area,vold,mi,
-     &  ipkon,kon,lakon,iponoel,inoel,ielprop,prop,ielmat,
+     &  ipkon,kon,lakon,iponoeln,inoeln,ielprop,prop,ielmat,
      &  shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon,
      &  ipobody,xbody,ibody,heatnod,heatfac)
 !
@@ -74,11 +74,11 @@
 !                        and continues until all nodes are covered. The
 !                        number of nodes depends on the element label
 !     lakon(i)           contains the label of element i
-!     iponoel(i)         the network elements to which node i belongs
-!                        are stored in inoel(1,iponoel(i)),
-!                        inoel(1,inoel(2,iponoel(i)))...... until
-!                        inoel(2,inoel(2,inoel(2......)=0
-!     inoel(1..2,*)      field containing the network elements
+!     iponoeln(i)         the network elements to which node i belongs
+!                        are stored in inoeln(1,iponoeln(i)),
+!                        inoeln(1,inoeln(2,iponoeln(i)))...... until
+!                        inoeln(2,inoeln(2,inoeln(2......)=0
+!     inoeln(1..2,*)      field containing the network elements
 !     ielprop(i)         points to the location in field prop preceding
 !                        the properties of element i
 !     prop(*)            contains the properties of all network elements. The
@@ -148,10 +148,10 @@
       character*20 loadtype
 !
       integer kstep,kinc,noel,npt,jltyp,nfield,node,mi(*),ipkon(*),
-     &  kon(*),iponoel(*),inoel(2,*),ielprop(*),ielmat(mi(3),*),ntmat_,
+     &  kon(*),iponoeln(*),inoeln(2,*),ielprop(*),ielmat(mi(3),*),
      &  nshcon(*),nrhcon(*),ncocon(2,*),nodem,indexprop,indexe,
      &  iel1,iel2,ielup,iit,imat,icase,itherm,ipobody(2,*),
-     &  ibody(3,*)
+     &  ibody(3,*),ntmat_
 !
       real*8 h(2),sink,time(2),coords(3),temp,field(nfield),area,
      &  vold(0:mi(2),*),prop(*),shcon(0:3,ntmat_,*),rhcon(0:1,ntmat_,*),
@@ -159,7 +159,7 @@
      &  xks,xkappa,xlambda,f,cp,A,D,form_fact,xbody(7,*),heatnod,
      &  heatfac
 !
-      if((node.eq.0).or.(iponoel(node).eq.0)) then
+      if((node.eq.0).or.(iponoeln(node).eq.0)) then
 !
 !     simple example: constant film coefficient
 !
@@ -187,13 +187,13 @@
 !     The convection node comes from the calling program: "node"
 !
 !     The elements connected to this node are determined by:
-!     iel1=inoel(1,iponoel(node)),
-!     iel2=inoel(1,inoel(2,iponoel(node))),
+!     iel1=inoeln(1,iponoeln(node)),
+!     iel2=inoeln(1,inoeln(2,iponoeln(node))),
 !     .... until
-!     inoel(2,inoel(2,inoel(2,.......inoel(2,iponoel(node)))))=0
+!     inoeln(2,inoeln(2,inoeln(2,.......inoeln(2,iponoeln(node)))))=0
 !
 !     Let us assumed that "node" belongs to exactly two network
-!     elements, i.e. inoel(2,inoel(2,iponoel(node)))=0
+!     elements, i.e. inoeln(2,inoeln(2,iponoeln(node)))=0
 !     
 !     Let us look at the upstream element. To determine the
 !     upstream element one looks at the sign of the mass flow
@@ -228,13 +228,13 @@
 !
 !        elements belonging to the network node
 !
-         iel1=inoel(1,iponoel(node))
-         if(inoel(2,iponoel(node)).ne.0) then
-            iel2=inoel(1,inoel(2,iponoel(node)))
+         iel1=inoeln(1,iponoeln(node))
+         if(inoeln(2,iponoeln(node)).ne.0) then
+            iel2=inoeln(1,inoeln(2,iponoeln(node)))
 !
 !           check whether the node belongs to maximum two elements
 !
-            if(inoel(2,inoel(2,iponoel(node))).ne.0) then
+            if(inoeln(2,inoeln(2,iponoeln(node))).ne.0) then
                write(*,*) 'ERROR in film: the network node'
                write(*,*) '      belongs to more than 2 elements'
                call exit(201)

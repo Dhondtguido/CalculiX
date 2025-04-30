@@ -137,7 +137,7 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,
 		  double *cfsini,double *cfstil,double *plkcon,ITG *nplkcon,
 		  char *filab,double *f,double *fn,
 		  double *qa,ITG *nprint,char *prlab,double *xforc,
-		  ITG *nforc);
+		  ITG *nforc,ITG *iponoel);
     
 void FORTRAN(spcmpcmortar,(ITG *ntie,ITG *islavnode,ITG *imastnode,
 			   ITG *nslavnode,ITG *nmastnode,ITG *nboun,
@@ -381,10 +381,11 @@ void premortar(ITG *nzs,ITG *nzsc2,
 	       ITG *ilin,ITG *iperturb_sav,
 	       ITG *itietri,double *cg,double *straight,ITG *koncont,
 	       double *energyini,
-	       double *energy,ITG *kscale,ITG *iponoel,ITG *inoel,ITG *nener,
+	       double *energy,ITG *kscale,ITG *iponoeln,ITG *inoeln,ITG *nener,
 	       char *orname,ITG *network,
 	       char *typeboun,ITG *num_cpus,double *t0g,double *t1g,
-	       double *smscale,ITG *mscalmethod,ITG *nslavquadel);
+	       double *smscale,ITG *mscalmethod,ITG *nslavquadel,
+	       ITG *iponoel);
        
 void FORTRAN(regularization_gn_c,(double *lambdap,ITG *divmode,ITG *regmode,
 				  double *gnc,double *aninvloc,double *p0,
