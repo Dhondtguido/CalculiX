@@ -27,6 +27,10 @@ rm -f substructure.dat
 mv substructure.mtx substructure.dat
 rm -f substructure2.dat
 mv substructure2.mtx substructure2.dat
+rm -f beammrlin_diff.dat
+mv beammrlin_diff.mtx beammrlin_diff.dat
+rm -f beammrlin_same.dat
+mv beammrlin_same.mtx beammrlin_same.dat
 
 ./compare_par2
 

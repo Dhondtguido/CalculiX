@@ -429,6 +429,11 @@ c 100          format(i10,",",i5,",",i10,",",i5,",",e20.13)
                           call add_sm_ei(au,ad,aub,adb,jq,irow,
      &                         idof1,idof2,value,valu2,i0,i0)
                         endif
+                      elseif(idof2.eq.2*(idof2/2)) then
+                        if(nmethod.eq.2) then
+                          icolumn=neq(2)-idof2/2
+                          call add_bo_st(au,jq,irow,idof1,icolumn,value)
+                        endif
                       endif
                       index=nodempc(3,index)
                       if(index.eq.0) exit
@@ -483,6 +488,20 @@ c 100          format(i10,",",i5,",",i10,",",i5,",",e20.13)
                             call add_sm_ei(au,ad,aub,adb,jq,
      &                           irow,idof1,idof2,value,valu2,i0,i0)
                           endif
+                        elseif((idof1.gt.0).and.(idof2.eq.2*(idof2/2)))
+     &                         then
+                          if(nmethod.eq.2) then
+                            icolumn=neq(2)-idof2/2
+                            call add_bo_st(au,jq,irow,idof1,icolumn,
+     &                           value)
+                          endif
+                        elseif((idof2.gt.0).and.(idof1.eq.2*(idof1/2)))
+     &                         then
+                          if(nmethod.eq.2) then
+                            icolumn=neq(2)-idof1/2
+                            call add_bo_st(au,jq,irow,idof2,icolumn,
+     &                           value)
+                          endif
                         endif
 !     
                         index2=nodempc(3,index2)
@@ -529,6 +548,20 @@ c 100          format(i10,",",i5,",",i10,",",i5,",",e20.13)
 !     
                             call add_sm_ei(au,ad,aub,adb,jq,
      &                           irow,idof1,idof2,value,valu2,i0,i0)
+                          endif
+                        elseif((idof1.gt.0).and.(idof2.eq.2*(idof2/2)))
+     &                         then
+                          if(nmethod.eq.2) then
+                            icolumn=neq(2)-idof2/2
+                            call add_bo_st(au,jq,irow,idof1,icolumn,
+     &                           value)
+                          endif
+                        elseif((idof2.gt.0).and.(idof1.eq.2*(idof1/2)))
+     &                         then
+                          if(nmethod.eq.2) then
+                            icolumn=neq(2)-idof1/2
+                            call add_bo_st(au,jq,irow,idof2,icolumn,
+     &                           value)
                           endif
                         endif
 !     

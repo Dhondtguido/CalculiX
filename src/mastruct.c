@@ -457,6 +457,21 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 		  idof2=nactdof[mt*(nodempc[3*index-3]-1)+nodempc[3*index-2]];
 		  if(idof2>0){
 		    insert(ipointer,&mast1,&next,&idof1,&idof2,&ifree,&nzs_);
+
+	    /* boundary stiffness coefficients (for frequency
+	       and modal dynamic calculations) : x-elements
+	       on the right of the vertical line */
+
+	    //               |x x x
+	    //        x      |x x x
+	    //        x x    |x x x
+	    //        x x x  |x x x
+		    
+		  }else if(idof2==2*(idof2/2)){
+		    if((*nmethod==2)||((*nmethod==4)&&(*iperturb<=1))||((*nmethod>=5)&&(*nmethod<=7))){
+		      icolumn=neq[1]-idof2/2;
+		      insertfreq(ipointer,&mast1,&next,&idof1,&icolumn,&ifree,&nzs_);
+		    }
 		  }
 		  index=nodempc[3*index-1];
 		  if(index==0) break;
@@ -507,7 +522,28 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 		  while(1){
 		    idof2=nactdof[mt*(nodempc[3*index2-3]-1)+nodempc[3*index2-2]];
 		    if((idof1>0)&&(idof2>0)){
-		      insert(ipointer,&mast1,&next,&idof1,&idof2,&ifree,&nzs_);}
+		      insert(ipointer,&mast1,&next,&idof1,&idof2,&ifree,&nzs_);
+
+	    /* boundary stiffness coefficients (for frequency
+	       and modal dynamic calculations) : x-elements
+	       on the right of the vertical line */
+
+	    //               |x x x
+	    //        x      |x x x
+	    //        x x    |x x x
+	    //        x x x  |x x x
+		    
+		    }else if((idof1>0)&&(idof2==2*(idof2/2))){
+		      if((*nmethod==2)||((*nmethod==4)&&(*iperturb<=1))||((*nmethod>=5)&&(*nmethod<=7))){
+			icolumn=neq[1]-idof2/2;
+			insertfreq(ipointer,&mast1,&next,&idof1,&icolumn,&ifree,&nzs_);
+		      }
+		    }else if ((idof2>0)&&(idof1==2*(idof1/2))){
+		      if((*nmethod==2)||((*nmethod==4)&&(*iperturb<=1))||((*nmethod>=5)&&(*nmethod<=7))){
+			icolumn=neq[1]-idof1/2;
+			insertfreq(ipointer,&mast1,&next,&idof2,&icolumn,&ifree,&nzs_);
+		      }
+		    }
 		    index2=nodempc[3*index2-1];
 		    if(index2==0) break;
 		  }
@@ -535,7 +571,28 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 		  while(1){
 		    idof2=nactdof[mt*(nodempc[3*index2-3]-1)+nodempc[3*index2-2]];
 		    if((idof1>0)&&(idof2>0)){
-		      insert(ipointer,&mast1,&next,&idof1,&idof2,&ifree,&nzs_);}
+		      insert(ipointer,&mast1,&next,&idof1,&idof2,&ifree,&nzs_);
+
+	    /* boundary stiffness coefficients (for frequency
+	       and modal dynamic calculations) : x-elements
+	       on the right of the vertical line */
+
+	    //               |x x x
+	    //        x      |x x x
+	    //        x x    |x x x
+	    //        x x x  |x x x
+		    
+		    }else if((idof1>0)&&(idof2==2*(idof2/2))){
+		      if((*nmethod==2)||((*nmethod==4)&&(*iperturb<=1))||((*nmethod>=5)&&(*nmethod<=7))){
+			icolumn=neq[1]-idof2/2;
+			insertfreq(ipointer,&mast1,&next,&idof1,&icolumn,&ifree,&nzs_);
+		      }
+		    }else if ((idof2>0)&&(idof1==2*(idof1/2))){
+		      if((*nmethod==2)||((*nmethod==4)&&(*iperturb<=1))||((*nmethod>=5)&&(*nmethod<=7))){
+			icolumn=neq[1]-idof1/2;
+			insertfreq(ipointer,&mast1,&next,&idof2,&icolumn,&ifree,&nzs_);
+		      }
+		    }
 		    index2=nodempc[3*index2-1];
 		    if(index2==0) break;
 		  }

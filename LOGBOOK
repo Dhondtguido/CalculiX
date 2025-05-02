@@ -5469,3 +5469,7 @@ Dec 2002        - started to work on single crystal plasticity
                 - removed an error in frd.c concerning field errn
                 - included all MPC-vertexnodes as fixed in mesh refinement
                 - extended refinement to nonlingeo-calculations
+
+ 2 May 2025     - made some essential changes in matruct.c and mafillsm.f for
+                  substructures involving several mean rotation MPC's and/or
+		  distributing couplings.
