@@ -2817,7 +2817,7 @@ The output for the reaction forces in the .dat file looks like:
 The nodal output is again very accurate, while the section output has clearly
 improved: the total reaction force is now -9.25 force units, the moment about
 the center of gravity is 72.12 [force][length]. The finer mesh leads to more
-accurate nodal stresses, which are the ones which have been used to determined
+accurate nodal stresses, which are the ones which have been used to determine
 the section forces.
 
 \section{Theory \label{strains}}
@@ -4375,12 +4375,11 @@ derived based on the assumptions, that
     forces).
 \end{itemize}
 
-\paragraph{Differential intertia terms in  a local main axis coordinate frame}\mbox{} \\
+\paragraph{Differential inertia terms in  a local main axis coordinate frame}\mbox{} \\
  
 \noindent
-At first all intertia terms are derived in a local coordinate frame $X_i$, which axes  
-$X_2$, $X_3$ correspond to the main axes of the cross-section, i.e. where
-the deviation moment $I_{23}=0$.
+At first all inertia terms are derived in a local coordinate frame $X_i$, with axes  
+$X_2$, $X_3$ corresponding to the principal axes of the cross-section, i.e. $I_{23}=0$.
 %
 \begin{figure}[htbp]
   \centering
@@ -4399,61 +4398,60 @@ the deviation moment $I_{23}=0$.
   \put(-17,48){\textcolor{red}{$X_1$}}
   \put(-162,50){\textcolor{red}{$X_2$}}
   \put(-70,50){\textcolor{red}{$X_3$}}
-  \caption{Cylindrical beam with arbitrary cross-section (main cross-section axes $X_2$, $X_3$)}
+  \caption{Cylindrical beam with arbitrary cross-section (principal cross-section axes $X_2$, $X_3$)}
 \end{figure}
 %
 \noindent
-With the differential cross-section quantities
+With the moments of inertia
 %
 \begin{eqnarray}
-  \textrm{d}m & = & \rho  \textrm{d}A \textrm{d}X_1  \nonumber \\
-  \textrm{d}J^S_{33} & =&  \rho  X_2^2 \textrm{d}A \textrm{d}X_1  \nonumber \\
-  \textrm{d}J^S_{22} & =&  \rho  X_3^2 \textrm{d}A \textrm{d}X_1  \nonumber \\
-  \textrm{d}J^S_m & = & \rho  (X_2^2 + X_3^2) \textrm{d}A \textrm{d}X_1
+  \textrm{d}I_{33} & =&    X_2^2 \textrm{d}A   \nonumber \\
+  \textrm{d}I_{22} & =&    X_3^2 \textrm{d}A  \nonumber \\
+  \textrm{d}I_p & = &  (X_2^2 + X_3^2) \textrm{d}A 
 \end{eqnarray}
 %
 \noindent
-the intertia forces of a differential cross-section $\textrm{d}M = \rho A \textrm{d}X_1$ can be derived
+the inertia forces of a differential cross-section $\textrm{d}M = \rho A \textrm{d}X_1$ can be derived
 by integration of the above quantities over $A$:
-%
+
 \noindent
 \begin{eqnarray}
-  \textrm{d}F_1  & = & -\int_A  \ddot{u}_1 \textrm{d}m = -\rho A \ddot{u}_1 \textrm{d}x \nonumber \\
-  \textrm{d}F_2  & = & -\int_A  \ddot{u}_2 \textrm{d}m = -\rho A \ddot{u}_2 \textrm{d}x \nonumber \\
-  \textrm{d}F_3  & = & -\int_A  \ddot{u}_3 \textrm{d}m = -\rho A \ddot{u}_3 \textrm{d}x \nonumber \\
-  \textrm{d}M_1  & = & -\int_A  \ddot{\varphi}_1 \rho  (X_2^2 + X_3^2) \textrm{d}A \textrm{d}X_1 = -\rho I_{p} \ddot{\varphi}_1 \textrm{d}X_1 \nonumber \\
-  \textrm{d}M_2  & = & -\int_A  \ddot{\varphi}_2 \rho  X_3^2 \textrm{d}A \textrm{d}X_1 = -\rho I_1 \ddot{\varphi}_2 \textrm{d}X_1 \nonumber \\
-  \textrm{d}M_3  & = & -\int_A  \ddot{\varphi}_3 \rho  X_2^2 \textrm{d}A \textrm{d}X_1 = -\rho I_2 \ddot{\varphi}_3 \textrm{d}X_1
+  \textrm{d}F_1  & = & -\int_A  \ddot{U}_1 \textrm{d}m = -\rho A \ddot{U}_1 \textrm{d}X \nonumber \\
+  \textrm{d}F_2  & = & -\int_A  \ddot{U}_2 \textrm{d}m = -\rho A \ddot{U}_2 \textrm{d}X \nonumber \\
+  \textrm{d}F_3  & = & -\int_A  \ddot{U}_3 \textrm{d}m = -\rho A \ddot{U}_3 \textrm{d}X \nonumber \\
+  \textrm{d}M_1  & = & -\int_A  \ddot{\psi}_1 \rho  (X_2^2 + X_3^2) \textrm{d}A \textrm{d}X_1 = -\rho I_{p} \ddot{\psi}_1 \textrm{d}X_1 \nonumber \\
+  \textrm{d}M_2  & = & -\int_A  \ddot{\psi}_2 \rho  X_3^2 \textrm{d}A \textrm{d}X_1 = -\rho I_{22} \ddot{\psi}_2 \textrm{d}X_1 \nonumber \\
+  \textrm{d}M_3  & = & -\int_A  \ddot{\psi}_3 \rho  X_2^2 \textrm{d}A \textrm{d}X_1 = -\rho I_{33} \ddot{\psi}_3 \textrm{d}X_1
 \end{eqnarray}
 %
 %
-\paragraph{Discretization of inertia terms (main axis coordinate frame)}\mbox{} \\
+\paragraph{Discretization of inertia terms (principal axis coordinate frame)}\mbox{} \\
 %
 \noindent
-A Bubnov-Galerkin discretization of the (virtual) displacements and rotations $\boldsymbol{u}$ 
+A Galerkin discretization of the (virtual) displacements and rotations $\boldsymbol{U}$ 
 %
 %
 \begin{equation}
-  \boldsymbol{u} \approx \boldsymbol{u}^h = \left[
+  \boldsymbol{U} \approx \boldsymbol{U}^h = \left[
     \begin{array}{c}
-      u_x(\xi) \\
-      u_1(\xi) \\
-      u_2(\xi) \\
-      \varphi_x(\xi) \\
-      \varphi_1(\xi) \\
-      \varphi_2(\xi) 
+      U_1(\xi) \\
+      U_2(\xi) \\
+      U_3(\xi) \\
+      \psi_1(\xi) \\
+      \psi_2(\xi) \\
+      \psi_3(\xi) 
     \end{array}
     \right]
   = \boldsymbol{N} \boldsymbol{d}
   \quad  \textrm{and} \quad 
-  \delta \boldsymbol{u} \approx \delta \boldsymbol{u}^h = \left[
+  \delta \boldsymbol{U} \approx \delta \boldsymbol{U}^h = \left[
     \begin{array}{c}
-      \delta u_x(\xi) \\
-      \delta u_1(\xi) \\
-      \delta u_2(\xi) \\
-      \delta \varphi_x(\xi) \\
-      \delta \varphi_1(\xi) \\
-      \delta \varphi_2(\xi) 
+      \delta U_1(\xi) \\
+      \delta U_2(\xi) \\
+      \delta U_3(\xi) \\
+      \delta \psi_1(\xi) \\
+      \delta \psi_2(\xi) \\
+      \delta \psi_3(\xi) 
     \end{array}
     \right]
   = \boldsymbol{N} \delta \boldsymbol{d}
@@ -4466,20 +4464,20 @@ leads along with the nodal (virtual) displacements and rotations
   \boldsymbol{d} = 
    \left[
     \begin{array}{c}
-      d_1 \\
-      d_2 \\
+      (U_1)_1 \\
+      (U_2)_1 \\
         : \\
-      d_{12}
+      (\psi_{3})_2
     \end{array}
     \right]
   \quad  \textrm{and} \quad 
   \delta \boldsymbol{d} = 
    \left[
     \begin{array}{c}
-      d_1 \\
-      d_2 \\
+      \delta (U_1)_1 \\
+      \delta (U_2)_1 \\
         : \\
-      d_{12}
+      \delta (\psi_{3})_2
     \end{array}
     \right]
 \end{equation}
@@ -4492,12 +4490,12 @@ $\boldsymbol{N}(\xi)$
   \boldsymbol{N} = 
     \left[
         \begin{array}{cccccccccccc}
-            N_1 &   0 & 0   & 0   & 0   & 0&  N_2 &   0 & 0   & 0   & 0   & 0 \\
-              0 & N_1 & 0   & 0   & 0   & 0&    0 & N_2 & 0   & 0   & 0   & 0 \\
-              0 &   0 & N_1 & 0   & 0   & 0&    0 &   0 & N_2 & 0   & 0   & 0 \\
-              0 & 0   & 0   & N_1 & 0   & 0&    0 & 0   & 0   & N_2 & 0   & 0 \\
-              0 & 0   & 0   & 0   & N_1 & 0&    0 & 0   & 0   & 0   & N_2 & 0 \\
-              0 & 0   & 0   & 0   & 0 & N_1&    0 & 0   & 0   & 0   & 0 & N_2 
+            \varphi_1 &   0 & 0   & 0   & 0   & 0&  \varphi_2 &   0 & 0   & 0   & 0   & 0 \\
+              0 & \varphi_1 & 0   & 0   & 0   & 0&    0 & \varphi_2 & 0   & 0   & 0   & 0 \\
+              0 &   0 & \varphi_1 & 0   & 0   & 0&    0 &   0 & \varphi_2 & 0   & 0   & 0 \\
+              0 & 0   & 0   & \varphi_1 & 0   & 0&    0 & 0   & 0   & \varphi_2 & 0   & 0 \\
+              0 & 0   & 0   & 0   & \varphi_1 & 0&    0 & 0   & 0   & 0   & \varphi_2 & 0 \\
+              0 & 0   & 0   & 0   & 0 & \varphi_1&    0 & 0   & 0   & 0   & 0 & \varphi_2 
         \end{array}
     \right]
 \end{equation}
@@ -4506,7 +4504,7 @@ $\boldsymbol{N}(\xi)$
 where 
 %
 \begin{equation}
-  N_1(\xi) = \frac{1}{2}(1-\xi) \ ,  N_2(\xi) = \frac{1}{2}(1+\xi)
+  \varphi_1(\xi) = \frac{1}{2}(1-\xi) \ ,  \varphi_2(\xi) = \frac{1}{2}(1+\xi)
 \end{equation}
 %
 %
@@ -4515,7 +4513,7 @@ to the following weak formulation of the inertia terms:
 %
 %
 \begin{equation}
-  \int_x \delta \boldsymbol{u} \cdot 
+  \int_x \delta \boldsymbol{U}^T \cdot 
     \left[\begin{array}{c}
         \textrm{d}F_1 \\
         \textrm{d}F_2\\
@@ -4541,7 +4539,7 @@ Thus  the integration of the product of the shape functions  can be performed an
 \end{equation}
 %
 \begin{equation}
-  \int_L N_i N_j \textrm{d}X_1 = \frac{1}{2}(X_2 - X_1)\int_{-\frac{1}{2}}^\frac{1}{2}  N_i N_j \textrm{d}\xi 
+  \int_L \varphi_i \varphi_j \textrm{d}X_1 = \frac{1}{2}(X_2 - X_1)\int_{-\frac{1}{2}}^\frac{1}{2}  \varphi_i \varphi_j \textrm{d}\xi 
   =  \left\{
    \begin{array}{c}
       \frac{1}{3}(X_2 - X_1) \ , \quad i = j\\
@@ -4554,7 +4552,7 @@ Thus  the integration of the product of the shape functions  can be performed an
 \paragraph{Mass matrix in (local) main axis coordinate frame}\mbox{} \\
  
 \noindent
-Thus the mass matrix becomes in the main axis coordinates
+Consequently, the mass matrix becomes in the principal axis coordinates
 %
 %
 \begin{equation}
@@ -4578,8 +4576,8 @@ with
             0 & \rho A & 0 & 0 & 0 & 0  \\
             0 & 0 & \rho A & 0 & 0 & 0 \\
             0 & 0 & 0 & \rho I_p & 0 & 0 \\
-            0 & 0 & 0 & 0 & \rho I_1 & 0  \\
-            0 & 0 & 0 & 0 & 0 & \rho I_2
+            0 & 0 & 0 & 0 & \rho I_{22} & 0  \\
+            0 & 0 & 0 & 0 & 0 & \rho I_{33}
         \end{array}
     \right]
 \end{equation}
@@ -4595,8 +4593,8 @@ and
             0 & \rho A & 0 & 0 & 0 &0  \\
             0 & 0 & \rho A & 0 & 0 & 0 \\
             0 & 0 & 0 & \rho I_p & 0 & 0 \\
-            0 & 0 & 0 & 0 & \rho I_1 & 0  \\
-            0 & 0 & 0 & 0 & 0 & \rho I_2
+            0 & 0 & 0 & 0 & \rho I_{22} & 0  \\
+            0 & 0 & 0 & 0 & 0 & \rho I_{33}
         \end{array}
     \right]
 \end{equation}
@@ -4605,22 +4603,28 @@ and
 \paragraph{ Mass matrix in global coordinate frame}\mbox{} \\
 
 \noindent
-Transformation of a vector $\boldsymbol{a}$ %$\delta \boldsymbol{u}^h$ and $\boldsymbol{u}^h$ 
+Transformation of a vector $\boldsymbol{a}$ %$\delta \boldsymbol{U}^h$ and $\boldsymbol{U}^h$ 
 from local  coordinate frame
 $\boldsymbol{e}_i$ into global coordinate frame $\hat{\boldsymbol{e}}_i$ 
 yields
 %
 \begin{eqnarray}
-  a^i \hat{\boldsymbol{e}}_i & = & a^j \boldsymbol{e}_j \quad \vert \cdot \hat{\boldsymbol{e}}^k \\
-  a^i \delta_i^{\ k} & =&  a^j \boldsymbol{e}_j \cdot \hat{\boldsymbol{e}}^k \\
-  a^k & = & \hat T_j^{\ k} a^j =  T^k_{\ j} a^j 
+  \hat{a}_i \hat{\boldsymbol{e}}_i & = & a_j \boldsymbol{e}_j \quad \vert \cdot \hat{\boldsymbol{e}}_k \\
+  \hat{a}_i \delta_{ik} & =&  a_j \boldsymbol{e}_j \cdot \hat{\boldsymbol{e}}_k \\
+  \hat{a}_k & = &  T_{jk} a_j =  (T^T)_{kj} a_j 
 \end{eqnarray}
+
+\noindent or
+
+\begin{equation}
+  \boldsymbol{a} = \boldsymbol{T}  \boldsymbol{\hat{a}},
+\end{equation} 
 %
 \noindent
-I.e. with the transformation matrix 
+with the transformation matrix 
 %
 \begin{equation}
-  \boldsymbol{T} = \left[  T^k_{\ j} \right] 
+  \boldsymbol{T} 
     = \left[
         \begin{array}{ccc}
           - & \boldsymbol{e}_1 & - \\
@@ -4631,23 +4635,17 @@ I.e. with the transformation matrix
 \end{equation}
 %
 \noindent
-and the (virtual) displacements 
+Therefore, the variation of the kinetic energy becomes
 %
 \begin{equation}
-  \delta \hat{\boldsymbol{u}}^h = \boldsymbol{T} \delta \boldsymbol{u}^h =  \boldsymbol{T} ( \boldsymbol{N} \delta \boldsymbol{d}^h)
-  \quad \textrm{and} \quad 
-  \hat{\boldsymbol{u}}^h = \boldsymbol{T} \boldsymbol{u}^h =  \boldsymbol{T}   (\boldsymbol{N}\boldsymbol{d}^h)
+  \delta \boldsymbol{d}^T \boldsymbol{M} \boldsymbol{d} = \delta
+  \boldsymbol{\hat{d}}^T \boldsymbol{T}^T \boldsymbol{M} \boldsymbol{T}
+  \boldsymbol{\hat{d}}      
 \end{equation}
 %
 \noindent
-the variation of the kinetic energy becomes
-%
-\begin{equation}
-  \delta \boldsymbol{d}^T \boldsymbol{T}^T \boldsymbol{M} \boldsymbol{T} \boldsymbol{d}
-\end{equation}
-%
-\noindent
-and thus the final mass matrix in global coordinate frame $\hat{\boldsymbol{e}}_i$
+and thus the final mass matrix in global coordinate frame
+$\hat{\boldsymbol{e}}_i$ yields
 %
 \begin{equation}
   \hat{\boldsymbol{M}} =  \boldsymbol{T}^T \boldsymbol{M} \boldsymbol{T}
