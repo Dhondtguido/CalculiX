@@ -78,7 +78,7 @@
           p0=0.0
           beta=0.0
 !     
-!     piecewiese linear regularization
+!     piecewise linear regularization
 !     
         elseif(int(elcon(3,1,imat)).eq.3) then
           regmode=2

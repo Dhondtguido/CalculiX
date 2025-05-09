@@ -20,7 +20,7 @@
 !
 !     calculates the discharge coefficient of holes with chamfered inlets 
 !     using N. Hay and A.Spencer 
-!     "Disharge coefficient of Cooling holes with radiused and chamfered 
+!     "Discharge coefficient of Cooling holes with radiused and chamfered 
 !     inlets" ASME 91-GT-269
 !     
 !     Nota:the radius correction is not used here due to the unreliability 

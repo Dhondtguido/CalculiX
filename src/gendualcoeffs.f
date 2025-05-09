@@ -144,7 +144,7 @@
             ns=l
             iflag=2
 !     
-!     construct dual basis functions for transformed standart
+!     construct dual basis functions for transformed standard
 !     basis functions
 !     
             if(nopes.eq.8) then
