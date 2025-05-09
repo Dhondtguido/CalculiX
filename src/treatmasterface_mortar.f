@@ -44,21 +44,20 @@
 !     [in,out]   gapmints		gap evaluated at the integration points
 !     [in]       issurf		current slave surface index	
 !     [in,out]   areaslav		current covering of the slave surface (in the reference element) 
-!     [in]       debug		debug output parameter
 !     
       subroutine treatmasterface_mortar(
      &     nopes,slavstraight,xn,xns,xl2s,xl2sp,
      &     ipe,ime,iactiveline,nactiveline,
      &     nelemm,nintpoint,pslavsurf,
      &     imastsurf,pmastsurf,xl2m,nnodelem,xl2m2,nmp,
-     &     nodem,gapmints,issurf,areaslav,debug,clearance,
+     &     nodem,gapmints,issurf,areaslav,clearance,
      &     cl2s,cl2m,shrink,reltime)
 !     
 !     Author: Saskia Sitzmann     
 !     
       implicit none
 !     
-      logical debug,shrink
+      logical shrink
 !     
       integer nvertex,nopes,ipe(*),ime(4,*),iactiveline(3,*),
      &     nactiveline,ifreeintersec,nmp,i,j,k,nintpoint,imastsurf(*),
@@ -73,8 +72,6 @@
      &     pm(3),ph(3),reltime,ps(3),xit(3),etat(3),phc(3),
      &     areaslav,cl2s(3,8),cl2m(3,8),psc(3),pmc(3)
 !     
-!     
-!     
       data ijk /0/
       save ijk
 !     
@@ -84,9 +81,6 @@
       err=1.d-6
       nvertex=0
       nipold=nintpoint
-!     
-      if(debug) write(20,*) 'TT:slavsurf',issurf,' melem',nelemm
-      if(debug) write(20,*) 'TT:xn',(xn(1:3))
 !     
 !     Project master nodes to meanplane, needed for Sutherland-Hodgman
 !     
@@ -99,17 +93,6 @@
         enddo
       enddo 
 !     
-      if(debug) then
-        write(20,*) 'TT: xl2sp'
-        do j=1,nopes
-          write(20,*)(xl2sp(k,j),k=1,3)
-        enddo       
-        write(20,*)'TT:xl2mp'
-        do j=1,nmp
-          write(20,*)(xl2mp(k,j),k=1,3)
-        enddo  
-      endif
-!     
  111  format(3(e27.20))
 !     
 !     call Sutherland-Hodgman Algo
@@ -120,13 +103,6 @@
      &     nvertex,pvertex) 
 !     
 !     do we have a degenerated triangle?
-!     
-      if(debug)then
-        write(20,*) 'nelemm',nelemm ,'p_new'
-        do k=1,nvertex
-          write(20,111)(pvertex(i,k),i=1,3)
-        enddo
-      endif
 !     
       do k=1,3
         cgp(k)=0.0
@@ -148,13 +124,6 @@
         k_max=nvertex
       endif 
 !     
-      if(debug)then
-        write(20,*) 'TT: nactiveline',nactiveline,'iactiveline'
-        write(20,*) (iactiveline(1,k),k=1,nactiveline)
-        write(20,*) 'cg' ,(cgp(k),k=1,3)
-        write(20,*)'********************************************' 
-      endif    
-!     
 !     Project center point back on slave face
 !     
       call attachline(xl2s,cgp,nopes,xit(3),etat(3),xn,p,dist)
@@ -162,22 +131,6 @@
 !     generating integration points on the slave surface S
 !     
       do k=1,k_max
-!     
-!     storing the triangulation of the slave surfaces
-!     
-        if(debug) then
-          ijk=ijk+1
-          write(40,100) ijk,(cgp(i),i=1,3)
-          ijk=ijk+1
-          write(40,100) ijk,(pvertex(i,modf(nvertex,k)),i=1,3)
-          ijk=ijk+1
-          write(40,100) ijk,(pvertex(i,modf(nvertex,k+1)),i=1,3)
-          write(40,101) ijk-2,ijk-2,ijk-1
-          write(40,101) ijk-1,ijk-1,ijk
-          write(40,101) ijk,ijk,ijk-2
-        endif
- 100    format('PNT ',i10,'P',3(1x,e21.14))
- 101    format('LINE ',i10,'L',i10,'P ',i10,'P')
 !     
 !     Project back on slave surface
 !     
@@ -215,11 +168,6 @@
           return
         endif
         areaslav=areaslav+area
-        if(debug)then
-          write(20,106) k,area,areaslav
- 106      format('tri',i10,' area',e15.8,' atot',e15.8)
-          write(20,*) '# fuer itri',k,'werden 7intp gen.'
-        endif
 !     
 !     7 points scheme
 !     
@@ -243,14 +191,6 @@
 !     
           call attachline(xl2m,ps,nnodelem,xilm,etlm,xn,p,dist)
           call evalshapefunc(xilm,etlm,xl2m,nnodelem,pm)   
-!     
-          if(debug)then     
-            ijk=ijk+1
-            write(40,100) ijk,(ps(jj),jj=1,3)
-            ijk=ijk+1
-            write(40,100) ijk,(pm(jj),jj=1,3)
-            write(40,101) ijk-1,ijk-1,ijk 
-          endif
 !     
 !     Calculation of the gap function at the integration point
 !     
@@ -293,14 +233,8 @@
           pmastsurf(1,nintpoint)=xilm
           pmastsurf(2,nintpoint)=etlm
           imastsurf(nintpoint)=nelemm
-          if(debug)then
-            write(30,201) xil,etl,pslavsurf(3,nintpoint),spm,nelemm 
-          endif 
- 201      format('xil ',1x,e15.8,2x,'etl',2x,e15.8,2x,'w ',e15.8,2x,
-     &         e15.8,2x,'M',i10)
         enddo
-!     
       enddo
-c     write(20,*)'********************'
+!     
       return
       end
