@@ -76,11 +76,11 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     *ipkont=NULL,*ielmatt=NULL,*inotrt=NULL,*kont=NULL,node,iel,*ielcs=NULL,
     ielset,*istartnmd=NULL,*iendnmd=NULL,inmd,neqact,*nshcon=NULL,
     *ipev=NULL,icfd=0,*inomat=NULL,mortar=0,*islavsurf=NULL,
-    *iponoel=NULL,*inoel=NULL,iperturbsav,nevcomplex,*itiefac=NULL,
+    *iponoeln=NULL,*inoeln=NULL,iperturbsav,nevcomplex,*itiefac=NULL,
     mscalmethod=0,*islavquadel=NULL,*irowt=NULL,*jqt=NULL,nboun2,
     *ndirboun2=NULL,*nodeboun2=NULL,nmpc2,*ipompc2=NULL,*nodempc2=NULL,
     *ikboun2=NULL,*ilboun2=NULL,*ikmpc2=NULL,*ilmpc2=NULL,mortartrafoflag=0,
-    intscheme=0;
+    intscheme=0,*iponoel=NULL;
 
   long long i2;
 
@@ -112,9 +112,6 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
   ITG token;
 #endif
 
-  pi=4.*atan(1.);
-  constant=180./pi;
-
   co=*cop;kon=*konp;ipkon=*ipkonp;lakon=*lakonp;ielmat=*ielmatp;
   ielorien=*ielorienp;inotr=*inotrp;nodeboun=*nodebounp;
   ndirboun=*ndirbounp;iamboun=*iambounp;xboun=*xbounp;
@@ -122,6 +119,15 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
   vold=*voldp;eme=*emep;ener=*enerp;ipompc=*ipompcp;nodempc=*nodempcp;
   coefmpc=*coefmpcp;labmpc=*labmpcp;ikmpc=*ikmpcp;ilmpc=*ilmpcp;
   fmpc=*fmpcp;veold=*veoldp;iamt1=*iamt1p;t0=*t0p;t1=*t1p;t1old=*t1oldp;
+
+  /* determining whether a node belongs to at least one element
+     (needed in resultsforc.c) */
+  
+  NNEW(iponoel,ITG,*nk);
+  FORTRAN(nodebelongstoel,(iponoel,lakon,ipkon,kon,ne));
+
+  pi=4.*atan(1.);
+  constant=180./pi;
 
   tinc=&timepar[0];
   tper=&timepar[1];
@@ -1471,11 +1477,11 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		&ne0,thicke,shcon,nshcon,
 		sideload,xload,xloadold,&icfd,inomat,pslavsurf,pmastsurf,
 		&mortar,islavact,cdn,islavnode,nslavnode,ntie,clearini,
-		islavsurf,ielprop,prop,energyini,energy,&iit,iponoel,
-		inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
+		islavsurf,ielprop,prop,energyini,energy,&iit,iponoeln,
+		inoeln,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 		itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
 		islavquadel,aut,irowt,jqt,&mortartrafoflag,
-		&intscheme,physcon,dam,damn);}
+		&intscheme,physcon,dam,damn,iponoel);}
       else{
 	results(co,nk,kon,ipkon,lakon,ne,&v[kkv],&stn[kk6],inum,
 		&stx[kkx],elcon,
@@ -1494,11 +1500,11 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		&ne0,thicke,shcon,nshcon,
 		sideload,xload,xloadold,&icfd,inomat,pslavsurf,pmastsurf,
 		&mortar,islavact,cdn,islavnode,nslavnode,ntie,clearini,
-		islavsurf,ielprop,prop,energyini,energy,&iit,iponoel,
-		inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
+		islavsurf,ielprop,prop,energyini,energy,&iit,iponoeln,
+		inoeln,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 		itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
 		islavquadel,aut,irowt,jqt,&mortartrafoflag,
-		&intscheme,physcon,dam,damn);
+		&intscheme,physcon,dam,damn,iponoel);
       }
 
     }
@@ -1984,6 +1990,8 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
   *coefmpcp=coefmpc;*labmpcp=labmpc;*ikmpcp=ikmpc;*ilmpcp=ilmpc;
   *fmpcp=fmpc;*veoldp=veold;*iamt1p=iamt1;*t0p=t0;*t1oldp=t1old;*t1p=t1;
   *stip=sti;
+
+  SFREE(iponoel);
 
   return;
 }
