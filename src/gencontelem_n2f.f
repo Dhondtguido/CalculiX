@@ -869,40 +869,5 @@ c     ! TODO CMT: Taking it into account for N2F contact:
         jqw(3*nslavnode(ntie+1)+1)=nzsw+1
       endif
 !     
-!     DEBUG PRINT WB MATRIX
-      if((filab(1)(3:3).eq.'C').and.(mortar.eq.-1))then
-!     nmastnode(ntie+1) ! QUESTION: total master nodes?
-        open(unit=31416,file='WbPre_colsort.csv')
-        do i=1,nslavnode(ntie+1)
-          write(31416,*) islavnode(i) ,',N'
-          write(31416,*) islavnode(i) ,',T1'
-          write(31416,*) islavnode(i) ,',T2'
-        enddo
-        close(31416)
-
-        open(unit=31416,file='WbPre_size.csv')
-        write(31416,*) (nmastnode(ntie+1)+nslavnode(ntie+1))*3
-        write(31416,*) nslavnode(ntie+1)*3
-        close(31416)
-
-        open(unit=31416,file='WbPre_auw.csv')
-        do i=1,nzsw
-          write(31416,*) auw(i)
-        enddo
-        close(31416)
-
-        open(unit=31416,file='WbPre_iroww.csv')
-        do i=1,nzsw
-          write(31416,*) iroww(i)
-        enddo
-        close(31416)
-
-        open(unit=31416,file='WbPre_jqw.csv')
-        do i=1,(nslavnode(ntie+1)*3)+1
-          write(31416,*) jqw(i)
-        enddo
-        close(31416)
-      endif
-!     
       return
       end
