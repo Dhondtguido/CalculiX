@@ -225,12 +225,12 @@
 !           total force and moment about the origin
 !
             write(5,*)
-            if(prlab(ii)(1:2).eq.'CF') then     
-              write(5,126)
-            elseif(prlab(ii)(1:3).eq.'CFN') then     
+            if(prlab(ii)(1:3).eq.'CFN') then     
               write(5,131)
             elseif(prlab(ii)(1:3).eq.'CFS') then
               write(5,132)
+            else 
+              write(5,126)
             endif
 !     
  126        format('   total surface force (fx,fy,fz) ',

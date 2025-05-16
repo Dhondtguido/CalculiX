@@ -2,8 +2,6 @@
 \usepackage{epsfig,html,amsmath,amssymb,lscape,longtable,pstricks,hyperref}
 \pagestyle{headings}
 \markboth{}{}
-%--------------------------fette-schrift----------------------------
-\newcommand{\bm}[1]{\mbox{\boldmath $#1$}}  
 \begin{document}
 \title{CalculiX CrunchiX USER'S MANUAL development version}
 \author{Guido Dhondt}
@@ -29649,15 +29647,12 @@ This option is used to define surfaces made up of nodes or surfaces made up of
 element faces. A mixture of nodes and element faces belonging to one and the
 same surface is not possible. There are
 two parameters: NAME and TYPE. The parameter NAME
-containing the name of the surface is required. The TYPE parameter takes the
+containing the name of the surface is required. If the name of an already
+existing surface is used, the latter is extended by the nodes or faces listed
+underneath the *SURFACE keyword. The TYPE parameter takes the
 value NODE for nodal surfaces and ELEMENT for element face surfaces. Default
-is TYPE=ELEMENT. 
-
-At present, surfaces are used to establish cyclic symmetry conditions and to
-define contact (including tied contact). The master and slave surfaces in cyclic symmetry conditions
-must be nodal surfaces. For contact, the slave surface can be a nodal or
-element face
-surface, while the master surface has to be a element face surface.
+is TYPE=ELEMENT. At present, surfaces are used e.g. to establish cyclic symmetry conditions or to
+define contact (including tied contact). 
 
 Element faces are identified by the surface label Sx where x is the number of the face. The numbering depends on the element type.
 

@@ -5473,3 +5473,6 @@ Dec 2002        - started to work on single crystal plasticity
  2 May 2025     - made some essential changes in matruct.c and mafillsm.f for
                   substructures involving several mean rotation MPC's and/or
 		  distributing couplings.
+
+ 16 May 2025    - corrected some small errors in remlagrangemult.f and
+                  printoutcontact.f.
