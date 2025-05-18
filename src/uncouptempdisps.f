@@ -66,7 +66,7 @@
       if(istep.lt.1) then
          write(*,*) 
      &       '*ERROR reading *UNCOUPLED TEMPERATURE-DISPLACEMENT:'
-         write(*,*) '       *UNCOUPLED TEMPERATURE-DISPLACMENT '
+         write(*,*) '       *UNCOUPLED TEMPERATURE-DISPLACEMENT '
          write(*,*) '       can only be used within a STEP'
          ier=1
          return
