@@ -1439,7 +1439,7 @@ void FORTRAN(dynresults,(ITG *nk,double *v,ITG *ithermal,ITG *nactdof,
 void FORTRAN(edgedivide,(ITG *nnewnodes,ITG *nktet_,ITG *ipoed,
                          ITG *iexternedg,ITG *iedg,double *d,
                          double *h,ITG *n,double *r,ITG *iext,
-			 ITG *jfix));
+			 ITG *jfix,char *filab));
 
 void FORTRAN(effectivemodalmass,(ITG *neq,ITG *nactdof,ITG *mi,double *adb,
                         double *aub,ITG *jq,ITG *irow,ITG *nev,double *z,

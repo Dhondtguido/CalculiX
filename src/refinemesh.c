@@ -202,7 +202,7 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
     NNEW(r,double,6*netet_);
 
     FORTRAN(edgedivide,(&nnewnodes,&nktet_,ipoed,iexternedg,iedg,
-			d,h,n,r,&iext,jfix));
+			d,h,n,r,&iext,jfix,filab));
     if(nnewnodes>maxnnewnodes){maxnnewnodes=nnewnodes;}
 
     /* determining new nodes in the edges to be divided */
@@ -402,7 +402,7 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
     NNEW(r,double,6*netet_);
 
     FORTRAN(edgedivide,(&nnewnodes,&nktet_,ipoed,iexternedg,iedg,
-			d,h,n,r,&iext,jfix));
+			d,h,n,r,&iext,jfix,filab));
     if(nnewnodes>maxnnewnodes){maxnnewnodes=nnewnodes;}
 
     /* determining new nodes in the edges to be divided */
