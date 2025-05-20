@@ -62,7 +62,7 @@
 !     an edge adjacent to domains-not-to-be-refined is not
 !     split            
 !
-          if(filab(48)(1:4).eq.'SMOO') then
+          if(filab(48)(3:6).eq.'SMOO') then
             n(index)=0
           else
             if((jfix(n1).eq.1).or.(jfix(n2).eq.1)) then

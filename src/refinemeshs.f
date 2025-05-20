@@ -102,10 +102,14 @@
           filab(48)(i:i)=' '
         enddo
       endif
-!
+!     
       if(smoothingonly) then
-        filab(48)(1:4)='SMOO'
-        return
+        filab(48)(3:6)='SMOO'
+        do
+          call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
+     &         ipoinp,inp,ipoinpc)
+          if((key.eq.1).or.(istat.lt.0)) return
+        enddo  
       endif
 !     
       do
