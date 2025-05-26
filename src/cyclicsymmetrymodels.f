@@ -24,7 +24,8 @@
      &     ipoinp,inp,ntie,mcs,lprev,ithermal,rcscg,rcs0cg,zcscg,
      &     zcs0cg,nrcg,nzcg,jcs,kontri,straight,ne,ipkon,kon,
      &     lakon,lcs,ifacetet,inodface,ipoinpc,maxsectors,
-     &     trab,ntrans,ntrans_,jobnamec,vold,nef,mi,iaxial,ier)
+     &     trab,ntrans,ntrans_,jobnamec,vold,nef,mi,iaxial,ier,
+     &     nk_)
 !     
 !     reading the input deck: *CYCLIC SYMMETRY MODEL
 !     
@@ -66,7 +67,7 @@
       character*20 labmpc(*)
       character*80 tie
       character*81 set(*),depset,indepset,tieset(3,*),elset
-      character*132 textpart(16),jobnamec(*)
+      character*132 textpart(16),jobnamec(*),slave,master
       character*256 fn
 !     
       integer istartset(*),iendset(*),ialset(*),ipompc(*),ifaces,
@@ -79,7 +80,15 @@
      &     ifacetet(*),inodface(*),ipoinpc(0:*),maxsectors,id,jfaces,
      &     noden(2),ntrans,ntrans_,nef,mi(*),ifaceq(8,6),ifacet(6,4),
      &     ifacew1(4,5),ifacew2(8,5),idof,ier,icount,nodeaxd,nodeaxi,
-     &     ilen,ielem
+     &     ilen,ielem,iposslave,iposmaster,nel,iflag,ifree,nea,
+     &     indexold,index1,indexglob,nk_,node2,node3,nope
+!
+      integer,dimension(:),allocatable::iel
+      integer,dimension(:),allocatable::ipoface
+      integer,dimension(:,:),allocatable::nodface
+      integer,dimension(:),allocatable::ipofaceglob
+      integer,dimension(:,:),allocatable::nodfaceglob
+      integer,dimension(:),allocatable::icsd
 !     
       real*8 tolloc,co(3,*),coefmpc(*),rcs(*),zcs(*),rcs0(*),zcs0(*),
      &     csab(7),xn,yn,zn,dd,xap,yap,zap,tietol(4,*),cs(18,*),
@@ -137,6 +146,7 @@
       tie='
      &'
       matrixname='U    '
+      master(1:1)=' '
 !
       do i=2,n
         if(textpart(i)(1:2).eq.'N=') then
@@ -186,6 +196,18 @@
      &           "*CYCLIC SYMMETRY MODEL%",ier)
             return
           endif
+        elseif(textpart(i)(1:7).eq.'MASTER=') then
+          iposmaster=index(textpart(i),' ')
+          master(1:iposmaster-8)=textpart(i)(8:iposmaster-1)
+          do j=iposmaster-7,132
+            master(j:j)=' '
+          enddo
+        elseif(textpart(i)(1:6).eq.'SLAVE=') then
+          iposslave=index(textpart(i),' ')
+          slave(1:iposslave-7)=textpart(i)(7:iposslave-1)
+          do j=iposslave-6,132
+            slave(j:j)=' '
+          enddo
        else
           write(*,*) 
      &         '*WARNING reading *CYCLIC SYMMETRY MODEL:'
@@ -460,8 +482,6 @@
 !     
             if(lakon(nelems)(4:5).eq.'20') then
               nopes=8
-            elseif(lakon(nelems)(4:4).eq.'2') then
-              nopes=9
             elseif(lakon(nelems)(4:4).eq.'8') then
               nopes=4
             elseif(lakon(nelems)(4:5).eq.'10') then
@@ -664,8 +684,6 @@
 !     
           if(lakon(nelems)(4:5).eq.'20') then
             nopes=8
-          elseif(lakon(nelems)(4:4).eq.'2') then
-            nopes=9
           elseif(lakon(nelems)(4:4).eq.'8') then
             nopes=4
           elseif(lakon(nelems)(4:5).eq.'10') then
@@ -905,21 +923,291 @@
         ier=1
         return
       endif
+!
+!     check for contact
+!
+      if(master(1:1).ne.' ') then
+        if(indepkind.ne.'T') then
+          write(*,*) '*ERROR reading *CYCLIC SYMMETRY MODEL'
+          write(*,*) '       For contact the independent cyclic'
+          write(*,*) '       symmetry surface must be face-based'
+          call inputerror(inpc,ipoinpc,iline,
+     &         "*CYCLIC SYMMETRY MODEL%",ier)
+          return
+        endif
+!
+!     store all elements on the independent cyclic symmetry side
+!
+        nel=0
+        allocate(iel(ncsnodes))
+        do j=istartset(jindep),iendset(jindep)
+          ifaces=ialset(j)
+          nelems=int(ifaces/10)
+          call nident(iel,nelems,nel,id)
+          if(id.gt.0) then
+            if(iel(id).eq.nelems) cycle
+          endif
+!          
+          nel=nel+1
+          if(nel.gt.ncsnodes) then
+            write(*,*) '*ERROR in cyclicsymmetrymodels'
+            write(*,*) '       increase the dimension of field iel'
+            ier=1
+            return
+          endif
+!
+          do k=nel,id+2,-1
+            iel(k)=iel(k-1)
+          enddo
+          iel(id+1)=nelems
+        enddo
+!
+!       determine all external faces of all elements in iel(1...nel)
+!
+        allocate(ipoface(nk))
+        allocate(nodface(5,6*ne))
+        nea=1
+        iflag=1
+        call extsurface(nodface,ipoface,ipkon,lakon,kon,nea,nel,iel,
+     &       iflag,ifree)
+!
+!     remove all faces belonging to the cyclic symmetry independent
+!     surface
+!
+        do j=istartset(jindep),iendset(jindep)
+          ifaces=ialset(j)
+          nelems=int(ifaces/10)
+          jfaces=ifaces-nelems*10
+!
+          call removeface(nodface,ipoface,ipkon,lakon,kon,nelems,
+     &         jfaces,ifree)
+        enddo
+!
+!     catalogue all external faces in the complete model
+!
+        allocate(ipofaceglob(nk))
+        allocate(nodfaceglob(5,6*ne))
+        nea=1
+        iflag=0
+        call extsurface(nodfaceglob,ipofaceglob,ipkon,lakon,kon,nea,ne,
+     &       iel,iflag,ifree)
+!
+!     remove global external faces from set (ipoface,nodface)
+!
+!     loop over all local external faces
+!
+        do i=1,nk
+          if(ipoface(i).eq.0) cycle
+          if(ipofaceglob(i).eq.0) cycle
+          index1=ipoface(i)
+          indexold=0
+          do
+            node2=nodface(2,index1)
+            node3=nodface(3,index1)
+            indexglob=ipofaceglob(i)
+            do
+              if((nodfaceglob(2,index1).eq.node2).and.
+     &           (nodfaceglob(3,index1).eq.node3)) then
+!     
+!     local external face is a global external face:
+!     remove the global external face from local set (ipoface,noface)
+!     
+                if(indexold.eq.0) then
+                  ipoface(i)=nodface(5,index1)
+                else
+                  nodface(5,indexold)=nodface(5,index1)
+                endif
+                index1=nodface(5,index1)
+                nodface(5,index1)=ifree
+                ifree=index1
+                exit
+              endif
+!
+              indexglob=nodfaceglob(5,indexglob)
+              if(indexglob.eq.0) then
+!
+!     local external face is not a global external face:
+!     examine next local external face
+!
+                indexold=index1
+                index1=nodface(5,index1)
+                exit
+              endif
+            enddo
+            if(index1.eq.0) exit
+          enddo
+        enddo
+        deallocate(ipofaceglob)
+        deallocate(nodfaceglob)
+!
+!     replace the independent nodes by the new ones
+!
+        l=0
+        do i=1,nk
+          if(ipoface(i).eq.0) cycle
+          index1=ipoface(i)
+          do
+            nelems=nodface(3,index1)
+            ifaces=nodface(4,index1)
+!     
+            if(lakon(nelems)(4:5).eq.'20') then
+              nopes=8
+            elseif(lakon(nelems)(4:4).eq.'8') then
+              nopes=4
+            elseif(lakon(nelems)(4:5).eq.'10') then
+              nopes=6
+            elseif(lakon(nelems)(4:4).eq.'4') then
+              nopes=3
+            endif
+!     
+            if(lakon(nelems)(4:4).eq.'6') then
+              if(jfaces.le.2) then
+                nopes=3
+              else
+                nopes=4
+              endif
+            endif
+            if(lakon(nelems)(4:5).eq.'15') then
+              if(jfaces.le.2) then
+                nopes=6
+              else
+                nopes=8
+              endif
+            endif   
+!     
+            do m=1,nopes
+              if((lakon(nelems)(4:4).eq.'2').or.
+     &             (lakon(nelems)(4:4).eq.'8')) then
+                node=kon(indexe+ifaceq(m,jfaces))
+              elseif((lakon(nelems)(4:4).eq.'4').or.
+     &               (lakon(nelems)(4:5).eq.'10')) then
+                node=kon(indexe+ifacet(m,jfaces))
+              elseif(lakon(nelems)(4:4).eq.'6') then
+                node=kon(indexe+ifacew1(m,jfaces))
+              elseif(lakon(nelems)(4:5).eq.'15') then
+                node=kon(indexe+ifacew2(m,jfaces))
+              endif
+              call nident(ics,node,l,id)
+              if(id.gt.0) then
+                if(ics(id).eq.node) cycle
+              endif
+              l=l+1
+              if(lprev+l.gt.ncs_) then
+                write(*,*) '*ERROR reading *CYCLIC SYMMETRY MODEL:'
+                write(*,*) '       increase ncs_'
+                write(*,*)
+                ier=1
+                return
+              endif
+              do k=l,id+2,-1
+                ics(k)=ics(k-1)
+                zcs(k)=zcs(k-1)
+                rcs(k)=rcs(k-1)
+              enddo
+!     
+              xap=co(1,node)-csab(1)
+              yap=co(2,node)-csab(2)
+              zap=co(3,node)-csab(3)
+!     
+              ics(id+1)=node
+              zcs(id+1)=xap*xn+yap*yn+zap*zn
+              rcs(id+1)=dsqrt((xap-zcs(id+1)*xn)**2+
+     &             (yap-zcs(id+1)*yn)**2+
+     &             (zap-zcs(id+1)*zn)**2)
+            enddo
+            index1=nodface(5,index1)
+            if(index1.eq.0) exit
+          enddo
+        enddo
+        ncsnodes=l
+        deallocate(ipoface)
+        deallocate(nodface)
+!
+!     generate dependent nodes
+!
+        allocate(icsd(ncsnodes))
+        do i=1,ncsnodes
+          nodei=ics(i)
+          xap=co(1,nodei)-csab(1)
+          yap=co(2,nodei)-csab(2)
+          zap=co(3,nodei)-csab(3)
+          zp=xap*xn+yap*yn+zap*zn
+          rp=dsqrt((xap-zp*xn)**2+(yap-zp*yn)**2+(zap-zp*zn)**2)
+          nk=nk+1
+          if(nk.gt.nk_) then
+            write(*,*) '*ERROR in cyclicsymmetrymodels'
+            write(*,*) '       increase nk_'
+            ier=1
+            return
+          endif
+          co(1,nk)=co(1,nodei)+rp*(x2-x3)
+          co(2,nk)=co(2,nodei)+rp*(y2-y3)
+          co(3,nk)=co(3,nodei)+rp*(z2-z3)
+          icsd(i)=nk
+        enddo
+!
+!       change the topology of the rotated elements
+!
+        do i=1,nel
+          nelems=iel(i)
+          if(lakon(nelems)(4:5).eq.'20') then
+            nope=20
+          elseif(lakon(nelems)(4:5).eq.'15') then
+            nope=15
+          elseif(lakon(nelems)(4:5).eq.'10') then
+            nope=10
+          elseif(lakon(nelems)(4:4).eq.'8') then
+            nope=8
+          elseif(lakon(nelems)(4:4).eq.'6') then
+            nope=6
+          else
+            nope=4
+          endif
+          indexe=ipkon(nelems)
+          do j=1,nope
+            node=kon(indexe+j)
+            call nident(ics,node,ncsnodes,id)
+            if(id.gt.0) then
+              if(ics(id).eq.node) then
+                kon(indexe+j)=icsd(id)
+              endif
+            endif
+          enddo
+        enddo
+        deallocate(iel)
+!
+!       generate cyclic MPC's
+!
+        do i=1,ncsnodes
+          nodei=ics(i)
+          noded=icsd(i)
+!     
+          call generatecycmpcs(tolloc,co,nk,ipompc,nodempc,
+     &         coefmpc,nmpc,ikmpc,ilmpc,mpcfree,rcs,zcs,ics,
+     &         nr,nz,rcs0,zcs0,labmpc,
+     &         mcs,triangulation,csab,xn,yn,zn,phi,noded,
+     &         ncsnodes,rcscg,rcs0cg,zcscg,zcs0cg,nrcg,
+     &         nzcg,jcs,lcs,kontri,straight,ne,ipkon,kon,lakon,
+     &         ifacetet,inodface,vold,nef,mi,
+     &         indepset,ithermal,icount)
+        enddo
+        deallocate(icsd)
+      else
 !     
 !     allocating a node of the depset to each node of the indepset 
 !     
-      triangulation=.false.
+        triangulation=.false.
 !     
 !     opening a file to store the nodes which are not connected
-!
-      do ilen=1,132
-        if(ichar(jobnamec(1)(ilen:ilen)).eq.0) exit
-      enddo
-      ilen=ilen-1
-      fn=jobnamec(1)(1:ilen)//'_WarnNodeMissCyclicSymmetry.nam'
-      open(40,file=fn,status='unknown')
-      write(40,*) '*NSET,NSET=WarnNodeCyclicSymmetry'
-      icount=0
+!     
+        do ilen=1,132
+          if(ichar(jobnamec(1)(ilen:ilen)).eq.0) exit
+        enddo
+        ilen=ilen-1
+        fn=jobnamec(1)(1:ilen)//'_WarnNodeMissCyclicSymmetry.nam'
+        open(40,file=fn,status='unknown')
+        write(40,*) '*NSET,NSET=WarnNodeCyclicSymmetry'
+        icount=0
 !     
 !     generating the thermal MPC's; the generated MPC's are for nodal
 !     diameter 0. BETTER: based on ithermal(2), cf. gen3dfrom2d.f
@@ -932,133 +1220,131 @@
 !     t0 before ensuring the cyclic symmetry for t1. So also in this
 !     case a non-cyclic symmetric field t0 can lead to stresses.
 !     
-      if(ithermal(1).eq.1) then
-        write(*,*) '*INFO reading *CYCLIC SYMMETRY MODEL'
-        write(*,*) '      cyclic symmetry equations are generated'
-        write(*,*) '      for the temperature; if the initial'
-        write(*,*) '      temperatures are not cyclic symmetric'
-        write(*,*) '      and/or the applied temperature is not'
-        write(*,*) '      cyclic symmetric this may lead to'
-        write(*,*) '      additional stresses'
-        write(*,*)
-      endif
+        if(ithermal(1).eq.1) then
+          write(*,*) '*INFO reading *CYCLIC SYMMETRY MODEL'
+          write(*,*) '      cyclic symmetry equations are generated'
+          write(*,*) '      for the temperature; if the initial'
+          write(*,*) '      temperatures are not cyclic symmetric'
+          write(*,*) '      and/or the applied temperature is not'
+          write(*,*) '      cyclic symmetric this may lead to'
+          write(*,*) '      additional stresses'
+          write(*,*)
+        endif
 !     
-      loop2: do i=istartset(jdep),iendset(jdep)
-      if(ialset(i).gt.0) then
+        loop2: do i=istartset(jdep),iendset(jdep)
+        if(ialset(i).gt.0) then
 !     
 !     check whether dependent side is node based or
 !     face based
 !     
-        if(depkind.eq.'T') then
-          ifaces=ialset(i)
-          nelems=int(ifaces/10)
-          jfaces=ifaces - nelems*10
-          indexe=ipkon(nelems)
+          if(depkind.eq.'T') then
+            ifaces=ialset(i)
+            nelems=int(ifaces/10)
+            jfaces=ifaces - nelems*10
+            indexe=ipkon(nelems)
 !     
-          if(lakon(nelems)(4:5).eq.'20') then
-            nopes=8
-          elseif(lakon(nelems)(4:4).eq.'2') then
-            nopes=9
-          elseif(lakon(nelems)(4:4).eq.'8') then
-            nopes=4
-          elseif(lakon(nelems)(4:5).eq.'10') then
-            nopes=6
-          elseif(lakon(nelems)(4:4).eq.'4') then
-            nopes=3
-          endif
-!     
-          if(lakon(nelems)(4:4).eq.'6') then
-            if(jfaces.le.2) then
-              nopes=3
-            else
-              nopes=4
-            endif
-          endif
-          if(lakon(nelems)(4:5).eq.'15') then
-            if(jfaces.le.2) then
-              nopes=6
-            else
+            if(lakon(nelems)(4:5).eq.'20') then
               nopes=8
+            elseif(lakon(nelems)(4:4).eq.'8') then
+              nopes=4
+            elseif(lakon(nelems)(4:5).eq.'10') then
+              nopes=6
+            elseif(lakon(nelems)(4:4).eq.'4') then
+              nopes=3
             endif
-          endif 
+!     
+            if(lakon(nelems)(4:4).eq.'6') then
+              if(jfaces.le.2) then
+                nopes=3
+              else
+                nopes=4
+              endif
+            endif
+            if(lakon(nelems)(4:5).eq.'15') then
+              if(jfaces.le.2) then
+                nopes=6
+              else
+                nopes=8
+              endif
+            endif 
+          else
+            nopes=1
+          endif
+!     
+          do m=1,nopes
+            if(depkind.eq.'T') then
+              if((lakon(nelems)(4:4).eq.'2').or.
+     &             (lakon(nelems)(4:4).eq.'8')) then
+                noded=kon(indexe+ifaceq(m,jfaces))
+              elseif((lakon(nelems)(4:4).eq.'4').or.
+     &               (lakon(nelems)(4:5).eq.'10')) then
+                noded=kon(indexe+ifacet(m,jfaces))
+              elseif(lakon(nelems)(4:4).eq.'6') then
+                noded=kon(indexe+ifacew1(m,jfaces))
+              elseif(lakon(nelems)(4:5).eq.'15') then
+                noded=kon(indexe+ifacew2(m,jfaces))
+              endif
+            else
+              if(i.gt.istartset(jdep)) then
+                if(ialset(i).eq.ialset(i-1)) cycle loop2
+              endif
+              noded=ialset(i)
+            endif
+!     
+!     check whether cyclic MPC's have already been
+!     generated (e.g. for nodes belonging to several
+!     faces for face based dependent surfaces)
+!     
+            idof=8*(noded-1)+1
+            call nident(ikmpc,idof,nmpc,id)
+            if(id.gt.0) then
+              if(ikmpc(id).eq.idof) then
+                if(labmpc(ilmpc(id))(1:6).eq.'CYCLIC') cycle
+              endif
+            endif
+!     
+            call generatecycmpcs(tolloc,co,nk,ipompc,nodempc,
+     &           coefmpc,nmpc,ikmpc,ilmpc,mpcfree,rcs,zcs,ics,
+     &           nr,nz,rcs0,zcs0,labmpc,
+     &           mcs,triangulation,csab,xn,yn,zn,phi,noded,
+     &           ncsnodes,rcscg,rcs0cg,zcscg,zcs0cg,nrcg,
+     &           nzcg,jcs,lcs,kontri,straight,ne,ipkon,kon,lakon,
+     &           ifacetet,inodface,vold,nef,mi,
+     &           indepset,ithermal,icount)
+          enddo
+!     
         else
-          nopes=1
+          k=ialset(i-2)
+          do
+            k=k-ialset(i)
+            if(k.ge.ialset(i-1)) exit
+            noded=k
+!     
+!     check whether cyclic MPC's have already been
+!     generated (e.g. for nodes belonging to several
+!     faces for face based dependent surfaces)
+!     
+            idof=8*(noded-1)+1
+            call nident(ikmpc,idof,nmpc,id)
+            if(id.gt.0) then
+              if(ikmpc(id).eq.idof) then
+                if(labmpc(ilmpc(id))(1:6).eq.'CYCLIC') cycle
+              endif
+            endif
+!     
+            call generatecycmpcs(tolloc,co,nk,ipompc,nodempc,
+     &           coefmpc,nmpc,ikmpc,ilmpc,mpcfree,rcs,zcs,ics,
+     &           nr,nz,rcs0,zcs0,labmpc,
+     &           mcs,triangulation,csab,xn,yn,zn,phi,noded,
+     &           ncsnodes,rcscg,rcs0cg,zcscg,zcs0cg,nrcg,
+     &           nzcg,jcs,lcs,kontri,straight,ne,ipkon,kon,lakon,
+     &           ifacetet,inodface,vold,nef,mi,
+     &           indepset,ithermal,icount)
+          enddo
         endif
 !     
-        do m=1,nopes
-          if(depkind.eq.'T') then
-            if((lakon(nelems)(4:4).eq.'2').or.
-     &           (lakon(nelems)(4:4).eq.'8')) then
-              noded=kon(indexe+ifaceq(m,jfaces))
-            elseif((lakon(nelems)(4:4).eq.'4').or.
-     &             (lakon(nelems)(4:5).eq.'10')) then
-              noded=kon(indexe+ifacet(m,jfaces))
-            elseif(lakon(nelems)(4:4).eq.'6') then
-              noded=kon(indexe+ifacew1(m,jfaces))
-            elseif(lakon(nelems)(4:5).eq.'15') then
-              noded=kon(indexe+ifacew2(m,jfaces))
-            endif
-          else
-            if(i.gt.istartset(jdep)) then
-              if(ialset(i).eq.ialset(i-1)) cycle loop2
-            endif
-            noded=ialset(i)
-          endif
-!     
-!     check whether cyclic MPC's have already been
-!     generated (e.g. for nodes belonging to several
-!     faces for face based dependent surfaces)
-!     
-          idof=8*(noded-1)+1
-          call nident(ikmpc,idof,nmpc,id)
-          if(id.gt.0) then
-            if(ikmpc(id).eq.idof) then
-              if(labmpc(ilmpc(id))(1:6).eq.'CYCLIC') cycle
-            endif
-          endif
-!     
-          call generatecycmpcs(tolloc,co,nk,ipompc,nodempc,
-     &         coefmpc,nmpc,ikmpc,ilmpc,mpcfree,rcs,zcs,ics,
-     &         nr,nz,rcs0,zcs0,labmpc,
-     &         mcs,triangulation,csab,xn,yn,zn,phi,noded,
-     &         ncsnodes,rcscg,rcs0cg,zcscg,zcs0cg,nrcg,
-     &         nzcg,jcs,lcs,kontri,straight,ne,ipkon,kon,lakon,
-     &         ifacetet,inodface,vold,nef,mi,
-     &         indepset,ithermal,icount)
-        enddo
-!     
-      else
-        k=ialset(i-2)
-        do
-          k=k-ialset(i)
-          if(k.ge.ialset(i-1)) exit
-          noded=k
-!     
-!     check whether cyclic MPC's have already been
-!     generated (e.g. for nodes belonging to several
-!     faces for face based dependent surfaces)
-!     
-          idof=8*(noded-1)+1
-          call nident(ikmpc,idof,nmpc,id)
-          if(id.gt.0) then
-            if(ikmpc(id).eq.idof) then
-              if(labmpc(ilmpc(id))(1:6).eq.'CYCLIC') cycle
-            endif
-          endif
-!     
-          call generatecycmpcs(tolloc,co,nk,ipompc,nodempc,
-     &         coefmpc,nmpc,ikmpc,ilmpc,mpcfree,rcs,zcs,ics,
-     &         nr,nz,rcs0,zcs0,labmpc,
-     &         mcs,triangulation,csab,xn,yn,zn,phi,noded,
-     &         ncsnodes,rcscg,rcs0cg,zcscg,zcs0cg,nrcg,
-     &         nzcg,jcs,lcs,kontri,straight,ne,ipkon,kon,lakon,
-     &         ifacetet,inodface,vold,nef,mi,
-     &         indepset,ithermal,icount)
-        enddo
-      endif
-!     
       enddo loop2
-!
+!     
       if(icount.gt.0) then
         write(*,*) '*WARNING reading *CYCLIC SYMMETRY MODEL:'
         write(*,*) '        for at least one dependent'
@@ -1081,6 +1367,8 @@
 !     
       kflag=1
       call isortii(ics,nr,ncsnodes,kflag)
+      endif
+!     
       cs(4,mcs)=ncsnodes+0.5d0
       lprev=lprev+ncsnodes
 !     

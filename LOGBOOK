@@ -5479,3 +5479,5 @@ Dec 2002        - started to work on single crystal plasticity
 
  19 May 2025    - introduced the parameter SMOOTHING ONLY on the
                   *REFINE MESH card
+
+ 26 May 2025    - worked on cyclic symmetry with contact

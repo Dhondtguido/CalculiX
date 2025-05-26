@@ -320,6 +320,7 @@ extrapolate_u.f \
 extrapolate_u1.f \
 extrapolate_us3.f \
 extrapolate_us45.f \
+extsurface.f \
 faceinfo.f \
 fcrit.f \
 feasibledirections.f \
@@ -728,6 +729,7 @@ reinit_refine.f \
 relaxval_al.f \
 relaxval_alfull.f \
 remlagrangemult.f \
+removeface.f \
 removesliver.f \
 removetet_refine.f \
 removetet_sliver.f \
