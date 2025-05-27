@@ -527,7 +527,7 @@ c
      &       dcs(12*ncs_+1),ne,ipkon,kon,lakon,ics(14*ncs_+1),
      &       ics(16*ncs_+1),ics(18*ncs_+1),ipoinpc,
      &       maxsectors,trab,ntrans,ntrans_,jobnamec,vold,nef,mi,
-     &       iaxial,ier)
+     &       iaxial,ier,nk_)
 !     
       elseif(textpart(1)(1:17).eq.'*DAMAGEINITIATION') then
         call damageinitiations(inpc,textpart,matname,nmat,

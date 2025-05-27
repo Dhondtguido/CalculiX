@@ -79,7 +79,7 @@
         nodface(5,i)=i+1
       enddo
 !     
-      do ii=1,nea,neb
+      do ii=nea,neb
 !     
         if(iflag.eq.1) then
           i=ielem(ii)

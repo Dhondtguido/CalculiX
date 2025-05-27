@@ -965,6 +965,9 @@
 !       determine all external faces of all elements in iel(1...nel)
 !
         allocate(ipoface(nk))
+        do j=1,nk
+          ipoface(j)=0
+        enddo
         allocate(nodface(5,6*ne))
         nea=1
         iflag=1
@@ -986,6 +989,9 @@
 !     catalogue all external faces in the complete model
 !
         allocate(ipofaceglob(nk))
+        do j=1,nk
+          ipofaceglob(j)=0
+        enddo
         allocate(nodfaceglob(5,6*ne))
         nea=1
         iflag=0
@@ -1002,12 +1008,12 @@
           index1=ipoface(i)
           indexold=0
           do
-            node2=nodface(2,index1)
-            node3=nodface(3,index1)
+            node2=nodface(1,index1)
+            node3=nodface(2,index1)
             indexglob=ipofaceglob(i)
             do
-              if((nodfaceglob(2,index1).eq.node2).and.
-     &           (nodfaceglob(3,index1).eq.node3)) then
+              if((nodfaceglob(1,indexglob).eq.node2).and.
+     &           (nodfaceglob(2,indexglob).eq.node3)) then
 !     
 !     local external face is a global external face:
 !     remove the global external face from local set (ipoface,noface)
@@ -1018,8 +1024,6 @@
                   nodface(5,indexold)=nodface(5,index1)
                 endif
                 index1=nodface(5,index1)
-                nodface(5,index1)=ifree
-                ifree=index1
                 exit
               endif
 !
@@ -1048,7 +1052,7 @@
           index1=ipoface(i)
           do
             nelems=nodface(3,index1)
-            ifaces=nodface(4,index1)
+            jfaces=nodface(4,index1)
 !     
             if(lakon(nelems)(4:5).eq.'20') then
               nopes=8
@@ -1058,23 +1062,21 @@
               nopes=6
             elseif(lakon(nelems)(4:4).eq.'4') then
               nopes=3
-            endif
-!     
-            if(lakon(nelems)(4:4).eq.'6') then
+            elseif(lakon(nelems)(4:4).eq.'6') then
               if(jfaces.le.2) then
                 nopes=3
               else
                 nopes=4
               endif
-            endif
-            if(lakon(nelems)(4:5).eq.'15') then
+            elseif(lakon(nelems)(4:5).eq.'15') then
               if(jfaces.le.2) then
                 nopes=6
               else
                 nopes=8
               endif
             endif   
-!     
+!
+            indexe=ipkon(nelems)
             do m=1,nopes
               if((lakon(nelems)(4:4).eq.'2').or.
      &             (lakon(nelems)(4:4).eq.'8')) then
