@@ -500,6 +500,12 @@
               xsectors=0
               exit
             endif
+          elseif(textpart(i)(1:7).eq.'MASTER=') then
+!     
+!           in case of contact the elements adjacent to the independent
+!           side are copied and new nodes are generated
+!     
+            nk_=nk_+ncs_
           endif
         enddo
         maxsectors_=max(maxsectors_,int(xsectors)+1)
@@ -2457,9 +2463,13 @@ c     !
           endif
         endif
 !
+!       the factor 3 was introduced in the next lines to take
+!       cyclic symmetry with contact into account (involving
+!       the rotation of the master elements on the independent side)
+!
         if((islavset.ne.0).and.(imastset.ne.0)) then
           ncs_=ncs_+max(multslav*meminset(islavset),
-     &         multmast*meminset(imastset))
+     &         multmast*3*meminset(imastset))
         else
           write(*,*) '*ERROR in allocation: either the slave'
           write(*,*) '       surface or the master surface in a'

@@ -48,7 +48,7 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
          *epnt=NULL,*enernt=NULL,*xstatent=NULL,theta,pi,t[3],*qfnt=NULL,
          *vr=NULL,*vi=NULL,*stnr=NULL,*stni=NULL,*vmax=NULL,*stnmax=NULL,
          *stit=NULL,*eenmax=NULL,*fnr=NULL,*fni=NULL,*emnt=NULL,
-    *cdnr=NULL,*cdni=NULL,*errn=NULL;
+    *cdnr=NULL,*cdni=NULL,*errn=NULL,*cdnt=NULL;
 
   errn=*errnp;
 
@@ -147,9 +147,15 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
     NNEW(xstatent,double,*nstate_**nk*ngraph);
   if((strcmp1(&filab[696],"HFL ")==0)||(strcmp1(&filab[2784],"HER ")==0))
     NNEW(qfnt,double,3**nk*ngraph);
-  if((strcmp1(&filab[1044],"ZZS ")==0)||(strcmp1(&filab[1044],"ERR ")==0)||
-     (strcmp1(&filab[2175],"CONT")==0))
+  if((strcmp1(&filab[1044],"ZZS ")==0)||(strcmp1(&filab[1044],"ERR ")==0))
     NNEW(stit,double,6*mi[0]**ne*ngraph);
+  if(strcmp1(&filab[2175],"CONT")==0){
+    if(*mortar==1){
+      NNEW(cdnt,double,6**nk*ngraph);
+    }else{
+      NNEW(stit,double,6*mi[0]**ne*ngraph);
+    }
+  }
   if(strcmp1(&filab[2697],"ME  ")==0)
     NNEW(emnt,double,6**nk*ngraph);
 
@@ -260,9 +266,15 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
     for(l=0;l<*nstate_**nk;l++){xstatent[l]=xstaten[l];};
   if((strcmp1(&filab[696],"HFL ")==0)||(strcmp1(&filab[2784],"HER ")==0))
     for(l=0;l<3**nk;l++){qfnt[l]=qfn[l];};
-  if((strcmp1(&filab[1044],"ZZS ")==0)||(strcmp1(&filab[1044],"ERR ")==0)||
-     (strcmp1(&filab[2175],"CONT")==0))
+  if((strcmp1(&filab[1044],"ZZS ")==0)||(strcmp1(&filab[1044],"ERR ")==0))
     for(l=0;l<6*mi[0]**ne;l++){stit[l]=sti[l];};
+  if(strcmp1(&filab[2175],"CONT")==0){
+    if(*mortar==1){
+      for(l=0;l<6**nk;l++){cdnt[l]=cdn[l];}
+    }else{
+      for(l=0;l<6*mi[0]**ne;l++){stit[l]=sti[l];}
+    }
+  }
   if(strcmp1(&filab[2697],"ME  ")==0)
     for(l=0;l<6**nk;l++){emnt[l]=emn[l];};
   
@@ -359,6 +371,21 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
           }
         }
       }
+
+      /* results are only copied for face-to-face penalty contact */
+      
+      if(strcmp1(&filab[2175],"CONT")==0){
+	if(*mortar==1){
+	  for(l1=0;l1<*nk;l1++){
+	    if(inocs[l1]==jj){
+	      for(l2=0;l2<6;l2++){
+		l=6*l1+l2;
+		cdnt[l+6**nk*i]=cdn[l];
+	      }
+	    }
+	  }
+	}
+      }
     
       if(strcmp1(&filab[2697],"ME  ")==0){
         for(l1=0;l1<*nk;l1++){
@@ -389,7 +416,7 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
       ntrans,orab,ielorien,norien,description,ipneigh,neigh,
       mi,stit,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&net,
       cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emnt,
-      thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,ielprop,
+      thicke,jobnamec,output,qfx,cdnt,mortar,cdnr,cdni,nmat,ielprop,
       prop,sti,damn,&errn);
 
   if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
@@ -410,8 +437,14 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
   if(strcmp1(&filab[522],"ENER")==0) SFREE(enernt);
   if(strcmp1(&filab[609],"SDV ")==0) SFREE(xstatent);
   if((strcmp1(&filab[696],"HFL ")==0)||(strcmp1(&filab[2784],"HER ")==0)) SFREE(qfnt);
-  if((strcmp1(&filab[1044],"ZZS ")==0)||(strcmp1(&filab[1044],"ERR ")==0)||
-     (strcmp1(&filab[2175],"CONT")==0)) SFREE(stit);
+  if((strcmp1(&filab[1044],"ZZS ")==0)||(strcmp1(&filab[1044],"ERR ")==0)) SFREE(stit);
+  if(strcmp1(&filab[2175],"CONT")==0){
+    if(*mortar==1){
+      SFREE(cdnt);
+    }else{
+      SFREE(stit);
+    }
+  }
   if(strcmp1(&filab[2697],"ME  ")==0) SFREE(emnt);
 
   SFREE(kont);SFREE(ipkont);SFREE(lakont);SFREE(ielmatt);

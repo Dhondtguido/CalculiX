@@ -81,21 +81,27 @@
      &     noden(2),ntrans,ntrans_,nef,mi(*),ifaceq(8,6),ifacet(6,4),
      &     ifacew1(4,5),ifacew2(8,5),idof,ier,icount,nodeaxd,nodeaxi,
      &     ilen,ielem,iposslave,iposmaster,nel,iflag,ifree,nea,
-     &     indexold,index1,indexglob,nk_,node2,node3,nope
+     &     indexold,index1,indexglob,nk_,node2,node3,nope,nkref
 !
       integer,dimension(:),allocatable::iel
       integer,dimension(:),allocatable::ipoface
       integer,dimension(:,:),allocatable::nodface
       integer,dimension(:),allocatable::ipofaceglob
       integer,dimension(:,:),allocatable::nodfaceglob
-      integer,dimension(:),allocatable::icsd
+      integer,dimension(:),allocatable::icovered
 !     
       real*8 tolloc,co(3,*),coefmpc(*),rcs(*),zcs(*),rcs0(*),zcs0(*),
      &     csab(7),xn,yn,zn,dd,xap,yap,zap,tietol(4,*),cs(18,*),
      &     gsectors,x3,y3,z3,phi,rcscg(*),rcs0cg(*),zcscg(*),zcs0cg(*),
      &     straight(9,*),x1,y1,z1,x2,y2,z2,zp,rp,dist,trab(7,*),rpd,zpd,
      &     vold(0:mi(2),*),calculated_angle,user_angle,xsectors,
-     &     axdistmin,psectors
+     &     axdistmin,psectors,c1,c2,c3,dtheta,c(3,3),d(3,3),e(3,3,3),
+     &     conew(3),tn(3)
+!     
+      data d /1.d0,0.d0,0.d0,0.d0,1.d0,0.d0,0.d0,0.d0,1.d0/
+      data e /0.d0,0.d0,0.d0,0.d0,0.d0,-1.d0,0.d0,1.d0,0.d0,
+     &     0.d0,0.d0,1.d0,0.d0,0.d0,0.d0,-1.d0,0.d0,0.d0,
+     &     0.d0,-1.d0,0.d0,1.d0,0.d0,0.d0,0.d0,0.d0,0.d0/
 !     
 !     nodes per face for hex elements
 !     
@@ -488,16 +494,13 @@
               nopes=6
             elseif(lakon(nelems)(4:4).eq.'4') then
               nopes=3
-            endif
-!     
-            if(lakon(nelems)(4:4).eq.'6') then
+            elseif(lakon(nelems)(4:4).eq.'6') then
               if(jfaces.le.2) then
                 nopes=3
               else
                 nopes=4
               endif
-            endif
-            if(lakon(nelems)(4:5).eq.'15') then
+            elseif(lakon(nelems)(4:5).eq.'15') then
               if(jfaces.le.2) then
                 nopes=6
               else
@@ -690,16 +693,13 @@
             nopes=6
           elseif(lakon(nelems)(4:4).eq.'4') then
             nopes=3
-          endif
-!     
-          if(lakon(nelems)(4:4).eq.'6') then
+          elseif(lakon(nelems)(4:4).eq.'6') then
             if(jfaces.le.2) then
               nopes=3
             else
               nopes=4
             endif
-          endif
-          if(lakon(nelems)(4:5).eq.'15') then
+          elseif(lakon(nelems)(4:5).eq.'15') then
             if(jfaces.le.2) then
               nopes=6
             else
@@ -1124,17 +1124,47 @@
         ncsnodes=l
         deallocate(ipoface)
         deallocate(nodface)
+!     
+!     initialization of near2d
+!     
+        do i=1,ncsnodes
+          nr(i)=i
+          nz(i)=i
+          rcs0(i)=rcs(i)
+          zcs0(i)=zcs(i)
+        enddo
+        kflag=2
+        call dsort(rcs,nr,ncsnodes,kflag)
+        call dsort(zcs,nz,ncsnodes,kflag)
+!
+!       calculating the rotation matrix
+!
+        if(phi.lt.0.d0) then
+          dtheta=6.28318531d0/cs(18,mcs)
+        else
+          dtheta=-6.28318531d0/cs(18,mcs)
+        endif
+!
+        c1=dcos(dtheta)
+        c2=dsin(dtheta)
+        c3=1.d0-c1
+        tn(1)=xn
+        tn(2)=yn
+        tn(3)=zn
+!
+        do i=1,3
+          do j=1,3
+            c(i,j)=c1*d(i,j)+
+     &           c2*(e(i,1,j)*tn(1)+e(i,2,j)*tn(2)+e(i,3,j)*tn(3))+
+     &           c3*tn(i)*tn(j)
+          enddo
+        enddo
 !
 !     generate dependent nodes
 !
-        allocate(icsd(ncsnodes))
+        nkref=nk
         do i=1,ncsnodes
           nodei=ics(i)
-          xap=co(1,nodei)-csab(1)
-          yap=co(2,nodei)-csab(2)
-          zap=co(3,nodei)-csab(3)
-          zp=xap*xn+yap*yn+zap*zn
-          rp=dsqrt((xap-zp*xn)**2+(yap-zp*yn)**2+(zap-zp*zn)**2)
           nk=nk+1
           if(nk.gt.nk_) then
             write(*,*) '*ERROR in cyclicsymmetrymodels'
@@ -1142,14 +1172,18 @@
             ier=1
             return
           endif
-          co(1,nk)=co(1,nodei)+rp*(x2-x3)
-          co(2,nk)=co(2,nodei)+rp*(y2-y3)
-          co(3,nk)=co(3,nodei)+rp*(z2-z3)
-          icsd(i)=nk
+          do j=1,3
+            co(j,nk)=c(j,1)*co(1,nodei)+c(j,2)*co(2,nodei)
+     &           +c(j,3)*co(3,nodei)
+          enddo
         enddo
 !
 !       change the topology of the rotated elements
 !
+        allocate(icovered(nk))
+        do i=1,nk
+          icovered(i)=0
+        enddo
         do i=1,nel
           nelems=iel(i)
           if(lakon(nelems)(4:5).eq.'20') then
@@ -1171,18 +1205,29 @@
             call nident(ics,node,ncsnodes,id)
             if(id.gt.0) then
               if(ics(id).eq.node) then
-                kon(indexe+j)=icsd(id)
+                kon(indexe+j)=nkref+id
               endif
+            endif
+            if(icovered(node).eq.0) then
+              do k=1,3
+                conew(k)=c(k,1)*co(1,node)+c(k,2)*co(2,node)
+     &               +c(k,3)*co(3,node)
+              enddo
+              do k=1,3
+                co(k,node)=conew(k)
+              enddo
+              icovered(node)=1
             endif
           enddo
         enddo
         deallocate(iel)
+        deallocate(icovered)
 !
 !       generate cyclic MPC's
 !
         do i=1,ncsnodes
           nodei=ics(i)
-          noded=icsd(i)
+          noded=nkref+i
 !     
           call generatecycmpcs(tolloc,co,nk,ipompc,nodempc,
      &         coefmpc,nmpc,ikmpc,ilmpc,mpcfree,rcs,zcs,ics,
@@ -1193,7 +1238,6 @@
      &         ifacetet,inodface,vold,nef,mi,
      &         indepset,ithermal,icount)
         enddo
-        deallocate(icsd)
       else
 !     
 !     allocating a node of the depset to each node of the indepset 
@@ -1253,16 +1297,13 @@
               nopes=6
             elseif(lakon(nelems)(4:4).eq.'4') then
               nopes=3
-            endif
-!     
-            if(lakon(nelems)(4:4).eq.'6') then
+            elseif(lakon(nelems)(4:4).eq.'6') then
               if(jfaces.le.2) then
                 nopes=3
               else
                 nopes=4
               endif
-            endif
-            if(lakon(nelems)(4:5).eq.'15') then
+            elseif(lakon(nelems)(4:5).eq.'15') then
               if(jfaces.le.2) then
                 nopes=6
               else
