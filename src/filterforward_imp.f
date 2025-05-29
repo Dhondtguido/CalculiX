@@ -36,7 +36,7 @@
 !
 !        Multiply the design update vector with the mass matrix
 !        and copy to rhs
-!        loop over all colums for main- and sub-diagonal
+!        loop over all columns for main- and sub-diagonal
          do idesvar=1,ndesi
             inode=nodedesi(idesvar)
 !

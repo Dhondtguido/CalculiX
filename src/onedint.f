@@ -33,10 +33,11 @@ C
 C  2.INPUT     CALL ONEDINT(XE,YE,NE,XA,YA,NA,IART,IEXP,IER)
 C  ***********                XE = ABSCISSE VECTOR OF THE SAMPLING POINTS
 C                             YE = ORDINATE VECTOR OF THE SAMPLING POINTS
-C                             NE = LENGHT OF THE SAMPLING POINT VECTOR
+C                             NE = LENGTH OF THE SAMPLING POINT VECTOR
 C                             XA = ASCISSE VECTOR OF THE INTERPOLATION POINT(INPUT)
 C                             YA = ORDINATE VECTOR OF THE INTERPOLATION POINT(OUTPUT)
-C                             NA = LENGTH OF THE INTERPOLATION VECTOR                         c                             IART = tYPE OF INTERPOLATION
+C                             NA = LENGTH OF THE INTERPOLATION VECTOR
+C                             IART = TYPE OF INTERPOLATION
 C                                    =0: CONSTANT
 C                                    =1: LINEAR
 C                                    =2: DOUBLE QUADRATIC
@@ -54,7 +55,7 @@ C                                    =-1:PROBLEM IN TH EGIVEN VALUES
 C                                         PROGRAMM STOPS.
 C
 C  3.RESTRICTION    ABSCISSE VECTOR XE MUST BE STRICTLY MONOTONIC INCREASING SORTED
-C  ***************  AUTOMATIC CONTROL INSIDE TEH SUBROUTINE:
+C  ***************  AUTOMATIC CONTROL INSIDE THE SUBROUTINE:
 C                   NE = 0: ERROR INTERRUPTION
 C                   NE = 1: ONLY CONSTANT INTER- EXTRAPOLATION
 C                   NE = 2: MAXIMAL LINEAR INTER- EXTRAPOLATION

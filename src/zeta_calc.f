@@ -728,7 +728,7 @@
          rad=prop(index+4)
 !     angle
          delta=prop(index+5)
-!     heigth/width (square section)
+!     height/width (square section)
          a0=prop(index+6)
          b0=prop(index+7)
 !
@@ -924,7 +924,7 @@
      &       (lakon(nelem)(2:7).eq.'LPLOLI')) then 
 !     
 !     'METHOD OF LICHTAROWICZ'
-!     "Discharge coeffcients for incompressible non-cavitating 
+!     "Discharge coefficients for incompressible non-cavitating 
 !     flow through long orifices"
 !     A. Lichtarowicz, R.K duggins and E. Markland
 !     Journal  Mechanical Engineering Science , vol 7, No. 2, 1965
@@ -1315,7 +1315,7 @@ c            endif
                   call twodint(Z90TAB,n6,n11,a2a0,V2V0,zeta,
      &                 n1,iexpbr1,ier)
                   zeta=zeta*(W0W1)**2
-!     cheching whether the table eveluation in the eptrapolated domain
+!     checking whether the table evaluation in the extrapolated domain
 !     (This procedure is guessed from the original table)
 !     
                   Z90LIM11=Z90LIMX(1)
