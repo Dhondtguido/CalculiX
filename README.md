@@ -18,7 +18,7 @@ Klaus Wittig(Pre- and Postprocessor)
 
   
 
-### **Version 2.20 of CalculiX is available!**
+### **Version 2.22 of CalculiX is available!**
 
 * * *
 
