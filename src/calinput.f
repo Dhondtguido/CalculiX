@@ -83,7 +83,8 @@
      &     nodeprint_flag,elfile_flag,nodefile_flag,contactfile_flag,
      &     dflux_flag,cflux_flag,film_flag,radiate_flag,out3d,
      &     solid,sectionprint_flag,contactprint_flag,pretension,
-     &     beamgeneralsection,objective_flag,constraint_flag
+     &     beamgeneralsection,objective_flag,constraint_flag,
+     &     cyclicsymmetrymodel_flag
 !     
       character*1 typeboun(*),inpc(*)
       character*4 output
@@ -108,7 +109,7 @@
      &     rig(*),nshcon(*),ncocon(2,*),nodebounold(*),ielprop(*),nprop,
      &     nprop_,maxsectors,irestartread,ndmat_,irefineloop,
      &     ndirbounold(*),ipoinp(2,*),inp(3,*),nintpoint,ifacecount,
-     &     ifile_output,ichangefriction,nslavs,
+     &     ifile_output,ichangefriction,nslavs,ist,index1,
      &     nalset,nalset_,nmat,nmat_,ntmat_,norien,norien_,
      &     islavsurf(2,*),
      &     nmethod,nk,ne,nboun,nmpc,nmpc_,mpcfree,i,istat,n,
@@ -136,7 +137,7 @@
      &     plkcon(0:2*npmat_,ntmat_,*),trab(7,*),dcs(*),
      &     shcon(0:3,ntmat_,*),cocon(0:6,ntmat_,*),timepar(*),
      &     ctrl(*),vold(0:mi(2),*),xbounold(*),xforcold(*),
-     &     xloadold(*),t1old(*),eme(*),sti(*),ener(*),
+     &     xloadold(*),t1old(*),eme(*),sti(*),ener(*),temperature,
      &     xstate(nstate_,mi(1),*),ttime,qaold(2),cs(18,*),tietol(4,*),
      &     xbody(7,*),xbodyold(7,*),t0g(2,*),t1g(2,*),
      &     fei(4),tinc,tper,xmodal(*),tmin,tmax,tincf,
@@ -208,6 +209,7 @@
       cflux_flag=.false.
       objective_flag=.false.
       constraint_flag=.false.
+      cyclicsymmetrymodel_flag=.false.
 !     
       if(istep.eq.0) then
 !     
@@ -410,10 +412,6 @@
      &       nmpc,ikmpc,ilmpc,labmpc,iamplitudedefault,namtot,ier,
      &       edc,orab,coeffc,ikdc,ndc)
         cload_flag=.true.
-c        do i=1,nforc
-c          write(*,*) i,nodeforc(1,i),ndirforc(i),xforc(i)
-c        enddo
-c        call exit(201)
 !     
       elseif(textpart(1)(1:17).eq.'*COMPLEXFREQUENCY') then
         call complexfrequencys(inpc,textpart,nmethod,
@@ -528,6 +526,7 @@ c
      &       ics(16*ncs_+1),ics(18*ncs_+1),ipoinpc,
      &       maxsectors,trab,ntrans,ntrans_,jobnamec,vold,nef,mi,
      &       iaxial,ier,nk_)
+        cyclicsymmetrymodel_flag=.true.
 !     
       elseif(textpart(1)(1:17).eq.'*DAMAGEINITIATION') then
         call damageinitiations(inpc,textpart,matname,nmat,
@@ -1349,6 +1348,47 @@ c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
      &     ics(3*ncs_+1),ics(5*ncs_+1),ics(7*ncs_+1),ics(8*ncs_+1),
      &     dcs(12*ncs_+1),ne,ipkon,kon,lakon,ics(14*ncs_+1),
      &     ics(16*ncs_+1),ics(18*ncs_+1),jobnamec,nmethod)
+!
+!     initial temperatures in cyclic symmetry calculations
+!
+      if((istep.eq.1).and.(ithermal(1).gt.0)) then
+        do i=1,nmpc
+          if(labmpc(i)(1:6).eq.'CYCLIC') then
+            if(nodempc(2,ipompc(i)).ne.0) cycle
+            ist=ipompc(i)
+            index1=nodempc(3,ist)
+            temperature=0.d0
+            do
+              if(index1.eq.0) exit
+              temperature=temperature-coefmpc(index1)*
+     &             t0(nodempc(1,index1))
+              index1=nodempc(3,index1)
+            enddo
+            t0(nodempc(1,ist))=temperature/coefmpc(ist)
+            vold(0,nodempc(1,ist))=t0(nodempc(1,ist))
+          endif
+        enddo
+      endif
+!
+!     actual temperatures in cyclic symmetry calculations
+!
+      if(ithermal(1).eq.1) then
+        do i=1,nmpc
+          if(labmpc(i)(1:6).eq.'CYCLIC') then
+            if(nodempc(2,ipompc(i)).ne.0) cycle
+            ist=ipompc(i)
+            index1=nodempc(3,ist)
+            temperature=0.d0
+            do
+              if(index1.eq.0) exit
+              temperature=temperature-coefmpc(index1)*
+     &             t1(nodempc(1,index1))
+              index1=nodempc(3,index1)
+            enddo
+            t1(nodempc(1,ist))=temperature/coefmpc(ist)
+          endif
+        enddo
+      endif
 !     
       infree(1)=ixfree
       infree(2)=ikfree

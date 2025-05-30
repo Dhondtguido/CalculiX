@@ -5485,3 +5485,5 @@ Dec 2002        - started to work on single crystal plasticity
  27 May 2025    - continued work on cyclicsymmetrymodels.f
 
  29 May 2025    - made changes in cyclicsymmetrymodels.f and frdcyc.c
+
+ 30 May 2025    - included temperatures in cyclic symmetric contact

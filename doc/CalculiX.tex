@@ -21518,7 +21518,8 @@ in a cyclic symmetric structure for use in a cyclic symmetry calculation
 must be preceded by two *SURFACE cards defining the nodes belonging to the
 left and right boundary of the sector and a *TIE card linking those surfaces. The axis of symmetry is defined by two points a and b, defined in global Cartesian coordinates.
 
-For structural calculations there are seven parameters, N, NPHYS, NGRAPH, TIE, ELSET,
+For structural calculations there are nine parameters, N, NPHYS, NGRAPH, TIE,
+MASTER, SLAVE, ELSET,
 MATRIX and CHECK. The parameter N,
 specifying the number of (numerical) sectors, is required, TIE is required if more than
 one cyclic symmetry tie is defined. The number of sectors can exceed the
@@ -21539,6 +21540,16 @@ dependent surface (slave) to the independent surface (master).
 The parameter TIE specifies the name of the tie constraint to which the cyclic symmetry
 model definition applies. It need not be specified if only one *TIE card has
 been defined.
+
+The parameters MASTER and SLAVE are only needed if surface-to-surface penalty contact is defined between
+the dependent and independent cyclic symmetry surfaces. They contain the name
+of the MASTER and SLAVE surface exactly as defined underneath a
+\htmlref{*CONTACT PAIR}{contactpair} definition. The effect is that the
+elements adjacent to the independent cyclic symmetry surface are rotated to
+the dependent side by an angle calculated from the physical number of
+sector. The contact definition is left unchanged. This option only works
+if both the cyclic symmetric dependent and independent surfaces defined by the
+tie to which the *CYCLIC SYMMETRY CARD refers are face based.
 
 The element set specified by ELSET specifies the elements to which the
 parameter NGRAPH should be applied. Default if only one cyclic symmetry *TIE
@@ -21608,7 +21619,7 @@ Example:
 defines a cyclic symmetric structure consisting of $30^\circ$ sectors and axis of symmetry through the points (0.,0.,0.) and (1.,0.,0.). The solution will be stored for three connected sectors ($120^\circ$).
 
 \bigskip
-Example files: segment, fullseg, couette1per, couettecyl4.
+Example files: segment, fullseg, couette1per, couettecyl4, cycliccontact.
 
 \subsection{\label{damageinitiation}*DAMAGE INITIATION}
 

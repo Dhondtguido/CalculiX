@@ -1206,6 +1206,7 @@
             if(id.gt.0) then
               if(ics(id).eq.node) then
                 kon(indexe+j)=nkref+id
+                cycle
               endif
             endif
             if(icovered(node).eq.0) then
