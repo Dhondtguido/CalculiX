@@ -1199,6 +1199,11 @@ c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
      &       istep,istat,n,tinc,tper,tmin,tmax,idrct,ithermal,iline,
      &       ipol,inl,ipoinp,inp,ipoinpc,alpha,ctrl,ttime,nener,ier)
 !     
+      elseif(textpart(1)(1:15).eq.'*USEREFINEDMESH') then
+        call userefinedmeshs(inpc,textpart,
+     &  irstrt,istep,istat,n,iline,ipol,inl,ipoinp,inp,ipoinpc,
+     &  irefineloop,ier)
+!     
       elseif(textpart(1)(1:12).eq.'*USERELEMENT') then
         if(istep.gt.0) then
           write(*,*) '*ERROR reading *USER ELEMENT:'

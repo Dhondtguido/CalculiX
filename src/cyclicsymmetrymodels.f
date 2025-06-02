@@ -59,7 +59,7 @@
 !     
       implicit none
 !     
-      logical triangulation,calcangle,nodesonaxis,check,exist
+      logical triangulation,calcangle,nodesonaxis,check,exist,contact
 !     
       character*1 inpc(*),depkind,indepkind
       character*5 matrixname
@@ -67,7 +67,7 @@
       character*20 labmpc(*)
       character*80 tie
       character*81 set(*),depset,indepset,tieset(3,*),elset
-      character*132 textpart(16),jobnamec(*),slave,master
+      character*132 textpart(16),jobnamec(*)
       character*256 fn
 !     
       integer istartset(*),iendset(*),ialset(*),ipompc(*),ifaces,
@@ -80,7 +80,7 @@
      &     ifacetet(*),inodface(*),ipoinpc(0:*),maxsectors,id,jfaces,
      &     noden(2),ntrans,ntrans_,nef,mi(*),ifaceq(8,6),ifacet(6,4),
      &     ifacew1(4,5),ifacew2(8,5),idof,ier,icount,nodeaxd,nodeaxi,
-     &     ilen,ielem,iposslave,iposmaster,nel,iflag,ifree,nea,
+     &     ilen,ielem,nel,iflag,ifree,nea,
      &     indexold,index1,indexglob,nk_,node2,node3,nope,nkref
 !
       integer,dimension(:),allocatable::iel
@@ -152,7 +152,7 @@
       tie='
      &'
       matrixname='U    '
-      master(1:1)=' '
+      contact=.false.
 !
       do i=2,n
         if(textpart(i)(1:2).eq.'N=') then
@@ -202,19 +202,9 @@
      &           "*CYCLIC SYMMETRY MODEL%",ier)
             return
           endif
-        elseif(textpart(i)(1:7).eq.'MASTER=') then
-          iposmaster=index(textpart(i),' ')
-          master(1:iposmaster-8)=textpart(i)(8:iposmaster-1)
-          do j=iposmaster-7,132
-            master(j:j)=' '
-          enddo
-        elseif(textpart(i)(1:6).eq.'SLAVE=') then
-          iposslave=index(textpart(i),' ')
-          slave(1:iposslave-7)=textpart(i)(7:iposslave-1)
-          do j=iposslave-6,132
-            slave(j:j)=' '
-          enddo
-       else
+        elseif(textpart(i)(1:7).eq.'CONTACT') then
+          contact=.true.
+        else
           write(*,*) 
      &         '*WARNING reading *CYCLIC SYMMETRY MODEL:'
           write(*,*) '         parameter not recognized:'
@@ -926,7 +916,7 @@
 !
 !     check for contact
 !
-      if(master(1:1).ne.' ') then
+      if(contact) then
         if(indepkind.ne.'T') then
           write(*,*) '*ERROR reading *CYCLIC SYMMETRY MODEL'
           write(*,*) '       For contact the independent cyclic'

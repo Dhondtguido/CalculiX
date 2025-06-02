@@ -5487,3 +5487,5 @@ Dec 2002        - started to work on single crystal plasticity
  29 May 2025    - made changes in cyclicsymmetrymodels.f and frdcyc.c
 
  30 May 2025    - included temperatures in cyclic symmetric contact
+
+ 31 May 2025    - introduced the keyword *USE REFINED MESH

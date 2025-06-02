@@ -500,7 +500,7 @@
               xsectors=0
               exit
             endif
-          elseif(textpart(i)(1:7).eq.'MASTER=') then
+          elseif(textpart(i)(1:7).eq.'CONTACT') then
 !     
 !           in case of contact the elements adjacent to the independent
 !           side are copied and new nodes are generated
