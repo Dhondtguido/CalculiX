@@ -22,7 +22,7 @@
 !
       subroutine faceinfo(nelem,jface,lakon,nope,nopes,mint2d)
 !
-!     autor: Saskia Sitzmann 
+!     author: Saskia Sitzmann 
 !
       implicit none
 !     
