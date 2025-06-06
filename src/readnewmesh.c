@@ -27,7 +27,12 @@
 #include "CalculiX.h"
 #include "readfrd.h"
 
-ITG nkold,mpcrfna,mpcrfnb;
+//ITG nkold,mpcrfna,mpcrfnb;
+
+static ITG *nkapar=NULL,*nkbpar=NULL,*integerglob1,nkold1,*nk1,*iprfn1,
+  *konrfn1,ideltamax;
+
+static double *co1,*doubleglob1,*ratiorfn1; 
 
 void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
 		 double *xboun,ITG *nload,char *sideload,ITG *iamload,
@@ -56,10 +61,10 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
 {
 
   char masterrfnfile[132]="",fnrfn[132]="",*inpc=NULL,*labmpc=NULL,*lakon=NULL,
-    masterurffile[132]="",*env,*envsys;
+    masterurffile[132]="";
 
   ITG *integerglob=NULL,iglob=1,irefine=1,*inodestet=NULL,nnodestet=0,i,
-    istart,j,iquadratic,nenew,nline,nset_=0,*ipoinp=NULL,
+    istart,j,iquadratic,nenew,nline,nset_=0,*ipoinp=NULL,nkold,
     *inp=NULL,*ipoinpc=NULL,idummy[2]={0,0},nuel_=0,inp_size,nentries=19,
     nkold_,neold_,nkonold_,*ielprop=NULL,*iponor=NULL,*iponoel=NULL,
     *rig=NULL,*ne2boun=NULL,*ielorien=NULL,*inotr=NULL,im,mt=mi[1]+1,
@@ -68,12 +73,17 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
     limit,*ipobody2=NULL,ifreebody2,index,index2,*iprfn=NULL,*konrfn=NULL,
     *jq=NULL,*irow=NULL,*icol=NULL,*loc=NULL,*irowt=NULL,*jqt=NULL,
     *itemp=NULL,*ixcol=NULL,*ipoface=NULL,*nodface=NULL,iamplitude,
-    num_cpus,sys_cpus;
+    num_cpus,isize,idelta,isum,num_cpus_loc,jstart,kstart,k,m;
 
   double *doubleglob=NULL,sigma=0.,*thickn=NULL,*thicke=NULL,*offset=NULL,
     *t0=NULL,*t0g=NULL,*t1g=NULL,*prestr=NULL,*vold=NULL,*veold=NULL,
     *randomval=NULL,*t1=NULL,*coefmpc=NULL,*co=NULL,*ratiorfn=NULL,
     *au=NULL;
+      
+  /* variables for multithreading procedure */
+  
+  ITG sys_cpus,*ithread=NULL;
+  char *env,*envsys;
 
   ielprop=*ielpropp;iponor=*iponorp;thickn=*thicknp;thicke=*thickep;
   offset=*offsetp;iponoel=*iponoelp;rig=*rigp;ne2boun=*ne2bounp;
@@ -320,16 +330,77 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
 		     xboun,nload,sideload,iamload,&iglob,nforc,iamforc,xforc,
 		     ithermal,nk,t1,iamt1,&sigma,&irefine);
 
-    NNEW(iprfn,ITG,*nk-nkold+1);
-    NNEW(konrfn,ITG,20*(*nk-nkold));
-    NNEW(ratiorfn,double,20*(*nk-nkold));
+    /* parallellizing the calculation of the interpolation coefficients of
+       the new nodes within the old mesh */
+    
+    pthread_t tid[num_cpus];
 
-    FORTRAN(genratio,(co,doubleglob,integerglob,&nkold,nk,iprfn,konrfn,
-		      ratiorfn));
+    isize=*nk-nkold;
+    if(num_cpus>isize){
+      num_cpus_loc=isize;
+    }else{
+      num_cpus_loc=num_cpus;
+    }
 
-    SFREE(integerglob);SFREE(doubleglob);
-    RENEW(konrfn,ITG,iprfn[*nk-nkold]);
-    RENEW(ratiorfn,double,iprfn[*nk-nkold]);
+    /* dividing the new nodes among the cpus */
+    
+    idelta=(ITG)floor(isize)/(double)(num_cpus_loc);
+    ideltamax=idelta;
+    isum=nkold;
+    for(i=0;i<num_cpus_loc;i++){
+      nkapar[i]=isum;
+      if(i!=num_cpus_loc-1){
+	isum+=idelta;
+      }else{
+	isum=isize;
+	if(ideltamax<isize-nkapar[i]) ideltamax=isize-nkapar[i];
+      }
+      nkbpar[i]=isum;
+    }
+
+    /* performing the coefficient calculation in parallel */
+    
+    NNEW(iprfn,ITG,num_cpus_loc*(ideltamax+1));
+    NNEW(konrfn,ITG,num_cpus_loc*20*ideltamax);
+    NNEW(ratiorfn,double,num_cpus_loc*20*ideltamax);
+
+    co1=co;doubleglob1=doubleglob;integerglob1=integerglob;nkold1=nkold;
+    nk1=nk;iprfn1=iprfn;konrfn1=konrfn;ratiorfn1=ratiorfn;
+
+    NNEW(ithread,ITG,num_cpus_loc);
+
+    for(i=0; i<num_cpus_loc; i++)  {
+      ithread[i]=i;
+      pthread_create(&tid[i], NULL,
+		     (void *)genratiomt, (void *)&ithread[i]);
+    }
+    for(i=0; i<num_cpus_loc; i++)  pthread_join(tid[i], NULL);
+    
+    /* reordering the information in serial form */
+
+    for(i=0;i<num_cpus_loc;i++){
+      j=nkapar[i]-nkold;
+      jstart=i*(ideltamax+1);
+      kstart=i*20*ideltamax;
+      for(k=0;k<nkbpar[i]-nkapar[i]+1;k++){
+	iprfn[j+k]=kstart+iprfn[jstart+k];
+	for(m=0;m<iprfn[jstart+k+1]-iprfn[jstart+k];m++){
+	  konrfn[iprfn[j+k]+m]=konrfn[kstart+iprfn[jstart+k]+m];
+	}
+      }
+    }
+    iprfn[j+nkbpar[i]-nkapar[i]+1]=kstart+iprfn[jstart+nkbpar[i]-nkapar[i]+1];
+    
+    /*    NNEW(iprfn,ITG,*nk-nkold+1);
+	  NNEW(konrfn,ITG,20*(*nk-nkold));
+	  NNEW(ratiorfn,double,20*(*nk-nkold));
+
+	  FORTRAN(genratio,(co,doubleglob,integerglob,&nkold,nk,iprfn,konrfn,
+	  ratiorfn));
+
+	  SFREE(integerglob);SFREE(doubleglob);
+	  RENEW(konrfn,ITG,iprfn[*nk-nkold]);
+	  RENEW(ratiorfn,double,iprfn[*nk-nkold]);*/
 
     /* interpolating the initial temperatures t0 */
 
@@ -363,14 +434,14 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
 
     /* interpolating vold and veold */
 
-      for(i=0;i<*nk-nkold;i++){
-	vold[nkold+i]=0.;
-	veold[nkold+i]=0.;
-	for(j=0;j<iprfn[i+1]-iprfn[i];j++){
-	  vold[nkold+i]+=ratiorfn[iprfn[i]+j]*vold[konrfn[iprfn[i]+j]-1];
-	  veold[nkold+i]+=ratiorfn[iprfn[i]+j]*veold[konrfn[iprfn[i]+j]-1];
-	}
+    for(i=0;i<*nk-nkold;i++){
+      vold[nkold+i]=0.;
+      veold[nkold+i]=0.;
+      for(j=0;j<iprfn[i+1]-iprfn[i];j++){
+	vold[nkold+i]+=ratiorfn[iprfn[i]+j]*vold[konrfn[iprfn[i]+j]-1];
+	veold[nkold+i]+=ratiorfn[iprfn[i]+j]*veold[konrfn[iprfn[i]+j]-1];
       }
+    }
     
   }
 
@@ -484,6 +555,24 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
   *ipkonp=ipkon;*lakonp=lakon;*iamt1p=iamt1;*ipobodyp=ipobody;
   *iprfnp=iprfn;*konrfnp=konrfn;*ratiorfnp=ratiorfn;
   
-  return;
+  return NULL;
 
+}
+
+/* subroutine for multithreading of calcenergy */
+
+void *genratiomt(ITG *i){
+
+  ITG nka,nkb,index1,index2;
+
+  nka=nkapar[*i]+1;
+  nkb=nkbpar[*i]+1;
+
+  index1=*i*(ideltamax+1);
+  index2=*i*20*ideltamax;
+
+  FORTRAN(genratio,(co1,doubleglob1,integerglob1,&nka,&nkb,
+		    &iprfn1[index1],&konrfn1[index2],&ratiorfn1[index2]));
+
+  return NULL;
 }

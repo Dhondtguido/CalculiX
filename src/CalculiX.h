@@ -1943,6 +1943,8 @@ void FORTRAN(genratio,(double *co,double *doubleglob,ITG *integerglob,
 		       ITG *nkold,ITG *nk,ITG *iprfn,ITG *konrfn,
 		       double *ratiorfn));
 
+void *genratiomt(ITG *i);
+
 void FORTRAN(gentiedmpc,(char *tieset,ITG *ntie,ITG *itietri,ITG *ipkon,
 			 ITG *kon,char *lakon,char *set,ITG *istartset,
 			 ITG *iendset,ITG *ialset,double *cg,double *straight,

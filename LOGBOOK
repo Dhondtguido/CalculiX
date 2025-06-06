@@ -5489,3 +5489,5 @@ Dec 2002        - started to work on single crystal plasticity
  30 May 2025    - included temperatures in cyclic symmetric contact
 
  31 May 2025    - introduced the keyword *USE REFINED MESH
+
+ 6 June 2025    - worked on the parallellization of genratio.f
