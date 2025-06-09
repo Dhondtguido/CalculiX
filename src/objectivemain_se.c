@@ -671,7 +671,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	  }else{
 
 	    /* generate appropriate MPC's for the real
-	       and imaginary part of the sensivity */
+	       and imaginary part of the sensitivity */
 		      
 	    DMEMSET(temp,0,2*mt**nk,0.);
 	    NNEW(coefmpcnew,double,*mpcend);
@@ -1314,7 +1314,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 
 	lmax=ndesired/num_cpus;
 
-	/* deviding the design variables in sets of
+	/* dividing the design variables in sets of
 	   num_cpus variables */
 
 	for(l=0;l<lmax+1;l++){
@@ -1349,7 +1349,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	      	      
 	lmax=neqred/num_cpus;
 
-	/* deviding the design variables in sets of
+	/* dividing the design variables in sets of
 	   num_cpus variables */
 
 	for(l=0;l<lmax+1;l++){
@@ -2000,7 +2000,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 
       lmax=ndesired/num_cpus;
 
-      /* deviding the design variables in sets of
+      /* dividing the design variables in sets of
 	 num_cpus variables */
 
       for(l=0;l<lmax+1;l++){
@@ -2035,7 +2035,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	      	      
       lmax=neqred/num_cpus;
 
-      /* deviding the design variables in sets of
+      /* dividing the design variables in sets of
 	 num_cpus variables */
 
       for(l=0;l<lmax+1;l++){
@@ -2258,7 +2258,7 @@ void *stress_sen_dxmt(ITG *i){
   memcpy(&dstx1[6*mi1[0]**ne1**i],&stx1[0],sizeof(double)*6*mi1[0]**ne1);
   memcpy(&dstn1[6**nk1**i],&stn1[0],sizeof(double)*6**nk1);
 
-  /* pertubation of the coordinates of the design variables */ 
+  /* perturbation of the coordinates of the design variables */ 
 
   for(j=0;j<3;j++){    
     conew1[(node-1)*3+j+3**nk1**i]=co1[(node-1)*3+j]+xdesi1[(idesvar-1)*3+j];
@@ -2311,7 +2311,7 @@ void *stress_sen_dvmt(ITG *i){
 
   /* this routine is called by one thread and calculates
      the change in the von Mises stress KS function due 
-     to the perturbation of the displacement in diretion
+     to the perturbation of the displacement in direction
      idir of one specific design variable */
 
   idof=nactdofred1[*ipos1+(*i)];					  
@@ -2394,7 +2394,7 @@ void *peeq_sen_dxmt(ITG *i){
   memcpy(&dxstate1[*nstate1_*mi1[0]**ne1**i],&xstate1[0],sizeof(double)**nstate1_*mi1[0]**ne1);
   memcpy(&depn1[*nk1**i],&epn1[0],sizeof(double)**nk1);
 
-  /* pertubation of the coordinates of the design variables */ 
+  /* perturbation of the coordinates of the design variables */ 
 
   for(j=0;j<3;j++){    
     conew1[(node-1)*3+j+3**nk1**i]=co1[(node-1)*3+j]+xdesi1[(idesvar-1)*3+j];
@@ -2448,7 +2448,7 @@ void *peeq_sen_dvmt(ITG *i){
 
   /* this routine is called by one thread and calculates
      the change in the peeq KS function due 
-     to the perturbation of the displacement in diretion
+     to the perturbation of the displacement in direction
      idir of one specific design variable */
 
   idof=nactdofred1[*ipos1+(*i)];					  
