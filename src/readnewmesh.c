@@ -342,6 +342,13 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
       num_cpus_loc=num_cpus;
     }
 
+    /* allocating the fields for the cpu load
+       cpu i covers the nodes j: nkapar[i]<=j<nkbpar[i] (C-convention) or
+                                 nkapar[i]<j<=nkbpar[i] (FORTRAN-convention)  */
+    
+    NNEW(nkapar,ITG,num_cpus_loc);
+    NNEW(nkbpar,ITG,num_cpus_loc);
+
     /* dividing the new nodes among the cpus */
     
     idelta=(ITG)floor(isize)/(double)(num_cpus_loc);
@@ -352,8 +359,8 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
       if(i!=num_cpus_loc-1){
 	isum+=idelta;
       }else{
-	isum=isize;
-	if(ideltamax<isize-nkapar[i]) ideltamax=isize-nkapar[i];
+	isum=nkold+isize;
+	if(ideltamax<nkold+isize-nkapar[i]) ideltamax=nkold+isize-nkapar[i];
       }
       nkbpar[i]=isum;
     }
@@ -382,14 +389,16 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
       j=nkapar[i]-nkold;
       jstart=i*(ideltamax+1);
       kstart=i*20*ideltamax;
-      for(k=0;k<nkbpar[i]-nkapar[i]+1;k++){
+      for(k=0;k<nkbpar[i]-nkapar[i];k++){
 	iprfn[j+k]=kstart+iprfn[jstart+k];
 	for(m=0;m<iprfn[jstart+k+1]-iprfn[jstart+k];m++){
 	  konrfn[iprfn[j+k]+m]=konrfn[kstart+iprfn[jstart+k]+m];
 	}
       }
+      if(i==num_cpus_loc-1){
+	iprfn[j+nkbpar[i]-nkapar[i]]=kstart+iprfn[jstart+nkbpar[i]-nkapar[i]];
+      }
     }
-    iprfn[j+nkbpar[i]-nkapar[i]+1]=kstart+iprfn[jstart+nkbpar[i]-nkapar[i]+1];
     
     /*    NNEW(iprfn,ITG,*nk-nkold+1);
 	  NNEW(konrfn,ITG,20*(*nk-nkold));
@@ -566,7 +575,7 @@ void *genratiomt(ITG *i){
   ITG nka,nkb,index1,index2;
 
   nka=nkapar[*i]+1;
-  nkb=nkbpar[*i]+1;
+  nkb=nkbpar[*i];
 
   index1=*i*(ideltamax+1);
   index2=*i*20*ideltamax;
