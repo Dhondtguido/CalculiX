@@ -73,7 +73,10 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
     limit,*ipobody2=NULL,ifreebody2,index,index2,*iprfn=NULL,*konrfn=NULL,
     *jq=NULL,*irow=NULL,*icol=NULL,*loc=NULL,*irowt=NULL,*jqt=NULL,
     *itemp=NULL,*ixcol=NULL,*ipoface=NULL,*nodface=NULL,iamplitude,
-    num_cpus,isize,idelta,isum,num_cpus_loc,jstart,kstart,k,m;
+    num_cpus,isize,idelta,isum,num_cpus_loc,jstart,kstart,k,m,jstartn,
+    kstartn;
+
+  static ITG nkn1,nkn2;
 
   double *doubleglob=NULL,sigma=0.,*thickn=NULL,*thicke=NULL,*offset=NULL,
     *t0=NULL,*t0g=NULL,*t1g=NULL,*prestr=NULL,*vold=NULL,*veold=NULL,
@@ -241,82 +244,6 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
 	}
       }
     }
-  
-    /* get the nodes and topology of the refined mesh (i.e. the new mesh
-       in the part which was refined) */
-  
-    /*cc   strcpy2(masterrfnfile,jobnamec,132);
-    strcat(masterrfnfile,".rfn.frd");
-  
-    getglobalresults(masterrfnfile,&integerglob,&doubleglob,nboun,iamboun,xboun,
-		     nload,sideload,iamload,&iglob,nforc,iamforc,xforc,
-		     ithermal,nk,t1,iamt1,&sigma,&irefine);cc*/
-
-    /* determine all nodes at the free surface of the part of the old
-       mesh which is refined */
-  
-    /* cc NNEW(inodestet,ITG,*nk);
-    NNEW(ipoface,ITG,*nk);
-    NNEW(nodface,ITG,20**ne);
-
-    FORTRAN(getnodesinitetmesh,(ne,lakon,ipkon,kon,istartset,iendset,ialset,set,
-				nset,filab,inodestet,&nnodestet,nodface,
-				ipoface,nk));
-
-    SFREE(ipoface);SFREE(nodface);
-
-    RENEW(inodestet,ITG,nnodestet);cc*/
-
-    //  for(i=0;i<nnodestet;i++) {printf("%d\n",inodestet[i]);}
-
-    /* create MPC's for all surface nodes in the unrefined mesh */
-  
-    /*cc   *nmpc_+=3*nnodestet;
-    RENEW(ipompc,ITG,*nmpc_);
-    RENEW(labmpc,char,20**nmpc_+1);
-    RENEW(ikmpc,ITG,*nmpc_);
-    RENEW(ilmpc,ITG,*nmpc_);
-  
-    istart=*memmpc_+1;
-    nodempc[3**memmpc_-1]=istart;
-  
-    nenew=integerglob[1];
-
-    iquadratic=0;
-    for(i=0;i<nenew;i++){
-      if(ipkon[i]>=0){
-	if(strcmp1(&lakon[8*i],"C3D10   ")==0){
-	  iquadratic=1;
-	  break;
-	}
-      }
-    }
-    if(iquadratic==0) {
-      *memmpc_+=3*5*nnodestet;
-    }else {
-      *memmpc_+=3*11*nnodestet;
-    }
-
-    RENEW(nodempc,ITG,3**memmpc_);
-    RENEW(coefmpc,double,*memmpc_);
-    for(j=istart;j<*memmpc_;j++){
-      nodempc[3*j-1]=j+1;
-    }
-    nodempc[3**memmpc_-1]=0;
-
-    mpcrfna=*nmpc+1;
-
-    FORTRAN(genmpc,(inodestet,&nnodestet,co,doubleglob,integerglob,ipompc,
-		    nodempc,coefmpc,nmpc,nmpc_,labmpc,mpcfree,ikmpc,ilmpc));
-
-		    SFREE(inodestet);mpcrfnb=*nmpc;cc*/
-    
-    /*   for(i=0;i<*nmpc;i++){
-      j=i+1;
-      FORTRAN(writempc,(ipompc,nodempc,coefmpc,labmpc,&j));
-      }*/
-
-    //cc  SFREE(integerglob);SFREE(doubleglob);
     
     /* create MPC's to determine the temperatures t0, t1, vold,
        and veold in the new mesh based on the values in the old mesh */
@@ -335,7 +262,19 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
     
     pthread_t tid[num_cpus];
 
-    isize=*nk-nkold;
+    if(*nk==nkold){
+
+      /* smoothing only */
+      
+      nkn1=0;nkn2=*nk;
+    }else{
+
+      /* mesh refinement */
+      
+      nkn1=nkold;nkn2=*nk;
+    }
+    
+    isize=nkn2-nkn1;
     if(num_cpus>isize){
       num_cpus_loc=isize;
     }else{
@@ -353,14 +292,14 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
     
     idelta=(ITG)floor(isize)/(double)(num_cpus_loc);
     ideltamax=idelta;
-    isum=nkold;
+    isum=nkn1;
     for(i=0;i<num_cpus_loc;i++){
       nkapar[i]=isum;
       if(i!=num_cpus_loc-1){
 	isum+=idelta;
       }else{
-	isum=nkold+isize;
-	if(ideltamax<nkold+isize-nkapar[i]) ideltamax=nkold+isize-nkapar[i];
+	isum=nkn1+isize;
+	if(ideltamax<nkn1+isize-nkapar[i]) ideltamax=nkn1+isize-nkapar[i];
       }
       nkbpar[i]=isum;
     }
@@ -371,8 +310,8 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
     NNEW(konrfn,ITG,num_cpus_loc*20*ideltamax);
     NNEW(ratiorfn,double,num_cpus_loc*20*ideltamax);
 
-    co1=co;doubleglob1=doubleglob;integerglob1=integerglob;nkold1=nkold;
-    nk1=nk;iprfn1=iprfn;konrfn1=konrfn;ratiorfn1=ratiorfn;
+    co1=co;doubleglob1=doubleglob;integerglob1=integerglob;
+    iprfn1=iprfn;konrfn1=konrfn;ratiorfn1=ratiorfn;
 
     NNEW(ithread,ITG,num_cpus_loc);
 
@@ -386,42 +325,35 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
     /* reordering the information in serial form */
 
     for(i=0;i<num_cpus_loc;i++){
-      j=nkapar[i]-nkold;
       jstart=i*(ideltamax+1);
+      jstartn=nkapar[i]-nkn1;
       kstart=i*20*ideltamax;
+      if(i==0){
+	kstartn=0;
+      }else{
+	kstartn=iprfn[nkbpar[i-1]-nkn1];
+      }
       for(k=0;k<nkbpar[i]-nkapar[i];k++){
-	iprfn[j+k]=kstart+iprfn[jstart+k];
+	iprfn[jstartn+k]=kstartn+iprfn[jstart+k];
 	for(m=0;m<iprfn[jstart+k+1]-iprfn[jstart+k];m++){
-	  konrfn[iprfn[j+k]+m]=konrfn[kstart+iprfn[jstart+k]+m];
+	  konrfn[iprfn[jstartn+k]+m]=konrfn[kstart+iprfn[jstart+k]+m];
+	  ratiorfn[iprfn[jstartn+k]+m]=ratiorfn[kstart+iprfn[jstart+k]+m];
 	}
       }
-      if(i==num_cpus_loc-1){
-	iprfn[j+nkbpar[i]-nkapar[i]]=kstart+iprfn[jstart+nkbpar[i]-nkapar[i]];
-      }
+      iprfn[j+nkbpar[i]-nkapar[i]]=kstart+iprfn[jstart+nkbpar[i]-nkapar[i]];
     }
-    
-    /*    NNEW(iprfn,ITG,*nk-nkold+1);
-	  NNEW(konrfn,ITG,20*(*nk-nkold));
-	  NNEW(ratiorfn,double,20*(*nk-nkold));
-
-	  FORTRAN(genratio,(co,doubleglob,integerglob,&nkold,nk,iprfn,konrfn,
-	  ratiorfn));
-
-	  SFREE(integerglob);SFREE(doubleglob);
-	  RENEW(konrfn,ITG,iprfn[*nk-nkold]);
-	  RENEW(ratiorfn,double,iprfn[*nk-nkold]);*/
 
     /* interpolating the initial temperatures t0 */
 
     if(ithermal[0]>0){
-      for(i=0;i<*nk-nkold;i++){
-	t0[nkold+i]=0.;
+      for(i=0;i<nkn2-nkn1;i++){
+	t0[nkn1+i]=0.;
 	for(j=0;j<iprfn[i+1]-iprfn[i];j++){
-	  t0[nkold+i]+=ratiorfn[iprfn[i]+j]*t0[konrfn[iprfn[i]+j]-1];
+	  t0[nkn1+i]+=ratiorfn[iprfn[i]+j]*t0[konrfn[iprfn[i]+j]-1];
 	}
       }
       if(*nam>0){
-	for(i=0;i<*nk-nkold;i++){
+	for(i=0;i<nkn2-nkn1;i++){
 	  iamplitude=iamt1[konrfn[iprfn[i]]-1];
 	  for(j=1;j<iprfn[i+1]-iprfn[i];j++){
 	    if(iamt1[konrfn[iprfn[i]+j]-1]!=iamplitude){
@@ -436,56 +368,25 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
 	    printf("        not the same.\n");
 	    FORTRAN(stop,());
 	  }
-	  iamt1[nkold+i]=iamplitude;
+	  iamt1[nkn1+i]=iamplitude;
 	}
       }
     }
 
     /* interpolating vold and veold */
 
-    for(i=0;i<*nk-nkold;i++){
-      vold[nkold+i]=0.;
-      veold[nkold+i]=0.;
+    for(i=0;i<nkn2-nkn1;i++){
+      vold[nkn1+i]=0.;
+      veold[nkn1+i]=0.;
       for(j=0;j<iprfn[i+1]-iprfn[i];j++){
-	vold[nkold+i]+=ratiorfn[iprfn[i]+j]*vold[konrfn[iprfn[i]+j]-1];
-	veold[nkold+i]+=ratiorfn[iprfn[i]+j]*veold[konrfn[iprfn[i]+j]-1];
+	vold[nkn1+i]+=ratiorfn[iprfn[i]+j]*vold[konrfn[iprfn[i]+j]-1];
+	veold[nkn1+i]+=ratiorfn[iprfn[i]+j]*veold[konrfn[iprfn[i]+j]-1];
       }
     }
     
   }
 
   /* the remaining lines are executed in each step */
-
-  /* rearranging the equations connecting the nodes at the surface
-     of the unrefined mesh to the nodes at the surface of the refined
-     mesh in case some of the former are subject to SPC's or MPC's */
-
-  /*ccnnodestet=mpcrfnb-mpcrfna+1;
-  NNEW(jq,ITG,nnodestet+1);
-  NNEW(irow,ITG,10*nnodestet);
-  NNEW(au,double,10*nnodestet);
-  NNEW(icol,ITG,nnodestet);
-  NNEW(ixcol,ITG,nnodestet);
-  NNEW(loc,ITG,10*nnodestet);
-  NNEW(itemp,ITG,10*nnodestet);
-  NNEW(irowt,ITG,10*nnodestet);
-  NNEW(jqt,ITG,*nk+1);
-  NNEW(inodestet,ITG,nnodestet);
-
-  FORTRAN(modifympc,(inodestet,&nnodestet,co,ipompc,
-		     nodempc,coefmpc,nmpc,nmpc_,labmpc,mpcfree,ikmpc,ilmpc,
-		     jq,irow,icol,loc,irowt,jqt,itemp,au,ixcol,ikboun,
-		     nboun,nodeboun,&mpcrfna,&mpcrfnb,nodempcref,coefmpcref,
-		     memmpcref_,mpcfreeref,maxlenmpcref,memmpc_,maxlenmpc,
-		     istep));
-
-  SFREE(jq);SFREE(irow);SFREE(icol);SFREE(loc);SFREE(irowt);SFREE(jqt);
-  SFREE(itemp);SFREE(au);SFREE(ixcol);SFREE(inodestet);cc*/
-    
-  /*for(i=0;i<*nmpc;i++){
-    j=i+1;
-    FORTRAN(writempc,(ipompc,nodempc,coefmpc,labmpc,&j));
-    }*/
 
   /* transfering the body load information from the
      parent elements */
@@ -545,10 +446,10 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
 
     /* interpolating the initial temperatures t1 */
 
-    for(i=0;i<*nk-nkold;i++){
-      t1[nkold+i]=0.;
+    for(i=0;i<nkn2-nkn1;i++){
+      t1[nkn1+i]=0.;
       for(j=0;j<iprfn[i+1]-iprfn[i];j++){
-	t1[nkold+i]+=ratiorfn[iprfn[i]+j]*t1[konrfn[iprfn[i]+j]-1];
+	t1[nkn1+i]+=ratiorfn[iprfn[i]+j]*t1[konrfn[iprfn[i]+j]-1];
       }
     }
 

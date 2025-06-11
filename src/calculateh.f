@@ -106,6 +106,11 @@
         elseif(label.eq.'USER') then
 c     call ucalculateh(v,veold,stn,een,emn,epn,enern,qfn,
 c     &           errn,size,mi)
+        else
+!
+!         smoothing only
+!
+          size=targetsize
         endif
 !     
         if(size/targetsize.gt.1.d0) then
