@@ -3605,7 +3605,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	if(negpres==0){
 	  if((*mortar==1)&&(1.-theta-dtheta<=1.e-6)&&(itruecontact==1)){
 	    printf(" pressure ratio (smallest/largest pressure over all contact areas) =%e\n\n",pressureratio);
-	    if(pressureratio<-0.05){
+	    	    if(pressureratio<-0.05){
+	    //	    if((pressureratio<-0.05)||((*nmethod==1)&&(iperturb[1]==1))){
 	      printf(" zero-size increment is appended\n\n");
 	      negpres=1;theta=1.-1.e-6;dtheta=1.e-6;
 	    }

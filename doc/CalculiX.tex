@@ -28260,7 +28260,10 @@ element, the refined mesh contains C3D10 elements only, else it is a pure C3D4
 mesh.
 
 Finally, *REFINE MESH is only available in a
-\htmlref{*STATIC}{static} or \htmlref{*DYNAMIC}{dynamic} step.
+\htmlref{*STATIC}{static} or \htmlref{*DYNAMIC}{dynamic} step. If the job name
+is ``test'' the refined mesh is stored in input format in ``test.rfn.inp''
+(can be visualized with CalculiX GraphiX using ``cgx -c test.rfn.inp'') and
+the unrefined mesh in ``test.urf.frd''. 
 
 \bigskip
 
@@ -30497,6 +30500,38 @@ in the step (default). The second line indicates that the initial time increment
 
 \bigskip
 Example files: thermomech2.
+
+\subsection{\label{userefinedmesh}*USE REFINED MESH}
+
+Keyword type: model definition
+
+With this option one can use a refined version of the mesh actually provided
+in the input deck. This refined mesh must have been generated using \htmlref{*REFINE MESH}{refinemesh} in another
+calculation with exactly the same unrefined mesh and applying boundary
+conditions and loads at exactly the same locations as in the present input
+deck. If the other calculation had as job name ``test1'' then the refined mesh
+has been stored in a file ``test1.rfn.inp'' and the unrefined mesh in a file
+``test1.urf.frd''. If the new job has has job name ``test2'',
+``test1.rfn.inp'' and ``test1.urf.frd'' have to be copied into
+``test2.rfn.inp'' and ``test2.urf.frd'' before starting test2. In the new job
+the user can e.g. change the material properties are the values of the
+boundary conditions and/or loadings.
+
+\bigskip
+
+First and only line:
+\begin{itemize}
+\item *USE REFINED MESH
+\end{itemize}
+
+\begin{verbatim}
+Example:
+
+*USE REFINED MESH
+\end{verbatim}
+
+\bigskip
+Example files: circ11p.
 
 \subsection{\label{userelement}*USER ELEMENT}
 

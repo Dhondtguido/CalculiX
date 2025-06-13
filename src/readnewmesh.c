@@ -340,8 +340,12 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
 	  ratiorfn[iprfn[jstartn+k]+m]=ratiorfn[kstart+iprfn[jstart+k]+m];
 	}
       }
-      iprfn[j+nkbpar[i]-nkapar[i]]=kstart+iprfn[jstart+nkbpar[i]-nkapar[i]];
+      iprfn[jstartn+nkbpar[i]-nkapar[i]]=kstartn+iprfn[jstart+nkbpar[i]-nkapar[i]];
     }
+    
+    RENEW(iprfn,ITG,jstartn+nkbpar[num_cpus_loc-1]-nkapar[num_cpus_loc-1]+1);
+    RENEW(konrfn,ITG,kstartn+iprfn[jstart+nkbpar[num_cpus_loc-1]-nkapar[num_cpus_loc-1]]);
+    RENEW(ratiorfn,double,kstartn+iprfn[jstart+nkbpar[num_cpus_loc-1]-nkapar[num_cpus_loc-1]]);
 
     /* interpolating the initial temperatures t0 */
 
