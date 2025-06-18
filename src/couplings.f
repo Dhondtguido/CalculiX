@@ -170,7 +170,7 @@
 !     
       if(name(1:1).eq.' ') then
         write(*,*)
-     &       '*ERROR reading *COUPLING: no CONTRAINT NAME given'
+     &       '*ERROR reading *COUPLING: no CONSTRAINT NAME given'
         write(*,*) '  '
         call inputerror(inpc,ipoinpc,iline,
      &       "*COUPLING%",ier)
@@ -396,46 +396,51 @@
 !     
 !     reading the degrees of freedom
 !     
+        ibounstart=0
         do
           call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &         ipoinp,inp,ipoinpc)
-          if((istat.lt.0).or.(key.eq.1)) return
-!     
-          read(textpart(1)(1:10),'(i10)',iostat=istat) ibounstart
-          if(istat.gt.0) then
-            call inputerror(inpc,ipoinpc,iline,
-     &           "*KINEMATIC%",ier)
-            return
-          endif
-          if(ibounstart.lt.1) then
-            write(*,*) '*ERROR reading *KINEMATIC'
-            write(*,*) '       starting degree of freedom cannot'
-            write(*,*) '       be less than 1'
-            write(*,*) '  '
-            call inputerror(inpc,ipoinpc,iline,
-     &           "*KINEMATIC%",ier)
-            return
-          endif
-!     
-          if(textpart(2)(1:1).eq.' ') then
-            ibounend=ibounstart
+          if((istat.lt.0).or.(key.eq.1)) then
+            if(ibounstart.gt.0) return
+            ibounstart=1
+            ibounend=6
           else
-            read(textpart(2)(1:10),'(i10)',iostat=istat) ibounend
+            read(textpart(1)(1:10),'(i10)',iostat=istat) ibounstart
             if(istat.gt.0) then
               call inputerror(inpc,ipoinpc,iline,
-     &             "*BOUNDARY%",ier)
+     &             "*KINEMATIC%",ier)
               return
+            endif
+            if(ibounstart.lt.1) then
+              write(*,*) '*ERROR reading *KINEMATIC'
+              write(*,*) '       starting degree of freedom cannot'
+              write(*,*) '       be less than 1'
+              write(*,*) '  '
+              call inputerror(inpc,ipoinpc,iline,
+     &             "*KINEMATIC%",ier)
+              return
+            endif
+!     
+            if(textpart(2)(1:1).eq.' ') then
+              ibounend=ibounstart
+            else
+              read(textpart(2)(1:10),'(i10)',iostat=istat) ibounend
+              if(istat.gt.0) then
+                call inputerror(inpc,ipoinpc,iline,
+     &               "*KINEMATIC%",ier)
+                return
+              endif
             endif
           endif
           if(ibounend.gt.3) then
-            write(*,*) '*ERROR reading *KINEMATIC'
-            write(*,*) '       final degree of freedom cannot'
-            write(*,*) '       exceed 3'
+            write(*,*) '*WARNING reading *KINEMATIC'
+            write(*,*) '       only translation degrees of'
+            write(*,*) '       freedom are supported'
             write(*,*) '  '
-            call inputerror(inpc,ipoinpc,iline,
-     &           "*KINEMATIC%",ier)
-            return
-          elseif(ibounend.lt.ibounstart) then
+            if(ibounstart.gt.3) cycle
+            ibounend=3
+          endif
+          if(ibounend.lt.ibounstart) then
             write(*,*) '*ERROR reading *KINEMATIC'
             write(*,*) '       initial degree of freedom cannot'
             write(*,*) '       exceed final degree of freedom'
@@ -473,6 +478,7 @@
      &             iorientation)
             enddo
           endif
+          if((istat.lt.0).or.(key.eq.1)) return
         enddo
       elseif(textpart(1)(2:13).eq.'DISTRIBUTING') then
         if(surfkind.eq.'S') then
@@ -963,11 +969,18 @@ c        write(*,*) e1(1)*e2(1)+e1(2)*e2(2)+e1(3)*e2(3)
 !
 !     reading the degrees of freedom
 !     
+        ibounstart=0
         do
           call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &         ipoinp,inp,ipoinpc)
-          if((istat.lt.0).or.(key.eq.1)) return
-!     
+          if((istat.lt.0).or.(key.eq.1)) then
+            if(ibounstart.gt.0) return
+            write(*,*) '*ERROR reading *DISTRIBUTING'
+            write(*,*) '       degrees of freedom must be specified'
+            write(*,*) '  '
+            ier=1
+            return
+          endif
           read(textpart(1)(1:10),'(i10)',iostat=istat) ibounstart
           if(istat.gt.0) then
             call inputerror(inpc,ipoinpc,iline,
