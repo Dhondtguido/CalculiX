@@ -262,17 +262,17 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
     
     pthread_t tid[num_cpus];
 
-    if(*nk==nkold){
+    //  if(*nk==nkold){
 
       /* smoothing only */
       
       nkn1=0;nkn2=*nk;
-    }else{
+      //    }else{
 
       /* mesh refinement */
       
-      nkn1=nkold;nkn2=*nk;
-    }
+      //     nkn1=nkold;nkn2=*nk;
+      // }
     
     isize=nkn2-nkn1;
     if(num_cpus>isize){
@@ -342,10 +342,10 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
       }
       iprfn[jstartn+nkbpar[i]-nkapar[i]]=kstartn+iprfn[jstart+nkbpar[i]-nkapar[i]];
     }
-    
-    RENEW(iprfn,ITG,jstartn+nkbpar[num_cpus_loc-1]-nkapar[num_cpus_loc-1]+1);
-    RENEW(konrfn,ITG,kstartn+iprfn[jstart+nkbpar[num_cpus_loc-1]-nkapar[num_cpus_loc-1]]);
-    RENEW(ratiorfn,double,kstartn+iprfn[jstart+nkbpar[num_cpus_loc-1]-nkapar[num_cpus_loc-1]]);
+
+    RENEW(iprfn,ITG,nkn2-nkn1+1);
+    RENEW(konrfn,ITG,iprfn[nkn2-nkn1]);
+    RENEW(ratiorfn,double,iprfn[nkn2-nkn1]);
 
     /* interpolating the initial temperatures t0 */
 
