@@ -48,6 +48,8 @@
       real*8 t0(*),t1(*),temperature,tempgrad1,tempgrad2,amta(2,*),
      &     t1g(2,*),a,b,c,dd,d1,d2,temp1,temp2,gradient,co(3,*)
 !     
+      logical master2d
+!
       iamplitude=iamplitudedefault
       idelay=0
       user=.false.
@@ -184,6 +186,10 @@
           utempusesteps=.true.
         elseif(textpart(i)(1:8).eq.'SUBMODEL') then
           submodel=.true.
+        elseif(textpart(i)(1:9).eq.'MASTER=2D') then
+!         check if master model is a 2D model
+          master2d=.true.
+          write(*,*) '(temperatures.f) 2D master model detected'
         elseif(textpart(i)(1:5).eq.'STEP=') then
           read(textpart(i)(6:15),'(i10)',iostat=istat) iglobstep
           if(istat.gt.0) then
@@ -269,7 +275,17 @@
 !     dummy temperature consisting of the first primes
 !     
           if(user) temperature=1.2357111317d0
-          if(submodel) temperature=1.9232931374d0
+          if(submodel) then
+!           mark the presence of a 2D master model in xboun
+            if (master2d) then
+              temperature=1.9232931376d0
+              write(*,*) 'temperature set to 1.9232931376d0'
+            else
+!             regular submodel
+              temperature=1.9232931374d0
+            endif
+          endif
+
 !     
           if((inoelfree.ne.0).or.(nuel_.gt.0)) then
             tempgrad1=0.d0

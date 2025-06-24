@@ -96,7 +96,7 @@ void getglobalresults (char *masterfile,ITG **integerglobp,double **doubleglobp,
 
     if(istep==0){
       for(i=0;i<*nboun;i++){
-	if((xboun[i]<1.9232931375)&&(xboun[i]>1.9232931373)){
+	if((xboun[i]<1.9232931377)&&(xboun[i]>1.9232931373)){
 	  istep=iamboun[i];
 	  break;
 	}
@@ -120,7 +120,7 @@ void getglobalresults (char *masterfile,ITG **integerglobp,double **doubleglobp,
     }
     if((istep==0)&&(*ithermal>0)){
 	for(i=0;i<*nk;i++){
-	    if((t1[i]<1.9232931375)&&(t1[i]>1.9232931373)){
+	    if((t1[i]<1.9232931377)&&(t1[i]>1.9232931373)){
 		istep=iamt1[i];
 		break;
 	    }

@@ -30,6 +30,9 @@
 !     
       logical boun_flag,user,massflowrate,fixed,submodel,lintemp
 !     
+c.hassler:  global master is 2D model
+      logical master2d
+!
       character*1 typeboun(*),type,inpc(*)
       character*20 labmpc(*),label
       character*80 amname(*),amplitude
@@ -60,7 +63,8 @@
       iglobstep=0
       submodel=.false.
       lintemp=.false.
-!     
+      master2d=.false.
+!
       do i=2,n
         if((textpart(i)(1:6).eq.'OP=NEW').and.(.not.boun_flag)) then
 !     
@@ -257,6 +261,11 @@
           fixed=.true.
         elseif(textpart(i)(1:8).eq.'SUBMODEL') then
           submodel=.true.
+c.hassler check if master model is a 2D model
+        elseif(textpart(i)(1:9).eq.'MASTER=2D') then
+          master2d=.true.
+          write(*,'(a51,/)')
+     &        ' *INFO 3D submodeling from a 2D master is activated'
         elseif(textpart(i)(1:5).eq.'STEP=') then
           read(textpart(i)(6:15),'(i10)',iostat=istat) iglobstep
           if(istat.gt.0) then
@@ -358,8 +367,16 @@
 !     dummy boundary condition consisting of the first primes
 !     
           if(user) bounval=1.2357111317d0
-          if(submodel) bounval=1.9232931374d0
-!     
+          if(submodel) then
+!           mark the presence of a 2D master model in xboun
+            if (master2d) then
+              bounval=1.9232931376d0
+            else
+              ! regular submodel
+              bounval=1.9232931374d0
+            endif
+          endif
+!
           read(textpart(1)(1:10),'(i10)',iostat=istat) l
           if(istat.eq.0) then
             if((l.gt.nk).or.(l.le.0)) then
