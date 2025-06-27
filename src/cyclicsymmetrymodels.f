@@ -762,12 +762,13 @@
             nodeaxi=nodei
           endif
 !     
-!     in order for the angle to be correct the axial position
-!     of the dependent and independent node must be the same
-!     (important for non-coincident meshes)
-!     
-          if((.not.calcangle).and.(rp.gt.1.d-10).and.
-     &         (dabs(zp-zpd).lt.1.d-10)) then
+c!     in order for the angle to be correct the axial position
+c!     of the dependent and independent node must be the same
+c!     (important for non-coincident meshes)
+c!     
+c          if((.not.calcangle).and.(rp.gt.1.d-10).and.
+c     &         (dabs(zp-zpd).lt.1.d-10)) then
+          if((.not.calcangle).and.(rp.gt.1.d-10)) then
             x3=(xap-zp*xn)/rp
             y3=(yap-zp*yn)/rp
             z3=(zap-zp*zn)/rp
@@ -856,12 +857,13 @@
             nodeaxi=nodei
           endif
 !     
-!     in order for the angle to be correct the axial position
-!     of the dependent and independent node must be the same
-!     (important for non-coincident meshes)
-!     
-          if((.not.calcangle).and.(rp.gt.1.d-10).and.
-     &         (dabs(zp-zpd).lt.1.d-10)) then
+c!     in order for the angle to be correct the axial position
+c!     of the dependent and independent node must be the same
+c!     (important for non-coincident meshes)
+c!     
+c          if((.not.calcangle).and.(rp.gt.1.d-10).and.
+c     &         (dabs(zp-zpd).lt.1.d-10)) then
+          if((.not.calcangle).and.(rp.gt.1.d-10)) then
             x3=(xap-zp*xn)/rp
             y3=(yap-zp*yn)/rp
             z3=(zap-zp*zn)/rp
@@ -1134,6 +1136,11 @@
         else
           dtheta=-6.28318531d0/cs(18,mcs)
         endif
+!
+!       setting the rotation angle to the physical angle, i.e.
+!       360 degrees divided by the number of segments
+!
+        phi=-dtheta
 !
         c1=dcos(dtheta)
         c2=dsin(dtheta)
