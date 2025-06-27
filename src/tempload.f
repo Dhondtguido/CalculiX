@@ -29,21 +29,12 @@
      &     ipobody,iponoeln,inoeln,ipkon,kon,ielprop,prop,ielmat,
      &     shcon,nshcon,rhcon,nrhcon,cocon,ncocon,ntmat_,lakon,
      &     set,nset)
-!> calculates the loading at a given time
-!!
-!! @param[in,out]   xbounact   a real array, size: max_size
-!! @param[in]       n       current values in the array
-!! @param[in]       max_size    size if the array
-!! @param[in]       new_entry   the value to insert
-!!
-!! @param aggr information about the aggregates
-!! @todo Update the docstring
-!
+!     
 !     calculates the loading at a given time
 !     
       implicit none
 !     
-      logical gasnode
+      logical gasnode,master2d
 !     
       character*1 entity
       character*8 lakon(*)
@@ -68,21 +59,15 @@
      &     t1(*),t1act(*),amta(2,*),ampli(*),time,fixed_temp,
      &     xforcold(*),xloadold(2,*),t1old(*),reltime,coefmpc(*),
      &     xbounold(*),xboun(*),xbounact(*),ttime,dtime,reftime,
-     &     xbody(7,*),xbodyold(7,*),xbodyact(7,*),co(3,*),
-     &     vold(0:mi(2),*),abqtime(2),coords(3),trab(7,*),
+     &     xbody(7,*),xbodyold(7,*),xbodyact(7,*),co(3,*),cosphi,
+     &     vold(0:mi(2),*),abqtime(2),coords(3),trab(7,*),sinphi,
      &     veold(0:mi(2),*),doubleglob(*),prop(*),shcon(0:3,ntmat_,*),
-     &     rhcon(0:1,ntmat_,*),cocon(0:6,ntmat_,*)
-!     auxiliary fields for storing coords and interpol. results
-      real*8 coords_aux(3), cosphi, sinphi
-!     2D3Dcoupling is used
-      logical master2D
-!
-!
-!
+     &     rhcon(0:1,ntmat_,*),cocon(0:6,ntmat_,*),coords_aux(3)
+!     
       data msecpt /1/
       data one /1/
-      data master2D /.false./
-!
+      data master2d /.false./
+!     
 !     if an amplitude is active, the loading is scaled according to
 !     the actual time. If no amplitude is active, then the load is
 !     - scaled according to the relative time for a static step
@@ -178,14 +163,17 @@ c     coords(j)=co(j,node)+vold(j,node)
         if((xboun(i).lt.1.9232931377d0).and.
      &       (xboun(i).gt.1.9232931373d0)) then
 !
-!         boundary conditions for submodel
-!         determine whether within a submodel a 2D/3D coupling is to be performed
-          if ((xboun(i).lt.1.9232931377d0).and.
-     &        (xboun(i).gt.1.9232931375d0)) then
-            master2D=.true.
+!         check whether master model is 2d or 3d
+!
+          if((xboun(i).lt.1.9232931377d0).and.
+     &         (xboun(i).gt.1.9232931375d0)) then
+            master2d=.true.
           else
-            master2D=.false.
+            master2d=.false.
           endif
+!     
+!     boundary conditions for submodel
+!     
           node=nodeboun(i)
 !     
 !     check whether node is a gasnode
@@ -203,41 +191,53 @@ c     coords(j)=co(j,node)+vold(j,node)
 !     
           do j=1,3
             coords(j)=co(j,node)
-            if (master2D) then ! .AND. ndirboun(i).ne.0) then
+            if(master2d) then
               coords_aux(j)=coords(j)
             endif
           enddo
-          if (master2D) then ! .AND. ndirboun(i).ne.0) then
-              ! transf. submodel rect. CSYS -> cyl. CSYS
-              coords(1)=(coords_aux(1)**2.d0
-     &                     +coords_aux(3)**2.d0)**.5d0
-              coords(3)=0.d0
-          endif
-
-          entity='N'
-          iselect(1)=ndirboun(i)+1
-!         select dispx as radial displ. from global model to derive uz
-          if (master2D .AND. ndirboun(i).eq.3) iselect(1)=2
+!     
+!         for a 2d master model the first coordinate is radial,    
+!               the second is axial and the third is circumferential
+!         in the 3d submodel the second should be axial
 !
+          if(master2d) then
+            coords(1)=dsqrt(coords_aux(1)**2+coords_aux(3)**2)
+            coords(3)=0.d0
+          endif
+!          
+          entity='N'
+c          one=1
+          iselect(1)=ndirboun(i)+1
+!
+!         for a 3d submodel in combination with a 2d master model one has:
+!         if submodel: 1  then master model: 1 (radial)
+!         if submodel: 2  then master model: 2 (axial)
+!         if submodel: 3  then master model: 1 (radial)
+!
+          if((master2d).and.(ndirboun(i).eq.3)) iselect(1)=2
+!          
           call interpolsubmodel(integerglob,doubleglob,xbounact(i),
      &         coords,iselect,one,node,tieset,istartset,iendset,
      &         ialset,ntie,entity,set,nset)
-!
-          if (master2D .AND. ndirboun(i).eq.1) then
+!     
+!         for a 2d master model: converting the radial displacement    
+!         into a displacement in x or z, if needed.    
+!     
+          if((master2d).and.(ndirboun(i).eq.1)) then
             cosphi=coords_aux(1)/
-     &            (coords_aux(1)**2 + coords_aux(3)**2)**0.5d0
+     &           dsqrt(coords_aux(1)**2+coords_aux(3)**2)
             xbounact(i)=xbounact(i)*cosphi
-          else if (master2D .AND. ndirboun(i).eq.3) then
+          elseif((master2d).and.(ndirboun(i).eq.3)) then
             sinphi=coords_aux(3)/
-     &            (coords_aux(1)**2 + coords_aux(3)**2)**0.5d0
+     &           dsqrt(coords_aux(1)**2+coords_aux(3)**2)
             xbounact(i)=xbounact(i)*sinphi
           endif
-!
+!     
           if(nmethod.eq.1) then
             xbounact(i)=xbounold(i)+
      &           (xbounact(i)-xbounold(i))*reltime
           endif
-!          write(*,*) 'tempload ',node,ndirboun(i),xbounact(i)
+c     write(*,*) 'tempload ',node,ndirboun(i),xbounact(i)
           cycle
         endif
 !     
@@ -339,6 +339,7 @@ c     coords(j)=co(j,node)+vold(j,node)
             enddo
 !     
             entity='N'
+c            one=1
             iselect(1)=ndirforc(i)+10
             call interpolsubmodel(integerglob,doubleglob,xforcact(i),
      &           coords,iselect,one,node,tieset,istartset,iendset,
@@ -467,36 +468,40 @@ c     coords(j)=co(j,i)+vold(j,i)
      &           shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon)
             cycle
           endif
-!
+!     
           if((t1(i).lt.1.9232931377d0).and.
      &         (t1(i).gt.1.9232931373d0)) then
 !
-!           boundary conditions for submodel
-!           determine whether within a submodel a 2D/3D coupling is to be performed
-            if ((t1(i).lt.1.9232931377d0).and.
-     &          (t1(i).gt.1.9232931375d0)) then
-              master2D=.true.
-            else
-              master2D=.false.
-            endif
+!           check whether master model is 2d or 3d
 !
+            if((t1(i).lt.1.9232931377d0).and.
+     &           (t1(i).gt.1.9232931375d0)) then
+              master2d=.true.
+            else
+              master2d=.false.
+            endif
+!     
 !     for the interpolation of submodels the undeformed
 !     geometry is taken
 !     
             do j=1,3
               coords(j)=co(j,i)
-              if (master2D) then
+              if(master2d) then
                 coords_aux(j)=coords(j)
               endif
             enddo
-            if (master2D) then
-                ! transf. submodel rect. CSYS -> cyl. CSYS
-                coords(1)=(coords_aux(1)**2.d0
-     &                       +coords_aux(3)**2.d0)**.5d0
-                coords(3)=0.d0
+!     
+!     for a 2d master model the first coordinate is radial,    
+!     the second is axial and the third is circumferential
+!     in the 3d submodel the second should be axial
+!     
+            if(master2d) then
+              coords(1)=dsqrt(coords_aux(1)**2+coords_aux(3)**2)
+              coords(3)=0.d0
             endif
-!
+!     
             entity='N'
+c            one=1
             iselect(1)=1
             call interpolsubmodel(integerglob,doubleglob,t1act(i),
      &           coords,iselect,one,i,tieset,istartset,iendset,
@@ -547,6 +552,18 @@ c     coords(j)=co(j,i)+vold(j,i)
           t1act(node)=fixed_temp/coefmpc(ist)
         enddo
       endif
-!
+c     write(*,*) 'nboun'
+c     do i=1,nboun
+c     write(*,'(i7,1x,e11.4,1x,e11.4)') i,xbounact(i),xboun(i)
+c     enddo
+c     write(*,*) 'nforc'
+c     do i=1,nforc
+c     write(*,'(i7,1x,e11.4,1x,e11.4)') i,xforcact(i),xforc(i)
+c     enddo
+c     write(*,*) 'nload'
+c     do i=1,nload
+c     write(*,'(i7,1x,e11.4,1x,e11.4)') i,xloadact(1,i),xload(1,i)
+c     enddo
+!     
       return
       end

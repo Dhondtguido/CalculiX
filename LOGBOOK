@@ -5494,3 +5494,6 @@ Dec 2002        - started to work on single crystal plasticity
 
  13 June 2025   - corrected an error in printoutface.f (2D elements)
                   and  in calcexternalwork.f
+
+ 27 June 2025   - incorporated 3d submodels based on 2d axisymmetric
+                  global models
