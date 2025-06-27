@@ -19249,7 +19249,7 @@ directions coincide with the global ones. Notice that a *TRANSFORM card is not
 allowed for nodes in which boundary conditions are applied to rotations.
 
 Optional parameters are OP, AMPLITUDE, TIME DELAY, LOAD CASE, USER, MASS FLOW,
-FIXED, SUBMODEL, STEP, DATA SET and LINTEMP. OP can take the value NEW or
+FIXED, SUBMODEL, MASTER, STEP, DATA SET and LINTEMP. OP can take the value NEW or
 MOD. OP=MOD is default and implies that previously prescribed
 displacements remain active in subsequent steps. Specifying a
 displacement in the same node and direction for which a displacement
@@ -19293,7 +19293,12 @@ Next, the SUBMODEL parameter specifies that the displacements in the nodes
 listed underneath will be obtained by interpolation from a global model. To
 this end these nodes have to be part of a
 \htmlref{*SUBMODEL}{submodel},TYPE=NODE card. On the latter card the result
-file (frd file) of the global model is defined. The use of the SUBMODEL
+file (frd file) of the global model is defined. A submodel must be
+three-dimensional (i.e. made up of volumetric elements), the global model may
+be made up of axisymmetric elements or be truly three-dimensional. In the
+former case the parameter MASTER with value 2D, i.e. MASTER=2D must be
+used. Furthermore the direction of the axis in the global axisymmetric model
+must correspond with the global y-axis in the submodel. Default is MASTER=3D. The use of the SUBMODEL
 parameter requires the STEP or the DATA SET parameter. 
 
 In case the global
@@ -19367,7 +19372,7 @@ Example:
 fixes the degrees of freedom one through three (global if no transformation was defined for node 73, else local) of node 73.
 
 \bigskip
-Example files: achteld.
+Example files: achteld, submodel\_2d3d.
 
 \subsubsection{Inhomogeneous Conditions}
 
@@ -20100,7 +20105,8 @@ freedom of the nodes
 listed underneath will be obtained by interpolation from a global model. To
 this end these nodes have to be part of a
 \htmlref{*SUBMODEL}{submodel},TYPE=NODE card. On the latter card the result
-file (frd file) of the global model is defined. The use of the SUBMODEL
+file (frd file) of the global model is defined. The global model must be truly
+three-dimensional, i.e. be made up of three-dimensional elements. The use of the SUBMODEL
 parameter requires the STEP  or the DATA SET parameter. 
 
 In case the global
@@ -22889,7 +22895,8 @@ parameters: SUBMODEL and either STEP or DATA SET. Underneath the *DSLOAD card fa
 for which a section stress will be calculated by interpolation from the global
 model. To this end these faces have to be part of a *SUBMODEL card,
 TYPE=SURFACE. The latter card also lists the name of the global model results
-file.  
+file. The global model must be truly
+three-dimensional, i.e. be made up of three-dimensional elements. 
 
 In case the global
 calculation was a *STATIC calculation the STEP parameter specifies the step in the global model
@@ -29947,7 +29954,7 @@ elements, temperature gradients within a purely mechanical *STEP definition.
 thermomechanical analysis. In these types of analysis the 
 \htmlref{*BOUNDARY}{boundary} card for degree of freedom 11 should be used instead.  
 
-Optional parameter are OP, AMPLITUDE, TIME DELAY, USER, SUBMODEL, STEP, DATA
+Optional parameter are OP, AMPLITUDE, TIME DELAY, USER, SUBMODEL, MASTER, STEP, DATA
 SET, FILE, BSTEP and LINTEMP. OP can take the value NEW or
 MOD. OP=MOD is default and implies that thermal load in different
 nodes is accumulated over all steps starting from the last
@@ -29989,7 +29996,12 @@ the AMPLITUDE parameter has no effect and should not be used.
 The SUBMODEL parameter is used to specify that the nodes underneath the
 *TEMPERATURE card should get their temperature values by interpolation from a
 global model. Each of these nodes must be listed underneath exactly one nodal
-\htmlref{*SUBMODEL}{submodel} card. The SUBMODEL parameter automatically
+\htmlref{*SUBMODEL}{submodel} card.  A submodel must be
+three-dimensional (i.e. made up of volumetric elements), the global model may
+be made up of axisymmetric elements or be truly three-dimensional. In the
+former case the parameter MASTER with value 2D, i.e. MASTER=2D must be
+used. Furthermore the direction of the axis in the global axisymmetric model
+must correspond with the global y-axis in the submodel. Default is MASTER=3D.The SUBMODEL parameter automatically
 requires the use of the STEP or DATA SET parameter.
 
 In case the global
@@ -30078,7 +30090,7 @@ assigns a temperature T=293 to all nodes in (node) set N1, and T=473 to nodes 30
 will read the temperatures from step 4 in file ``temperatures.frd''.
 
 \bigskip
-Example files: beam8t, beam20t, beamnlt, beamt4, beamfrdread.
+Example files: beam8t, beam20t, beamnlt, beamt4, beamfrdread, submodel\_2d3d\_thermal.
 
 \bigskip
 
