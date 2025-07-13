@@ -5499,3 +5499,5 @@ Dec 2002        - started to work on single crystal plasticity
                   global models
                 - removed error in readnewmesh.c and updated basis.f
                 - minor changes in cyclicsymmetrymodels.f
+
+ 13 July 2025   - corrected readnewmesh.c

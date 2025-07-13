@@ -371,8 +371,10 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
     NNEW(venew,double,nkmt);
     for(i=0;i<*nk;i++){
       for(j=0;j<iprfn[i+1]-iprfn[i];j++){
-	vnew[i]+=ratiorfn[iprfn[i]+j]*vold[konrfn[iprfn[i]+j]-1];
-	venew[i]+=ratiorfn[iprfn[i]+j]*veold[konrfn[iprfn[i]+j]-1];
+	for(k=0;k<mt;k++){
+	  vnew[i*mt+k]+=ratiorfn[iprfn[i]+j]*vold[(konrfn[iprfn[i]+j]-1)*mt+k];
+	  venew[i*mt+k]+=ratiorfn[iprfn[i]+j]*veold[(konrfn[iprfn[i]+j]-1)*mt+k];
+	}
       }
     }
     cpypardou(vold,vnew,&nkmt,&num_cpus_loc);
