@@ -95,7 +95,7 @@
 !     value(nfield)   interpolated values (max. nfield values)
 !     ratio(nterms)   coefficients for the interpolation within the parent
 !                     element
-!     nterms          number of coeffients in the interpolation. This is
+!     nterms          number of coefficients in the interpolation. This is
 !                     also the number of nodes belonging to the parent
 !                     element
 !     konl(nterms)    node numbers of the parent element ielemnr

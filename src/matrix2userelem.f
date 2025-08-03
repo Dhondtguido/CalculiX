@@ -177,7 +177,7 @@ c      mi(2)=max(mi(2),3)
       return
  2    write(*,*)
       write(*,*) '*ERROR in stiffness matrix file ',filename
-      write(*,*) '       uncorrect format'
+      write(*,*) '       incorrect format'
       call exit(201)
  3    write(*,*)
       write(*,*) '*ERROR reading stiffness matrix file: ',filename
