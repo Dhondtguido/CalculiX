@@ -5,11 +5,11 @@
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
 !     published by the Free Software Foundation(version 2);
-!
+!     
 !
 !     This program is distributed in the hope that it will be useful,
-!     but WITHOUT ANY WARRANTY; without even the implied warranty of
-!     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+!     but WITHOUT ANY WARRANTY; without even the implied warranty of 
+!     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
 !     GNU General Public License for more details.
 !
 !     You should have received a copy of the GNU General Public License
@@ -22,7 +22,7 @@
      &  amname,nam,itpamp,idrct,ipoinpc,nef,contactfile_flag,
      &  set,nset,xmodal,ier,physcon,output,ndmat_)
 !
-!     reading the *NODE FILE, *EL FILE and *CONTACT FILE cards in the
+!     reading the *NODE FILE, *EL FILE and *CONTACT FILE cards in the 
 !     input deck
 !
       implicit none
@@ -56,10 +56,10 @@
      &                           '
 !
       if(istep.lt.1) then
-         write(*,*)
+         write(*,*) 
      &'*ERROR reading *NODE/EL/CONTACT FILE: *NODE FILE, *EL FILE'
          write(*,*) '       *CONTACT FILE'
-         write(*,*) '       should only be used within a *STEP'
+         write(*,*) '       should only be used within a *STEP' 
          write(*,*) '       definition'
          ier=1
          return
@@ -181,7 +181,7 @@
       elseif(ifile_output.eq.3)then
 !
 !     reset the contact print requests
-!
+!         
          if(.not.contactfile_flag) then
 !
 !           reset "last iterations" and "contact elements"
@@ -251,7 +251,7 @@
                  if(filab(j)(5:5).eq.'E') filab(j)(5:5)='I'
               enddo
            elseif(out3d) then
-              write(*,*)
+              write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: OUTPUT=2D has no'
               write(*,*) '         effect in all but the first step'
            endif
@@ -263,7 +263,7 @@
                  filab(j)(5:5)='E'
               enddo
            elseif(.not.out3d) then
-              write(*,*)
+              write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: OUTPUT=3D has no'
               write(*,*) '         effect in all but the first step'
            endif
@@ -287,7 +287,7 @@
               return
            endif
            if(idrct.eq.1) then
-              write(*,*)
+              write(*,*) 
      &'*ERROR reading *NODE/EL/CONTACT FILE: the DIRECT option'
               write(*,*) '       collides with a TIME POINTS '
               write(*,*) '       specification'
@@ -308,8 +308,8 @@
         elseif(textpart(ii)(1:6).eq.'DOUBLE') then
            output(1:3)='dbi '
         else
-            write(*,*)
-     &             '*WARNING reading *NODE/EL/CONTACT FILE:'
+            write(*,*) 
+     &             '*WARNING reading *NODE/EL/CONTACT FILE:' 
             write(*,*) '         parameter not recognized:'
             write(*,*) '         ',
      &                 textpart(ii)(1:index(textpart(ii),' ')-1)
@@ -321,7 +321,7 @@
 !     check whether SECTION FORCES and OUTPUT=3D are both active
 !
       if((filab(3)(5:5).eq.'M').and.(out3d)) then
-         write(*,*)
+         write(*,*) 
      &'*ERROR reading *NODE/EL/CONTACT FILE: SECTION FORCES and'
          write(*,*) '       OUTPUT=3D are mutually exclusive'
          call inputerror(inpc,ipoinpc,iline,
@@ -342,7 +342,7 @@
         endif
          if(i.gt.nset) then
             noset(ipos:ipos)=' '
-            write(*,*)
+            write(*,*) 
      &        '*ERROR reading *NODE/EL/CONTACT FILE: node set ',noset
             write(*,*) '  has not yet been defined.'
             ier=1
@@ -384,7 +384,7 @@
                filab(5)(7:87)=noset
             elseif(textpart(ii)(1:4).eq.'PEEQ') then
                if((nmethod.eq.2).or.(nmethod.eq.3)) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: selection of PEEQ'
                   write(*,*) '         does not make sense for a'
                   write(*,*) '         frequency or bucking calculation'
@@ -399,18 +399,18 @@
      &             (textpart(ii)(1:4).ne.'CELS')) then
                textpart(ii)(1:4)='PEEQ'
                if((nmethod.eq.2).or.(nmethod.eq.3)) then
-                  write(*,*)
-     &                '*WARNING reading *NODE/EL/CONTACT FILE:'
+                  write(*,*) 
+     &                '*WARNING reading *NODE/EL/CONTACT FILE:' 
                   write(*,*) '         selection of CEEQ or CE or PE'
                   write(*,*) '         does not make sense for a'
                   write(*,*) '         frequency or bucking calculation'
                else
-                  write(*,*)
+                  write(*,*) 
      &                '*WARNING reading *NODE/EL/CONTACT FILE:'
                   write(*,*) '         selection of CEEQ or CE or PE'
                   write(*,*) '         is converted into PEEQ; no distin
      &ction'
-                  write(*,*)
+                  write(*,*) 
      &                 '         is made between PEEQ, CEEQ, CE and PE'
                   write(*,*)
                   filab(6)(1:4)='PEEQ'
@@ -424,7 +424,7 @@
               nener=1
             elseif(textpart(ii)(1:4).eq.'SDV ') then
                if((nmethod.eq.2).or.(nmethod.eq.3)) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: selection of SDV'
                   write(*,*) '         does not make sense for a'
                   write(*,*) '         frequency or bucking calculation'
@@ -435,7 +435,7 @@
                endif
             elseif(textpart(ii)(1:4).eq.'HFL ') then
                if(ithermal(1).le.1) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: HFL only makes '
                   write(*,*) '         sense for heat transfer '
                   write(*,*) '          calculations'
@@ -446,7 +446,7 @@
                endif
             elseif(textpart(ii)(1:4).eq.'RFL ') then
                if(ithermal(1).le.1) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: RFL only makes '
                   write(*,*) '         sense for heat transfer '
                   write(*,*) '          calculations'
@@ -458,12 +458,12 @@
             elseif(textpart(ii)(1:4).eq.'PU  ') then
                if((nmethod.ne.2).and.(nmethod.ne.5).and.
      &            (nmethod.ne.6).and.(nmethod.ne.7)) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: PU only makes'
                   write(*,*) '         sense for frequency and steady'
                   write(*,*) '         state dynamics calculations'
                elseif((nmethod.eq.5).and.(xmodal(7).gt.0.d0)) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: PU does not make'
                   write(*,*) '         sense for nonharmonic periodic'
                   write(*,*) '         excitations; use U instead'
@@ -506,7 +506,7 @@
                filab(17)(7:87)=noset
             elseif(textpart(ii)(1:4).eq.'PHS ') then
                if((nmethod.ne.2).and.(nmethod.ne.5)) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: PHS only makes'
                   write(*,*) '         sense for frequency and steady'
                   write(*,*) '         state dynamics calculations'
@@ -517,7 +517,7 @@
                endif
             elseif(textpart(ii)(1:4).eq.'MAXU') then
                if(nmethod.ne.2) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: MAXU only makes'
                   write(*,*) '         sense for frequency calculations'
                else
@@ -527,7 +527,7 @@
                endif
             elseif(textpart(ii)(1:4).eq.'MAXS') then
                if(nmethod.ne.2) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: MAXS only makes'
                   write(*,*) '         sense for frequency calculations'
                else
@@ -541,7 +541,7 @@
                    filab(21)(6:6)=nodesys
                    filab(21)(7:87)=noset
                 else
-                   write(*,*)
+                   write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: V only available'
                    write(*,*) '         for dynamic calculations and'
                    write(*,*) '         3-D fluid calculations'
@@ -552,7 +552,7 @@
                filab(22)(7:87)=noset
             elseif(textpart(ii)(1:4).eq.'MACH') then
                if(nef.eq.0) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: MACH only makes'
                   write(*,*) '         sense for 3D fluid calculations'
                else
@@ -562,7 +562,7 @@
                endif
             elseif(textpart(ii)(1:4).eq.'CP  ') then
                if(nef.eq.0) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: CP only makes'
                   write(*,*) '         sense for 3D fluid calculations'
                else
@@ -572,13 +572,13 @@
                endif
             elseif(textpart(ii)(1:4).eq.'TURB') then
                if(nef.eq.0) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: TURB only makes'
                   write(*,*) '         sense for 3D fluid calculations'
                 elseif((physcon(9).lt.1.d0).or.
      &                 ((physcon(9).gt.10.d0).and.(physcon(9).lt.11.d0))
      &                 )then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: TURB only makes'
                   write(*,*) '         sense for 3D fluid calculations'
                   write(*,*) '         with an active turbulence model'
@@ -607,7 +607,7 @@
                   filab(29)(7:87)=noset
             elseif(textpart(ii)(1:4).eq.'MAXE') then
                if(nmethod.ne.2) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: MAXE only makes'
                   write(*,*) '         sense for frequency calculations'
                else
@@ -618,12 +618,12 @@
             elseif(textpart(ii)(1:4).eq.'PRF ') then
                if((nmethod.ne.2).and.(nmethod.ne.5).and.
      &            (nmethod.ne.6).and.(nmethod.ne.7)) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: PRF only makes'
                   write(*,*) '         sense for frequency and steady'
                   write(*,*) '         state dynamics calculations'
                elseif((nmethod.eq.5).and.(xmodal(7).gt.0.d0)) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: PRF does not make'
                   write(*,*) '         sense for nonharmonic periodic'
                   write(*,*) '         excitations; use RF instead'
@@ -637,7 +637,7 @@
                filab(32)(7:87)=noset
             elseif(textpart(ii)(1:3).eq.'HER') then
                if(ithermal(1).le.1) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: HER only makes '
                   write(*,*) '         sense for heat transfer '
                   write(*,*) '          calculations'
@@ -648,7 +648,7 @@
                endif
             elseif(textpart(ii)(1:4).eq.'VF  ') then
                if(nef.eq.0) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: VF only makes'
                   write(*,*) '         sense for 3D fluid calculations'
                else
@@ -658,7 +658,7 @@
                endif
             elseif(textpart(ii)(1:4).eq.'PSF ') then
                if(nef.eq.0) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: PSF only makes'
                   write(*,*) '         sense for 3D fluid calculations'
                else
@@ -668,7 +668,7 @@
                endif
             elseif(textpart(ii)(1:4).eq.'TSF ') then
                if(nef.eq.0) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: TSF only makes'
                   write(*,*) '         sense for 3D fluid calculations'
                else
@@ -678,7 +678,7 @@
                endif
             elseif(textpart(ii)(1:4).eq.'PTF ') then
                if(nef.eq.0) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: PTF only makes'
                   write(*,*) '         sense for 3D fluid calculations'
                else
@@ -688,7 +688,7 @@
                endif
             elseif(textpart(ii)(1:4).eq.'TTF ') then
                if(nef.eq.0) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: TTF only makes'
                   write(*,*) '         sense for 3D fluid calculations'
                else
@@ -698,7 +698,7 @@
                endif
             elseif(textpart(ii)(1:4).eq.'SF  ') then
                if(nef.eq.0) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: SF only makes'
                   write(*,*) '         sense for 3D fluid calculations'
                else
@@ -708,7 +708,7 @@
                endif
             elseif(textpart(ii)(1:4).eq.'HFLF') then
                if(nef.eq.0) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: HFLF only makes'
                   write(*,*) '         sense for 3D fluid calculations'
                else
@@ -718,7 +718,7 @@
                endif
             elseif(textpart(ii)(1:4).eq.'SVF ') then
                if(nef.eq.0) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: SVF only makes'
                   write(*,*) '         sense for 3D fluid calculations'
                else
@@ -728,9 +728,9 @@
                endif
             elseif(textpart(ii)(1:3).eq.'ECD') then
                if(nmethod.lt.8) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: ECD only makes'
-                  write(*,*)
+                  write(*,*) 
      &         '         sense for electromagnetic calculations'
                else
                   filab(42)(1:4)='ECD '
@@ -739,9 +739,9 @@
                endif
             elseif(textpart(ii)(1:3).eq.'POT') then
                if(nmethod.lt.8) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: POT only makes'
-                  write(*,*)
+                  write(*,*) 
      &         '         sense for electromagnetic calculations'
                else
                   filab(43)(1:4)='POT '
@@ -750,9 +750,9 @@
                endif
             elseif(textpart(ii)(1:4).eq.'EMFE') then
                if(nmethod.lt.8) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: EMFE only makes'
-                  write(*,*)
+                  write(*,*) 
      &         '         sense for electromagnetic calculations'
                else
                   filab(44)(1:4)='EMFE'
@@ -761,9 +761,9 @@
                endif
             elseif(textpart(ii)(1:4).eq.'EMFB') then
                if(nmethod.lt.8) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: EMFB only makes'
-                  write(*,*)
+                  write(*,*) 
      &         '         sense for electromagnetic calculations'
                else
                   filab(45)(1:4)='EMFB'
@@ -772,7 +772,7 @@
                endif
             elseif(textpart(ii)(1:4).eq.'PCON') then
                if((nmethod.ne.2).and.(nmethod.ne.5)) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: PCON only makes'
                   write(*,*) '         sense for frequency and steady'
                   write(*,*) '         state dynamics calculations'
@@ -783,9 +783,9 @@
                endif
             elseif(textpart(ii)(1:3).eq.'SEN') then
                if((nmethod.ne.12).and.(nmethod.ne.16)) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: SEN only makes'
-                  write(*,*)
+                  write(*,*) 
      &         '         sense for sensitivity and feasible direction'
                   write(*,*) '         calculations'
                else
@@ -795,7 +795,7 @@
                endif
             elseif(textpart(ii)(1:4).eq.'DEPF') then
                if(nef.eq.0) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: DEPF only makes'
                   write(*,*) '         sense for 3D fluid calculations'
                else
@@ -805,7 +805,7 @@
                endif
             elseif(textpart(ii)(1:4).eq.'DTF ') then
                if(nef.eq.0) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: DTF only makes'
                   write(*,*) '         sense for 3D fluid calculations'
                else
@@ -827,7 +827,7 @@
                filab(53)(7:87)=noset
             elseif(textpart(ii)(1:4).eq.'KEQ ') then
                if(nmethod.ne.15) then
-                  write(*,*)
+                  write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: KEQ only makes'
                   write(*,*) '         sense for crack propagation'
                   write(*,*) '         calculations'
@@ -852,7 +852,7 @@
                write(*,*)
      &'      nodes and the extrapolated mechanical strains to the'
                write(*,*)
-     &'      nodes'
+     &'      nodes'            
                write(*,*)
 !
                filab(4)(1:4)='E   '
@@ -866,11 +866,11 @@
                filab(55)(7:87)=noset
              elseif(textpart(ii)(1:4).eq.'DUCT') then
                if(ndmat_.eq.0) then
-                 write(*,*)
+                 write(*,*) 
      &        '*WARNING reading *NODE/EL/CONTACT FILE: DUCT only makes'
-                 write(*,*)
+                 write(*,*) 
      &                '         sense if there exists at least one'
-                 write(*,*)
+                 write(*,*) 
      &                '         material with *DAMAGE INITIATION'
                else
                  filab(56)(1:4)='DUCT'
@@ -888,7 +888,7 @@
                    write(*,*) '         for dynamic calculations'
                 endif
              else
-               write(*,*)
+               write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: label not applicable'
                write(*,*) '         or unknown; '
                call inputwarning(inpc,ipoinpc,iline,

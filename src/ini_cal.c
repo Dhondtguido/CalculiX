@@ -7,7 +7,7 @@
 /*                    */
 
 /*     This program is distributed in the hope that it will be useful,   */
-/*     but WITHOUT ANY WARRANTY; without even the implied warranty of    */
+/*     but WITHOUT ANY WARRANTY; without even the implied warranty of    */ 
 /*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the      */
 /*     GNU General Public License for more details.                      */
 
@@ -44,11 +44,11 @@ void ini_cal(char *jobnamec,char *output,char *fneig,char *kind1,char *kind2,
 	     ITG *nfc_,ITG *ndc,ITG *ndc_,ITG *ndmat_){
 
   /* used for initialization and re-initialization */
-
+  
   ITG i;
 
   /* file names */
-
+  
   for(i=132;i<792;i++) strcpy1(&jobnamec[i]," ",1);
   for(i=0;i<132;i++){strcpy1(&fneig[i]," ",1);}
 
@@ -56,45 +56,45 @@ void ini_cal(char *jobnamec,char *output,char *fneig,char *kind1,char *kind2,
   *nheading_=0;
 
   /* parameters involved in reading the input deck */
-
+  
   *istat=0;
 
   /* distritubed loading */
-
+  
   *nloadold=0;
   *nload_=0;
   *nload=0;
 
   /* body loading */
-
+  
   *nbody_=0;
   *nbodyold=0;
   *nbody=0;
 
   /* single point constraints */
-
+  
   *nbounold=0;
   *nboun_=0;
   *nboun=0;
 
   /* concentrated loads */
-
+  
   *nforcold=0;
   *nforc_=0;
   *nforc=0;
 
   /* temperature loading */
-
+  
   for(i=0;i<2;i++) itempuser[i]=0;
   itempuser[2]=-2;
 
   /* node numbers */
-
+  
   *nk_=0;
   *nk=0;
 
   /* information on multiple point constraints */
-
+  
   *nmpc_=0;
   *nmpc=0;
   *memmpc_=0;
@@ -111,7 +111,7 @@ void ini_cal(char *jobnamec,char *output,char *fneig,char *kind1,char *kind2,
   *ndc=0;
 
   /* amplitude information */
-
+  
   *namtot_=0;
   *namtot=0;
   *nam_=0;
@@ -121,7 +121,7 @@ void ini_cal(char *jobnamec,char *output,char *fneig,char *kind1,char *kind2,
   *nstam=0;
 
   /* ties / cyclic symmetry */
-
+  
   *ntie_=0;
   strcpy1(kind1,"T",1);
   strcpy1(kind2,"T",1);
@@ -129,7 +129,7 @@ void ini_cal(char *jobnamec,char *output,char *fneig,char *kind1,char *kind2,
   *mcs=0;
 
   /* material information */
-
+  
   *ntmat_=0;
   *npmat_=0;
   *nmat_=0;
@@ -143,24 +143,24 @@ void ini_cal(char *jobnamec,char *output,char *fneig,char *kind1,char *kind2,
   for(i=0;i<14;i++){physcon[i]=0.;}
 
   /* beam and fluid element properties */
-
+  
   *nprop_=0;
   *nprop=0;
 
   /* sensitivity analysis and robust design */
-
+  
   *isens=0;
   *nobject_=0;
   *nobject=0;
   for(i=0;i<3;i++) irobustdesign[i]=0;
 
   /* (modal) dynamic and frequency analysis */
-
+  
   *nevdamp_=0;
   *nevtot=0;
-
+  
   /* element topology */
-
+  
   *ne_=0;
   *nkon_=0;
   *nkon=0;
@@ -168,19 +168,19 @@ void ini_cal(char *jobnamec,char *output,char *fneig,char *kind1,char *kind2,
   *nef=0;
 
   /* 1d and 2d element information */
-
+  
   *ne1d=0;
   *ne2d=0;
   *iaxial=1;
   for(i=0;i<4;i++) infree[i]=0;
 
   /* info on network elements */
-
+  
   *nflow=0;
   *network=0;
 
   /* set information */
-
+  
   *nalset_=0;
 
   /* output information */
@@ -200,47 +200,47 @@ void ini_cal(char *jobnamec,char *output,char *fneig,char *kind1,char *kind2,
   strcpy1(output,"asc ",4);
 
   /* info on the kind of nonlinearity of the step */
-
+  
   for(i=0;i<2;i++) iperturb[i]=0;
 
   /* ithermal[1] comes from readinput */
-
+  
   ithermal[0]=0;
 
   /* restart */
-
+  
   *jrstrt=0;
   for(i=0;i<2;i++) irstrt[i]=0;
 
   /* basic dimensional information */
-
+  
   mi[0]=0;
   mi[1]=3;
   mi[2]=1;
 
   /* equation solver information */
-
+  
   *isolver=0;
   *nzs_=20000000;
   for(i=0;i<3;i++) neq[i]=0;
   for(i=0;i<2;i++){qaold[i]=0.;}
 
   /* contact information */
-
+  
   *ifacecount=0;
   *nslavs=0;
   *mortar=-2;
   *icontact=0;
 
   /* energy requests */
-
+  
   *nener=0;
   for(i=0;i<5;i++){energy[i]=0.;}
 
   /* control parameters (cf. controlss.f) */
 
   /* time control parameters */
-
+  
   ctrl[0]=4.5;    // i0
   ctrl[1]=8.5;    // ir
   ctrl[2]=9.5;    // ip
@@ -261,7 +261,7 @@ void ini_cal(char *jobnamec,char *output,char *fneig,char *kind1,char *kind2,
   ctrl[17]=0.;    // wg
 
   /* field control parameters */
-
+  
   ctrl[18]=0.005; // ran
   ctrl[19]=0.01;  // can
   ctrl[20]=0.;    // qa0
@@ -272,11 +272,11 @@ void ini_cal(char *jobnamec,char *output,char *fneig,char *kind1,char *kind2,
   ctrl[25]=1.e-8; // ral
 
   /* heat transfer and modal dynamics parameter */
-
+  
   ctrl[26]=1.e30; // deltmx
 
   /* line search parameters */
-
+  
   ctrl[27]=1.5;   // nls
   ctrl[28]=0.25;  // smaxls
   ctrl[29]=1.01;  // sminls
@@ -284,7 +284,7 @@ void ini_cal(char *jobnamec,char *output,char *fneig,char *kind1,char *kind2,
   ctrl[31]=1.;    // etls
 
   /* network parameters */
-
+  
   ctrl[32]=5.e-7; // c1t
   ctrl[33]=5.e-7; // c1f
   ctrl[34]=1.e-4; // c1p
@@ -294,11 +294,11 @@ void ini_cal(char *jobnamec,char *output,char *fneig,char *kind1,char *kind2,
   ctrl[38]=5.e-7; // c2a
 
   /* viscous parameter */
-
+  
   ctrl[39]=-1.;   // cetol
 
   /* network parameters */
-
+  
   ctrl[40]=1.e20; // a1t
   ctrl[41]=1.e20; // a1f
   ctrl[42]=1.e20; // a1p
@@ -308,7 +308,7 @@ void ini_cal(char *jobnamec,char *output,char *fneig,char *kind1,char *kind2,
   ctrl[46]=1.e20; // a2a
 
   /* CFD parameters */
-
+  
   ctrl[47]=1.5;   // scheme
   ctrl[48]=0.5;   // simple or simplec
   ctrl[49]=20.5;  // iitf
@@ -317,28 +317,28 @@ void ini_cal(char *jobnamec,char *output,char *fneig,char *kind1,char *kind2,
   ctrl[52]=1.5;   // iitpt
 
   /* contact parameters */
-
+  
   ctrl[53]=0.001; // delcon
   ctrl[54]=0.1;   // alea
   ctrl[55]=100.5; // kscalemax
   ctrl[56]=60.5;  // itf2f
 
   /* time integration dynamics */
-
+  
   alpha[0]=0.;
   alpha[1]=0.5;
 
   /* information on the step, iteration ... */
-
+  
   *istep=0;
   *iit=-1;
   *ttime=0.;
 
   /* residual stress, pre-stress */
-
+  
   *iprestr=0;
   *npt_=0;
-
+  
   /* default solver */
 
 #if defined(SGI)
@@ -354,6 +354,6 @@ void ini_cal(char *jobnamec,char *output,char *fneig,char *kind1,char *kind2,
 #else
   *isolver=3;
 #endif
-
+  
   return;
 }
