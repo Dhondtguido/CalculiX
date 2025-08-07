@@ -67,7 +67,7 @@ void writeoldmesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,
       &kode,filabtmp,een,t1,fn,&time,epn,ielmatold,matname,enern,xstaten,
       &nstate_,&istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
       &ntrans,orab,ielorien,&norien,description,ipneigh,neigh,
-      mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
+      mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,NULL,ener,ne,
       cs,set,&nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
       thicke,foldmesh,output,qfx,cdn,&mortar,cdnr,cdni,nmat,ielprop,
       prop,sti,damn,&errn);

@@ -414,7 +414,7 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
       kode,filab,eent,t1t,fnt,time,epnt,ielmatt,matname,enernt,xstatent,
       nstate_,istep,iinc,ithermal,qfnt,&mode,noddiam,trab,inotrt,
       ntrans,orab,ielorien,norien,description,ipneigh,neigh,
-      mi,stit,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&net,
+      mi,stit,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,NULL,ener,&net,
       cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emnt,
       thicke,jobnamec,output,qfx,cdnt,mortar,cdnr,cdni,nmat,ielprop,
       prop,sti,damn,&errn);

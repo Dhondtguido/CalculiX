@@ -878,15 +878,14 @@
                  filab(56)(7:87)=noset
                endif
              elseif(textpart(ii)(1:4).eq.'A   ') then
-                if((nmethod.eq.4).or.(nef.gt.0)) then
+                if(nmethod.eq.4) then
                    filab(57)(1:4)='A   '
                    filab(57)(6:6)=nodesys
                    filab(57)(7:87)=noset
                 else
                    write(*,*)
      &'*WARNING reading *NODE/EL/CONTACT FILE: A only available'
-                   write(*,*) '         for dynamic calculations and'
-                   write(*,*) '         3-D fluid calculations'
+                   write(*,*) '         for dynamic calculations'
                 endif
              else
                write(*,*)

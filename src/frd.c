@@ -34,7 +34,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	 ITG *ielorien,ITG *norien,char *description,ITG *ipneigh,
 	 ITG *neigh,ITG *mi,double *stx,double *vr,double *vi,
 	 double *stnr,double *stni,double *vmax,double *stnmax,
-	 ITG *ngraph,double *veold,double *ener,ITG *ne,double *cs,
+	 ITG *ngraph,double *veold,double *accold,double *ener,ITG *ne,double *cs,
 	 char *set,ITG *nset,ITG *istartset,ITG *iendset,ITG *ialset,
 	 double *eenmax,double *fnr,double *fni,double *emn,
 	 double *thicke,char *jobnamec,char *output,double *qfx,
@@ -960,23 +960,27 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
   if((strcmp1(&filab[4872],"A   ")==0)&&(*ithermal!=2)){
     iselect=1;
 
-    // TODO(gmb): set these
-    //frdset(&filab[4872],set,&iset,istartset,iendset,ialset,
-	  // inum,&noutloc,&nout,nset,&noutmin,&noutplus,&iselect,
-	  // ngraph);
+    if(accold) {
+      frdset(&filab[4872],set,&iset,istartset,iendset,ialset,
+	    inum,&noutloc,&nout,nset,&noutmin,&noutplus,&iselect,
+	    ngraph);
 
-    //frdheader(&icounter,&oner,time,&pi,noddiam,cs,&null,mode,
-	  //    &noutloc,description,kode,nmethod,f1,output,istep,iinc);
+      frdheader(&icounter,&oner,time,&pi,noddiam,cs,&null,mode,
+        &noutloc,description,kode,nmethod,f1,output,istep,iinc);
 
-    fprintf(f1," -4  ACCE        4    1\n");
-    fprintf(f1," -5  A1          1    2    1    0\n");
-    fprintf(f1," -5  A2          1    2    2    0\n");
-    fprintf(f1," -5  A3          1    2    3    0\n");
-    fprintf(f1," -5  ALL         1    2    0    0    1ALL\n");
+      fprintf(f1," -4  ACCE        4    1\n");
+      fprintf(f1," -5  A1          1    2    1    0\n");
+      fprintf(f1," -5  A2          1    2    2    0\n");
+      fprintf(f1," -5  A3          1    2    3    0\n");
+      fprintf(f1," -5  ALL         1    2    0    0    1ALL\n");
 
-    //frdvector(veold,&iset,ntrans,&filab[1740],&nkcoords,inum,m1,inotr,
-	  //    trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3,
-	  //    &ioutall);
+      frdvector(accold,&iset,ntrans,&filab[4872],&nkcoords,inum,m1,inotr,
+        trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3,
+        &ioutall);
+    } else {
+      printf(" *WARNING in frd:\n");
+      printf("          ACCE output is not supported\n");
+    }
   }
 
   /* storing the temperatures in the nodes */

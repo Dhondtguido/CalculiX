@@ -1812,18 +1812,18 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 	  kode,filab,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
 	  nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
 	  ntrans,orab,ielorien,norien,description,ipneigh,neigh,
-	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
+	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,accold,ener,ne,
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	  thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,ielprop,
 	  prop,sti,damn,&errn);
-	
+
       if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
     }
-      
+
     if(isteadystate==1){
-	  
+
       /* calculate maximum displacement/temperature */
-	  
+
       resultmax=0.;
       if(*ithermal<2){
 	for(i=1;i<mt**nk;i=i+mt){
