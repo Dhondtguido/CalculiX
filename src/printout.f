@@ -275,7 +275,7 @@
               write(5,*)
               write(5,112) elset(1:ipos-2),ttime+time
  112          format(    ' heat flux (elem, integ.pnt.,qx,qy,qz) for set 
-     &',A,' and time ',e14.7)
+     & ',A,' and time ',e14.7)
               write(5,*)
             elseif(prlab(ii)(1:4).eq.'ME  ') then
               write(5,*)
