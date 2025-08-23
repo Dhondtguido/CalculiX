@@ -28,8 +28,8 @@
      &   iregion
 !
 !
-!     lists which external faces have design varibales on it
-!     nsurfsdesi       number of surfaces containing design varibales
+!     lists which external faces have design variables on it
+!     nsurfsdesi       number of surfaces containing design variables
 !     ipkonfadesi(i)   pointer to surface in ipkonfa(*)
 !
       nsurfsdesi=0

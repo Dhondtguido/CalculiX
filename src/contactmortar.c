@@ -265,8 +265,8 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
     SFREE(xo);SFREE(yo);SFREE(zo);SFREE(x);SFREE(y);SFREE(z);SFREE(nx);    
     SFREE(ny);SFREE(nz);
       
-    /* check SPC's and MPC's on slave nodes for compability and set all 
-       slave nodes involed in SPCs/MPCs to no-LM nodes */
+    /* check SPC's and MPC's on slave nodes for compatibility and set all 
+       slave nodes involved in SPCs/MPCs to no-LM nodes */
       
     FORTRAN(remlagrangemult,(ntie,tieset,islavnode,imastnode,nslavnode,
 			     nmastnode,islavact,nodempc,nmpc,ipompc));
@@ -487,7 +487,7 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
      the fields auc, adc, irowc, jqc and nzsc, bhat */
   
   /* k needed in semi-smooth Newton in tangential direction:
-     k=1 stick is assumed in all nodes, k=2 stick or slip is assummed 
+     k=1 stick is assumed in all nodes, k=2 stick or slip is assumed 
      according to active set entry*/
   
   if(*iit==1 && *iinc==1){k=1;}else{k=2;}

@@ -1096,7 +1096,7 @@ c          call nident(itg,node,ntg,id)
           ct=prop(index+2)
 !     
 !     if a swirl element was given by the user, this takes
-!     precendence to a value of ct
+!     precedence to a value of ct
 !     
           if(nint(prop(index+3)).ne.0) then
             nelemswirl=nint(prop(index+3))

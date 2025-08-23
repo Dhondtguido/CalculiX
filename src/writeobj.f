@@ -19,7 +19,7 @@
       subroutine writeobj(objectset,iobject,g0,dgdxglob,nobject,
      &   ndesi,nodedesi,nk,nobjectstart)
 !
-!     writes the results design repsonse information in the .dat file
+!     writes the results design response information in the .dat file
 !
       implicit none
 !
@@ -49,7 +49,7 @@
          write(5,*)
       endif
 !
-!     write design repsonse in .dat file
+!     write design response in .dat file
 !
       i=iobject+1
       dd=0.d0

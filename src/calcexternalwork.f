@@ -79,7 +79,7 @@
 c** start change 20191219
          indexe=ipkon(nelem)
          if(indexe.lt.0) cycle
-c** end chenge 20191219
+c** end change 20191219
          ig=jface-10*nelem
 !     
 !        determining the distributed load on the face
