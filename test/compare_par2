@@ -102,7 +102,7 @@ done
 
 rm -f beam10psmooth.rfn.inp
 rm -f circ10dload.rfn.inp
-rm -f circ10pcent.rfn.in
+rm -f circ10pcent.rfn.inp
 rm -f circ10p.rfn.inp
 rm -f circ10pnl.rfn.inp
 rm -f segmentsmooth.rfn.inp

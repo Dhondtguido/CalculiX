@@ -17292,7 +17292,7 @@ is defined with the keyword \htmlref{DESIGNVARIABLES}{designvariables} and a
 sensitivity analysis is introduced with the procedure card
 \htmlref{*SENSITIVITY}{sensitivity}. 
 
-If the parameter NLGEOM is not used on the *SENSITIVITY card, the calculation
+If the parameter NLGEOM is not used on the *STEP card in the *SENSITIVITY procedure, the calculation
 of $\frac{\partial K}{\partial s}$ does not contain the large deformation and
 stress stiffness, else it does. Similarly, without NLGEOM  $\frac{\partial
   G}{\partial s}$ is calculated based on the linear strains, else the
@@ -17330,7 +17330,7 @@ or
 
 \noindent The NLGEOM parameter is kept if the *SENSITIVITY and *STATIC step
 are in the same input deck (so then NLGEOM does not have to be repeated on the
-*SENSITIVITY step).
+*STEP card in the *SENSITIVITY step).
 
 If the objective functions are the eigenfrequencies (which include the
 eigenmodes),  a  \htmlref{*FREQUENCY}{frequency} step must have been
@@ -26863,6 +26863,12 @@ the user can define new nonlinear MPC's. Examples are given in Section
 \ref{usermpc}, e.g. the mean rotation MPC.
 \end{itemize}
 
+Since the 3-D expansion of standard beam, shell, plane stress, plane strain and axisymmetric
+elements frequently involves the use of extra linear equations and/or nonlinear MPC's such as knots, the additional
+application of nonlinear MPC's to such elements is problematic. Therefore, it
+is not allowed to apply STRAIGHT, PLANE, BEAM and MEANROT MPC's to any node
+belonging to such elements.
+
 A *MPC card automatically triggers the NLGEOM parameter, i.e. a geometrically
 nonlinear calculation is performed, except if the MPC is a mean rotation MPC.
 
@@ -28476,6 +28482,9 @@ unit normal on the axis and $\mathbf{u}_R$ is the displacement of the
 ROT NODE, this results in a linear MPC of the form $\mathbf{a}.\mathbf{u}_R
 =0$ to be specified by the user by means of a
 \htmlref{*EQUATION}{equation}  card.
+
+Notice that due to nodes belonging to shell or beam elements are not allowed
+to be part of a rigid body definition.
 \bigskip
 
 First and only line:
@@ -28706,21 +28715,8 @@ Example files: segment, fullseg, greencyc1.
 
 Keyword type: step
 
-This procedure is used to perform a sensitivity analysis. There are three
-optional parameters: NLGEOM, READ and WRITE. If NLGEOM is active, the change of the stiffness matrix
-w.r.t. the design variables is performed based on:
-
-\begin{itemize}
-\item a material tangent stiffness matrix at the strain at the end of the
-  previous static step
-\item displacements at the end of the previous static step (large deformation
-  stiffness)
-\item the stresses at the end of the previous static step (stress stiffness)
-\end{itemize}
-
-It makes sense to include NLGEOM if it was used on a previous static step and
-not to include it if it was not used on a prevous static step or in the
-absense of any prevous static step.
+This procedure is used to perform a sensitivity analysis. There are two
+optional parameters: READ and WRITE.
 
 The parameters READ and WRITE are mutually exclusive and can only be used if
 the coordinates are the design variables. If WRITE is selected,
@@ -28740,7 +28736,7 @@ step, possibly preceded by a *STATIC step, cf. \htmlref{*OBJECTIVE}{objective}.
 First line:
 \begin{itemize}
 \item *SENSITIVITY
-\item Enter the NLGEOM parameter if needed.
+\item Enter the READ or WRITE parameter if needed.
 \end{itemize}
 
 \begin{verbatim}
@@ -30164,10 +30160,6 @@ was specified by the user. In order to create
 the MPC's connecting the slave and master side, the latter is
 triangulated. 
 
-The tie can be assigned a name by using the parameter NAME. This name can be
-referred to on the  \htmlref{*CYCLIC
-  SYMMETRY MODEL}{cyclicsymmetrymodel} card.
-
 The parameter CYCLIC SYMMETRY is used to tie two surfaces bounding one and the
 same datum sector in circumferential direction. Both the slave and the master
 surface can be node or face based. For face based surfaces the nodes belonging
@@ -30190,7 +30182,7 @@ more elaborate multiple point constraint is generated. If none
 is found, the closest face is taken. If this face does not lie within $10 \%$
 of its length from the slave node, no MPC's are generated for this node, an error is issued and the node is stored in
 file jobname\_WarnNodeMissCyclicSymmetry.nam. This file can be read into CalculiX GraphiX by using
-the command ``read jobname\_WarnNodeMissCyclicSymmetry.nam inp''.
+the command ``read jobname\_WarnNodeMissCyclicSymmetry.nam inp''. 
 
 The parameter MULTISTAGE is used to tie two coincident nodal surfaces (no
 face based surfaces allowed) each of which
@@ -30202,7 +30194,7 @@ encompass the smaller datum sector, i.e. it should extend beyond the smaller
 datum sector in both directions, clockwise and counterclockwise. This option
 should not be used in the presence of network elements.
 
-The parameter NAME is needed if more than one *TIE constraint is defined. It
+The parameter NAME is compulsary. It is actually needed if more than one *TIE constraint is defined. It
 allows the user to distinguish the tie constraints when referring to them in
 other keyword cards 
 (e.g. \htmlref{*CYCLIC SYMMETRY MODEL}{cyclicsymmetrymodel}).
