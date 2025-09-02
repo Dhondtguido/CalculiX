@@ -1405,7 +1405,7 @@ void *con2physmt(ITG *i){
     
   nkdelta=(ITG)ceil(*nk1/(double)num_cpus);
   nka=*i*nkdelta+1;
-  nkb=nka+nkdelta;
+  nkb=(*i+1)*nkdelta;
   if(nkb>*nk1) nkb=*nk1;
 
   FORTRAN(con2phys,(vold1,vcon1,nk1,ntmat_1,shcon1,nshcon1,rhcon1,nrhcon1,
@@ -1425,7 +1425,7 @@ void *phys2conmt(ITG *i){
     
   nkdelta=(ITG)ceil(*nk1/(double)num_cpus);
   nka=*i*nkdelta+1;
-  nkb=nka+nkdelta;
+  nkb=(*i+1)*nkdelta;
   if(nkb>*nk1) nkb=*nk1;
     
   FORTRAN(phys2con,(inomat1,vold1,ntmat_1,shcon1,nshcon1,
@@ -1445,7 +1445,7 @@ void *updateconmt(ITG *i){
     
   nkdelta=(ITG)ceil(*nk1/(double)num_cpus);
   nka=*i*nkdelta+1;
-  nkb=nka+nkdelta;
+  nkb=(*i+1)*nkdelta;
   if(nkb>*nk1) nkb=*nk1;
 
   FORTRAN(updatecon,(vold1,vcon1,v1,nk1,ithermal1,iturbulent1,mi1,
@@ -1463,7 +1463,7 @@ void *calcdevmt(ITG *i){
     
   nkdelta=(ITG)ceil(*nk1/(double)num_cpus);
   nka=*i*nkdelta+1;
-  nkb=nka+nkdelta;
+  nkb=(*i+1)*nkdelta;
   if(nkb>*nk1) nkb=*nk1;
 
   FORTRAN(calcdev,(vold1,vcon1,v1,nk1,iturbulent1,mi1,&vconmax1[7**i],
@@ -1481,7 +1481,7 @@ void *presgradientmt(ITG *i){
     
   nkdelta=(ITG)ceil(*nk1/(double)num_cpus);
   nka=*i*nkdelta+1;
-  nkb=nka+nkdelta;
+  nkb=(*i+1)*nkdelta;
   if(nkb>*nk1) nkb=*nk1;
 
   FORTRAN(presgradient,(iponoel1,inoel1,sa1,&shockcoef1,
