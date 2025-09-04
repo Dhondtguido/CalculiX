@@ -5501,3 +5501,9 @@ Dec 2002        - started to work on single crystal plasticity
                 - minor changes in cyclicsymmetrymodels.f
 
  13 July 2025   - corrected readnewmesh.c
+
+ 21 Aug 2025    - checked for nonlinear MPC's in nodes belonging to
+                  1D/2D elements
+		  
+ 2 Sep 2025     - corrected some errors in the parallellization in
+                  compfluid.f (definition of nkb)
