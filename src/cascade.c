@@ -65,10 +65,10 @@ void cascade(ITG *ipompc, double **coefmpcp, ITG **nodempcp, ITG *nmpc,
   nodempc=*nodempcp;
   coefmpc=*coefmpcp;
     
-  /*    for(i=0;i<*nmpc;i++){
+      for(i=0;i<*nmpc;i++){
        j=i+1;
        FORTRAN(writempc,(ipompc,nodempc,coefmpc,labmpc,&j));
-       }*/
+       }
 
   NNEW(jmpc,ITG,*nmpc);
   idepend=0;

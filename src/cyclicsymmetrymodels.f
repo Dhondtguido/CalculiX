@@ -1248,7 +1248,8 @@ c     &         (dabs(zp-zpd).lt.1.d-10)) then
           if(ichar(jobnamec(1)(ilen:ilen)).eq.0) exit
         enddo
         ilen=ilen-1
-        fn=jobnamec(1)(1:ilen)//'_WarnNodeMissCyclicSymmetry.nam'
+        fn=jobnamec(1)(1:ilen)//'_WarnNodeMissCyclicSymmetry_'//
+     &       tie(1:index(tie,' ')-1)//'.nam'
         open(40,file=fn,status='unknown')
         write(40,*) '*NSET,NSET=WarnNodeCyclicSymmetry'
         icount=0
@@ -1392,11 +1393,11 @@ c     &         (dabs(zp-zpd).lt.1.d-10)) then
         write(*,*) '        node in a cyclic symmetry definition no '
         write(*,*) '        independent counterpart was found.'
         write(*,*) '        Failed nodes are stored in file '
-        write(*,*) '        ',fn(1:ilen+31)
+        write(*,*) '        ',fn(1:index(fn,' ')-1)
         write(*,*) '        This file can be loaded into'
         write(*,*) '        an active cgx-session by typing'
         write(*,*) 
-     &       '      read ',fn(1:ilen+31),' inp'
+     &       '      read ',fn(1:index(fn,' ')-1),' inp'
         write(*,*)
         close(40)
       else

@@ -30181,8 +30181,10 @@ master surface is identified to which the rotated slave node belongs, and a
 more elaborate multiple point constraint is generated. If none
 is found, the closest face is taken. If this face does not lie within $10 \%$
 of its length from the slave node, no MPC's are generated for this node, an error is issued and the node is stored in
-file jobname\_WarnNodeMissCyclicSymmetry.nam. This file can be read into CalculiX GraphiX by using
-the command ``read jobname\_WarnNodeMissCyclicSymmetry.nam inp''. 
+file jobname\_WarnNodeMissCyclicSymmetry\_''tie''.nam, where ``tie'' is the name of
+the tie (if any) which was specified on the *CYCLIC SYMMETRY MODEL card for which no
+corresponding face was found. This file can be read into CalculiX GraphiX by using
+the command ``read jobname\_WarnNodeMissCyclicSymmetry\_''tie''.nam inp''. 
 
 The parameter MULTISTAGE is used to tie two coincident nodal surfaces (no
 face based surfaces allowed) each of which
