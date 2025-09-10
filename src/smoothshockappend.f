@@ -16,8 +16,8 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-      subroutine smoothshock(aub,sol,aux,irow,jq,
-     &  neqa,neqb)
+      subroutine smoothshockappend(adl,sol,aux,
+     &  neqa,neqb,sa)
 !
 !     smoothing the finite element solution
 !
@@ -28,14 +28,12 @@
 !
       implicit none
 !
-      integer irow(*),jq(*),neqa,neqb,i,j
+      integer neqa,neqb,i
 !
-      real*8 aub(*),sol(*),aux(*)
+      real*8 adl(*),sol(*),aux(*),sa(*)
 !
       do i=neqa,neqb
-        do j=jq(i),jq(i+1)-1
-          aux(i)=aux(i)+aub(j)*sol(irow(j))
-        enddo
+        sol(i)=sol(i)+sa(i)*aux(i)*adl(i)
       enddo
 !
       return

@@ -5512,3 +5512,5 @@ Dec 2002        - started to work on single crystal plasticity
                   in the name of the file containing the nodes without face
 		  counterpart
                 - improved multistages.f for slanted surfaces
+
+ 10 Sep 2025    - corrected an error in the parallellization of smoothshock.f

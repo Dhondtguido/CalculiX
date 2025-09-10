@@ -892,6 +892,14 @@ void compfluidfem(double **cop,ITG *nk,ITG **ipkonp,ITG **konp,char **lakonp,
 	  for(i=0; i<num_cpus; i++)  pthread_join(tid[i], NULL);
 	  SFREE(ithread);
 	  
+	  NNEW(ithread,ITG,num_cpus);
+	  for(i=0; i<num_cpus; i++)  {
+	    ithread[i]=i;
+	    pthread_create(&tid[i], NULL, (void *)smoothshockappendmt, (void *)&ithread[i]);
+	  }
+	  for(i=0; i<num_cpus; i++)  pthread_join(tid[i], NULL);
+	  SFREE(ithread);
+	  
 	  SFREE(aux);
 	}
 	  
@@ -1326,7 +1334,24 @@ void *smoothshockmt(ITG *i){
   neqb=(*i+1)*neqdelta;
   if(neqb>neq1) neqb=neq1;
   
-  FORTRAN(smoothshock,(aub1,adl1,sol1,aux1,irow1,jq1,
+  FORTRAN(smoothshock,(aub1,sol1,aux1,irow1,jq1,
+			  &neqa,&neqb));
+
+  return NULL;
+}
+
+/* subroutine for multithreading of smoothshockappend */
+
+void *smoothshockappendmt(ITG *i){
+
+  ITG neqa,neqb,neqdelta;
+    
+  neqdelta=(ITG)ceil(neq1/(double)num_cpus);
+  neqa=*i*neqdelta+1;
+  neqb=(*i+1)*neqdelta;
+  if(neqb>neq1) neqb=neq1;
+  
+  FORTRAN(smoothshockappend,(adl1,sol1,aux1,
 			  &neqa,&neqb,sa1));
 
   return NULL;
