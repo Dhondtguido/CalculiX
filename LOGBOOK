@@ -5514,3 +5514,5 @@ Dec 2002        - started to work on single crystal plasticity
                 - improved multistages.f for slanted surfaces
 
  10 Sep 2025    - corrected an error in the parallellization of smoothshock.f
+
+ 14 Sep 2025    - removed equationf from the source code

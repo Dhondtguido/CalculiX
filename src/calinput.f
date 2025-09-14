@@ -676,13 +676,6 @@ c
       elseif(textpart(1)(1:8).eq.'*ENDSTEP') then
         exit
 !     
-c      elseif(textpart(1)(1:10).eq.'*EQUATIONF') then
-c        M_or_SPC=1
-c        call equationfs(inpc,textpart,ipompc,nodempc,coefmpc,
-c     &       nmpc,nmpc_,mpcfree,co,trab,ntrans,ikmpc,ilmpc,
-c     &       labmpc,istep,istat,n,iline,ipol,inl,ipoinp,inp,ipoinpc,
-c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
-!     
       elseif(textpart(1)(1:9).eq.'*EQUATION') then
         M_or_SPC=1
         call equations(inpc,textpart,ipompc,nodempc,coefmpc,
