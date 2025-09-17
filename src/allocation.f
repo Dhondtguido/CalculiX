@@ -1290,8 +1290,7 @@ c     !
             enddo
           endif
         enddo
-      elseif((textpart(1)(1:9).eq.'*EQUATION').or.
-     &       (textpart(1)(1:10).eq.'*EQUATIONF')) then
+      elseif(textpart(1)(1:9).eq.'*EQUATION') then
         iremove=0
         do i=2,n
           if(textpart(i)(1:6).eq.'REMOVE') iremove=1

@@ -5507,3 +5507,12 @@ Dec 2002        - started to work on single crystal plasticity
 		  
  2 Sep 2025     - corrected some errors in the parallellization in
                   compfluid.f (definition of nkb)
+
+ 4 Sep 2025     - included the name of the cyclic symmetry tie, if any,
+                  in the name of the file containing the nodes without face
+		  counterpart
+                - improved multistages.f for slanted surfaces
+
+ 10 Sep 2025    - corrected an error in the parallellization of smoothshock.f
+
+ 14 Sep 2025    - removed equationf from the source code

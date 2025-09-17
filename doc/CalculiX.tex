@@ -28250,7 +28250,8 @@ gradient based error estimator (label ERR) or a user-defined function (user
 subroutine ucalculateh.f). The size is defined as the absolute value if it
 concerns a scalar quantity and the norm if it concerns a vector or tensor.
 
-There is one required parameter LIMIT and two optional parameters ELSET and USER.
+There is one required parameter LIMIT and three optional parameters ELSET,
+USER and SMOOTHING ONLY.
 
 With the parameter LIMIT the user defines a positive value above which
 refinement is requested. For instance, if the limit is 50. and the value of
@@ -28268,6 +28269,11 @@ should not be longer than 60 characters.
 
 With the parameter USER a new criterion for the refinement can be coded in
 user subroutine ucalculateh.f.
+
+Finally, the parameter SMOOTHING ONLY the user can perform a smoothing of the
+existing mesh without refining the mesh, i.e. the existing nodes and elements
+and their numbering is kept. This option does not need any results, therefore,
+the parameter LIMIT does not make sense and no line specifying the criterion is needed either.
 
 If the tetrahedral mesh in the input deck contains at least one quadratic
 element, the refined mesh contains C3D10 elements only, else it is a pure C3D4
@@ -30182,8 +30188,10 @@ master surface is identified to which the rotated slave node belongs, and a
 more elaborate multiple point constraint is generated. If none
 is found, the closest face is taken. If this face does not lie within $10 \%$
 of its length from the slave node, no MPC's are generated for this node, an error is issued and the node is stored in
-file jobname\_WarnNodeMissCyclicSymmetry.nam. This file can be read into CalculiX GraphiX by using
-the command ``read jobname\_WarnNodeMissCyclicSymmetry.nam inp''. 
+file jobname\_WarnNodeMissCyclicSymmetry\_''tie''.nam, where ``tie'' is the name of
+the tie (if any) which was specified on the *CYCLIC SYMMETRY MODEL card for which no
+corresponding face was found. This file can be read into CalculiX GraphiX by using
+the command ``read jobname\_WarnNodeMissCyclicSymmetry\_''tie''.nam inp''. 
 
 The parameter MULTISTAGE is used to tie two coincident nodal surfaces (no
 face based surfaces allowed) each of which

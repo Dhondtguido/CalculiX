@@ -4738,9 +4738,15 @@ void FORTRAN(smoothingvertexnodes,(ITG *inn,ITG *iponn,ITG *nktet,
 			ITG *ipoeln,ITG *ieln,double *h,double *quality,
 			ITG *jfix));
 
-void FORTRAN(smoothshock,(double *aub,double *adl,
+void FORTRAN(smoothshock,(double *aub,
 			     double *sol,double *aux,ITG *irow,
-			     ITG *jq,ITG *neqa,ITG *neqb,double *sa));
+			     ITG *jq,ITG *neqa,ITG *neqb));
+
+void FORTRAN(smoothshockappend,(double *adl,
+			     double *sol,double *aux,
+			     ITG *neqa,ITG *neqb,double *sa));
+
+void *smoothshockappendmt(ITG *i);
 
 void *smoothshockmt(ITG *i);
 

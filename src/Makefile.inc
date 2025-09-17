@@ -813,6 +813,7 @@ smoothbadvertex.f \
 smoothingmidnodes.f \
 smoothingvertexnodes.f \
 smoothshock.f \
+smoothshockappend.f \
 solidsections.f \
 sortev.f \
 spcmatch.f \
