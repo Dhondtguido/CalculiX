@@ -1301,11 +1301,14 @@ c     !
           if(iremove.eq.1) exit
           if((istat.lt.0).or.(key.eq.1)) exit 
           read(textpart(1)(1:10),'(i10)',iostat=istat) nterm
+          nmpc_=nmpc_+1
           if(ntrans_.eq.0) then
-            nmpc_=nmpc_+1
+c            nmpc_=nmpc_+1
             memmpc_=memmpc_+nterm
           else
-            nmpc_=nmpc_+3
+c
+c            change on 17 Sep 2025
+c            nmpc_=nmpc_+3
             memmpc_=memmpc_+3*nterm
           endif
           ii=0
@@ -1313,6 +1316,31 @@ c     !
             call getnewline(inpc,textpart,istat,n,key,iline,ipol,
      &           inl,ipoinp,inp,ipoinpc)
             if((istat.lt.0).or.(key.eq.1)) exit
+!
+!           check for a node set instead of a node in the first term
+!           of the equation
+!
+            if(ii.eq.0) then
+              read(textpart(1)(1:10),'(i10)',iostat=istat) l
+              if(istat.ne.0) then
+                read(textpart(1)(1:80),'(a80)',iostat=istat) noset
+                noset(81:81)=' '
+                ipos=index(noset,' ')
+                noset(ipos:ipos)='N'
+                call cident81(set,noset,nset_,id)
+                if(id.gt.0) then
+                  if(noset.eq.set(id)) then
+                    nmpc_=nmpc_+(meminset(id)-1)
+                    if(ntrans_.eq.0) then
+                      memmpc_=memmpc_+nterm*(meminset(id)-1)
+                    else
+                      memmpc_=memmpc_+3*nterm*(meminset(id)-1)
+                    endif
+                  endif
+                endif
+              endif
+            endif
+!  
             ii=ii+n/3
             if(ii.eq.nterm) exit
           enddo

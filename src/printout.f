@@ -22,7 +22,7 @@
      &     orab,ielorien,norien,nk,ne,inum,filab,vold,ikin,ielmat,
      &     thicke,eme,islavsurf,mortar,time,ielprop,prop,veold,orname,
      &     nelemload,nload,sideload,xload,rhcon,nrhcon,ntmat_,ipobody,
-     &     ibody,xbody,nbody,nmethod,dam)
+     &     ibody,xbody,nbody,nmethod,dam,nactdof)
 !     
 !     stores results in the .dat file
 !     
@@ -42,7 +42,7 @@
      &     inum(*),nfield,ikin,nodes,ne0,nope,mt,ielmat(mi(3),*),iface,
      &     jfaces,mortar,islavsurf(2,*),ielprop(*),nload,i,ntmat_,id,
      &     nelemload(2,*),nrhcon(*),ipobody(2,*),ibody(3,*),nbody,
-     &     nmethod,ne,iforce
+     &     nmethod,ne,iforce,nactdof(0:mi(2),*)
 !     
       real*8 v(0:mi(2),*),t1(*),fn(0:mi(2),*),stx(6,mi(1),*),bhetot,
      &     eei(6,mi(1),*),xstate(nstate_,mi(1),*),ener(2,mi(1),*),
@@ -63,8 +63,10 @@
             nfield=mt
             cflag=' '
             iforce=0
-            call map3dto1d2d(v,ipkon,inum,kon,lakon,nfield,nk,
-     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
+c            call map3dto1d2d(v,ipkon,inum,kon,lakon,nfield,nk,
+c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
+            call map3dto1d2d_v(v,ipkon,inum,kon,lakon,nfield,nk,
+     &           ne,nactdof)
           endif
           exit
         endif
