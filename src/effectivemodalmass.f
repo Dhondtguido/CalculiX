@@ -126,6 +126,8 @@
       write(5,100)
  100  format(   'MODE NO.   X-COMPONENT     Y-COMPONENT     Z-COMPONENT 
      &    X-ROTATION      Y-ROTATION      Z-ROTATION')
+ 101  format(   '           X-COMPONENT     Y-COMPONENT     Z-COMPONENT 
+     &    X-ROTATION      Y-ROTATION      Z-ROTATION')
       write(5,*)
       do k=1,nev
          write(5,'(i7,6(2x,e14.7))') k,(part(k,j),j=1,6)
@@ -148,7 +150,7 @@
       write(5,*)
       write(5,*) '    T O T A L   E F F E C T I V E   M A S S'
       write(5,*)
-      write(5,100)
+      write(5,101)
       write(5,*)
       write(5,'(a7,6(2x,e14.7))') '       ',(toteffmass(j),j=1,6)
       write(5,*)
@@ -166,7 +168,7 @@
       write(5,*)
       write(5,*) '    F R A C T I O N   O F   T O T A L S'
       write(5,*)
-      write(5,100)
+      write(5,101)
       write(5,*)
       write(5,'(a7,6(2x,e14.7))') '       ',
      &  (fraction(j),j=1,6)
