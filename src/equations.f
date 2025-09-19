@@ -278,6 +278,17 @@ c              enddo
           iset=0
         endif
 !        
+        call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
+     &       ipoinp,inp,ipoinpc)
+        if((istat.lt.0).or.(key.eq.1)) then
+          write(*,*) '*ERROR reading *EQUATION: mpc definition ',
+     &         nmpc
+          write(*,*) '  is not complete. '
+          call inputerror(inpc,ipoinpc,iline,
+     &         "*EQUATION%",ier)
+          return
+        endif
+!        
         read(textpart(1)(1:10),'(i10)',iostat=istat) node
         if(istat.eq.0) then
           nnodes=1
@@ -318,15 +329,17 @@ c              enddo
             endif
 !
             if(k.eq.1) then
-              call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
-     &             ipoinp,inp,ipoinpc)
-              if((istat.lt.0).or.(key.eq.1)) then
-                write(*,*) '*ERROR reading *EQUATION: mpc definition ',
-     &               nmpc
-                write(*,*) '  is not complete. '
-                call inputerror(inpc,ipoinpc,iline,
-     &               "*EQUATION%",ier)
-                return
+              if(ii.gt.0) then
+                call getnewline(inpc,textpart,istat,n,key,iline,ipol,
+     &               inl,ipoinp,inp,ipoinpc)
+                if((istat.lt.0).or.(key.eq.1)) then
+                  write(*,*)
+     &                 '*ERROR reading *EQUATION: mpc definition ',nmpc
+                  write(*,*) '  is not complete. '
+                  call inputerror(inpc,ipoinpc,iline,
+     &                 "*EQUATION%",ier)
+                  return
+                endif
               endif
             else
               n=3*nterm
@@ -343,21 +356,36 @@ c              enddo
             do i=1,n/3
 !
               if(k.eq.1) then
-                read(textpart((i-1)*3+1)(1:10),'(i10)',iostat=istat)node
-                if(istat.gt.0) then
-                  call inputerror(inpc,ipoinpc,iline,
-     &                 "*EQUATION%",ier)
-                  return
+!
+!               first time this equation is treated
+!
+                if((iset.eq.0).or.(ii.gt.0)) then
+                  read(textpart((i-1)*3+1)(1:10),'(i10)',iostat=istat)
+     &                 node
+                  if(istat.gt.0) then
+                    call inputerror(inpc,ipoinpc,iline,
+     &                   "*EQUATION%",ier)
+                    return
+                  endif
+                  if((node.gt.nk).or.(node.le.0)) then
+                    write(*,*) '*ERROR reading *EQUATION:'
+                    write(*,*) '       node ',node,' is not defined'
+                    ier=1
+                    return
+                  endif
+                  if(iset.gt.0) nodempcset(1,ii+1)=node
+                else
+                  node=ialset(istartset(iset))
                 endif
-                if((node.gt.nk).or.(node.le.0)) then
-                  write(*,*) '*ERROR reading *EQUATION:'
-                  write(*,*) '       node ',node,' is not defined'
-                  ier=1
-                  return
-                endif
-                if(iset.gt.0) nodempcset(1,ii+1)=node
               else
-                node=nodempcset(1,ii+1)
+!
+!               this equation is repeated for other nodes in the set
+!
+                if(ii.eq.0) then
+                  node=ialset(istartset(iset)+k-1)
+                else
+                  node=nodempcset(1,ii+1)
+                endif
               endif
 !
               if(k.eq.1) then

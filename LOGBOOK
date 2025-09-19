@@ -5521,3 +5521,5 @@ Dec 2002        - started to work on single crystal plasticity
                   resultsprint,printout and storeresidual (use of
 		  independent values instead of interpolating)
                 - allowed for node sets in the first term of an equation.
+
+ 19 Sep 2025    - corrected equations.f for sets.
