@@ -1223,13 +1223,6 @@ void FORTRAN(desiperelem,(ITG *ndesi,ITG *istartdesi,ITG *ialdesi,
                           ITG *ipoeldi,ITG *ieldi,ITG *ne,
                           ITG *istartelem,ITG *ialelem));
 
-void  FORTRAN(resforccont,(double *vold,ITG *nk,ITG *mi,double *aubi,
-			   ITG *irowbi,ITG *jqbi,ITG *neqtot,ITG *ktot,
-			   double *fext,double *gapdof,
-			   double *auib,ITG *irowib,ITG *jqib,
-			   ITG *nactdof,double *volddof,
-			   ITG *neq,double *qik_kbi));
-
 void FORTRAN(detectactivecont,(double *gapnorm,double *gapdisp,double *auw,
 			       ITG *iroww,ITG *jqw,ITG *nslavs,
 			       double *springarea,ITG *iacti,ITG *nacti,
@@ -2998,7 +2991,7 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,
 	      ITG *ne,ITG **jqbip,double **aubip,ITG **irowbip,ITG **jqibp,
 	      double **auibp,ITG **irowibp,ITG *iclean,ITG *iinc,
 	      double *fullgmatrix,double *fullr,double *alglob,
-	      ITG *num_cpus);
+	      ITG *num_cpus,ITG *ncont);
 
 void *massless1mt(ITG *i);
 
@@ -4070,7 +4063,7 @@ void *res4parllmt(ITG *i);
 void resforccont(double *vold,ITG *nk,ITG *mi,double *aubi,ITG *irowbi,
 		 ITG *jqbi,ITG *neqtot,ITG *ktot,double *fext,double *gapdisp,
 		 double *auib,ITG *irowib,ITG *jqib,ITG *nactdof,
-		 double *volddof,ITG *neq,double *qi_kbi);
+		 double *volddof,ITG *neq,double *qi_kbi,ITG *ncont);
 
 void *resforccontmt(ITG *i);
 

@@ -774,9 +774,10 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
 				   &netet_,&nktet_));
       }
     }
+    SFREE(qualityjac);SFREE(ibadnodes); 
   }
 
-  SFREE(iponn);SFREE(inn);SFREE(qualityjac);SFREE(ibadnodes);
+  SFREE(iponn);SFREE(inn);
 
   SFREE(ialsete);SFREE(ilist);SFREE(isharp);SFREE(idimsh);SFREE(itreated);
 

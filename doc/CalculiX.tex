@@ -39518,9 +39518,9 @@ jmax(2) &              maximum number of CFD increments \\
       voldaux(0,i) & Total energy density $\rho \epsilon_t$ in node i  \\ 
       voldaux(1..3,i) & Momentum density components $\rho v_i$ in node i  \\ 
       voldaux(4,i) & Density $\rho$ in node i  \\ 
-      v(0,i) & Total energy density correction in node i  \\ 
-      v(1..3,i) & Momentum density correction components in node i  \\ 
-      v(4,i) & For fluids: Pressure correction in node i  \\ 
+      v(i,0) & Total energy density correction in node i  \\ 
+      v(i,1..3) & Momentum density correction components in node i  \\ 
+      v(i,4) & For fluids: Pressure correction in node i  \\ 
              & For gas: Density correction in node i \\
 
 \hline

@@ -5526,3 +5526,6 @@ Dec 2002        - started to work on single crystal plasticity
                 - removed the mode number from TOTAL EFFECTIVE MASS and
 		  FRACTION OF TOTALS in the .dat-file
                 - inserted the number of nodes in CFD frd-files
+
+ 8 Oct 2025     - worked on massless contact explicit dynamics without
+                  contact

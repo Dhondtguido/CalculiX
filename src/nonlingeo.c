@@ -1127,22 +1127,26 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
        factorization of the LHS matrix */
     
     if(*mortar==-1){
-      nmasts=nmastnode[*ntie];
+      if(ncont!=0){
+	nmasts=nmastnode[*ntie];
 
-      NNEW(kslav,ITG,3**nslavs);
-      NNEW(lslav,ITG,3**nslavs);
-      NNEW(ktot,ITG,3**nslavs+3*nmasts);
-      NNEW(ltot,ITG,3**nslavs+3*nmasts);
-      NNEW(fric,double,*nslavs);
+	NNEW(kslav,ITG,3**nslavs);
+	NNEW(lslav,ITG,3**nslavs);
+	NNEW(ktot,ITG,3**nslavs+3*nmasts);
+	NNEW(ltot,ITG,3**nslavs+3*nmasts);
+	NNEW(fric,double,*nslavs);
 
-      /*  Create set of slave and slave+master contact DOFS (sorted);
-          assign a friction coefficient to each slave node */
+	/*  Create set of slave and slave+master contact DOFS (sorted);
+	    assign a friction coefficient to each slave node */
       
-      FORTRAN(create_contactdofs,(kslav,lslav,ktot,ltot,nslavs,islavnode,
-				  &nmasts,imastnode,nactdof,mi,&neqtot,
-				  nslavnode,fric,tieset,tietol,ntie,elcon,
-				  ncmat_,ntmat_));
-
+	FORTRAN(create_contactdofs,(kslav,lslav,ktot,ltot,nslavs,islavnode,
+				    &nmasts,imastnode,nactdof,mi,&neqtot,
+				    nslavnode,fric,tieset,tietol,ntie,elcon,
+				    ncmat_,ntmat_));
+      }else{
+	neqtot=0;
+      }
+      
       /*   RENEW(kslav,ITG,3**nslavs);
       RENEW(lslav,ITG,3**nslavs);
       RENEW(ktot,ITG,neqtot);
@@ -1173,8 +1177,10 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       /* reduce LHS and RHS by removing contact dofs (diagonal terms
          are set to 1, off-diagonal terms to 0 */
 
-      FORTRAN(reducematrix,(aub,adb,jq,irow,neq,&neqtot,ktot));
-      FORTRAN(reducematrix,(auc,adc,jq,irow,neq,&neqtot,ktot));
+      if(ncont!=0){
+	FORTRAN(reducematrix,(aub,adb,jq,irow,neq,&neqtot,ktot));
+	FORTRAN(reducematrix,(auc,adc,jq,irow,neq,&neqtot,ktot));
+      }
 
       /* factorize the LHS */
 
@@ -1227,8 +1233,10 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
       // Storing contact force vector initial solution
 
-      NNEW(aloc,double,3**nslavs);
-      NNEW(alglob,double,neqtot);
+      if(ncont!=0){
+	NNEW(aloc,double,3**nslavs);
+	NNEW(alglob,double,neqtot);
+      }
 
       /* no nlgeom and no nonlinear material for massless explicit dynamics */
       
@@ -2653,13 +2661,13 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		     &num_cpus);
       }else{
 	NNEW(volddof,double,neq[0]);
-	NNEW(qb,double,neqtot);
+	if(ncont!=0){NNEW(qb,double,neqtot);}
         massless(kslav,lslav,ktot,ltot,au,ad,auc,adc,jq,irow,neq,nzs,auw,jqw,
 		 iroww,&nzsw,islavnode,nslavnode,nslavs,imastnode,nmastnode,
 		 ntie,nactdof,mi,vold,volddof,veold,nk,fext,isolver,
 		 &masslesslinear,co,springarea,&neqtot,qb,b,&dtime,aloc,fric,
 		 iexpl,nener,ener,ne,&jqbi,&aubi,&irowbi,&jqib,&auib,&irowib,
-		 &iclean,&iinc,fullgmatrix,fullr,alglob,&num_cpus);
+		 &iclean,&iinc,fullgmatrix,fullr,alglob,&num_cpus,&ncont);
         if(masslesslinear==0){SFREE(ad);SFREE(au);} 
       }
       
@@ -3062,22 +3070,24 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 #endif
 	    }
 	    if(*mortar==-1){
-	      if(iinc==1){
-		for(i=0;i<neqtot;i++){
-		  k=floor(ltot[i]/10);
-		  l=ltot[i]-10*k;
-		  b[ktot[i]-1]=veold[mt*(k-1)+l];
-		}
-	      } else{
+	      if(ncont!=0){
+		if(iinc==1){
+		  for(i=0;i<neqtot;i++){
+		    k=floor(ltot[i]/10);
+		    l=ltot[i]-10*k;
+		    b[ktot[i]-1]=veold[mt*(k-1)+l];
+		  }
+		} else{
 
-		/* determine the velocity in the contact nodes */
+		  /* determine the velocity in the contact nodes */
 	      
-		for(i=0;i<neqtot;++i){
-		  //		  b[ktot[i]-1]=(qb[i]-volddof[ktot[i]-1])/(*tinc);
-		  b[ktot[i]-1]=(qb[i]-volddof[ktot[i]-1])/(dtime);
+		  for(i=0;i<neqtot;++i){
+		    b[ktot[i]-1]=(qb[i]-volddof[ktot[i]-1])/(dtime);
+		  }
 		}
+		SFREE(qb);
 	      }
-	      SFREE(qb);SFREE(volddof);
+	      SFREE(volddof);
 	    }
 	  }
 	  if(*ithermal>1){
@@ -3087,7 +3097,6 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	  }
 	}
       }
-      //           for(k=0;k<neq[1];++k){printf("b=%" ITGFORMAT ",%f\n",k,b[k]);}
       
       /* mortar */
 
@@ -3467,12 +3476,10 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	}
 	iflagact=0;
       }
-
-      //      if(*mortar==-1){SFREE(auw);SFREE(jqw);SFREE(iroww);}
-      
     }
 
-    if((*mortar==-1)&&(masslesslinear==0)){SFREE(auw);SFREE(jqw);SFREE(iroww);}
+    if((*mortar==-1)&&(masslesslinear==0)&&(ncont!=0))
+      {SFREE(auw);SFREE(jqw);SFREE(iroww);}
 
     if(*nmethod!=4)SFREE(resold);
 
@@ -4166,21 +4173,21 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     SFREE(springarea);SFREE(xmastnor);
 
     if(*mortar==-1){
-      SFREE(kslav);SFREE(lslav);SFREE(ktot);SFREE(ltot);
-      SFREE(aloc);SFREE(alglob);
-      SFREE(adc);SFREE(auc);SFREE(areaslav);SFREE(fric);
+      if(ncont!=0){SFREE(kslav);SFREE(lslav);SFREE(ktot);SFREE(ltot);
+	SFREE(aloc);SFREE(alglob);SFREE(areaslav);SFREE(fric);}
+      SFREE(adc);SFREE(auc);
       if(idispfrdonly==1){SFREE(inumcp);}
       if(masslesslinear>0){
-	SFREE(ad);SFREE(au);SFREE(jqbi);SFREE(aubi);SFREE(irowbi);
-	SFREE(jqib);SFREE(auib);SFREE(irowib);SFREE(auw);SFREE(jqw);
-	SFREE(iroww);SFREE(fullgmatrix);SFREE(fullr);
+	SFREE(ad);SFREE(au);
+	if(ncont!=0){SFREE(auw);SFREE(jqw);SFREE(iroww);
+	  SFREE(fullgmatrix);SFREE(fullr);}
 	iclean=1;
         massless(kslav,lslav,ktot,ltot,au,ad,auc,adc,jq,irow,neq,nzs,auw,jqw,
 		 iroww,&nzsw,islavnode,nslavnode,nslavs,imastnode,nmastnode,
 		 ntie,nactdof,mi,vold,volddof,veold,nk,fext,isolver,
 		 &masslesslinear,co,springarea,&neqtot,qb,b,&dtime,aloc,fric,
 		 iexpl,nener,ener,ne,&jqbi,&aubi,&irowbi,&jqib,&auib,&irowib,
-		 &iclean,&iinc,fullgmatrix,fullr,alglob,&num_cpus);
+		 &iclean,&iinc,fullgmatrix,fullr,alglob,&num_cpus,&ncont);
       }
       if(masslesslinear==2){SFREE(fextload);}
 
