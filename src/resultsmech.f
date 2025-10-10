@@ -183,7 +183,6 @@
             dlayer(k)=0.d0
           enddo
 !     
-!     
 !     S6 - composite element
 !     
         elseif(lakonl(4:5).eq.'15') then

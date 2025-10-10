@@ -5529,3 +5529,9 @@ Dec 2002        - started to work on single crystal plasticity
 
  8 Oct 2025     - worked on massless contact explicit dynamics without
                   contact
+
+ 10 Oct 2025    - replaced shape8hr.f by a new version provided by
+                  Otto Bernhardi (improved hourglass stabilization for
+		  C3D8R)
+                - updated resultstherm.f for composite shells
+                - modified calcdamage.f

@@ -13887,7 +13887,7 @@ absolute basis temperature (in K). Furthermore, the balance of momentum reduces 
 For details, the reader is referred to \cite{Eringen} and
 \cite{Anderson}. Equation~(\ref{waveeq}) is the well-known wave
 equation. By comparison with the heat equation, the correspondence in Table
-~(\ref{t1}) arises. 
+\ref{t1} arises. 
 
 \begin{table}
 \caption{Correspondence between the heat equation and the gas momentum equation.\label{t1}}
@@ -13955,7 +13955,7 @@ following assumptions are made:
 Due to the integration process the above equation is two-dimensional,
 i.e. only the surface of the fluid has to be meshed. 
 By comparison with the heat equation, the correspondence in Table
-~(\ref{t2}) arises. Therefore, shallow water motion can be simulated using the
+\ref{t2} arises. Therefore, shallow water motion can be simulated using the
 \htmlref{*HEAT TRANSFER}{heattransfer} procedure.
 
 \begin{table}
@@ -14021,7 +14021,7 @@ fluid). This term is zero if the walls are not porous.
 
 For practical calculations the density and thickness of the film is assumed to
 be known, the pressure is the unknown. By comparison with the heat equation, the correspondence in Table
-~(\ref{t3}) arises. $\overline{ \boldsymbol{ v}}$ is the mean velocity over
+\ref{t3} arises. $\overline{ \boldsymbol{ v}}$ is the mean velocity over
 the film, $\overline{ v}_n$ its component orthogonal to the boundary. Since
 the governing equation is the result of an integration across the film
 thickness, it is again two-dimensional and applies in the present form to a
@@ -14076,7 +14076,7 @@ and the balance of momentum for gravitational flow yields
 where $g$ is the earth acceleration, $p$ is the pressure, $\rho_0$ is the
 density and z is the coordinate in earth direction.
 By comparison with the heat equation, the correspondence in Table
-~(\ref{t4}) arises. 
+\ref{t4} arises. 
 
 \begin{table}
 \caption{Correspondence between the heat equation and the equation for
@@ -14154,7 +14154,7 @@ yields the governing equation
 
 Accordingly,
 by comparison with the heat equation, the correspondence in Table
-~\ref{t5} arises. Notice that the electrostatics equation is a steady state
+\ref{t5} arises. Notice that the electrostatics equation is a steady state
 equation, and there is no equivalent to the heat capacity term.
 
 \begin{table}
@@ -14219,7 +14219,7 @@ $\epsilon_r$=11.68). Now, the governing equation yields
 \nabla \cdot (- \epsilon \boldsymbol{ I} \cdot \nabla V) =  \rho^f
 \end{equation}
 
-and the analogy in Table~\ref{t11} arises. The equivalent of Equation
+and the analogy in Table \ref{t11} arises. The equivalent of Equation
 (\ref{surfcharge}) now reads
 
 \begin{equation}
@@ -14283,7 +14283,7 @@ The resulting equation now reads
 
 Accordingly,
 by comparison with the heat equation, the correspondence in Table
-~(\ref{t6}) arises. Notice that the groundwater flow equation is a steady state
+\ref{t6} arises. Notice that the groundwater flow equation is a steady state
 equation, and there is no equivalent to the heat capacity term.
 
 \begin{table}
@@ -14425,7 +14425,7 @@ or
 
 Accordingly,
 by comparison with the heat equation, the correspondence in Table
-~(\ref{t7}) arises. 
+\ref{t7} arises. 
 
 \begin{table}
 \caption{Correspondence between the heat equation and mass diffusion equation.\label{t7}}
@@ -32723,7 +32723,7 @@ been defined.
 
 It is important to know where fields are allocated, reallocated and
 deallocated. Most (re-, de-) allocation is done in
-CalculiX.c. Table~(\ref{talloc}) gives an overview where the allocation (A),
+CalculiX.c. Table \ref{talloc} gives an overview where the allocation (A),
 reallocation (R) and deallocation (D) is done in file CalculiX.c. A
 fundamental mark in this file is the call of subroutine calinput, where the
 input data is interpreted.
@@ -35262,8 +35262,8 @@ degree of freedom in a gas node is active: if the entry is nonzero (actually
 positive; contrary to nactdof nactdog does not take negative values) it is
 active, else it is inactive (which means that the value is known or not
 applicable because the node is a structural node). The degrees of freedom
-correspond to the first three rows of Table~\ref{t8} and are repeated in
-Table~\ref{t9} for clarity. Here too, only the first three rows are
+correspond to the first three rows of Table \ref{t8} and are repeated in
+Table \ref{t9} for clarity. Here too, only the first three rows are
 relevant. 
 
 \begin{table}
@@ -35290,7 +35290,7 @@ in node 328. The number of the degree of freedom corresponds with the column
 number in the resulting set of equations. 
 What nactdog is for the degrees of freedom is nacteq for the equations. It is
 a field of the same size of nactdog but now a nonzero entry indicates that a
-specific conservation equation applies to the node, cf. Table ~\ref{t10}.
+specific conservation equation applies to the node, cf. Table \ref{t10}.
 
 \begin{table}
 \caption{Conservation equations in fluid nodes (field nacteq).\label{t10}}

@@ -4408,7 +4408,7 @@ void FORTRAN(resultstherm,(double *co,ITG *kon,ITG *ipkon,
        double *xloadold,double *pslavsurf,double *pmastsurf,ITG *mortar,
        double *clearini,double *plicon,ITG *nplicon,ITG *ielprop,
        double *prop,ITG *iponoeln,ITG *inoeln,ITG *network,ITG *ipobody,
-       double *xbodyact,ITG *ibody));
+       double *xbodyact,ITG *ibody,double *thicke));
 
 void *resultsthermemmt(ITG *i);
 
