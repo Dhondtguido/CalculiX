@@ -958,6 +958,14 @@ c          endif
               mi(1)=max(mi(1),1)
               nope=4
               nopeexp=4
+            elseif(label.eq.'C3D5    ') then
+              mi(1)=max(mi(1),5)
+              nope=5
+              nopeexp=5
+            elseif((label.eq.'C3D13   ').or.(label.eq.'C3D13F  ')) then
+              mi(1)=max(mi(1),13)
+              nope=13
+              nopeexp=13
             elseif(label.eq.'C3D15   ') then
               mi(1)=max(mi(1),9)
               nope=15
