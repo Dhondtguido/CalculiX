@@ -35,7 +35,7 @@
      &  ncocon(2,*),k1,jj,ig,ntmat_,nope,nopes,imat,iperturb(*),
      &  mint2d,ifacet(6,4),ifacew(8,5),iflag,indexe,jface,istartset(*),
      &  iendset(*),ipkon(*),kon(*),iset,ialset(*),nset,ipos,id,
-     &  mi(*),ielmat(mi(3),*)
+     &  mi(*),ielmat(mi(3),*),ifacep(8,5)
 !
       real*8 co(3,*),xl(3,20),shp(4,20),xs2(3,7),f(0:3),time,
      &  vkl(0:3,3),t(3,3),xtorque,bendmom,xnormforc,shearforc,
@@ -64,6 +64,13 @@
      &             1,2,5,4,7,14,10,13,
      &             2,3,6,5,8,15,11,14,
      &             4,6,3,1,12,15,9,13/
+!  13 nodes pyramid surface numbering
+      data ifacep /
+     &     1,5,4,10,13,9,0,0,
+     &     2,5,1,11,10,6,0,0,
+     &     3,5,2,12,11,7,0,0,
+     &     4,5,3,13,12,8,0,0,
+     &     1,4,3,2,9,8,7,6/
       data iflag /3/
 !
 !     flag to check whether sof and/or som output was already
@@ -152,6 +159,10 @@
                elseif(lakonl(4:4).eq.'4') then
                   nope=4
                   nopes=3
+               elseif(lakonl(4:5).eq.'13') then
+                  nope=13
+               elseif(lakonl(4:4).eq.'5') then
+                  nope=5
                elseif(lakonl(4:5).eq.'15') then
                   nope=15
                elseif(lakonl(4:4).eq.'6') then
@@ -209,17 +220,37 @@ c                  endif
                  enddo
                endif
 !     
+!     treatment of pyramid faces
+!     
+               if(lakonl(4:4).eq.'5') then
+                  mint2d=1
+                  if(ig.le.4) then
+                     nopes=3
+                  else
+                     nopes=4
+                  endif
+!               endif
+               elseif(lakonl(4:5).eq.'13') then
+                  if(ig.le.4) then
+                     mint2d=3
+                     nopes=6
+                  else
+                     mint2d=9
+                     nopes=8
+                  endif
+!               endif
+!     
 !     treatment of wedge faces
 !     
-               if(lakonl(4:4).eq.'6') then
+               elseif(lakonl(4:4).eq.'6') then
                   mint2d=1
                   if(ig.le.2) then
                      nopes=3
                   else
                      nopes=4
                   endif
-               endif
-               if(lakonl(4:5).eq.'15') then
+!               endif
+               elseif(lakonl(4:5).eq.'15') then
                   if(ig.le.2) then
                      mint2d=3
                      nopes=6
@@ -267,6 +298,12 @@ c                  endif
                        xl2(j,i)=co(j,konl(ifacet(i,ig)))
                      enddo
                    enddo
+                 elseif((nope.eq.13).or.(nope.eq.5)) then
+                   do i=1,nopes
+                     do j=1,3
+                       xl2(j,i)=co(j,konl(ifacep(i,ig)))
+                     enddo
+                   enddo
                  else
                    do i=1,nopes
                      do j=1,3
@@ -288,21 +325,25 @@ c                  endif
                      weight=weight2d1(i)
                   elseif((lakonl(4:4).eq.'8').or.
      &                    (lakonl(4:6).eq.'20R').or.
-     &                    ((lakonl(4:5).eq.'15').and.(nopes.eq.8))) then
+     &                    ((lakonl(4:5).eq.'15').and.(nopes.eq.8)).or.
+     &                   ((lakonl(4:5).eq.'5').and.(nopes.eq.4))) then
                      xi=gauss2d2(1,i)
                      et=gauss2d2(2,i)
                      weight=weight2d2(i)
-                  elseif(lakonl(4:4).eq.'2') then
+                  elseif((lakonl(4:4).eq.'2').or.
+     &                   ((lakonl(4:5).eq.'13').and.(nopes.eq.8))) then
                      xi=gauss2d3(1,i)
                      et=gauss2d3(2,i)
                      weight=weight2d3(i)
                   elseif((lakonl(4:5).eq.'10').or.
-     &                    ((lakonl(4:5).eq.'15').and.(nopes.eq.6))) then
+     &                    ((lakonl(4:5).eq.'15').and.(nopes.eq.6)).or.
+     &                   ((lakonl(4:5).eq.'13').and.(nopes.eq.6))) then
                      xi=gauss2d5(1,i)
                      et=gauss2d5(2,i)
                      weight=weight2d5(i)
                   elseif((lakonl(4:4).eq.'4').or.
-     &                    ((lakonl(4:4).eq.'6').and.(nopes.eq.3))) then
+     &                    ((lakonl(4:4).eq.'6').and.(nopes.eq.3)).or.
+     &                   ((lakonl(4:5).eq.'5').and.(nopes.eq.3))) then
                      xi=gauss2d4(1,i)
                      et=gauss2d4(2,i)
                      weight=weight2d4(i)
@@ -467,6 +508,21 @@ c                         write(*,*) jface,i,t(1,3),t(2,3)
      &                            shp2(4,i1)*stn(5,konl(ifacet(i1,ig)))
                            t(2,3)=t(2,3)+
      &                            shp2(4,i1)*stn(6,konl(ifacet(i1,ig)))
+                        enddo
+                     elseif((nope.eq.13).or.(nope.eq.5)) then
+                        do i1=1,nopes
+                           t(1,1)=t(1,1)+
+     &                            shp2(4,i1)*stn(1,konl(ifacep(i1,ig)))
+                           t(2,2)=t(2,2)+
+     &                            shp2(4,i1)*stn(2,konl(ifacep(i1,ig)))
+                           t(3,3)=t(3,3)+
+     &                            shp2(4,i1)*stn(3,konl(ifacep(i1,ig)))
+                           t(1,2)=t(1,2)+
+     &                            shp2(4,i1)*stn(4,konl(ifacep(i1,ig)))
+                           t(1,3)=t(1,3)+
+     &                            shp2(4,i1)*stn(5,konl(ifacep(i1,ig)))
+                           t(2,3)=t(2,3)+
+     &                            shp2(4,i1)*stn(6,konl(ifacep(i1,ig)))
                         enddo
                      else
                         do i1=1,nopes
