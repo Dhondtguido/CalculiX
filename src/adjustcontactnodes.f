@@ -37,7 +37,7 @@
      &     ipos,nset,istartset(*),iendset(*),ialset(*),iclear,
      &     istart,ilength,nope,nopes,nelems,jj,ifaces,itiefac(2,*),
      &     jfaces,islavsurf(2,*),ifaceq(8,6),ifacet(6,4),ifacew1(4,5),
-     &     ifacew2(8,5),ipkon(*),kon(*)
+     &     ifacew2(8,5),ipkon(*),kon(*),ifacepl(4,5),ifacepq(8,5)
 !     
       real*8 cg(3,*),straight(16,*),co(3,*),vold(0:mi(2),*),p(3),
      &     dist,xo(*),yo(*),zo(*),x(*),y(*),z(*),tietol(4,*),adjust,
@@ -74,6 +74,22 @@
      &     1,2,5,4,7,14,10,13,
      &     2,3,6,5,8,15,11,14,
      &     3,1,4,6,9,13,12,15/
+!
+!  5 nodes pyramid surface numbering
+      data ifacepl /
+     &     1,5,4,0,
+     &     2,5,1,0,
+     &     3,5,2,0,
+     &     4,5,3,0,
+     &     1,4,3,2/
+!  13 nodes pyramid surface numbering
+      data ifacepq /
+     &     1,5,4,10,13,9,0,0,
+     &     2,5,1,11,10,6,0,0,
+     &     3,5,2,12,11,7,0,0,
+     &     4,5,3,13,12,8,0,0,
+     &     1,4,3,2,9,8,7,6/
+!     
 !     
       do i=1,ntie
 cccc  replaced on 06.12.2021 next line      
@@ -292,9 +308,20 @@ c     write(*,*) '**regular solution'
             elseif(lakon(nelems)(4:4).eq.'4') then
               nopes=3
               nope=4
-!     
-!     treatment of wedge faces
-!     
+            elseif(lakon(nelems)(4:5).eq.'13') then
+              nope=13
+              if(jfaces.le.4) then
+                nopes=6
+              else
+                nopes=8
+              endif
+            elseif(lakon(nelems)(4:4).eq.'5') then
+               nope=5
+              if(jfaces.le.4) then
+                nopes=3
+              else
+                nopes=4
+              endif
             elseif(lakon(nelems)(4:4).eq.'6') then
               nope=6
               if(jfaces.le.2) then
@@ -323,6 +350,10 @@ c     write(*,*) '**regular solution'
               elseif((nope.eq.10).or.(nope.eq.4).or.(nope.eq.14)) 
      &               then
                 node=kon(ipkon(nelems)+ifacet(m,jfaces))
+              elseif(nope.eq.5) then
+                node=kon(ipkon(nelems)+ifacepl(m,jfaces))
+              elseif(nope.eq.13) then
+                node=kon(ipkon(nelems)+ifacepq(m,jfaces))
               elseif(nope.eq.15) then
                 node=kon(ipkon(nelems)+ifacew2(m,jfaces))
               else
