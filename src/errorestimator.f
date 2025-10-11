@@ -71,6 +71,13 @@
             nopev=8
          elseif(lakonl(4:4).eq.'8') then
             nopev=8
+!         elseif(lakonl(4:4).eq.'5') then
+! fgr-mod 5 nodes pyramid
+!      write(*,'(/,A,/)') ' Errorestimator 5 nodes pyramid 78 ok'
+!            nopev=5
+! fgr-mod 13 nodes pyramid
+!      write(*,'(/,A,/)') ' Errorestimator 5 nodes pyramid 81 ok'
+!            nopev=5
          elseif(lakonl(4:5).eq.'10') then
             nopev=4
          elseif(lakonl(4:4).eq.'4') then
@@ -88,6 +95,10 @@
          elseif((lakonl(4:4).eq.'8').or.
      &           (lakonl(4:6).eq.'20R')) then
             mint3d=8
+         elseif(lakonl(4:4).eq.'5') then
+            mint3d=5
+         elseif(lakonl(4:5).eq.'13') then
+            mint3d=13
          elseif(lakonl(4:4).eq.'2') then
             mint3d=27
          elseif(lakonl(4:5).eq.'10') then
@@ -217,6 +228,10 @@ c            enddo
                nopev=8
             elseif(lakonl(4:4).eq.'8') then
                nopev=8
+            elseif(lakonl(4:4).eq.'5') then
+               nopev=5
+            elseif(lakonl(4:5).eq.'13') then
+               nopev=5
             elseif(lakonl(4:5).eq.'10') then
                nopev=4
             elseif(lakonl(4:4).eq.'4') then
@@ -308,6 +323,36 @@ c            enddo
 !     
 !              true 8-node brick element
 !     
+               do j=1,nopev
+                  node=kon(indexe+j)
+                  if(yn(2,node).le.0.157d0) then
+                     yn(1,node)=max(yn(1,node),31.847d0*yn(2,node))
+                  else
+                     yn(1,node)=max(yn(1,node),
+     &                              85.324d0*yn(2,node)-8.396d0)
+                  endif
+               enddo
+            elseif(lakonl(4:7).eq.'5   ') then
+!     
+!              true 5-node pyramid element
+!     
+! fgr-mod 5 nodes pyramid
+!      write(*,'(/,A,/)') ' Errorestimator 5 nodes pyrammid 348 not implemented'
+               do j=1,nopev
+                  node=kon(indexe+j)
+                  if(yn(2,node).le.0.157d0) then
+                     yn(1,node)=max(yn(1,node),31.847d0*yn(2,node))
+                  else
+                     yn(1,node)=max(yn(1,node),
+     &                              85.324d0*yn(2,node)-8.396d0)
+                  endif
+               enddo
+            elseif(lakonl(4:7).eq.'13   ') then
+!     
+!              true 13-node pyramid element
+!     
+! fgr-mod 13 nodes pyramid
+!      write(*,'(/,A,/)') ' Errorestimator 5 nodes pyrammid 363 not implemented'
                do j=1,nopev
                   node=kon(indexe+j)
                   if(yn(2,node).le.0.157d0) then
