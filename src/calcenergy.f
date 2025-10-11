@@ -61,6 +61,10 @@
             nope=10
          elseif(lakonl(4:4).eq.'4') then
             nope=4
+         elseif(lakonl(4:5).eq.'13') then
+            nope=13
+         elseif(lakonl(4:4).eq.'5') then
+            nope=5
          elseif(lakonl(4:5).eq.'15') then
             nope=15
          elseif(lakonl(4:5).eq.'6') then
@@ -178,6 +182,10 @@
             mint3d=4
          elseif(lakonl(4:4).eq.'4') then
             mint3d=1
+         elseif(lakonl(4:5).eq.'13') then
+            mint3d=13
+         elseif(lakonl(4:4).eq.'5') then
+            mint3d=5
          elseif(lakonl(4:5).eq.'15') then
             if(lakonl(7:8).eq.'LC') then
                mint3d=6*nlayer
@@ -261,6 +269,23 @@
                et=gauss3d4(2,jj)
                ze=gauss3d4(3,jj)
                weight=weight3d4(jj)
+            elseif(lakonl(4:5).eq.'13') then
+              if(lakonl(6:6).eq.'F') then
+                xi=pyra13d3f(1,jj)
+                et=pyra13d3f(2,jj)
+                ze=pyra13d3f(3,jj)
+                weight=wpyra13d3f(jj)
+              else
+                xi=pyra13d3(1,jj)
+                et=pyra13d3(2,jj)
+                ze=pyra13d3(3,jj)
+                weight=wpyra13d3(jj)
+              endif
+            elseif(lakonl(4:4).eq.'5') then
+              xi=pyra5d3(1,jj)
+              et=pyra5d3(2,jj)
+              ze=pyra5d3(3,jj)
+              weight=wpyra5d3(jj)
             elseif(lakonl(4:5).eq.'15') then
                if(lakonl(7:8).ne.'LC') then
                   xi=gauss3d8(1,jj)
@@ -310,6 +335,14 @@
                call shape10tet(xi,et,ze,xl,xsj,shp,iflag)
             elseif(nope.eq.4) then
                call shape4tet(xi,et,ze,xl,xsj,shp,iflag)
+            elseif(nope.eq.5) then
+              call shape5p(xi,et,ze,xl,xsj,shp,iflag)
+            elseif(nope.eq.13) then
+              if(lakonl(6:6).eq.'F') then
+                call shape13pf(xi,et,ze,xl,xsj,shp,iflag)
+              else
+                call shape13p(xi,et,ze,xl,xsj,shp,iflag)
+              endif
             elseif(nope.eq.15) then
                call shape15w(xi,et,ze,xl,xsj,shp,iflag)
             else
