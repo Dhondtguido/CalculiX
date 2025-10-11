@@ -113,7 +113,7 @@
 !
       integer ifaceq(8,6),ifacet(6,4),ifacew(8,5),ig,nelem,nopes,
      &  iflag,i,j,nope,ipompc(*),nodempc(3,*),nmpc,ikmpc(*),ilmpc(*),
-     &  node,idof,id
+     &  node,idof,id,ifacep(8,5)
 !
       real*8 xl2(3,8),pres(8),xi,et,xsj2(3),xs2(3,7),shp2(7,8),
      &  coefmpc(*),veold(0:mi(2),*)
@@ -135,6 +135,13 @@
      &             1,2,5,4,7,14,10,13,
      &             2,3,6,5,8,15,11,14,
      &             4,6,3,1,12,15,9,13/),(/8,5/))
+! 13 nodes pyramid surface numbering
+      ifacep=reshape((/
+     &     1,5,4,10,13,9,0,0,
+     &     2,5,1,11,10,6,0,0,
+     &     3,5,2,12,11,7,0,0,
+     &     4,5,3,13,12,8,0,0,
+     &     1,4,3,2,9,8,7,6/),(/8,5/))
       iflag=2
 !
       nelem=noel
@@ -152,22 +159,32 @@
       elseif(lakonl(4:4).eq.'4') then
          nope=4
          nopes=3
-      elseif(lakonl(4:5).eq.'15') then
-         nope=15
-      elseif(lakonl(4:4).eq.'6') then
-         nope=6
-      endif
+      elseif(lakonl(4:4).eq.'5') then
+         nope=5
+         if(ig.le.4) then
+            nopes=3
+         else
+            nopes=4
+         endif
+      elseif(lakonl(4:5).eq.'13') then
+         nope=13
+         if(ig.le.4) then
+            nopes=6
+         else
+            nopes=8
+         endif
 !     
 !     treatment of wedge faces
 !     
-      if(lakonl(4:4).eq.'6') then
+      elseif(lakonl(4:4).eq.'6') then
+         nope=6
          if(ig.le.2) then
             nopes=3
          else
             nopes=4
          endif
-      endif
-      if(lakonl(4:5).eq.'15') then
+      elseif(lakonl(4:5).eq.'15') then
+         nope=15
          if(ig.le.2) then
             nopes=6
          else
@@ -208,6 +225,20 @@
             node=nodempc(1,nodempc(3,ipompc(ilmpc(id))))
             pres(i)=vold(0,node)
          enddo
+      elseif((nope.eq.13).or.(nope.eq.5)) then
+         do i=1,nopes
+            node=konl(ifacep(i,ig))
+            node=konl(ifaceq(i,ig))
+            idof=8*(node-1)
+            call nident(ikmpc,idof,nmpc,id)
+            if((id.eq.0).or.(ikmpc(id).ne.idof)) then
+               write(*,*) '*ERROR in dload: node ',node
+               write(*,*) '       is not connected to the oil film'
+               call exit(201)
+            endif
+            node=nodempc(1,nodempc(3,ipompc(ilmpc(id))))
+            pres(i)=vold(0,node)
+         enddo
       else
          do i=1,nopes
             node=konl(ifacew(i,ig))
@@ -232,18 +263,22 @@
          et=gauss2d1(2,i)
       elseif((lakonl(4:4).eq.'8').or.
      &        (lakonl(4:6).eq.'20R').or.
-     &        ((lakonl(4:5).eq.'15').and.(nopes.eq.8))) then
+     &        ((lakonl(4:5).eq.'15').and.(nopes.eq.8)).or.
+     &        ((lakonl(4:4).eq.'5').and.(nopes.eq.4))) then
          xi=gauss2d2(1,i)
          et=gauss2d2(2,i)
-      elseif(lakonl(4:4).eq.'2') then
+      elseif((lakonl(4:4).eq.'2').or.
+     &        ((lakonl(4:5).eq.'13').and.(nopes.eq.8))) then
          xi=gauss2d3(1,i)
          et=gauss2d3(2,i)
       elseif((lakonl(4:5).eq.'10').or.
+     &        ((lakonl(4:5).eq.'13').and.(nopes.eq.6)).or.
      &        ((lakonl(4:5).eq.'15').and.(nopes.eq.6))) then
          xi=gauss2d5(1,i)
          et=gauss2d5(2,i)
       elseif((lakonl(4:4).eq.'4').or.
-     &        ((lakonl(4:4).eq.'6').and.(nopes.eq.3))) then
+     &        ((lakonl(4:4).eq.'6').and.(nopes.eq.3)).or.
+     &        ((lakonl(4:4).eq.'5').and.(nopes.eq.3))) then
          xi=gauss2d4(1,i)
          et=gauss2d4(2,i)
       endif
