@@ -132,6 +132,12 @@ c     Bernhardi end
           elseif(lakon(i)(4:4).eq.'8') then
             nope=8
             ndof=3
+          elseif(lakon(i)(4:4).eq.'5') then
+            nope=5
+            ndof=3
+          elseif(lakon(i)(4:5).eq.'13') then
+            nope=13
+            ndof=3
           elseif(lakon(i)(4:5).eq.'10') then
             nope=10
             ndof=3
@@ -629,6 +635,10 @@ c 100          format(i10,",",i5,",",i10,",",i5,",",e20.13)
             nope=20
           elseif(lakon(i)(4:4).eq.'8') then
             nope=8
+          elseif(lakon(i)(4:4).eq.'5') then
+            nope=5
+          elseif(lakon(i)(4:5).eq.'13') then
+            nope=13
           elseif(lakon(i)(4:5).eq.'10') then
             nope=10
           elseif(lakon(i)(4:4).eq.'4') then
