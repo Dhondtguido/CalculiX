@@ -16,15 +16,15 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-      subroutine networkelementpernode(iponoel,inoel,lakon,ipkon,kon,
-     &       inoelsize,nflow,ieg,ne,network)
+      subroutine networkelementpernode(iponoeln,inoeln,lakon,ipkon,kon,
+     &       inoelnsize,nflow,ieg,ne,network)
 !
       implicit none
 !
       character*8 lakon(*)
 !
-      integer iponoel(*),inoel(2,*),ipkon(*),kon(*),i,j,k,
-     &  inoelfree,nope,indexe,node,inoelsize,nflow,ieg(*),ne,
+      integer iponoeln(*),inoeln(2,*),ipkon(*),kon(*),i,j,k,
+     &  inoelnfree,nope,indexe,node,inoelnsize,nflow,ieg(*),ne,
      &  network
 !
 !     determining the elements belonging to the nodes of
@@ -33,7 +33,7 @@
 !     network<=1: simultaneous procedure
 !     network>1: alternating procedure
 !
-      inoelfree=1
+      inoelnfree=1
 !
       if(network.gt.1) then
          do k=1,nflow
@@ -42,10 +42,10 @@
             do j=1,3
                node=kon(indexe+j)
                if(node.eq.0) cycle
-               inoel(1,inoelfree)=i
-               inoel(2,inoelfree)=iponoel(node)
-               iponoel(node)=inoelfree
-               inoelfree=inoelfree+1
+               inoeln(1,inoelnfree)=i
+               inoeln(2,inoelnfree)=iponoeln(node)
+               iponoeln(node)=inoelnfree
+               inoelnfree=inoelnfree+1
             enddo
          enddo
       else
@@ -55,18 +55,18 @@
                do j=1,3
                   node=kon(indexe+j)
                   if(node.eq.0) cycle
-                  inoel(1,inoelfree)=i
-                  inoel(2,inoelfree)=iponoel(node)
-                  iponoel(node)=inoelfree
-                  inoelfree=inoelfree+1
+                  inoeln(1,inoelnfree)=i
+                  inoeln(2,inoelnfree)=iponoeln(node)
+                  iponoeln(node)=inoelnfree
+                  inoelnfree=inoelnfree+1
                enddo
             endif
          enddo
       endif
 !
-!     size of field inoel
+!     size of field inoeln
 !
-      inoelsize=inoelfree-1
+      inoelnsize=inoelnfree-1
 !
       return
       end

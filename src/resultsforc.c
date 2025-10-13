@@ -25,7 +25,7 @@
 void resultsforc(ITG *nk,double *f,double *fn,ITG *nactdof,ITG *ipompc,
 		 ITG *nodempc,double *coefmpc,char *labmpc,ITG *nmpc,
 		 ITG *mi,double *fmpc,ITG *calcul_fn,ITG *calcul_f,
-                 ITG *num_cpus){
+                 ITG *num_cpus,ITG *iponoel){
 
     ITG i,j,ist,node,ndir,mt=mi[1]+1,index,index2;
 
@@ -80,12 +80,17 @@ void resultsforc(ITG *nk,double *f,double *fn,ITG *nactdof,ITG *ipompc,
 	    ndir=nodempc[3*ist+1];
 	    if(ndir>3) continue;
 	    forcempc=fmpc[i];
-	    fn[mt*node+ndir]=forcempc*coefmpc[ist];
+	    //cccccc
+	    //if(node<261){
+	    if(iponoel[node]!=0){
+	      fn[mt*node+ndir]=forcempc*coefmpc[ist];
+	    }
+	    //cccc
 	    index=nodempc[3*ist+2]-1;
 
             /* nodes not belonging to the structure have to be taken out */
 	    
-	    if(strcmp1(&labmpc[20*i],"MEANROT")==0){
+	    /*if(strcmp1(&labmpc[20*i],"MEANROT")==0){
 		index2=nodempc[3*index+2]-1;
 		index2=nodempc[3*index2+2];
 		if(index2==0) continue;
@@ -98,19 +103,24 @@ void resultsforc(ITG *nk,double *f,double *fn,ITG *nactdof,ITG *ipompc,
 		index2=nodempc[3*index2+2]-1;
 		index2=nodempc[3*index2+2];
 		if(index2==0) continue;
-	    }else{
+		}else{*/
 		if(index==-1) continue;
-	    }
+		//	    }
 
 	    do{
 		node=nodempc[3*index]-1;
 		ndir=nodempc[3*index+1];
-		fn[mt*node+ndir]+=coefmpc[index]*forcempc;
+		//ccccc
+		//		if(node<261){
+		if(iponoel[node]!=0){
+		  fn[mt*node+ndir]+=coefmpc[index]*forcempc;
+		}
+		//ccccc
 		index=nodempc[3*index+2]-1;
 
                 /* nodes not belonging to the structure have to be taken out */
 
-		if(strcmp1(&labmpc[20*i],"MEANROT")==0){
+		/*	if(strcmp1(&labmpc[20*i],"MEANROT")==0){
 		    index2=nodempc[3*index+2]-1;
 		    index2=nodempc[3*index2+2];
 		    if(index2==0) break;
@@ -123,9 +133,9 @@ void resultsforc(ITG *nk,double *f,double *fn,ITG *nactdof,ITG *ipompc,
 		    index2=nodempc[3*index2+2]-1;
 		    index2=nodempc[3*index2+2];
 		    if(index2==0) break;
-		}else{
+		    }else{*/
 		    if(index==-1) break;
-		}
+		    //	}
 
 	    }while(1);
 	}

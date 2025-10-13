@@ -57,6 +57,7 @@ boundarymesh.f \
 boundarys.f \
 bsort.f \
 buckles.f \
+calcdamage.f \
 calcdatarget.f \
 calcdev.f \
 calcdhds.f \
@@ -210,6 +211,7 @@ cubic.f \
 cubtri.f \
 cyclichardenings.f \
 cyclicsymmetrymodels.f \
+damageinitiations.f \
 dampings.f \
 dashdamp.f \
 dashpots.f \
@@ -318,6 +320,7 @@ extrapolate_u.f \
 extrapolate_u1.f \
 extrapolate_us3.f \
 extrapolate_us45.f \
+extsurface.f \
 faceinfo.f \
 fcrit.f \
 feasibledirections.f \
@@ -548,10 +551,12 @@ modaldynamics.f \
 modelchanges.f \
 modf.f \
 modifympc.f \
+modifystressstiff.f \
 moehring.f \
 mohrcoulomb.f \
 mohrcoulombhardenings.f \
 mohrcoulombs.f \
+move.f \
 mpcadd.f \
 mpcrem.f \
 mpcs.f \
@@ -584,6 +589,7 @@ nidentll.f \
 nmatrix.f \
 noanalysiss.f \
 nodalthicknesss.f \
+nodebelongstoel.f \
 nodeprints.f \
 nodes.f \
 nodestiedface.f \
@@ -591,8 +597,6 @@ noelfiles.f \
 noelsets.f \
 nonlinmpc.f \
 normals.f \
-writeinputdeck.f \
-writeinputdeck2.f \
 normalsoninterface.f \
 normalsonsurface_robust.f \
 normalsonsurface_se.f \
@@ -725,6 +729,7 @@ reinit_refine.f \
 relaxval_al.f \
 relaxval_alfull.f \
 remlagrangemult.f \
+removeface.f \
 removesliver.f \
 removetet_refine.f \
 removetet_sliver.f \
@@ -808,6 +813,7 @@ smoothbadvertex.f \
 smoothingmidnodes.f \
 smoothingvertexnodes.f \
 smoothshock.f \
+smoothshockappend.f \
 solidsections.f \
 sortev.f \
 spcmatch.f \
@@ -919,6 +925,7 @@ updatecontpen.f \
 updategeodata.f \
 us3_sub.f \
 us4_sub.f \
+userefinedmeshs.f \
 userelements.f \
 usermaterials.f \
 usermpc.f \
@@ -949,6 +956,8 @@ writeev.f \
 writehe.f \
 writeim.f \
 writeinput.f \
+writeinputdeck.f \
+writeinputdeck2.f \
 writelm.f \
 writemaccs.f \
 writemac.f \

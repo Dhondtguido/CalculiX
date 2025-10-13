@@ -113,16 +113,18 @@
 !      
       implicit none
 !     
-!     100 nearest nodes: node(100),idummy1(100),idummy2(100),iparentel(100)
-!     
-      integer ifatet(4,*),id,node(netet),near,nx(*),ny(*),nz(*),
+      integer ifatet(4,*),id,near,nx(*),ny(*),nz(*),
      &     ifs,iface,i,konl(20),nfield,nktet,ielement,ielmax,netet,k,
      &     j,iselect(nselect),nselect,kontyp(*),ipkon(*),kon(*),
-     &     nterms,indexe,nelem,konl_opt(20),idummy1(netet),
-     &     iparentel(netet),nparentel,kflag,ii,inside,nterms_opt,
+     &     nterms,indexe,nelem,konl_opt(20),
+     &     nparentel,kflag,ii,inside,nterms_opt,
      &     istartset(*),iendset(*),ialset(*),imastset,ielemnr(*),
      &     ielementnr,nlength,nearset,nelem_opt,loopa,ielement2,
-     &     iparent(*),idummy2(netet)
+     &     iparent(*),idummy2(1)
+!
+      integer,dimension(:),allocatable::itet
+      integer,dimension(:),allocatable::idummy1
+      integer,dimension(:),allocatable::iparentel
 !     
       real*8 cotet(3,*),planfa(4,*),dface,dfacemax,tolerance,
      &     dist,field(nfield,nktet),ratio(20),pneigh(3,20),pnode(3),xi,
@@ -167,14 +169,16 @@
           write(*,*) '         node: ',xp,yp,zp
           near=netet
         endif
-c     write(*,*) 'basis ',ii
+!
+        allocate(itet(near))
+        allocate(iparentel(near))
 !     
         if(ii.lt.4) then
 !     
 !     looking for the nearest linear tetrahedral element
 !     
           call near3d(xo,yo,zo,x,y,z,nx,ny,nz,xp,yp,zp,netet,
-     &         node,near)
+     &         itet,near)
         endif
 !     
         inside=0
@@ -183,7 +187,7 @@ c     write(*,*) 'basis ',ii
 !     
         do i=1,near
           if(ii.lt.4) then
-            ielement=node(i)
+            ielement=itet(i)
           else
             ielement=i
           endif
@@ -204,7 +208,7 @@ c     write(*,*) 'basis ',ii
             if(id.le.0) cycle
             if(ialset(istartset(imastset)+id-1).ne.ielementnr) cycle
             nearset=nearset+1
-            node(nearset)=node(i)
+            itet(nearset)=itet(i)
           else
             nearset=near
           endif
@@ -238,7 +242,7 @@ c          write(*,*) 'basis dface 1',dface,ielemnr(iparent(ielement))
             if(imastset.ne.0) then
               do j=i+1,near
                 if(ii.lt.4) then
-                  ielement2=node(j)
+                  ielement2=itet(j)
                 else
                   ielement2=j
                 endif
@@ -249,7 +253,7 @@ c          write(*,*) 'basis dface 1',dface,ielemnr(iparent(ielement))
                 if(ialset(istartset(imastset)+id-1).ne.ielementnr)
      &               cycle
                 nearset=nearset+1
-                node(nearset)=node(j)
+                itet(nearset)=itet(j)
               enddo
             else
               nearset=near
@@ -275,6 +279,8 @@ c     if(i.eq.1) then
         if(imastset.ne.0) then
           if(nearset.eq.0) then
             if(ii.lt.4) then
+              deallocate(itet)
+              deallocate(iparentel)
               cycle
             else
               write(*,*) '*ERROR: no suitable global element found'
@@ -378,9 +384,10 @@ c     123     format('basis ',4(1x,e11.4))
 !     
 !     sorting the parent elements (different linear tetrahedrals
 !     may have the same parent element)
-!     
+!
+          allocate(idummy1(nearset))          
           do i=1,nearset
-            idummy1(i)=iparent(node(i))
+            idummy1(i)=iparent(itet(i))
           enddo
           kflag=1
           call isortii(idummy1,idummy2,nearset,kflag)
@@ -397,6 +404,7 @@ c     123     format('basis ',4(1x,e11.4))
               endif
             endif
           enddo
+          deallocate(idummy1)
 !     
           do k=1,nparentel
 !     
@@ -494,6 +502,9 @@ c
             ratio(i)=ratio_opt(i)
           enddo
         endif
+!
+        deallocate(itet)
+        deallocate(iparentel)
 !     
         if((ii.eq.3).or.(dist.lt.tolerance)) exit
 !     
@@ -512,7 +523,6 @@ c
 !     
 !     interpolating the fields
 !     
-c      write(*,*) 'basis end 4',dist,tolerance,near
       do k=1,nselect
         i=iselect(k)
         value(k)=0.d0
@@ -521,13 +531,8 @@ c      write(*,*) 'basis end 4',dist,tolerance,near
 !     due to round-off the values can be slightly outside the
 !     (0,1) range           
 !     
-c          ratio(j)=max(0.d0,ratio(j))
-c          ratio(j)=min(1.d0,ratio(j))
-!          
           value(k)=value(k)+ratio(j)*field(i,konl(j))
-c     write(*,*) 'basis j',j,konl(j),field(i,konl(j))
         enddo
-c     write(*,*) 'basis select',k,i,value(k)
       enddo
 !     
       return

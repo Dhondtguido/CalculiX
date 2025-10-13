@@ -24,7 +24,8 @@
      &     ntie_,nbody_,nprop_,ipoinpc,nevdamp_,npt_,nslavs,nkon_,mcs,
      &     mortar,ifacecount,nintpoint,infree,nheading_,nobject_,
      &     iuel,iprestr,nstam,ndamp,nef,nbounold,nforcold,nloadold,
-     &     nbodyold,mpcend,irobustdesign,nfc_,ndc_,maxsectors_)
+     &     nbodyold,mpcend,irobustdesign,nfc_,ndc_,maxsectors_,
+     &     ndmat_)
 !     
 !     calculates a conservative estimate of the size of the 
 !     fields to be allocated
@@ -56,7 +57,7 @@
      &     ibounstart,ibounend,ibound,ntrans_,ntmatl,npmatl,ityp,l,
      &     ielset,nope,nteller,nterm,ialset(16),ncs_,rmeminset(*),
      &     islavset,imastset,namtot_,ncmat_,nconstants,memmpc_,j,ipos,
-     &     maxrmeminset,ne1d,ne2d,necper,necpsr,necaxr,nesr,
+     &     maxrmeminset,ne1d,ne2d,necper,necpsr,necaxr,nesr,ndmat_,
      &     neb32,nn,nflow,nradiate,irestartread,irestartstep,icntrl,
      &     irstrt(*),ithermal(*),nener,nstate_,ipoinp(2,*),inp(3,*),
      &     ntie_,nbody_,nprop_,ipoinpc(0:*),nevdamp_,npt_,nentries,
@@ -499,6 +500,12 @@
               xsectors=0
               exit
             endif
+          elseif(textpart(i)(1:7).eq.'CONTACT') then
+!     
+!           in case of contact the elements adjacent to the independent
+!           side are copied and new nodes are generated
+!     
+            nk_=nk_+ncs_
           endif
         enddo
         maxsectors_=max(maxsectors_,int(xsectors)+1)
@@ -507,6 +514,32 @@
           call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &         ipoinp,inp,ipoinpc)
           if((istat.lt.0).or.(key.eq.1)) exit
+        enddo
+      elseif(textpart(1)(1:17).eq.'*DAMAGEINITIATION') then
+        ntmatl=0
+!
+        do i=2,n
+          if(textpart(i)(1:10).eq.'CRITERION=') then
+            if(textpart(i)(11:20).eq.'RICETRACEY') then
+              nconstants=3
+              ndmat_=max(3,ndmat_)
+            elseif(textpart(i)(11:21).eq.'JOHNSONCOOK') then
+              nconstants=10
+              ndmat_=max(10,ndmat_)
+            endif
+          endif
+        enddo
+!
+        do
+          call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
+     &         ipoinp,inp,ipoinpc)
+          if((istat.lt.0).or.(key.eq.1)) exit
+          ntmatl=ntmatl+1
+          ntmat_=max(ntmatl,ntmat_)
+          do i=2,nconstants/8+1
+            call getnewline(inpc,textpart,istat,n,key,iline,ipol,
+     &           inl,ipoinp,inp,ipoinpc)
+          enddo
         enddo
       elseif(textpart(1)(1:8).eq.'*DAMPING') then
         do i=2,n
@@ -1257,8 +1290,7 @@ c     !
             enddo
           endif
         enddo
-      elseif((textpart(1)(1:9).eq.'*EQUATION').or.
-     &       (textpart(1)(1:10).eq.'*EQUATIONF')) then
+      elseif(textpart(1)(1:9).eq.'*EQUATION') then
         iremove=0
         do i=2,n
           if(textpart(i)(1:6).eq.'REMOVE') iremove=1
@@ -1269,11 +1301,14 @@ c     !
           if(iremove.eq.1) exit
           if((istat.lt.0).or.(key.eq.1)) exit 
           read(textpart(1)(1:10),'(i10)',iostat=istat) nterm
+          nmpc_=nmpc_+1
           if(ntrans_.eq.0) then
-            nmpc_=nmpc_+1
+c            nmpc_=nmpc_+1
             memmpc_=memmpc_+nterm
           else
-            nmpc_=nmpc_+3
+c
+c            change on 17 Sep 2025
+c            nmpc_=nmpc_+3
             memmpc_=memmpc_+3*nterm
           endif
           ii=0
@@ -1281,6 +1316,31 @@ c     !
             call getnewline(inpc,textpart,istat,n,key,iline,ipol,
      &           inl,ipoinp,inp,ipoinpc)
             if((istat.lt.0).or.(key.eq.1)) exit
+!
+!           check for a node set instead of a node in the first term
+!           of the equation
+!
+            if(ii.eq.0) then
+              read(textpart(1)(1:10),'(i10)',iostat=istat) l
+              if(istat.ne.0) then
+                read(textpart(1)(1:80),'(a80)',iostat=istat) noset
+                noset(81:81)=' '
+                ipos=index(noset,' ')
+                noset(ipos:ipos)='N'
+                call cident81(set,noset,nset_,id)
+                if(id.gt.0) then
+                  if(noset.eq.set(id)) then
+                    nmpc_=nmpc_+(meminset(id)-1)
+                    if(ntrans_.eq.0) then
+                      memmpc_=memmpc_+nterm*(meminset(id)-1)
+                    else
+                      memmpc_=memmpc_+3*nterm*(meminset(id)-1)
+                    endif
+                  endif
+                endif
+              endif
+            endif
+!  
             ii=ii+n/3
             if(ii.eq.nterm) exit
           enddo
@@ -1948,7 +2008,8 @@ c     !
      &         ne1d,ne2d,nflow,set,meminset,rmeminset,jobnamec,
      &         irestartstep,icntrl,ithermal,nener,nstate_,ntie_,
      &         nslavs,nkon_,mcs,nprop_,mortar,ifacecount,nintpoint,
-     &         infree,nef,mpcend,nheading_,network,nfc_,ndc_,iprestr)
+     &         infree,nef,mpcend,nheading_,network,nfc_,ndc_,iprestr,
+     &         ndmat_)
           irstrt(1)=-1
           nbounold=nboun_
           nforcold=nforc_
@@ -2429,9 +2490,13 @@ c     !
           endif
         endif
 !
+!       the factor 3 was introduced in the next lines to take
+!       cyclic symmetry with contact into account (involving
+!       the rotation of the master elements on the independent side)
+!
         if((islavset.ne.0).and.(imastset.ne.0)) then
           ncs_=ncs_+max(multslav*meminset(islavset),
-     &         multmast*meminset(imastset))
+     &         multmast*3*meminset(imastset))
         else
           write(*,*) '*ERROR in allocation: either the slave'
           write(*,*) '       surface or the master surface in a'

@@ -72,7 +72,7 @@
      &     thicke(mi(3),*),emeini(6,mi(1),*),clearini(3,9,*),
      &     pslavsurf(3,*),pmastsurf(6,*),smscale(*),sum1,sum2,
      &     scal,enerscal,elineng(6),t0g(2,*),t1g(2,*),aut(*),
-     &     aute(96),shptil(4,20)
+     &     aute(96),shptil(4,20),xthi(3,3),vthj
 !     
       include "gauss.f"
 !
@@ -182,7 +182,6 @@
           do k=1,4
             dlayer(k)=0.d0
           enddo
-!     
 !     
 !     S6 - composite element
 !     
@@ -768,28 +767,6 @@ c     Bernhardi end
             vj=xkl(1,1)*(xkl(2,2)*xkl(3,3)-xkl(2,3)*xkl(3,2))
      &           -xkl(1,2)*(xkl(2,1)*xkl(3,3)-xkl(2,3)*xkl(3,1))
      &           +xkl(1,3)*(xkl(2,1)*xkl(3,2)-xkl(2,2)*xkl(3,1))
-c!     
-c!     inversion of the deformation gradient (only for
-c!     deformation plasticity)
-c!     
-c            if(kode.eq.-50) then
-c!     
-c              ckl(1,1)=(xkl(2,2)*xkl(3,3)-xkl(2,3)*xkl(3,2))/vj
-c              ckl(2,2)=(xkl(1,1)*xkl(3,3)-xkl(1,3)*xkl(3,1))/vj
-c              ckl(3,3)=(xkl(1,1)*xkl(2,2)-xkl(1,2)*xkl(2,1))/vj
-c              ckl(1,2)=(xkl(1,3)*xkl(3,2)-xkl(1,2)*xkl(3,3))/vj
-c              ckl(1,3)=(xkl(1,2)*xkl(2,3)-xkl(2,2)*xkl(1,3))/vj
-c              ckl(2,3)=(xkl(2,1)*xkl(1,3)-xkl(1,1)*xkl(2,3))/vj
-c              ckl(2,1)=(xkl(3,1)*xkl(2,3)-xkl(2,1)*xkl(3,3))/vj
-c              ckl(3,1)=(xkl(2,1)*xkl(3,2)-xkl(2,2)*xkl(3,1))/vj
-c              ckl(3,2)=(xkl(3,1)*xkl(1,2)-xkl(1,1)*xkl(3,2))/vj
-c!     
-c!     converting the Lagrangian strain into Eulerian
-c!     strain (only for deformation plasticity)
-c!     
-c              cauchy=0
-c              call str2mat(eloc,ckl,vj,cauchy)
-c            endif
 !     
           endif
 !     
@@ -935,17 +912,19 @@ c            endif
      &         stiff,rho,i,ithermal,alzero,mattyp,t0l,t1l,ihyper,
      &         istiff,elconloc,eth,kode,plicon,nplicon,
      &         plkcon,nplkcon,npmat_,plconloc,mi(1),dtime,jj,
-     &         xstiff,ncmat_)
+     &         xstiff,ncmat_,iperturb)
 !     
 !     determining the mechanical strain
 !     
           if(ithermal(1).ne.0) then
-            call calcmechstrain(vkl,vokl,emec,eth,iperturb)
+            call calcmechstrain(vkl,vokl,emec,eth,iperturb,nalcon,imat,
+     &           xthi,vthj)
           else
             do m1=1,6
               emec(m1)=eloc(m1)
             enddo
           endif
+c          write(*,*) 'resultsmech1 ',i,jj,(emec(m1),m1=1,6)
           if(kode.le.-100) then
             do m1=1,6
               emec0(m1)=emeini(m1,jj,i)
@@ -978,7 +957,19 @@ c            endif
      &         amat,t1l,dtime,time,ttime,i,jj,nstate_,mi(1),
      &         iorien,pgauss,orab,eloc,mattyp,qa(3),istep,iinc,
      &         ipkon,nmethod,iperturb,qa(4),nlgeom_undo,physcon,
-     &         ncmat_)
+     &         ncmat_,nalcon,imat)
+c          write(*,*) 'resultsmech2 ',i,jj,(stre(m1),m1=1,6)
+c          write(*,*) 'resultsmech3 ',i,jj,(stiff(m1),m1=1,21)
+!
+!     modifying the stress and stiffness for a multiplicative
+!     decomposition of the deformation gradient in a mechanical and
+!     a thermal part
+!
+          if((ithermal(1).ne.0).and.(iperturb(2).eq.1)) then
+            call modifystressstiff(stre,stiff,mattyp,eth,nalcon,imat,
+     &     xthi,vthj)
+          endif
+c          write(*,*) 'resultsmech4 ',i,jj,(stre(m1),m1=1,6)
 !     
           if(((nmethod.ne.4).or.(iperturb(1).ne.0)).and.
      &         (nmethod.ne.5).and.(icmd.ne.3)) then

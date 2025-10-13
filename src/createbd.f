@@ -32,8 +32,6 @@
 !     
       implicit none
 !     
-      logical debug
-!     
       character*8 lakon(*)
 !     
       integer ipkon(*),kon(*),konl(20),iflag,m,l,j,jj,
@@ -54,7 +52,6 @@
      &     dcontr(*),dcontribution,gcontr(*),gcontribution,
      &     shp2s2(7,8),xs2s2(3,7)
 !     
-      debug=.false.
       contribution = 0.d0
       dcontribution = 0.d0
       gcontribution = 0.d0
@@ -65,12 +62,10 @@
       jfaces = ifaces - nelemens*10
       indexe = ipkon(nelemens)
       ict=ict+1
-      if(debug)write(*,*) 'createbd:l=',l,'tie',ict
       call getnumberofnodes(nelemens,jfaces,lakon,nope1,nopes1,idummy)
       mint2d=islavsurf(2,l+1)-islavsurf(2,l)
       if(mint2d.eq.0) return
       indexf=islavsurf(2,l)
-      if(debug)write(*,*) 'createbd:mint2d',mint2d
 !     
 !     loop over all nodesf of current slave face
 !     
@@ -119,8 +114,6 @@
             exit
           endif  
         enddo
-        if(debug)write(*,*) 'createbd:MF,loc1, loc2',ifacem,
-     &       mint2dloc1,mint2dloc2       
         help=0.0
         do m=mint2dloc1,mint2dloc2
           xis=pslavsurf(1,indexf+m)
@@ -276,13 +269,6 @@
       enddo
       icounter2=icounter2+nopes1*nopes1
 !     
-      debug=.false.
-      if(debug )then
-        write(*,*) 'createbd: gcontri,idcontr',l
-        do j=1, nopes1
-          write(*,*) gcontr(j),igcontr(j),islavact(igcontr(j))
-        enddo 
-      endif
       ict=ict-1
       return 
       end

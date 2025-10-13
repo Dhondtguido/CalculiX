@@ -66,6 +66,7 @@
      &         (prlab(i)(1:4).eq.'HFLF').or.
      &         (prlab(i)(1:4).eq.'COOR').or.
      &         (prlab(i)(1:4).eq.'CENT').or.
+     &         (prlab(i)(1:4).eq.'DUCT').or.
      &         (prlab(i)(1:4).eq.'HFL ')) cycle
             ii=ii+1
             prlab(ii)=prlab(i)
@@ -265,6 +266,7 @@ c          enddo
      &             (textpart(ii)(1:4).ne.'EMAS').and.
      &             (textpart(ii)(1:4).ne.'COOR').and.
      &             (textpart(ii)(1:4).ne.'CENT').and.
+     &             (textpart(ii)(1:4).ne.'DUCT').and.
      &             (textpart(ii)(1:4).ne.'EBHE')) then
                write(*,*) 
      &             '*ERROR reading *EL PRINT: label not applicable'

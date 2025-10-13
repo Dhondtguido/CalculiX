@@ -79,7 +79,7 @@
      &             2,3,6,5,8,15,11,14,
      &             3,1,4,6,9,13,12,15/
 !
-      data nlabel /55/
+      data nlabel /56/
 !
 !     if 1d/2d elements are part of the mesh, no node selection
 !     is performed (because of the renumbering due to the

@@ -1,0 +1,36 @@
+# libgomp (GNU OpenMP)
+{
+	libgomp
+	Memcheck:Leak
+	match-leak-kinds: reachable
+	...
+	obj:/usr/lib64/libgomp.so.*
+	...
+}
+
+#PaStiX
+{
+	pastix
+	Memcheck:Leak
+	...
+	fun:pastixInit
+	...
+}
+
+{
+	pastix
+	Memcheck:Leak
+	...
+	fun:pastix_subtask_*
+	...
+}
+
+{
+	pastix
+	Memcheck:Leak
+	...
+	fun:pastix_task_*
+	...
+}
+
+	

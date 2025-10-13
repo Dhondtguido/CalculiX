@@ -100,10 +100,11 @@ void premortar(ITG *nzs,ITG *nzsc2,
 	       ITG *iforbou,ITG *iperturb_sav,
 	       ITG *itietri,double *cg,double *straight,ITG *koncont,
 	       double *energyini,
-	       double *energy,ITG *kscale,ITG *iponoel,ITG *inoel,ITG *nener,
+	       double *energy,ITG *kscale,ITG *iponoeln,ITG *inoeln,ITG *nener,
 	       char *orname,ITG *network,
 	       char *typeboun,ITG *num_cpus,double *t0g,double *t1g,
-	       double *smscale,ITG *mscalmethod,ITG *nslavquadel){
+	       double *smscale,ITG *mscalmethod,ITG *nslavquadel,
+	       ITG *iponoel){
   
   ITG im,i,k,mt=mi[1]+1,*irowc2=NULL,*icolc2=NULL,*jqc2=NULL,*irowbd=NULL,
     *jqbd=NULL,*irowbdtil=NULL,*jqbdtil=NULL,*irowbdtil2=NULL,*jqbdtil2=NULL,
@@ -115,7 +116,7 @@ void premortar(ITG *nzs,ITG *nzsc2,
   double alpha,*auc2=NULL,*adc2=NULL,*aubd=NULL,*aux2=NULL,*cv=NULL,
     *aubdtil=NULL,*aubdtil2=NULL,*f=NULL,*fext=NULL,*cvini=NULL,
     *audd=NULL,*auddtil=NULL,*auddinv=NULL,*auddtil2=NULL,*v=NULL,
-    *stx=NULL,*fn=NULL,*fini=NULL,*fextini=NULL,
+    *stx=NULL,*fn=NULL,*fini=NULL,*fextini=NULL,*dam=NULL,*damn=NULL,
     *fmpc2=NULL,*aub=NULL,*adb=NULL,
     *adc=NULL,*auc=NULL,*volddummy=NULL,
     *vectornull=NULL,*f_cs=NULL,*f_cm=NULL,*fnext=NULL;
@@ -234,11 +235,11 @@ void premortar(ITG *nzs,ITG *nzsc2,
 	    reltime,ne0,thicke,shcon,nshcon,
 	    sideload,xloadact,xloadold,icfd,inomat,pslavsurf,pmastsurf,
 	    mortar,islavact,cdn,islavnode,nslavnode,ntie,clearini,
-	    islavsurf,ielprop,prop,energyini,energy,kscale,iponoel,
-	    inoel,nener,orname,network,ipobody,xbodyact,ibody,typeboun,
+	    islavsurf,ielprop,prop,energyini,energy,kscale,iponoeln,
+	    inoeln,nener,orname,network,ipobody,xbodyact,ibody,typeboun,
 	    itiefac,tieset,smscale,mscalmethod,nbody,t0g,t1g,
 	    islavquadel,aut,irowt,jqt,&mortartrafoflag,
-	    intscheme,physcon);
+	    intscheme,physcon,dam,damn,iponoel);
   
     SFREE(v);SFREE(stx);SFREE(fn);SFREE(inum);SFREE(fmpc2);
     *iout=0;	    
@@ -267,7 +268,7 @@ void premortar(ITG *nzs,ITG *nzsc2,
 		 xstateini,xstate,thicke,integerglob,doubleglob,
 		 tieset,istartset,iendset,ialset,ntie,nasym,pslavsurf,
 		 pmastsurf,mortar,clearini,ielprop,prop,ne0,fnext,kscale,
-		 iponoel,inoel,network,ntrans,inotr,trab,smscale,
+		 iponoeln,inoeln,network,ntrans,inotr,trab,smscale,
 		 mscalmethod,set,nset,islavquadel,aut,irowt,jqt,
 		 &mortartrafoflag);
 

@@ -125,7 +125,7 @@
       integer ithermal(*),icmd,kode,ielas,iel,iint,nstate_,mi(*),iorien,
      &     i,j,ipiv(6),info,neq,lda,ldb,j1,j2,j3,j4,j5,j6,j7,j8,id,
      &     nrhs,iplas,kel(4,21),nmethod,ielastic,iloop,niso,nkin,
-     &     user_hardening
+     &     user_hardening,user_creep,kinc,kspt,kstep,layer,lend,leximp
 !     
       real*8 ep0(6),al10,al20(6),eeq,ep(6),al1,b,Pn(6),QSn(6),fiso,
      &     al2(6),dg,ddg,ca,cn,c(21),x(21),cm1(21),h1,h2,dfiso,fkin,
@@ -134,9 +134,10 @@
      &     skl(3,3),gcreep,gm1,ya(3,3,3,3),d1,d2,dsg,detc,strinv,
      &     elconloc(*),stiff(21),emec(6),emec0(6),beta(6),stre(6),
      &     vj,t1l,dtime,xkl(3,3),xokl(3,3),voj,pgauss(3),orab(7,*),
-     &     time,ttime,xstate(nstate_,mi(1),*),plconloc(802),
+     &     time,ttime,xstate(nstate_,mi(1),*),plconloc(802),svm,
      &     xstateini(nstate_,mi(1),*),xiso(200),yiso(200),xkin(200),
-     &     ykin(200)
+     &     ykin(200),deswa(5),dpred(1),dtemp,esw(2),p,predef(1),serd,
+     &     timeabq(2),ec(2),decra(5)
 !     
       kel=reshape((/1,1,1,1,1,1,2,2,2,2,2,2,1,1,3,3,2,2,3,3,3,3,3,3,
      &     1,1,1,2,2,2,1,2,3,3,1,2,1,2,1,2,1,1,1,3,2,2,1,3,
@@ -148,6 +149,10 @@
       c0=dsqrt(2.d0/3.d0)
       c1=2.d0/3.d0
       c2=-1.d0/3.d0
+!
+      lend=3
+      timeabq(1)=time
+      timeabq(2)=ttime+time
 !     
 !     elastic constants
 !     
@@ -217,17 +222,22 @@
 !     
 !     (visco)plastic constants
 !     
-      if((elconloc(10).le.0.d0).or.
+c      if((elconloc(10).le.0.d0).or.
+      if((elconloc(10).eq.0.d0).or.
      &     ((nmethod.eq.1).and.(ithermal(1).ne.3))) then
         visco=0
       else
         visco=1
 !     
 !     viscous constants
-!     
-c       ca=c0/(elconloc(10)*(ttime+time-dtime)**elconloc(12)*dtime)
-        ca=c0/(elconloc(10)*(ttime+time)**elconloc(12)*dtime)
-        cn=elconloc(11)
+!
+        if(elconloc(10).lt.0.d0) then
+          user_creep=1
+        else
+          user_creep=0
+          ca=c0/(elconloc(10)*(ttime+time)**elconloc(12)*dtime)
+          cn=elconloc(11)
+        endif
       endif
 !     
 !     check for user subroutines
@@ -554,7 +564,7 @@ c        write(*,*) 'ortho_plas plastic'
       do
 !     
         iloop=iloop+1
-        if(iloop.gt.100) then
+c        if(iloop.gt.100) then
 c     NOTE: write statements cause problems for
 c     parallellized execution
 c     write(*,*) '*WARNING in umat_aniso_plas: material loop'
@@ -562,9 +572,9 @@ c     write(*,*) '         did not converge in integration'
 c     write(*,*) '         point',iint,'in element',iel,';'
 c     write(*,*) '         the increment size is reduced'
 c     write(*,*)
-          pnewdt=0.25d0
-          return
-        endif
+c          pnewdt=0.25d0
+c          return
+c        endif
 !
 !       for iloop=1 the values were calculated before the loop
 !
@@ -681,7 +691,21 @@ c     write(*,*)
 !     evaluation of the yield surface
 !     
         if(visco.eq.1) then
-          htri=dsg+c0*(q1-(ca*dg)**(1.d0/cn))
+          if(user_creep.eq.1) then
+            ec(1)=eeq
+            if(dg.le.0.d0) then
+              decra(1)=c0*1.d-10
+            else
+              decra(1)=c0*dg
+            endif
+            call creep(decra,deswa,xstateini(1,iint,iel),serd,ec,
+     &           esw,p,svm,t1l,dtemp,predef,dpred,timeabq,dtime,
+     &           amat,leximp,lend,pgauss,nstate_,iel,iint,layer,kspt,
+     &           kstep,kinc)
+            htri=dsg-c0*svm
+          else  
+            htri=dsg+c0*(q1-(ca*dg)**(1.d0/cn))
+          endif
         else
           htri=dsg+c0*q1
         endif
@@ -707,16 +731,26 @@ c     write(*,*)
         if(iloop.gt.1) then
           if((dabs(htri).le.1.d-5).or.(dabs(ddg).lt.1.d-3*dabs(dg)))
      &         then
-          dd=0.d0
-          do i=1,13
-            dd=dd+r(i)*r(i)
-          enddo
-          dd=sqrt(dd)
-          if(dd.le.1.d-10) then
+            dd=0.d0
+            do i=1,13
+              dd=dd+r(i)*r(i)
+            enddo
+            dd=sqrt(dd)
+            if(dd.le.1.d-10) then
+              exit
+            endif
+          endif
+          if(iloop.eq.99) then
+            if(dabs(ddg).gt.1.d-7) then
+              write(*,*) '*WARNING in ortho_plas: convergence'
+              write(*,*) '         not satisfactory: change in'
+              write(*,*) '         consistency parameter exceeds'
+              write(*,*) '         1.d-7; value: ',ddg
+              write(*,*) '         in element:',iel
+            endif
             exit
           endif
         endif
-      endif
 !     
 !     determining b.x
 !     
@@ -904,14 +938,18 @@ c     write(*,*)
 !     calculating the creep contribution
 !     
         if(visco.eq.1) then
-          if(dg.gt.0.d0) then
-            gcreep=c0*ca/cn*(dg*ca)**(1.d0/cn-1.d0)
+          if(user_creep.eq.1) then
+            gcreep=c1/decra(5)
           else
+            if(dg.gt.0.d0) then
+              gcreep=c0*ca/cn*(dg*ca)**(1.d0/cn-1.d0)
+            else
 !     
 !     for gamma ein default of 1.d-10 is taken to
 !     obtain a finite gradient
 !     
-            gcreep=c0*ca/cn*(1.d-10*ca)**(1.d0/cn-1.d0)
+              gcreep=c0*ca/cn*(1.d-10*ca)**(1.d0/cn-1.d0)
+            endif
           endif
         endif
 !     

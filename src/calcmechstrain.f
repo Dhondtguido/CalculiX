@@ -16,30 +16,124 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-      subroutine calcmechstrain(vkl,vokl,emec,eth,iperturb)
+      subroutine calcmechstrain(vkl,vokl,emec,eth,iperturb,nalcon,imat,
+     &     xthi,vthj)
 !
 !     calculates the mechanical strain from the displacement gradients
-!     and the thermal stretches
+!     and the thermal stretches (only called if ithermal(1).ne.0
 !
       implicit none
 !
-      integer iperturb(*)
+      integer iperturb(*),nalcon(2,*),imat
 !
       real*8 elineng(6),vkl(0:3,3),vokl(3,3),emec(6),eth(6),
-     &     wkl(3,3),wokl(3,3)
+     &     wkl(3,3),wokl(3,3),xkl(3,3),xth(3,3),xthi(3,3),vthj
+!
+      if(iperturb(2).eq.1) then
+!
+!     nlgeom active:
+!     multiplicative decomposition of the total gradient into a
+!     mechanical and thermal one
+!
+!     multiplying with the inverse of the thermal deformation gradient
+!     at the end of the increment
+!
+        if(nalcon(1,imat).le.3) then
+!
+!         isotropic or orthotropic expansion
+!
+          wkl(1,1)=(1.d0+vkl(1,1))/(1.d0+eth(1))-1.d0
+          wkl(2,2)=(1.d0+vkl(2,2))/(1.d0+eth(2))-1.d0
+          wkl(3,3)=(1.d0+vkl(3,3))/(1.d0+eth(3))-1.d0
+          wkl(1,2)=(vkl(1,2))/(1.d0+eth(2))
+          wkl(1,3)=(vkl(1,3))/(1.d0+eth(3))
+          wkl(2,3)=(vkl(2,3))/(1.d0+eth(3))
+          wkl(2,1)=(vkl(2,1))/(1.d0+eth(1))
+          wkl(3,1)=(vkl(3,1))/(1.d0+eth(1))
+          wkl(3,2)=(vkl(3,2))/(1.d0+eth(2))
+        else
+!
+!         anisotropic expansion Fmech=F.(Fth)^{-1}
+!
+!         Fth
+!
+          xth(1,1)=eth(1)+1.d0
+          xth(2,2)=eth(2)+1.d0
+          xth(3,3)=eth(3)+1.d0
+          xth(1,2)=eth(4)
+          xth(1,3)=eth(5)
+          xth(2,3)=eth(6)
+!
+!         det(Fth)
+!
+          vthj=xth(1,1)*(xth(2,2)*xth(3,3)-xth(2,3)*xth(2,3))
+     &        -xth(1,2)*(xth(1,2)*xth(3,3)-xth(1,3)*xth(2,3))
+     &        +xth(1,3)*(xth(1,2)*xth(2,3)-xth(1,3)*xth(2,2))
+!
+!         Fth^{-1} (inverse of a symmetric matrix is symmetric)
+!
+          xthi(1,1)=(xth(2,2)*xth(3,3)-xth(2,3)*xth(2,3))/vthj
+          xthi(2,2)=(xth(1,1)*xth(3,3)-xth(1,3)*xth(1,3))/vthj
+          xthi(3,3)=(xth(1,1)*xth(2,2)-xth(1,2)*xth(1,2))/vthj
+          xthi(1,2)=(xth(1,3)*xth(2,3)-xth(1,2)*xth(3,3))/vthj
+          xthi(1,3)=(xth(1,2)*xth(2,3)-xth(2,2)*xth(1,3))/vthj
+          xthi(2,3)=(xth(1,2)*xth(1,3)-xth(1,1)*xth(2,3))/vthj
+          xthi(2,1)=xthi(1,2)
+          xthi(3,1)=xthi(1,3)
+          xthi(3,2)=xthi(2,3)
+!
+!         deformation gradient F
+!     
+          xkl(1,1)=1.d0+wkl(1,1)
+          xkl(2,2)=1.d0+wkl(2,2)
+          xkl(3,3)=1.d0+wkl(3,3)
+          xkl(1,2)=wkl(1,2)
+          xkl(1,3)=wkl(1,3)
+          xkl(2,3)=wkl(2,2)
+          xkl(2,1)=xkl(1,2)
+          xkl(3,1)=xkl(1,3)
+          xkl(3,2)=xkl(2,3)
+!
+!         wkl=F.(Fth)^{-1}-1.d0
+!
+          wkl(1,1)=xkl(1,1)*xthi(1,1)+xkl(1,2)*xthi(1,2)
+     &         +xkl(1,3)*xthi(1,3)-1.d0
+          wkl(2,2)=xkl(2,1)*xthi(1,2)+xkl(2,2)*xthi(2,2)
+     &         +xkl(2,3)*xthi(2,3)-1.d0
+          wkl(3,3)=xkl(3,1)*xthi(1,3)+xkl(3,2)*xthi(2,3)
+     &         +xkl(3,3)*xthi(3,3)-1.d0
+          wkl(1,2)=xkl(1,1)*xthi(1,2)+xkl(1,2)*xthi(2,2)
+     &         +xkl(1,3)*xthi(2,3)
+          wkl(1,3)=xkl(1,1)*xthi(1,3)+xkl(1,2)*xthi(2,3)
+     &         +xkl(1,3)*xthi(3,3)
+          wkl(2,3)=xkl(2,1)*xthi(1,3)+xkl(2,2)*xthi(2,3)
+     &         +xkl(2,3)*xthi(3,3)
+          wkl(2,1)=xkl(2,1)*xthi(1,1)+xkl(2,2)*xthi(1,2)
+     &         +xkl(2,3)*xthi(1,3)
+          wkl(3,1)=xkl(3,1)*xthi(1,1)+xkl(3,2)*xthi(1,2)
+     &         +xkl(3,3)*xthi(1,3)
+          wkl(3,2)=xkl(3,1)*xthi(1,2)+xkl(3,2)*xthi(2,2)
+     &         +xkl(3,3)*xthi(2,3)
+        endif
+      else
+!
+!     nlgeom not active:
+!     additive decomposition of the total gradient into a
+!     mechanical and thermal one
 !
 !     subtracting the thermal stretch from the deformation gradients
 !     at the end of the increment
 !
-      wkl(1,1)=vkl(1,1)-eth(1)
-      wkl(2,2)=vkl(2,2)-eth(2)
-      wkl(3,3)=vkl(3,3)-eth(3)
-      wkl(1,2)=vkl(1,2)-eth(4)
-      wkl(1,3)=vkl(1,3)-eth(5)
-      wkl(2,3)=vkl(2,3)-eth(6)
-      wkl(2,1)=vkl(2,1)-eth(4)
-      wkl(3,1)=vkl(3,1)-eth(5)
-      wkl(3,2)=vkl(3,2)-eth(6)
+        wkl(1,1)=vkl(1,1)-eth(1)
+        wkl(2,2)=vkl(2,2)-eth(2)
+        wkl(3,3)=vkl(3,3)-eth(3)
+        wkl(1,2)=vkl(1,2)-eth(4)
+        wkl(1,3)=vkl(1,3)-eth(5)
+        wkl(2,3)=vkl(2,3)-eth(6)
+        wkl(2,1)=vkl(2,1)-eth(4)
+        wkl(3,1)=vkl(3,1)-eth(5)
+        wkl(3,2)=vkl(3,2)-eth(6)
+      endif
 !
 !     attention! elineng(4),elineng(5) and elineng(6) are engineering strains!
 !     

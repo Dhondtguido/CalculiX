@@ -21,7 +21,7 @@
      &     plicon,nplicon,plkcon,nplkcon,npmat_,mi,dtime,
      &     xstiff,ncmat_,vold,ielmat,t0,t1,
      &     matname,lakon,wavespeed,nmat,ipkon,co,kon,dtvol,alpha,
-     &     smscale,dtset,mscalmethod,mortar,jobnamef)
+     &     smscale,dtset,mscalmethod,mortar,jobnamef,iperturb)
 !     
 !     **************
 !     ------------Wavespeed calculation------------------------CARLO MT
@@ -62,7 +62,7 @@
      &     ielmat(mi(3),*),nope,iorien,ipkon(*),null,ilen,
      &     konl(26),nopered,npmat_,nmat,kon(*),indexe,iflag,nopes,
      &     nfaces,ig,ifaceq(8,6),ifacet(6,4),ifacew(8,5),
-     &     mscalmethod,icount,mortar
+     &     mscalmethod,icount,mortar,iperturb(*)
 !     
       real*8 stiff(21),wavespeed(*),rhcon(0:1,ntmat_,*),volfac,
      &     alcon(0:6,ntmat_,*),coords(3),orab(7,*),rho,alzero(*),
@@ -313,7 +313,7 @@ c            if(mortar.eq.-1) elemfac=0.9d0
      &         ihyper,istiff,elconloc,eth,kode,plicon,
      &         nplicon,plkcon,nplkcon,npmat_,
      &         plconloc,mi(1),dtime,kk,
-     &         xstiff,ncmat_)
+     &         xstiff,ncmat_,iperturb)
 !     
           if(mattyp.eq.1) then
             e=stiff(1)

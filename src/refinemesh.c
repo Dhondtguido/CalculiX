@@ -27,7 +27,10 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
 		double *errn,char *filab,ITG *mi,char *lakon,
                 char *jobnamec,ITG *istartset,ITG *iendset,
 		ITG *ialset,char *set,ITG *nset,char *matname,
-		ITG *ithermal,char *output,ITG *nmat){
+		ITG *ithermal,char *output,ITG *nmat,ITG *nelemload,
+		ITG *nload,char *sideload,
+		ITG *nodeforc,ITG *nforc,ITG *nodeboun,ITG *nboun,
+		ITG *nodempc,ITG *ipompc,ITG *nmpc){
 
   /* refinement of tetrahedral meshes as a function of a field
      variable */
@@ -44,7 +47,8 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
     *ialsete=NULL,nexternel,*iedgextfa=NULL,*ifacexted=NULL,
     *ilist=NULL,*isharp=NULL,*idimsh=NULL,ifreenn=1,*iponn=NULL,
     *inn=NULL,*n1newnodes=NULL,*n2newnodes=NULL,*jfix=NULL,*number=NULL,
-    *iparentel=NULL,jflag=0,*ibadnodes=NULL,nbadnodes,iwrite;
+    *iparentel=NULL,jflag=0,*ibadnodes=NULL,nbadnodes,iwrite,
+    maxnnewnodes=0;
 
   unsigned long unsiint,seed=184389;
 
@@ -54,12 +58,13 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
     *hnewnodes=NULL,*qualityjac=NULL;
 
   /* storing the unrefined mesh (needed for interpolation 
-     purposes of the temperature in the refined mesh) */
+     purposes of the temperature, displacements, velocities,..
+     in the refined mesh) */
 
-  if(ithermal[0]>0){
+  //  if(ithermal[0]>0){
     writeoldmesh(nk,ne,co,ipkon,kon,lakon,mi,matname,ithermal,jobnamec,
-	       output,nmat);
-  }
+		 output,nmat);
+    //  }
   
   /* in kon the original elements are kept;
      the new elements are inserted in kontet either:
@@ -96,7 +101,9 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
   FORTRAN(cattet,(kontet,&netet_,ifac,ne,ipkon,kon,ifatet,&ifreetet,
 		  bc,itetfa,&ifreefa,planfa,ipofa,cotet,cg,ipoeln,
 		  ieln,&ifreeln,lakon,kontetor,&iquad,istartset,iendset,
-		  ialset,set,nset,filab,jfix,iparentel,jobnamec));
+		  ialset,set,nset,filab,jfix,iparentel,jobnamec,
+		  nelemload,nload,sideload,nodeforc,
+		  nforc,nodeboun,nboun,nodempc,ipompc,nmpc));
   
   /* catalogueing the edges of the tetrahedral elements */
 
@@ -148,7 +155,7 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
   RENEW(ifacext,ITG,6*nexternfa);
   RENEW(ifacexted,ITG,3*nexternfa);
   RENEW(ialsete,ITG,nexternel);
-  SFREE(kontetor);
+  //  SFREE(kontetor);
 
   NNEW(isharp,ITG,nexternedg);
   FORTRAN(checksharp,(&nexternedg,iedgextfa,cotet,ifacext,isharp));
@@ -176,7 +183,7 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
 	 subsequent interpolation purposes */
 
       getlocalresults(&integerglob,&doubleglob,&nktet_,cotet,h,&netet_,
-		      kontet,ifatet,planfa,kontetor);
+		      kontet,ifatet,planfa);
 
     }else{
       FORTRAN(updategeodata,(&nktet,&netet_,h,d,&dmin,ipoed,iedg,cotet,
@@ -195,7 +202,8 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
     NNEW(r,double,6*netet_);
 
     FORTRAN(edgedivide,(&nnewnodes,&nktet_,ipoed,iexternedg,iedg,
-			d,h,n,r,&iext,jfix));
+			d,h,n,r,&iext,jfix,filab));
+    if(nnewnodes>maxnnewnodes){maxnnewnodes=nnewnodes;}
 
     /* determining new nodes in the edges to be divided */
 
@@ -394,7 +402,8 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
     NNEW(r,double,6*netet_);
 
     FORTRAN(edgedivide,(&nnewnodes,&nktet_,ipoed,iexternedg,iedg,
-			d,h,n,r,&iext,jfix));
+			d,h,n,r,&iext,jfix,filab));
+    if(nnewnodes>maxnnewnodes){maxnnewnodes=nnewnodes;}
 
     /* determining new nodes in the edges to be divided */
 
@@ -622,7 +631,8 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
   FORTRAN(projectvertexnodes,(ipoed,iexternedg,iedgext,cotet,&nktet,iedg,
 			      iexternfa,ifacext,itreated,ilist,isharp,ipofa,
 			      ifac,iedgextfa,ifacexted,co,idimsh,ipoeln,ieln,
-			      kontet,&c1,&jflag,ibadnodes,&nbadnodes,&iwrite));
+			      kontet,&c1,&jflag,ibadnodes,&nbadnodes,&iwrite,
+			      jfix));
   
   /* optimizing the position of subsurface neighbors of vertices,
      which were not fully projected */
@@ -661,7 +671,7 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
 				iexternfa,ifacext,itreated,ilist,isharp,ipofa,
 				ifac,iedgextfa,ifacexted,co,idimsh,ipoeln,ieln,
 				kontet,&c1,&jflag,ibadnodes,&nbadnodes,
-				&iwrite));
+				&iwrite,jfix));
   
   /* optimizing the position of subsurface neighbors of vertices,
      which were not fully projected */
@@ -764,9 +774,10 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
 				   &netet_,&nktet_));
       }
     }
+    SFREE(qualityjac);SFREE(ibadnodes); 
   }
 
-  SFREE(iponn);SFREE(inn);SFREE(qualityjac);SFREE(ibadnodes);
+  SFREE(iponn);SFREE(inn);
 
   SFREE(ialsete);SFREE(ilist);SFREE(isharp);SFREE(idimsh);SFREE(itreated);
 
@@ -775,16 +786,17 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
   NNEW(number,ITG,nktet);
   
   FORTRAN(writerefinemesh,(kontet,&netet_,cotet,&nktet,jobnamec,
-			   &iquad,iedtet,iedgmid,
-			   number,jfix,iparentel,nk,&iwrite));
+			   &iquad,iedtet,iedgmid,number,jfix,iparentel,
+			   nk,&iwrite,&maxnnewnodes,kontetor));
 
+  SFREE(kontetor);
   SFREE(number);
 
   /* store the refined mesh of the part of the mesh which was refined 
      to frd-file */
   
-  writenewmesh(&nktet,&netet_,cotet,&iquad,kontet,iedgmid,iedtet,mi,
-	       matname,ithermal,jobnamec,output,nmat);
+  /* writenewmesh(&nktet,&netet_,cotet,&iquad,kontet,iedgmid,iedtet,mi,
+     matname,ithermal,jobnamec,output,nmat);*/
    
   SFREE(iedgmid);
 

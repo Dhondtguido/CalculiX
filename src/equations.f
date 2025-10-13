@@ -38,9 +38,12 @@
      &     ipoinp(2,*),inp(3,*),ipoinpc(0:*),impcstart,impcend,i1,
      &     istartset(*),iendset(*),ialset(*),nset,k,l,m,index1,ipos,
      &     impc,nodempcref(3,*),ikmpcref(*),memmpcref_,mpcfreeref,
-     &     maxlenmpcref,memmpc_,maxlenmpc,ier
+     &     maxlenmpcref,memmpc_,maxlenmpc,ier,iset,nnodes
 !     
       real*8 coefmpc(*),co(3,*),trab(7,*),a(3,3),x,coefmpcref(*)
+!
+      integer,dimension(:,:),allocatable::nodempcset
+      real*8,dimension(:),allocatable::coefmpcset
 !     
       do m=2,n
         if(textpart(m)(1:9).eq.'REMOVEALL') then
@@ -251,7 +254,8 @@ c              enddo
         ier=1
         return
       endif
-!     
+!
+      iset=0
       do
         call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &       ipoinp,inp,ipoinpc)
@@ -267,158 +271,194 @@ c              enddo
 !     
         labmpc(nmpc)='                    '
         ipompc(nmpc)=mpcfree
-        ii=0
-!     
-        do
-          call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
-     &         ipoinp,inp,ipoinpc)
-          if((istat.lt.0).or.(key.eq.1)) then
-            write(*,*) '*ERROR reading *EQUATION: mpc definition ',
-     &           nmpc
-            write(*,*) '  is not complete. '
+!
+        if(iset.gt.0) then
+          deallocate(coefmpcset)
+          deallocate(nodempcset)
+          iset=0
+        endif
+!        
+        call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
+     &       ipoinp,inp,ipoinpc)
+        if((istat.lt.0).or.(key.eq.1)) then
+          write(*,*) '*ERROR reading *EQUATION: mpc definition ',
+     &         nmpc
+          write(*,*) '  is not complete. '
+          call inputerror(inpc,ipoinpc,iline,
+     &         "*EQUATION%",ier)
+          return
+        endif
+!        
+        read(textpart(1)(1:10),'(i10)',iostat=istat) node
+        if(istat.eq.0) then
+          nnodes=1
+        else
+!
+!         first term contains a node set instead of a node
+!
+          read(textpart(1)(1:80),'(a80)',iostat=istat) noset
+          noset(81:81)=' '
+          ipos=index(noset,' ')
+          noset(ipos:ipos)='N'
+          call cident81(set,noset,nset,iset)
+          if(iset.gt.0) then
+            if(noset.ne.set(iset)) iset=0
+          endif                 
+!
+!         check for the existence of the set
+!
+          if(iset.le.0) then
+            noset(ipos:ipos)=' '
+            write(*,*) '*ERROR reading *EQUATION: node set ',noset
+            write(*,*) '  has not yet been defined. '
             call inputerror(inpc,ipoinpc,iline,
      &           "*EQUATION%",ier)
             return
           endif
-!     
-          do i=1,n/3
-!     
-            read(textpart((i-1)*3+1)(1:10),'(i10)',iostat=istat) node
-            if(istat.gt.0) then
-              call inputerror(inpc,ipoinpc,iline,
-     &             "*EQUATION%",ier)
-              return
-            endif
-            if((node.gt.nk).or.(node.le.0)) then
-              write(*,*) '*ERROR reading *EQUATION:'
-              write(*,*) '       node ',node,' is not defined'
-              ier=1
-              return
-            endif
-!     
-            read(textpart((i-1)*3+2)(1:10),'(i10)',iostat=istat) ndir
-            if(istat.gt.0) then
-              call inputerror(inpc,ipoinpc,iline,
-     &             "*EQUATION%",ier)
-              return
-            endif
-            if(ndir.le.6) then
-            elseif(ndir.eq.8) then
-              ndir=4
-            elseif(ndir.eq.11) then
-              ndir=0
-            else
-              write(*,*) '*ERROR reading *EQUATION:'
-              write(*,*) '       direction',ndir,' is not defined'
-              ier=1
-              return
-            endif
-!     
-            read(textpart((i-1)*3+3)(1:20),'(f20.0)',iostat=istat) x
-            if(istat.gt.0) then
-              call inputerror(inpc,ipoinpc,iline,
-     &             "*EQUATION%",ier)
-              return
-            endif
-!     
-!     check whether the node is transformed
-!     
-            if(ntrans.le.0) then
-              itr=0
-            elseif(inotr(1,node).eq.0) then
-              itr=0
-            else
-              itr=inotr(1,node)
-            endif
-!     
-            if((itr.eq.0).or.(ndir.eq.0).or.(ndir.eq.4)) then
-              nodempc(1,mpcfree)=node
-              nodempc(2,mpcfree)=ndir
-              coefmpc(mpcfree)=x
-!     
-!     updating ikmpc and ilmpc
-!     
-              if(ii.eq.0) then
-                idof=8*(node-1)+ndir
-                call nident(ikmpc,idof,nmpc-1,id)
-                if(id.gt.0) then
-                  if(ikmpc(id).eq.idof) then
-                    write(*,100)
-     &                   (ikmpc(id))/8+1,ikmpc(id)-8*((ikmpc(id))/8)
-                    ier=1
-                    return
-                  endif
-                endif
-                do j=nmpc,id+2,-1
-                  ikmpc(j)=ikmpc(j-1)
-                  ilmpc(j)=ilmpc(j-1)
-                enddo
-                ikmpc(id+1)=idof
-                ilmpc(id+1)=nmpc
+          nnodes=iendset(iset)-istartset(iset)+1
+        endif
+!
+        do k=1,nnodes
+          ii=0
+          do
+            if(iset.gt.0) then
+              if(k.eq.1) then
+                allocate(nodempcset(2,nterm))
+                allocate(coefmpcset(nterm))
               endif
-!     
-              mpcfreeold=mpcfree
-              mpcfree=nodempc(3,mpcfree)
-              if(mpcfree.eq.0) then
-                write(*,*) 
-     &               '*ERROR reading *EQUATION: increase memmpc_'
+            endif
+!
+            if(k.eq.1) then
+              if(ii.gt.0) then
+                call getnewline(inpc,textpart,istat,n,key,iline,ipol,
+     &               inl,ipoinp,inp,ipoinpc)
+                if((istat.lt.0).or.(key.eq.1)) then
+                  write(*,*)
+     &                 '*ERROR reading *EQUATION: mpc definition ',nmpc
+                  write(*,*) '  is not complete. '
+                  call inputerror(inpc,ipoinpc,iline,
+     &                 "*EQUATION%",ier)
+                  return
+                endif
+              endif
+            else
+              n=3*nterm
+              nmpc=nmpc+1
+              if(nmpc.gt.nmpc_) then
+                write(*,*) '*ERROR reading *EQUATION: increase nmpc_'
                 ier=1
                 return
               endif
-            else
-              call transformatrix(trab(1,inotr(1,node)),
-     &             co(1,node),a)
+              labmpc(nmpc)='                    '
+              ipompc(nmpc)=mpcfree
+            endif
 !     
-              number=ndir-1
-              if(ii.eq.0) then
-!     
-!     determining which direction to use for the
-!     dependent side: should not occur on the dependent
-!     side in another MPC and should have a nonzero
-!     coefficient
-!     
-                do j=1,3
-                  number=number+1
-                  if(number.gt.3) number=1
-                  idof=8*(node-1)+number
-                  call nident(ikmpc,idof,nmpc-1,id)
-                  if(id.gt.0) then
-                    if(ikmpc(id).eq.idof) then
-                      cycle
-                    endif
+            do i=1,n/3
+!
+              if(k.eq.1) then
+!
+!               first time this equation is treated
+!
+                if((iset.eq.0).or.(ii.gt.0)) then
+                  read(textpart((i-1)*3+1)(1:10),'(i10)',iostat=istat)
+     &                 node
+                  if(istat.gt.0) then
+                    call inputerror(inpc,ipoinpc,iline,
+     &                   "*EQUATION%",ier)
+                    return
                   endif
-                  if(dabs(a(number,ndir)).lt.1.d-5) cycle
-                  exit
-                enddo
-                if(j.gt.3) then
-                  write(*,*) 
-     &                 '*ERROR reading *EQUATION: SPC in node'
-                  write(*,*) node,' in transformed coordinates'
-                  write(*,*) ' cannot be converted in MPC: all'
-                  write(*,*) ' DOFs in the node are used as'
-                  write(*,*) ' dependent nodes in other MPCs'
+                  if((node.gt.nk).or.(node.le.0)) then
+                    write(*,*) '*ERROR reading *EQUATION:'
+                    write(*,*) '       node ',node,' is not defined'
+                    ier=1
+                    return
+                  endif
+                  if(iset.gt.0) nodempcset(1,ii+1)=node
+                else
+                  node=ialset(istartset(iset))
+                endif
+              else
+!
+!               this equation is repeated for other nodes in the set
+!
+                if(ii.eq.0) then
+                  node=ialset(istartset(iset)+k-1)
+                else
+                  node=nodempcset(1,ii+1)
+                endif
+              endif
+!
+              if(k.eq.1) then
+                read(textpart((i-1)*3+2)(1:10),'(i10)',iostat=istat)ndir
+                if(istat.gt.0) then
+                  call inputerror(inpc,ipoinpc,iline,
+     &                 "*EQUATION%",ier)
+                  return
+                endif
+                if(ndir.le.6) then
+                elseif(ndir.eq.8) then
+                  ndir=4
+                elseif(ndir.eq.11) then
+                  ndir=0
+                else
+                  write(*,*) '*ERROR reading *EQUATION:'
+                  write(*,*) '       direction',ndir,' is not defined'
                   ier=1
                   return
                 endif
-                number=number-1
+                if(iset.gt.0) nodempcset(2,ii+1)=ndir
+              else
+                ndir=nodempcset(2,ii+1)
+              endif
+!
+              if(k.eq.1) then
+                read(textpart((i-1)*3+3)(1:20),'(f20.0)',iostat=istat) x
+                if(istat.gt.0) then
+                  call inputerror(inpc,ipoinpc,iline,
+     &                 "*EQUATION%",ier)
+                  return
+                endif
+                if(iset.gt.0) coefmpcset(ii+1)=x
+              else
+                x=coefmpcset(ii+1)
+              endif
+!     
+!     check whether the node is transformed
+!     
+              if(ntrans.le.0) then
+                itr=0
+              elseif(inotr(1,node).eq.0) then
+                itr=0
+              else
+                itr=inotr(1,node)
+              endif
+!     
+              if((itr.eq.0).or.(ndir.eq.0).or.(ndir.eq.4)) then
+                nodempc(1,mpcfree)=node
+                nodempc(2,mpcfree)=ndir
+                coefmpc(mpcfree)=x
 !     
 !     updating ikmpc and ilmpc
 !     
-                do j=nmpc,id+2,-1
-                  ikmpc(j)=ikmpc(j-1)
-                  ilmpc(j)=ilmpc(j-1)
-                enddo
-                ikmpc(id+1)=idof
-                ilmpc(id+1)=nmpc
-              endif
+                if(ii.eq.0) then
+                  idof=8*(node-1)+ndir
+                  call nident(ikmpc,idof,nmpc-1,id)
+                  if(id.gt.0) then
+                    if(ikmpc(id).eq.idof) then
+                      write(*,100)
+     &                     (ikmpc(id))/8+1,ikmpc(id)-8*((ikmpc(id))/8)
+                      ier=1
+                      return
+                    endif
+                  endif
+                  do j=nmpc,id+2,-1
+                    ikmpc(j)=ikmpc(j-1)
+                    ilmpc(j)=ilmpc(j-1)
+                  enddo
+                  ikmpc(id+1)=idof
+                  ilmpc(id+1)=nmpc
+                endif
 !     
-              do j=1,3
-                number=number+1
-                if(number.gt.3) number=1
-                if(dabs(a(number,ndir)).lt.1.d-5) cycle
-                nodempc(1,mpcfree)=node
-                nodempc(2,mpcfree)=number
-                coefmpc(mpcfree)=x*a(number,ndir)
                 mpcfreeold=mpcfree
                 mpcfree=nodempc(3,mpcfree)
                 if(mpcfree.eq.0) then
@@ -427,16 +467,79 @@ c              enddo
                   ier=1
                   return
                 endif
-              enddo
+              else
+                call transformatrix(trab(1,inotr(1,node)),
+     &               co(1,node),a)
+!     
+                number=ndir-1
+                if(ii.eq.0) then
+!     
+!     determining which direction to use for the
+!     dependent side: should not occur on the dependent
+!     side in another MPC and should have a nonzero
+!     coefficient
+!     
+                  do j=1,3
+                    number=number+1
+                    if(number.gt.3) number=1
+                    idof=8*(node-1)+number
+                    call nident(ikmpc,idof,nmpc-1,id)
+                    if(id.gt.0) then
+                      if(ikmpc(id).eq.idof) then
+                        cycle
+                      endif
+                    endif
+                    if(dabs(a(number,ndir)).lt.1.d-5) cycle
+                    exit
+                  enddo
+                  if(j.gt.3) then
+                    write(*,*) 
+     &                   '*ERROR reading *EQUATION: SPC in node'
+                    write(*,*) node,' in transformed coordinates'
+                    write(*,*) ' cannot be converted in MPC: all'
+                    write(*,*) ' DOFs in the node are used as'
+                    write(*,*) ' dependent nodes in other MPCs'
+                    ier=1
+                    return
+                  endif
+                  number=number-1
+!     
+!     updating ikmpc and ilmpc
+!     
+                  do j=nmpc,id+2,-1
+                    ikmpc(j)=ikmpc(j-1)
+                    ilmpc(j)=ilmpc(j-1)
+                  enddo
+                  ikmpc(id+1)=idof
+                  ilmpc(id+1)=nmpc
+                endif
+!     
+                do j=1,3
+                  number=number+1
+                  if(number.gt.3) number=1
+                  if(dabs(a(number,ndir)).lt.1.d-5) cycle
+                  nodempc(1,mpcfree)=node
+                  nodempc(2,mpcfree)=number
+                  coefmpc(mpcfree)=x*a(number,ndir)
+                  mpcfreeold=mpcfree
+                  mpcfree=nodempc(3,mpcfree)
+                  if(mpcfree.eq.0) then
+                    write(*,*) 
+     &                   '*ERROR reading *EQUATION: increase memmpc_'
+                    ier=1
+                    return
+                  endif
+                enddo
+              endif
+!     
+              ii=ii+1
+            enddo
+!     
+            if(ii.eq.nterm) then
+              nodempc(3,mpcfreeold)=0
+              exit
             endif
-!     
-            ii=ii+1
           enddo
-!     
-          if(ii.eq.nterm) then
-            nodempc(3,mpcfreeold)=0
-            exit
-          endif
         enddo
       enddo
 !     

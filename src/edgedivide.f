@@ -17,19 +17,19 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
       subroutine edgedivide(nnewnodes,nktet_,ipoed,iexternedg,iedg,
-     &     d,h,n,r,iext,jfix)
+     &     d,h,n,r,iext,jfix,filab)
 !     
 !     determines the edges to be divided and the number of sub-intervals
 !     for each such edge based on the h-field
 !     
       implicit none
+!      
+      character*87 filab(*)
 !     
       integer nnewnodes,i,nktet_,index,ipoed(*),iexternedg(*),iedg(3,*),
      &     n1,n2,n(*),iext,jfix(*)
 !     
       real*8 d(*),h(*),h1,h2,r(*)
-!
-!
 !     
       nnewnodes=0
 !     
@@ -61,13 +61,17 @@
 !     limiting the new nodes to maximum 1 per edge
 !     an edge adjacent to domains-not-to-be-refined is not
 !     split            
-!     
-          if((jfix(n1).eq.1).or.(jfix(n2).eq.1)) then
+!
+          if(filab(48)(3:6).eq.'SMOO') then
             n(index)=0
-          elseif(n(index).gt.1) then
-            n(index)=1
-          elseif(n(index).lt.0) then
-            n(index)=0
+          else
+            if((jfix(n1).eq.1).or.(jfix(n2).eq.1)) then
+              n(index)=0
+            elseif(n(index).gt.1) then
+              n(index)=1
+            elseif(n(index).lt.0) then
+              n(index)=0
+            endif
           endif
 !     
           r(index)=(h2-h1)/(n(index)+2)

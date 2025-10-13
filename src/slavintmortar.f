@@ -34,7 +34,7 @@
 !     
       implicit none
 !     
-      logical debug,shrink
+      logical shrink
 !     
       character*8 lakon(*)
 !     
@@ -81,16 +81,11 @@
      &     0.5,0.5,
      &     0,0.5/
 !     
-      debug=.false.
-!     
       kneigh=1
       err=0.1
       areaslav=0.0
       nintpfirst=nintpoint
       islavsurf(2,l)=nintpoint
-!     
-      if(debug)WRITE(30,*) '#SLAVINTMORTAR iinc',iinc,'face',l
-      if(debug)WRITE(20,*) '#SLAVINTMORTAR iinc',iinc,'face',l      
 !     
 !     get clearance and shrink
 !     
@@ -260,10 +255,6 @@
      &       ntri,neigh,kneigh,itietri,ntie,straight,imastop,itri,i)
         ifac=getlocno(j,jfaces,nope)
         node=konl(ifac)
-        if(debug) then
-          write(20,*) neigh(1),neigh(1)+itietri(1,i)-1
-          write(20,*) 'itri',itri,'node',node
-        endif
         call nident(islavnode(nslavnode(i)+1),node,
      &       nslavnode(i+1)-nslavnode(i),id) 
         if(itri.eq.0) then  
@@ -276,15 +267,9 @@
 !     
 !     triangle found; slave node is by default set to inactive (value 0)
 !     
-          if(debug)write(20,*) ' node',node,
-     &         islavnode(nslavnode(i)+id),
-     &         id,islavact(nslavnode(i)+id) 
           if(islavact(nslavnode(i)+id).lt.0) then  
             islavact(nslavnode(i)+id)=0
           endif
-          if(debug)write(20,*) ' node',node,
-     &         islavnode(nslavnode(i)+id),
-     &         id,islavact(nslavnode(i)+id) 
         endif
       enddo
 !
@@ -323,10 +308,7 @@
      &       straight(14,itri)*xn(2)+
      &       straight(15,itri)*xn(3))
         if(dist.lt.distmin)distmin=dist
-        if(debug)write(20,*) 'j',j,'dist',dist,distmin
         ifacem=koncont(4,itri)
-        if(debug)write(20,*)'noder ',node,'itri',itri,
-     &       'ifacem',ifacem
 !     
         call nident(imface,ifacem,ntria,id)
         if(id.gt.0) then
@@ -344,7 +326,6 @@
         anglesm=xn(1)*straight(13,itri)
      &       +xn(2)*straight(14,itri)
      &       +xn(3)*straight(15,itri)
-        if(debug)write(20,*)'cos alpa',anglesm
 !     
 !     check angle to avoid problem with the dual gap         
 !     
@@ -368,12 +349,6 @@
           enddo 
         endif              
       enddo
-      if(debug)then 
-        write(20,*)'ifacem n1:n8 face',l,ntria
-        do k=1,ntria
-          write(20,*) imface (k),imfacecorner(1:nopes,k)
-        enddo
-      endif
 !     
       nactiveline=0
 !     
@@ -381,7 +356,6 @@
 !     
       ncoveredmelem=0
       do j=1,ntria
-        if(debug)write(20,*) 'corner triangle j',j
         ifacem=imface(j)
         nelemm=int(ifacem/10.d0)
         jfacem=ifacem-10*nelemm
@@ -405,7 +379,6 @@ c     if(id.ne.0 .and. icoveredmelem(id).eq.nelemm)then
         enddo
         icoveredmelem(id+1)=nelemm
 !        
-        if(debug)write(20,*)itri,imface(j),ifacem,nelemm,jfacem
         call getnumberofnodes(nelemm,jfacem,lakon,nopemm,
      &       nnodelem,idummy)     
 !     
@@ -430,22 +403,7 @@ c     if(id.ne.0 .and. icoveredmelem(id).eq.nelemm)then
 !     guido: xn already normalized?
 !        
         dd=dsqrt(xn(1)**2+xn(2)**2+xn(3)**2)
-        if(debug)then
-          write(20,*) 'dd',dd    
-          write(20,100)(xn(k),k=1,3)
-          write(20,100)(slavstraight(nopes*4+k),k=1,3)
-          write(20,*) 'SIM: xl2s'
-          do j1=1,nopes
-            write(20,*)(xl2s(k,j1),k=1,3)
-          enddo    
-          write(20,*) 'SIM: xl2m'
-          do j1=1,nnodelem
-            write(20,*)(xl2m(k,j1),k=1,3)
-          enddo
-        endif                                        
  100    format('SIM: xns',3(3x,e15.8))
-!     
-        if(debug) write(20,*) 'TT: itri',nelemm
 !     
 !     divide master element into konvex subelements
 !     
@@ -466,7 +424,7 @@ c     if(id.ne.0 .and. icoveredmelem(id).eq.nelemm)then
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
         elseif(nnodelem.eq.6)then
@@ -494,7 +452,7 @@ c     write(20,*)'*********tria 1**************'
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
 !     2. triangle
@@ -519,7 +477,7 @@ c     write(20,*)'*********tria 2**************'
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
 !     3. triangle
@@ -544,7 +502,7 @@ c     write(20,*)'*********tria 3**************'
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
 !     4. triangle
@@ -569,7 +527,7 @@ c     write(20,*)'*********tria 4**************'
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
         elseif(nnodelem.eq.8)then
@@ -596,7 +554,7 @@ c     write(20,*)'*********tria 4**************'
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
 !     2. triangle
@@ -620,7 +578,7 @@ c     write(20,*)'*********tria 4**************'
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
 !     3. triangle
@@ -644,7 +602,7 @@ c     write(20,*)'*********tria 4**************'
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
 !     4. triangle
@@ -668,7 +626,7 @@ c     write(20,*)'*********tria 4**************'
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
 !     quad
@@ -696,7 +654,7 @@ c     write(20,*)'*********tria 4**************'
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
         endif
       enddo
@@ -785,18 +743,6 @@ c     if(id .gt. 0 .and. icoveredmelem(id).eq.nelemm)then
             cl2m(j1,k1)=co(j1,konl(ifac))
           enddo
         enddo
-        if(debug)then
-          write(20,*) 'dd',dd ,'ifacem',ifacem   
-          write(20,100)(xn(k),k=1,3)
-          write(20,*) 'SIM: xl2s'
-          do j1=1,nopes
-            write(20,*)(xl2s(k,j1),k=1,3)
-          enddo    
-          write(20,*) 'SIM: xl2m'
-          do j1=1,nnodelem
-            write(20,*)(xl2m(k,j1),k=1,3)
-          enddo
-        endif  
 !     
 !     divide master element into konvex subelements
 !     
@@ -817,7 +763,7 @@ c     if(id .gt. 0 .and. icoveredmelem(id).eq.nelemm)then
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
         elseif(nnodelem.eq.6)then
@@ -845,7 +791,7 @@ c     write(20,*)'*********tria 1**************'
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
 !     2. triangle
@@ -870,7 +816,7 @@ c     write(20,*)'*********tria 2**************'
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
 !     3. triangle
@@ -895,7 +841,7 @@ c     write(20,*)'*********tria 3**************'
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
 !     4. triangle
@@ -920,7 +866,7 @@ c     write(20,*)'*********tria 4**************'
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
         elseif(nnodelem.eq.8)then
@@ -947,7 +893,7 @@ c     write(20,*)'*********tria 4**************'
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
 !     2. triangle
@@ -971,7 +917,7 @@ c     write(20,*)'*********tria 4**************'
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
 !     3. triangle
@@ -995,7 +941,7 @@ c     write(20,*)'*********tria 4**************'
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
 !     4. triangle
@@ -1019,7 +965,7 @@ c     write(20,*)'*********tria 4**************'
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
 !     quad
@@ -1047,27 +993,11 @@ c     write(20,*)'*********tria 4**************'
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
         endif
       enddo
       islavsurf(2,l+1)=nintpoint
-      if(debug) then
-        if(areaslav.lt.1.e-12)write(*,*)'areaslav(',l,')=',
-     &       areaslav
-      endif
 !     
-      if(debug)then
-        write(20,*) 'mint2d',(nintpoint-islavsurf(2,l))
-        write(20,*)'areaslav(',l,')=',areaslav
-        write(20,*)'*********************************'
-      endif
-!     
-c            do j=1,nintpoint
-c              write(*,*) 'slavintmortar', j,imastsurf(j)
-c              write(*,*) 'slavintmortar', (pmastsurf(j1,j),j1=1,2)
-c              write(*,*) 'slavintmortar', (pslavsurf(j1,j),j1=1,3)
-c              write(*,*) 'slavintmortar', gapmints(j)
-c            enddo
       return
       end

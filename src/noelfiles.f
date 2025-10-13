@@ -20,7 +20,7 @@
      &  nodefile_flag,elfile_flag,ifile_output,nener,ithermal,
      &  istep,istat,n,iline,ipol,inl,ipoinp,inp,out3d,nlabel,
      &  amname,nam,itpamp,idrct,ipoinpc,nef,contactfile_flag,
-     &  set,nset,xmodal,ier,physcon,output)
+     &  set,nset,xmodal,ier,physcon,output,ndmat_)
 !
 !     reading the *NODE FILE, *EL FILE and *CONTACT FILE cards in the 
 !     input deck
@@ -38,7 +38,7 @@
       character*132 textpart(16)
 !
       integer istep,istat,n,key,ii,jout(2),joutl,nmethod,nener,
-     &  ithermal(*),ier,id,
+     &  ithermal(*),ier,id,ndmat_,
      &  iline,ipol,inl,ipoinp(2,*),inp(3,*),j,nlabel,nam,itpamp,i,
      &  idrct,ipoinpc(0:*),nef,ifile_output,ipos,nset
 !
@@ -153,6 +153,7 @@
                filab(j)(1:4)='    '
             enddo
             filab(55)(1:4)='    '
+            filab(56)(1:4)='    '
 !
             filab(3)(6:87)=' '
             filab(4)(6:87)=' '
@@ -173,6 +174,7 @@
                filab(j)(6:87)=' '
             enddo
             filab(55)(6:87)=' '
+            filab(56)(6:87)=' '
 !
             sectionforces=.false.
          endif
@@ -862,6 +864,19 @@
                filab(55)(1:4)='THE '
                filab(55)(6:6)=elemsys
                filab(55)(7:87)=noset
+             elseif(textpart(ii)(1:4).eq.'DUCT') then
+               if(ndmat_.eq.0) then
+                 write(*,*) 
+     &        '*WARNING reading *NODE/EL/CONTACT FILE: DUCT only makes'
+                 write(*,*) 
+     &                '         sense if there exists at least one'
+                 write(*,*) 
+     &                '         material with *DAMAGE INITIATION'
+               else
+                 filab(56)(1:4)='DUCT'
+                 filab(56)(6:6)=elemsys
+                 filab(56)(7:87)=noset
+               endif
              else
                write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: label not applicable'
@@ -874,9 +889,3 @@
 !
       return
       end
-
-
-
-
-
-

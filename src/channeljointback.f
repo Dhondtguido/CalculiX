@@ -19,7 +19,7 @@
 !     Solve the Bresse equation for the turbulent stationary flow
 !     in channels with a non-erosive bottom
 !     
-      subroutine channeljointback(neldo,ndo,iponoel,inoel,ipkon,kon,
+      subroutine channeljointback(neldo,ndo,iponoeln,inoeln,ipkon,kon,
      &     mi,v,istackb,nstackb,co,ielprop,prop,g,dg,xflow,rho)
 !
 !     treats a channel joint for a backwater calculation
@@ -28,9 +28,9 @@
 !
       logical stacked
 !
-      integer nel1,nel2,nup1,nup2,iponoel(*),inoel(2,*),ipkon(*),kon(*),
+      integer nel1,nel2,nup1,nup2,iponoeln(*),inoeln(2,*),ipkon(*),
      &     index,inv,mi(*),i,istackb(2,*),nstackb,nel1sav,nup1sav,
-     &     ndoo,indexp,ielprop(*),niter,neldo,ndo
+     &     ndoo,indexp,ielprop(*),niter,neldo,ndo,kon(*)
 !
       real*8 v(0:mi(2),*),xflow1,xflow2,xflow1sav,vec(3),vec1(3),dl,dl1,
      &     vec2(3),co(3,*),alpha1,alpha2,pi,prop(*),g(3),dg,h,u,dl2,
@@ -41,15 +41,15 @@
       nel1=0
       nel2=0
 !
-      index=iponoel(ndo)
+      index=iponoeln(ndo)
 !
 !     find the two upstream elements nel1 and nel2 of neldo and
 !     the upstream nodes nup1 and nup2 of these elements
 !
       do
-        if(inoel(1,index).ne.neldo) then
+        if(inoeln(1,index).ne.neldo) then
           if(nel1.eq.0) then
-            nel1=inoel(1,index)
+            nel1=inoeln(1,index)
             if(kon(ipkon(nel1)+1).eq.ndo) then
               nup1=kon(ipkon(nel1)+3)
               inv=-1
@@ -59,7 +59,7 @@
             endif
             xflow1=inv*v(1,kon(ipkon(nel1)+2))
           else
-            nel2=inoel(1,index)
+            nel2=inoeln(1,index)
             if(kon(ipkon(nel2)+1).eq.ndo) then
               nup2=kon(ipkon(nel2)+3)
               inv=-1
@@ -70,7 +70,7 @@
             xflow2=inv*v(1,kon(ipkon(nel2)+2))
           endif
         endif
-        index=inoel(2,index)
+        index=inoeln(2,index)
         if(index.eq.0) exit
       enddo
 !

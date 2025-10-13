@@ -28,7 +28,7 @@
      &     islavact,cdn,mortar,islavnode,nslavnode,ntie,islavsurf,time,
      &     ielprop,prop,veold,ne0,nmpc,ipompc,nodempc,labmpc,energyini,
      &     energy,orname,xload,itiefac,pmastsurf,springarea,tieset,
-     &     ipobody,ibody,xbody,nbody,iinc)
+     &     ipobody,ibody,xbody,nbody,iinc,dam,damn)
 !     
 !     - stores the results in the .dat file, if requested
 !     - nodal quantities at the nodes
@@ -70,7 +70,7 @@
      &     eme(6,mi(1),*),emn(6,*),shcon(0:3,ntmat_,*),
      &     prop(*),veold(0:mi(2),*),energy(*),energyini(*),xload(2,*),
      &     pmastsurf,springarea(2,*),xbody(7,*),pslavsurf(3,*),
-     &     cocon(0:6,ntmat_,*)
+     &     cocon(0:6,ntmat_,*),dam(mi(1),*),damn(*)
 !     
       data iflag /3/
       data iperm /5,6,7,8,1,2,3,4,13,14,15,16,9,10,11,12,17,18,19,20/
@@ -120,7 +120,7 @@
      &     orab,ielorien,norien,nk,ne,inum,filab,vold,ikin,ielmat,
      &     thicke,eme,islavsurf,mortar,time,ielprop,prop,veold,orname,
      &     nelemload,nload,sideload,xload,rhcon,nrhcon,ntmat_,ipobody,
-     &     ibody,xbody,nbody,nmethod)
+     &     ibody,xbody,nbody,nmethod,dam,nactdof)
 !     
 !     for facial information (*section print): if forces and/or
 !     moments in sections are requested, the stresses have to be
@@ -167,8 +167,10 @@
         nfield=mt
         cflag=filab(1)(5:5)
         iforce=0
-        call map3dto1d2d(v,ipkon,inum,kon,lakon,nfield,nk,
-     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
+c        call map3dto1d2d(v,ipkon,inum,kon,lakon,nfield,nk,
+c     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
+        call map3dto1d2d_v(v,ipkon,inum,kon,lakon,nfield,nk,
+     &       ne,nactdof)
       endif
 !     
       if((filab(2)(1:4).eq.'NT  ').and.(ithermal(1).le.1)) then
@@ -379,6 +381,21 @@
         cflag=filab(9)(5:5)
         iforce=0
         call extrapolate(qfx,qfn,ipkon,inum,kon,lakon,nfield,nk,
+     &       ne,mi(1),ndim,orab,ielorien,co,iorienloc,cflag,
+     &       vold,iforce,ielmat,thicke,ielprop,prop)
+        iextrapolate=1
+      endif
+!     
+!     determining the ductile damage initiation in the nodes 
+!     for output in frd format
+!     
+      if(filab(56)(1:4).eq.'DUCT') then
+        nfield=1
+        ndim=1
+        iorienloc=0
+        cflag=filab(56)(5:5)
+        iforce=0
+        call extrapolate(dam,damn,ipkon,inum,kon,lakon,nfield,nk,
      &       ne,mi(1),ndim,orab,ielorien,co,iorienloc,cflag,
      &       vold,iforce,ielmat,thicke,ielprop,prop)
         iextrapolate=1

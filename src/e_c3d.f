@@ -809,7 +809,7 @@ c     mortar end
      &       ihyper,istiff,elconloc,eth,kode,plicon,
      &       nplicon,plkcon,nplkcon,npmat_,
      &       plconloc,mi(1),dtime,kk,
-     &       xstiff,ncmat_)
+     &       xstiff,ncmat_,iperturb)
 !     
         if(mattyp.eq.1) then
 c     write(*,*) 'elastic co', stiff(1),stiff(2)

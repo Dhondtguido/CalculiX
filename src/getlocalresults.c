@@ -23,7 +23,7 @@
 
 void getlocalresults(ITG **integerglobp,double **doubleglobp,ITG *nktet,
                      double *cotet,double *h,ITG *netet_,ITG *kontet,
-                     ITG *ifatet,double *planfa,ITG *kontetor){
+                     ITG *ifatet,double *planfa){
     
   ITG *ifatetl=NULL,*kon=NULL,*ipkon=NULL,*kontyp=NULL,*iparent=NULL,
     *ielemnr=NULL,*integerglob=NULL,nfaces,netet,*nnx=NULL,
@@ -56,11 +56,6 @@ void getlocalresults(ITG **integerglobp,double **doubleglobp,ITG *nktet,
       if(ifatet[4*i+j]>nfaces) nfaces=ifatet[4*i+j];
     }
 
-    /* storing the midnodes */
-
-    //	for(j=0;j<6;j++){kon[10*netet+4+j]=kontetor[6*i+j];}
-
-    //    ipkon[netet]=10*netet;
     ipkon[netet]=4*netet;
     kontyp[netet]=3;
     iparent[netet]=netet+1;

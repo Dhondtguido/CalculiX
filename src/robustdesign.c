@@ -97,7 +97,7 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *eenmax=NULL,*veold=NULL,*stnmax=NULL,*vmax=NULL,*stni=NULL,
     *stnr=NULL,*vi=NULL,*vr=NULL,*qfn=NULL,*xstaten=NULL,*enern=NULL,
     *epn=NULL,*fn=NULL,*een=NULL,*v=NULL,*x=NULL,*y=NULL,*z=NULL,*xo=NULL,
-    *yo=NULL,*zo=NULL,*dist=NULL;
+    *yo=NULL,*zo=NULL,*dist=NULL,*damn=NULL,*errn=NULL;
   
 #ifdef SGI
   ITG token;
@@ -312,7 +312,7 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
       cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
       thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
-      ielprop,prop,sti);
+      ielprop,prop,sti,damn,&errn);
   
   frd_sen(co,nk,stn,inum,nmethod,kode,filab,&ptime,nstate_,
     	  istep,

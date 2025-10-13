@@ -83,10 +83,10 @@
          qred_crit=dsqrt(kappa/R)*
      &     (1.d0+0.5d0*(kappa-1.d0))**(-0.5d0*(kappa+1.d0)/(kappa-1.d0))
 !     
-!     Because there is no explicit expression relating massflow
-!     to pressure loss for Moehrings
-!     initial mass flow is set to arbitrarily
-!     with consideration to flow direction
+!     Because there is no explicit expression relating mass flow
+!     to pressure loss for Moehring, the
+!     initial mass flow is set to arbitrary
+!     with consideration of flow direction
 !     
          node1=kon(ipkon(nelem)+1)
          node2=kon(ipkon(nelem)+3)

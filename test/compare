@@ -26,6 +26,11 @@ for i in *.inp; do
 	    continue
 	fi
 	
+	if [ $i = circ11p.rfn.inp ]
+	then
+	    continue
+	fi
+	
 	if [ $i = segmentsmooth.rfn.inp ]
 	then
 	    continue

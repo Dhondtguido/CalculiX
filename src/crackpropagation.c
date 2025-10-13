@@ -59,7 +59,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
     nfronteq,ncyc,*idist=NULL,ncrconst,nstep,nproc,ncrtem,law,nstepf2,
     *iincglob=NULL,nparam,ncyctot=0,ieqspace=1,*integerglobf=NULL,lcf,
     *iamt1=NULL,mt=mi[1]+1,*iponor=NULL,one=1,nkinc,im,ncenter,
-    *ibounel=NULL,nbounel,*mastelnr=NULL;
+    *ibounel=NULL,nbounel,*mastelnr=NULL,*nelemload=NULL;
 
   double *doubleglob=NULL,*stress=NULL,*xt=NULL,*xn=NULL,*xa=NULL,
     *acrack=NULL,*xk1=NULL,*xk2=NULL,*xk3=NULL,*doubleglobf=NULL,
@@ -78,8 +78,8 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
     *dkeq=NULL,*domphi=NULL,*xkeqminglob=NULL,*xkeqmaxglob=NULL,*cg=NULL,
     *domstepglob=NULL,*hcftemp=NULL,*xk1f=NULL,*xk2f=NULL,*xk3f=NULL,
     *xkeqf=NULL,*phif=NULL,*psif=NULL,*rglob=NULL,*r=NULL,*xplanecrack=NULL,
-    *t0=NULL,*t1=NULL,*t0g=NULL,*t1g=NULL,*t1old=NULL,*vold=NULL,
-    *prestr=NULL,*offset=NULL,*eme=NULL,*xstate=NULL,
+    *t0=NULL,*t1=NULL,*t0g=NULL,*t1g=NULL,*t1old=NULL,*vold=NULL,*errn=NULL,
+    *prestr=NULL,*offset=NULL,*eme=NULL,*xstate=NULL,*dam=NULL,*damn=NULL,
     *crackarea=NULL,*surfnor=NULL,*surfco=NULL,*resarea=NULL,*alambdapj=NULL;
 
   co=*cop;lakon=*lakonp;ipkon=*ipkonp;kon=*konp;ielmat=*ielmatp;
@@ -154,7 +154,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
   
   for(iinc=0;iinc<jmax[0];iinc++){
 
-    printf("Increment %d\n\n",iinc+1);
+    printf("Increment %" ITGFORMAT "\n\n",iinc+1);
 
     nkinc=*nk;
   
@@ -404,8 +404,8 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
     if(mei[0]>0){
       
       if(mei[1]>nstep){
-	printf(" *ERROR in crackpropagation.c: HCF mission step %d\n",mei[1]);
-	printf("        exceeds the number of LCF steps %d\n\n",nstep);
+	printf(" *ERROR in crackpropagation.c: HCF mission step %" ITGFORMAT "\n",mei[1]);
+	printf("        exceeds the number of LCF steps %" ITGFORMAT "\n\n",nstep);
 	FORTRAN(stop,());
       }
 
@@ -507,7 +507,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 	}else{
 	  printf(" *WARNING: Exit because an error occurred in crackrate.f \n");
 	}
-	printf("           Number of iteration= %d\n\n" ,(iinc+1));
+	printf("           Number of iteration= %" ITGFORMAT "\n\n" ,(iinc+1));
 	
 	SFREE(xkeq);SFREE(phi);SFREE(xk1);SFREE(xk2);SFREE(xk3);
 	SFREE(xkeqf);SFREE(phif);SFREE(xk1f);SFREE(xk2f);SFREE(xk3f);
@@ -596,7 +596,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 	}else{
 	  printf(" *WARNING: Exit because an error occurred in crackrate.f \n");
 	}
-	printf("           Number of iteration= %d\n\n" ,(iinc+1));
+	printf("           Number of iteration= %" ITGFORMAT "\n\n" ,(iinc+1));
 	
 	SFREE(xkeq);SFREE(phi);SFREE(xk1);SFREE(xk2);SFREE(xk3);
 	SFREE(crconloc);SFREE(xn);SFREE(xa);
@@ -770,11 +770,11 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 
     if(icritic>0){
 	printf(" *WARNING: Exit because crack propagation occurred due to the modal loading \n");
-	printf("           Number of iteration= %d\n\n" ,(iinc+1));
+	printf("           Number of iteration= %" ITGFORMAT "\n\n" ,(iinc+1));
 	break;
     }else if(icritic<0){
 	printf(" *WARNING: Exit because no crack propagation anywhere along the crack front \n");
-	printf("           Number of iteration= %d\n\n" ,(iinc+1));
+	printf("           Number of iteration= %" ITGFORMAT "\n\n" ,(iinc+1));
 	break;
     }
 
@@ -866,7 +866,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
       mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
       cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
       thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
-      ielprop,prop,sti);
+      ielprop,prop,sti,damn,&errn);
 
   /* storing the crack propagation fields in frd-format */
 

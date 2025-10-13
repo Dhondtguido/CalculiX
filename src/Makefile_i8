@@ -1,6 +1,6 @@
 
 CFLAGS = -Wall -O2 -fopenmp -fpic -I ../../SPOOLES.2.2 -I$(PASTIX_INCLUDE) -DARCH="Linux" -DSPOOLES -DARPACK -DMATRIXSTORAGE -DINTSIZE64 -DPASTIX -DPASTIX_FP32 -DPASTIX_GPU
-FFLAGS = -Wall -O2 -fopenmp -fpic -fdefault-integer-8
+FFLAGS = -Wall -O2 -fopenmp -fpic -fdefault-integer-8 -cpp
 
 CC=cc
 FC=gfortran

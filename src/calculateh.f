@@ -34,8 +34,6 @@
      &     epn(*),enern(*),qfn(3,*),errn(6,*),h(*),targetsize,size,d(*),
      &     dmin,cotet(3,*)
 !     
-!     
-!     
       label(1:4)=filab(48)(3:6)
 !     
       read(filab(48)(7:26),'(f20.0)',iostat=istat) targetsize
@@ -108,6 +106,11 @@
         elseif(label.eq.'USER') then
 c     call ucalculateh(v,veold,stn,een,emn,epn,enern,qfn,
 c     &           errn,size,mi)
+        else
+!
+!         smoothing only
+!
+          size=targetsize
         endif
 !     
         if(size/targetsize.gt.1.d0) then

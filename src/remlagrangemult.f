@@ -66,11 +66,11 @@
                       write(*,*) '*WARNING in remlagrangemult:'
                       write(*,*) '         node ',node,
      &                     ' belongs to both slave surface'
-                      ilen=index(tieset(1,i)(1:80),' ')
-                      write(*,*) '         ',tieset(1,i)(1:ilen-1),
+                      ilen=index(tieset(2,i)(1:80),' ')
+                      write(*,*) '         ',tieset(2,i)(1:ilen-2),
      &                     ' and slave surface'
-                      ilen=index(tieset(1,j)(1:80),' ')
-                      write(*,*) '         ',tieset(1,j)(1:ilen-1),
+                      ilen=index(tieset(2,j)(1:80),' ')
+                      write(*,*) '         ',tieset(2,j)(1:ilen-2),
      &                     ' Lagrange multiplier is removed'
                       write(*,*)
                     endif
@@ -83,11 +83,11 @@
                       write(*,*) '*WARNING in remlagrangemult:'
                       write(*,*) '         node ',node,
      &                     ' belongs to both slave surface'
-                      ilen=index(tieset(1,i)(1:80),' ')
-                      write(*,*) '         ',tieset(1,i)(1:ilen-1),
+                      ilen=index(tieset(2,i)(1:80),' ')
+                      write(*,*) '         ',tieset(2,i)(1:ilen-2),
      &                     ' and master surface'
-                      ilen=index(tieset(1,j)(1:80),' ')
-                      write(*,*) '         ',tieset(1,j)(1:ilen-1),
+                      ilen=index(tieset(3,j)(1:80),' ')
+                      write(*,*) '         ',tieset(3,j)(1:ilen-2),
      &                     ' Lagrange multiplier is removed'
                       write(*,*)
                     endif

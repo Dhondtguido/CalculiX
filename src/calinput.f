@@ -48,7 +48,7 @@
      &     mpcfreeref,maxlenmpcref,memmpc_,isens,namtot,nstam,dacon,
      &     vel,nef,velo,veloo,ne2boun,itempuser,irobustdesign,
      &     irandomtype,randomval,nfc,nfc_,coeffc,ikdc,ndc,ndc_,edc,
-     &     coini)
+     &     coini,ndmat_,ndmcon,dmcon,dam,irefineloop)
 !     
       implicit none
 !     
@@ -83,7 +83,8 @@
      &     nodeprint_flag,elfile_flag,nodefile_flag,contactfile_flag,
      &     dflux_flag,cflux_flag,film_flag,radiate_flag,out3d,
      &     solid,sectionprint_flag,contactprint_flag,pretension,
-     &     beamgeneralsection,objective_flag,constraint_flag
+     &     beamgeneralsection,objective_flag,constraint_flag,
+     &     cyclicsymmetrymodel_flag
 !     
       character*1 typeboun(*),inpc(*)
       character*4 output
@@ -100,15 +101,15 @@
      &     nodeforc(2,*),ndirforc(*),nelemload(2,*),iaxial,j,mi(*),
      &     istartset(*),iendset(*),ialset(*),ipkon(*),ics(*),nodedep,
      &     nelcon(2,*),nrhcon(*),nalcon(2,*),ielmat(mi(3),*),nodeind,
-     &     ielorien(mi(3),*),icomposite,nsubmodel,mortar,
+     &     ielorien(mi(3),*),icomposite,nsubmodel,mortar,ndmcon(2,*),
      &     namta(3,*),iamforc(*),iamload(2,*),iamt1(*),ipoinpc(0:*),
      &     iamboun(*),inotr(2,*),ikboun(*),ilboun(*),ikmpc(*),ilmpc(*),
      &     iponor(2,*),knor(*),ikforc(*),ilforc(*),iponoel(*),
      &     inoel(3,*),infree(4),ixfree,ikfree,inoelfree,iponoelmax,
      &     rig(*),nshcon(*),ncocon(2,*),nodebounold(*),ielprop(*),nprop,
-     &     nprop_,maxsectors,irestartread,
+     &     nprop_,maxsectors,irestartread,ndmat_,irefineloop,
      &     ndirbounold(*),ipoinp(2,*),inp(3,*),nintpoint,ifacecount,
-     &     ianisoplas,ifile_output,ichangefriction,nslavs,
+     &     ifile_output,ichangefriction,nslavs,ist,index1,
      &     nalset,nalset_,nmat,nmat_,ntmat_,norien,norien_,
      &     islavsurf(2,*),
      &     nmethod,nk,ne,nboun,nmpc,nmpc_,mpcfree,i,istat,n,
@@ -136,14 +137,15 @@
      &     plkcon(0:2*npmat_,ntmat_,*),trab(7,*),dcs(*),
      &     shcon(0:3,ntmat_,*),cocon(0:6,ntmat_,*),timepar(*),
      &     ctrl(*),vold(0:mi(2),*),xbounold(*),xforcold(*),
-     &     xloadold(*),t1old(*),eme(*),sti(*),ener(*),
+     &     xloadold(*),t1old(*),eme(*),sti(*),ener(*),temperature,
      &     xstate(nstate_,mi(1),*),ttime,qaold(2),cs(18,*),tietol(4,*),
      &     xbody(7,*),xbodyold(7,*),t0g(2,*),t1g(2,*),
      &     fei(4),tinc,tper,xmodal(*),tmin,tmax,tincf,
      &     alpha(*),physcon(*),coefmpcref(*),vel(nef,*),velo(*),
-     &     veloo(*),randomval(2,*),coeffc(0:6,*),edc(12,*),coini(3,*)
+     &     veloo(*),randomval(2,*),coeffc(0:6,*),edc(12,*),coini(3,*),
+     &     dmcon(0:ndmat_,ntmat_,*),dam(mi(1),*)
 !     
-      save solid,ianisoplas,out3d,pretension
+      save solid,out3d,pretension
 !     
       integer nentries
       parameter(nentries=19)
@@ -207,6 +209,7 @@
       cflux_flag=.false.
       objective_flag=.false.
       constraint_flag=.false.
+      cyclicsymmetrymodel_flag=.false.
 !     
       if(istep.eq.0) then
 !     
@@ -223,7 +226,6 @@
         nmethod=0
 !     
         ne=0
-c        nset=0
         nalset=0
         nmat=0
         norien=0
@@ -252,7 +254,6 @@ c        nset=0
         endif
 !     
         solid=.false.
-        ianisoplas=0
         pretension=.false.
 !     
       endif
@@ -411,10 +412,6 @@ c        nset=0
      &       nmpc,ikmpc,ilmpc,labmpc,iamplitudedefault,namtot,ier,
      &       edc,orab,coeffc,ikdc,ndc)
         cload_flag=.true.
-c        do i=1,nforc
-c          write(*,*) i,nodeforc(1,i),ndirforc(i),xforc(i)
-c        enddo
-c        call exit(201)
 !     
       elseif(textpart(1)(1:17).eq.'*COMPLEXFREQUENCY') then
         call complexfrequencys(inpc,textpart,nmethod,
@@ -449,7 +446,7 @@ c        call exit(201)
      &       nodefile_flag,elfile_flag,ifile_output,nener,ithermal,
      &       istep,istat,n,iline,ipol,inl,ipoinp,inp,out3d,nlabel,
      &       amname,nam,itpamp,idrct,ipoinpc,nef,contactfile_flag,
-     &       set,nset,xmodal,ier,physcon,output)
+     &       set,nset,xmodal,ier,physcon,output,ndmat_)
         contactfile_flag=.true.
 !     
       elseif(textpart(1)(1:12).eq.'*CONTACTPAIR') then
@@ -504,7 +501,7 @@ c        call exit(201)
         call creeps(inpc,textpart,nelcon,imat,ntmat_,npmat_,
      &       plicon,nplicon,elcon,iplas,iperturb,nstate_,ncmat_,
      &       matname,irstrt,istep,istat,n,iline,ipol,inl,ipoinp,inp,
-     &       ipoinpc,ianisoplas,ier)
+     &       ipoinpc,ier)
 !     
       elseif(textpart(1)(1:16).eq.'*CYCLICHARDENING') then
         call cyclichardenings(inpc,textpart,nelcon,imat,ntmat_,
@@ -528,7 +525,13 @@ c
      &       dcs(12*ncs_+1),ne,ipkon,kon,lakon,ics(14*ncs_+1),
      &       ics(16*ncs_+1),ics(18*ncs_+1),ipoinpc,
      &       maxsectors,trab,ntrans,ntrans_,jobnamec,vold,nef,mi,
-     &       iaxial,ier)
+     &       iaxial,ier,nk_)
+        cyclicsymmetrymodel_flag=.true.
+!     
+      elseif(textpart(1)(1:17).eq.'*DAMAGEINITIATION') then
+        call damageinitiations(inpc,textpart,matname,nmat,
+     &       irstrt,istep,istat,n,iline,ipol,inl,ipoinp,inp,
+     &       ipoinpc,ier,dmcon,ndmcon,ntmat_,ndmat_)
 !     
       elseif(textpart(1)(1:8).eq.'*DAMPING') then
         call dampings(inpc,textpart,xmodal,istep,
@@ -654,7 +657,7 @@ c
      &       nodefile_flag,elfile_flag,ifile_output,nener,ithermal,
      &       istep,istat,n,iline,ipol,inl,ipoinp,inp,out3d,nlabel,
      &       amname,nam,itpamp,idrct,ipoinpc,nef,contactfile_flag,
-     &       set,nset,xmodal,ier,physcon,output)
+     &       set,nset,xmodal,ier,physcon,output,ndmat_)
         elfile_flag=.true.
 !     
       elseif(textpart(1)(1:8).eq.'*ELPRINT') then
@@ -672,13 +675,6 @@ c
 !     
       elseif(textpart(1)(1:8).eq.'*ENDSTEP') then
         exit
-!     
-c      elseif(textpart(1)(1:10).eq.'*EQUATIONF') then
-c        M_or_SPC=1
-c        call equationfs(inpc,textpart,ipompc,nodempc,coefmpc,
-c     &       nmpc,nmpc_,mpcfree,co,trab,ntrans,ikmpc,ilmpc,
-c     &       labmpc,istep,istat,n,iline,ipol,inl,ipoinp,inp,ipoinpc,
-c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
 !     
       elseif(textpart(1)(1:9).eq.'*EQUATION') then
         M_or_SPC=1
@@ -869,7 +865,7 @@ c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
         call mohrcoulombhardenings(inpc,textpart,nelcon,nmat,
      &       plicon,nplicon,plkcon,nplkcon,iplas,iperturb,nstate_,
      &       ncmat_,elcon,matname,irstrt,istep,istat,n,iline,ipol,
-     &       inl,ipoinp,inp,ipoinpc,ianisoplas,ier,ntmat_,npmat_)
+     &       inl,ipoinp,inp,ipoinpc,ier,ntmat_,npmat_)
 !     
       elseif(textpart(1)(1:12).eq.'*MOHRCOULOMB') then
         call mohrcoulombs(inpc,textpart,elcon,nelcon,nmat,
@@ -921,7 +917,7 @@ c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
      &       nodefile_flag,elfile_flag,ifile_output,nener,ithermal,
      &       istep,istat,n,iline,ipol,inl,ipoinp,inp,out3d,nlabel,
      &       amname,nam,itpamp,idrct,ipoinpc,nef,contactfile_flag,
-     &       set,nset,xmodal,ier,physcon,output)
+     &       set,nset,xmodal,ier,physcon,output,ndmat_)
         nodefile_flag=.true.
 !     
       elseif(textpart(1)(1:10).eq.'*NODEPRINT') then
@@ -965,7 +961,7 @@ c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
         call plastics(inpc,textpart,nelcon,imat,ntmat_,npmat_,
      &       plicon,nplicon,plkcon,nplkcon,iplas,iperturb,nstate_,
      &       ncmat_,elcon,matname,irstrt,istep,istat,n,iline,ipol,
-     &       inl,ipoinp,inp,ipoinpc,ianisoplas,ier)
+     &       inl,ipoinp,inp,ipoinpc,ier)
 !     
       elseif(textpart(1)(1:19).eq.'*PRE-TENSIONSECTION') then
         call pretensionsections(inpc,textpart,ipompc,nodempc,
@@ -1023,7 +1019,7 @@ c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
      &       t0g,t1g,nprop,ielprop,prop,mortar,nintpoint,ifacecount,
      &       islavsurf,pslavsurf,clearini,ier,vel,nef,velo,veloo,
      &       ne2boun,heading,network,irestartread,nfc,ndc,coeffc,
-     &       ikdc,edc,xmodal)
+     &       ikdc,edc,xmodal,ndmat_,ndmcon,dmcon,dam,irefineloop)
 !     
       elseif(textpart(1)(1:18).eq.'*RETAINEDNODALDOFS') then
         call retainednodaldofss(inpc,textpart,set,istartset,
@@ -1196,6 +1192,11 @@ c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
      &       istep,istat,n,tinc,tper,tmin,tmax,idrct,ithermal,iline,
      &       ipol,inl,ipoinp,inp,ipoinpc,alpha,ctrl,ttime,nener,ier)
 !     
+      elseif(textpart(1)(1:15).eq.'*USEREFINEDMESH') then
+        call userefinedmeshs(inpc,textpart,
+     &  irstrt,istep,istat,n,iline,ipol,inl,ipoinp,inp,ipoinpc,
+     &  irefineloop,ier)
+!     
       elseif(textpart(1)(1:12).eq.'*USERELEMENT') then
         if(istep.gt.0) then
           write(*,*) '*ERROR reading *USER ELEMENT:'
@@ -1345,6 +1346,47 @@ c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
      &     ics(3*ncs_+1),ics(5*ncs_+1),ics(7*ncs_+1),ics(8*ncs_+1),
      &     dcs(12*ncs_+1),ne,ipkon,kon,lakon,ics(14*ncs_+1),
      &     ics(16*ncs_+1),ics(18*ncs_+1),jobnamec,nmethod)
+!
+!     initial temperatures in cyclic symmetry calculations
+!
+      if((istep.eq.1).and.(ithermal(1).gt.0)) then
+        do i=1,nmpc
+          if(labmpc(i)(1:6).eq.'CYCLIC') then
+            if(nodempc(2,ipompc(i)).ne.0) cycle
+            ist=ipompc(i)
+            index1=nodempc(3,ist)
+            temperature=0.d0
+            do
+              if(index1.eq.0) exit
+              temperature=temperature-coefmpc(index1)*
+     &             t0(nodempc(1,index1))
+              index1=nodempc(3,index1)
+            enddo
+            t0(nodempc(1,ist))=temperature/coefmpc(ist)
+            vold(0,nodempc(1,ist))=t0(nodempc(1,ist))
+          endif
+        enddo
+      endif
+!
+!     actual temperatures in cyclic symmetry calculations
+!
+      if(ithermal(1).eq.1) then
+        do i=1,nmpc
+          if(labmpc(i)(1:6).eq.'CYCLIC') then
+            if(nodempc(2,ipompc(i)).ne.0) cycle
+            ist=ipompc(i)
+            index1=nodempc(3,ist)
+            temperature=0.d0
+            do
+              if(index1.eq.0) exit
+              temperature=temperature-coefmpc(index1)*
+     &             t1(nodempc(1,index1))
+              index1=nodempc(3,index1)
+            enddo
+            t1(nodempc(1,ist))=temperature/coefmpc(ist)
+          endif
+        enddo
+      endif
 !     
       infree(1)=ixfree
       infree(2)=ikfree
@@ -1372,7 +1414,7 @@ c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
         endif
       endif
 !     
-      if(((iplas.eq.0).and.(ianisoplas.eq.0)).or.(nmethod.eq.2)) then
+      if((iplas.eq.0).or.(nmethod.eq.2)) then
         if(filab(6)(1:4).eq.'PEEQ') then
           write(*,*) '*WARNING in calinput: PEEQ-output requested'
           write(*,*) '         yet no (visco)plastic calculation'
@@ -1392,6 +1434,44 @@ c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
           prset(ii)=prset(i)
         enddo
         nprint=ii
+      endif
+!
+!     check whether damage calculations were only requested for materials
+!     for which the equivalent plastic strain is calculated:
+!     1) *DEFORMATION PLASTICITY
+!     2) *PLASTIC (isotropic or orthotropic elasticity,
+!        including Johnson Cook hardening)      
+!     3) *CREEP
+!     4) *MOHR COULOMB
+!
+      if(ndmat_.gt.0) then
+        ierror=0
+        do imat=1,nmat
+          if(ndmcon(1,imat).gt.0) then
+            if((((nelcon(1,imat).gt.-51).or.(nelcon(1,imat).lt.-54)))
+     &           .and.
+     &           (matname(imat)(1:11).ne.'ANISO_CREEP')
+     &           .and.
+     &           (matname(imat)(1:11).ne.'JOHNSONCOOK')) then
+              ierror=1
+              write(*,*) '*ERROR in calinput: a damage initiation'
+              write(*,*) '       model was defined for material',
+     &             matname(imat)
+              write(*,*) '       for which no equivalent strain is'
+              write(*,*) '       calculated.'
+            endif
+          endif
+        enddo
+        if(((nmethod.ne.1).and.(nmethod.ne.4)).or.
+     &       (iperturb(1).lt.2)) then
+          ierror=1
+          write(*,*) '*ERROR in calinput: a damage initiation'
+          write(*,*) '       model was defined for a calculation'
+          write(*,*) '       which is neither nonlinear static'
+          write(*,*) '       (*STATIC) nor nonlinear dynamic'
+          write(*,*) '       (*DYNAMIC).'
+        endif
+        if(ierror.eq.1) call exit(201)
       endif
 !     
 !     for frequency calculations no kinetic energy is calculated
@@ -1710,9 +1790,6 @@ c     &       lakon,ne,nload,sideload,ipkon,kon,nelemload,ier)
         endif
       endif
 !     
-c      write(*,*)
-c      write(*,*) 'STEP ',istep
-c      write(*,*)
       if(nmethod.eq.-1) then
         write(*,*) 'Visco analysis was selected'
       elseif(nmethod.eq.0) then
@@ -1752,14 +1829,6 @@ c      write(*,*)
       timepar(5)=tincf
 !     
       if(istep.eq.1) ncs_=lprev
-c!     
-c      if(ier.ge.1) then
-c        write(*,*) '*ERROR in calinput: at least one fatal'
-c        write(*,*) '       error message while reading the'
-c        write(*,*) '       input deck: CalculiX stops.'
-c        write(*,*)
-c        call exit(201)
-c      endif
 !
 !     the step number is written in the .dat-file if data output
 !     was requested or if the procedure always leads to some

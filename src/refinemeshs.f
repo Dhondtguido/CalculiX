@@ -22,6 +22,8 @@
 !     reading *REFINE MESH in the input deck
 !     
       implicit none
+!
+      logical smoothingonly
 !     
       character*1 inpc(*)
       character*81 set(*),elset
@@ -39,6 +41,8 @@
         ier=1
         return
       endif
+!
+      smoothingonly=.false.
 !     
 !     reset the refinement controlling field
 !     
@@ -48,9 +52,7 @@
       do ii=2,n
         if(textpart(ii)(1:6).eq.'LIMIT=') then
           filab(48)(7:26)=textpart(ii)(7:26)
-c        elseif(textpart(ii)(1:4).eq.'USER') then
-c          filab(48)(1:6)='RMUSER'
-        elseif(textpart(ii)(1:6).eq.'ELSET=') THEN
+        elseif(textpart(ii)(1:6).eq.'ELSET=') then
           elset(1:60)=textpart(ii)(7:66)
           if(textpart(ii)(67:67).ne.' ') then
             write(*,*) 'set name too long (more than 60 characters)'
@@ -63,6 +65,8 @@ c          filab(48)(1:6)='RMUSER'
           enddo
           ipos=index(elset,' ')
           elset(ipos:ipos)='E'
+        elseif(textpart(ii)(1:13).eq.'SMOOTHINGONLY') then
+          smoothingonly=.true.
         else
           write(*,*) 
      &         '*WARNING reading *REFINE MESH:' 
@@ -77,9 +81,6 @@ c          filab(48)(1:6)='RMUSER'
 !     check whether a set was defined, and if any, whether it exists
 !      
       if(ipos.gt.0) then
-c        do i=1,nset
-c          if(set(i).eq.elset) exit
-c        enddo
         call cident81(set,elset,nset,id)
         i=nset+1
         if(id.gt.0) then
@@ -100,6 +101,15 @@ c        enddo
         do i=27,87
           filab(48)(i:i)=' '
         enddo
+      endif
+!     
+      if(smoothingonly) then
+        filab(48)(3:6)='SMOO'
+        do
+          call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
+     &         ipoinp,inp,ipoinpc)
+          if((key.eq.1).or.(istat.lt.0)) return
+        enddo  
       endif
 !     
       do

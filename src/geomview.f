@@ -30,7 +30,7 @@
 !
 !     change following line if nlabel is increased
 !     
-      character*87 label(55)
+      character*87 label(56)
 !     
       integer i,j,l,mi(*),kontri(4,*),i1,mcs,inocs(*),i2,i3,
      &     ntrit,jj,is,m,nkt,icntrl,imag,nk,nlabel
@@ -46,7 +46,7 @@
 !     change following line if nlabel is increased and the dimension
 !     of field label above!
 !     
-      nlabel=55
+      nlabel=56
 !     
 !     updating the displacements for cyclic symmetric structures
 !     

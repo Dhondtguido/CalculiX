@@ -36,9 +36,7 @@
 !
       real*8 shp(4,23),xs(3,3),xsi(3,3),xl(3,23),sh(3),xsi0(3,3)
 !
-      real*8 xi,et,ze,xsj,omg,omh,omr,opg,oph,opr
-!
-!
+      real*8 xi,et,ze,xsj,xsj0,omg,omh,omr,opg,oph,opr
 !
       if(iflag.gt.2) then
 !
@@ -89,22 +87,22 @@
 !
 !        computation of the jacobian determinant at center point
 !
-         xsj=xs(1,1)*(xs(2,2)*xs(3,3)-xs(2,3)*xs(3,2))
+         xsj0=xs(1,1)*(xs(2,2)*xs(3,3)-xs(2,3)*xs(3,2))
      &        -xs(1,2)*(xs(2,1)*xs(3,3)-xs(2,3)*xs(3,1))
      &        +xs(1,3)*(xs(2,1)*xs(3,2)-xs(2,2)*xs(3,1))
 !
 !        computation of the global derivative of the local coordinates
 !        at center point of element. 
 !
-         xsi0(1,1)=(xs(2,2)*xs(3,3)-xs(3,2)*xs(2,3))/xsj
-         xsi0(1,2)=(xs(1,3)*xs(3,2)-xs(1,2)*xs(3,3))/xsj
-         xsi0(1,3)=(xs(1,2)*xs(2,3)-xs(2,2)*xs(1,3))/xsj
-         xsi0(2,1)=(xs(2,3)*xs(3,1)-xs(2,1)*xs(3,3))/xsj
-         xsi0(2,2)=(xs(1,1)*xs(3,3)-xs(3,1)*xs(1,3))/xsj
-         xsi0(2,3)=(xs(1,3)*xs(2,1)-xs(1,1)*xs(2,3))/xsj
-         xsi0(3,1)=(xs(2,1)*xs(3,2)-xs(3,1)*xs(2,2))/xsj
-         xsi0(3,2)=(xs(1,2)*xs(3,1)-xs(1,1)*xs(3,2))/xsj
-         xsi0(3,3)=(xs(1,1)*xs(2,2)-xs(2,1)*xs(1,2))/xsj
+         xsi0(1,1)=(xs(2,2)*xs(3,3)-xs(3,2)*xs(2,3))/xsj0
+         xsi0(1,2)=(xs(1,3)*xs(3,2)-xs(1,2)*xs(3,3))/xsj0
+         xsi0(1,3)=(xs(1,2)*xs(2,3)-xs(2,2)*xs(1,3))/xsj0
+         xsi0(2,1)=(xs(2,3)*xs(3,1)-xs(2,1)*xs(3,3))/xsj0
+         xsi0(2,2)=(xs(1,1)*xs(3,3)-xs(3,1)*xs(1,3))/xsj0
+         xsi0(2,3)=(xs(1,3)*xs(2,1)-xs(1,1)*xs(2,3))/xsj0
+         xsi0(3,1)=(xs(2,1)*xs(3,2)-xs(3,1)*xs(2,2))/xsj0
+         xsi0(3,2)=(xs(1,2)*xs(3,1)-xs(1,1)*xs(3,2))/xsj0
+         xsi0(3,3)=(xs(1,1)*xs(2,2)-xs(2,1)*xs(1,2))/xsj0
 !     
       endif
 !
@@ -231,7 +229,7 @@ c      shp(4,11)=1.0d0-ze*ze
           sh(j)=shp(1,k)*xsi0(1,j)+shp(2,k)*xsi0(2,j)+shp(3,k)*xsi0(3,j)
         enddo
         do j=1,3
-          shp(j,k)=sh(j)
+          shp(j,k)=sh(j)*xsj0/xsj
         enddo
       enddo
 !

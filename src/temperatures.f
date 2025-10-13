@@ -24,6 +24,8 @@
 !     
 !     reading the input deck: *TEMPERATURE
 !     
+!     Author master2d-option: Marc Hassler     
+!     
 !     itempuser(1): flag: 0: temperatures in the input deck
 !     1: user subroutine utemp is used
 !     2: temperatures read from frd-file
@@ -32,7 +34,7 @@
 !     
       implicit none
 !     
-      logical temp_flag,user,submodel,utempusesteps,lintemp
+      logical temp_flag,user,submodel,utempusesteps,lintemp,master2d
 !     
       character*1 inpc(*)
       character*80 amname(*),amplitude
@@ -55,6 +57,7 @@
       iglobstep=0
       submodel=.false.
       lintemp=.false.
+      master2d=.false.
 !     
 !     defaults: 1) temperatures read from the input deck
 !     2) if read from file, then from the first step      
@@ -184,6 +187,8 @@
           utempusesteps=.true.
         elseif(textpart(i)(1:8).eq.'SUBMODEL') then
           submodel=.true.
+        elseif(textpart(i)(1:9).eq.'MASTER=2D') then
+          master2d=.true.
         elseif(textpart(i)(1:5).eq.'STEP=') then
           read(textpart(i)(6:15),'(i10)',iostat=istat) iglobstep
           if(istat.gt.0) then
@@ -268,8 +273,20 @@
 !     
 !     dummy temperature consisting of the first primes
 !     
+!     user: 1,2,3,5,7,11,13,17
+!     
           if(user) temperature=1.2357111317d0
-          if(submodel) temperature=1.9232931374d0
+!     
+!     submodel: 19,23,29,31,37
+!               + 4 if 3d, +6 if 2d
+!     
+          if(submodel) then
+            if(master2d) then
+              temperature=1.9232931376d0
+            else
+              temperature=1.9232931374d0
+            endif
+          endif
 !     
           if((inoelfree.ne.0).or.(nuel_.gt.0)) then
             tempgrad1=0.d0

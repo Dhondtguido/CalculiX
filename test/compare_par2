@@ -100,7 +100,14 @@ for i in *.inp; do
 
 done
 
-rm -f *.rfn.inp
+rm -f beam10psmooth.rfn.inp
+rm -f circ10dload.rfn.inp
+rm -f circ10pcent.rfn.inp
+rm -f circ10p.rfn.inp
+rm -f circ10pnl.rfn.inp
+rm -f segmentsmooth.rfn.inp
+rm -f segmentsmooth3.rfn.inp
+rm -f segmentsmooth2.rfn.inp
 
 echo "check the existence of file $errorfile"
 echo "if this file does not exist, the present results"

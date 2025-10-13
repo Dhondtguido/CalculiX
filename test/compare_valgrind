@@ -73,7 +73,6 @@ for i in *.inp; do
 
 done
 
-rm -f *.rfn.inp
 rm -f $tempfile
 echo "check the existence of file $errorfile"
 echo "if this file does not exist, the present results"

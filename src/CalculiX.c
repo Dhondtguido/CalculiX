@@ -56,7 +56,7 @@ int main(int argc,char *argv[])
     *istartset=NULL,*iendset=NULL,*ialset=NULL,*ielmat=NULL,
     *ielorien=NULL,*nrhcon=NULL,*nodebounold=NULL,*ndirbounold=NULL,
     *nelcon=NULL,*nalcon=NULL,*iamforc=NULL,*iamload=NULL,
-    *iamt1=NULL,*namta=NULL,*ipkon=NULL,*iamboun=NULL,
+    *iamt1=NULL,*namta=NULL,*ipkon=NULL,*iamboun=NULL,*ndmcon=NULL,
     *nplicon=NULL,*nplkcon=NULL,*inotr=NULL,*iponor=NULL,*knor=NULL,
     *ikforc=NULL,*ilforc=NULL,*iponoel=NULL,*inoel=NULL,*nshcon=NULL,
     *ncocon=NULL,*ibody=NULL,*ielprop=NULL,*islavsurf=NULL,
@@ -69,7 +69,7 @@ int main(int argc,char *argv[])
     nforcold,nloadold,nbody,nbody_,nbodyold,network,nheading_,
     k,nzs[3],nmpc_,nload_,nforc_,istep,istat,nboun_,nintpoint,
     iperturb[2],nmat,ntmat_,norien,ithermal[2]={0,0},nmpcold,
-    iprestr,kode,isolver,nslavs,nkon_,ne1,nkon0,mortar,
+    iprestr,kode,isolver,nslavs,nkon_,ne1,nkon0,mortar,ndmat_,
     jout[2],nlabel,nkon,idrct,jmax[2],iexpl,nevtot,ifacecount,
     iplas,npmat_,mi[3],ntrans,mpcend,namtot_,iheading,
     icascade,maxlenmpc,mpcinfo[4],ne1d,ne2d,infree[4],
@@ -89,7 +89,7 @@ int main(int argc,char *argv[])
     
   double *co=NULL,*xboun=NULL,*coefmpc=NULL,*xforc=NULL,*clearini=NULL,
     *xload=NULL,*xbounold=NULL,*xforcold=NULL,*randomval=NULL,
-    *vold=NULL,*sti=NULL,*xloadold=NULL,*xnor=NULL,
+    *vold=NULL,*sti=NULL,*xloadold=NULL,*xnor=NULL,*dmcon=NULL,
     *reorder=NULL,*dcs=NULL,*thickn=NULL,*thicke=NULL,*offset=NULL,
     *elcon=NULL,*rhcon=NULL,*alcon=NULL,*alzero=NULL,*t0=NULL,*t1=NULL,
     *prestr=NULL,*orab=NULL,*amta=NULL,*veold=NULL,*accold=NULL,
@@ -98,7 +98,7 @@ int main(int argc,char *argv[])
     *cs=NULL,*tietol=NULL,*fmpc=NULL,*prop=NULL,*t0g=NULL,*t1g=NULL,
     *xbody=NULL,*xbodyold=NULL,*coefmpcref=NULL,*dacon=NULL,*vel=NULL,
     *velo=NULL,*veloo=NULL,energy[5],*ratiorfn=NULL,*dgdxglob=NULL,
-    *g0=NULL,*xdesi=NULL,*coeffc=NULL,*edc=NULL,*coini=NULL;
+    *g0=NULL,*xdesi=NULL,*coeffc=NULL,*edc=NULL,*coini=NULL,*dam=NULL;
     
   double ctrl[57];
 
@@ -158,7 +158,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Mon Dec  2 10:07:33 CET 2024\n");
+  printf("You are using an executable made on Fri Oct 10 15:09:01 CEST 2025\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -189,7 +189,7 @@ int main(int argc,char *argv[])
 	  &ntrans_,&ncs_,&nstate_,&ncmat_,&memmpc_,&nprint_,energy,ctrl,alpha,
 	  qaold,physcon,&istep,&istat,&iprestr,&kode,&nload,&nbody,&nforc,
 	  &nboun,&nk,&nmpc,&nam,&nzs_,&nlabel,&ttime,&iheading,&nfc,&nfc_,&ndc,
-	  &ndc_);
+	  &ndc_,&ndmat_);
   
   NNEW(set,char,81*nset_);
   NNEW(meminset,ITG,nset_);
@@ -205,7 +205,7 @@ int main(int argc,char *argv[])
 		      &mortar,&ifacecount,&nintpoint,infree,&nheading_,
 		      &nobject_,iuel,&iprestr,&nstam,&ndamp,&nef,&nbounold,
 		      &nforcold,&nloadold,&nbodyold,&mpcend,irobustdesign,
-		      &nfc_,&ndc_,&maxsectors_));
+		      &nfc_,&ndc_,&maxsectors_,&ndmat_));
 
   SFREE(meminset);SFREE(rmeminset);mt=mi[1]+1;
   NNEW(heading,char,66*nheading_);
@@ -335,6 +335,14 @@ int main(int argc,char *argv[])
 
       NNEW(elcon,double,(ncmat_+1)*ntmat_*nmat);
       NNEW(nelcon,ITG,2*nmat);
+
+      /* damage constants */
+
+      if(ndmat_>0){
+	NNEW(dmcon,double,(ndmat_+1)*ntmat_*nmat);
+	NNEW(ndmcon,ITG,2*nmat);
+	NNEW(dam,double,mi[0]*ne_);
+      }
 
       /* density */
 
@@ -636,7 +644,8 @@ int main(int argc,char *argv[])
 		      &mpcfreeref,&maxlenmpcref,&memmpc_,&isens,&namtot,&nstam,
 		      dacon,vel,&nef,velo,veloo,ne2boun,itempuser,
 		      irobustdesign,irandomtype,randomval,&nfc,&nfc_,coeffc,
-		      ikdc,&ndc,&ndc_,edc,coini));
+		      ikdc,&ndc,&ndc_,edc,coini,&ndmat_,ndmcon,dmcon,dam,
+		      &irefineloop));
     
     SFREE(idefforc);SFREE(idefload);SFREE(idefbody);
 
@@ -655,7 +664,7 @@ int main(int argc,char *argv[])
       RENEW(ipobody,ITG,2*(ifreebody-1));
     }
     
-    if(irefineloop==1){
+    if(irefineloop>0){
 
       /* in the last step refinement was requested and the mesh
          was appropriately refined; this mesh has to be read */
@@ -672,7 +681,8 @@ int main(int argc,char *argv[])
 		  &network,&nlabel,iuel,iperturb,&iprestr,&ntie,tieset,
 		  &iparentel,ikboun,&ifreebody,&ipobody,&nbody,&iprfn,
 		  &konrfn,&ratiorfn,nodempcref,coefmpcref,&memmpcref_,
-		  &mpcfreeref,&maxlenmpcref,&maxlenmpc,&norien,tietol);
+		  &mpcfreeref,&maxlenmpcref,&maxlenmpc,&norien,tietol,
+		  &ntrans,&nam);
     }
 
 #ifdef CALCULIX_EXTERNAL_BEHAVIOURS_SUPPORT
@@ -816,6 +826,12 @@ int main(int argc,char *argv[])
 
       RENEW(elcon,double,(ncmat_+1)*ntmat_*nmat);
       RENEW(nelcon,ITG,2*nmat);
+
+      if(ndmat_>0){
+	RENEW(dmcon,double,(ndmat_+1)*ntmat_*nmat);
+	RENEW(ndmcon,ITG,2*nmat);
+	RENEW(dam,double,mi[0]*ne);
+      }
 
       RENEW(rhcon,double,2*ntmat_*nmat);
       RENEW(nrhcon,ITG,nmat);
@@ -1172,7 +1188,7 @@ int main(int argc,char *argv[])
       NNEW(jq,ITG,mt*nk+1);
       NNEW(ipointer,ITG,mt*nk);
       
-      if((icascade==0)&&((nmethod<8)||(nmethod>10))){
+      if(((icascade==0)&&((nmethod<8)||(nmethod>10)))||(nmethod==12)){
 	if((nmethod==11)||(nmethod==13)){nmethodl=2;}else{nmethodl=nmethod;}
 	mastruct(&nk,kon,ipkon,lakon,&ne,nodeboun,ndirboun,&nboun,ipompc,
 		 nodempc,&nmpc,nactdof,icol,jq,&mast1,&irow,&isolver,neq,
@@ -1282,7 +1298,8 @@ int main(int argc,char *argv[])
 		    &nintpoint,&mortar,&ifacecount,typeboun,&islavsurf,
 		    &pslavsurf,&clearini,&nmat,xmodal,&iaxial,&inext,&nprop,
 		    &network,orname,vel,&nef,velo,veloo,energy,itempuser,
-		    ipobody,&inewton,t0g,t1g,&ifreebody,&nlabel);
+		    ipobody,&inewton,t0g,t1g,&ifreebody,&nlabel,&ndmat_,ndmcon,
+		    dmcon,dam);
 
 	  memmpc_=mpcinfo[0];mpcfree=mpcinfo[1];icascade=mpcinfo[2];
 	  maxlenmpc=mpcinfo[3];
@@ -1624,11 +1641,12 @@ int main(int argc,char *argv[])
 
     /* check whether refinement was active */
 
-    //          if(irefineloop==20){
+    if(irefineloop>0){irefineloop++;}
     if(strcmp1(&filab[4089],"RM")==0){
-      irefineloop++;
+      //      irefineloop++;
+      irefineloop=1;
 
-      if(irefineloop==1){
+      //      if(irefineloop==1){
 
 	/* refinement was requested in the step which was just
 	   finished and a refined mesh was created and stored.
@@ -1663,7 +1681,7 @@ int main(int argc,char *argv[])
 		    &nobject_,&objectset,&nmethod,iperturb,&irefineloop,
 		    &iparentel,&iprfn,&konrfn,&ratiorfn,&heading,
 		    &nodedesi,&dgdxglob,&g0,&nuel_,&xdesi,&nfc,&coeffc,
-		    &ikdc,&edc,&coini);
+		    &ikdc,&edc,&coini,&ndmat_,&ndmcon,&dmcon,&dam);
 
 	/* closing and reopening the output files */
 	
@@ -1684,7 +1702,7 @@ int main(int argc,char *argv[])
 		&ncs_,&nstate_,&ncmat_,&memmpc_,&nprint_,energy,ctrl,alpha,
 		qaold,physcon,&istep,&istat,&iprestr,&kode,&nload,&nbody,&nforc,
 		&nboun,&nk,&nmpc,&nam,&nzs_,&nlabel,&ttime,&iheading,&nfc,
-		&nfc_,&ndc,&ndc_);
+		&nfc_,&ndc,&ndc_,&ndmat_);
   
 	NNEW(set,char,81*nset_);
 	NNEW(meminset,ITG,nset_);
@@ -1701,13 +1719,13 @@ int main(int argc,char *argv[])
 			    &mortar,&ifacecount,&nintpoint,infree,&nheading_,
 			    &nobject_,iuel,&iprestr,&nstam,&ndamp,&nef,
 			    &nbounold,&nforcold,&nloadold,&nbodyold,&mpcend,
-			    irobustdesign,&nfc_,&ndc_,&maxsectors_));
+			    irobustdesign,&nfc_,&ndc_,&maxsectors_,&ndmat_));
 
 	SFREE(meminset);SFREE(rmeminset);mt=mi[1]+1;
 	NNEW(heading,char,66*nheading_);
 
 	continue;
-      }
+	//      }
     }
 
     /* reset tempuserflag */
@@ -1851,7 +1869,8 @@ int main(int argc,char *argv[])
 			      &mortar,&nintpoint,&ifacecount,islavsurf,
 			      pslavsurf,clearini,irstrt,vel,&nef,velo,veloo,
 			      ne2boun,&memmpc_,heading,&nheading_,&network,
-			      &nfc,&ndc,coeffc,ikdc,edc,xmodal));
+			      &nfc,&ndc,coeffc,ikdc,edc,xmodal,&ndmat_,ndmcon,
+			      dmcon,dam));
       }
     } 
 	  
@@ -1897,7 +1916,7 @@ int main(int argc,char *argv[])
 	      &nobject_,&objectset,&nmethod,iperturb,&irefineloop,
 	      &iparentel,&iprfn,&konrfn,&ratiorfn,&heading,
 	      &nodedesi,&dgdxglob,&g0,&nuel_,&xdesi,&nfc,&coeffc,
-	      &ikdc,&edc,&coini);
+	      &ikdc,&edc,&coini,&ndmat_,&ndmcon,&dmcon,&dam);
   
 #ifdef CALCULIX_MPI
   MPI_Finalize();

@@ -345,7 +345,7 @@
      &       ihyper,istiff,elconloc,eth,kode,plicon,
      &       nplicon,plkcon,nplkcon,npmat_,
      &       plconloc,mi(1),dtime,jjj,
-     &       xstiff,ncmat_)
+     &       xstiff,ncmat_,iperturb)
 !
         e=stiff(1)
         un=stiff(2)

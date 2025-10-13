@@ -40,7 +40,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	 double *eenmax,double *fnr,double *fni,double *emn,
 	 double *thicke,char *jobnamec,char *output,double *qfx,
          double *cdn,ITG *mortar,double *cdnr,double *cdni,ITG *nmat,
-         ITG *ielprop,double *prop,double *sti){
+         ITG *ielprop,double *prop,double *sti,double *damn,double **errnp){
 
   /* stores the results in frd format
 
@@ -90,6 +90,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
   double pi,oner,*errn=NULL,*ethn=NULL;
 
   setlocale(LC_NUMERIC, "C");
+  errn=*errnp;
 
   strcpy2(fneig,jobnamec,132);
   strcat(fneig,".frd");
@@ -203,7 +204,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
     fprintf(f1,"%5sUHOST                                                              \n",p1);
     fprintf(f1,"%5sUPGM               CalculiX                                        \n",p1);
     fprintf(f1,"%5sUVERSION           Version DEVELOPMENT                             \n",p1);
-    fprintf(f1,"%5sUCOMPILETIME       Mon Dec  2 10:07:33 CET 2024                    \n",p1);
+    fprintf(f1,"%5sUCOMPILETIME       Fri Oct 10 15:09:01 CEST 2025                    \n",p1);
     fprintf(f1,"%5sUDIR                                                               \n",p1);
     fprintf(f1,"%5sUDBN                                                               \n",p1);
     
@@ -1587,6 +1588,27 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 
   }
 
+  /* storing the ductile damage initiation in the nodes */
+  
+  if((strcmp1(&filab[4785],"DUCT")==0)&&(*ithermal!=2)){
+    iselect=1;
+    
+    frdset(&filab[4785],set,&iset,istartset,iendset,ialset,
+	   inum,&noutloc,&nout,nset,&noutmin,&noutplus,&iselect,
+	   ngraph);
+    
+    frdheader(&icounter,&oner,time,&pi,noddiam,cs,&null,mode,
+	      &noutloc,description,kode,nmethod,f1,output,istep,iinc);
+
+    fprintf(f1," -4  DUCT        1    1\n");
+    fprintf(f1," -5  DUCT        1    1    0    0\n");
+
+    frdselect(damn,damn,&iset,&nkcoords,inum,m1,istartset,iendset,
+	      ialset,ngraph,&ncompscalar,ifieldscalar,icompscalar,
+	      nfieldscalar,&iselect,m2,f1,output,m3);
+
+  }
+
   /* storing the energy in the nodes */
   
   if((*nmethod!=5)||(*mode==-1)){
@@ -2221,19 +2243,24 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 
   /* mesh refinement */
   
-  if(strcmp1(&filab[4089],"RM")==0){
+  /*  if(strcmp1(&filab[4089],"RM")==0){
     refinemesh(nk,ne,co,ipkon,kon,v,veold,stn,een,emn,epn,enern,
 	       qfn,errn,filab,mi,lakon,jobnamec,istartset,iendset,
-	       ialset,set,nset,matname,ithermal,output,nmat);
-  }
+	       ialset,set,nset,matname,ithermal,output,nmat,
+	       nelemload,nload,sideload,nodeforc,
+	       nforc,nodeboun,nboun,nodempc,ipompc,nmpc);
+	       }*/
 
-  /* remove auxiliary field for the error estimator at the nodes */  
+  /* remove auxiliary field for the error estimator at the nodes
+     if no mesh refinement was requested */  
 
-  if((*nmethod!=5)||(*mode==-1)){
-    if((strcmp1(&filab[1044],"ERR")==0)&&(*ithermal!=2)){
-      SFREE(errn);
-    }
-  }
+  if((strcmp1(&filab[4089],"RM")!=0)&&
+     ((*nmethod!=5)||(*mode==-1))&&
+     ((strcmp1(&filab[1044],"ERR")==0)&&(*ithermal!=2))){
+    SFREE(errn);
+  }else{*errnp=errn;}
+
+  //  if(((*nmethod!=5)||(*mode==-1)&&((strcmp1(&filab[1044],"ERR")==0)&&(*ithermal!=2))) SFREE(errn);
 
   /*  the remaining lines only apply to frequency calculations
       with cyclic symmetry, complex frequency and steady state calculations */
@@ -2502,6 +2529,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
   }
   
   fclose(f1);
+  
   return;
   
 }

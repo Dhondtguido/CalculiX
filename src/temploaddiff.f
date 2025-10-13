@@ -25,7 +25,7 @@
      &     co,vold,itg,ntg,amname,ikboun,ilboun,nelemload,sideload,mi,
      &     xforcdiff,xloaddiff,xbodydiff,t1diff,xboundiff,iabsload,
      &     iprescribedboundary,ntrans,trab,inotr,veold,nactdof,bcont,fn,
-     &     ipobody,iponoel,inoel,ipkon,kon,lakon,ielprop,prop,ielmat,
+     &     ipobody,iponoeln,inoeln,ipkon,kon,lakon,ielprop,prop,ielmat,
      &     shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon)
 !     
 !     calculates the loading at a given time and the difference with
@@ -47,7 +47,7 @@
      &     nbody,iambodyi,nodeboun(*),ndirboun(*),nodeforc(2,*),
      &     ndirforc(*),istep,iinc,msecpt,node,j,ikboun(*),ilboun(*),
      &     ipresboun,mi(*),iabsload,iprescribedboundary,ntrans,
-     &     nactdof(0:mi(2),*),ipobody(2,*),iponoel(*),inoel(2,*),
+     &     nactdof(0:mi(2),*),ipobody(2,*),iponoeln(*),inoeln(2,*),
      &     ipkon(*),kon(*),ielprop(*),ielmat(mi(3),*),nshcon(*),
      &     nrhcon(*),ncocon(2,*),ntmat_
 !     
@@ -149,13 +149,13 @@
             endif
             if(ndirboun(i).eq.0) then
               call utemp(xbounact(i),msecpt,istep,iinc,abqtime,node,
-     &             coords,vold,mi,iponoel,inoel,
+     &             coords,vold,mi,iponoeln,inoeln,
      &             ipobody,xbodyact,ibody,ipkon,kon,
      &             lakon,ielprop,prop,ielmat,
      &             shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon)
             else
               call uboun(xbounact(i),istep,iinc,abqtime,node,
-     &             ndirboun(i),coords,vold,mi,iponoel,inoel,
+     &             ndirboun(i),coords,vold,mi,iponoeln,inoeln,
      &             ipobody,xbodyact,ibody,ipkon,kon,
      &             lakon,ielprop,prop,ielmat,
      &             shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon)
@@ -236,7 +236,7 @@
               xforcdiff(i)=xforcact(i)-xforcdiff(i)
             endif
             call cflux(xforcact(i),msecpt,istep,iinc,abqtime,node,
-     &           coords,vold,mi,ipkon,kon,lakon,iponoel,inoel,
+     &           coords,vold,mi,ipkon,kon,lakon,iponoeln,inoeln,
      &           ielprop,prop,ielmat,shcon,nshcon,rhcon,nrhcon,
      &           ntmat_,cocon,ncocon)
             xforcdiff(i)=xforcact(i)-xforcdiff(i)
