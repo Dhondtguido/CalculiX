@@ -32,7 +32,7 @@
      &  jj,ig,nope,nopes,igpres,id,
      &  mint2d,ifacet(6,4),ifacew(8,5),iflag,indexe,jface,istartset(*),
      &  iendset(*),ipkon(*),kon(*),iset,ialset(*),nset,ipos,
-     &  mi(*),nelemload(2,*),nload,ipres
+     &  mi(*),nelemload(2,*),nload,ipres,ifacepq(8,5)
 !
       real*8 co(3,*),xs2(3,7),pres,voldl2(3,8),xl2(3,8),xsj2(3),
      &  shp2(7,8),vold(0:mi(2),*),xi,et,weight,voldprev(0:mi(2),*),
@@ -58,6 +58,12 @@
      &             1,2,5,4,7,14,10,13,
      &             2,3,6,5,8,15,11,14,
      &             4,6,3,1,12,15,9,13/
+      data ifacepq /
+     &     1,5,4,10,13,9,0,0,
+     &     2,5,1,11,10,6,0,0,
+     &     3,5,2,12,11,7,0,0,
+     &     4,5,3,13,12,8,0,0,
+     &     1,4,3,2,9,8,7,6/
       data iflag /3/
 !     
 !           determining the set with the external faces
@@ -125,6 +131,10 @@ c         indexe=ipkon(nelem)
          elseif(lakonl(4:4).eq.'4') then
             nope=4
             nopes=3
+         elseif(lakonl(4:5).eq.'13') then
+            nope=13
+         elseif(lakonl(4:4).eq.'5') then
+            nope=5
          elseif(lakonl(4:5).eq.'15') then
             nope=15
          elseif(lakonl(4:4).eq.'6') then
@@ -156,18 +166,39 @@ c            endif
          do i=1,nope
             konl(i)=kon(indexe+i)
          enddo
+!
+!  treatment of Pyramid elements
+!
+         if(lakonl(4:4).eq.'5') then
+            mint2d=1
+            if(ig.le.4) then
+               nopes=3
+            else
+               nopes=4
+            endif
+!         endif
+         elseif(lakonl(4:5).eq.'13') then
+            if(ig.le.4) then
+!  values from C3D10 equivalent surface
+              mint2d=3
+              nopes=6
+            else
+!  values from C3D20 equivalent surface
+              mint2d=9
+              nopes=8
+            endif
 !     
 !        treatment of wedge faces
 !     
-         if(lakonl(4:4).eq.'6') then
+         elseif(lakonl(4:4).eq.'6') then
             mint2d=1
             if(ig.le.2) then
                nopes=3
             else
                nopes=4
             endif
-         endif
-         if(lakonl(4:5).eq.'15') then
+!         endif
+         elseif(lakonl(4:5).eq.'15') then
             if(ig.le.2) then
                mint2d=3
                nopes=6
@@ -199,6 +230,15 @@ c            endif
                  voldl2(j,i)=voldl2(j,i)-voldprev(j,konl(ifacet(i,ig)))
                enddo
             enddo
+         elseif((nope.eq.13).or.(nope.eq.5)) then
+            do i=1,nopes
+               do j=1,3
+                  voldl2(j,i)=vold(j,konl(ifacepq(i,ig)))
+                  xl2(j,i)=co(j,konl(ifacepq(i,ig)))
+     &                 +voldl2(j,i)
+                 voldl2(j,i)=voldl2(j,i)-voldprev(j,konl(ifacepq(i,ig)))
+               enddo
+            enddo
          else
             do i=1,nopes
                do j=1,3
@@ -222,20 +262,24 @@ c            endif
                weight=weight2d1(i)
             elseif((lakonl(4:4).eq.'8').or.
      &              (lakonl(4:6).eq.'20R').or.
+     &              ((lakonl(4:5).eq.'5').and.(nopes.eq.4)).or.
      &              ((lakonl(4:5).eq.'15').and.(nopes.eq.8))) then
                xi=gauss2d2(1,i)
                et=gauss2d2(2,i)
                weight=weight2d2(i)
-            elseif(lakonl(4:4).eq.'2') then
+            elseif((lakonl(4:4).eq.'2').or.
+     &              ((lakonl(4:5).eq.'13').and.(nopes.eq.8))) then
                xi=gauss2d3(1,i)
                et=gauss2d3(2,i)
                weight=weight2d3(i)
             elseif((lakonl(4:5).eq.'10').or.
+     &              ((lakonl(4:5).eq.'13').and.(nopes.eq.6)).or.
      &              ((lakonl(4:5).eq.'15').and.(nopes.eq.6))) then
                xi=gauss2d5(1,i)
                et=gauss2d5(2,i)
                weight=weight2d5(i)
             elseif((lakonl(4:4).eq.'4').or.
+     &              ((lakonl(4:4).eq.'5').and.(nopes.eq.3)).or.
      &              ((lakonl(4:4).eq.'6').and.(nopes.eq.3))) then
                xi=gauss2d4(1,i)
                et=gauss2d4(2,i)

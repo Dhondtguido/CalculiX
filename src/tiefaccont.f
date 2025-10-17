@@ -47,7 +47,7 @@
      &     nslavnode(ntie+1),nmastnode(ntie+1),ifacecount,islav,imast,
      &     ipos,index1,iponoels(*),inoels(2,*),ifreenoels,ifreenoelold,
      &     mortar,numbern,numberf,iface,kflag,nk,ipoface(*),
-     &     nodface(5,*),nface,nelem,nope
+     &     nodface(5,*),nface,nelem,nope,ifacepl(4,5),ifacepq(8,5)
 !     
       real*8 xnoels(*)
 !     
@@ -89,6 +89,21 @@
      &     1,2,5,4,7,14,10,13,
      &     2,3,6,5,8,15,11,14,
      &     3,1,4,6,9,13,12,15/
+!
+!  5 nodes pyramid surface numbering
+      data ifacepl /
+     &     1,5,4,0,
+     &     2,5,1,0,
+     &     3,5,2,0,
+     &     4,5,3,0,
+     &     1,4,3,2/
+!  13 nodes pyramid surface numbering
+      data ifacepq /
+     &     1,5,4,10,13,9,0,0,
+     &     2,5,1,11,10,6,0,0,
+     &     3,5,2,12,11,7,0,0,
+     &     4,5,3,13,12,8,0,0,
+     &     1,4,3,2,9,8,7,6/
 !     
       ifacecount=0
       nslavs=0
@@ -260,6 +275,22 @@
                       elseif(lakon(nelem)(4:4).eq.'4') then
                         nopes=3
                         nface=4
+                      elseif(lakon(nelem)(4:5).eq.'13') then
+                        if(jface.le.4) then
+                          nopes=6
+                        else
+                          nopes=8
+                        endif
+                        nface=5
+                        nope=13
+                      elseif(lakon(nelem)(4:4).eq.'5') then
+                        if(jface.le.4) then
+                          nopes=3
+                        else
+                          nopes=4
+                        endif
+                        nface=5
+                        nope=5
                       elseif(lakon(nelem)(4:5).eq.'15') then
                         if(jface.le.2) then
                           nopes=6
@@ -419,16 +450,25 @@
                   nopes=6
                 elseif(lakon(nelems)(4:4).eq.'4') then
                   nopes=3
-                endif
-!     
-                if(lakon(nelems)(4:4).eq.'6') then
+                elseif(lakon(nelems)(4:4).eq.'5') then
+                  if(jfaces.le.4) then
+                    nopes=3
+                  else
+                    nopes=4
+                  endif
+                elseif(lakon(nelems)(4:5).eq.'13') then
+                  if(jfaces.le.4) then
+                    nopes=6
+                  else
+                    nopes=8
+                  endif
+                elseif(lakon(nelems)(4:4).eq.'6') then
                   if(jfaces.le.2) then
                     nopes=3
                   else
                     nopes=4
                   endif
-                endif
-                if(lakon(nelems)(4:5).eq.'15') then
+                elseif(lakon(nelems)(4:5).eq.'15') then
                   if(jfaces.le.2) then
                     nopes=6
                   else
@@ -443,6 +483,10 @@
                   elseif((lakon(nelems)(4:4).eq.'4').or.
      &                   (lakon(nelems)(4:5).eq.'10')) then
                     node=kon(indexe+ifacet(l,jfaces))
+                  elseif(lakon(nelems)(4:4).eq.'5') then
+                    node=kon(indexe+ifacepl(l,jfaces))
+                  elseif(lakon(nelems)(4:5).eq.'13') then
+                    node=kon(indexe+ifacepq(l,jfaces))
                   elseif(lakon(nelems)(4:4).eq.'6') then
                     node=kon(indexe+ifacew1(l,jfaces))
                   elseif(lakon(nelems)(4:5).eq.'15') then
@@ -559,16 +603,25 @@ c          enddo
               nopem=6
             elseif(lakon(nelemm)(4:4).eq.'4') then
               nopem=3
-            endif
-!     
-            if(lakon(nelemm)(4:4).eq.'6') then
+            elseif(lakon(nelemm)(4:4).eq.'5') then
+              if(jfacem.le.4) then
+                nopem=3
+              else
+                nopem=4
+              endif
+            elseif(lakon(nelemm)(4:5).eq.'13') then
+              if(jfacem.le.4) then
+                nopem=6
+              else
+                nopem=8
+              endif
+            elseif(lakon(nelemm)(4:4).eq.'6') then
               if(jfacem.le.2) then
                 nopem=3
               else
                 nopem=4
               endif
-            endif
-            if(lakon(nelemm)(4:5).eq.'15') then
+            elseif(lakon(nelemm)(4:5).eq.'15') then
               if(jfacem.le.2) then
                 nopem=6
               else
@@ -583,6 +636,10 @@ c          enddo
               elseif((lakon(nelemm)(4:4).eq.'4').or.
      &               (lakon(nelemm)(4:5).eq.'10')) then
                 node=kon(indexe+ifacet(l,jfacem))
+              elseif(lakon(nelemm)(4:4).eq.'5') then
+                node=kon(indexe+ifacepl(l,jfacem))
+              elseif(lakon(nelemm)(4:5).eq.'13') then
+                node=kon(indexe+ifacepq(l,jfacem))
               elseif(lakon(nelemm)(4:4).eq.'6') then
                 node=kon(indexe+ifacew1(l,jfacem))
               elseif(lakon(nelemm)(4:5).eq.'15') then

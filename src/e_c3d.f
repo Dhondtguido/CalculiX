@@ -74,7 +74,8 @@
      &     istartset(*),iendset(*),ialset(*),ntie,integerglob(*),nasym,
      &     nplicon(0:ntmat_,*),nplkcon(0:ntmat_,*),npmat_,nopered,
      &     mscalmethod,nset,islavquadel(*),jqte(*),irowte(*),
-     &     node1,node2,irowtf(16),jqtf(9),j2,mortartrafoflag
+     &     node1,node2,irowtloc1(16),jqtloc1(9),j2,mortartrafoflag,
+     &     ifacep(8,5)
 !     
       real*8 co(3,*),xl(3,20),shp(4,20),xs2(3,7),veold(0:mi(2),*),
      &     s(60,60),w(3,3),p1(3),p2(3),bodyf(3),bodyfx(3),ff(60),
@@ -115,6 +116,13 @@
      &     1,2,5,4,7,14,10,13,
      &     2,3,6,5,8,15,11,14,
      &     4,6,3,1,12,15,9,13/),(/8,5/))
+! 13 nodes pyramid surface numbering
+      ifacep=reshape((/
+     &     1,5,4,10,13,9,0,0,
+     &     2,5,1,11,10,6,0,0,
+     &     3,5,2,12,11,7,0,0,
+     &     4,5,3,13,12,8,0,0,
+     &     1,4,3,2,9,8,7,6/),(/8,5/))
       iflag=3
       null=0
       iperm=(/13,14,-15,16,17,-18,19,20,-21,22,23,-24,
@@ -134,8 +142,8 @@ c     Bernhardi start
         nope=11
         nopev=8
         nopes=4
-      elseif(lakonl(4:5).eq.'20') then
 c     Bernhardi end
+      elseif(lakonl(4:5).eq.'20') then
         nope=20
         nopev=8
         nopes=8
@@ -151,6 +159,13 @@ c     Bernhardi end
         nope=4
         nopev=4
         nopes=3
+      elseif(lakonl(4:4).eq.'5') then
+        nope=5
+        nopev=5
+      elseif(lakonl(4:5).eq.'13') then
+        nope=13
+        nopev=5
+        nopes=8
       elseif(lakonl(4:5).eq.'15') then
         nope=15
         nopev=6
@@ -315,6 +330,10 @@ c     Bernhardi end
           else
             mint3d=4
           endif
+        elseif(lakonl(4:4).eq.'5') then
+          mint3d=5
+        elseif(lakonl(4:5).eq.'13') then
+          mint3d=13
         elseif(lakonl(4:5).eq.'15') then
           if(lakonl(7:8).eq.'LC') then
             mint3d=6*nlayer
@@ -590,6 +609,23 @@ c     write(*,*) 'e_c3d ',nelem
               ze=gauss3d5(3,kk)
               weight=weight3d5(kk)
             endif
+          elseif(lakonl(4:4).eq.'5') then
+            xi=pyra5d3(1,kk)
+            et=pyra5d3(2,kk)
+            ze=pyra5d3(3,kk)
+            weight=wpyra5d3(kk)
+          elseif(lakonl(4:5).eq.'13') then
+            if(lakonl(6:6).eq.'F') then
+              xi=pyra13d3f(1,kk)
+              et=pyra13d3f(2,kk)
+              ze=pyra13d3f(3,kk)
+              weight=wpyra13d3f(kk)
+            else
+              xi=pyra13d3(1,kk)
+              et=pyra13d3(2,kk)
+              ze=pyra13d3(3,kk)
+              weight=wpyra13d3(kk)
+            endif
           elseif(lakonl(4:5).eq.'15') then
             if(lakonl(7:8).ne.'LC') then
               xi=gauss3d8(1,kk)
@@ -667,6 +703,14 @@ c     Bernhardi end
           call shape10tet(xi,et,ze,xl,xsj,shp,iflag)
         elseif(nope.eq.4) then
           call shape4tet(xi,et,ze,xl,xsj,shp,iflag)
+        elseif(nope.eq.5) then
+          call shape5p(xi,et,ze,xl,xsj,shp,iflag)
+        elseif(nope.eq.13) then
+          if(lakonl(6:6).eq.'F') then
+            call shape13pf(xi,et,ze,xl,xsj,shp,iflag)
+          else
+            call shape13p(xi,et,ze,xl,xsj,shp,iflag)
+          endif
         elseif(nope.eq.15) then
           call shape15w(xi,et,ze,xl,xsj,shp,iflag)
         else
@@ -802,7 +846,7 @@ c     mortar end
 !     
 !     material data and local stiffness matrix
 !     
-        istiff=1
+       istiff=1
         call materialdata_me(elcon,nelcon,rhcon,nrhcon,alcon,nalcon,
      &       imat,amat,iorien,coords,orab,ntmat_,stiff,rho,
      &       nelem,ithermal,alzero,mattyp,t0l,t1l,
@@ -1338,6 +1382,33 @@ c     read(sideload(id)(2:2),'(i1)') ig
             endif
           endif
 !     
+!     treatment of pyramid faces
+!     
+          if(lakonl(4:4).eq.'5') then
+            mint2d=1
+            if(ig.le.4) then
+              nopes=3
+            else
+              nopes=4
+            endif
+          endif
+!
+!  Squared surface should be compatible with C3D20  
+!  Triangled surface should be compatible with C3D10
+!
+          if(lakonl(4:5).eq.'13') then
+            if(ig.le.4) then
+!  values from C3D10 equivalent surface
+              mint2d=3
+              nopes=6
+            else
+!  values from C3D20 equivalent surface
+              mint2d=9
+              nopes=8
+            endif
+          endif
+!  end of pyramid elements
+!     
 c     Bernhardi start
           if((nope.eq.20).or.(nope.eq.8).or.
      &         (nope.eq.11)) then
@@ -1385,6 +1456,28 @@ c     Bernhardi end
                 enddo
               enddo
             endif
+          elseif((nope.eq.13).or.(nope.eq.5)) then
+            if((iperturb(1).ne.1).and.(iperturb(2).ne.1)) then
+              do i=1,nopes
+                do j=1,3
+                  xl2(j,i)=co(j,konl(ifacep(i,ig)))
+                enddo
+              enddo
+            else
+              if(mass.eq.1) then
+                do i=1,nopes
+                  do j=1,3
+                    xl1(j,i)=co(j,konl(ifacep(i,ig)))
+                  enddo
+                enddo
+              endif
+              do i=1,nopes
+                do j=1,3
+                  xl2(j,i)=co(j,konl(ifacep(i,ig)))+
+     &                 vold(j,konl(ifacep(i,ig)))
+                enddo
+              enddo
+            endif
           else
             if((iperturb(1).ne.1).and.(iperturb(2).ne.1)) then
               do i=1,nopes
@@ -1422,6 +1515,8 @@ c     mortar start
                   node1=ifaceq(i1,ig)
                 elseif(nope.eq.10) then
                   node1=ifacet(i1,ig)
+                elseif(nope.eq.13) then
+                  node1=ifacep(i1,ig)
                 else
                   node1=ifacew(i1,ig)
                 endif
@@ -1431,6 +1526,8 @@ c     mortar start
                     node2=ifaceq(j2,ig)
                   elseif(nope.eq.10) then
                     node2=ifacet(j2,ig)
+                  elseif(nope.eq.13) then
+	            node2=ifacep(j2,ig)
                   else
                     node2=ifacew(j2,ig)
                   endif
@@ -1453,7 +1550,8 @@ c     mortar end
 !          
           do i=1,mint2d
             if((lakonl(4:5).eq.'8R').or.
-     &           ((lakonl(4:4).eq.'6').and.(nopes.eq.4))) then
+     &           ((lakonl(4:4).eq.'6').and.(nopes.eq.4)).or.
+     &           ((lakonl(4:4).eq.'5').and.(nopes.eq.4))) then
               xi=gauss2d1(1,i)
               et=gauss2d1(2,i)
               weight=weight2d1(i)
@@ -1467,13 +1565,19 @@ c     mortar end
               xi=gauss2d3(1,i)
               et=gauss2d3(2,i)
               weight=weight2d3(i)
+            elseif((lakonl(4:5).eq.'13').and.(nopes.eq.8)) then
+              xi=gauss2d3(1,i)
+              et=gauss2d3(2,i)
+              weight=weight2d3(i)
             elseif((lakonl(4:5).eq.'10').or.
-     &             ((lakonl(4:5).eq.'15').and.(nopes.eq.6))) then
+     &             ((lakonl(4:5).eq.'15').and.(nopes.eq.6)).or.
+     &             ((lakonl(4:5).eq.'13').and.(nopes.eq.6))) then
               xi=gauss2d5(1,i)
               et=gauss2d5(2,i)
               weight=weight2d5(i)
             elseif((lakonl(4:4).eq.'4').or.
-     &             ((lakonl(4:4).eq.'6').and.(nopes.eq.3))) then
+     &             ((lakonl(4:4).eq.'6').and.(nopes.eq.3)).or.
+     &           ((lakonl(4:4).eq.'5').and.(nopes.eq.3))) then
               xi=gauss2d4(1,i)
               et=gauss2d4(2,i)
               weight=weight2d4(i)
@@ -1482,7 +1586,7 @@ c     mortar end
             if(rhsi.eq.1) then
               if(nopes.eq.8) then
                 call shape8q(xi,et,xl2,xsj2,xs2,shp2,iflag)
-              elseif(nopes.eq.4) then
+             elseif(nopes.eq.4) then
                 call shape4q(xi,et,xl2,xsj2,xs2,shp2,iflag)
               elseif(nopes.eq.6) then
                 call shape6tri(xi,et,xl2,xsj2,xs2,shp2,iflag)
@@ -1592,6 +1696,8 @@ c     Bernhardi end
                   ipointer=(ifaceq(k,ig)-1)*3
                 elseif((nope.eq.10).or.(nope.eq.4)) then
                   ipointer=(ifacet(k,ig)-1)*3
+                elseif((nope.eq.13).or.(nope.eq.5)) then
+                  ipointer=(ifacep(k,ig)-1)*3
                 else
                   ipointer=(ifacew(k,ig)-1)*3
                 endif
@@ -1743,6 +1849,8 @@ c     Bernhardi end
                   ipointeri=(ifaceq(ii,ig)-1)*3
                 elseif((nope.eq.10).or.(nope.eq.4)) then
                   ipointeri=(ifacet(ii,ig)-1)*3
+                elseif((nope.eq.13).or.(nope.eq.5)) then
+                  ipointeri=(ifacep(ii,ig)-1)*3
                 else
                   ipointeri=(ifacew(ii,ig)-1)*3
                 endif
@@ -1754,6 +1862,8 @@ c     Bernhardi end
                     ipointerj=(ifaceq(jj,ig)-1)*3
                   elseif((nope.eq.10).or.(nope.eq.4)) then
                     ipointerj=(ifacet(jj,ig)-1)*3
+                  elseif((nope.eq.13).or.(nope.eq.5)) then
+                    ipointerj=(ifacep(jj,ig)-1)*3
                   else
                     ipointerj=(ifacew(jj,ig)-1)*3
                   endif
@@ -1939,13 +2049,20 @@ c     mortar end
           alp=.2917d0
         elseif(nope.eq.10) then
           alp=0.1203d0
+        elseif(nope.eq.13) then
+          alp=0.138752d0
+          if(lakonl(6:6).eq.'F') then
+            alp=0.209198d0
+          else  ! Quite a diff between Fellippa & Bedrosian Shapeform
+            alp=0.138752d0
+          endif
         elseif(nope.eq.15) then
           alp=0.2141d0
         elseif(nope.eq.11) then
           alp=0.1852d0
         endif
-!     
-        if((nope.eq.20).or.(nope.eq.10).or.
+!
+        if((nope.eq.20).or.(nope.eq.10).or.(nope.eq.13).or.
      &       (nope.eq.15).or.(nope.eq.11)) then
           factore=summass*alp/(1.d0+alp)/sume
           factorm=summass/(1.d0+alp)/summ

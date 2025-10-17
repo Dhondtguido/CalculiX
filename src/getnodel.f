@@ -27,7 +27,8 @@
       implicit none
 !
       integer ii,jface,nope,
-     &        ifaceq(8,6),ifacet(6,4),ifacew1(4,5),ifacew2(8,5)
+     &        ifaceq(8,6),ifacet(6,4),ifacew1(4,5),ifacew2(8,5),
+     &        ifacepl(4,5),ifacepq(8,5)
 !
       include "gauss.f"
 !
@@ -41,6 +42,21 @@
      &             1,2,4,5,9,8,
      &             2,3,4,6,10,9,
      &             1,4,3,8,10,7/
+!
+!  5 nodes pyramid surface numbering
+      data ifacepl /
+     &     1,5,4,0,
+     &     2,5,1,0,
+     &     3,5,2,0,
+     &     4,5,3,0,
+     &     1,4,3,2/
+!  13 nodes pyramid surface numbering
+      data ifacepq /
+     &     1,5,4,10,13,9,0,0,
+     &     2,5,1,11,10,6,0,0,
+     &     3,5,2,12,11,7,0,0,
+     &     4,5,3,13,12,8,0,0,
+     &     1,4,3,2,9,8,7,6/
 !
       data ifacew1 /1,3,2,0,
      &             4,5,6,0,
@@ -62,6 +78,10 @@
                getnodel=ifaceq(ii,jface)
       elseif((nope.eq.10).or.(nope.eq.4)) then
          getnodel=ifacet(ii,jface)
+      elseif(nope.eq.5) then
+         getnodel=ifacepl(ii,jface)
+      elseif(nope.eq.13) then
+         getnodel=ifacepq(ii,jface)
       elseif(nope.eq.6) then
          getnodel=ifacew1(ii,jface)
       else

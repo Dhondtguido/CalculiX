@@ -55,8 +55,10 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
   char c[2]="C",m1[4]=" -1",m2[4]=" -2",m3[4]=" -3",
     p0[6]="    0",p1[6]="    1",p2[6]="    2",p3[6]="    3",p4[6]="    4",
     p5[6]="    5",p6[6]="    6",p7[6]="    7",p8[6]="    8",p9[6]="    9",
-    p10[6]="   10",p11[6]="   11",
-    p12[6]="   12", fneig[132]="",date[8],clock[10],newdate[21],newclock[9],
+    p10[6]="   10",p11[6]="   11",p12[6]="   12",
+	p13[6]="spare",p14[6]="spare",
+	p15[6]="   15",p16[6]="   16", /* C3D5 & C3D15 Pyramid elements */
+    fneig[132]="",date[8],clock[10],newdate[21],newclock[9],
     material[59]="                                                          ",
     text[2]=" ";
 
@@ -65,7 +67,8 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
   ITG null,one,i,j,k,indexe,nemax,nlayer,noutloc,iset,iselect,ncomp,nope,
     nodes,ifield[7],nfield[2],icomp[7],ifieldstate[*nstate_],two,three,
     icompstate[*nstate_],ip0=0,ip1=1,ip2=2,ip3=3,ip4=4,ip5=5,ip6=6,ip7=7,
-    ip8=8,ip9=9,ip10=10,ip11=11,ip12=12,imat,nelout,ioutall=0,*inumshell=NULL,
+    ip8=8,ip9=9,ip10=10,ip11=11,ip12=12,ip13=13,ip14=14,ip15=15,ip16=16,
+	imat,nelout,ioutall=0,*inumshell=NULL,
     nterms,nout,noutplus,noutmin,mt=mi[1]+1,iflag,numfield,iorienloc;
 
   ITG ncompscalar=1,ifieldscalar[1]={1},icompscalar[1]={0},
@@ -552,6 +555,44 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	    }
 	  }
 	}
+      }else if(strcmp1(&lakon[8*i+3],"5")==0){
+
+	  /* 5-node pyramid element */
+
+	if(strcmp1(output,"asc")==0){
+	  fprintf(f1,"%3s%10" ITGFORMAT "%5s%5s%5" ITGFORMAT "\n%3s",
+		  m1,i+1,p15,p0,imat,m2);
+	  for(j=0;j<5;j++)fprintf(f1,"%10" ITGFORMAT "",kon[indexe+j]);
+	  fprintf(f1,"\n");
+	}else{
+	  iw=(int)(i+1);fwrite(&iw,sizeof(int),1,f1);
+	  iw=(int)ip15;fwrite(&iw,sizeof(int),1,f1);
+	  iw=(int)ip0;fwrite(&iw,sizeof(int),1,f1);
+	  iw=(int)imat;fwrite(&iw,sizeof(int),1,f1);
+	  for(j=0;j<5;j++){iw=(int)kon[indexe+j];
+	    fwrite(&iw,sizeof(int),1,f1);}
+	}
+      }else if(strcmp1(&lakon[8*i+3],"13")==0){
+
+          /* 13-node pyramid element */
+
+	  if(strcmp1(output,"asc")==0){
+	    fprintf(f1,"%3s%10" ITGFORMAT "%5s%5s%5" ITGFORMAT "\n%3s",
+		    m1,i+1,p16,p0,imat,m2);
+	    for(j=0;j<10;j++)fprintf(f1,"%10" ITGFORMAT "",kon[indexe+j]);
+	    fprintf(f1,"\n%3s",m2);
+	    for(j=10;j<13;j++)fprintf(f1,"%10" ITGFORMAT "",kon[indexe+j]);
+	    fprintf(f1,"\n");
+	  }else{
+	    iw=(int)(i+1);fwrite(&iw,sizeof(int),1,f1);
+	    iw=(int)ip16;fwrite(&iw,sizeof(int),1,f1);
+	    iw=(int)ip0;fwrite(&iw,sizeof(int),1,f1);
+	    iw=(int)imat;fwrite(&iw,sizeof(int),1,f1);
+	    for(j=0;j<10;j++){iw=(int)kon[indexe+j];
+	      fwrite(&iw,sizeof(int),1,f1);}
+	    for(j=10;j<13;j++){iw=(int)kon[indexe+j];
+	      fwrite(&iw,sizeof(int),1,f1);}
+	  }
       }else if((strcmp1(&lakon[8*i+3],"10")==0)||
                (strcmp1(&lakon[8*i+3],"14")==0)){
 
@@ -587,6 +628,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	  for(j=0;j<4;j++){iw=(int)kon[indexe+j];
 	    fwrite(&iw,sizeof(int),1,f1);}
 	}
+
       }else if(strcmp1(&lakon[8*i+3],"15")==0){
 	if(((strcmp1(&lakon[8*i+6]," ")==0)||
 	    (strcmp1(&filab[4],"E")==0))&&

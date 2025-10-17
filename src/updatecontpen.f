@@ -33,10 +33,10 @@
      &     nmastnode(*),ntie,imast,iplaneaxial,noeq,
      &     istartset(*),iendset(*),ialset(*),ifacem,nelemm,
      &     jfacem,indexe,ipkon(*),nopem,nope,konl(26),kon(*),m,
-     &     ifaceq(8,6),ifacet(6,4),ifacew1(4,5),
-     &     ifacew2(8,5),id,index1,indexnode(9),l,iflag,nset,itriact,
+     &     ifaceq(8,6),ifacet(6,4),ifacew1(4,5),ifacew2(8,5),
+     &     id,index1,indexnode(9),l,iflag,nset,itriact,
      &     ipos,ntrifaces,noeq4(2),noeq8(6),mcs,ics(*),icyc(3),
-     &     istart,ilength,noeq9(8)
+     &     istart,ilength,noeq9(8),ifacepl(4,5),ifacepq(8,5)
 !     
       real*8 co(3,*),vold(0:mi(2),*),cg(3,*),straight(16,*),col(3,3),
      &     xmastnor(3,*),xl2m(3,9),xi,et,dd,xsj2(3),shp2(7,9),
@@ -73,6 +73,20 @@
      &     1,2,5,4,7,14,10,13,
      &     2,3,6,5,8,15,11,14,
      &     3,1,4,6,9,13,12,15/
+!  5 nodes pyramid surface numbering
+      data ifacepl /
+     &     1,5,4,0,
+     &     2,5,1,0,
+     &     3,5,2,0,
+     &     4,5,3,0,
+     &     1,4,3,2/
+!  13 nodes pyramid surface numbering
+      data ifacepq /
+     &     1,5,4,10,13,9,0,0,
+     &     2,5,1,11,10,6,0,0,
+     &     3,5,2,12,11,7,0,0,
+     &     4,5,3,13,12,8,0,0,
+     &     1,4,3,2,9,8,7,6/
 !     
       data iflag /2/
 !     
@@ -167,9 +181,23 @@
               elseif(lakon(nelemm)(4:4).eq.'4') then
                 nopem=3
                 nope=4
-!     
-!     treatment of wedge faces
-!     
+                  elseif(lakon(nelemm)(4:4).eq.'5') then
+                     nope=5
+                     if(jfacem.le.4) then
+                        nopem=3
+                     else
+                        nopem=4
+                     endif
+                  elseif(lakon(nelemm)(4:5).eq.'13') then
+                     nope=13
+                     if(jfacem.le.4) then
+                        nopem=6
+                     else
+                        nopem=8
+                     endif
+                   elseif(lakon(nelemm)(4:4).eq.'6') then
+                      nope=6
+                      if(jfacem.le.2) then   
               elseif(lakon(nelemm)(4:4).eq.'6') then
                 nope=6
                 if(jfacem.le.2) then
@@ -218,6 +246,20 @@
               elseif(nope.eq.15) then
                 do m=1,nopem
                   do k=1,3
+                           xl2m(k,m)=co(k,konl(ifacepq(m,jfacem)))+
+     &                          vold(k,konl(ifacepq(m,jfacem)))
+                        enddo
+                     enddo
+                  elseif(nope.eq.5) then
+                     do m=1,nopem
+                        do k=1,3
+                           xl2m(k,m)=co(k,konl(ifacepl(m,jfacem)))+
+     &                          vold(k,konl(ifacepl(m,jfacem)))
+                        enddo
+                     enddo
+                  elseif(nope.eq.15) then
+                     do m=1,nopem
+                        do k=1,3
                     xl2m(k,m)=co(k,konl(ifacew2(m,jfacem)))+
      &                   vold(k,konl(ifacew2(m,jfacem)))
                   enddo
@@ -409,6 +451,18 @@
               ntrifaces=4
             elseif(lakon(nelemm)(4:4).eq.'4') then
               ntrifaces=1
+               elseif(lakon(nelemm)(4:5).eq.'13') then
+                  if(jfacem.le.4) then
+                     ntrifaces=4
+                  else
+                     ntrifaces=6
+                  endif
+               elseif(lakon(nelemm)(4:4).eq.'5') then
+                  if(jfacem.le.4) then
+                     ntrifaces=1
+                  else
+                     ntrifaces=2
+                  endif
             elseif(lakon(nelemm)(4:5).eq.'15') then
               if(jfacem.le.2) then
                 ntrifaces=4

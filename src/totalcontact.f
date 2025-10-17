@@ -30,7 +30,8 @@
      &     ifaceq(8,6),ifacet(6,4),ifacew1(4,5),ifacew2(8,5),nelemm,
      &     jfacem,indexe,nface,nope,nodefm(9),ifaces,jfaces,ifacem,
      &     id,islavsurf(2,*),itiefac(2,*),nelems,m,mint2d,nopes,
-     &     igauss,nopem,nodefs(9),indexf,nkon0
+     &     igauss,nopem,nodefs(9),indexf,nkon0,
+     &     ifacepl(4,5),ifacepq(8,5)
 !     
       real*8 pmastsurf(6,*)
 !     
@@ -66,6 +67,21 @@
      &     2,3,6,5,8,15,11,14,
      &     3,1,4,6,9,13,12,15/
 !
+!  5 nodes pyramid surface numbering
+      data ifacepl /
+     &     1,5,4,0,
+     &     2,5,1,0,
+     &     3,5,2,0,
+     &     4,5,3,0,
+     &     1,4,3,2/
+!  13 nodes pyramid surface numbering
+      data ifacepq /
+     &     1,5,4,10,13,9,0,0,
+     &     2,5,1,11,10,6,0,0,
+     &     3,5,2,12,11,7,0,0,
+     &     4,5,3,13,12,8,0,0,
+     &     1,4,3,2,9,8,7,6/
+!
       ifree=nkon0
       ne=ne0
 !      
@@ -98,9 +114,20 @@
             elseif(lakon(nelems)(4:4).eq.'4') then
                nopes=3
                nope=4
-!     
-!     treatment of wedge faces
-!     
+            elseif(lakon(nelems)(4:4).eq.'5') then
+               nope=5
+               if(jfaces.le.4) then
+                  nopes=3
+               else
+                  nopes=4
+               endif
+            elseif(lakon(nelems)(4:5).eq.'13') then
+               nope=13
+               if(jfaces.le.4) then
+                  nopes=6
+               else
+                  nopes=8
+               endif
             elseif(lakon(nelems)(4:4).eq.'6') then
                nope=6
                if(jfaces.le.2) then
@@ -127,6 +154,14 @@
             elseif((nope.eq.10).or.(nope.eq.4)) then
                do m=1,nopes
                   nodefs(m)=kon(ipkon(nelems)+ifacet(m,jfaces))
+               enddo
+            elseif(nope.eq.13) then
+               do m=1,nopes
+                  nodefs(m)=kon(ipkon(nelems)+ifacepq(m,jfaces))
+               enddo
+            elseif(nope.eq.5) then
+               do m=1,nopes
+                  nodefs(m)=kon(ipkon(nelems)+ifacepl(m,jfaces))
                enddo
             elseif(nope.eq.15) then
                do m=1,nopes
@@ -170,6 +205,22 @@
                elseif(lakon(nelemm)(4:4).eq.'4') then
                   nopem=3
                   nface=4
+               elseif(lakon(nelemm)(4:5).eq.'13') then
+                  if(jfacem.le.4) then
+                     nopem=6
+                  else
+                     nopem=8
+                  endif
+                  nface=5
+                  nope=13
+               elseif(lakon(nelemm)(4:4).eq.'5') then
+                  if(jfacem.le.4) then
+                     nopem=3
+                  else
+                     nopem=4
+                  endif
+                  nface=5
+                  nope=5
                elseif(lakon(nelemm)(4:5).eq.'15') then
                   if(jfacem.le.2) then
                      nopem=6
@@ -197,7 +248,15 @@
                      nodefm(k)=kon(indexe+ifacet(k,jfacem))
                   enddo
                elseif(nface.eq.5) then
-                  if(nope.eq.6) then
+                  if(nope.eq.5) then
+                     do k=1,nopem
+                        nodefm(k)=kon(indexe+ifacepl(k,jfacem))
+                     enddo
+                  elseif(nope.eq.13) then
+                     do k=1,nopem
+                        nodefm(k)=kon(indexe+ifacepq(k,jfacem))
+                     enddo
+                  elseif(nope.eq.6) then
                      do k=1,nopem
                         nodefm(k)=kon(indexe+ifacew1(k,jfacem))
                      enddo

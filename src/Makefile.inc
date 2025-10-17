@@ -781,6 +781,8 @@ sectionprints.f \
 selectcyclicsymmetrymodess.f \
 sensitivitys.f \
 shape10tet.f \
+shape13p.f \
+shape13pf.f \
 shape15w.f \
 shape20h_ax.f \
 shape20h.f \
@@ -790,6 +792,7 @@ shape3l.f \
 shape3tri.f \
 shape4q.f \
 shape4tet.f \
+shape5p.f \
 shape6tri.f \
 shape6tritilde.f \
 shape6tritilde_lin.f \
