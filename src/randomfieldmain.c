@@ -21,6 +21,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#include <locale.h>
 #include "CalculiX.h"
 #ifdef SPOOLES
 #include "spooles.h"
@@ -77,6 +78,8 @@ void randomfieldmain(ITG *kon,ITG *ipkon,char *lakon,ITG *ne,ITG *nmpc,
     actreliability,*stn=NULL,reliability,corrlen,*acscalar=NULL,
     *add=NULL,*aud=NULL,sigma=0,*rhs=NULL,*vector=NULL,*adbd=NULL,
     *aubd=NULL,*auc=NULL,delta,time=0.;
+
+  setlocale(LC_NUMERIC, "C");
 	         
   reliability=physcon[10];
   corrlen=physcon[11];
