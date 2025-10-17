@@ -21,7 +21,7 @@
 !     This subroutine enables to calculate the discharge coefficient for an 
 !     orifice (shap edged , rotating..) following the results obtained 
 !     by Mcgreehan and Schotsch
-!     The decription of the method can be found in :
+!     The description of the method can be found in :
 !     "Flow characteristics of long orifices with rotation and 
 !     corner radiusing"
 !     ASME 87-GT-162
@@ -48,7 +48,7 @@
       cd=1.d0-fakt*(1.d0-cd)
       cd=min(max(cd,0.d0),1.d0)
 !
-!     taking in account the lenght of the orifice
+!     taking in account the length of the orifice
 !
       lkorr=xl-rad
       q=lkorr/d

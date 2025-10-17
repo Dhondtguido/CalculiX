@@ -423,7 +423,7 @@ void filterbackwardmain(double *co, double *dgdxglob, ITG *nobject,
   
   }else{
 
-    printf(" Scaling of sensitivties with mass matrix\n\n");
+    printf(" Scaling of sensitivities with mass matrix\n\n");
     
     /* Solve the system of equations */
      

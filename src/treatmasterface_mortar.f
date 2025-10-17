@@ -29,7 +29,7 @@
 !     [in]       xl2sp		projected positions of slave nodes
 !     [in]       ipe	 	(i) pointer to ime for node i 
 !     [in]       ime     		... cataloging the edges with node i
-!     [in,out]   iactiveline 	field storing the active master triange lines for the active line search
+!     [in,out]   iactiveline 	field storing the active master triangle lines for the active line search
 !     [in,out]   nactiveline 	number of active lines
 !     [in]       nelemm		current master element
 !     [in,out]   nintpoint		number of generated integration points
@@ -37,7 +37,7 @@
 !     [in,out]   imastsurf		pointer into pmastsurf 
 !     [in,out]   pmastsurf		field storing position and weights for integration points on master side 
 !     [in,out]   xl2m		coordinates of master nodes for current master face
-!     [in,out]   nnodelem		number of nodes in curretn master element
+!     [in,out]   nnodelem		number of nodes in current master element
 !     [in,out]   xl2m2		resorted coordinates of master nodes for current master face
 !     [in]       nmp		number of master nodes for current master face
 !     [in]       nodem		node numbers for current master face

@@ -62,7 +62,7 @@ void mastructcmatrix(ITG *icolc,ITG *jqc,ITG **mast1p,ITG **irowcp,
 	   if(inode1==inode2){
 	      insert_cmatrix(ipointer,&mast1,&next,&jdof1,&jdof2,
 	         &ifree,nzsc); 
-           /* lower triangel matrix entries */
+           /* lower triangle matrix entries */
            }else if(inode1<inode2){
 	      istart=jqs[kk]-1; 
 	      FORTRAN(nident,(&irows[istart],&ipos,&icols[kk],&irow));
@@ -71,7 +71,7 @@ void mastructcmatrix(ITG *icolc,ITG *jqc,ITG **mast1p,ITG **irowcp,
 	         insert_cmatrix(ipointer,&mast1,&next,&jdof1,&jdof2,
 	            &ifree,nzsc); 
 	      }
- 	   /* upper triangel matrix entries */
+ 	   /* upper triangle matrix entries */
 	   }else{
 	      istart=jqs[jj]-1;  
 	      FORTRAN(nident,(&irows[istart],&jdof1,&icols[jj],&irow));

@@ -78,7 +78,7 @@
       data iflag /2/
 !
       if(network.le.2) then
-        write(*,*) '*ERROR: a network channel canot be used for'
+        write(*,*) '*ERROR: a network channel cannot be used for'
         write(*,*) '        temperature calculations only'
         write(*,*)
         call exit(201)

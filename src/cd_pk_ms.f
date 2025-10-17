@@ -61,7 +61,7 @@
       endif
 !      
 !     if rotating orifice with Mac Greehan & Scotch
-!     The decription of the method can be found in :
+!     The description of the method can be found in :
 !     "Flow characteristics of long orifices with rotation and 
 !     corner radiusing" ASME 87-GT-16
 !

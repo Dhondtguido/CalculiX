@@ -360,6 +360,7 @@
 !     temperature is needed, i.e. for the Johnson-Cook model
 !     
           if(int(dmcon(1,1,imat)).eq.2) then
+            iflag=1
             if(lakonl(1:5).eq.'C3D8R') then
               call shape8hr(xl,xsj,shp,gs,a)
             elseif(lakonl(1:5).eq.'C3D8I') then

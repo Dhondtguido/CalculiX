@@ -356,7 +356,7 @@
         Ds=Ds+Qs*gpthick(jjj,2)*dett 
       enddo   
 !
-!   stiffness matirx (6 dofs 3 nodes -> 18x18)  
+!   stiffness matrix (6 dofs 3 nodes -> 18x18)  
 !
       call us3_Kp(x,Db,Ds,Kp)   ! plate part (CS-DSG)   - in e0-frame
       call us3_Km(x,Km,Qin,h)   ! membrane part (ANDES) - in e0-frame

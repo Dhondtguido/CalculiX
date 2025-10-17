@@ -77,7 +77,7 @@ c          write(*,*)
 !     
 !     calculating the equivalent K-factor, the deflection angle
 !     and twist angle (formulas by Hans Richard, University of Paderborn;
-!     slightly modified to accomodate negative dk1 as well)
+!     slightly modified to accommodate negative dk1 as well)
 !     
       do i=1,nfront
         do m=1,nstep

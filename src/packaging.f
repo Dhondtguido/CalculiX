@@ -20,7 +20,7 @@
      &     xo,yo,zo,x,y,z,nx,ny,nz,co,ifree,ndesia,ndesib,
      &     iobject,ndesi,dgdxglob,nk,extnor,g0,nodenum)                       
 !     
-!     calcualtion of the actual wall thickness      
+!     calculation of the actual wall thickness      
 !     
       implicit none
 !     
