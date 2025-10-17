@@ -5535,3 +5535,6 @@ Dec 2002        - started to work on single crystal plasticity
 		  C3D8R)
                 - updated resultstherm.f for composite shells
                 - modified calcdamage.f
+
+ 17 Oct 2025    - included an example for thermal calculations in a
+                  composite shell
