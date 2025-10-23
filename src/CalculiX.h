@@ -1629,7 +1629,8 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
 		       char *output,ITG *ntrans,ITG *inotr,double *trab,
 		       char *orname,double *xdesi,double *timepar,
 		       double *coini,ITG *ikboun,ITG *nactdof,ITG *ne2d,
-		       ITG *nkon,char *tieset,ITG *ntie);
+		       ITG *nkon,char *tieset,ITG *ntie,ITG *knor2d,
+		       ITG *iponoel2d,ITG *iponor2d,ITG *inoel2d);
 
 void FORTRAN(fill_neiel,(ITG *nef,ITG *ipnei,ITG *neiel,ITG *neielcp));
 
@@ -3307,7 +3308,8 @@ void FORTRAN(normalsonsurface_se,(ITG *ipkon,ITG *kon,char*lakon,
              double *extnor,double *co,ITG *nk,ITG *ipoface,
              ITG *nodface,ITG *nactdof,ITG *mi,ITG *nodedesiinv,
              ITG *iregion,ITG *iponoelfa,ITG *ndesi,ITG *nodedesi,
-             ITG *nod2nd3rd,ITG *ikboun,ITG *nboun,ITG *ne2d));
+             ITG *nod2nd3rd,ITG *ikboun,ITG *nboun,ITG *ne2d,ITG *knor2d,
+             ITG *iponoel2d,ITG *iponor2d,ITG *inoel2d,ITG *ne));
 
 void FORTRAN(normalsonsurface_robust,(ITG *ipkon,ITG *kon,char *lakon,
 				      double *extnor,double *co,ITG *nk,
@@ -3435,7 +3437,7 @@ void FORTRAN(objective_shapeener_dx,(double *co1,ITG *kon1,ITG *ipkon1,
 void FORTRAN(objective_shapeener_tot,(ITG *ne,ITG *kon,ITG *ipkon,char *lakon,
              double *fint,double *vold,ITG *iperturb,ITG *mi,ITG *nactdof,
              double *dgdx,double *df,ITG *ndesi,ITG *iobject,ITG *jqs,
-             ITG *irows,double *vec,ITG *nod1st));
+             ITG *irows,double *vec,ITG *nod1st,ITG *nactdofinv));
 
 void FORTRAN(objective_peeq,(ITG *nodeset,ITG *istartset,ITG *iendset,
 			     ITG *ialset,ITG *nk,ITG *idesvar,ITG *iobject,
@@ -4708,7 +4710,7 @@ void FORTRAN(slavintpoints,(ITG *ntie,ITG *itietri,ITG *ipkon,
         ITG *i,ITG *l,ITG *ntri));
 
 void FORTRAN(smalldist,(double *co,double *distmin,char *lakon,
-             ITG *ipkon,ITG *kon,ITG *ne));
+             ITG *ipkon,ITG *kon,ITG *ne,ITG *ne2d));
 
 void FORTRAN(smoothbadmid,(double *cotet,ITG *kontet,ITG *ipoeln,ITG *ieln,
 			      ITG *nbadnodes,ITG *ibadnodes,

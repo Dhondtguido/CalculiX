@@ -5,11 +5,11 @@
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
 !     published by the Free Software Foundation(version 2);
-!     
+!
 !
 !     This program is distributed in the hope that it will be useful,
-!     but WITHOUT ANY WARRANTY; without even the implied warranty of 
-!     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+!     but WITHOUT ANY WARRANTY; without even the implied warranty of
+!     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 !     GNU General Public License for more details.
 !
 !     You should have received a copy of the GNU General Public License
@@ -18,7 +18,7 @@
 !
       subroutine writeinputdeck2(feasdir,nodedesi,ndesi,
      &     inoel,iponoel,xdesi,co,lakon,ipkon,kon,tinc,nk)
-!     
+!
 !     storing the feasible directionvalues to the mesh modification file
 !
       character*8 lakon(*)
@@ -41,15 +41,16 @@
 !
       do m=1,ndesi
         i=nodedesi(m)
-!     
+!
 !     consideration of plain stress/strain 2d-elements
-!     and axisymmetric elements        
-!     
+!     and axisymmetric elements
+!
         ielem=inoel(1,iponoel(i))
         if((lakon(ielem)(7:7).eq.'A').or.
      &       (lakon(ielem)(7:7).eq.'S').or.
+     &       (lakon(ielem)(7:7).eq.'L').or.
      &       (lakon(ielem)(7:7).eq.'E')) then
-!     
+!
           if(lakon(ielem)(4:5).eq.'20') then
             nope=20
           elseif (lakon(ielem)(4:4).eq.'8') then
@@ -61,20 +62,20 @@
           else
             cycle
           endif
-!     
+!
           indexe=ipkon(ielem)
           do j=1,nope
             if(i.eq.kon(indexe+j)) then
               exit
             endif
           enddo
-!     
-!     replace 3D node number by 2D node number     
-!     the only 3D nodes to be replaced are the expanded node with   
+!
+!     replace 3D node number by 2D node number
+!     the only 3D nodes to be replaced are the expanded node with
 !     the lowest node number (of the three expanded nodes; so nodes
-!     with local numbers 1,2,3,4,9,10,11,12 for a C3D20(R) element). 
-!     The other two are skipped by the statement nodedesiinv(.)=-1  
-!     
+!     with local numbers 1,2,3,4,9,10,11,12 for a C3D20(R) element).
+!     The other two are skipped by the statement nodedesiinv(.)=-1
+!
           if(lakon(ielem)(4:5).eq.'20') then
             if(j.gt.4) j=j-4
             node=kon(indexe+nope+j)
@@ -86,15 +87,9 @@
           elseif(lakon(ielem)(4:5).eq.'6') then
             node=kon(indexe+nope+j)
           endif
-!     
-        elseif(lakon(ielem)(7:7).eq.'L') then
-!     
-!     no output for shell elements necessary
-!     
-          cycle
         else
-!     
-!     in case of a 3D model no change of node number     
+!
+!     in case of a 3D model no change of node number
           node=i
         endif
 !
@@ -125,12 +120,13 @@
         write(20,103) nk+m,feasdir(2,i)*tinc
       enddo
       write(20,105)
-!      
+!
  101  format('*EQUATION',/,i1)
  102  format(3(i10,",",i1,",",e20.13,","),i10,',1,-1.')
  103  format('*BOUNDARY',/,i10,',1,1,',e20.13)
- 105  format('*STEP',/,'*STATIC',/,'*NODE FILE',/,'U',/,'*END STEP')
+ 105  format('*STEP',/,'*STATIC',/,'*NODE FILE, OUTPUT=2D',/,
+     &       'U',/,'*END STEP')
       close(20)
-!     
-      return        
+!
+      return
       end

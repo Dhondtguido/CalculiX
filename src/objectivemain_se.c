@@ -466,7 +466,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 
       FORTRAN(objective_shapeener_tot,(ne,kon,ipkon,lakon,fint,vold,iperturb,
 				       mi,nactdof,dgdx,df,ndesi,&iobject,jqs,
-				       irows,vec,nod1st));
+				       irows,vec,nod1st,nactdofinv));
 	    
       SFREE(vec);
 	    

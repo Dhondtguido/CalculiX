@@ -7,7 +7,7 @@
 /*                    */
 
 /*     This program is distributed in the hope that it will be useful,   */
-/*     but WITHOUT ANY WARRANTY; without even the implied warranty of    */ 
+/*     but WITHOUT ANY WARRANTY; without even the implied warranty of    */
 /*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the      */
 /*     GNU General Public License for more details.                      */
 
@@ -37,7 +37,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		ITG **ielorienp,ITG *norien,double *orab,ITG *ntmat_,
 		double *t0,double *t1,double *t1old,
 		ITG *ithermal,double *prestr,ITG *iprestr,
-		double *vold,ITG *iperturb,double *sti,ITG *nzs, 
+		double *vold,ITG *iperturb,double *sti,ITG *nzs,
 		ITG *kode,char *filab,double *eme,
 		ITG *iexpl,double *plicon,ITG *nplicon,double *plkcon,
 		ITG *nplkcon,
@@ -61,16 +61,16 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		ITG *iponor2d,ITG *knor2d,ITG *ne2d,ITG *iponoel2d,ITG *inoel2d,
 		ITG *mpcend,double *dgdxglob,double *g0,ITG **nodedesip,
 		ITG *ndesi,ITG *nobjectstart,double **xdesip,ITG *rig){
-	     
+
   char description[13]="            ",*lakon=NULL,cflag[1]=" ",fneig[132]="",
     stiffmatrix[132]="",*lakonfa=NULL,*objectset=NULL;
-  
+
   static int outputnormals=1;
-   
+
   ITG *inum=NULL,k,*irow=NULL,ielas=0,icmd=0,iinc=1,nasym=0,
     mass[2]={0,0},stiffness=1,buckling=0,rhsi=1,intscheme=0,*ncocon=NULL,
     *nshcon=NULL,mode=-1,noddiam=-1,coriolis=0,iout,
-    *itg=NULL,ntg=0,ngraph=1,mt=mi[1]+1,ne0,*integerglob=NULL,     
+    *itg=NULL,ntg=0,ngraph=1,mt=mi[1]+1,ne0,*integerglob=NULL,
     icfd=0,*inomat=NULL,*islavact=NULL,*islavnode=NULL,*nslavnode=NULL,
     *islavsurf=NULL,nmethodl,*kon=NULL,*ipkon=NULL,*ielmat=NULL,nzss,
     *mast1=NULL,*irows=NULL,*jqs=NULL,*ipointer=NULL,i,iread,
@@ -86,13 +86,13 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *iponexp=NULL,*ipretinfo=NULL,nfield,iforce,*nod2nd3rd=NULL,
     *nod1st=NULL,ishape=0,iscaleflag,istart,modalstress=0,ifeasd=0,
     *nx=NULL,*ny=NULL,*nz=NULL,*nodes=NULL;
-      
+
   double *stn=NULL,*v=NULL,*een=NULL,cam[5],*xstiff=NULL,*stiini=NULL,*tper,
     *f=NULL,*fn=NULL,qa[4],*epn=NULL,*xstateini=NULL,*xdesi=NULL,
     *vini=NULL,*stx=NULL,*enern=NULL,*xbounact=NULL,*xforcact=NULL,
     *xloadact=NULL,*t1act=NULL,*ampli=NULL,*xstaten=NULL,*eei=NULL,
     *enerini=NULL,*cocon=NULL,*shcon=NULL,*qfx=NULL,*dfm=NULL,
-    *qfn=NULL,*cgr=NULL,*xbodyact=NULL,*springarea=NULL,*emn=NULL,        
+    *qfn=NULL,*cgr=NULL,*xbodyact=NULL,*springarea=NULL,*emn=NULL,
     *clearini=NULL,ptime=0.,*emeini=NULL,*doubleglob=NULL,*au=NULL,
     *ad=NULL,*b=NULL,*aub=NULL,*adb=NULL,*pslavsurf=NULL,
     *pmastsurf=NULL,*cdn=NULL,*xstate=NULL,*fnext=NULL,*energyini=NULL,
@@ -103,7 +103,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *zo=NULL,*dist=NULL,*dummy=NULL;
 
   FILE *f1;
-  
+
 #ifdef SGI
   ITG token;
 #endif
@@ -131,9 +131,9 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   getglobalresults(&jobnamec[396],&integerglob,&doubleglob,nboun,iamboun,xboun,
 		   nload,sideload,iamload,&iglob,nforc,iamforc,xforc,
                    ithermal,nk,t1,iamt1,&sigma,&irefine);
-  
+
   /* check which design variables are active */
-  
+
   for(i=0;i<*ntie;i++){
     if(strcmp1(&tieset[i*243+80],"D")==0){
       if(*nobject>0){
@@ -142,9 +142,9 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       break;
     }
   }
-  
+
   /* check which targets are active */
-  
+
   for(i=0;i<*nobject;i++){
     if((strcmp1(&objectset[i*405],"ALL-DISP")==0)||
        (strcmp1(&objectset[i*405],"X-DISP")==0)||
@@ -184,9 +184,9 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
   if(ishapeenergy==1){
     NNEW(enerini,double,2*mi[0]**ne);
-    NNEW(emeini,double,6*mi[0]**ne); 
-    NNEW(stiini,double,6*mi[0]**ne); 
-      
+    NNEW(emeini,double,6*mi[0]**ne);
+    NNEW(stiini,double,6*mi[0]**ne);
+
     memcpy(&enerini[0],&ener[0],sizeof(double)*2*mi[0]**ne);
     memcpy(&emeini[0],&eme[0],sizeof(double)*6*mi[0]**ne);
     memcpy(&stiini[0],&sti[0],sizeof(double)*6*mi[0]**ne);
@@ -195,10 +195,10 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   if(ieigenfrequency==1){
 
     /* opening the eigenvalue file and checking for cyclic symmetry */
-      
+
     strcpy2(fneig,jobnamec,132);
     strcat(fneig,".eig");
-      
+
     if((f1=fopen(fneig,"rb"))==NULL){
       printf(" *ERROR in sensi_coor: cannot open eigenvalue file for reading");
       printf(" *INFO  in sensi_coor: if there are problems reading the .eig file this may be due to:\n");
@@ -207,7 +207,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       printf("           which created the .eig file\n\n");
       exit(0);
     }
-      
+
     if(fread(&cyclicsymmetry,sizeof(ITG),1,f1)!=1){
       printf(" *ERROR in sensi_coor reading the cyclic symmetry flag in the eigenvalue file");
       printf(" *INFO  in sensi_coor: if there are problems reading the .eig file this may be due to:\n");
@@ -216,7 +216,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       printf("           which created the .eig file\n\n");
       exit(0);
     }
-      
+
     if(fread(&nherm,sizeof(ITG),1,f1)!=1){
       printf(" *ERROR in sensi_coor reading the Hermitian flag in the eigenvalue file");
       printf(" *INFO  in sensi_coor: if there are problems reading the .eig file this may be due to:\n");
@@ -225,7 +225,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       printf("           which created the .eig file\n\n");
       exit(0);
     }
-      
+
     if(nherm!=1){
       printf(" *ERROR in sensi_coor: the eigenvectors in the .eig-file result\n");
       printf("       from a non-Hermitian eigenvalue problem. The \n");
@@ -251,12 +251,12 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   }
 
   /* determining the elements belonging to a given node */
-  
+
   NNEW(iponoel,ITG,*nk);
   NNEW(inoel,ITG,2**nkon);
   FORTRAN(elementpernode,(iponoel,inoel,lakon,ipkon,kon,ne));
-     
-  /* find the 
+
+  /* find the
      - external faces belonging to a given node
      - nodes belonging to a given external surface */
 
@@ -280,32 +280,32 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   FORTRAN(extfacepernode,(iponoelfa,inoelfa,lakonfa,ipkonfa,konfa,
 			  &nsurfs,&inoelsize));
   RENEW(inoelfa,ITG,3*inoelsize);
-      
+
   /* determining the design variables */
-      
+
   NNEW(itmp,ITG,*nk);
   NNEW(nodedesiinv,ITG,*nk);
-      
+
   if(*ne2d!=0){
 
     NNEW(nod2nd3rd,ITG,2**nk);
     NNEW(nod1st,ITG,*nk);
-	 
+
     FORTRAN(getdesiinfo2d,(set,istartset,iendset,ialset,nset,
 			   mi,nactdof,ndesi,nodedesi,ntie,tieset,
 			   nodedesiinv,lakon,ipkon,kon,iponoelfa,
 			   nod2nd3rd,iponor2d,knor2d,iponoel2d,
 			   inoel2d,nobject,objectset,nod1st,ne,
 			   jobnamef,rig));
-      
+
   }else{
-      
+
     FORTRAN(getdesiinfo3d,(set,istartset,iendset,ialset,nset,
 			   mi,nactdof,ndesi,nodedesi,ntie,tieset,
 			   itmp,nmpc,nodempc,ipompc,nodedesiinv,
 			   iponoel,inoel,lakon,ipkon,
 			   kon,&iregion,ipoface,nodface,nk,jobnamef,
-			   ipkonfa,lakonfa,konfa,&nsurfs));  
+			   ipkonfa,lakonfa,konfa,&nsurfs));
   }
 
   if(*ndesi==0){
@@ -313,8 +313,8 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     printf("         either none were defined, or all were removed\n");
     printf("         because of conflicting constraints.\n");
     FORTRAN(stop,());
-  }    
-  
+  }
+
   SFREE(itmp);
   RENEW(nodedesi,ITG,*ndesi);
 
@@ -327,16 +327,17 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		       istartdesi,ialdesi,lakon,ipkon,kon,
 		       nodedesiinv,&icoordinate,&iregion));
   RENEW(ialdesi,ITG,istartdesi[*ndesi]-1);
-            
+
   /* calculating the normal direction for every designvariable */
-      
+
   NNEW(extnor,double,3**nk);
-      
+
   FORTRAN(normalsonsurface_se,(ipkon,kon,lakon,extnor,co,nk,ipoface,
 			       nodface,nactdof,mi,nodedesiinv,&iregion,
-			       iponoelfa,ndesi,nodedesi,nod2nd3rd,
-			       ikboun,nboun,ne2d)); 
-      
+			       iponoelfa,ndesi,nodedesi,nod2nd3rd,ikboun,
+			       nboun,ne2d,knor2d,iponoel2d,iponor2d,inoel2d,
+			       ne));
+
   /* if the sensitivity calculation is used in a optimization script
      this script usually contains a loop consisting of:
      1. a call to CalculiX to define the sensitivities
@@ -346,7 +347,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
      mesh quality
      The latter point can be done by performing a linear elastic
      calculation in which the small modification in 2. is applied as
-     a *boundary condition and all other nodes (on the external 
+     a *boundary condition and all other nodes (on the external
      surface but no design variables) are fixed by *equation's
      in a direction normal to the surface. At corners and edges
      there my be more than one normal. The necessary equations are
@@ -368,47 +369,47 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   NNEW(nz,ITG,*nk);
   NNEW(nodes,ITG,*nk);
   NNEW(dist,double,*ne);
-      
+
   FORTRAN(writeinputdeck,(nk,co,iponoelfa,inoelfa,konfa,ipkonfa,lakonfa,
 			  &nsurfs,iponor,xnor,nodedesiinv,jobnamef,
 			  iponexp,nmpc,labmpc,ipompc,nodempc,ipretinfo,
 			  kon,ipkon,lakon,iponoel,inoel,iponor2d,knor2d,
 			  ipoface,nodface,ne,x,y,z,xo,yo,zo,nx,ny,nz,nodes,
 			  dist,ne2d,nod1st,nod2nd3rd,extnor,nodedesi,ndesi));
-                  
+
   SFREE(iponor);SFREE(xnor);SFREE(iponexp);SFREE(ipretinfo);
   SFREE(x);SFREE(y);SFREE(z);SFREE(xo);SFREE(yo);SFREE(zo);SFREE(nx);
   SFREE(ny);SFREE(nz);SFREE(nodes);SFREE(dist);
 
   /* createinum is called in order to determine the nodes belonging
      to elements; this information is needed in frd_se */
-      
+
   NNEW(inum,ITG,*nk);
   FORTRAN(createinum,(ipkon,inum,kon,lakon,nk,ne,&cflag[0],nelemload,
 		      nload,nodeboun,nboun,ndirboun,ithermal,co,vold,mi,ielmat,
 		      ielprop,prop));
-	  				   
+
   /* storing the normal information in the frd-file for the optimizer */
-          
+
   if(outputnormals==1){
- 
+
     ++*kode;
     inorm=1;
     nfield=3;
     iforce=0;
-  
+
     if(strcmp1(&filab[4],"I")==0){
-      
+
       FORTRAN(map3dto1d2d,(extnor,ipkon,inum,kon,lakon,&nfield,nk,
 			   ne,cflag,co,vold,&iforce,mi,ielprop,prop));
     }
-      
+
     frd_sen(co,nk,stn,inum,nmethod,kode,filab,&ptime,nstate_,
 	    istep,
 	    &iinc,&mode,&noddiam,description,mi,&ngraph,ne,cs,set,nset,
 	    istartset,iendset,ialset,jobnamec,output,
 	    extnor,&iobject,objectset,ntrans,inotr,trab,&idesvar,orname,
-	    &icoordinate,&inorm,&irand,&ishape,&ifeasd); 
+	    &icoordinate,&inorm,&irand,&ishape,&ifeasd);
     inorm=0;
     outputnormals=0;
   }
@@ -420,10 +421,10 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     node=nodedesi[k]-1;
     memcpy(&xdesi[3*k],&extnor[3*node],sizeof(double)*3);
   }
-      
+
   /* calculation of the smallest distance between nodes */
-      
-  FORTRAN(smalldist,(co,&distmin,lakon,ipkon,kon,ne));
+
+  FORTRAN(smalldist,(co,&distmin,lakon,ipkon,kon,ne,ne2d));
 
   /* resizing xdesi to a length of distmin */
 
@@ -431,20 +432,20 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     xdesi[k]*=distmin;
   }
 
-  SFREE(inum);SFREE(extnor);      
+  SFREE(inum);SFREE(extnor);
 
-      
+
   /* storing the design variables per element
      (including 0 for the unperturbed state) */
-      
+
   NNEW(ipoeldi,ITG,*ne);
   NNEW(ieldi,ITG,2*(istartdesi[*ndesi]-1+*ne));
   NNEW(istartelem,ITG,*ne+1);
   NNEW(ialelem,ITG,istartdesi[*ndesi]-1+*ne);
-  
+
   FORTRAN(desiperelem,(ndesi,istartdesi,ialdesi,ipoeldi,ieldi,ne,
 		       istartelem,ialelem));
-  
+
   SFREE(ipoeldi);SFREE(ieldi);
   RENEW(ialelem,ITG,istartelem[*ne]-1);
 
@@ -495,9 +496,9 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
   SFREE(ipointer);SFREE(mast1);
   RENEW(irows,ITG,nzss);
-  
+
   /* invert nactdof */
-  
+
   NNEW(nactdofinv,ITG,mt**nk);
   FORTRAN(gennactdofinv3d,(nactdof,nactdofinv,nk,mi));
 
@@ -507,9 +508,9 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   if(ieigenfrequency==1){
 
     /* reading the eigenvalues / eigenmodes */
-      
+
     if(!cyclicsymmetry){
-	  
+
       if(fread(&nev,sizeof(ITG),1,f1)!=1){
 	printf(" *ERROR in sensi_coor reading the number of eigenvalues in the eigenvalue file");
 	printf(" *INFO  in sensi_coor: if there are problems reading the .eig file this may be due to:\n");
@@ -518,9 +519,9 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	printf("           which created the .eig file\n\n");
 	exit(0);
       }
-	  
+
       NNEW(d,double,nev);
-	  
+
       if(fread(d,sizeof(double),nev,f1)!=nev){
 	printf(" *ERROR in sensi_coor reading the eigenvalues in the eigenvalue file");
 	printf(" *INFO  in sensi_coor: if there are problems reading the .eig file this may be due to:\n");
@@ -529,16 +530,16 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	printf("           which created the .eig file\n\n");
 	exit(0);
       }
-	  
+
       /*	  for(i=0;i<nev;i++){
 		  if(d[i]>0){d[i]=sqrt(d[i]);}else{d[i]=0.;}
 		  }*/
-	  
+
       NNEW(ad,double,neq[1]);
       NNEW(adb,double,neq[1]);
       NNEW(au,double,nzsprevstep[2]);
       NNEW(aub,double,nzs[1]);
-	  
+
       if(fread(ad,sizeof(double),neq[1],f1)!=neq[1]){
 	printf(" *ERROR in sensi_coor reading the diagonal of the stiffness matrix in the eigenvalue file");
 	printf(" *INFO  in sensi_coor: if there are problems reading the .eig file this may be due to:\n");
@@ -547,7 +548,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	printf("           which created the .eig file\n\n");
 	exit(0);
       }
-	  
+
       if(fread(au,sizeof(double),nzsprevstep[2],f1)!=nzsprevstep[2]){
 	printf(" *ERROR in sensi_coor reading the off-diagonals of the stiffness matrix in the eigenvalue file");
 	printf(" *INFO  in sensi_coor: if there are problems reading the .eig file this may be due to:\n");
@@ -556,7 +557,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	printf("           which created the .eig file\n\n");
 	exit(0);
       }
-	  
+
       if(fread(adb,sizeof(double),neq[1],f1)!=neq[1]){
 	printf(" *ERROR in sensi_coor reading the diagonal of the mass matrix in the eigenvalue file");
 	printf(" *INFO  in sensi_coor: if there are problems reading the .eig file this may be due to:\n");
@@ -565,7 +566,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	printf("           which created the .eig file\n\n");
 	exit(0);
       }
-	  
+
       if(fread(aub,sizeof(double),nzs[1],f1)!=nzs[1]){
 	printf(" *ERROR in sensi_coor reading the off-diagonals of the mass matrix in the  eigenvalue file");
 	printf(" *INFO  in sensi_coor: if there are problems reading the .eig file this may be due to:\n");
@@ -574,9 +575,9 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	printf("           which created the .eig file\n\n");
 	exit(0);
       }
-	  
+
       NNEW(z,double,neq[1]*nev);
-	  
+
       if(fread(z,sizeof(double),neq[1]*nev,f1)!=neq[1]*nev){
 	printf(" *ERROR in sensi_coor reading the eigenvectors in the eigenvalue file");
 	printf(" *INFO  in sensi_coor: if there are problems reading the .eig file this may be due to:\n");
@@ -607,7 +608,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	  RENEW(d,double,nev+nevd);
 	  RENEW(nm,ITG,nev+nevd);
 	}
-	      
+
 	if(fread(&d[nev],sizeof(double),nevd,f1)!=nevd){
 	  printf(" *ERROR in sensi_coor reading the eigenvalues for nodal diameter %" ITGFORMAT " in the eigenvalue file",nmd);
 	  printf(" *INFO  in sensi_coor: if there are problems reading the .eig file this may be due to:\n");
@@ -616,16 +617,16 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	  printf("           which created the .eig file\n\n");
 	  exit(0);
 	}
-	      
+
 	for(i=nev;i<nev+nevd;i++){nm[i]=nmd;}
-	      
+
 	if(nev==0){
 
 	  /* reading stiffness and mass matrix; */
 
 	  NNEW(ad,double,neq[1]);
 	  NNEW(au,double,nzs[1]);
-		  
+
 	  if(fread(ad,sizeof(double),neq[1],f1)!=neq[1]){
 	    printf(" *ERROR in sensi_coor reading the diagonal of the stiffness matrix in the eigenvalue file");
 	    printf(" *INFO  in sensi_coor: if there are problems reading the .eig file this may be due to:\n");
@@ -634,7 +635,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	    printf("           which created the .eig file\n\n");
 	    exit(0);
 	  }
-		  
+
 	  if(fread(au,sizeof(double),nzs[1],f1)!=nzs[1]){
 	    printf(" *ERROR in sensi_coor reading the off-diagonals of the stiffness matrix in the eigenvalue file");
 	    printf(" *INFO  in sensi_coor: if there are problems reading the .eig file this may be due to:\n");
@@ -646,7 +647,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
 	  NNEW(adb,double,neq[1]);
 	  NNEW(aub,double,nzs[1]);
-		  
+
 	  if(fread(adb,sizeof(double),neq[1],f1)!=neq[1]){
 	    printf(" *ERROR in sensi_coor reading the diagonal of the mass matrix in the eigenvalue file");
 	    printf(" *INFO  in sensi_coor: if there are problems reading the .eig file this may be due to:\n");
@@ -655,7 +656,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	    printf("           which created the .eig file\n\n");
 	    exit(0);
 	  }
-		  
+
 	  if(fread(aub,sizeof(double),nzs[1],f1)!=nzs[1]){
 	    printf(" *ERROR in sensi_coor reading the off-diagonals of the mass matrix in the eigenvalue file");
 	    printf(" *INFO  in sensi_coor: if there are problems reading the .eig file this may be due to:\n");
@@ -667,13 +668,13 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
 	  if(igreen!=1){SFREE(ad);SFREE(au);SFREE(adb);SFREE(aub);}
 	}
-	      
+
 	if(nev==0){
 	  NNEW(z,double,neq[1]*nevd);
 	}else{
 	  RENEW(z,double,(long long)neq[1]*(nev+nevd));
 	}
-	      
+
 	if(fread(&z[(long long)neq[1]*nev],sizeof(double),neq[1]*nevd,f1)!=neq[1]*nevd){
 	  printf(" *ERROR in sensi_coor reading the eigenvectors for nodal diameter %" ITGFORMAT " in the eigenvalue file",nmd);
 	  printf(" *INFO  in sensi_coor: if there are problems reading the .eig file this may be due to:\n");
@@ -689,7 +690,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   }else{
     nev=1;
     if((idisplacement==1)||((ishapeenergy==1)&&(iperturb[1]==1))){
-	
+
       /* reading the stiffness matrix from previous step for sensitivity analysis */
       /* matrix stored in <jobname>.stm file */
 
@@ -700,20 +701,20 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       */
 
       /* for mass and strain energy the stiffness matrix is not needed */
-	
+
       strcpy2(stiffmatrix,jobnamec,132);
       strcat(stiffmatrix,".stm");
-	
+
       if((f1=fopen(stiffmatrix,"rb"))==NULL){
 	printf(" *ERROR in sensi_coor: cannot open stiffness-matrix file for reading");
 	exit(0);
       }
-	
+
       if(fread(&nasym,sizeof(ITG),1,f1)!=1){
 	printf(" *ERROR in sensi_coor reading the symmetry flag of the stiffness matrix file...");
 	exit(0);
       }
-	
+
       if(fread(nzs,sizeof(ITG),3,f1)!=3){
 	printf(" *ERROR in sensi_coor reading the number of subdiagonal nonzeros in the stiffness matrix file...");
 	exit(0);
@@ -734,7 +735,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	printf(" *ERROR in sensi_coor reading icol in the stiffness matrix file...");
 	exit(0);
       }
-	
+
       NNEW(ad,double,neq[1]);
       NNEW(au,double,(nasym+1)*nzs[2]);
 
@@ -742,12 +743,12 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	printf(" *ERROR in sensi_coor reading the diagonal of the stiffness matrix in the .stm-file");
 	exit(0);
       }
-	
+
       if(fread(au,sizeof(double),(nasym+1)*nzs[2],f1)!=(nasym+1)*nzs[2]){
 	printf(" *ERROR in sensi_coor reading the off-diagonals of the stiffness matrix in the .stm-file");
 	exit(0);
-      }  
-	
+      }
+
       fclose(f1);
     }
   }
@@ -756,7 +757,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
      loop over just one value */
 
   for(iev=0;iev<nev;iev++){
-      
+
     NNEW(dgdx,double,*ndesi**nobject);
 
     /* Reading the "raw" sensititities */
@@ -784,18 +785,18 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       }
 
       /* determining the internal forces and the stiffness coefficients */
-      
+
       NNEW(f,double,*neq); /* FAKE */
-      
+
       /* needed for nonlinear strain energy */
 
       if((iperturb[1]==1)&&(ishapeenergy==1)){
 	NNEW(fint,double,*neq);
       }
-      
-      /* allocating a field for the stiffness matrix 
+
+      /* allocating a field for the stiffness matrix
 	 (calculated in results_se and needed in mafillsmse */
-      
+
       NNEW(xstiff,double,(long long)27*mi[0]**ne);
 
       NNEW(fn,double,mt**nk);  /* FAKE */
@@ -806,11 +807,11 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	NNEW(df,double,2*nzss);
       }
       NNEW(stx,double,6*mi[0]**ne);
-      
+
       iout=-1;
       NNEW(v,double,mt**nk);
       if(iperturb[1]==1) memcpy(&v[0],&vold[0],sizeof(double)*mt**nk);
-      
+
       results_se(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,
 		 elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 		 ielorien,norien,orab,ntmat_,t0,t1act,ithermal,
@@ -831,13 +832,13 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		 ndesi,nodedesi,sti,nkon,jqs,irows,nactdofinv,
 		 &icoordinate,dxstiff,istartdesi,ialdesi,xdesi,
 		 &ieigenfrequency,fint,&ishapeenergy,typeboun,physcon);
-	  
+
       iout=1;SFREE(v);
-      
+
       nmethodl=*nmethod;
-      
+
       /* v contains the values dK/dx has to be multiplied with */
-      
+
       if(ieigenfrequency==0){
 	NNEW(v,double,mt**nk);
 	memcpy(&v[0],&vold[0],sizeof(double)*mt**nk);
@@ -853,12 +854,12 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	  FORTRAN(resultsnoddir,(nk,&v[mt**nk],nactdof,&z[iev*neq[1]+neq[1]/2],ipompc,
 				 nodempc,coefmpc,nmpc,mi));
 	}
-	  
+
 	ptime=d[iev];
 	if(ptime>0){ptime=sqrt(ptime)/6.283185308;}else{ptime=0.;}
 
 	/* for an eigenfrequency objective (K-eigenvalue*M) is
-	   taken instead of K (not for ORIENTATION as design 
+	   taken instead of K (not for ORIENTATION as design
 	   variable since the mass does not change with orientation)*/
 
 	sigma=d[iev];
@@ -888,7 +889,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
       /* for the stress sensitivity in a modal analysis
 	 dM/ds.u is needed */
-      
+
       if(modalstress){
 	sigmak=0.;
 	mafillsmmain_se(co,nk,kon,ipkon,lakon,ne,nodeboun,ndirboun,xbounact,
@@ -912,10 +913,10 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 			&cyclicsymmetry,labmpc,ics,cs,mcs,&ieigenfrequency,
 			set,nset,&sigmak);
       }
-      
+
       /* determining the values and the derivatives of the objective functions */
-            
-      iout=-1; 
+
+      iout=-1;
       objectivemain_se(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,elcon,nelcon,
 		       rhcon,nrhcon,alcon,nalcon,alzero,ielmat,ielorien,norien,
 		       orab,ntmat_,t0,t1act,ithermal,prestr,iprestr,filab,eme,
@@ -940,7 +941,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		       &ishapeenergy,fint,nlabel,&igreen,&nasym,iponoel,inoel,
 		       nodedesiinv,dgdxdy,nkon,nod2nd3rd,nod1st,ics,
 		       mcs,mpcend,&noddiam,ipobody,ibody,xbody,nbody,
-		       nobjectstart,dfm,physcon,ne2d); 
+		       nobjectstart,dfm,physcon,ne2d);
       iout=1;
 
       SFREE(v);SFREE(f);SFREE(xstiff);SFREE(fn);SFREE(df);SFREE(stx);
@@ -956,9 +957,9 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       }
     }
 
-    /* Backward filtering of sensitivities 
+    /* Backward filtering of sensitivities
        --> variable transformation from x to s */
-  
+
     filterbackwardmain(co,dgdxglob,nobject,nk,nodedesi,ndesi,objectset,
 	       xdesi,nobjectstart,iponoelfa,inoelfa,lakonfa,
 	       konfa,ipkonfa,nodedesiinv,istartdesi,ialdesi,ipkon,lakon,
@@ -972,30 +973,30 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 			nload,nodeboun,nboun,ndirboun,ithermal,co,vold,
 			mi,ielmat,ielprop,prop));
 
-    /* for 2D models extrapolate the results of the midnodes 
+    /* for 2D models extrapolate the results of the midnodes
        to the 2 symmetry planes */
 
     if(*ne2d!=0){
-      FORTRAN(extrapol2dto3d,(dgdxglob,nod2nd3rd,ndesi,nodedesi,nobject,nk));		     
+      FORTRAN(extrapol2dto3d,(dgdxglob,nod2nd3rd,ndesi,nodedesi,nobject,nk));
     }
-	    
+
     //++*kode;
 
     /* scaling the sensitivities: highest absolute value is scaled to 1 */
-    
+
     for(iobject=*nobjectstart;iobject<*nobject;iobject++){
 
       /* writing the objectives in the dat-file for the optimizer */
-	  	      
+
       FORTRAN(writeobj,(objectset,&iobject,g0,dgdxglob,nobject,ndesi,
                         nodedesi,nk,nobjectstart));
 
       iscaleflag=1;
       istart=iobject+1;
       FORTRAN(scalesen,(dgdxglob,dummy,nk,nodedesi,ndesi,objectset,
-			&iscaleflag,&istart,ne2d)); 	  
+			&iscaleflag,&istart,ne2d));
 
-      /* storing the sensitivities in the frd-file for visualization 
+      /* storing the sensitivities in the frd-file for visualization
 	 and for optimization */
 
       ++*kode;
@@ -1003,31 +1004,31 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       iforce=0;
 
       if(strcmp1(&filab[4],"I")==0){
-           
+
 	FORTRAN(map3dto1d2d,(&dgdxglob[2**nk*iobject],ipkon,inum,kon,lakon,
 			     &nfield,nk,ne,cflag,co,vold,&iforce,mi,ielprop,
 			     prop));
       }
-          
+
       frd_sen(co,nk,stn,inum,nmethod,kode,filab,&ptime,nstate_,istep,
 	      &iinc,&mode,&noddiam,description,mi,&ngraph,ne,cs,set,nset,
 	      istartset,iendset,ialset,jobnamec,output,dgdxglob,&iobject,
 	      objectset,ntrans,inotr,trab,&idesvar,orname,&icoordinate,
 	      &inorm,&irand,&ishape,&ifeasd);
 
-    }  
-	  
+    }
+
     SFREE(inum);SFREE(dgdx);
-            
+
   } // end loop over nev
 
   SFREE(iponoel);SFREE(inoel);SFREE(nodedesiinv);SFREE(inoelfa);
-  SFREE(konfa);SFREE(ipkonfa);SFREE(lakonfa);SFREE(iponoelfa);	  
-  
+  SFREE(konfa);SFREE(ipkonfa);SFREE(lakonfa);SFREE(iponoelfa);
+
   if(*ne2d!=0){
     SFREE(nod2nd3rd);SFREE(nod1st);
   }
-  
+
   if(ieigenfrequency==1){
     if(!cyclicsymmetry){SFREE(d);SFREE(ad);SFREE(adb);SFREE(au);
       SFREE(aub);SFREE(z);
@@ -1038,7 +1039,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   }else if(idisplacement==1){
     SFREE(ad);SFREE(au);
   }
-  
+
   SFREE(xbounact);SFREE(xforcact);SFREE(xloadact);SFREE(t1act);SFREE(ampli);
   SFREE(xbodyact);SFREE(nactdofinv);
 
@@ -1060,6 +1061,6 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   *nobjectstart=*nobject;
 
   if(*nstate_!=0){SFREE(xstateini);}
-  
+
   return;
 }

@@ -1633,7 +1633,8 @@ int main(int argc,char *argv[])
 			ielprop,prop,&kode,&nmethod,filab,&nstate_,&istep,cs,
 			set,&nset,istartset,iendset,ialset,jobnamec,output,
 			&ntrans,inotr,trab,orname,xdesi,timepar,coini,ikboun,
-			nactdof,&ne2d,&nkon,tieset,&ntie);         
+			nactdof,&ne2d,&nkon,tieset,&ntie,knor,iponoel,iponor,
+			inoel);         
       
     }
 

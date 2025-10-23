@@ -19,7 +19,7 @@
       subroutine normalsonsurface_se(ipkon,kon,lakon,extnor,co,nk,
      &     ipoface,nodface,nactdof,mi,nodedesiinv,iregion,
      &     iponoelfa,ndesi,nodedesi,nod2nd3rd,ikboun,nboun,
-     &     ne2d)
+     &     ne2d,knor2d,iponoel2d,iponor2d,inoel2d,ne)
 !     
 !     calculating the normal direction onto the external surface;
 !     the design variables are moved in this direction.
@@ -37,84 +37,85 @@
 !     
       implicit none
 !     
-      character*8 lakon(*)
+      character*8 lakon(*),lakonl
 !     
       integer j,nelem,jface,indexe,ipkon(*),kon(*),nopem,node,
-     &     ifaceq(8,6),ifacet(6,4),ifacew1(4,5),ifacew2(8,5),ne2d,
-     &     konl(20),ipoface(*),nodface(5,*),mi(*),nodedesiinv(*),
-     &     nactdof(0:mi(2),*),nodesurf(9),nnodes,iregion,nope,
-     &     nopedesi,l,m,iflag,k,nk,iponoelfa(*),ndesi,nodedesi(*),
-     &     nodemid,nodeboun1,nodeboun2,nod2nd3rd(2,*),
-     &     ishift,expandhex(20),expandwed(15),konl2d(20),ikboun(*),
-     &     idof,nboun,id,node2d
+     &  ifaceq(8,6),ifacet(6,4),ifacew1(4,5),ifacew2(8,5),ne2d,
+     &  konl(20),ipoface(*),nodface(5,*),mi(*),nodedesiinv(*),
+     &  nactdof(0:mi(2),*),nodesurf(9),nnodes,iregion,nope,
+     &  nopedesi,l,m,iflag,k,nk,iponoelfa(*),ndesi,nodedesi(*),
+     &  nodemid,nodeboun1,nodeboun2,nod2nd3rd(2,*),expandhex(20),
+     &  ishift,expandwed(15),konl2d(20),ikboun(*),idof,nboun,id,
+     &  node2d,nodelow,nodeup,knor2d(*),iponor2d(2,*),iponoel2d(*),
+     &  indexe2d,ipos,inoel2d(3,*),i,jmax,ne,ielem,index2d
 !     
       real*8 extnor(3,*),xsj2(3),shp2(7,9),xs2(3,2),xi,et,dd,
-     &     xquad(2,9),xtri(2,7),xl2m(3,9),co(3,*)
+     &  xquad(2,9),xtri(2,7),xl2m(3,9),co(3,*)
 !     
 !     local node numbers for relationship between 2D and 3D elements
 !     
       data expandhex /1,2,3,4,
-     &     1,2,3,4,
-     &     5,6,7,8,
-     &     5,6,7,8,
-     &     1,2,3,4/
+     &  1,2,3,4,
+     &  5,6,7,8,
+     &  5,6,7,8,
+     &  1,2,3,4/
       data expandwed /1,2,3,
-     &     1,2,3,
-     &     4,5,6,
-     &     4,5,6,
-     &     1,2,3/
+     &  1,2,3,
+     &  4,5,6,
+     &  4,5,6,
+     &  1,2,3/
 !     
 !     nodes per face for hex elements
 !     
       data ifaceq /4,3,2,1,11,10,9,12,
-     &     5,6,7,8,13,14,15,16,
-     &     1,2,6,5,9,18,13,17,
-     &     2,3,7,6,10,19,14,18,
-     &     3,4,8,7,11,20,15,19,
-     &     4,1,5,8,12,17,16,20/
+     &  5,6,7,8,13,14,15,16,
+     &  1,2,6,5,9,18,13,17,
+     &  2,3,7,6,10,19,14,18,
+     &  3,4,8,7,11,20,15,19,
+     &  4,1,5,8,12,17,16,20/
 !     
 !     nodes per face for tet elements
 !     
       data ifacet /1,3,2,7,6,5,
-     &     1,2,4,5,9,8,
-     &     2,3,4,6,10,9,
-     &     1,4,3,8,10,7/
+     &  1,2,4,5,9,8,
+     &  2,3,4,6,10,9,
+     &  1,4,3,8,10,7/
 !     
 !     nodes per face for linear wedge elements
 !     
       data ifacew1 /1,3,2,0,
-     &     4,5,6,0,
-     &     1,2,5,4,
-     &     2,3,6,5,
-     &     3,1,4,6/
+     &  4,5,6,0,
+     &  1,2,5,4,
+     &  2,3,6,5,
+     &  3,1,4,6/
 !     
 !     nodes per face for quadratic wedge elements
 !     
       data ifacew2 /1,3,2,9,8,7,0,0,
-     &     4,5,6,10,11,12,0,0,
-     &     1,2,5,4,7,14,10,13,
-     &     2,3,6,5,8,15,11,14,
-     &     3,1,4,6,9,13,12,15/
+     &  4,5,6,10,11,12,0,0,
+     &  1,2,5,4,7,14,10,13,
+     &  2,3,6,5,8,15,11,14,
+     &  3,1,4,6,9,13,12,15/
 !     
 !     new added data for the local coordinates for nodes
 !     
       data xquad /-1.d0,-1.d0,
-     &     1.d0,-1.d0,
-     &     1.d0,1.d0,
-     &     -1.d0,1.d0,
-     &     0.d0,-1.d0,
-     &     1.d0,0.d0,
-     &     0.d0,1.d0,
-     &     -1.d0,0.d0,
-     &     0.d0,0.d0/
+     &  1.d0,-1.d0,
+     &  1.d0,1.d0,
+     &  -1.d0,1.d0,
+     &  0.d0,-1.d0,
+     &  1.d0,0.d0,
+     &  0.d0,1.d0,
+     &  -1.d0,0.d0,
+     &  0.d0,0.d0/
 !     
       data xtri /0.d0,0.d0,
-     &     1.d0,0.d0,
-     &     0.d0,1.d0,
-     &     .5d0,0.d0,
-     &     .5d0,.5d0,
-     &     0.d0,.5d0,
-     &     0.333333333333333d0,0.333333333333333d0/
+     &  1.d0,0.d0,
+     &  0.d0,1.d0,
+     &  .5d0,0.d0,
+     &  .5d0,.5d0,
+     &  0.d0,.5d0,
+     &  0.333333333333333d0,0.333333333333333d0/
 !     
       data iflag /2/
 !     
@@ -171,11 +172,17 @@
 !     nopem: # of nodes in the surface
 !     nope: # of nodes in the element
 !     
-          if(lakon(nelem)(4:4).eq.'8') then
+          if((lakon(nelem)(4:5).eq.'8 ').or.
+     &       (lakon(nelem)(4:5).eq.'8R')) then
             nopem=4
             nope=8
             nopedesi=3
             ishift=8
+          elseif(lakon(nelem)(4:5).eq.'8I') then
+            nopem=4
+            nope=11
+            nopedesi=3
+            ishift=11
           elseif(lakon(nelem)(4:5).eq.'20') then
             nopem=8
             nope=20
@@ -221,7 +228,7 @@
      &         (lakon(nelem)(7:7).eq.'S').or.      
      &         (lakon(nelem)(7:7).eq.'E')) then
             if((lakon(nelem)(4:5).eq.'20').or.
-     &           (lakon(nelem)(4:5).eq.'8 ')) then
+     &         (lakon(nelem)(4:4).eq.'8')) then
               do k=1,nope
                 konl(k)=kon(ipkon(nelem)+k)
                 konl2d(k)=kon(ipkon(nelem)+ishift+expandhex(k))
@@ -239,7 +246,7 @@
             enddo
           endif
 !     
-          if((nope.eq.20).or.(nope.eq.8)) then
+          if((nope.eq.20).or.(nope.eq.8).or.(nope.eq.11)) then
             do m=1,nopem
               nodesurf(m)=konl(ifaceq(m,jface))
               do k=1,3
@@ -367,7 +374,7 @@
               if((lakon(nelem)(7:7).eq.'A').or.
      &             (lakon(nelem)(7:7).eq.'S').or.       
      &             (lakon(nelem)(7:7).eq.'E')) then
-                if(nope.eq.8) then
+                if((nope.eq.8).or.(nope.eq.11)) then
                   node2d=konl2d(ifaceq(m,jface))
                 elseif(nope.eq.6) then
                   node2d=konl2d(ifacew1(m,jface))
@@ -519,19 +526,45 @@
 !     in case of 2D elements all expanded nodes must have the same 
 !     normal direction to get the correct normal direction for the 2D model
 !     
-c      if(ne2d.ne.0) then
-c        do l=1,ndesi
-c          nodelow=nodedesi(l)
-c          if(nod2nd3rd(1,nodelow).ne.0) then      
-c            nodemid=nod2nd3rd(1,nodelow)
-c            nodeup=nod2nd3rd(2,nodelow)
-c            do m=1,3
-c              extnor(m,nodemid)=extnor(m,nodelow)
-c              extnor(m,nodeup)=extnor(m,nodelow)
-c            enddo
-c          endif
-c        enddo
-c      endif
-!     
+      if(ne2d.ne.0) then
+        do i=1,ne
+          if(ipkon(i).lt.0) cycle
+            lakonl=lakon(i)
+            indexe=ipkon(i)	  
+          if(lakonl(4:5).eq.'15') then
+            indexe2d=indexe+15
+            jmax=6
+          elseif(lakonl(4:4).eq.'6') then
+            indexe2d=indexe+6
+            jmax=3
+          elseif((lakonl(4:5).eq.'8 ').or.
+     &           (lakonl(4:5).eq.'8R')) then
+            indexe2d=indexe+8
+            jmax=4
+          elseif(lakonl(4:5).eq.'8I') then
+            indexe2d=indexe+11
+            jmax=4
+          elseif(lakonl(4:5).eq.'20') then
+            indexe2d=indexe+20
+            jmax=8
+          endif	  
+!
+          do j=1,jmax
+            node2d=kon(indexe2d+j)
+            index2d=iponoel2d(node2d)
+            ielem=inoel2d(1,index2d)
+            k=inoel2d(2,index2d)
+            ipos=iponor2d(2,ipkon(ielem)+k)
+            nodelow=knor2d(ipos+1)
+            nodemid=knor2d(ipos+2)
+            nodeup=knor2d(ipos+3)
+            do m=1,3
+              extnor(m,nodemid)=extnor(m,nodelow)
+              extnor(m,nodeup)=extnor(m,nodelow)
+            enddo
+          enddo
+        enddo
+      endif
+!		     
       return
       end

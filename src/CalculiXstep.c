@@ -1778,13 +1778,14 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 
     else if(*nmethod==16){
     
-      feasibledirection(&nobject,&objectset,&dgdxglob,g0,&ndesi,nodedesi,nk,
-			&isolver,&ipkon,&kon,&lakon,ne,nelemload,nload,
-			nodeboun,nboun,ndirboun,ithermal,co,vold,mi,&ielmat,
-			ielprop,prop,&kode,nmethod,filab,&nstate_,&istep,cs,
+      feasibledirection(&nobject,&objectset,&dgdxglob,g0,&ndesi,nodedesi,&nk,
+			&isolver,&ipkon,&kon,&lakon,&ne,nelemload,&nload,
+			nodeboun,&nboun,ndirboun,ithermal,co,vold,mi,&ielmat,
+			ielprop,prop,&kode,&nmethod,filab,&nstate_,&istep,cs,
 			set,&nset,istartset,iendset,ialset,jobnamec,output,
 			&ntrans,inotr,trab,orname,xdesi,timepar,coini,ikboun,
-			nactdof,&ne2d,&nkon,tieset,&ntie);         
+			nactdof,&ne2d,&nkon,tieset,&ntie,knor,iponoel,iponor,
+			inoel);         
       
     }
 

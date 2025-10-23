@@ -32,7 +32,7 @@
 !     
       logical boun_flag,user,massflowrate,fixed,submodel,lintemp,
      &     master2d
-!     
+
       character*1 typeboun(*),type,inpc(*)
       character*20 labmpc(*),label
       character*80 amname(*),amplitude
@@ -64,7 +64,7 @@
       submodel=.false.
       lintemp=.false.
       master2d=.false.
-!     
+!
       do i=2,n
         if((textpart(i)(1:6).eq.'OP=NEW').and.(.not.boun_flag)) then
 !     
@@ -366,7 +366,7 @@
 !     user: 1,2,3,5,7,11,13,17
 !     
           if(user) bounval=1.2357111317d0
-!     
+!
 !     submodel: 19,23,29,31,37
 !               + 4 if 3d, +6 if 2d
 !     

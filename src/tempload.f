@@ -29,7 +29,16 @@
      &     ipobody,iponoeln,inoeln,ipkon,kon,ielprop,prop,ielmat,
      &     shcon,nshcon,rhcon,nrhcon,cocon,ncocon,ntmat_,lakon,
      &     set,nset)
-!     
+!> calculates the loading at a given time
+!!
+!! @param[in,out]   xbounact   a real array, size: max_size
+!! @param[in]       n       current values in the array
+!! @param[in]       max_size    size if the array
+!! @param[in]       new_entry   the value to insert
+!!
+!! @param aggr information about the aggregates
+!! @todo Update the docstring
+!
 !     calculates the loading at a given time
 !     
       implicit none
@@ -237,7 +246,7 @@ c          one=1
             xbounact(i)=xbounold(i)+
      &           (xbounact(i)-xbounold(i))*reltime
           endif
-c     write(*,*) 'tempload ',node,ndirboun(i),xbounact(i)
+!          write(*,*) 'tempload ',node,ndirboun(i),xbounact(i)
           cycle
         endif
 !     
@@ -468,7 +477,7 @@ c     coords(j)=co(j,i)+vold(j,i)
      &           shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon)
             cycle
           endif
-!     
+!
           if((t1(i).lt.1.9232931377d0).and.
      &         (t1(i).gt.1.9232931373d0)) then
 !
@@ -552,18 +561,6 @@ c            one=1
           t1act(node)=fixed_temp/coefmpc(ist)
         enddo
       endif
-c     write(*,*) 'nboun'
-c     do i=1,nboun
-c     write(*,'(i7,1x,e11.4,1x,e11.4)') i,xbounact(i),xboun(i)
-c     enddo
-c     write(*,*) 'nforc'
-c     do i=1,nforc
-c     write(*,'(i7,1x,e11.4,1x,e11.4)') i,xforcact(i),xforc(i)
-c     enddo
-c     write(*,*) 'nload'
-c     do i=1,nload
-c     write(*,'(i7,1x,e11.4,1x,e11.4)') i,xloadact(1,i),xload(1,i)
-c     enddo
-!     
+!
       return
       end
