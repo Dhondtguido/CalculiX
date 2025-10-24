@@ -17,7 +17,7 @@ jobs:
         with:
           msystem: UCRT64
           update: true
-          install: git make mingw-w64-ucrt-x86_64-gcc-libgfortran mingw-w64-ucrt-x86_64-gcc-fortran mingw-w64-ucrt-x86_64-cc mingw-w64-ucrt-x86_64-openblas mingw-w64-ucrt-x86_64-arpack mingw-w64-ucrt-x86_64-spooles
+          install: git make mingw-w64-ucrt-x86_64-gcc-libgfortran mingw-w64-ucrt-x86_64-gcc-fortran mingw-w64-ucrt-x86_64-cc mingw-w64-ucrt-x86_64-openblas mingw-w64-ucrt-x86_64-arpack mingw-w64-ucrt-x86_64-spooles mingw-w64-ucrt-x86_64-taucs
       - name: CI-Build
         run: |
           make -f Makefile_mingw
