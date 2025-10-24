@@ -1,5 +1,5 @@
 
-CFLAGS = -Wall -O2 -fopenmp -I ${MINGW_PREFIX}/include/spooles -DSPOOLES -DARCH="Linux" -DSPOOLES -DARPACK -DMATRIXSTORAGE -DNETWORKOUT -DUSE_MT=1 -DCALCULIX_EXTERNAL_BEHAVIOURS_SUPPORT -fcommon -Wno-implicit-function-declaration -Wno-incompatible-pointer-types
+CFLAGS = -Wall -O2 -fopenmp -I ${MINGW_PREFIX}/include/spooles -DSPOOLES -I ${MINGW_PREFIX}/include/taucs -DTAUCS -DARCH="Linux" -DSPOOLES -DARPACK -DMATRIXSTORAGE -DNETWORKOUT -DUSE_MT=1 -DCALCULIX_EXTERNAL_BEHAVIOURS_SUPPORT -fcommon -Wno-implicit-function-declaration -Wno-incompatible-pointer-types
 FFLAGS = -Wall -O2 -fopenmp -cpp 
 
 CC=cc
@@ -19,7 +19,7 @@ OCCXC = $(SCCXC:.c=.o)
 OCCXMAIN = $(SCCXMAIN:.c=.o)
 
 LIBS = \
-       -lspoolesMT -lspooles \
+       -lspoolesMT -lspooles -latucs \
        -lopenblas -larpack \
        -lpthread -lm
 
