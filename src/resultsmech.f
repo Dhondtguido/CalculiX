@@ -236,6 +236,10 @@ c     Bernhardi end
           nope=8
         elseif(lakonl(4:5).eq.'10') then
           nope=10
+        elseif(lakonl(4:4).eq.'5') then
+          nope=5
+        elseif(lakonl(4:5).eq.'13') then
+          nope=13
         elseif(lakonl(4:4).eq.'4') then
           nope=4
         elseif(lakonl(4:5).eq.'15') then
@@ -303,6 +307,10 @@ c     Bernhardi end
           mint3d=4
         elseif(lakonl(4:4).eq.'4') then
           mint3d=1
+        elseif(lakonl(4:4).eq.'5') then
+          mint3d=5
+        elseif(lakonl(4:5).eq.'13') then
+          mint3d=13
         elseif(lakonl(4:5).eq.'15') then
           if(lakonl(7:8).eq.'LC') then
             mint3d=6*nlayer
@@ -554,6 +562,23 @@ c              if(nener.eq.1) venergy=enerini(2,1,ne0+igauss)
             et=gauss3d3(2,jj)
             ze=gauss3d3(3,jj)
             weight=weight3d3(jj)
+          elseif(lakonl(4:4).eq.'5') then
+            xi=pyra5d3(1,jj)
+            et=pyra5d3(2,jj)
+            ze=pyra5d3(3,jj)
+            weight=wpyra5d3(jj)
+          elseif(lakonl(4:5).eq.'13') then
+            if(lakonl(6:6).eq.'F') then
+              xi=pyra13d3f(1,jj)
+              et=pyra13d3f(2,jj)
+              ze=pyra13d3f(3,jj)
+              weight=wpyra13d3f(jj)
+            else
+              xi=pyra13d3(1,jj)
+              et=pyra13d3(2,jj)
+              ze=pyra13d3(3,jj)
+              weight=wpyra13d3(jj)
+            endif
           elseif(lakonl(4:5).eq.'10') then
             xi=gauss3d5(1,jj)
             et=gauss3d5(2,jj)
@@ -643,6 +668,14 @@ c     Bernhardi end
             call shape10tet(xi,et,ze,xl,xsj,shp,iflag)
           elseif(nope.eq.4) then
             call shape4tet(xi,et,ze,xl,xsj,shp,iflag)
+          elseif(nope.eq.5) then
+            call shape5p(xi,et,ze,xl,xsj,shp,iflag)
+          elseif(nope.eq.13) then
+            if(lakonl(6:6).eq.'F') then
+              call shape13pf(xi,et,ze,xl,xsj,shp,iflag)
+            else
+              call shape13p(xi,et,ze,xl,xsj,shp,iflag)
+            endif
           elseif(nope.eq.15) then
             call shape15w(xi,et,ze,xl,xsj,shp,iflag)
           else
@@ -907,7 +940,7 @@ c     Bernhardi end
 !     
           istiff=0
 !     
-          call materialdata_me(elcon,nelcon,rhcon,nrhcon,alcon,
+         call materialdata_me(elcon,nelcon,rhcon,nrhcon,alcon,
      &         nalcon,imat,amat,iorien,pgauss,orab,ntmat_,
      &         stiff,rho,i,ithermal,alzero,mattyp,t0l,t1l,ihyper,
      &         istiff,elconloc,eth,kode,plicon,nplicon,

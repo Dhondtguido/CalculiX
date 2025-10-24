@@ -204,6 +204,12 @@ c     Bernhardi end
 !     linear tetrahedral element
 !     
      &       (label.eq.'C3D4    ').or.
+!
+!     linear + quadratic pyramidal element
+!     
+     &       (label.eq.'C3D5    ').or.
+     &       (label.eq.'C3D13   ').or.
+     &       (label.eq.'C3D13F  ').or.
 !     
 !     quadratic wedge
 !     (including such which are expanded into one)
@@ -361,6 +367,12 @@ c     Bernhardi end
       elseif(label(4:4).eq.'4') then
         nope=4
         nopeexp=4
+      elseif(label(4:4).eq.'5') then
+        nope=5
+        nopeexp=5
+      elseif(label(4:5).eq.'13') then
+        nope=13
+        nopeexp=13
       elseif(label(4:5).eq.'15') then
         nope=15
         nopeexp=15
@@ -438,7 +450,7 @@ c     Bernhardi end
           return
         endif
         if(i.gt.ne_) then
-          write(*,*) '*ERROR reading *ELEMENT: increase ne_'
+          write(*,*) '*ERROR reading *ELEMENT: increase ne_', ne_
           ier=1
           return
         endif

@@ -155,6 +155,8 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 	else if (strcmp1(&lakon[8*i+3],"10")==0){nope=10;ndof=3;}
 	else if ((strcmp1(&lakon[8*i+3],"4")==0)||
 		 (strcmp1(&lakon[8*i+2],"4")==0)){nope=4;ndof=3;}
+	else if (strcmp1(&lakon[8*i+3],"5")==0){nope=5;ndof=3;}
+	else if (strcmp1(&lakon[8*i+3],"13")==0){nope=13;ndof=3;}
 	else if (strcmp1(&lakon[8*i+3],"15")==0){nope=15;ndof=3;}
 	else if (strcmp1(&lakon[8*i+3],"6")==0){nope=6;ndof=3;}
 	else if (strcmp1(&lakon[8*i],"E")==0){
@@ -204,6 +206,8 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 	else if (strcmp1(&lakon[8*i+3],"8")==0)nope=8;
 	else if (strcmp1(&lakon[8*i+3],"10")==0)nope=10;
 	else if (strcmp1(&lakon[8*i+3],"4")==0)nope=4;
+	else if (strcmp1(&lakon[8*i+3],"5")==0)nope=5;
+	else if (strcmp1(&lakon[8*i+3],"13")==0)nope=13;
 	else if (strcmp1(&lakon[8*i+3],"15")==0)nope=15;
 	else if (strcmp1(&lakon[8*i+3],"6")==0)nope=6;
 	else if (strcmp1(&lakon[8*i],"E")==0){
@@ -385,6 +389,8 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
       else if (strcmp1(&lakon[8*i+3],"8")==0){nope=8;ndof=3;}
       else if (strcmp1(&lakon[8*i+3],"10")==0){nope=10;ndof=3;}
       else if (strcmp1(&lakon[8*i+3],"4")==0){nope=4;ndof=3;}
+      else if (strcmp1(&lakon[8*i+3],"5")==0){nope=5;ndof=3;}
+      else if (strcmp1(&lakon[8*i+3],"13")==0){nope=13;ndof=3;}
       else if (strcmp1(&lakon[8*i+3],"15")==0){nope=15;ndof=3;}
       else if (strcmp1(&lakon[8*i+3],"6")==0){nope=6;ndof=3;}
       else if (strcmp1(&lakon[8*i],"E")==0){
@@ -622,6 +628,8 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
       else if (strcmp1(&lakon[8*i+3],"8")==0)nope=8;
       else if (strcmp1(&lakon[8*i+3],"10")==0)nope=10;
       else if (strcmp1(&lakon[8*i+3],"4")==0)nope=4;
+      else if (strcmp1(&lakon[8*i+3],"5")==0)nope=5;
+      else if (strcmp1(&lakon[8*i+3],"13")==0)nope=13;
       else if (strcmp1(&lakon[8*i+3],"15")==0)nope=15;
       else if (strcmp1(&lakon[8*i+3],"6")==0)nope=6;
       else if (strcmp1(&lakon[8*i],"E")==0){

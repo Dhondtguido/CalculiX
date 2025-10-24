@@ -89,6 +89,10 @@
             nope=10
           elseif(lakon(i)(4:4).eq.'4') then
             nope=4
+          elseif(lakon(i)(4:5).eq.'13') then
+            nope=13
+          elseif(lakon(i)(4:4).eq.'5') then
+            nope=5
           elseif(lakon(i)(4:5).eq.'15') then
             nope=15
           elseif(lakon(i)(4:4).eq.'6') then
@@ -292,6 +296,10 @@
             nope=10
           elseif(lakon(i)(4:4).eq.'4') then
             nope=4
+          elseif(lakon(i)(4:5).eq.'13') then
+            nope=13
+          elseif(lakon(i)(4:4).eq.'5') then
+            nope=5
           elseif(lakon(i)(4:5).eq.'15') then
             nope=15
           elseif(lakon(i)(4:4).eq.'6') then

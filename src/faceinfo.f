@@ -54,11 +54,24 @@
          mint2d=1
          nopes=3
          nope=4
-      endif
-!     
-!     treatment of wedge faces
-!     
-      if(lakon(nelem)(4:4).eq.'6') then
+      elseif(lakon(nelem)(4:4).eq.'5') then
+         mint2d=1
+         nope=5
+         if(jface.le.4) then
+            nopes=3
+         else
+            nopes=4
+         endif
+      elseif(lakon(nelem)(4:5).eq.'13') then
+         nope=13
+         if(jface.le.4) then
+            mint2d=3
+            nopes=6
+         else
+            mint2d=9
+            nopes=8
+         endif
+      elseif(lakon(nelem)(4:4).eq.'6') then
          mint2d=1
          nope=6
          if(jface.le.2) then
@@ -66,8 +79,7 @@
          else
             nopes=4
          endif
-      endif
-      if(lakon(nelem)(4:5).eq.'15') then
+      elseif(lakon(nelem)(4:5).eq.'15') then
          nope=15
          if(jface.le.2) then
             mint2d=3

@@ -49,7 +49,7 @@
      &     itiefac(2,*),iponoels(*),inoels(2,*),konl(26),nelems,m,
      &     mint2d,nopes,ipos,nset,istartset(*),iendset(*),m1,m2,
      &     ialset(*),length,iorder(4),imastnode(*),nmastnode(*),
-     &     jbasis,kbasis,filedebug
+     &     jbasis,kbasis,filedebug,ifacepl(4,5),ifacepq(8,5)
 !     
       real*8 cg(3,*),straight(16,*),co(3,*),vold(0:mi(2),*),p(3),
      &     dist,xo(*),yo(*),zo(*),x(*),y(*),z(*),c0coef,auw(*),
@@ -90,6 +90,21 @@
      &     1,2,5,4,7,14,10,13,
      &     2,3,6,5,8,15,11,14,
      &     3,1,4,6,9,13,12,15/
+!
+!  5 nodes pyramid surface numbering
+      data ifacepl /
+     &     1,5,4,0,
+     &     2,5,1,0,
+     &     3,5,2,0,
+     &     4,5,3,0,
+     &     1,4,3,2/
+!  13 nodes pyramid surface numbering
+      data ifacepq /
+     &     1,5,4,10,13,9,0,0,
+     &     2,5,1,11,10,6,0,0,
+     &     3,5,2,12,11,7,0,0,
+     &     4,5,3,13,12,8,0,0,
+     &     1,4,3,2,9,8,7,6/
 !     
 !     flag for shape functions
 !     
@@ -264,9 +279,23 @@ c     iteller=iteller+1
             mint2d=1
             nopes=3
             nope=4
-!     
-!     treatment of wedge faces
-!     
+          elseif(lakon(nelems)(4:4).eq.'5') then
+            mint2d=1
+            nope=5
+            if(jfaces.le.4) then
+              nopes=3
+            else
+              nopes=4
+            endif
+          elseif(lakon(nelems)(4:5).eq.'13') then
+            nope=13
+            if(jfaces.le.4) then
+              mint2d=3
+              nopes=6
+            else
+              mint2d=9
+              nopes=8
+            endif
           elseif(lakon(nelems)(4:4).eq.'6') then
             mint2d=1
             nope=6
@@ -307,6 +336,20 @@ c     iteller=iteller+1
      &               vold(j,konl(ifacet(m,jfaces)))
               enddo
             enddo
+          elseif(nope.eq.5) then
+            do m=1,nopes
+              do j=1,3
+                xl2(j,m)=co(j,konl(ifacepl(m,jfaces)))+
+     &               vold(j,konl(ifacepl(m,jfaces)))
+              enddo
+            enddo
+          elseif(nope.eq.13) then
+            do m=1,nopes
+              do j=1,3
+                xl2(j,m)=co(j,konl(ifacepq(m,jfaces)))+
+     &               vold(j,konl(ifacepq(m,jfaces)))
+              enddo
+            enddo
           elseif(nope.eq.15) then
             do m=1,nopes
               do j=1,3
@@ -334,22 +377,30 @@ c     iteller=iteller+1
               weight=weight2d1(m)
             elseif((lakon(nelems)(4:4).eq.'8').or.
      &             (lakon(nelems)(4:6).eq.'20R').or.
+     &             ((lakon(nelems)(4:4).eq.'5').and.
+     &             (nopes.eq.4)).or.
      &             ((lakon(nelems)(4:5).eq.'15').and.
      &             (nopes.eq.8))) then
               xi=gauss2d2(1,m)
               et=gauss2d2(2,m)
               weight=weight2d2(m)
-            elseif(lakon(nelems)(4:4).eq.'2') then
+            elseif((lakon(nelems)(4:4).eq.'2').or.
+     &            ((lakon(nelems)(4:5).eq.'13').and.
+     &             (nopes.eq.8))) then
               xi=gauss2d3(1,m)
               et=gauss2d3(2,m)
               weight=weight2d3(m)
             elseif((lakon(nelems)(4:5).eq.'10').or.
+     &            ((lakon(nelems)(4:5).eq.'13').and.
+     &             (nopes.eq.6)).or.
      &             ((lakon(nelems)(4:5).eq.'15').and.
      &             (nopes.eq.6))) then
               xi=gauss2d5(1,m)
               et=gauss2d5(2,m)
               weight=weight2d5(m)
             elseif((lakon(nelems)(4:4).eq.'4').or.
+     &            ((lakon(nelems)(4:4).eq.'5').and.
+     &             (nopes.eq.3)).or.
      &             ((lakon(nelems)(4:4).eq.'6').and.
      &             (nopes.eq.3))) then
               xi=gauss2d4(1,m)
@@ -517,6 +568,22 @@ c     write(*,*) '**regular solution'
           elseif(lakon(nelem)(4:4).eq.'4') then
             nopes=3
             nface=4
+          elseif(lakon(nelem)(4:5).eq.'13') then
+            if(jface.le.4) then
+              nopes=6
+            else
+              nopes=8
+            endif
+            nface=5
+            nope=13
+          elseif(lakon(nelem)(4:4).eq.'5') then
+            if(jface.le.4) then
+              nopes=3
+            else
+              nopes=4
+            endif
+            nface=5
+            nope=5
           elseif(lakon(nelem)(4:5).eq.'15') then
             if(jface.le.2) then
               nopes=6
@@ -544,7 +611,15 @@ c     write(*,*) '**regular solution'
               nodef(k)=kon(indexe+ifacet(k,jface))
             enddo
           elseif(nface.eq.5) then
-            if(nope.eq.6) then
+            if(nope.eq.5) then
+              do k=1,nopes
+                nodef(k)=kon(indexe+ifacepl(k,jface))
+              enddo
+            elseif(nope.eq.13) then
+              do k=1,nopes
+                nodef(k)=kon(indexe+ifacepq(k,jface))
+              enddo
+            elseif(nope.eq.6) then
               do k=1,nopes
                 nodef(k)=kon(indexe+ifacew1(k,jface))
               enddo
