@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <locale.h>
 #include "CalculiX.h"
 
 #define GOOD 0
@@ -73,6 +74,8 @@ ITG cgsolver (double *A, double *x, double *b, ITG neq, ITG len,
 {
   ITG i=0;
   double *Factor=NULL,*r=NULL,*p=NULL,*z=NULL,*C=NULL,*g=NULL,*rho=NULL;
+
+  setlocale(LC_NUMERIC, "C");
 
   /*  reduce row and column indices by 1 (FORTRAN->C)   */
 
