@@ -5,11 +5,11 @@
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
 !     published by the Free Software Foundation(version 2);
-!
+!     
 !
 !     This program is distributed in the hope that it will be useful,
-!     but WITHOUT ANY WARRANTY; without even the implied warranty of
-!     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+!     but WITHOUT ANY WARRANTY; without even the implied warranty of 
+!     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
 !     GNU General Public License for more details.
 !
 !     You should have received a copy of the GNU General Public License
@@ -18,17 +18,17 @@
 !
       subroutine transition(feasdir,nobject,nk,nodedesi,ndesi,
      &           objectset,xo,yo,zo,x,y,z,nx,ny,nz,co,ifree,
-     &           ndesia,ndesib)
+     &           ndesia,ndesib)                         
 !
 !     scaling of sensitivitites between the designspace
-!     and non-designspace
+!     and non-designspace      
 !
       implicit none
 !
       character*81 objectset(5,*)
 
       integer nobject,nk,nodedesi(*),ndesi,j,m,neighbor(10),nx(*),
-     &   ny(*),nz(*),istat,ndesia,ndesib,ifree,nnodes,irefnode,
+     &   ny(*),nz(*),istat,ndesia,ndesib,ifree,nnodes,irefnode,        
      &   iactnode
 !
       real*8 feasdir(2,*),xo(*),yo(*),zo(*),x(*),y(*),z(*),
@@ -36,14 +36,14 @@
      &   yrefnode,zrefnode,pi
 !
 !     Read transition distance.
-!
+!   
       read(objectset(1,1)(21:40),'(f20.0)',iostat=istat) trans
 !
-      pi=3.14159
+      pi=4.d0*datan(1.d0)
       nnodes=1
 !
       do j=ndesia,ndesib
-!
+!         
          iactnode=nodedesi(j)
          xdesi=co(1,iactnode)
          ydesi=co(2,iactnode)
@@ -51,8 +51,8 @@
 !
          call near3d(xo,yo,zo,x,y,z,nx,ny,nz,xdesi,ydesi,zdesi,
      &        ifree,neighbor,nnodes)
-!
-!        Calculate scaled sensitivity
+!  
+!        Calculate scaled sensitivity 
 !
          irefnode=neighbor(1)
          xrefnode=xo(irefnode)
@@ -65,14 +65,15 @@
          if(actdist.ge.trans) cycle
 !
 !        Linear scaling
-!         scale=actdist/trans
+c         scale=actdist/trans
 !        Exponential scaling
 !        scale=1/(1+dexp(-actdist/trans*10+5))
-!        COS scaling
-         scale=0.5-0.5*cos(pi*actdist/trans)
+!        COS scaling         
 !
+         scale=0.5d0*(1.d0-dcos(pi*actdist/trans))
+!     
          feasdir(2,iactnode)=feasdir(2,iactnode)*scale
       enddo
 !
-      return
+      return        
       end

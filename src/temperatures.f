@@ -49,7 +49,7 @@
 !     
       real*8 t0(*),t1(*),temperature,tempgrad1,tempgrad2,amta(2,*),
      &     t1g(2,*),a,b,c,dd,d1,d2,temp1,temp2,gradient,co(3,*)
-!
+!     
       iamplitude=iamplitudedefault
       idelay=0
       user=.false.
@@ -276,7 +276,7 @@
 !     user: 1,2,3,5,7,11,13,17
 !     
           if(user) temperature=1.2357111317d0
-!
+!     
 !     submodel: 19,23,29,31,37
 !               + 4 if 3d, +6 if 2d
 !     
@@ -287,7 +287,7 @@
               temperature=1.9232931374d0
             endif
           endif
-!
+!     
           if((inoelfree.ne.0).or.(nuel_.gt.0)) then
             tempgrad1=0.d0
             tempgrad2=0.d0
