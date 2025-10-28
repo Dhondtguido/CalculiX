@@ -46,7 +46,7 @@
 !
       data n11 /11/
 !
-!     determination of cd with the caracteristics by interpolation
+!     determination of cd with the characteristics by interpolation
 !
       real*8 ps2,pt1,ps2vpt1,cd      
 !

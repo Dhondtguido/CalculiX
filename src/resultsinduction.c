@@ -34,7 +34,7 @@ static ITG *kon1,*ipkon1,*ne1,*nelcon1,*nrhcon1,*nalcon1,*ielmat1,*ielorien1,
     *neapar=NULL,*nebpar=NULL;
 
 static double *co1,*v1,*elcon1,*rhcon1,*alcon1,*orab1,*t01,*eei1,
-    *fn1=NULL,*qa1=NULL,*vold1,*dtime1,*time1,*prop1,
+    *fn1=NULL,*qa1=NULL,*vold1,*dtime1,*time1,*prop1,*thicke1,
     *ttime1,*plkcon1,*xstateini1,*xstiff1,*xstate1,*sti1,
     *springarea1,*reltime1,*coefmpc1,*vini1,
     *cocon1,*qfx1,*shcon1,*xload1,*plicon1,
@@ -250,7 +250,7 @@ void resultsinduction(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
         pslavsurf1=pslavsurf;pmastsurf1=pmastsurf;mortar1=mortar;
         clearini1=clearini;plicon1=plicon;nplicon1=nplicon;ielprop1=ielprop;
         prop1=prop;iponoeln1=iponoeln;inoeln1=inoeln;network1=network;
-        ipobody1=ipobody;ibody1=ibody;xbody1=xbody;
+        ipobody1=ipobody;ibody1=ibody;xbody1=xbody;thicke1=thicke;
 
 	/* calculating the heat flux */
 	
@@ -369,7 +369,8 @@ void *resultsthermemmt(ITG *i){
 	   &calcul_fn1,&calcul_qa1,&nal[indexnal],&nea,&neb,ithermal1,
            nelemload1,nload1,nmethod1,reltime1,sideload1,xload1,xloadold1,
 	   pslavsurf1,pmastsurf1,&mortar1,clearini1,plicon1,nplicon1,
-	   ielprop1,prop1,iponoeln1,inoeln1,network1,ipobody1,xbody1,ibody1));
+	   ielprop1,prop1,iponoeln1,inoeln1,network1,ipobody1,xbody1,ibody1,
+	   thicke1));
 
     return NULL;
 }

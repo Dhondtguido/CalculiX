@@ -5,7 +5,7 @@
                                 INCREMENT    10
 
 
- heat flux (elem, integ.pnt.,qx,qy,qz) for setEALL and time  0.7588672E+01
+ heat flux (elem, integ.pnt.,qx,qy,qz) for set EALL and time  0.7588672E+01
 
          1   1 -2.734366E+02 -2.925537E-02  3.696755E+00
          1   2 -2.737858E+02 -3.786372E-03  3.701477E+00
@@ -281,7 +281,7 @@
                                 INCREMENT    20
 
 
- heat flux (elem, integ.pnt.,qx,qy,qz) for setEALL and time  0.2188469E+03
+ heat flux (elem, integ.pnt.,qx,qy,qz) for set EALL and time  0.2188469E+03
 
          1   1 -2.333158E+02 -4.626103E-01  3.154338E+00
          1   2 -2.385274E+02 -4.957164E-02  3.224797E+00
@@ -557,7 +557,7 @@
                                 INCREMENT    29
 
 
- heat flux (elem, integ.pnt.,qx,qy,qz) for setEALL and time  0.1000000E+04
+ heat flux (elem, integ.pnt.,qx,qy,qz) for set EALL and time  0.1000000E+04
 
          1   1 -6.071076E+01 -6.999293E-01  8.207855E-01
          1   2 -6.736791E+01 -2.699344E-02  9.107876E-01

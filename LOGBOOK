@@ -5516,3 +5516,25 @@ Dec 2002        - started to work on single crystal plasticity
  10 Sep 2025    - corrected an error in the parallellization of smoothshock.f
 
  14 Sep 2025    - removed equationf from the source code
+
+ 17 Sep 2025    - replaced map3dto1d2d(v* by map3dto1d2d_v(v* in
+                  resultsprint,printout and storeresidual (use of
+		  independent values instead of interpolating)
+                - allowed for node sets in the first term of an equation.
+
+ 19 Sep 2025    - corrected equations.f for sets.
+                - removed the mode number from TOTAL EFFECTIVE MASS and
+		  FRACTION OF TOTALS in the .dat-file
+                - inserted the number of nodes in CFD frd-files
+
+ 8 Oct 2025     - worked on massless contact explicit dynamics without
+                  contact
+
+ 10 Oct 2025    - replaced shape8hr.f by a new version provided by
+                  Otto Bernhardi (improved hourglass stabilization for
+		  C3D8R)
+                - updated resultstherm.f for composite shells
+                - modified calcdamage.f
+
+ 17 Oct 2025    - included an example for thermal calculations in a
+                  composite shell

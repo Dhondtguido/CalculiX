@@ -360,6 +360,7 @@
 !     temperature is needed, i.e. for the Johnson-Cook model
 !     
           if(int(dmcon(1,1,imat)).eq.2) then
+            iflag=1
             if(lakonl(1:5).eq.'C3D8R') then
               call shape8hr(xl,xsj,shp,gs,a)
             elseif(lakonl(1:5).eq.'C3D8I') then
@@ -510,7 +511,7 @@
 !     
 !     Johnson-Cook model
 !
-              if(dpeqdt.lt.eps0p) dpeq=0.d0
+c              if(dpeqdt.lt.eps0p) dpeq=0.d0
 !              
               if(t1l.lt.Ttrans) then
                 That=0.d0
@@ -520,8 +521,16 @@
                 That=(t1l-Ttrans)/(Tmelt-Ttrans)
               endif
 !
-              ef=(d1+d2*dexp(-d3*triax))*(1.d0+d4*dlog(dpeqdt/eps0p))*
-     &             (1.d0+d5*That)
+              if(dpeqdt.gt.eps0p) then
+                ef=(d1+d2*dexp(-d3*triax))*(1.d0+d4*dlog(dpeqdt/eps0p))*
+     &               (1.d0+d5*That)
+              else
+!
+!               replacing the logarithmic function by a linear function
+!
+                ef=(d1+d2*dexp(-d3*triax))*
+     &               (1.d0+d4*(dpeqdt/eps0p-1.d0))*(1.d0+d5*That)
+              endif
             endif
 !     
 !     damage

@@ -17,6 +17,40 @@ for i in *.inp; do
 #
 
 	rm -f ${i%.inp}.dat
+	
+#
+#       take out some .inp files created by running the examples
+#
+	
+	if [ $i = circ10pcent.rfn.inp ]
+	then
+	    continue
+	fi
+	
+	if [ $i = circ10p.rfn.inp ]
+	then
+	    continue
+	fi
+	
+	if [ $i = circ11p.rfn.inp ]
+	then
+	    continue
+	fi
+	
+	if [ $i = segmentsmooth.rfn.inp ]
+	then
+	    continue
+	fi
+	
+	if [ $i = segmentsmooth2.rfn.inp ]
+	then
+	    continue
+	fi
+	
+	if [ $i = beam10psmooth.rfn.inp ]
+	then
+	    continue
+	fi
 
 #
 #       executing CalculiX and generating the .dat file
@@ -73,7 +107,6 @@ for i in *.inp; do
 
 done
 
-rm -f *.rfn.inp
 rm -f $tempfile
 echo "check the existence of file $errorfile"
 echo "if this file does not exist, the present results"

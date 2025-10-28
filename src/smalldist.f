@@ -16,7 +16,7 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-      subroutine smalldist(co,distmin,lakon,ipkon,kon,ne)
+      subroutine smalldist(co,distmin,lakon,ipkon,kon,ne,ne2d)
 !
       implicit none
 !
@@ -24,7 +24,7 @@
 !
       integer ipkon(*),kon(*),i,j,ne,n,j1,j2,indexe,neigh2(2,1),
      &  neigh4(2,6),neigh6(2,9),neigh8(2,12),neigh10(2,12),
-     &  neigh15(2,18),neigh20(2,24)
+     &  neigh15(2,18),neigh20(2,24),ne2d
 !
       real*8 dist,distmin,co(3,*)
 !
@@ -55,7 +55,7 @@ c     &               1,17,17,5,2,18,18,6,3,19,19,7,4,20,20,8/),(/2,24/))
          indexe=ipkon(i)
          if(lakon(i)(4:4).eq.'2') then
             if((lakon(i)(7:7).eq.'A').or.
-     &           (lakon(i)(7:7).eq.'L').or.
+c     &           (lakon(i)(7:7).eq.'L').or.
      &           (lakon(i)(7:7).eq.'S').or.
      &           (lakon(i)(7:7).eq.'E')) then
                n=4
@@ -82,7 +82,7 @@ c     &               1,17,17,5,2,18,18,6,3,19,19,7,4,20,20,8/),(/2,24/))
             enddo
          elseif(lakon(i)(4:4).eq.'8') then
             if((lakon(i)(7:7).eq.'A').or.
-     &           (lakon(i)(7:7).eq.'L').or.
+c     &           (lakon(i)(7:7).eq.'L').or.
      &           (lakon(i)(7:7).eq.'S').or.
      &           (lakon(i)(7:7).eq.'E')) then
                n=4
@@ -119,7 +119,7 @@ c     &               1,17,17,5,2,18,18,6,3,19,19,7,4,20,20,8/),(/2,24/))
             enddo
          elseif(lakon(i)(4:4).eq.'6') then
             if((lakon(i)(7:7).eq.'A').or.
-     &           (lakon(i)(7:7).eq.'L').or.
+c     &           (lakon(i)(7:7).eq.'L').or.
      &           (lakon(i)(7:7).eq.'S').or.
      &           (lakon(i)(7:7).eq.'E')) then
                n=3
@@ -136,7 +136,7 @@ c     &               1,17,17,5,2,18,18,6,3,19,19,7,4,20,20,8/),(/2,24/))
             enddo
          elseif(lakon(i)(4:5).eq.'15') then
             if((lakon(i)(7:7).eq.'A').or.
-     &           (lakon(i)(7:7).eq.'L').or.
+c     &           (lakon(i)(7:7).eq.'L').or.
      &           (lakon(i)(7:7).eq.'S').or.
      &           (lakon(i)(7:7).eq.'E')) then
                n=3
@@ -156,7 +156,11 @@ c     &               1,17,17,5,2,18,18,6,3,19,19,7,4,20,20,8/),(/2,24/))
          endif
       enddo
 !
-      distmin=dsqrt(distmin)*1.d-6
+      if(ne2d.ne.0) then
+         distmin=dsqrt(distmin)*1.d-2
+      else
+         distmin=dsqrt(distmin)*1.d-6
+      endif
       distmin=max(distmin,1.d-8)
 !
       write(*,'(1x,a14,e14.7)') 'Perturbation: ',distmin

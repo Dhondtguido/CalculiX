@@ -733,7 +733,7 @@
           a1=a
           a2=a
 !
-!     calculating the reynolds number in the asumption of a circular
+!     calculating the reynolds number in the assumption of a circular
 !     cross section
 !
           reynolds=2.d0*xflow/(dvi*dsqrt(pi*a))

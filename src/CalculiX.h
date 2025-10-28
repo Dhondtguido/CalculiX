@@ -48,10 +48,10 @@
 
 /* memory allocation, reallocation, freeing */
 
-/* allocating memory for double reals and initializing it to zero (parallell) */
+/* allocating memory for double reals and initializing it to zero (parallel) */
 #define DNEW(a,b,c) {a=(b *)u_malloc((c)*sizeof(b),__FILE__,__LINE__,#a); \
         DOUMEMSET(a,0,c,0.);}
-/* allocating memory for ITG and initializing it to zero (parallell) */
+/* allocating memory for ITG and initializing it to zero (parallel) */
 #define INEW(a,b,c) {a=(b *)u_malloc((c)*sizeof(b),__FILE__,__LINE__,#a); \
         ITGMEMSET(a,0,c,0);}
 /* allocating memory without initialization */
@@ -1223,13 +1223,6 @@ void FORTRAN(desiperelem,(ITG *ndesi,ITG *istartdesi,ITG *ialdesi,
                           ITG *ipoeldi,ITG *ieldi,ITG *ne,
                           ITG *istartelem,ITG *ialelem));
 
-void  FORTRAN(resforccont,(double *vold,ITG *nk,ITG *mi,double *aubi,
-			   ITG *irowbi,ITG *jqbi,ITG *neqtot,ITG *ktot,
-			   double *fext,double *gapdof,
-			   double *auib,ITG *irowib,ITG *jqib,
-			   ITG *nactdof,double *volddof,
-			   ITG *neq,double *qik_kbi));
-
 void FORTRAN(detectactivecont,(double *gapnorm,double *gapdisp,double *auw,
 			       ITG *iroww,ITG *jqw,ITG *nslavs,
 			       double *springarea,ITG *iacti,ITG *nacti,
@@ -1636,7 +1629,8 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
 		       char *output,ITG *ntrans,ITG *inotr,double *trab,
 		       char *orname,double *xdesi,double *timepar,
 		       double *coini,ITG *ikboun,ITG *nactdof,ITG *ne2d,
-		       ITG *nkon,char *tieset,ITG *ntie);
+		       ITG *nkon,char *tieset,ITG *ntie,ITG *knor2d,
+		       ITG *iponoel2d,ITG *iponor2d,ITG *inoel2d);
 
 void FORTRAN(fill_neiel,(ITG *nef,ITG *ipnei,ITG *neiel,ITG *neielcp));
 
@@ -2998,7 +2992,7 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,
 	      ITG *ne,ITG **jqbip,double **aubip,ITG **irowbip,ITG **jqibp,
 	      double **auibp,ITG **irowibp,ITG *iclean,ITG *iinc,
 	      double *fullgmatrix,double *fullr,double *alglob,
-	      ITG *num_cpus);
+	      ITG *num_cpus,ITG *ncont);
 
 void *massless1mt(ITG *i);
 
@@ -3314,7 +3308,8 @@ void FORTRAN(normalsonsurface_se,(ITG *ipkon,ITG *kon,char*lakon,
              double *extnor,double *co,ITG *nk,ITG *ipoface,
              ITG *nodface,ITG *nactdof,ITG *mi,ITG *nodedesiinv,
              ITG *iregion,ITG *iponoelfa,ITG *ndesi,ITG *nodedesi,
-             ITG *nod2nd3rd,ITG *ikboun,ITG *nboun,ITG *ne2d));
+             ITG *nod2nd3rd,ITG *ikboun,ITG *nboun,ITG *ne2d,ITG *knor2d,
+             ITG *iponoel2d,ITG *iponor2d,ITG *inoel2d,ITG *ne));
 
 void FORTRAN(normalsonsurface_robust,(ITG *ipkon,ITG *kon,char *lakon,
 				      double *extnor,double *co,ITG *nk,
@@ -3442,7 +3437,7 @@ void FORTRAN(objective_shapeener_dx,(double *co1,ITG *kon1,ITG *ipkon1,
 void FORTRAN(objective_shapeener_tot,(ITG *ne,ITG *kon,ITG *ipkon,char *lakon,
              double *fint,double *vold,ITG *iperturb,ITG *mi,ITG *nactdof,
              double *dgdx,double *df,ITG *ndesi,ITG *iobject,ITG *jqs,
-             ITG *irows,double *vec,ITG *nod1st));
+             ITG *irows,double *vec,ITG *nod1st,ITG *nactdofinv));
 
 void FORTRAN(objective_peeq,(ITG *nodeset,ITG *istartset,ITG *iendset,
 			     ITG *ialset,ITG *nk,ITG *idesvar,ITG *iobject,
@@ -4070,7 +4065,7 @@ void *res4parllmt(ITG *i);
 void resforccont(double *vold,ITG *nk,ITG *mi,double *aubi,ITG *irowbi,
 		 ITG *jqbi,ITG *neqtot,ITG *ktot,double *fext,double *gapdisp,
 		 double *auib,ITG *irowib,ITG *jqib,ITG *nactdof,
-		 double *volddof,ITG *neq,double *qi_kbi);
+		 double *volddof,ITG *neq,double *qi_kbi,ITG *ncont);
 
 void *resforccontmt(ITG *i);
 
@@ -4415,7 +4410,7 @@ void FORTRAN(resultstherm,(double *co,ITG *kon,ITG *ipkon,
        double *xloadold,double *pslavsurf,double *pmastsurf,ITG *mortar,
        double *clearini,double *plicon,ITG *nplicon,ITG *ielprop,
        double *prop,ITG *iponoeln,ITG *inoeln,ITG *network,ITG *ipobody,
-       double *xbodyact,ITG *ibody));
+       double *xbodyact,ITG *ibody,double *thicke));
 
 void *resultsthermemmt(ITG *i);
 
@@ -4715,7 +4710,7 @@ void FORTRAN(slavintpoints,(ITG *ntie,ITG *itietri,ITG *ipkon,
         ITG *i,ITG *l,ITG *ntri));
 
 void FORTRAN(smalldist,(double *co,double *distmin,char *lakon,
-             ITG *ipkon,ITG *kon,ITG *ne));
+             ITG *ipkon,ITG *kon,ITG *ne,ITG *ne2d));
 
 void FORTRAN(smoothbadmid,(double *cotet,ITG *kontet,ITG *ipoeln,ITG *ieln,
 			      ITG *nbadnodes,ITG *ibadnodes,
@@ -5423,7 +5418,7 @@ typedef struct
   const void* ptr;
 }  CalculixExternalBehaviour;
 /*!
- * \return the description of an external beahviour
+ * \return the description of an external behaviour
  * \param[in] n : external behaviour name
  */
 const CalculixExternalBehaviour*

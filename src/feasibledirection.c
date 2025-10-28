@@ -55,7 +55,8 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
 		       ITG *ialset,char *jobnamec,char *output,ITG *ntrans,
 		       ITG *inotr,double *trab,char *orname,double *xdesi,
 		       double *timepar,double *coini,ITG *ikboun,ITG *nactdof,
-		       ITG *ne2d,ITG *nkon,char *tieset,ITG *ntie){
+		       ITG *ne2d,ITG *nkon,char *tieset,ITG *ntie,ITG *knor2d,
+		       ITG *iponoel2d,ITG *iponor2d,ITG *inoel2d){
                
   /* finding a feasible direction based on the sensitivity information */
   
@@ -178,17 +179,19 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
     
     /* calculating the normals w.r.t. to the initial geometry */
     
-    FORTRAN(normalsonsurface_se,(ipkon,kon,lakon,extnorini,coini,nk,ipoface,
+    FORTRAN(normalsonsurface_se,(ipkon,kon,lakon,extnor,co,nk,ipoface,
 			         nodface,nactdof,mi,nodedesiinv,&iregion,
 			         iponoelfa,ndesi,nodedesi,nod2nd3rd,
-			         ikboun,nboun,ne2d)); 		          
+			         ikboun,nboun,ne2d,knor2d,iponoel2d,iponor2d,
+				 inoel2d,ne)); 		          
 
-    /* calculating the normals w.r.t. the actual geoemtry */
+    /* calculating the normals w.r.t. the actual geometry */
     
     FORTRAN(normalsonsurface_se,(ipkon,kon,lakon,extnor,co,nk,ipoface,
 			         nodface,nactdof,mi,nodedesiinv,&iregion,
 			         iponoelfa,ndesi,nodedesi,nod2nd3rd,
-			         ikboun,nboun,ne2d)); 		          
+			         ikboun,nboun,ne2d,knor2d,iponoel2d,iponor2d,
+				 inoel2d,ne)); 		          
     
     for(i=0;i<*nobject;i++){
       if(strcmp1(&objectset[i*405+3],"MEMBERSIZE")==0){
@@ -325,7 +328,7 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
 
 
   /*************************************************************************/
-  /*         GRADIENT PROJETION METHOD                                     */
+  /*         GRADIENT PROJECTION METHOD                                     */
   /*************************************************************************/
 
   }else if(methodfd==2){                                    

@@ -224,7 +224,7 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
 	
     SFREE(n);SFREE(r);SFREE(d);
 
-    /* adding random contributions to the new nodes towords
+    /* adding random contributions to the new nodes towards
        the center of gravity of the base element */
 
     if(1.e-4*dmin<1.e-5){
@@ -421,7 +421,7 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
 	
     SFREE(n);SFREE(r);SFREE(d);
 
-    /* adding random contributions to the new nodes towords
+    /* adding random contributions to the new nodes towards
        the center of gravity of the base element */
 
     if(1.e-4*dmin<1.e-5){
@@ -774,9 +774,10 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
 				   &netet_,&nktet_));
       }
     }
+    SFREE(qualityjac);SFREE(ibadnodes); 
   }
 
-  SFREE(iponn);SFREE(inn);SFREE(qualityjac);SFREE(ibadnodes);
+  SFREE(iponn);SFREE(inn);
 
   SFREE(ialsete);SFREE(ilist);SFREE(isharp);SFREE(idimsh);SFREE(itreated);
 

@@ -34,8 +34,11 @@
          if(lakon(i)(1:1).eq.'F') cycle
          if(lakon(i)(4:4).eq.'2') then
             nope=20
-         elseif(lakon(i)(4:4).eq.'8') then
+         elseif((lakon(i)(4:5).eq.'8 ').or.
+     &          (lakon(i)(4:5).eq.'8R')) then
             nope=8
+         elseif(lakon(i)(4:5).eq.'8I') then
+            nope=11
          elseif(lakon(i)(4:4).eq.'4') then
             nope=4
          elseif(lakon(i)(4:5).eq.'10') then

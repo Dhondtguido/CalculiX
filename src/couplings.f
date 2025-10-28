@@ -170,7 +170,7 @@
 !     
       if(name(1:1).eq.' ') then
         write(*,*)
-     &       '*ERROR reading *COUPLING: no CONTRAINT NAME given'
+     &       '*ERROR reading *COUPLING: no CONSTRAINT NAME given'
         write(*,*) '  '
         call inputerror(inpc,ipoinpc,iline,
      &       "*COUPLING%",ier)

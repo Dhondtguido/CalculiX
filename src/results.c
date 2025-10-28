@@ -341,6 +341,7 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
     clearini1=clearini;plicon1=plicon;nplicon1=nplicon;ne1=ne;
     ielprop1=ielprop,prop1=prop;iponoeln1=iponoeln;inoeln1=inoeln;
     network1=network;ipobody1=ipobody;ibody1=ibody;xbody1=xbody;
+    thicke1=thicke;
 
     /* calculating the heat flux */
 	
@@ -532,7 +533,8 @@ void *resultsthermmt(ITG *i){
 			&nea,&neb,ithermal1,nelemload1,nload1,nmethod1,
 			reltime1,sideload1,xload1,xloadold1,pslavsurf1,
 			pmastsurf1,mortar1,clearini1,plicon1,nplicon1,ielprop1,
-			prop1,iponoeln1,inoeln1,network1,ipobody1,xbody1,ibody1));
+			prop1,iponoeln1,inoeln1,network1,ipobody1,xbody1,ibody1,
+			thicke1));
 
   return NULL;
 }

@@ -120,7 +120,7 @@
      &     orab,ielorien,norien,nk,ne,inum,filab,vold,ikin,ielmat,
      &     thicke,eme,islavsurf,mortar,time,ielprop,prop,veold,orname,
      &     nelemload,nload,sideload,xload,rhcon,nrhcon,ntmat_,ipobody,
-     &     ibody,xbody,nbody,nmethod,dam)
+     &     ibody,xbody,nbody,nmethod,dam,nactdof)
 !     
 !     for facial information (*section print): if forces and/or
 !     moments in sections are requested, the stresses have to be
@@ -167,8 +167,10 @@
         nfield=mt
         cflag=filab(1)(5:5)
         iforce=0
-        call map3dto1d2d(v,ipkon,inum,kon,lakon,nfield,nk,
-     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
+c        call map3dto1d2d(v,ipkon,inum,kon,lakon,nfield,nk,
+c     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
+        call map3dto1d2d_v(v,ipkon,inum,kon,lakon,nfield,nk,
+     &       ne,nactdof)
       endif
 !     
       if((filab(2)(1:4).eq.'NT  ').and.(ithermal(1).le.1)) then

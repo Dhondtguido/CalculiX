@@ -248,11 +248,6 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 
       r_rel=*r_abs/(*emax);
       if(r_rel<=-maxdecay) {
-	// deactivated on 22.03.2019
-	// energy/work may not be calculated correctly for forced BC
-	// (example: shaft)
-	// following line deactiveted on 16.07.2021
-	//      		idivergence=1;
       }else{
 		
 	/* Check if the residual is too close to the boundary */
@@ -270,7 +265,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 
   if((*nmethod==4)&&(*ithermal<2)&&(*uncoupled==0)&&(iconvergence==1)&&((*ne!=*ne0)||(*neini!=*ne0))){
 
-    /* store temporarly the value of emax: in case of forced divergence 
+    /* store temporarily the value of emax: in case of forced divergence 
        emax has to be reset. */
 
     tmp=*emax;

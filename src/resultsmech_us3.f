@@ -170,7 +170,7 @@
 !                        to be calculated from the PK2 stresses
 !     nener              if 0: internal energy calculation is not required
 !                        else: internal energy is required on output
-!     ikin               if 0: kinetic energy calculation is not requred
+!     ikin               if 0: kinetic energy calculation is not required
 !                        else: kinetic energy is required on output
 !     ne0                largest element number without contact elements (are
 !                        stored after all other elements)
@@ -486,7 +486,7 @@
         enddo
       endif       
 !
-! Internal forces based on displacments
+! Internal forces based on displacements
 !
       if(calcul_fn.eq.1)then     
 !

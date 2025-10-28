@@ -22,15 +22,13 @@
 !
       subroutine getnumberofnodes(nelem,jface,lakon,nope,nopes,mint2d)
 !      
-!     autor: Saskia Sitzmann
+!     author: Saskia Sitzmann
 !      
       implicit none
 !     
       character*8 lakon(*)
 !     
       integer  nopes,nope,nelem,jface,mint2d
-!
-!
 !     
       if(lakon(nelem)(4:5).eq.'8R') then
          mint2d=1

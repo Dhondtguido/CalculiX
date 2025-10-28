@@ -203,7 +203,7 @@ c     write(*,*) '**regular solution'
 !     triangle
 !     
 !     calculating the distance from each edge of the triangle
-!     dis(i) is the distance of the new integration point fromt
+!     dis(i) is the distance of the new integration point from
 !     the edge opposite to local node i of the triangle itri
 !     
         do l=1,3

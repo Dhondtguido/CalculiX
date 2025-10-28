@@ -72,7 +72,7 @@
 !     restore the original form of the MPC's
 !     an MPC with number in between mpcrfna and mpcrfnb (i.e. MPC's
 !     corresponding to the connection of the old mesh with the new
-!     mesh) is in its orignal form if the coefficient of the first
+!     mesh) is in its original form if the coefficient of the first
 !     term is exactly 1.d0
 !
       do i=mpcrfna,mpcrfnb
@@ -327,7 +327,7 @@
             enddo
           enddo
 !
-!     remove the indpendent node from the data base:          
+!     remove the independent node from the data base:          
 !     tagging the row dof in all other columns
 !     
           do m=jqt(newnode),jqt(newnode+1)-1

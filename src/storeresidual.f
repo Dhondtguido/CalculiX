@@ -109,8 +109,10 @@
          nfield=mt
          cflag=filab(1)(5:5)
          iforce=0
-         call map3dto1d2d(vold,ipkon,inum,kon,lakon,nfield,nk,
-     &        ne,cflag,co,vold,iforce,mi,ielprop,prop)
+c         call map3dto1d2d(vold,ipkon,inum,kon,lakon,nfield,nk,
+c     &        ne,cflag,co,vold,iforce,mi,ielprop,prop)
+         call map3dto1d2d_v(vold,ipkon,inum,kon,lakon,nfield,nk,
+     &        ne,nactdof)
       endif
 !
 !     marking gas nodes by multiplying inum by -1

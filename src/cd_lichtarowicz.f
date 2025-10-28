@@ -17,7 +17,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
 !     This subroutines enables to calculate the reynolds number correction after:
-!     "Discharge coeffcients for incompressible non-cavitating flowthrough long orifices"
+!     "Discharge coefficients for incompressible non-cavitating flowthrough long orifices"
 !     A. Lichtarowicz, R.K duggins and E. Markland
 !     Journal  Mechanical Engineering Science , vol 7, No. 2, 1965
 !

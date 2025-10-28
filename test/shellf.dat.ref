@@ -52,14 +52,14 @@ TOTAL     0.7574401E-30   0.1313442E-09   0.1681071E-09   0.5604375E-10   0.6256
 
      T O T A L   E F F E C T I V E   M A S S
 
-MODE NO.   X-COMPONENT     Y-COMPONENT     Z-COMPONENT     X-ROTATION      Y-ROTATION      Z-ROTATION
+           X-COMPONENT     Y-COMPONENT     Z-COMPONENT     X-ROTATION      Y-ROTATION      Z-ROTATION
 
           0.1690000E-09   0.1690000E-09   0.1711667E-09   0.5706408E-10   0.6257102E-10   0.1188958E-09
 
 
      F R A C T I O N   O F   T O T A L S
 
-MODE NO.   X-COMPONENT     Y-COMPONENT     Z-COMPONENT     X-ROTATION      Y-ROTATION      Z-ROTATION
+           X-COMPONENT     Y-COMPONENT     Z-COMPONENT     X-ROTATION      Y-ROTATION      Z-ROTATION
 
           0.4481894E-20   0.7771845E+00   0.9821254E+00   0.9821196E+00   0.9999158E+00   0.6306001E+00
 
@@ -85,11 +85,11 @@ P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.19000
 
  displacements (vx,vy,vz) for set N15 and time  0.1900000E+05
 
-        15  1.940281E-12 -1.958003E-13  1.841387E+02
+        15  1.940281E-12 -1.958003E-13  1.841437E+02
 
  displacements (vx,vy,vz) for set N15 and time  0.1900000E+05
 
-        15 -3.104548E-14  3.128022E-15 -2.945862E+00
+        15 -3.104548E-14  3.128022E-15 -2.945942E+00
 
 P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.1924691885636E+05 (CYCLES/TIME)
 
@@ -109,11 +109,11 @@ P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.19246
 
  displacements (vx,vy,vz) for set N15 and time  0.1924692E+05
 
-        15  1.301476E-15 -4.217669E-16  1.381178E-01
+        15  1.301476E-15 -4.217669E-16  1.381034E-01
 
  displacements (vx,vy,vz) for set N15 and time  0.1924692E+05
 
-        15 -1.195986E-10  1.205001E-11 -1.134828E+04
+        15 -1.195986E-10  1.205001E-11 -1.134859E+04
 
 P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.2000000000000E+05 (CYCLES/TIME)
 
@@ -133,8 +133,8 @@ P A R T I C I P A T I O N   F A C T O R S   F O R   F R E Q U E N C Y    0.20000
 
  displacements (vx,vy,vz) for set N15 and time  0.2000000E+05
 
-        15 -6.184220E-13  6.202047E-14 -5.866776E+01
+        15 -6.184220E-13  6.202047E-14 -5.866937E+01
 
  displacements (vx,vy,vz) for set N15 and time  0.2000000E+05
 
-        15 -3.337283E-15  3.362421E-16 -3.166612E-01
+        15 -3.337283E-15  3.362421E-16 -3.166699E-01

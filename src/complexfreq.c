@@ -835,7 +835,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 
   }else{
       
-    /* no cyclic symmmetry */
+    /* no cyclic symmetry */
       
     /* assembling the new eigenmodes */
       

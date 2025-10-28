@@ -3,10 +3,10 @@
 
 
    ##############################################################################################################
-   D E S I G N   R E S P O N S E                    I N F O R M A T I O N
+   D E S I G N   R E S P O N S E   I N F O R M A T I O N
 
    FUNCTION        FUNCTION VALUE    LENGTH GRADIENT   NAME                                                        
    ##############################################################################################################
 
-   EQPLASTICSTRAIN  0.6453641E+01      0.4529044E+03   PEEQ_OBJ                                                                        
-   MISESSTRESS      0.1455434E+02      0.6387111E+04   STRESS_OBJ                                                                      
+   EQPLASTICSTRAIN  0.6453641E+01      0.2834011E+02   PEEQ_OBJ                                                                        
+   MISESSTRESS      0.1455434E+02      0.4011854E+03   STRESS_OBJ                                                                      

@@ -133,7 +133,7 @@ void inimortar(double **enerp,ITG *mi,ITG *ne ,ITG *nslavs,ITG *nk,ITG *nener,
   NNEW(gap,double,*nslavs);
   NNEW(cdisp,double,6**nslavs);
   
-  /* allocation of temperary fields: stores the structure
+  /* allocation of temporary fields: stores the structure
      of the stiffness matrix without mortar contact */
   
   NNEW(cstress,double,mt**nslavs);

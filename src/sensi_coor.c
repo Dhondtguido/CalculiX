@@ -335,7 +335,8 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   FORTRAN(normalsonsurface_se,(ipkon,kon,lakon,extnor,co,nk,ipoface,
 			       nodface,nactdof,mi,nodedesiinv,&iregion,
 			       iponoelfa,ndesi,nodedesi,nod2nd3rd,
-			       ikboun,nboun,ne2d)); 
+			       ikboun,nboun,ne2d,knor2d,iponoel2d,iponor2d,
+			       inoel2d,ne)); 
       
   /* if the sensitivity calculation is used in a optimization script
      this script usually contains a loop consisting of:
@@ -423,7 +424,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       
   /* calculation of the smallest distance between nodes */
       
-  FORTRAN(smalldist,(co,&distmin,lakon,ipkon,kon,ne));
+  FORTRAN(smalldist,(co,&distmin,lakon,ipkon,kon,ne,ne2d));
 
   /* resizing xdesi to a length of distmin */
 
