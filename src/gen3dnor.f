@@ -452,6 +452,9 @@ c
 !     
 !     locating the beam elements to which node i belongs
 !     
+!     changed by Victor Kemp 2023-04-12
+!     fixes bug of beam-truss connection being disconnected in Z
+        beam=.false.
         index=iponoel(i)
         do
           if(index.eq.0) exit
@@ -460,9 +463,8 @@ c
      &         (lakon(ielem)(1:1).eq.'T')) then
             if(lakon(ielem)(1:1).eq.'B') then
               beam=.true.
-            else
-              beam=.false.
             endif
+!     end of change
             indexe=ipkon(ielem)
             nel=nel+1
             if(nel.gt.999) then
@@ -733,26 +735,27 @@ c
 !     storing the normals in xnor and generating 8 nodes
 !     for knor
 !     
+!     changed by Victor Kemp 2023-04-12
+!     fixes bug of *NORMAL not working for beams
+            if(ifix.eq.0) then
+              indexx = ixfree
+            else
+              indexx = iponor(1,ipkon(iel(jact))+jl(jact))
+            endif
             nexp=nexp+1
             do j=nelshell,nel
               if(ial(j).eq.1) then
                 ial(j)=2
-                if(ifix.eq.0) then
-                  iponor(1,ipkon(iel(j))+jl(j))=ixfree
-                else
-                  iponor(1,ipkon(iel(j))+jl(j))=
-     &                 iponor(1,ipkon(iel(jact))+jl(jact))
-                endif
+                iponor(1,ipkon(iel(j))+jl(j))=indexx
                 iponor(2,ipkon(iel(j))+jl(j))=ikfree
               endif
             enddo
-!     
+!
             do j=1,3
-              xnor(ixfree+j)=xn1(j,jact)
+              xnor(indexx+j)=xn1(j,jact)
+              xnor(indexx+3+j)=xnoref(j)
             enddo
-            do j=1,3
-              xnor(ixfree+3+j)=xnoref(j)
-            enddo
+!     end of change
             ixfree=ixfree+6
             if(lakon(iel(jact))(1:1).ne.'T') then
 !     
