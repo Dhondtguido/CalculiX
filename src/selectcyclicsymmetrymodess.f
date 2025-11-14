@@ -41,7 +41,8 @@
      &  cs(18,*)
 !
 !     irepeat indicates whether the step was preceded by another
-!     cyclic symmetry step (irepeat=1) or not (irepeat=0)
+!     step in which *SELECT CYCLIC SYMMETRY MODES was used (irepeat=1)
+!     or not (irepeat=0)
 !
       data irepeat /0/
       save irepeat
@@ -124,10 +125,6 @@
 !
 !     check whether cyclic symmetry axis is part of the structure
 !
-c         do i=1,nset
-c            if(set(i).eq.leftset) exit
-c         enddo
-c         ileft=i
          call cident81(set,leftset,nset,id)
          ileft=nset+1
          if(id.gt.0) then
@@ -150,7 +147,6 @@ c         ileft=i
                      call nident(ikmpc,idof,nmpc,id)
                      if(id.gt.0) then
                         if(ikmpc(id).eq.idof) then
-c                           write(*,*) 'removing MPC',node,k
                            mpc=ilmpc(id)
                            call mpcrem(mpc,mpcfree,nodempc,nmpc,ikmpc,
      &                           ilmpc,labmpc,coefmpc,ipompc)
@@ -423,10 +419,6 @@ c                           write(*,*) 'removing MPC',node,k
       call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &     ipoinp,inp,ipoinpc)
 !    
-c      do j=1,nmpc
-c         call writempc(ipompc,nodempc,coefmpc,labmpc,j)
-c      enddo
-!
       return
       end
 

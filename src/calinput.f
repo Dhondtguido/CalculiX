@@ -683,7 +683,7 @@ c
      &       labmpc,istep,istat,n,iline,ipol,inl,ipoinp,inp,ipoinpc,
      &       set,istartset,iendset,ialset,nset,nodempcref,coefmpcref,
      &       ikmpcref,memmpcref_,mpcfreeref,maxlenmpcref,memmpc_,
-     &       maxlenmpc,ier)
+     &       maxlenmpc,ier,mcs,cs)
 !     
       elseif(textpart(1)(1:10).eq.'*EXPANSION') then
         call expansions(inpc,textpart,alcon,nalcon,

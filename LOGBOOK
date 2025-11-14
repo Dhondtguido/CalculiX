@@ -5538,3 +5538,10 @@ Dec 2002        - started to work on single crystal plasticity
 
  17 Oct 2025    - included an example for thermal calculations in a
                   composite shell
+
+ 2 Nov 2025     - posted ccx_2.23
+
+ 14 Nov 2025    - reset the nodal diameters to default if all equations
+                  are removed by *EQUATION,REMOVE ALL
+                - made a correction in mafillsm.f concerning thermal
+		  frequency calculations
