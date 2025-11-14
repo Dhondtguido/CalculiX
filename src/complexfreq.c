@@ -237,7 +237,6 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	printf(" *ERROR in complexfreq reading the eigenvalues in the eigenvalue file...");
 	exit(0);
       }
-      //	  for(i=0;i<nev;i++){printf("eigenvalue %d %e\n",i,d[i]);}
     }else{
       NNEW(d,double,2*nev);
       if(fread(d,sizeof(double),2*nev,f1)!=2*nev){
@@ -249,7 +248,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     NNEW(ad,double,neq[1]);
     NNEW(adb,double,neq[1]);
     NNEW(au,double,nzs[2]);
-    NNEW(aub,double,nzs[1]);
+    NNEW(aub,double,nzs[2]);
       
     /* reading the stiffness matrix */
 
@@ -270,7 +269,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
       exit(0);
     }
       
-    if(fread(aub,sizeof(double),nzs[1],f1)!=nzs[1]){
+    if(fread(aub,sizeof(double),nzs[2],f1)!=nzs[2]){
       printf(" *ERROR in complexfreq reading the off-diagonals of the mass matrix in the eigenvalue file...");
       exit(0);
     }
@@ -1056,7 +1055,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	printf(" *ERROR in complexfreq saving the diagonal of the mass matrix to the eigenvalue file...");
 	exit(0);
       }
-      if(fwrite(aub,sizeof(double),nzs[1],f1)!=nzs[1]){
+      if(fwrite(aub,sizeof(double),nzs[1],f1)!=nzs[2]){
 	printf(" *ERROR in complexfreq saving the off-diagonal entries of the mass matrix to the eigenvalue file...");
 	exit(0);
       }

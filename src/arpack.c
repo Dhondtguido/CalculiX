@@ -989,7 +989,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
       printf(" *ERROR saving the diagonal of the mass matrix to the eigenvalue file...");
       exit(0);
     }
-    if(fwrite(aub,sizeof(double),nzs[1],f1)!=nzs[1]){
+    if(fwrite(aub,sizeof(double),nzs[2],f1)!=nzs[2]){
       printf(" *ERROR saving the off-diagonal terms of the mass matrix to the eigenvalue file...");
       exit(0);
     }
