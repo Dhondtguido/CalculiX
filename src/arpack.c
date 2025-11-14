@@ -493,7 +493,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
   NNEW(au,double,nzs[2]);
 
   NNEW(adb,double,neq[1]);
-  NNEW(aub,double,nzs[1]);
+  NNEW(aub,double,nzs[2]);
 
   NNEW(fext,double,neq[1]);
 
