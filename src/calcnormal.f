@@ -28,7 +28,7 @@
 !
       integer i,j,ifacequad(3,4),ifacetria(3,3),nelem,jface,nopes,
      &  nface,nodef(8),ifaceq(8,6),ifacet(6,4),ifacew1(4,5),
-     &  ifacew2(8,5),nope,kon(*),indexe,iflag
+     &  ifacew2(8,5),nope,kon(*),indexe,iflag,ifacepl(4,5),ifacepq(8,5)
 !
       real*8 xn(3),xt(3),xd(3),dd,co(3,*),xl(3,8),xi,et,
      &  xi3(3),et3(3),xi4(4),et4(4),xs(3,7),shp(7,8)
@@ -48,6 +48,20 @@
      &             1,2,4,5,9,8,
      &             2,3,4,6,10,9,
      &             1,4,3,8,10,7/
+!  5 nodes pyramid surface numbering
+      data ifacepl /
+     &     1,5,4,0,
+     &     2,5,1,0,
+     &     3,5,2,0,
+     &     4,5,3,0,
+     &     1,4,3,2/
+!  13 nodes pyramid surface numbering
+      data ifacepq /
+     &     1,5,4,10,13,9,0,0,
+     &     2,5,1,11,10,6,0,0,
+     &     3,5,2,12,11,7,0,0,
+     &     4,5,3,13,12,8,0,0,
+     &     1,4,3,2,9,8,7,6/
 !
 !     nodes per face for linear wedge elements
 !
@@ -109,6 +123,22 @@
       elseif(lakon(nelem)(3:4).eq.'D4') then
          nopes=3
          nface=4
+      elseif(lakon(nelem)(4:4).eq.'5') then
+         if(jface.le.4) then
+            nopes=3
+         else
+            nopes=4
+         endif
+         nface=5
+         nope=5
+      elseif(lakon(nelem)(4:5).eq.'13') then
+         if(jface.le.4) then
+            nopes=6
+         else
+            nopes=8
+         endif
+         nface=5
+         nope=13
       elseif(lakon(nelem)(4:5).eq.'15') then
          if(jface.le.2) then
             nopes=6
@@ -190,7 +220,15 @@ c         endif
             enddo
          endif
       elseif(nface.eq.5) then
-         if(nope.eq.6) then
+         if(nope.eq.5) then
+            do i=1,nopes
+               nodef(i)=kon(indexe+ifacepl(i,jface))
+            enddo
+         elseif(nope.eq.13) then
+            do i=1,nopes
+               nodef(i)=kon(indexe+ifacepq(i,jface))
+            enddo
+         elseif(nope.eq.6) then
             do i=1,nopes
                nodef(i)=kon(indexe+ifacew1(i,jface))
             enddo

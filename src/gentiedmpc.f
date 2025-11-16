@@ -45,7 +45,7 @@
      &     ipompc(*),nodempc(3,*),nmpc,nmpctied,mpcfree,ikmpc(*),
      &     ilmpc(*),ithermal(*),nef,ncont,mpcfreeold,m,id1,ikboun(*),
      &     itriold,itrinew,ntriangle,ntriangle_,itriangle(100),
-     &     ilen
+     &     ilen,ifacepl(4,5),ifacepq(8,5)
 !     
       real*8 cg(3,*),straight(16,*),co(3,*),p(3),
      &     dist,xo(*),yo(*),zo(*),x(*),y(*),z(*),pl(3,9),
@@ -82,6 +82,20 @@
      &     1,2,5,4,7,14,10,13,
      &     2,3,6,5,8,15,11,14,
      &     3,1,4,6,9,13,12,15/
+!  5 nodes pyramid surface numbering
+      data ifacepl /
+     &     1,5,4,0,
+     &     2,5,1,0,
+     &     3,5,2,0,
+     &     4,5,3,0,
+     &     1,4,3,2/
+!  13 nodes pyramid surface numbering
+      data ifacepq /
+     &     1,5,4,10,13,9,0,0,
+     &     2,5,1,11,10,6,0,0,
+     &     3,5,2,12,11,7,0,0,
+     &     4,5,3,13,12,8,0,0,
+     &     1,4,3,2,9,8,7,6/
 !     
 !     opening a file to store the nodes which are not connected
 !     
@@ -325,6 +339,22 @@ c     write(*,*) '**regular solution'
             elseif(lakon(nelem)(4:4).eq.'4') then
               nnodelem=3
               nface=4
+            elseif(lakon(nelem)(4:5).eq.'13') then
+              if(jface.le.4) then
+                nnodelem=6
+              else
+                nnodelem=8
+              endif
+              nface=5
+              nope=13
+            elseif(lakon(nelem)(4:4).eq.'5') then
+              if(jface.le.4) then
+                nnodelem=3
+              else
+                nnodelem=4
+              endif
+              nface=5
+              nope=5
             elseif(lakon(nelem)(4:5).eq.'15') then
               if(jface.le.2) then
                 nnodelem=6
@@ -352,7 +382,15 @@ c     write(*,*) '**regular solution'
                 nodef(k)=kon(indexe+ifacet(k,jface))
               enddo
             elseif(nface.eq.5) then
-              if(nope.eq.6) then
+              if(nope.eq.5) then
+                do k=1,nnodelem
+                  nodef(k)=kon(indexe+ifacepl(k,jface))
+                enddo
+              elseif(nope.eq.13) then
+                do k=1,nnodelem
+                  nodef(k)=kon(indexe+ifacepq(k,jface))
+                enddo
+              elseif(nope.eq.6) then
                 do k=1,nnodelem
                   nodef(k)=kon(indexe+ifacew1(k,jface))
                 enddo
@@ -581,6 +619,22 @@ c     &                                tietol(1,i)
             elseif(lakon(nelem)(4:4).eq.'4') then
               nnodelem=3
               nface=4
+            elseif(lakon(nelem)(4:5).eq.'13') then
+              if(jface.le.4) then
+                nnodelem=6
+              else
+                nnodelem=8
+              endif
+              nface=5
+              nope=13
+            elseif(lakon(nelem)(4:4).eq.'5') then
+              if(jface.le.4) then
+                nnodelem=3
+              else
+                nnodelem=4
+              endif
+              nface=5
+              nope=5
             elseif(lakon(nelem)(4:5).eq.'15') then
               if(jface.le.2) then
                 nnodelem=6
@@ -608,7 +662,15 @@ c     &                                tietol(1,i)
                 nodef(k)=kon(indexe+ifacet(k,jface))
               enddo
             elseif(nface.eq.5) then
-              if(nope.eq.6) then
+              if(nope.eq.5) then
+                do k=1,nnodelem
+                  nodef(k)=kon(indexe+ifacepl(k,jface))
+                enddo
+              elseif(nope.eq.13) then
+                do k=1,nnodelem
+                  nodef(k)=kon(indexe+ifacepq(k,jface))
+                enddo
+              elseif(nope.eq.6) then
                 do k=1,nnodelem
                   nodef(k)=kon(indexe+ifacew1(k,jface))
                 enddo

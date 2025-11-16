@@ -61,7 +61,7 @@
      &     nplicon(0:ntmat_,*),nplkcon(0:ntmat_,*),ncmat_,iorth,
      &     ielmat(mi(3),*),nope,iorien,ipkon(*),null,ilen,
      &     konl(26),nopered,npmat_,nmat,kon(*),indexe,iflag,nopes,
-     &     nfaces,ig,ifaceq(8,6),ifacet(6,4),ifacew(8,5),
+     &     nfaces,ig,ifaceq(8,6),ifacet(6,4),ifacew(8,5),ifacep(8,5),
      &     mscalmethod,icount,mortar,iperturb(*)
 !     
       real*8 stiff(21),wavespeed(*),rhcon(0:1,ntmat_,*),volfac,
@@ -90,6 +90,12 @@
      &     1,2,5,4,7,14,10,13,
      &     2,3,6,5,8,15,11,14,
      &     4,6,3,1,12,15,9,13/
+      data ifacep /
+     &     1,5,4,10,13,9,0,0,
+     &     2,5,1,11,10,6,0,0,
+     &     3,5,2,12,11,7,0,0,
+     &     4,5,3,13,12,8,0,0,
+     &     1,4,3,2,9,8,7,6/
 !     
       include "gauss.f"
 !     
@@ -196,6 +202,15 @@ c            if(mortar.eq.-1) elemfac=0.9d0
             nope=4
             nopes=3
             nfaces=4
+          elseif(lakonl(4:5).eq.'13') then
+            nope=13
+            nopes=8
+            nfaces=5
+            elemfac=quadfac
+          elseif(lakonl(4:4).eq.'5') then
+            nope=5
+            nopes=5
+            nfaces=5
           elseif(lakon(nelem)(4:5).eq.'15')then
             nope=15
             nfaces=5
@@ -224,6 +239,24 @@ c            if(mortar.eq.-1) elemfac=0.9d0
             et=gauss3d4(2,1)
             ze=gauss3d4(3,1)
             weight=weight3d4(1)
+!     elseif Pyramid
+          elseif((lakon(nelem)(4:5).eq.'13')) then
+            if(lakon(nelem)(6:6).eq.'F') then
+              xi=0.d0   ! Just a single IntPoint for the volume
+              et=0.d0
+              ze=-0.5d0
+              weight=128.d0/27.d0
+            else
+              xi=0.d0   ! Just a single IntPoint for the volume
+              et=0.d0
+              ze=0.24d0
+              weight=4.d0/3.d0
+            endif
+          elseif((lakon(nelem)(4:4).eq.'5')) then
+              xi=0.d0   ! Just a single IntPoint for the volume
+              et=0.d0
+              ze=0.24d0
+              weight=4.d0/3.d0
 !     elseif WEDGES
           elseif((lakonl(4:5).eq.'15').or.
      &           (lakonl(4:4).eq.'6'))then
@@ -249,6 +282,14 @@ c            if(mortar.eq.-1) elemfac=0.9d0
             call shape10tet(xi,et,ze,xl,xsj,shp,iflag)
           elseif(nope.eq.4) then
             call shape4tet (xi,et,ze,xl,xsj,shp,iflag)
+          elseif(nope.eq.5) then
+            call shape5p(xi,et,ze,xl,xsj,shp,iflag)
+          elseif(nope.eq.13) then
+            if(lakon(nelem)(6:6).eq.'F') then
+              call shape13pf(xi,et,ze,xl,xsj,shp,iflag)
+            else
+              call shape13p(xi,et,ze,xl,xsj,shp,iflag)
+            endif
           elseif(nope.eq.15)then
             call shape15w(xi,et,ze,xl,xsj,shp,iflag)
           else
@@ -360,6 +401,20 @@ c            if(mortar.eq.-1) elemfac=0.9d0
                 nopes=8
                 volfac=2.d0
               endif
+            elseif(lakon(nelem)(4:4).eq.'5')then
+              if(ig.le.4)then
+                nopes=3
+              else
+                nopes=4
+                volfac=3.d0
+              endif
+            elseif(lakon(nelem)(4:5).eq.'13')then
+              if(ig.le.4)then
+                nopes=6
+              else
+                nopes=8
+                volfac=3.d0
+              endif
             endif
 !
             if((nope.eq.20).or.(nope.eq.8))then
@@ -372,6 +427,12 @@ c            if(mortar.eq.-1) elemfac=0.9d0
               do i=1,nopes
                 do j=1,3
                   xl2(j,i)=co(j,konl(ifacet(i,ig)))
+                enddo
+              enddo
+            elseif((nope.eq.13).or.(nope.eq.5))then
+              do i=1,nopes
+                do j=1,3
+                  xl2(j,i)=co(j,konl(ifacep(i,ig)))
                 enddo
               enddo
             else

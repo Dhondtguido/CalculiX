@@ -68,6 +68,10 @@ c     enddo
           nope=20
         elseif(lakonl(4:4).eq.'8') then
           nope=8
+        elseif(lakonl(4:4).eq.'5') then
+          nope=5
+        elseif(lakonl(4:5).eq.'13') then
+          nope=13
         elseif(lakonl(4:5).eq.'10') then
           nope=10
         elseif(lakonl(4:4).eq.'4') then

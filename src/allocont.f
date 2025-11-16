@@ -118,6 +118,18 @@
                   ncont=ncont+4
                elseif(lakon(nelem)(4:4).eq.'4') then
                   ncont=ncont+1
+               elseif(lakon(nelem)(4:5).eq.'13') then
+                  if(jface.le.4) then
+                     ncont=ncont+4
+                  else
+                     ncont=ncont+6
+                  endif
+               elseif(lakon(nelem)(4:4).eq.'5') then
+                  if(jface.le.4) then
+                     ncont=ncont+1
+                  else
+                     ncont=ncont+2
+                  endif
                elseif(lakon(nelem)(4:5).eq.'15') then
                   if(jface.le.2) then
                      ncont=ncont+4

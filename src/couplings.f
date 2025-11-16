@@ -47,7 +47,7 @@
      &     kon(*),istep,nelem,ics(2,*),nodef(8),nboun_,nodeboun(*),
      &     npt,mint,mpcfreeold,id,idof,iflag,nk_,l,ndirboun(*),
      &     irotnode_kin,idupnode,ier,nopes,nfcstart,nfc,ikdc(*),ndc,
-     &     nfc_,ndc_,ilboun(*),matz,ierrs
+     &     nfc_,ndc_,ilboun(*),matz,ierrs,ifacepl(4,5),ifacepq(8,5)
 !     
       real*8 coefmpc(*),co(3,*),orab(7,*),dcs(*),areanodal(8),xl2(3,8),
      &     shp2(7,8),xsj2(3),xsj,xi,et,weight,xs2(3,2),area,sum1,sum2,
@@ -72,6 +72,20 @@
      &     1,2,4,5,9,8,
      &     2,3,4,6,10,9,
      &     1,4,3,8,10,7/
+!  5 nodes pyramid surface numbering
+      data ifacepl /
+     &     1,5,4,0,
+     &     2,5,1,0,
+     &     3,5,2,0,
+     &     4,5,3,0,
+     &     1,4,3,2/
+!  13 nodes pyramid surface numbering
+      data ifacepq /
+     &     1,5,4,10,13,9,0,0,
+     &     2,5,1,11,10,6,0,0,
+     &     3,5,2,12,11,7,0,0,
+     &     4,5,3,13,12,8,0,0,
+     &     1,4,3,2,9,8,7,6/
 !     
 !     nodes per face for linear wedge elements
 !     
@@ -225,16 +239,25 @@
                 nopes=6
               elseif(lakon(nelem)(4:4).eq.'4') then
                 nopes=3
-              endif
-!     
-              if(lakon(nelem)(4:4).eq.'6') then
+              elseif(lakon(nelem)(4:4).eq.'5') then
+                if(jface.le.4) then
+                  nopes=3
+                else
+                  nopes=4
+                endif
+              elseif(lakon(nelem)(4:5).eq.'13') then
+                if(jface.le.4) then
+                  nopes=6
+                else
+                  nopes=8
+                endif
+              elseif(lakon(nelem)(4:4).eq.'6') then
                 if(jface.le.2) then
                   nopes=3
                 else
                   nopes=4
                 endif
-              endif
-              if(lakon(nelem)(4:5).eq.'15') then
+              elseif(lakon(nelem)(4:5).eq.'15') then
                 if(jface.le.2) then
                   nopes=6
                 else
@@ -256,6 +279,10 @@
                 elseif((lakon(nelem)(4:4).eq.'4').or.
      &                 (lakon(nelem)(4:5).eq.'10')) then
                   node=kon(indexe+ifacet(m,jface))
+                elseif(lakon(nelem)(4:4).eq.'5') then
+                  node=kon(indexe+ifacepl(m,jface))
+                elseif(lakon(nelem)(4:5).eq.'13') then
+                  node=kon(indexe+ifacepq(m,jface))
                 elseif(lakon(nelem)(4:4).eq.'6') then
                   node=kon(indexe+ifacew1(m,jface))
                 elseif(lakon(nelem)(4:5).eq.'15') then
@@ -532,6 +559,22 @@
             nopes=3
             nface=4
             nope=4
+          elseif(lakon(nelem)(4:4).eq.'5') then
+            if(jface.le.4) then
+              nopes=3
+            else
+              nopes=4
+            endif
+            nface=5
+            nope=5
+          elseif(lakon(nelem)(4:5).eq.'13') then
+            if(jface.le.4) then
+              nopes=6
+            else
+              nopes=8
+            endif
+            nface=5
+            nope=13
           elseif(lakon(nelem)(4:5).eq.'15') then
             if(jface.le.2) then
               nopes=6
@@ -559,7 +602,15 @@
               nodef(i)=kon(indexe+ifacet(i,jface))
             enddo
           elseif(nface.eq.5) then
-            if(nope.eq.6) then
+            if(nope.eq.5) then
+              do i=1,nopes
+                nodef(i)=kon(indexe+ifacepl(i,jface))
+              enddo
+            elseif(nope.eq.13) then
+              do i=1,nopes
+                nodef(i)=kon(indexe+ifacepq(i,jface))
+              enddo
+            elseif(nope.eq.6) then
               do i=1,nopes
                 nodef(i)=kon(indexe+ifacew1(i,jface))
               enddo
@@ -615,6 +666,18 @@
             mint=3
           elseif(lakon(nelem)(4:4).eq.'4') then
             mint=1
+          elseif(lakon(nelem)(4:5).eq.'13') then
+            if(jface.le.4) then
+              mint=3
+            else
+              mint=9
+            endif
+          elseif(lakon(nelem)(4:5).eq.'5') then
+            if(jface.le.4) then
+              mint=1
+            else
+              mint=4
+            endif
           elseif(lakon(nelem)(3:4).eq.'D6') then
             mint=1
           elseif(lakon(nelem)(4:5).eq.'15') then
@@ -634,7 +697,8 @@
 !     
           do m=1,mint
             if((lakon(nelem)(3:5).eq.'D8R').or.
-     &           ((lakon(nelem)(3:4).eq.'D6').and.(nopes.eq.4))) then
+     &           ((lakon(nelem)(3:4).eq.'D6').and.(nopes.eq.4)).or.
+     &           ((lakon(nelem)(4:4).eq.'5').and.(nopes.eq.4))) then
               xi=gauss2d1(1,m)
               et=gauss2d1(2,m)
               weight=weight2d1(m)
@@ -645,19 +709,20 @@
               xi=gauss2d2(1,m)
               et=gauss2d2(2,m)
               weight=weight2d2(m)
-            elseif(lakon(nelem)(4:4).eq.'2') then
+            elseif((lakon(nelem)(4:4).eq.'2').or.
+     &            ((lakon(nelem)(4:5).eq.'13').and.(nopes.eq.8))) then
               xi=gauss2d3(1,m)
               et=gauss2d3(2,m)
               weight=weight2d3(m)
             elseif((lakon(nelem)(4:5).eq.'10').or.
-     &             ((lakon(nelem)(4:5).eq.'15').and.
-     &             (nopes.eq.6))) then
+     &             ((lakon(nelem)(4:5).eq.'15').and.(nopes.eq.6)).or.
+     &            ((lakon(nelem)(4:5).eq.'13').and.(nopes.eq.6))) then
               xi=gauss2d5(1,m)
               et=gauss2d5(2,m)
               weight=weight2d5(m)
             elseif((lakon(nelem)(4:4).eq.'4').or.
-     &             ((lakon(nelem)(3:4).eq.'D6').and.
-     &             (nopes.eq.3))) then
+     &             ((lakon(nelem)(3:4).eq.'D6').and.(nopes.eq.3)).or.
+     &             ((lakon(nelem)(4:4).eq.'5').and.(nopes.eq.3))) then
               xi=gauss2d4(1,m)
               et=gauss2d4(2,m)
               weight=weight2d4(m)

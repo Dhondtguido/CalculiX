@@ -41,7 +41,8 @@
      &  ilmpc(*),itr,idof,newnode,number,id,idofnew,idnew,nk,nk_,
      &  mpcfreenew,nmethod,iperturb(*),ii,mi(*),three,kflag,
      &  iy(3),inumber,iface,nload,nelemload(2,*),nopes,kon(*),nope,
-     &  nelem,loadid,ifacel,ifaceq(8,6),ifacet(6,4),ifacew(8,5)
+     &  nelem,loadid,ifacel,ifaceq(8,6),ifacet(6,4),ifacew(8,5),
+     &  ifacepq(8,5)
 !
       real*8 xboun(*),val,coefmpc(*),trab(7,*),a(3,3),co(3,*),cg(3),
      &  vold(0:mi(2),*),dx(3),xload(2,*)
@@ -61,6 +62,13 @@
      &             1,2,5,4,7,14,10,13,
      &             2,3,6,5,8,15,11,14,
      &             4,6,3,1,12,15,9,13/
+!  13 nodes pyramid surface numbering
+      data ifacepq /
+     &     1,5,4,10,13,9,0,0,
+     &     2,5,1,11,10,6,0,0,
+     &     3,5,2,12,11,7,0,0,
+     &     4,5,3,13,12,8,0,0,
+     &     1,4,3,2,9,8,7,6/
 !
       if(ntrans.le.0) then
          itr=0
@@ -155,6 +163,13 @@ c            write(*,*) 'bounaddf boun',iface,i,val,idof
             elseif(lakon(nelem)(4:4).eq.'4') then
                nope=4
                nopes=3
+            elseif(lakon(nelem)(4:4).eq.'5') then
+               nope=5
+               if(ifacel.le.4) then
+                  nopes=3
+               else
+                  nopes=4
+               endif
             elseif(lakon(nelem)(4:4).eq.'6') then
                nope=6
                if(ifacel.le.2) then
@@ -181,6 +196,12 @@ c            write(*,*) 'bounaddf boun',iface,i,val,idof
                do i=1,nopes
                   do j=1,3
                      cg(j)=cg(j)+co(j,kon(indexe+ifacet(i,ifacel)))
+                  enddo
+               enddo
+            elseif(nope.eq.5) then
+               do i=1,nopes
+                  do j=1,3
+                     cg(j)=cg(j)+co(j,kon(indexe+ifacepq(i,ifacel)))
                   enddo
                enddo
             else
