@@ -890,63 +890,6 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
     
   }
 
-  /* modal decomposition of the initial conditions */
-  /* for cyclic symmetric structures the initial conditions
-     are assumed to be zero */
-  
-  NNEW(cd,double,nev);
-  NNEW(cv,double,nev);
-
-  if(!cyclicsymmetry){
-    NNEW(temp_array1,double,neq[1]);
-    NNEW(temp_array2,double,neq[1]);
-    for(i=0;i<neq[1];i++){temp_array1[i]=0;temp_array2[i]=0;}
-    
-    /* displacement initial conditions */
-    
-    for(i=0;i<*nk;i++){
-      for(j=0;j<mt;j++){
-	if(nactdof[mt*i+j]>0){
-	  idof=nactdof[mt*i+j]-1;
-	  //	  temp_array1[idof]=vold[mt*i+j];
-	  temp_array1[idof]=vini[mt*i+j];
-	}
-      }
-    }
-
-    SFREE(vini);
-    
-    opmain(&neq[1],temp_array1,temp_array2,adb,aub,jq,irow);
-    
-    for(i=0;i<neq[1];i++){
-      for(k=0;k<nev;k++){
-	cd[k]+=z[k*neq[1]+i]*temp_array2[i];
-      }
-    }
-    
-    /* velocity initial conditions */
-    
-    for(i=0;i<neq[1];i++){temp_array1[i]=0;temp_array2[i]=0;}
-    for(i=0;i<*nk;i++){
-      for(j=0;j<mt;j++){
-	if(nactdof[mt*i+j]>0){
-	  idof=nactdof[mt*i+j]-1;
-	  temp_array1[idof]=veold[mt*i+j];
-	}
-      }
-    }
-    
-    opmain(&neq[1],temp_array1,temp_array2,adb,aub,jq,irow);
-    
-    for(i=0;i<neq[1];i++){
-      for(k=0;k<nev;k++){
-	cv[k]+=z[k*neq[1]+i]*temp_array2[i];
-      }
-    }
-    
-    SFREE(temp_array1);SFREE(temp_array2);
-		      
-  }
   NNEW(xforcact,double,*nforc);
   NNEW(xforcdiff,double,*nforc);
   NNEW(xloadact,double,2**nload);
@@ -1155,6 +1098,72 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 	    &alpham,&betam,nzl,&init,bact,bmin,jq,amname,bv,
 	    bprev,bdiff,&nactmech,&iabsload,&iprev,&reltime);
     init=0;
+  }
+
+  /* modal decomposition of the initial conditions */
+  /* for cyclic symmetric structures the initial conditions
+     are assumed to be zero */
+  
+  NNEW(cd,double,nev);
+  NNEW(cv,double,nev);
+
+  if(!cyclicsymmetry){
+    NNEW(temp_array1,double,neq[1]);
+    NNEW(temp_array2,double,neq[1]);
+    for(i=0;i<neq[1];i++){temp_array1[i]=0;temp_array2[i]=0;}
+    
+    /* displacement initial conditions */
+    
+    for(i=0;i<*nk;i++){
+      for(j=0;j<mt;j++){
+        if(nactdof[mt*i+j]>0){
+          idof=nactdof[mt*i+j]-1;
+          //	  temp_array1[idof]=vold[mt*i+j];
+          if(iprescribedboundary){
+            temp_array1[idof]=vini[mt*i+j]-bmin[idof];
+          } else {
+            temp_array1[idof]=vini[mt*i+j];
+          }
+        }
+      }
+    }
+
+    SFREE(vini);
+    
+    opmain(&neq[1],temp_array1,temp_array2,adb,aub,jq,irow);
+    
+    for(i=0;i<neq[1];i++){
+      for(k=0;k<nev;k++){
+	cd[k]+=z[k*neq[1]+i]*temp_array2[i];
+      }
+    }
+    
+    /* velocity initial conditions */
+    
+    for(i=0;i<neq[1];i++){temp_array1[i]=0;temp_array2[i]=0;}
+    for(i=0;i<*nk;i++){
+      for(j=0;j<mt;j++){
+        if(nactdof[mt*i+j]>0){
+          idof=nactdof[mt*i+j]-1;
+          if(iprescribedboundary){
+            temp_array1[idof]=veold[mt*i+j]-bv[idof];
+          } else {
+            temp_array1[idof]=veold[mt*i+j];
+          }
+	}
+      }
+    }
+
+    opmain(&neq[1],temp_array1,temp_array2,adb,aub,jq,irow);
+    
+    for(i=0;i<neq[1];i++){
+      for(k=0;k<nev;k++){
+	cv[k]+=z[k*neq[1]+i]*temp_array2[i];
+      }
+    }
+    
+    SFREE(temp_array1);SFREE(temp_array2);
+		      
   }
 
   iit=1;

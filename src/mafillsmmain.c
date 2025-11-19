@@ -363,7 +363,7 @@ void mafillsmmain(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
     }
     for(i=0;i<nzs[2];i++){
       for(j=1;j<num_cpus;j++){
-	aub[i]+=aub1[i+(long long)j*nzs[1]];
+	aub[i]+=aub1[i+(long long)j*nzs[2]];
       }
     }
   }
@@ -423,10 +423,10 @@ void *mafillsmmt(ITG *i){
   }
   if(mass1[1]==1){
     indexadb=*i*neq1[1];
-    indexaub=(long long)*i*nzs1[1];
+    indexaub=(long long)*i*nzs1[2];
   }else if((mass1[0]==1)||(*buckling1==1)){
-    indexadb=*i*neq1[0];
-    indexaub=(long long)*i*nzs1[1];
+    indexadb=*i*neq1[1];
+    indexaub=(long long)*i*nzs1[2];
   }
   if(nmethod1[0]==4){
     indexfnext=*i*(mi1[1]+1)**nk1;

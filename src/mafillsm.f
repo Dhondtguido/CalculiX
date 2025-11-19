@@ -419,8 +419,8 @@ c     mortar end
 !     
                 if(rhsi.eq.1) then
                 elseif(nmethod.eq.2) then
-                  value=s(jj,ll)
                   icolumn=neq(2)-idof2/2
+                  value=s(jj,ll)
                   call add_bo_st(au,jq,irow,idof1,icolumn,value)
                   valu2=sm(jj,ll)
                   call add_bo_st(aub,jq,irow,idof1,icolumn,valu2)
@@ -767,8 +767,8 @@ c     mortar end
 !     
                 if(rhsi.eq.1) then
                 elseif(nmethod.eq.2) then
-                  value=s(jj,ll)
                   icolumn=neq(2)-idof2/2
+                  value=s(jj,ll)
                   call add_bo_st(au,jq,irow,idof1,icolumn,value)
                   valu2=sm(jj,ll)
                   call add_bo_st(aub,jq,irow,idof1,icolumn,valu2)
