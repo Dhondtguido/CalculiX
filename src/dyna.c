@@ -1114,17 +1114,23 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
     
     /* displacement initial conditions */
     
-    for(i=0;i<*nk;i++){
-      for(j=0;j<mt;j++){
-        if(nactdof[mt*i+j]>0){
-          idof=nactdof[mt*i+j]-1;
-          //	  temp_array1[idof]=vold[mt*i+j];
-          if(iprescribedboundary){
-            temp_array1[idof]=vini[mt*i+j]-bmin[idof];
-          } else {
-            temp_array1[idof]=vini[mt*i+j];
-          }
-        }
+    if(iprescribedboundary){
+      for(i=0;i<*nk;i++){
+	for(j=0;j<mt;j++){
+	  if(nactdof[mt*i+j]>0){
+	    idof=nactdof[mt*i+j]-1;
+	    temp_array1[idof]=vini[mt*i+j]-bmin[idof];
+	  }
+	}
+      }
+    }else{
+      for(i=0;i<*nk;i++){
+	for(j=0;j<mt;j++){
+	  if(nactdof[mt*i+j]>0){
+	    idof=nactdof[mt*i+j]-1;
+	    temp_array1[idof]=vini[mt*i+j];
+	  }
+	}
       }
     }
 
@@ -1141,15 +1147,22 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
     /* velocity initial conditions */
     
     for(i=0;i<neq[1];i++){temp_array1[i]=0;temp_array2[i]=0;}
-    for(i=0;i<*nk;i++){
-      for(j=0;j<mt;j++){
-        if(nactdof[mt*i+j]>0){
-          idof=nactdof[mt*i+j]-1;
-          if(iprescribedboundary){
-            temp_array1[idof]=veold[mt*i+j]-bv[idof];
-          } else {
-            temp_array1[idof]=veold[mt*i+j];
-          }
+    if(iprescribedboundary){
+      for(i=0;i<*nk;i++){
+	for(j=0;j<mt;j++){
+	  if(nactdof[mt*i+j]>0){
+	    idof=nactdof[mt*i+j]-1;
+	    temp_array1[idof]=veold[mt*i+j]-bv[idof];
+	  }
+	}
+      }
+    }else{
+      for(i=0;i<*nk;i++){
+	for(j=0;j<mt;j++){
+	  if(nactdof[mt*i+j]>0){
+	    idof=nactdof[mt*i+j]-1;
+	    temp_array1[idof]=veold[mt*i+j];
+	  }
 	}
       }
     }

@@ -54,7 +54,7 @@ void dynboun(double *amta,ITG *namta,ITG *nam,double *ampli, double *time,
     *xbounv=NULL,*xbouna=NULL,*bplus=NULL,*ba=NULL,
     deltatime,deltatime2,deltatime3,deltatimesq,timemin,ttimemin,
     timeplus,ttimeplus,timepplus,ttimepplus,timeppplus,ttimeppplus,
-    *aux=NULL,*b1=NULL,*b2=NULL,*bnew=NULL,*x1=NULL,*x2=NULL,*xnew=NULL;
+    *b1=NULL,*b2=NULL,*bnew=NULL,*x1=NULL,*x2=NULL,*xnew=NULL;
   
 #ifdef SGI
   ITG token=1;
