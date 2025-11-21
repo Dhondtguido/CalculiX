@@ -15,10 +15,6 @@
 /*     along with this program; if not, write to the Free Software       */
 /*     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.         */
 
-#ifdef __WIN32
-_set_output_format(_TWO_DIGIT_EXPONENT);
-#endif
-
 #ifdef CALCULIX_MPI
 #include <spoolesMPI.h>
 #endif
@@ -44,6 +40,10 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
                   ITG *inputsteps,ITG *iperturb,ITG *irstrt,char **filabp,
                   ITG *nlabel)
 {
+
+#if defined(_WIN32) && !defined(_UCRT)
+_set_output_format(_TWO_DIGIT_EXPONENT);
+#endif
 
   /* in FORTRAN convention:
 
