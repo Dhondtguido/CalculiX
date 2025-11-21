@@ -19,6 +19,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
+#include <locale.h>
 #include "CalculiX.h"
 
 void frdheader(ITG *icounter,double *oner,double *time,double *pi,
@@ -29,6 +30,8 @@ void frdheader(ITG *icounter,double *oner,double *time,double *pi,
   char tmp[132],text[132];
 
   ITG i,ncomma;
+
+  setlocale(LC_NUMERIC, "C");
   
   /* icounter counts the number of loadcases in the frd-file 
      kode counts the number of increments in the frd-file */

@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <locale.h>
 #include "CalculiX.h"
 #include "mortar.h"
 
@@ -30,6 +31,8 @@ void printenergy(ITG *iexpl,double *ttime,double *theta,double *tper,
   ITG i;
 
   double denergymax;
+
+  setlocale(LC_NUMERIC, "C");
 
   if(*iexpl>1){
     printf(" actual total time=%e\n\n",*ttime+*theta**tper);

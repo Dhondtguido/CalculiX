@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <string.h>
+#include <locale.h>
 #include "CalculiX.h"
 #ifdef SPOOLES
 #include "spooles.h"
@@ -103,6 +104,8 @@ void radflowload(ITG *itg,ITG *ieg,ITG *ntg,ITG *ntr,double *adrad,
     cam0p=0.,cam0a=0.,sigma=0.,*adbrad=NULL,*aubrad=NULL,*q=NULL,
     *area=NULL,*pmid=NULL,*e1=NULL,*e2=NULL,*e3=NULL,
     qamt,qamf,qamtold,qamfold,*sfr=NULL,*hfr=NULL,*sba=NULL,*hba=NULL;
+
+  setlocale(LC_NUMERIC, "C");
   
   adview=*adviewp;auview=*auviewp;
 

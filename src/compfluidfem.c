@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <string.h>
+#include <locale.h>
 #include "CalculiX.h"
 #ifdef SPOOLES
 #include "spooles.h"
@@ -134,6 +135,8 @@ void compfluidfem(double **cop,ITG *nk,ITG **ipkonp,ITG **konp,char **lakonp,
     *vold=NULL,reltime,*dhel=NULL,*voldo=NULL,dtimefo,temp,ratio,
     *aubvr=NULL,*coefmodmpc=NULL,*voldini=NULL,*depth=NULL,*vcono=NULL,
     vconmax[7],vmax[7],*v=NULL;
+
+  setlocale(LC_NUMERIC, "C");
 
   nodempc=*nodempcp;ipompc=*ipompcp;ikmpc=*ikmpcp;ilmpc=*ilmpcp;
   coefmpc=*coefmpcp;labmpc=*labmpcp;fmpc=*fmpcp;co=*cop;
