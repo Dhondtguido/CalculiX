@@ -84,7 +84,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     mt=mi[1]+1,ne0,*integerglob=NULL,iglob=0,*ipneigh=NULL,*neigh=NULL,
     icfd=0,*inomat=NULL,*islavact=NULL,*islavnode=NULL,*nslavnode=NULL,
     *islavsurf=NULL,nretain,*iretain=NULL,*noderetain=NULL,*ndirretain=NULL,
-    nmethodl,nintpoint,ifacecount,memmpc_,mpcfree,icascade,maxlenmpc,
+    nintpoint,ifacecount,memmpc_,mpcfree,icascade,maxlenmpc,
     ncont=0,*itietri=NULL,*koncont=NULL,nslavs=0,ismallsliding=0,
     *itiefac=NULL,*imastnode=NULL,*nmastnode=NULL,*imastop=NULL,iitsta,
     *iponoels=NULL,*inoels=NULL,*ipe=NULL,*ime=NULL,iit=-1,iflagact=0,
@@ -410,14 +410,12 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
     NNEW(au,double,nzs[2]);
     rhsi=0;
-    nmethodl=2;
 
   }else{
 
     /* linear static calculation */
 
     NNEW(au,double,*nzs);
-    nmethodl=*nmethod;
 
     /* if submodel calculation with a global model obtained by
        a *FREQUENCY calculation: replace stiffness matrix K by
@@ -434,7 +432,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   mafillsmmain(co,nk,kon,ipkon,lakon,ne,nodeboun,ndirboun,xbounact,nboun,
 	       ipompc,nodempc,coefmpc,nmpc,nodeforc,ndirforc,xforcact,
 	       nforc,nelemload,sideload,xloadact,nload,xbodyact,ipobody,
-	       nbody,cgr,ad,au,fext,nactdof,icol,jq,irow,neq,nzl,&nmethodl,
+	       nbody,cgr,ad,au,fext,nactdof,icol,jq,irow,neq,nzl,nmethod,
 	       ikmpc,ilmpc,ikboun,ilboun,
 	       elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 	       ielorien,norien,orab,ntmat_,
@@ -451,8 +449,6 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	       set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag);
 
   /* check for negative Jacobians */
-
-  if(nmethodl==0) *nmethod=0;
 
   if(nasym==1){
     RENEW(au,double,2*nzs[1]);

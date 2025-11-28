@@ -56,18 +56,18 @@
      &     ibody(3,*),nk,ne,nboun,nmpc,nforc,nload,neq(2),nzl,nmethod,
      &     ithermal(*),iprestr,iperturb(*),nzs(3),i,j,k,l,m,idist,jj,
      &     ll,id,id1,id2,ist,ist1,ist2,index,jdof1,jdof2,idof1,idof2,
-     &     mpc1,mpc2,index1,index2,jdof,node1,node2,kflag,icalccg,
+     &     mpc1,mpc2,index1,index2,node1,node2,kflag,icalccg,
      &     ntmat_,indexe,nope,norien,iexpl,i0,ncmat_,istep,iinc,
      &     nplicon(0:ntmat_,*),nplkcon(0:ntmat_,*),npmat_,mortar,
      &     nea,neb,kscale,iponoeln(*),inoeln(2,*),network,ndof,
      &     nset,islavquadel(*),jqt(*),irowt(*),ii,jqte(21),
      &     irowte(96),i1,j1,j2,konl(26),mortartrafoflag,ikmpc(*),
-     &     mscalmethod,kk,imat,istiff,length
+     &     mscalmethod,imat,istiff,length
 !     
       real*8 co(3,*),xboun(*),coefmpc(*),xforc(*),xload(2,*),p1(3),
      &     p2(3),ad(*),au(*),bodyf(3),fext(*),xloadold(2,*),reltime,
      &     t0(*),t1(*),prestr(6,mi(1),*),vold(0:mi(2),*),s(60,60),
-     &     ff(60),fnext(0:mi(2),*),dd,
+     &     ff(60),fnext(0:mi(2),*),
      &     sti(6,mi(1),*),sm(60,60),stx(6,mi(1),*),adb(*),aub(*),
      &     elcon(0:ncmat_,ntmat_,*),rhcon(0:1,ntmat_,*),springarea(2,*),
      &     alcon(0:6,ntmat_,*),physcon(*),cocon(0:6,ntmat_,*),prop(*),
@@ -251,34 +251,6 @@ c     mortar end
                 enddo
             endif
           endif
-c          if(mortartrafoflag.gt.0) then
-c            if(islavquadel(i).gt.0) then
-c              if((nope.eq.20).or.(nope.eq.10).or.(nope.eq.15)) then
-c                jqte(1)=1
-c                ii=1
-c                do i1=1,nope
-c                  node1=konl(i1)
-c                  do j1=jqt(node1),jqt(node1+1)-1
-c                    node2=irowt(j1)
-c                    do j2=1,nope
-c                      if(konl(j2).eq.node2) then
-c                        aute(ii)=aut(j1)
-c                        irowte(ii)=j2
-c                        ii=ii+1
-c                      endif
-c                    enddo
-c                  enddo
-c                  jqte(i1+1)=ii
-c                enddo
-c              else
-c                jqte(1)=1
-c                ii=1
-c                do i1=1,nope
-c                  jqte(i1+1)=ii
-c                enddo
-c              endif
-c            endif
-c          endif
 !     
 !     mortar end
 !     
@@ -328,7 +300,6 @@ c          endif
               jj=(id1-1)*3+k
               call nident(kon(indexe+1),node2,nope,id2)
               ll=(id2-1)*3+m
-c              write(*,*) 'mafillsm ',node1,k,node2,m,jj,ll
               call mafillsmmatrix(ipompc,nodempc,coefmpc,nmpc,
      &             ad,au,nactdof,jq,irow,neq,nmethod,mi,rhsi,
      &             k,m,node1,node2,jj,ll,val,istiff)
@@ -375,11 +346,6 @@ c              write(*,*) 'mafillsm ',node1,k,node2,m,jj,ll
 !     
               node2=kon(indexe+l)
               jdof2=nactdof(m,node2)
-c              if(i.eq.96) then
-c                write(20,100) node1,k,node2,m,s(jj,ll)
-c                write(21,100) node1,k,node2,m,sm(jj,ll)
-c              endif
-c 100          format(i10,",",i5,",",i10,",",i5,",",e20.13)
 !     
 !     check whether one of the DOF belongs to a SPC or MPC
 !     
@@ -433,6 +399,13 @@ c 100          format(i10,",",i5,",",i10,",",i5,",",e20.13)
                         if(nmethod.eq.2) then
                           icolumn=neq(2)-idof2/2
                           call add_bo_st(au,jq,irow,idof1,icolumn,value)
+                          valu2=-coefmpc(index)*sm(jj,ll)/
+     &                         coefmpc(ist)
+                          call add_bo_st(aub,jq,irow,idof1,icolumn,
+     &                         valu2)
+                        elseif(nmethod.eq.11) then
+                          icolumn=neq(2)-idof2/2
+                          call add_bo_st(au,jq,irow,idof1,icolumn,value)
                         endif
                       endif
                       index=nodempc(3,index)
@@ -446,6 +419,12 @@ c 100          format(i10,",",i5,",",i10,",",i5,",",e20.13)
 !     
                 if(rhsi.eq.1) then
                 elseif(nmethod.eq.2) then
+                  value=s(jj,ll)
+                  icolumn=neq(2)-idof2/2
+                  call add_bo_st(au,jq,irow,idof1,icolumn,value)
+                  valu2=sm(jj,ll)
+                  call add_bo_st(aub,jq,irow,idof1,icolumn,valu2)
+                elseif(nmethod.eq.11) then
                   value=s(jj,ll)
                   icolumn=neq(2)-idof2/2
                   call add_bo_st(au,jq,irow,idof1,icolumn,value)
@@ -494,10 +473,26 @@ c 100          format(i10,",",i5,",",i10,",",i5,",",e20.13)
                             icolumn=neq(2)-idof2/2
                             call add_bo_st(au,jq,irow,idof1,icolumn,
      &                           value)
+                            valu2=coefmpc(index1)*coefmpc(index2)*
+     &                           sm(jj,ll)/coefmpc(ist)/coefmpc(ist)
+                            call add_bo_st(aub,jq,irow,idof1,icolumn,
+     &                           valu2)
+                          elseif(nmethod.eq.11) then
+                            icolumn=neq(2)-idof2/2
+                            call add_bo_st(au,jq,irow,idof1,icolumn,
+     &                           value)
                           endif
                         elseif((idof2.gt.0).and.(idof1.eq.2*(idof1/2)))
      &                         then
                           if(nmethod.eq.2) then
+                            icolumn=neq(2)-idof1/2
+                            call add_bo_st(au,jq,irow,idof2,icolumn,
+     &                           value)
+                            valu2=coefmpc(index1)*coefmpc(index2)*
+     &                           sm(jj,ll)/coefmpc(ist)/coefmpc(ist)
+                            call add_bo_st(aub,jq,irow,idof2,icolumn,
+     &                           valu2)
+                          elseif(nmethod.eq.11) then
                             icolumn=neq(2)-idof1/2
                             call add_bo_st(au,jq,irow,idof2,icolumn,
      &                           value)
@@ -555,10 +550,26 @@ c 100          format(i10,",",i5,",",i10,",",i5,",",e20.13)
                             icolumn=neq(2)-idof2/2
                             call add_bo_st(au,jq,irow,idof1,icolumn,
      &                           value)
+                            valu2=coefmpc(index1)*coefmpc(index2)*
+     &                           sm(jj,ll)/coefmpc(ist1)/coefmpc(ist2)
+                            call add_bo_st(aub,jq,irow,idof1,icolumn,
+     &                           valu2)
+                          elseif(nmethod.eq.11) then
+                            icolumn=neq(2)-idof2/2
+                            call add_bo_st(au,jq,irow,idof1,icolumn,
+     &                           value)
                           endif
                         elseif((idof2.gt.0).and.(idof1.eq.2*(idof1/2)))
      &                         then
                           if(nmethod.eq.2) then
+                            icolumn=neq(2)-idof1/2
+                            call add_bo_st(au,jq,irow,idof2,icolumn,
+     &                           value)
+                            valu2=coefmpc(index1)*coefmpc(index2)*
+     &                           sm(jj,ll)/coefmpc(ist1)/coefmpc(ist2)
+                            call add_bo_st(aub,jq,irow,idof2,icolumn,
+     &                           valu2)
+                          elseif(nmethod.eq.11) then
                             icolumn=neq(2)-idof1/2
                             call add_bo_st(au,jq,irow,idof2,icolumn,
      &                           value)
@@ -732,6 +743,18 @@ c 100          format(i10,",",i5,",",i10,",",i5,",",e20.13)
                           call add_sm_ei(au,ad,aub,adb,jq,irow,
      &                         idof1,idof2,value,valu2,i0,i0)
                         endif
+                      elseif(idof2.eq.2*(idof2/2)) then
+                        if(nmethod.eq.2) then
+                          icolumn=neq(2)-idof2/2
+                          call add_bo_st(au,jq,irow,idof1,icolumn,value)
+                          valu2=-coefmpc(index)*sm(jj,ll)/
+     &                         coefmpc(ist)
+                          call add_bo_st(aub,jq,irow,idof1,icolumn,
+     &                         valu2)
+                        elseif(nmethod.eq.11) then
+                          icolumn=neq(2)-idof2/2
+                          call add_bo_st(au,jq,irow,idof1,icolumn,value)
+                        endif
                       endif
                       index=nodempc(3,index)
                       if(index.eq.0) exit
@@ -744,6 +767,12 @@ c 100          format(i10,",",i5,",",i10,",",i5,",",e20.13)
 !     
                 if(rhsi.eq.1) then
                 elseif(nmethod.eq.2) then
+                  value=s(jj,ll)
+                  icolumn=neq(2)-idof2/2
+                  call add_bo_st(au,jq,irow,idof1,icolumn,value)
+                  valu2=sm(jj,ll)
+                  call add_bo_st(aub,jq,irow,idof1,icolumn,valu2)
+                elseif(nmethod.eq.11) then
                   value=s(jj,ll)
                   icolumn=neq(2)-idof2/2
                   call add_bo_st(au,jq,irow,idof1,icolumn,value)
@@ -785,6 +814,36 @@ c 100          format(i10,",",i5,",",i10,",",i5,",",e20.13)
      &                           sm(jj,ll)/coefmpc(ist)/coefmpc(ist)
                             call add_sm_ei(au,ad,aub,adb,jq,
      &                           irow,idof1,idof2,value,valu2,i0,i0)
+                          endif
+                        elseif((idof1.gt.0).and.(idof2.eq.2*(idof2/2)))
+     &                         then
+                          if(nmethod.eq.2) then
+                            icolumn=neq(2)-idof2/2
+                            call add_bo_st(au,jq,irow,idof1,icolumn,
+     &                           value)
+                            valu2=coefmpc(index1)*coefmpc(index2)*
+     &                           sm(jj,ll)/coefmpc(ist)/coefmpc(ist)
+                            call add_bo_st(aub,jq,irow,idof1,icolumn,
+     &                           valu2)
+                          elseif(nmethod.eq.11) then
+                            icolumn=neq(2)-idof2/2
+                            call add_bo_st(au,jq,irow,idof1,icolumn,
+     &                           value)
+                          endif
+                        elseif((idof2.gt.0).and.(idof1.eq.2*(idof1/2)))
+     &                         then
+                          if(nmethod.eq.2) then
+                            icolumn=neq(2)-idof1/2
+                            call add_bo_st(au,jq,irow,idof2,icolumn,
+     &                           value)
+                            valu2=coefmpc(index1)*coefmpc(index2)*
+     &                           sm(jj,ll)/coefmpc(ist)/coefmpc(ist)
+                            call add_bo_st(aub,jq,irow,idof2,icolumn,
+     &                           valu2)
+                          elseif(nmethod.eq.11) then
+                            icolumn=neq(2)-idof1/2
+                            call add_bo_st(au,jq,irow,idof2,icolumn,
+     &                           value)
                           endif
                         endif
 !     
@@ -832,6 +891,36 @@ c 100          format(i10,",",i5,",",i10,",",i5,",",e20.13)
 !     
                             call add_sm_ei(au,ad,aub,adb,jq,
      &                           irow,idof1,idof2,value,valu2,i0,i0)
+                          endif
+                        elseif((idof1.gt.0).and.(idof2.eq.2*(idof2/2)))
+     &                         then
+                          if(nmethod.eq.2) then
+                            icolumn=neq(2)-idof2/2
+                            call add_bo_st(au,jq,irow,idof1,icolumn,
+     &                           value)
+                            valu2=coefmpc(index1)*coefmpc(index2)*
+     &                           sm(jj,ll)/coefmpc(ist1)/coefmpc(ist2)
+                            call add_bo_st(aub,jq,irow,idof1,icolumn,
+     &                           valu2)
+                          elseif(nmethod.eq.11) then
+                            icolumn=neq(2)-idof2/2
+                            call add_bo_st(au,jq,irow,idof1,icolumn,
+     &                           value)
+                          endif
+                        elseif((idof2.gt.0).and.(idof1.eq.2*(idof1/2)))
+     &                         then
+                          if(nmethod.eq.2) then
+                            icolumn=neq(2)-idof1/2
+                            call add_bo_st(au,jq,irow,idof2,icolumn,
+     &                           value)
+                            valu2=coefmpc(index1)*coefmpc(index2)*
+     &                           sm(jj,ll)/coefmpc(ist1)/coefmpc(ist2)
+                            call add_bo_st(aub,jq,irow,idof2,icolumn,
+     &                           valu2)
+                          elseif(nmethod.eq.11) then
+                            icolumn=neq(2)-idof1/2
+                            call add_bo_st(au,jq,irow,idof2,icolumn,
+     &                           value)
                           endif
                         endif
 !     

@@ -859,7 +859,7 @@ c        write(*,*) e1(1)*e2(1)+e1(2)*e2(2)+e1(3)*e2(3)
             call exit(201)
           endif
 !
-          coeffc(0,nfc)=10*ics(1,i)+1.5
+          coeffc(0,nfc)=10*ics(1,i)+1.5d0
           coeffc(1,nfc)=e1(1)*dcs(i)
           coeffc(2,nfc)=e2(1)*dcs(i)
           coeffc(3,nfc)=e3(1)*dcs(i)
@@ -884,7 +884,7 @@ c        write(*,*) e1(1)*e2(1)+e1(2)*e2(2)+e1(3)*e2(3)
             call exit(201)
           endif
 !
-          coeffc(0,nfc)=10*ics(1,i)+2.5
+          coeffc(0,nfc)=10*ics(1,i)+2.5d0
           coeffc(1,nfc)=e1(2)*dcs(i)
           coeffc(2,nfc)=e2(2)*dcs(i)
           coeffc(3,nfc)=e3(2)*dcs(i)
@@ -909,7 +909,7 @@ c        write(*,*) e1(1)*e2(1)+e1(2)*e2(2)+e1(3)*e2(3)
             call exit(201)
           endif
 !
-          coeffc(0,nfc)=10*ics(1,i)+3.5
+          coeffc(0,nfc)=10*ics(1,i)+3.5d0
           coeffc(1,nfc)=e1(3)*dcs(i)
           coeffc(2,nfc)=e2(3)*dcs(i)
           coeffc(3,nfc)=e3(3)*dcs(i)

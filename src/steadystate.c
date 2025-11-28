@@ -376,7 +376,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     NNEW(ad,double,neq[1]);
     NNEW(adb,double,neq[1]);
     NNEW(au,double,nzs[2]);
-    NNEW(aub,double,nzs[1]);
+    NNEW(aub,double,nzs[2]);
       
     /* reading the stiffness matrix */
       
@@ -409,7 +409,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
       exit(0);
     }
       
-    if(fread(aub,sizeof(double),nzs[1],f1)!=nzs[1]){
+    if(fread(aub,sizeof(double),nzs[2],f1)!=nzs[2]){
       printf(" *ERROR in steadystate reading the off-diagonals of the mass matrix in the eigenvalue file");
       printf(" *INFO  in steadystate: if there are problems reading the .eig file this may be due to:\n");
       printf("        1) the nonexistence of the .eig file\n");
@@ -423,7 +423,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     if(nherm==1){
       NNEW(z,double,neq[1]*nev);
       if(fread(z,sizeof(double),neq[1]*nev,f1)!=neq[1]*nev){
-	printf(" *ERROR in complexfreq reading the eigenvectors in the eigenvalue file...");
+	printf(" *ERROR in steadystate reading the eigenvectors in the eigenvalue file...");
 	printf(" *INFO  in steadystate: if there are problems reading the .eig file this may be due to:\n");
 	printf("        1) the nonexistence of the .eig file\n");
 	printf("        2) other boundary conditions than in the input deck\n");
@@ -433,7 +433,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     }else{
       NNEW(z,double,2*neq[1]*nev);
       if(fread(z,sizeof(double),2*neq[1]*nev,f1)!=2*neq[1]*nev){
-	printf(" *ERROR in complexfreq reading the eigenvectors in the eigenvalue file...");
+	printf(" *ERROR in steadystate reading the eigenvectors in the eigenvalue file...");
 	printf(" *INFO  in steadystate: if there are problems reading the .eig file this may be due to:\n");
 	printf("        1) the nonexistence of the .eig file\n");
 	printf("        2) other boundary conditions than in the input deck\n");

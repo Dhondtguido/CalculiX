@@ -399,7 +399,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
     NNEW(ad,double,neq[1]);
     NNEW(adb,double,neq[1]);
     NNEW(au,double,nzs[2]);
-    NNEW(aub,double,nzs[1]);
+    NNEW(aub,double,nzs[2]);
       
     if(fread(ad,sizeof(double),neq[1],f1)!=neq[1]){
       printf(" *ERROR in dyna reading the diagonal of the stiffness matrix in the eigenvalue file");
@@ -428,7 +428,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
       exit(0);
     }
       
-    if(fread(aub,sizeof(double),nzs[1],f1)!=nzs[1]){
+    if(fread(aub,sizeof(double),nzs[2],f1)!=nzs[2]){
       printf(" *ERROR in dyna reading the off-diagonals of the mass matrix in the  eigenvalue file");
       printf(" *INFO  in dyna: if there are problems reading the .eig file this may be due to:\n");
       printf("        1) the nonexistence of the .eig file\n");
@@ -890,63 +890,6 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
     
   }
 
-  /* modal decomposition of the initial conditions */
-  /* for cyclic symmetric structures the initial conditions
-     are assumed to be zero */
-  
-  NNEW(cd,double,nev);
-  NNEW(cv,double,nev);
-
-  if(!cyclicsymmetry){
-    NNEW(temp_array1,double,neq[1]);
-    NNEW(temp_array2,double,neq[1]);
-    for(i=0;i<neq[1];i++){temp_array1[i]=0;temp_array2[i]=0;}
-    
-    /* displacement initial conditions */
-    
-    for(i=0;i<*nk;i++){
-      for(j=0;j<mt;j++){
-	if(nactdof[mt*i+j]>0){
-	  idof=nactdof[mt*i+j]-1;
-	  //	  temp_array1[idof]=vold[mt*i+j];
-	  temp_array1[idof]=vini[mt*i+j];
-	}
-      }
-    }
-
-    SFREE(vini);
-    
-    opmain(&neq[1],temp_array1,temp_array2,adb,aub,jq,irow);
-    
-    for(i=0;i<neq[1];i++){
-      for(k=0;k<nev;k++){
-	cd[k]+=z[k*neq[1]+i]*temp_array2[i];
-      }
-    }
-    
-    /* velocity initial conditions */
-    
-    for(i=0;i<neq[1];i++){temp_array1[i]=0;temp_array2[i]=0;}
-    for(i=0;i<*nk;i++){
-      for(j=0;j<mt;j++){
-	if(nactdof[mt*i+j]>0){
-	  idof=nactdof[mt*i+j]-1;
-	  temp_array1[idof]=veold[mt*i+j];
-	}
-      }
-    }
-    
-    opmain(&neq[1],temp_array1,temp_array2,adb,aub,jq,irow);
-    
-    for(i=0;i<neq[1];i++){
-      for(k=0;k<nev;k++){
-	cv[k]+=z[k*neq[1]+i]*temp_array2[i];
-      }
-    }
-    
-    SFREE(temp_array1);SFREE(temp_array2);
-		      
-  }
   NNEW(xforcact,double,*nforc);
   NNEW(xforcdiff,double,*nforc);
   NNEW(xloadact,double,2**nload);
@@ -1155,6 +1098,85 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 	    &alpham,&betam,nzl,&init,bact,bmin,jq,amname,bv,
 	    bprev,bdiff,&nactmech,&iabsload,&iprev,&reltime);
     init=0;
+  }
+
+  /* modal decomposition of the initial conditions */
+  /* for cyclic symmetric structures the initial conditions
+     are assumed to be zero */
+  
+  NNEW(cd,double,nev);
+  NNEW(cv,double,nev);
+
+  if(!cyclicsymmetry){
+    NNEW(temp_array1,double,neq[1]);
+    NNEW(temp_array2,double,neq[1]);
+    for(i=0;i<neq[1];i++){temp_array1[i]=0;temp_array2[i]=0;}
+    
+    /* displacement initial conditions */
+    
+    if(iprescribedboundary){
+      for(i=0;i<*nk;i++){
+	for(j=0;j<mt;j++){
+	  if(nactdof[mt*i+j]>0){
+	    idof=nactdof[mt*i+j]-1;
+	    temp_array1[idof]=vini[mt*i+j]-bmin[idof];
+	  }
+	}
+      }
+    }else{
+      for(i=0;i<*nk;i++){
+	for(j=0;j<mt;j++){
+	  if(nactdof[mt*i+j]>0){
+	    idof=nactdof[mt*i+j]-1;
+	    temp_array1[idof]=vini[mt*i+j];
+	  }
+	}
+      }
+    }
+
+    SFREE(vini);
+    
+    opmain(&neq[1],temp_array1,temp_array2,adb,aub,jq,irow);
+    
+    for(i=0;i<neq[1];i++){
+      for(k=0;k<nev;k++){
+	cd[k]+=z[k*neq[1]+i]*temp_array2[i];
+      }
+    }
+    
+    /* velocity initial conditions */
+    
+    for(i=0;i<neq[1];i++){temp_array1[i]=0;temp_array2[i]=0;}
+    if(iprescribedboundary){
+      for(i=0;i<*nk;i++){
+	for(j=0;j<mt;j++){
+	  if(nactdof[mt*i+j]>0){
+	    idof=nactdof[mt*i+j]-1;
+	    temp_array1[idof]=veold[mt*i+j]-bv[idof];
+	  }
+	}
+      }
+    }else{
+      for(i=0;i<*nk;i++){
+	for(j=0;j<mt;j++){
+	  if(nactdof[mt*i+j]>0){
+	    idof=nactdof[mt*i+j]-1;
+	    temp_array1[idof]=veold[mt*i+j];
+	  }
+	}
+      }
+    }
+
+    opmain(&neq[1],temp_array1,temp_array2,adb,aub,jq,irow);
+    
+    for(i=0;i<neq[1];i++){
+      for(k=0;k<nev;k++){
+	cv[k]+=z[k*neq[1]+i]*temp_array2[i];
+      }
+    }
+    
+    SFREE(temp_array1);SFREE(temp_array2);
+		      
   }
 
   iit=1;
