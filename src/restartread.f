@@ -478,7 +478,7 @@
 !     
 !     control parameters
 !     
-      read(15) (ctrl(i),i=1,52)
+      read(15) (ctrl(i),i=1,60)
       read(15) (qaold(i),i=1,2)
       read(15) output
       read(15) ttime

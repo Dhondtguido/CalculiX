@@ -129,7 +129,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     j=0,inoelnsize=0,isensitivity=0,*konf=NULL,nbodyrhs,
     *iwork=NULL,nelt,lrgw,*igwk=NULL,itol,itmax,iter,ierr,iunit,ligw,
     mei[4]={0,0,0,0},*itreated=NULL,mscalmethod=-1,inoelfree,
-    isiz=0,num_cpus,sys_cpus,ne1d2d=0,kchdep,nkftot,
+    isiz=0,num_cpus,sys_cpus,ne1d2d=0,kchdep,nkftot,iramp=0,idel=0,
     ifreesurface=0,*iponoelf=NULL,*inoelf=NULL,*iponoel=NULL,
     mortartrafoflag=0,*nelold=NULL,*nelnew=NULL,*nkold=NULL,*nknew=NULL,
     *ipompcf=NULL,*nodempcf=NULL,*nodebounf=NULL,*ndirbounf=NULL,
@@ -139,7 +139,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *kslav=NULL,*lslav=NULL,*ktot=NULL,*ltot=NULL,nmasts,neqtot,
     intpointvarm,calcul_fn,calcul_f,calcul_qa,calcul_cauchy,ikin,
     intpointvart,*jqbi=NULL,*irowbi=NULL,*jqib=NULL,*irowib=NULL,
-    idispfrdonly,*inumcp=NULL,nmethodold=*nmethod;
+    idispfrdonly,*inumcp=NULL,nmethodold=*nmethod,*inoel=NULL;
 
   double *stn=NULL,*v=NULL,*een=NULL,cam[5],*epn=NULL,*cg=NULL,
     *cdn=NULL,*pslavsurfold=NULL,*fextload=NULL,
@@ -1517,7 +1517,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     memcpy(&sideloadref[0],&sideload[0],sizeof(char)*20**nload);
   }
   
-  while((1.-theta>1.e-6)||(negpres==1)){
+  while((1.-theta>1.e-6)||(negpres==1)||(iramp>0)){
       
     if(icutb==0){
 	  
@@ -3450,9 +3450,9 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 			 set,nset,istartset,iendset,ialset,emn,thicke,jobnamec,
 			 mortar,nmat,ielprop,prop,&ialeatoric,&kscale,
 			 energy,&allwk,&energyref,&emax,&r_abs,&enetoll,
-			 energyini,
-			 &allwkini,&temax,&sizemaxinc,&ne0,&neini,&dampwk,
-			 &dampwkini,energystartstep);
+			 energyini,&allwkini,&temax,&sizemaxinc,&ne0,&neini,
+			 &dampwk,&dampwkini,energystartstep,&iramp,&idel,
+			 iponoel,inoel,nelcon,elcon,ncmat_,ntmat_);
 
 	if(*mortar>1){
 	  SFREE(f_cs);SFREE(f_cm);

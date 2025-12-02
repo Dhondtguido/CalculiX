@@ -100,7 +100,7 @@ int main(int argc,char *argv[])
     *velo=NULL,*veloo=NULL,energy[5],*ratiorfn=NULL,*dgdxglob=NULL,
     *g0=NULL,*xdesi=NULL,*coeffc=NULL,*edc=NULL,*coini=NULL,*dam=NULL;
     
-  double ctrl[57];
+  double ctrl[60];
 
   double fei[4],*xmodal=NULL,timepar[5],alpha[2],ttime,qaold[2],physcon[14];
 
@@ -158,7 +158,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Wed Nov 19 18:54:12 CET 2025\n");
+  printf("You are using an executable made on Tue Dec  2 19:06:16 CET 2025\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);

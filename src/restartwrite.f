@@ -496,7 +496,7 @@ c     call system("rm -f temporaryrestartfile")
 !     
 !     control parameters
 !     
-      write(15) (ctrl(i),i=1,52)
+      write(15) (ctrl(i),i=1,60)
       write(15) (qaold(i),i=1,2)
       write(15) output
       write(15) ttime

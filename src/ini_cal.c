@@ -323,6 +323,12 @@ void ini_cal(char *jobnamec,char *output,char *fneig,char *kind1,char *kind2,
   ctrl[55]=100.5; // kscalemax
   ctrl[56]=60.5;  // itf2f
 
+  /* convergence parameters */
+
+  ctrl[57]=1.1;   // elastic material stiffness decrease
+  ctrl[58]=-0.5;  // number of material ramping trials
+  ctrl[59]=1.;    // deactivation force limit
+
   /* time integration dynamics */
   
   alpha[0]=0.;

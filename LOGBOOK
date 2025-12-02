@@ -5549,3 +5549,5 @@ Dec 2002        - started to work on single crystal plasticity
  19 Nov 2025    - finished the correction of the base motion initial
                   conditions.
 		- changed 1.5 into 1.5d0 etc. in couplings.f
+
+ 2 Dec 2025     - worked on material ramping at divergence

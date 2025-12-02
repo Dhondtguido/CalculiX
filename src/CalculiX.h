@@ -701,7 +701,9 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
           double *energy,double *allwk,double *energyref,
           double *emax,double *enres,double *enetoll,double *energyini,
           double *allwkini,double *temax,double *reswk,ITG *ne0,
-	  ITG *neini,double *dampwk,double *dampwkini,double *energystartstep);
+	  ITG *neini,double *dampwk,double *dampwkini,double *energystartstep,
+	  ITG *iramp,ITG *idel,ITG *iponoel,ITG *inoel,ITG *nelcon,
+	  double *elcon,ITG *ncmat_,ITG *ntmat_);
 
 void checkconvnet(ITG *icutb,ITG *iin,
                   double *cam1t,double *cam1f,double *cam1p,
