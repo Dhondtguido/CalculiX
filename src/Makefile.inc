@@ -67,6 +67,7 @@ calcexternalwork.f \
 calcfeasibledirection_gd.f \
 calcfeasibledirection_gp.f \
 calcgeomelemnet.f \
+calcglobmastsurf.f \
 calch0interface.f \
 calcheatnet.f \
 calc_ider_cross_split.f \

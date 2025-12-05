@@ -385,6 +385,10 @@ void FORTRAN(calcenergy,(ITG *ipkon,char *lakon,ITG *kon,double *co,
                          double *energy,ITG *ielprop,double *prop,ITG *nea,
                          ITG *neb));
 
+void FORTRAN(calcglobmastsurf,(ITG *ne,ITG *ipkon,ITG *kon,char *lakon,
+			       ITG *nk,char *set,ITG *istartset,ITG *iendset,
+			       ITG *ialset,ITG *nset,ITG *nset_,ITG *nalset));
+
 void *calcenergymt(ITG *i);
 
 void FORTRAN(calcexternalwork,(double *co,double *vold,ITG *istartset,
@@ -3105,6 +3109,13 @@ void mastructse(ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
               ITG *nodedesi,ITG *ndesi,ITG *icoordinate,ITG *ielorien,
               ITG *istartdesi,ITG *ialdesi);
 
+void FORTRAN(materialramping,(ITG *nelcon,double *elcon,ITG *ncmat_,
+			      ITG *ntmat_,ITG *nmat,ITG *iramp,
+			      double *xramp,ITG *idel,double *xdel,
+			      ITG *nk,ITG *mi,ITG *nactdof,double *b,
+			      ITG *iponoel,ITG *inoel,ITG *idivergence,
+			      ITG *ipkon));
+
 void matrixstorage(double *ad,double **aup,double *adb,double *aub,
                 double *sigma,ITG *icol,ITG **irowp,
                 ITG *neq,ITG *nzs,ITG *ntrans,ITG *inotr,
@@ -3205,8 +3216,9 @@ void FORTRAN(nmatrix,(double *ad,double *au,ITG *jqs,ITG *irows,ITG *ndesi,
 		      ITG *nodedesi,double *dgdxglob,ITG *nactive,ITG *nobject,
 		      ITG *nnlconst,ITG *ipoacti,ITG *nk));         
 
-void FORTRAN(nodebelongstoel,(ITG *iponoel,char *lakon,ITG *ipkon,
-                             ITG *kon,ITG *ne));
+void FORTRAN(nodebelongstoel,(ITG *iponoel,ITG *inoel,ITG *inoelsize,
+			      char *lakon,ITG *ipkon,
+			      ITG *kon,ITG *ne,ITG *nramp));
 
 void FORTRAN(nodesperface,(ITG *ipkonf,ITG *konf,char *lakonf,ITG *nface,
 			   ITG *ielfa,ITG *iponofa,ITG *inofa));

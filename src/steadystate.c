@@ -97,7 +97,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     *islavnode=NULL,*nslavnode=NULL,*islavsurf=NULL,iit=-1,*iponoel=NULL,
     network=0,kscale=0,nmethodact=1,iperturbsav,coriolis,*itiefac=NULL,
     mscalmethod=0,*islavquadel=NULL,*irowt=NULL,*jqt=NULL,mortartrafoflag=0,
-    *iponoeln=NULL,*inoeln=NULL;
+    *iponoeln=NULL,*inoeln=NULL,*inoel=NULL,inoelsize,nramp=-1;
 
   long long i2;
 
@@ -153,7 +153,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
      (needed in resultsforc.c) */
   
   NNEW(iponoel,ITG,*nk);
-  FORTRAN(nodebelongstoel,(iponoel,lakon,ipkon,kon,ne));
+  FORTRAN(nodebelongstoel,(iponoel,inoel,&inoelsize,lakon,ipkon,kon,ne,&nramp));
 
   pi=4.*atan(1.);
   iout=2;

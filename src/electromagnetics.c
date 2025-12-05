@@ -113,10 +113,10 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
     coriolis=0,*ipneigh=NULL,*neigh=NULL,i,icfd=0,id,node,networknode,
     iflagact=0,*nodorig=NULL,*ipivr=NULL,*inomat=NULL,*nodface=NULL,
     *ipoface=NULL,*istartset=NULL,*iendset=NULL,*ialset=NULL,
-    *nelemloadref=NULL,*iamloadref=NULL,nloadref,kscale=1,
+    *nelemloadref=NULL,*iamloadref=NULL,nloadref,kscale=1,nramp=-1,
     *nelemload=NULL,*iamload=NULL,*idefload=NULL,ialeatoric=0,
     *iponoeln=NULL,*inoeln=NULL,inoelnsize,nrhs=1,neqfreq,nzsfreq,
-    *irowfreq=NULL,*icolfreq=NULL,*jqfreq=NULL,*jq=NULL,
+    *irowfreq=NULL,*icolfreq=NULL,*jqfreq=NULL,*jq=NULL,inoelsize,
     *itiefac=NULL,mscalmethod=0,nkon0,*nintpoint=0,num_cpus,sys_cpus,
     *islavquadel=NULL,*irowt=NULL,*jqt=NULL,mortartrafoflag=0;
 
@@ -166,7 +166,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
      (needed in resultsforc.c) */
   
   NNEW(iponoel,ITG,*nk);
-  FORTRAN(nodebelongstoel,(iponoel,lakon,ipkon,kon,ne));
+  FORTRAN(nodebelongstoel,(iponoel,inoel,&inoelsize,lakon,ipkon,kon,ne,&nramp));
 
   num_cpus=0;
   sys_cpus=0;

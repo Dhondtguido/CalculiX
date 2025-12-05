@@ -79,12 +79,12 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 
   ITG *inum=NULL,k,ido,dz,iparam[11],ipntr[11],lworkl,im,nasym=0,
     info,rvec=1,*select=NULL,lfin,j,lint,iout,iconverged=0,ielas=1,icmd=0,
-    iinc=1,*ncocon=NULL,*nshcon=NULL,nev,ncv,mxiter,jrow,
-    coriolis=0,ifreebody,symmetryflag=0,storematrix=0,
+    iinc=1,*ncocon=NULL,*nshcon=NULL,nev,ncv,mxiter,jrow,nramp=-1,
+    coriolis=0,ifreebody,symmetryflag=0,storematrix=0,inoelsize,
     inputformat=0,ngraph=1,mt=mi[1]+1,mass[2]={0,0}, stiffness=1, buckling=0, 
     rhsi=1, intscheme=0, noddiam=-1,*ipneigh=NULL,*neigh=NULL,ne0,
     *integerglob=NULL,ntie,icfd=0,*inomat=NULL,mortar=0,*islavnode=NULL,
-    *islavact=NULL,*nslavnode=NULL,*islavsurf=NULL,kscale=1,
+    *islavact=NULL,*nslavnode=NULL,*islavsurf=NULL,kscale=1,*inoel=NULL,
     *iponoeln=NULL,*inoeln=NULL,network=0,nrhs=1,*itiefac=NULL,mscalmethod=0,
     *islavquadel=NULL,*irowt=NULL,*jqt=NULL,mortartrafoflag=0,*iponoel=NULL;
 
@@ -116,9 +116,9 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 
   /* determining whether a node belongs to at least one element
      (needed in resultsforc.c) */
-  
+
   NNEW(iponoel,ITG,*nk);
-  FORTRAN(nodebelongstoel,(iponoel,lakon,ipkon,kon,ne));
+  FORTRAN(nodebelongstoel,(iponoel,inoel,&inoelsize,lakon,ipkon,kon,ne,&nramp));
  
   ne0=*ne;
 
