@@ -4706,8 +4706,7 @@ void FORTRAN(slavintpoints,(ITG *ntie,ITG *itietri,ITG *ipkon,
         ITG *kon,char *lakon,double *straight,
         ITG *nintpoint,ITG *koncont,double *co,double *vold,double *xo,
         double *yo,double *zo,double *x,double *y,double *z,ITG *nx,
-        ITG *ny,ITG *nz,ITG *islavsurf,
-        ITG *islavnode,ITG *nslavnode,ITG *imastop,
+        ITG *ny,ITG *nz,ITG *islavsurf,ITG *imastop,
         ITG *mi,ITG *ncont,ITG *ipe,ITG *ime,double *pslavsurf,
         ITG *i,ITG *l,ITG *ntri));
 

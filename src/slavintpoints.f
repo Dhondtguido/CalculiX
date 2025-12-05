@@ -25,7 +25,7 @@
       subroutine slavintpoints(ntie,itietri,ipkon,kon,
      &     lakon,straight,nintpoint,
      &     koncont,co,vold,xo,yo,zo,x,y,z,nx,ny,nz,
-     &     islavsurf,islavnode,nslavnode,imastop,
+     &     islavsurf,imastop,
      &     mi,ncont,ipe,ime,pslavsurf,i,l,ntri)
 !
 !     Author: Li, Yang; Rakotonanahary, Samoela; Sitzmann,Saskia
@@ -37,8 +37,7 @@
       integer ntie,nintpoint,imastop(3,*),ncont,itietri(2,ntie),
      &     ipkon(*),kon(*),koncont(4,*),node,neigh(10),iflag,kneigh,i,
      &     j,k,l,ii,itri,nx(*),ny(*),nz(*),ifreeintersec,nelemm,jfacem,
-     &     indexe,nopesm,nope,islavsurf(2,*),islavnode(*),
-     &     nslavnode(ntie+1),ifaces,nelems,jfaces,mi(*),
+     &     indexe,nopesm,nope,islavsurf(2,*),ifaces,nelems,jfaces,mi(*),
      &     m,nopes,konl(20),id,maface(8),nmaface,
      &     mafacecorner(8,8),line,iactiveline(3,3*ncont),
      &     icoveredmelem(3*ncont),nactiveline,ipe(*),ime(4,*),k1,j1,
@@ -49,8 +48,8 @@
      &     xo(*),yo(*),zo(*),x(*),y(*),z(*),
      &     xl2m(3,8),xl2s(3,8),xlpg(3,8),
      &     pmiddle(3),xl2sr(3,8),xl3sp(3,8),xl3s(3,8),
-     &     dd,xns(3,8),areaslav,al,xn(3),slavstraight(36),
-     &     err2,dist,distmin,pslavsurf(3,*),err,xquad(2,8),
+     &     dd,areaslav,al,xn(3),slavstraight(36),
+     &     pslavsurf(3,*),err,xquad(2,8),
      &     xtri(2,6),xi,et,xsj2(3),xs2(3,2),shp2(7,8),anglesm
 !
       data iflag /2/
@@ -295,7 +294,7 @@ c         if(dist.lt.distmin)distmin=dist
 !        add master element to covered stack
 !
          call nident(icoveredmelem,nelemm,ncoveredmelem,id)
-         if(id.ne.0 .and. icoveredmelem(id).eq.nelemm)then
+         if((id.ne.0).and.(icoveredmelem(id).eq.nelemm)) then
 !     master element was already treated
             cycle
          else
@@ -342,12 +341,10 @@ c         if(dist.lt.distmin)distmin=dist
                enddo
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xns,xl2s,xl3sp,
+     &           nopes,slavstraight,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifreeintersec,ifacem,
-     &           nintpoint,pslavsurf,
-     &           xl2m,nopesm,xlpg,npg,nodepg,
-     &           areaslav)
+     &           ifreeintersec,ifacem,nintpoint,pslavsurf,
+     &           xlpg,npg,nodepg,areaslav)
 !     
          elseif(nopesm.eq.6)then
 !
@@ -369,12 +366,10 @@ c         if(dist.lt.distmin)distmin=dist
                xlpg(j2,3)=xl2m(j2,6)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xns,xl2s,xl3sp,
+     &           nopes,slavstraight,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifreeintersec,ifacem,
-     &           nintpoint,pslavsurf,
-     &           xl2m,nopesm,xlpg,npg,nodepg,
-     &           areaslav)
+     &           ifreeintersec,ifacem,nintpoint,pslavsurf,
+     &           xlpg,npg,nodepg,areaslav)
 !     
 !     2. triangle
 !     
@@ -392,12 +387,10 @@ c         if(dist.lt.distmin)distmin=dist
                xlpg(j2,3)=xl2m(j2,5)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xns,xl2s,xl3sp,
+     &           nopes,slavstraight,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifreeintersec,ifacem,
-     &           nintpoint,pslavsurf,
-     &           xl2m,nopesm,xlpg,npg,nodepg,
-     &           areaslav)
+     &           ifreeintersec,ifacem,nintpoint,pslavsurf,
+     &           xlpg,npg,nodepg,areaslav)
 !     
 !     3. triangle
 !     
@@ -415,12 +408,10 @@ c         if(dist.lt.distmin)distmin=dist
                xlpg(j2,3)=xl2m(j2,6)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xns,xl2s,xl3sp,
+     &           nopes,slavstraight,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifreeintersec,ifacem,
-     &           nintpoint,pslavsurf,
-     &           xl2m,nopesm,xlpg,npg,nodepg,
-     &           areaslav)
+     &           ifreeintersec,ifacem,nintpoint,pslavsurf,
+     &           xlpg,npg,nodepg,areaslav)
 !     
 !     4. triangle
 !     
@@ -438,12 +429,10 @@ c         if(dist.lt.distmin)distmin=dist
                xlpg(j2,3)=xl2m(j2,6)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xns,xl2s,xl3sp,
+     &           nopes,slavstraight,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifreeintersec,ifacem,
-     &           nintpoint,pslavsurf,
-     &           xl2m,nopesm,xlpg,npg,nodepg,
-     &           areaslav)
+     &           ifreeintersec,ifacem,nintpoint,pslavsurf,
+     &           xlpg,npg,nodepg,areaslav)
 !
          elseif(nopesm.eq.8)then
 !     
@@ -465,12 +454,10 @@ c         if(dist.lt.distmin)distmin=dist
                xlpg(j2,3)=xl2m(j2,8)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xns,xl2s,xl3sp,
+     &           nopes,slavstraight,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifreeintersec,ifacem,
-     &           nintpoint,pslavsurf,
-     &           xl2m,nopesm,xlpg,npg,nodepg,
-     &           areaslav)
+     &           ifreeintersec,ifacem,nintpoint,pslavsurf,
+     &           xlpg,npg,nodepg,areaslav)
 !     
 !     2. triangle
 !     
@@ -488,12 +475,10 @@ c         if(dist.lt.distmin)distmin=dist
                xlpg(j2,3)=xl2m(j2,6)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xns,xl2s,xl3sp,
+     &           nopes,slavstraight,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifreeintersec,ifacem,
-     &           nintpoint,pslavsurf,
-     &           xl2m,nopesm,xlpg,npg,nodepg,
-     &           areaslav)
+     &           ifreeintersec,ifacem,nintpoint,pslavsurf,
+     &           xlpg,npg,nodepg,areaslav)
 !     
 !     3. triangle
 !     
@@ -511,12 +496,10 @@ c         if(dist.lt.distmin)distmin=dist
                xlpg(j2,3)=xl2m(j2,7)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xns,xl2s,xl3sp,
+     &           nopes,slavstraight,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifreeintersec,ifacem,
-     &           nintpoint,pslavsurf,
-     &           xl2m,nopesm,xlpg,npg,nodepg,
-     &           areaslav)
+     &           ifreeintersec,ifacem,nintpoint,pslavsurf,
+     &           xlpg,npg,nodepg,areaslav)
 !     
 !     4. triangle
 !     
@@ -534,12 +517,10 @@ c         if(dist.lt.distmin)distmin=dist
                xlpg(j2,3)=xl2m(j2,8)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xns,xl2s,xl3sp,
+     &           nopes,slavstraight,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifreeintersec,ifacem,
-     &           nintpoint,pslavsurf,
-     &           xl2m,nopesm,xlpg,npg,nodepg,
-     &           areaslav)
+     &           ifreeintersec,ifacem,nintpoint,pslavsurf,
+     &           xlpg,npg,nodepg,areaslav)
 !     
 !     quad
 !     
@@ -561,12 +542,10 @@ c         if(dist.lt.distmin)distmin=dist
               xlpg(j2,4)=xl2m(j2,8)
            enddo
            call treatmasterface(
-     &          nopes,slavstraight,xn,xns,xl2s,xl3sp,
+     &          nopes,slavstraight,xn,xl2s,xl3sp,
      &          ipe,ime,iactiveline,nactiveline,
-     &          ifreeintersec,ifacem,
-     &          nintpoint,pslavsurf,
-     &          xl2m,nopesm,xlpg,npg,nodepg,
-     &          areaslav)
+     &          ifreeintersec,ifacem,nintpoint,pslavsurf,
+     &          xlpg,npg,nodepg,areaslav)
         endif
       enddo
 !     
@@ -590,8 +569,8 @@ c         if(dist.lt.distmin)distmin=dist
 !     check whether still in contact tie
 !
          if((itri.gt.itietri(2,i)).or.(itri.lt.itietri(1,i)))then
-            if(itri.ne.0)then
-            endif
+c            if(itri.ne.0)then
+c            endif
             itri=0
          endif                            
          
@@ -613,7 +592,7 @@ c         if(dist.lt.distmin)distmin=dist
 !     add master element to covered stack
 !     
          call nident(icoveredmelem,nelemm,ncoveredmelem,id)
-         if(id .gt. 0 .and. icoveredmelem(id).eq.nelemm)then
+         if((id.gt.0).and.(icoveredmelem(id).eq.nelemm)) then
 !
 !     master element was already treated
 !
@@ -666,12 +645,10 @@ c         if(dist.lt.distmin)distmin=dist
                enddo
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xns,xl2s,xl3sp,
+     &           nopes,slavstraight,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifreeintersec,ifacem,
-     &           nintpoint,pslavsurf,
-     &           xl2m,nopesm,xlpg,npg,nodepg,
-     &           areaslav)
+     &           ifreeintersec,ifacem,nintpoint,pslavsurf,
+     &           xlpg,npg,nodepg,areaslav)
 !     
          elseif(nopesm.eq.6)then
 !
@@ -693,12 +670,10 @@ c         if(dist.lt.distmin)distmin=dist
                xlpg(j2,3)=xl2m(j2,6)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xns,xl2s,xl3sp,
+     &           nopes,slavstraight,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifreeintersec,ifacem,
-     &           nintpoint,pslavsurf,
-     &           xl2m,nopesm,xlpg,npg,nodepg,
-     &           areaslav)
+     &           ifreeintersec,ifacem,nintpoint,pslavsurf,
+     &           xlpg,npg,nodepg,areaslav)
 !     
 !     2. triangle
 !     
@@ -716,12 +691,10 @@ c         if(dist.lt.distmin)distmin=dist
                xlpg(j2,3)=xl2m(j2,5)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xns,xl2s,xl3sp,
+     &           nopes,slavstraight,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifreeintersec,ifacem,
-     &           nintpoint,pslavsurf,
-     &           xl2m,nopesm,xlpg,npg,nodepg,
-     &           areaslav)
+     &           ifreeintersec,ifacem,nintpoint,pslavsurf,
+     &           xlpg,npg,nodepg,areaslav)
 !     
 !     3. triangle
 !     
@@ -739,12 +712,10 @@ c         if(dist.lt.distmin)distmin=dist
                xlpg(j2,3)=xl2m(j2,6)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xns,xl2s,xl3sp,
+     &           nopes,slavstraight,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifreeintersec,ifacem,
-     &           nintpoint,pslavsurf,
-     &           xl2m,nopesm,xlpg,npg,nodepg,
-     &           areaslav)
+     &           ifreeintersec,ifacem,nintpoint,pslavsurf,
+     &           xlpg,npg,nodepg,areaslav)
 !     
 !     4. triangle
 !     
@@ -762,12 +733,10 @@ c         if(dist.lt.distmin)distmin=dist
                xlpg(j2,3)=xl2m(j2,6)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xns,xl2s,xl3sp,
+     &           nopes,slavstraight,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifreeintersec,ifacem,
-     &           nintpoint,pslavsurf,
-     &           xl2m,nopesm,xlpg,npg,nodepg,
-     &           areaslav)
+     &           ifreeintersec,ifacem,nintpoint,pslavsurf,
+     &           xlpg,npg,nodepg,areaslav)
 !
          elseif(nopesm.eq.8)then
 !     
@@ -789,12 +758,10 @@ c         if(dist.lt.distmin)distmin=dist
                xlpg(j2,3)=xl2m(j2,8)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xns,xl2s,xl3sp,
+     &           nopes,slavstraight,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifreeintersec,ifacem,
-     &           nintpoint,pslavsurf,
-     &           xl2m,nopesm,xlpg,npg,nodepg,
-     &           areaslav)
+     &           ifreeintersec,ifacem,nintpoint,pslavsurf,
+     &           xlpg,npg,nodepg,areaslav)
 !     
 !     2. triangle
 !     
@@ -812,12 +779,10 @@ c         if(dist.lt.distmin)distmin=dist
                xlpg(j2,3)=xl2m(j2,6)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xns,xl2s,xl3sp,
+     &           nopes,slavstraight,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifreeintersec,ifacem,
-     &           nintpoint,pslavsurf,
-     &           xl2m,nopesm,xlpg,npg,nodepg,
-     &           areaslav)
+     &           ifreeintersec,ifacem,nintpoint,pslavsurf,
+     &           xlpg,npg,nodepg,areaslav)
 !     
 !     3. triangle
 !     
@@ -835,12 +800,10 @@ c         if(dist.lt.distmin)distmin=dist
                xlpg(j2,3)=xl2m(j2,7)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xns,xl2s,xl3sp,
+     &           nopes,slavstraight,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifreeintersec,ifacem,
-     &           nintpoint,pslavsurf,
-     &           xl2m,nopesm,xlpg,npg,nodepg,
-     &           areaslav)
+     &           ifreeintersec,ifacem,nintpoint,pslavsurf,
+     &           xlpg,npg,nodepg,areaslav)
 !     
 !     4. triangle
 !     
@@ -858,12 +821,10 @@ c         if(dist.lt.distmin)distmin=dist
                xlpg(j2,3)=xl2m(j2,8)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xns,xl2s,xl3sp,
+     &           nopes,slavstraight,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifreeintersec,ifacem,
-     &           nintpoint,pslavsurf,
-     &           xl2m,nopesm,xlpg,npg,nodepg,
-     &           areaslav)
+     &           ifreeintersec,ifacem,nintpoint,pslavsurf,
+     &           xlpg,npg,nodepg,areaslav)
 !     
 !     quad
 !     
@@ -885,12 +846,10 @@ c         if(dist.lt.distmin)distmin=dist
               xlpg(j2,4)=xl2m(j2,8)
            enddo
            call treatmasterface(
-     &          nopes,slavstraight,xn,xns,xl2s,xl3sp,
+     &          nopes,slavstraight,xn,xl2s,xl3sp,
      &          ipe,ime,iactiveline,nactiveline,
-     &          ifreeintersec,ifacem,
-     &          nintpoint,pslavsurf,
-     &          xl2m,nopesm,xlpg,npg,nodepg,
-     &          areaslav)
+     &          ifreeintersec,ifacem,nintpoint,pslavsurf,
+     &          xlpg,npg,nodepg,areaslav)
         endif
       enddo
       islavsurf(2,l+1)=nintpoint
