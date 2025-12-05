@@ -118,13 +118,13 @@
          enddo
          pmiddle(j)=pmiddle(j)/nopes
       enddo
-      do j=1,3
-         do m=1,nopes
-            xl2sr(j,m)=xl2s(j,m)-0.5d0*err*(xl2s(j,m)-pmiddle(j))
-         enddo
-      enddo
+c      do j=1,3
+c         do m=1,nopes
+c            xl2sr(j,m)=xl2s(j,m)-0.5d0*err*(xl2s(j,m)-pmiddle(j))
+c         enddo
+c      enddo
 !
-!     Resort vertices for quadratic elements
+!     sort vertices for quadratic elements in ccw direction
 !     
       if((nopes.eq.3).or.(nopes.eq.4))then
          do j=1,nopes
@@ -141,11 +141,11 @@
          enddo
       endif
 !     
-!     calculate the mean normal vector on the Slave Surface
+!     calculate the mean normal vector xn on the slave face
 !     +
-!     determine the equations of the triangle/quadrilateral
-!     (mean)plane and of the planes boardering the 
-!     triangle/quadrilateral
+!     determine the equations of the slave face
+!     (mean)plane and of the planes perpendicular to its 
+!     piecewise linear approximation 
 !     
       if(nopes.eq.3) then
          call straighteq3d(xl3s,slavstraight)
@@ -186,7 +186,7 @@
             enddo
          enddo 
 !     
-!     normalizing the mean normal on the Slave surface
+!     normalizing the mean normal on the slave surface
 !     
          dd=dsqrt(xn(1)**2+xn(2)**2+xn(3)**2)
          do k=1,3
@@ -212,7 +212,7 @@
          endif
       enddo
 !     
-!     determine the triangles corresponding to the corner
+!     determine the master faces corresponding to the corner
 !     nodes
 !     
       nmaface=0
@@ -228,7 +228,7 @@
             xl2sr(j,m)=xl2s(j,m)-2*err*(xl2s(j,m)-pmiddle(j))
          enddo
       enddo
-      distmin=1.1d0
+c      distmin=1.1d0
       do j=1,nopes
          call neartriangle(xl2sr(1,j),xn,xo,yo,zo,x,y,z,nx,ny,nz,
      &        ntri,neigh,kneigh,itietri,ntie,straight,imastop,itri,i)
@@ -237,14 +237,14 @@
          if(itri.eq.0) then  
             cycle
          endif
-         dist=-(straight(13,itri)*xl2sr(1,j)+
-     &        straight(14,itri)*xl2sr(2,j)+
-     &        straight(15,itri)*xl2sr(3,j)+
-     &        straight(16,itri))/
-     &        (straight(13,itri)*xn(1)+
-     &        straight(14,itri)*xn(2)+
-     &        straight(15,itri)*xn(3))
-         if(dist.lt.distmin)distmin=dist
+c         dist=-(straight(13,itri)*xl2sr(1,j)+
+c     &        straight(14,itri)*xl2sr(2,j)+
+c     &        straight(15,itri)*xl2sr(3,j)+
+c     &        straight(16,itri))/
+c     &        (straight(13,itri)*xn(1)+
+c     &        straight(14,itri)*xn(2)+
+c     &        straight(15,itri)*xn(3))
+c         if(dist.lt.distmin)distmin=dist
          ifacem=koncont(4,itri)
 !     
          call nident(maface,ifacem,nmaface,id)
