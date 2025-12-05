@@ -31,18 +31,18 @@
 !     
       integer nvertex,nopes,ipe(*),ime(4,*),iactiveline(3,*),
      &     nactiveline,ifreeintersec,npg,i,j,k,nintpoint,
-     &     nnodelem,nodepg(*),modf,nelemm,k_max,nipold
+     &     nnodelem,nodepg(*),modf,nelemm,k_max
 !     
       real*8 pvertex(3,13),slavstraight(36),xn(3),xilm,etlm,xnl(3),
      &     xl2s(3,*),p1(2),p2(2),pslavsurf(3,*),xil,etl,p(3),dist,
      &     area,xl2m(3,8),xlpg(3,8),al,err,xns(3,8),
-     &     xl2sp(3,*),xlpgp(3,8),cgp(3),pm(3),ps(3),xit(3),etat(3),areaslav
+     &     xl2sp(3,*),xlpgp(3,8),cgp(3),pm(3),ps(3),xit(3),etat(3),
+     &     areaslav
 !     
       include "gauss.f"
 !     
       err=1.d-6
       nvertex=0
-      nipold=nintpoint
 !     
 !     Project master nodes to meanplane, needed for Sutherland-Hodgman
 !     
@@ -110,13 +110,15 @@ c     cgp(k)=cgp(k)+pvertex(k,i)/nvertex
         area=dabs(p1(1)*p2(2)-p2(1)*p1(2))/2.d0
 !     
         if(area.lt.1.d-4) cycle
-        if(nopes.eq.4.and.areaslav+area-4.0d0.gt.1.d-3
-     &       .and.nactiveline.gt.0)then
+        if(((nopes.eq.4).or.(nopes.eq.8))
+     &       .and.(areaslav+area-4.0d0.gt.1.d-3)
+     &       .and.(nactiveline.gt.0))then
           nactiveline=0
           return
         endif
-        if(nopes.eq.3.and.areaslav+area-0.5d0.gt.1.d-4
-     &       .and.nactiveline.gt.0)then
+        if(((nopes.eq.3).or.(nopes.eq.6))
+     &       .and.(areaslav+area-0.5d0.gt.1.d-4)
+     &       .and.(nactiveline.gt.0))then
           nactiveline=0
           return
         endif
@@ -133,20 +135,20 @@ c     cgp(k)=cgp(k)+pvertex(k,i)/nvertex
      &         etat(1)*gauss2d6(2,i)+
      &         etat(2)*(1-gauss2d6(1,i)-gauss2d6(2,i))
 !     
-          call evalshapefunc(xil,etl,xns,nopes,xnl)
-          call evalshapefunc(xil,etl,xl2s,nopes,ps)
+c          call evalshapefunc(xil,etl,xns,nopes,xnl)
+c          call evalshapefunc(xil,etl,xl2s,nopes,ps)
 !     
           nintpoint=nintpoint+1
 !     
-!     projection of the integration point in the mean
-!     slave plane onto the slave surface
-!     
-!     projection of the master integration point onto the
-!     master surface in order to get the local coordinates
-!     own xn for every integration point?
-!     
-          call attachline(xl2m,ps,nnodelem,xilm,etlm,xn,p,dist)
-          call evalshapefunc(xilm,etlm,xl2m,nnodelem,pm)   
+c!     projection of the integration point in the mean
+c!     slave plane onto the slave surface
+c!     
+c!     projection of the master integration point onto the
+c!     master surface in order to get the local coordinates
+c!     own xn for every integration point?
+c!     
+c          call attachline(xl2m,ps,nnodelem,xilm,etlm,xn,p,dist)
+c          call evalshapefunc(xilm,etlm,xl2m,nnodelem,pm)   
 !     
           pslavsurf(1,nintpoint)=xil
           pslavsurf(2,nintpoint)=etl
