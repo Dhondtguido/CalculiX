@@ -465,8 +465,7 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
   *ipkonp=ipkon;*lakonp=lakon;*iamt1p=iamt1;*ipobodyp=ipobody;
   *iprfnp=iprfn;*konrfnp=konrfn;*ratiorfnp=ratiorfn;
   
-  return NULL;
-
+  return;
 }
 
 /* subroutine for multithreading of calcenergy */

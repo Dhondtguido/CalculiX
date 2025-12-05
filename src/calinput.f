@@ -85,6 +85,8 @@
      &     solid,sectionprint_flag,contactprint_flag,pretension,
      &     beamgeneralsection,objective_flag,constraint_flag,
      &     cyclicsymmetrymodel_flag
+!
+      logical :: warning
 !     
       character*1 typeboun(*),inpc(*)
       character*4 output
@@ -1398,8 +1400,13 @@ c
       if((filab(11)(1:2).eq.'PU').or.(filab(18)(1:3).eq.'PHS').or.
      &     (filab(19)(1:4).eq.'MAXU').or.(filab(20)(1:4).eq.'MAXS'))
      &     then
-        if((nmethod.eq.1).or.(nmethod.eq.3).or.(nmethod.eq.4).or.
-     &       ((nmethod.eq.2).and.((mcs.eq.0).or.(cs(2,1).lt.0)))) then
+        warning = (nmethod.eq.1).or.(nmethod.eq.3).or.(nmethod.eq.4)
+        if (nmethod.eq.2) then
+            if ((mcs.eq.0).or.(cs(2,1).lt.0)) then
+                warning = .true.
+            endif
+        endif
+        if(warning) then
           write(*,*) '*WARNING in calinput: PU, PHS, MAXU or MAXS'
           write(*,*) '         was selected for a static, a non-'
           write(*,*) '         cyclic-symmetric frequency, a'

@@ -48,8 +48,10 @@ c      iperturb(1)=0
       tmin=0.d0
       tmax=0.d0
       steadystate=.false.
-      if((mcs.ne.0).and.(cs(2,1).ge.0.d0)) then
-         cyclicsymmetry=1
+      if(mcs.ne.0) then
+        if(cs(2,1).ge.0.d0) then
+            cyclicsymmetry=1
+        endif
       endif
       nodalset=.false.
 !
@@ -265,8 +267,11 @@ c      endif
 !     mastructcs is called instead of mastruct a fictitious
 !     minimum nodal diameter is stored
 !
-      if((cyclicsymmetry.eq.1).and.(mcs.ne.0).and.(cs(2,1).lt.0.d0)) 
-     &       cs(2,1)=0.d0
+      if((cyclicsymmetry.eq.1).and.(mcs.ne.0)) then
+        if(cs(2,1)<0.d0) then
+            cs(2,1)=0.d0
+        endif
+      endif
 !
       call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &     ipoinp,inp,ipoinpc)
