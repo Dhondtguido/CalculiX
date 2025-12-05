@@ -32921,8 +32921,8 @@ knor & A & & R & & &  infree[1] \\
 thickn & A & & D & & &  - \\
 thicke & A & & R & & &  mi[2]*nkon \\
 offset & A & & R & & network$>$0: R&  2*ne \\
-iponoel & A & & R & & &  infree[3] \\
-inoel & A & & R & & &  3*(infree[2]-1) \\
+iponoel2d & A & & R & & &  infree[3] \\
+inoel2d & A & & R & & &  3*(infree[2]-1) \\
 rig & A & & R & & &  infree[3] \\
 ne2boun & A & & R & & &  2*infree[3] \\
 \hline
@@ -33663,13 +33663,13 @@ The expansion of the elements requires several steps:
 \subsubsection{Cataloguing the elements belonging to a given node}
 
 A node can belong to several elements of different types. The structure to
-store this dependence consists of two fields: a one-dimensional field iponoel
-and a two-dimensional field inoel. For node i the value j1=iponoel(i) points
-to row j1 in field inoel containing in its first column the number k1 of an
+store this dependence consists of two fields: a one-dimensional field iponoel2d
+and a two-dimensional field inoel2d. For node i the value j1=iponoel2d(i) points
+to row j1 in field inoel2d containing in its first column the number k1 of an
 element to which
 node i belongs, in its second column the local number l1 which node i assumes in the
 topology of the element and in its third column the row number j2 in field
-inoel where another element to which node i belongs is listed. If no further
+inoel2d where another element to which node i belongs is listed. If no further
 element exists, this entry is zero (Figure \ref{iponoel}).
 
 \begin{figure}
@@ -38722,14 +38722,14 @@ nuel & number of different user element types \\
                       nodal entries in field kon \\
       offset(2,i) &    offsets (one for shells, two for beams) in
                       element i \\
-      iponoel(i) &     pointer for node i into field inoel, which
+      iponoel2d(i) &     pointer for node i into field inoel2d, which
                       stores the 1D and 2D elements belonging to the
                       node. \\
-      inoel(3,i) &     field containing an element number, a local node
+      inoel2d(3,i) &     field containing an element number, a local node
                       number within this element and a pointer to
                       another entry (or zero if there is no
                       other). \\
-      inoelfree &     next free field in inoel \\
+      inoel2dfree &     next free field in inoel2d \\
       rig(i) &        integer field indicating whether node i is a
                       rigid node (nonzero value) or not (zero value). In a rigid node
                       or knot all expansion nodes except the ones not

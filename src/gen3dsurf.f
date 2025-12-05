@@ -16,7 +16,7 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
-      subroutine gen3dsurf(iponoel,inoel,iponoelmax,kon,ipkon,
+      subroutine gen3dsurf(iponoel2d,inoel2d,iponoel2dmax,kon,ipkon,
      &     lakon,ne,iponor,knor,ipompc,nodempc,coefmpc,nmpc,nmpc_,
      &     mpcfree,ikmpc,ilmpc,labmpc,rig,ntrans,inotr,trab,nam,nk,nk_,
      &     co,nmethod,iperturb,nset,set,istartset,iendset,ialset,
@@ -35,7 +35,7 @@
       character*20 labmpc(*),label
       character*81 set(*)
 !     
-      integer iponoel(*),inoel(3,*),iponoelmax,kon(*),ipkon(*),ne,
+      integer iponoel2d(*),inoel2d(3,*),iponoel2dmax,kon(*),ipkon(*),ne,
      &     iponor(2,*),knor(*),ipompc(*),nodempc(3,*),nmpc,nmpc_,
      &     ikmpc(*),ilmpc(*),rig(*),ntrans,inotr(2,*),i,node,mpcfree,
      &     indexx,ielem,j,indexe,indexk,idir,nk,nk_,iamplitude,
@@ -57,23 +57,20 @@
         if(set(i)(ipos-1:ipos-1).ne.'S') cycle
         loop: do l=istartset(i),iendset(i)
           node=ialset(l)
-          if(node.gt.iponoelmax) cycle
-          indexx=iponoel(node)
+          if(node.gt.iponoel2dmax) cycle
+          indexx=iponoel2d(node)
 !
 !     next loop is needed, since an element may have
 !     been deactivated
 !
           do
             if(indexx.eq.0) cycle loop
-            ielem=inoel(1,indexx)
+            ielem=inoel2d(1,indexx)
             indexe=ipkon(ielem)
             if(indexe.ge.0) exit
-            indexx=inoel(3,indexx)
+            indexx=inoel2d(3,indexx)
           enddo
-c          if(indexx.eq.0) cycle
-c          ielem=inoel(1,indexx)
-          j=inoel(2,indexx)
-c          indexe=ipkon(ielem)
+          j=inoel2d(2,indexx)
           indexk=iponor(2,indexe+j)
 !     
           if(rig(node).eq.0) then

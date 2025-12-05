@@ -58,7 +58,7 @@ int main(int argc,char *argv[])
     *nelcon=NULL,*nalcon=NULL,*iamforc=NULL,*iamload=NULL,
     *iamt1=NULL,*namta=NULL,*ipkon=NULL,*iamboun=NULL,*ndmcon=NULL,
     *nplicon=NULL,*nplkcon=NULL,*inotr=NULL,*iponor=NULL,*knor=NULL,
-    *ikforc=NULL,*ilforc=NULL,*iponoel=NULL,*inoel=NULL,*nshcon=NULL,
+    *ikforc=NULL,*ilforc=NULL,*iponoel2d=NULL,*inoel2d=NULL,*nshcon=NULL,
     *ncocon=NULL,*ibody=NULL,*ielprop=NULL,*islavsurf=NULL,
     *ipoinpc=NULL,mt,nxstate,nload0,iload,*iuel=NULL,*ne2boun=NULL,
     *irandomtype=NULL,irobustdesign[3],*iparentel=NULL,ifreebody,
@@ -158,7 +158,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Fri Dec  5 12:27:51 CET 2025\n");
+  printf("You are using an executable made on Fri Dec  5 13:50:44 CET 2025\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -256,8 +256,8 @@ int main(int argc,char *argv[])
 	NNEW(thickn,double,2*nk_);
 	NNEW(thicke,double,mi[2]*nkon_);
 	NNEW(offset,double,2*ne_);
-	NNEW(iponoel,ITG,nk_);
-	NNEW(inoel,ITG,9*ne1d+24*ne2d);
+	NNEW(iponoel2d,ITG,nk_);
+	NNEW(inoel2d,ITG,9*ne1d+24*ne2d);
 	NNEW(rig,ITG,nk_);
 	NNEW(ne2boun,ITG,2*nk_);
 	if(infree[2]==0)infree[2]=1;
@@ -630,7 +630,7 @@ int main(int argc,char *argv[])
 		      &npmat_,mi,&nk_,trab,inotr,&ntrans,ikboun,ilboun,ikmpc,
 		      ilmpc,ics,dcs,&ncs_,&namtot_,cs,&nstate_,&ncmat_,
 		      &mcs,labmpc,iponor,xnor,knor,thickn,thicke,ikforc,ilforc,
-		      offset,iponoel,inoel,rig,infree,nshcon,shcon,cocon,
+		      offset,iponoel2d,inoel2d,rig,infree,nshcon,shcon,cocon,
 		      ncocon,physcon,&nflow,ctrl,&maxlenmpc,&ne1d,&ne2d,&nener,
 		      vold,nodebounold,ndirbounold,xbounold,xforcold,xloadold,
 		      t1old,eme,sti,ener,xstate,jobnamec,irstrt,&ttime,qaold,
@@ -675,8 +675,8 @@ int main(int argc,char *argv[])
 		  filab,&co,&ipompc,&nodempc,&coefmpc,&nmpc,&nmpc_,&labmpc,
 		  &mpcfree,&memmpc_,&ikmpc,&ilmpc,&nk_,&ne_,&nkon_,&istep,
 		  &nprop_,&ielprop,&ne1d,&ne2d,&iponor,&thickn,&thicke,mi,
-		  &offset,&iponoel,&rig,&ne2boun,&ielorien,&inotr,&t0,&t0g,&t1g,
-		  &prestr,&vold,&veold,&ielmat,irobustdesign,&irandomtype,
+		  &offset,&iponoel2d,&rig,&ne2boun,&ielorien,&inotr,&t0,&t0g,
+		  &t1g,&prestr,&vold,&veold,&ielmat,irobustdesign,&irandomtype,
 		  &randomval,&nalset,&nalset_,&nkon,xnor,&iaxial,
 		  &network,&nlabel,iuel,iperturb,&iprestr,&ntie,tieset,
 		  &iparentel,ikboun,&ifreebody,&ipobody,&nbody,&iprfn,
@@ -809,8 +809,8 @@ int main(int argc,char *argv[])
 	SFREE(thickn);
 	RENEW(thicke,double,mi[2]*nkon);
 	RENEW(offset,double,2*ne);
-	RENEW(inoel,ITG,3*(infree[2]-1));
-	RENEW(iponoel,ITG,infree[3]);
+	RENEW(inoel2d,ITG,3*(infree[2]-1));
+	RENEW(iponoel2d,ITG,infree[3]);
 	RENEW(rig,ITG,infree[3]);
 	RENEW(ne2boun,ITG,2*infree[3]);
       }
@@ -1562,8 +1562,8 @@ int main(int argc,char *argv[])
 		   ielprop,prop,typeboun,&mortar,mpcinfo,tietol,ics,
 		   &nobject,&objectset,&istat,orname,nzsprevstep,&nlabel,
 		   physcon,
-		   jobnamef,iponor,knor,&ne2d,iponoel,inoel,&mpcend,dgdxglob,
-		   g0,&nodedesi,&ndesi,&nobjectstart,&xdesi,rig);
+		   jobnamef,iponor,knor,&ne2d,iponoel2d,inoel2d,&mpcend,
+		   dgdxglob,g0,&nodedesi,&ndesi,&nobjectstart,&xdesi,rig);
     
       }else{
         sensi_orien(co,&nk,&kon,&ipkon,&lakon,&ne,nodeboun,ndirboun,
@@ -1585,7 +1585,7 @@ int main(int argc,char *argv[])
 		    ielprop,prop,typeboun,&mortar,mpcinfo,tietol,ics,
 		    &nobject,&objectset,&istat,orname,nzsprevstep,&nlabel,
 		    physcon,
-		    jobnamef,iponor,knor,&ne2d,iponoel,inoel,&mpcend);
+		    jobnamef,iponor,knor,&ne2d,iponoel2d,inoel2d,&mpcend);
       }
     
     }
@@ -1608,7 +1608,7 @@ int main(int argc,char *argv[])
 		   thicke,jobnamec,tieset,&ntie,&istep,&nmat,ielprop,prop,
 		   typeboun,&mortar,mpcinfo,tietol,ics,&nobject,
 		   &objectset,&istat,orname,nzsprevstep,&nlabel,physcon,
-		   jobnamef,iponor,knor,&ne2d,iponoel,inoel,&mpcend,
+		   jobnamef,iponor,knor,&ne2d,iponoel2d,inoel2d,&mpcend,
 		   irobustdesign,irandomtype,randomval,rig);
     }
 
@@ -1633,8 +1633,8 @@ int main(int argc,char *argv[])
 			ielprop,prop,&kode,&nmethod,filab,&nstate_,&istep,cs,
 			set,&nset,istartset,iendset,ialset,jobnamec,output,
 			&ntrans,inotr,trab,orname,xdesi,timepar,coini,ikboun,
-			nactdof,&ne2d,&nkon,tieset,&ntie,knor,iponoel,iponor,
-			inoel);         
+			nactdof,&ne2d,&nkon,tieset,&ntie,knor,iponoel2d,iponor,
+			inoel2d);         
       
     }
 
@@ -1677,7 +1677,7 @@ int main(int argc,char *argv[])
 		    &randomval,&prlab,&prset,&filab,&xmodal,&ielmat,
 		    &matname,&sti,&eme,&ener,&xstate,&vold,
 		    &veold,&vel,&velo,&veloo,&iponor,&xnor,
-		    &knor,&thicke,&offset,&iponoel,&inoel,&rig,
+		    &knor,&thicke,&offset,&iponoel2d,&inoel2d,&rig,
 		    &ne2boun,&islavsurf,&mortar,&pslavsurf,&clearini,
 		    &nobject_,&objectset,&nmethod,iperturb,&irefineloop,
 		    &iparentel,&iprfn,&konrfn,&ratiorfn,&heading,
@@ -1861,8 +1861,8 @@ int main(int argc,char *argv[])
 			      amname,amta,namta,t0,t1,iamt1,veold,ielmat,
 			      matname,prlab,prset,filab,vold,nodebounold,
 			      ndirbounold,xbounold,xforcold,xloadold,t1old,eme,
-			      iponor,xnor,knor,thicke,offset,iponoel,inoel,rig,
-			      shcon,nshcon,cocon,ncocon,ics,sti,ener,xstate,
+			      iponor,xnor,knor,thicke,offset,iponoel2d,inoel2d,
+			      rig,shcon,nshcon,cocon,ncocon,ics,sti,ener,xstate,
 			      jobnamec,infree,prestr,&iprestr,cbody,ibody,
 			      xbody,&nbody,xbodyold,&ttime,qaold,cs,&mcs,
 			      output,physcon,ctrl,typeboun,fmpc,tieset,&ntie,
@@ -1912,7 +1912,7 @@ int main(int argc,char *argv[])
 	      &randomval,&prlab,&prset,&filab,&xmodal,&ielmat,
 	      &matname,&sti,&eme,&ener,&xstate,&vold,
 	      &veold,&vel,&velo,&veloo,&iponor,&xnor,
-	      &knor,&thicke,&offset,&iponoel,&inoel,&rig,
+	      &knor,&thicke,&offset,&iponoel2d,&inoel2d,&rig,
 	      &ne2boun,&islavsurf,&mortar,&pslavsurf,&clearini,
 	      &nobject_,&objectset,&nmethod,iperturb,&irefineloop,
 	      &iparentel,&iprfn,&konrfn,&ratiorfn,&heading,

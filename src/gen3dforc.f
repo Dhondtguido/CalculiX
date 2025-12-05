@@ -18,8 +18,9 @@
 !     
       subroutine gen3dforc(ikforc,ilforc,nforc,nforc_,nodeforc,
      &     ndirforc,xforc,iamforc,ntrans,inotr,trab,rig,ipompc,nodempc,
-     &     coefmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,labmpc,iponoel,inoel,
-     &     iponoelmax,kon,ipkon,lakon,ne,iponor,xnor,knor,nam,nk,nk_,
+     &     coefmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,labmpc,iponoel2d,
+     &     inoel2d,
+     &     iponoel2dmax,kon,ipkon,lakon,ne,iponor,xnor,knor,nam,nk,nk_,
      &     co,thicke,nodeboun,ndirboun,ikboun,ilboun,nboun,nboun_,
      &     iamboun,typeboun,xboun,nmethod,iperturb,istep,vold,mi,
      &     idefforc)
@@ -39,8 +40,9 @@
       integer ikforc(*),ilforc(*),nodeforc(2,*),ndirforc(*),itr,idirref,
      &     iamforc(*),idim,ier,matz,nodeact,linc,lend,lstart,nnodes,
      &     nforc,nforc_,ntrans,inotr(2,*),rig(*),ipompc(*),nodempc(3,*),
-     &     nmpc,nmpc_,mpcfree,ikmpc(*),ilmpc(*),iponoel(*),inoel(3,*),
-     &     iponoelmax,kon(*),ipkon(*),ne,iponor(2,*),knor(*),nforcold,
+     &     nmpc,nmpc_,mpcfree,ikmpc(*),ilmpc(*),iponoel2d(*),
+     &     inoel2d(3,*),
+     &     iponoel2dmax,kon(*),ipkon(*),ne,iponor(2,*),knor(*),nforcold,
      &     i,node,index,ielem,j,indexe,indexk,nam,iamplitude,idir,
      &     irotnode,nk,nk_,newnode,idof,id,mpcfreenew,k,isector,
      &     idepnodes(80),l,iexpnode,indexx,irefnode,imax,isol,
@@ -71,7 +73,7 @@
       nforcold=nforc
       loop: do i=1,nforcold
         node=nodeforc(1,i)
-        if(node.gt.iponoelmax) then
+        if(node.gt.iponoel2dmax) then
           if(ndirforc(i).gt.3) then
             write(*,*) '*WARNING: in gen3dforc: node ',i,
      &           ' does not'
@@ -81,7 +83,7 @@
           endif
           cycle
         endif
-        index=iponoel(node)
+        index=iponoel2d(node)
 !     
 !     next loop is needed, since an element may have
 !     been deactivated
@@ -97,10 +99,10 @@
             endif
             cycle loop
           endif
-          ielem=inoel(1,index)
+          ielem=inoel2d(1,index)
           indexe=ipkon(ielem)
           if(indexe.ge.0) exit
-          index=inoel(3,index)
+          index=inoel2d(3,index)
         enddo
 !     
 !     checking whether element is linear or quadratic
@@ -121,8 +123,7 @@
           nedge=4
         endif
 !     
-        j=inoel(2,index)
-c     indexe=ipkon(ielem)
+        j=inoel2d(2,index)
         indexk=iponor(2,indexe+j)
         if(nam.gt.0) iamplitude=iamforc(i)
         idir=ndirforc(i)
