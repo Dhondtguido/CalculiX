@@ -132,11 +132,11 @@ c            mei(4)=1
 !     minimum nodal diameter is stored
 !
       if((cyclicsymmetry.eq.1).and.(mcs.ne.0)) then
-        if(cs(2,1)<0.d0) then
-            cs(2,1)=0.d0
+        if(cs(2,1).lt.0.d0) then
+          cs(2,1)=0.d0
         endif
       endif
-!
+ !
       call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &     ipoinp,inp,ipoinpc)
 !

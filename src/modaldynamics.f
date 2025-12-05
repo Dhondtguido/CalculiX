@@ -42,7 +42,6 @@
      &  vold(0:mi(2),*),veold(0:mi(2),*),xmodal(*)
 !
       iexpl=0
-c      iperturb(1)=0
       iperturb(2)=0
       idrct=1
       tmin=0.d0
@@ -50,7 +49,7 @@ c      iperturb(1)=0
       steadystate=.false.
       if(mcs.ne.0) then
         if(cs(2,1).ge.0.d0) then
-            cyclicsymmetry=1
+          cyclicsymmetry=1
         endif
       endif
       nodalset=.false.
@@ -268,8 +267,8 @@ c      endif
 !     minimum nodal diameter is stored
 !
       if((cyclicsymmetry.eq.1).and.(mcs.ne.0)) then
-        if(cs(2,1)<0.d0) then
-            cs(2,1)=0.d0
+        if(cs(2,1).lt.0.d0) then
+          cs(2,1)=0.d0
         endif
       endif
 !

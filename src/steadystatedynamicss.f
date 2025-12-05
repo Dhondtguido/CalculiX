@@ -45,7 +45,7 @@
       harmonic='YES'
       if(mcs.ne.0) then
         if(cs(2,1).ge.0.d0) then
-            cyclicsymmetry=1
+          cyclicsymmetry=1
         endif
       endif
       nodalset=.false.
@@ -237,8 +237,8 @@ c      nbody=0
 !       minimum nodal diameter is stored
 !
       if((cyclicsymmetry.eq.1).and.(mcs.ne.0)) then
-        if(cs(2,1)<0.d0) then
-            cs(2,1)=0.d0
+        if(cs(2,1).lt.0.d0) then
+          cs(2,1)=0.d0
         endif
       endif
 !
