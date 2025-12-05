@@ -21,25 +21,23 @@
 !     active line search
 !
       subroutine sutherland_hodgman(nopes,xn,xl2sp,xl2mp,
-     &  nodem,ipe,ime,iactiveline,nactiveline,ifreeintersec,
+     &  nodem,ipe,ime,iactiveline,nactiveline,
      &  nelemm,nnodelem,nvertex,pvertex)
 !     
       implicit none 
 !     
       logical invert,oldactive,altered,border
 !
-      integer nvertex,nopes,ipe(*),ime(4,*),iactiveline(3,*),
-     &  nactiveline,ifreeintersec,itri,nelemm,i,ii,j,k,nnodelem,id,
-     &  nodem(*),ncvertex,node1,node2,modf,node,indexl,ithree, 
+      integer nvertex,nopes,ipe(*),ime(4,*),iactiveline(2,*),
+     &  nactiveline,itri,nelemm,i,ii,j,k,nnodelem,id,
+     &  nodem(*),ncvertex,node1,node2,modf,node,indexl,itwo, 
      &  insertl(3),ninsertl
 !
       real*8 pvertex(3,*),xn(3),xl2sp(3,*),pa(3),pb(3),xinters(3),
      &  xcp(3),diff,dd,xl2mp(3,*),c_pvertex(3,13),t,cedge(3),xtest(3),
      &     eplane,area,areax,areay,areaz,p1(3),p2(3),areaface
 !
-!
-!     
-      data ithree /3/
+      data itwo /2/
 !     
       nvertex=0
       ninsertl=0
@@ -120,14 +118,14 @@
             enddo
          endif
          oldactive=.false.
-         call nidentk(iactiveline,indexl, nactiveline,id,ithree)
+         call nidentk(iactiveline,indexl,nactiveline,id,itwo)
          if(id.gt.0.and.iactiveline(1,id).eq.indexl)then
             oldactive=.true.
          endif    
          if(oldactive)then
             nactiveline=nactiveline-1
             do ii=id,nactiveline
-               do k=1,3
+               do k=1,2
                   iactiveline(k,ii)=iactiveline(k,ii+1)
                enddo
             enddo 
@@ -165,15 +163,13 @@
                   if((.not.oldactive).and.(.not.altered))then
                      altered=.true.
                      nactiveline=nactiveline+1
-                     ifreeintersec=ifreeintersec+1
                      do ii=nactiveline,id+2,-1
-                        do k=1,3
+                        do k=1,2
                            iactiveline(k,ii)=iactiveline(k,ii-1)
                         enddo
                      enddo
                      iactiveline(1,id+1)=indexl
                      iactiveline(2,id+1)=nelemm
-                     iactiveline(3,id+1)=ifreeintersec
                      ninsertl=ninsertl+1
                      insertl(ninsertl)=indexl
                   endif
@@ -200,15 +196,13 @@
                      if(eplane(pb,xcp,t).lt.0.d0.and.nvertex.gt.2)then
                         altered=.true.
                         nactiveline=nactiveline+1
-                        ifreeintersec=ifreeintersec+1
                         do ii=nactiveline,id+2,-1
-                           do k=1,3
+                           do k=1,2
                               iactiveline(k,ii)=iactiveline(k,ii-1)
                            enddo
                         enddo
                         iactiveline(1,id+1)=indexl
                         iactiveline(2,id+1)=nelemm
-                        iactiveline(3,id+1)=ifreeintersec
                         ninsertl=ninsertl+1
                         insertl(ninsertl)=indexl
                      endif
@@ -217,15 +211,13 @@
                   if((.not.oldactive).and.(.not.altered))then
                      altered=.true.
                      nactiveline=nactiveline+1
-                     ifreeintersec=ifreeintersec+1
                      do ii=nactiveline,id+2,-1
-                        do k=1,3
+                        do k=1,2
                            iactiveline(k,ii)=iactiveline(k,ii-1)
                         enddo
                      enddo
                      iactiveline(1,id+1)=indexl
                      iactiveline(2,id+1)=nelemm
-                     iactiveline(3,id+1)=ifreeintersec
                      ninsertl=ninsertl+1
                      insertl(ninsertl)=indexl
                   endif    
@@ -268,7 +260,7 @@
          do i=1,ninsertl
             oldactive=.false.
             indexl=insertl(i)
-            call nidentk(iactiveline,indexl, nactiveline,id,ithree)
+            call nidentk(iactiveline,indexl, nactiveline,id,itwo)
             if(id.gt.0)then
                if(iactiveline(1,id).eq.indexl) oldactive=.true.
             endif
@@ -276,7 +268,7 @@
             if(oldactive)then
                nactiveline=nactiveline-1
                do ii=id,nactiveline
-                  do k=1,3
+                  do k=1,2
                      iactiveline(k,ii)=iactiveline(k,ii+1)
                   enddo
                enddo  

@@ -25,23 +25,21 @@
 !
       subroutine nidentk(x,px,n,id,k)
       implicit none
-!
+!     
       integer x,px,n,id,n2,m,k
-!
+!     
       dimension x(k,n)
-!
-!
-!
+!     
       id=0
       if(n.eq.0) return
       n2=n+1
       do
-         m=(n2+id)/2
-         if(px.ge.x(1,m)) then
-            id=m
-         else
-            n2=m
-         endif
-         if((n2-id).eq.1) return
+        m=(n2+id)/2
+        if(px.ge.x(1,m)) then
+          id=m
+        else
+          n2=m
+        endif
+        if((n2-id).eq.1) return
       enddo
       end

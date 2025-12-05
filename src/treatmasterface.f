@@ -19,18 +19,16 @@
 !     cuts a 3- or 4-noded polygon of the master surface with a slave surface
 !     inserts new active edges into iactiveline for current triangle
 !     
-      subroutine treatmasterface(
-     &     nopes,slavstraight,xn,xl2s,xl2sp,
-     &     ipe,ime,iactiveline,nactiveline,
-     &     ifreeintersec,nelemm,nintpoint,pslavsurf,
+      subroutine treatmasterface(nopes,slavstraight,xn,xl2s,xl2sp,ipe,
+     &     ime,iactiveline,nactiveline,nelemm,nintpoint,pslavsurf,
      &     xlpg,npg,nodepg,areaslav)
 !     
 !     Author: Saskia Sitzmann     
 !     
       implicit none
 !     
-      integer nvertex,nopes,ipe(*),ime(4,*),iactiveline(3,*),
-     &     nactiveline,ifreeintersec,npg,i,j,k,nintpoint,
+      integer nvertex,nopes,ipe(*),ime(4,*),iactiveline(2,*),
+     &     nactiveline,npg,i,j,k,nintpoint,
      &     nodepg(*),modf,nelemm,k_max
 !     
       real*8 pvertex(3,13),slavstraight(36),xn(3),
@@ -59,8 +57,7 @@
 !     
       call sutherland_hodgman(nopes,xn,xl2sp,xlpgp,nodepg,
      &     ipe,ime,iactiveline,nactiveline,
-     &     ifreeintersec,nelemm,npg,
-     &     nvertex,pvertex) 
+     &     nelemm,npg,nvertex,pvertex) 
 !     
       do k=1,3
         cgp(k)=0.0d0

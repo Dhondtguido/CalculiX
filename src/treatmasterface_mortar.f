@@ -59,8 +59,8 @@
 !     
       logical shrink
 !     
-      integer nvertex,nopes,ipe(*),ime(4,*),iactiveline(3,*),
-     &     nactiveline,ifreeintersec,nmp,i,j,k,nintpoint,imastsurf(*),
+      integer nvertex,nopes,ipe(*),ime(4,*),iactiveline(2,*),
+     &     nactiveline,nmp,i,j,k,nintpoint,imastsurf(*),
      &     nnodelem,ijk,nodem(*),modf,nelemm,k_max,issurf,ii,jj,nipold
 !     
       real*8 pvertex(3,13),slavstraight(36),xn(3),
@@ -77,7 +77,6 @@
 !     
       include "gauss.f"
 !     
-      ifreeintersec=0
       err=1.d-6
       nvertex=0
       nipold=nintpoint
@@ -99,8 +98,7 @@
 !     
       call sutherland_hodgman(nopes,xn,xl2sp,xl2mp,nodem,
      &     ipe,ime,iactiveline,nactiveline,
-     &     ifreeintersec,nelemm,nmp,
-     &     nvertex,pvertex) 
+     &     nelemm,nmp,nvertex,pvertex) 
 !     
 !     do we have a degenerated triangle?
 !     

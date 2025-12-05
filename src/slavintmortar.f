@@ -18,7 +18,8 @@
 !     
 !     
 !     Calculating the slave-master triangulation
-!     and generating the integration points needed for the calculation of the coupling matrices
+!     and generating the integration points needed for the calculation
+!     of the coupling matrices
 !     for details see phd-thesis Sitzmann Appendix A 
 !     
       subroutine slavintmortar(ntie,itietri,ipkon,kon,lakon,straight,
@@ -46,7 +47,7 @@
      &     imastsurf(*),ifaces,nelems,jfaces,mi(*),
      &     m,nopes,konl(26),id,islavact(*),
      &     imface(8),ntria,imfacecorner(8,8),line,
-     &     iactiveline(3,3*ncont),icoveredmelem(3*ncont),
+     &     iactiveline(2,3*ncont),icoveredmelem(3*ncont),
      &     nactiveline,ipe(*),ime(4,*),k1,j1,ncoveredmelem,
      &     ntri,nintpfirst,nodem(8),nodem2(8),ithree,
      &     il,ifac,getlocno,ifacem,idummy,nopemm,nmp,k2,j2
@@ -403,11 +404,10 @@ c     if(id.ne.0 .and. icoveredmelem(id).eq.nelemm)then
 !     guido: xn already normalized?
 !        
         dd=dsqrt(xn(1)**2+xn(2)**2+xn(3)**2)
- 100    format('SIM: xns',3(3x,e15.8))
 !     
 !     divide master element into konvex subelements
 !     
-        if(nnodelem.eq.3 .or.nnodelem.eq.4)then
+        if((nnodelem.eq.3).or.(nnodelem.eq.4)) then
 !     
 !     no loop needed
 !     
@@ -432,7 +432,6 @@ c     if(id.ne.0 .and. icoveredmelem(id).eq.nelemm)then
 !     tri6 surface is divided into 4 tri3 surfaces
 !     
 !     1. triangle
-c     write(20,*)'*********tria 1**************'
           nmp=3
           nodem2(1)=nodem(1)
           nodem2(2)=nodem(4)
@@ -457,7 +456,6 @@ c     write(20,*)'*********tria 1**************'
 !     
 !     2. triangle
 !     
-c     write(20,*)'*********tria 2**************'
           nmp=3
           nodem2(1)=nodem(4)
           nodem2(2)=nodem(2)
@@ -482,7 +480,6 @@ c     write(20,*)'*********tria 2**************'
 !     
 !     3. triangle
 !     
-c     write(20,*)'*********tria 3**************'
           nmp=3
           nodem2(1)=nodem(5)
           nodem2(2)=nodem(3)
@@ -507,7 +504,6 @@ c     write(20,*)'*********tria 3**************'
 !     
 !     4. triangle
 !     
-c     write(20,*)'*********tria 4**************'
           nmp=3
           nodem2(1)=nodem(4)
           nodem2(2)=nodem(5)
@@ -685,7 +681,7 @@ c     write(20,*)'*********tria 4**************'
         if(itri.eq.0) then
           nactiveline=nactiveline-1
           do il=1,nactiveline
-            do k=1,3
+            do k=1,2
               iactiveline(k,il)=iactiveline(k,il+1)
             enddo
           enddo
@@ -707,7 +703,7 @@ c     if(id .gt. 0 .and. icoveredmelem(id).eq.nelemm)then
 !     
             nactiveline=nactiveline-1
             do il=1,nactiveline
-              do k=1,3
+              do k=1,2
                 iactiveline(k,il)=iactiveline(k,il+1)
               enddo
             enddo
@@ -771,7 +767,6 @@ c     if(id .gt. 0 .and. icoveredmelem(id).eq.nelemm)then
 !     tri6 surface is divided into 4 tri3 surfaces
 !     
 !     1. triangle
-c     write(20,*)'*********tria 1**************'
           nmp=3
           nodem2(1)=nodem(1)
           nodem2(2)=nodem(4)
@@ -796,7 +791,6 @@ c     write(20,*)'*********tria 1**************'
 !     
 !     2. triangle
 !     
-c     write(20,*)'*********tria 2**************'
           nmp=3
           nodem2(1)=nodem(4)
           nodem2(2)=nodem(2)
@@ -821,7 +815,6 @@ c     write(20,*)'*********tria 2**************'
 !     
 !     3. triangle
 !     
-c     write(20,*)'*********tria 3**************'
           nmp=3
           nodem2(1)=nodem(5)
           nodem2(2)=nodem(3)
@@ -846,7 +839,6 @@ c     write(20,*)'*********tria 3**************'
 !     
 !     4. triangle
 !     
-c     write(20,*)'*********tria 4**************'
           nmp=3
           nodem2(1)=nodem(4)
           nodem2(2)=nodem(5)
