@@ -341,8 +341,6 @@
                         kin=0
                         call plcopy(plicon,nplicon,plconloc,npmat_,
      &                       ntmat_,imat,itemp,iel,kin)
-                        if((id.eq.0).or.(id.eq.nplicon(0,imat))) then
-                        endif
                      else
                         kin=0
                         call plmix(plicon,nplicon,plconloc,npmat_,
@@ -373,8 +371,6 @@
                         kin=1
                         call plcopy(plkcon,nplkcon,plconloc,npmat_,
      &                       ntmat_,imat,itemp,iel,kin)
-                        if((id.eq.0).or.(id.eq.nplkcon(0,imat))) then
-                        endif
                      else
                         kin=1
                         call plmix(plkcon,nplkcon,plconloc,npmat_,
