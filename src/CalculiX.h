@@ -387,7 +387,8 @@ void FORTRAN(calcenergy,(ITG *ipkon,char *lakon,ITG *kon,double *co,
 
 void FORTRAN(calcglobmastsurf,(ITG *ne,ITG *ipkon,ITG *kon,char *lakon,
 			       ITG *nk,char *set,ITG *istartset,ITG *iendset,
-			       ITG *ialset,ITG *nset,ITG *nset_,ITG *nalset));
+			       ITG *ialset,ITG *nset,ITG *nset_,ITG *nalset,
+			       ITG *imastset,ITG *nmastface));
 
 void *calcenergymt(ITG *i);
 
@@ -620,6 +621,10 @@ void FORTRAN(catedges_mesh,(ITG *kontet,ITG *netet_,ITG *iedg,ITG *ipoed,
 void FORTRAN(catedges_refine,(ITG *netet_,ITG *iedg,ITG *kontet,ITG *ipoed,
                        ITG *ifreeed,ITG *iedtet,ITG *ipoeled,ITG *ieled,
                        ITG *ifreele));
+
+void FORTRAN(catmastnodes,(char *lakon,ITG *ipkon,ITG *kon,ITG *istartset,
+			   ITG *iendset,ITG *ialset,ITG *imastnode,
+			   ITG *nmasts,ITG *imastset));
 
 void FORTRAN(catnodes,(ITG *ifreenn,ITG *inn,ITG *iponn,ITG *iedg,ITG *ipoed,
 		       ITG *nktet_,ITG *iexternnode,ITG *idimsh,ITG *sharp,
@@ -5192,6 +5197,11 @@ void FORTRAN(triangucont,(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,
 			  ITG *itietri,char *lakon,ITG *ipkon,ITG *kon,
 			  ITG *koncont,char *kind1,char *kind2,double *co,
 			  ITG *nk,ITG *mortar));
+
+void FORTRAN(triangucont_load,(ITG *ncont,
+			       ITG *istartset,ITG *iendset,ITG *ialset,
+			       char *lakon,ITG *ipkon,ITG *kon,
+			       ITG *koncont,ITG *imastset));
 
 void FORTRAN(tridiagonal_nrhs,(double *a,double *b,ITG *n,ITG *m,
              ITG *nrhs));

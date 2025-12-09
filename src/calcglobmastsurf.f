@@ -17,7 +17,8 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
       subroutine calcglobmastsurf(ne,ipkon,kon,lakon,nk,
-     &     set,istartset,iendset,ialset,nset,nset_,nalset)
+     &     set,istartset,iendset,ialset,nset,nset_,nalset,
+     &     imastset,nmastface)
 !     
 !     preliminary calculations for I-type loading applications:
 !     determining the external faces of the mesh and storing
@@ -31,7 +32,8 @@
       integer nodes(4),ne,ipkon(*),kon(*),
      &     indexe,ifaceq(8,6),ifacet(7,4),index,ifacew(8,5),ithree,
      &     ifour,iaux,kflag,nset_,nalset,id,nk,i,j,k,m,ifree,indexold,
-     &     ifreenew,istartset(*),iendset(*),ialset(*),nset
+     &     ifreenew,istartset(*),iendset(*),ialset(*),nset,imastset,
+     &     nmastface
 !
       integer,dimension(:),allocatable::ipoface
       integer,dimension(:,:),allocatable::nodface
@@ -263,6 +265,9 @@
       enddo
 !
       iendset(id+1)=nalset
+!
+      imastset=id+1
+      nmastface=iendset(imastset)-istartset(imastset)+1
 !
       deallocate(ipoface)
       deallocate(nodface)

@@ -64,6 +64,9 @@ void inicont(ITG * nk,ITG *ncont, ITG *ntie, char *tieset, ITG *nset, char *set,
 		       itietri,lakon,ipkon,kon,koncont,kind1,kind2,co,nk,
 		       mortar));
 
+  /* establishing the neighborhood relationships within the
+     triangulation */
+
   NNEW(ipe,ITG,*nk);
   NNEW(ime,ITG,12**ncont);
   DMEMSET(ipe,0,*nk,0.);

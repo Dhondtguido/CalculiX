@@ -98,6 +98,7 @@ calinput_rfn.f \
 carbon_seal.f \
 catedges_crackprop.f \
 catedges_refine.f \
+catmastnodes.f \
 catnodes.f \
 cattet.f \
 cattri.f \
@@ -884,6 +885,7 @@ treatmasterface.f \
 treatmasterface_mortar.f \
 trianeighbor.f \
 triangucont.f \
+triangucont_load.f \
 triangulate.f \
 triloc.f \
 ts_calc.f \
@@ -924,6 +926,7 @@ updatecon.f \
 updatecont2d.f \
 updatecont.f \
 updatecontpen.f \
+updatecontpen_load.f \
 updategeodata.f \
 us3_sub.f \
 us4_sub.f \
