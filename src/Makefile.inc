@@ -523,6 +523,7 @@ map3dtolayer.f \
 massflow_percent.f \
 massflows.f \
 masss.f \
+mastintpoints.f \
 materialdata_cond.f \
 materialdata_cp.f \
 materialdata_cp_sec.f \
@@ -882,6 +883,7 @@ transformfs.f \
 transforms.f \
 transition.f \
 treatmasterface.f \
+treatmasterface_load.f \
 treatmasterface_mortar.f \
 trianeighbor.f \
 triangucont.f \

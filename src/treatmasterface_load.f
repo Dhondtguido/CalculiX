@@ -19,23 +19,26 @@
 !     cuts a 3- or 4-noded polygon of the master surface with a slave surface
 !     inserts new active edges into iactiveline for current triangle
 !     
-      subroutine treatmasterface(nopes,slavstraight,xn,xl2s,xl2sp,ipe,
-     &     ime,iactiveline,nactiveline,ifacem,nintpoint,pslavsurf,
-     &     xlpg,npg,nodepg,areaslav)
+      subroutine treatmasterface_load(nopes,slavstraight,xn,xl2m,xl3sp,
+     &     ipe,ime,iactiveline,nactiveline,ifacem,nintpoint,imastload,
+     &     pmastload,xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &     xload,nload,nload_,iamload,nam,ifaces)
 !     
-!     Author: Saskia Sitzmann     
+!     based on treatmasterface.f    
 !     
       implicit none
+!
+      character*20 sideload(*),label
 !     
-      integer nvertex,nopes,ipe(*),ime(4,*),iactiveline(2,*),
-     &     nactiveline,npg,i,j,k,nintpoint,
-     &     nodepg(*),modf,ifacem,k_max
+      integer nvertex,nopes,ipe(*),ime(4,*),iactiveline(2,*),nopem,
+     &     nactiveline,npg,i,j,k,nintpoint,imastload(2,*),jfacem,ier,
+     &     nodepg(*),modf,ifacem,k_max,nelemload(2,*),iamload(2,*),
+     &     nload,nload_,nam,nelemm,id,iloadm,ifaces
 !     
-      real*8 pvertex(3,13),slavstraight(36),xn(3),
-     &     xl2s(3,*),p1(2),p2(2),pslavsurf(3,*),xil,etl,p(3),dist,
-     &     area,xlpg(3,8),al,err,
-     &     xl2sp(3,*),xlpgp(3,8),cgp(3),xit(3),etat(3),
-     &     areaslav
+      real*8 pvertex(3,13),slavstraight(36),xn(3),xl2m(3,*),p1(2),p2(2),
+     &     pmastload(3,*),xil,etl,p(3),dist,area,xlpg(3,8),al,err,
+     &     xl3sp(3,*),xlpgp(3,8),cgp(3),xit(3),etat(3),areaslav,
+     &     xload(2,*)
 !     
       include "gauss.f"
 !     
@@ -55,7 +58,7 @@
 !     
 !     call Sutherland-Hodgman Algo
 !     
-      call sutherland_hodgman(nopes,xn,xl2sp,xlpgp,nodepg,
+      call sutherland_hodgman(nopes,xn,xl3sp,xlpgp,nodepg,
      &     ipe,ime,iactiveline,nactiveline,
      &     ifacem,npg,nvertex,pvertex) 
 !     
@@ -85,7 +88,7 @@ c     cgp(k)=cgp(k)+pvertex(k,i)/nvertex
 !     
 !     Project center point back on slave face
 !     
-      call attachline(xl2s,cgp,nopes,xit(3),etat(3),xn,p,dist)
+      call attachline(xl2m,cgp,nopem,xit(3),etat(3),xn,p,dist)
 !     
 !     generating integration points on the slave surface S
 !     
@@ -93,10 +96,10 @@ c     cgp(k)=cgp(k)+pvertex(k,i)/nvertex
 !     
 !     Project back on slave surface
 !     
-        call attachline(xl2s,pvertex(1:3,modf(nvertex,k)),
-     &       nopes,xit(1),etat(1),xn,p,dist)
-        call attachline(xl2s,pvertex(1:3,modf(nvertex,k+1)),
-     &       nopes,xit(2),etat(2),xn,p,dist)
+        call attachline(xl2m,pvertex(1:3,modf(nvertex,k)),
+     &       nopem,xit(1),etat(1),xn,p,dist)
+        call attachline(xl2m,pvertex(1:3,modf(nvertex,k+1)),
+     &       nopem,xit(2),etat(2),xn,p,dist)
 !     
         p1(1)=xit(1)-xit(3)
         p1(2)=etat(1)-etat(3)
@@ -134,12 +137,79 @@ c     cgp(k)=cgp(k)+pvertex(k,i)/nvertex
 !     
           nintpoint=nintpoint+1
 !     
-          pslavsurf(1,nintpoint)=xil
-          pslavsurf(2,nintpoint)=etl
+          pmastload(1,nintpoint)=xil
+          pmastload(2,nintpoint)=etl
 !     
 !     weights sum up to 0.5 for triangles in local coordinates
 !     
-          pslavsurf(3,nintpoint)=2.d0*area*weight2d6(i)
+          pmastload(3,nintpoint)=2.d0*area*weight2d6(i)
+!
+!         creating load
+!
+          nelemm=int(ifacem/10.d0)
+          jfacem=ifacem-10*nelemm
+          label='I                   '
+          write(label(2:2),'(i1)') jfacem
+          ier=1
+          call nident2(nelemload,nelemm,nload,id)
+          if(id.gt.0) then
+            if(nelemload(1,id).eq.nelemm) then
+              do
+                if(sideload(id).eq.label) then
+                  ier=0
+                  exit
+                endif  
+                id=id-1
+                if(id.eq.0) exit
+                if(nelemload(1,id).ne.nelemm) exit
+              enddo
+            endif
+          endif
+!
+!           new load
+!
+          if(ier.eq.1) then
+            nload=nload+1
+            if(nload.gt.nload_) then
+              write(*,*)
+     &             '*ERROR in treatmasterface_load: increase nload_'
+              call exit(201)
+            endif
+!     
+!     shifting existing loading
+!     
+            do j=nload,id+2,-1
+              nelemload(1,j)=nelemload(1,j-1)
+              nelemload(2,j)=nelemload(2,j-1)
+              sideload(j)=sideload(j-1)
+              xload(1,j)=xload(1,j-1)
+              xload(2,j)=xload(2,j-1)
+              if(nam.gt.0) then
+                iamload(1,j)=iamload(1,j-1)
+                iamload(2,j)=iamload(2,j-1)
+              endif
+            enddo
+!     
+!     inserting new loading
+!     
+            nelemload(1,id+1)=nelemm
+            nelemload(2,id+1)=0
+            sideload(id+1)=label
+            xload(1,id+1)=0.d0
+            xload(2,id+1)=0.d0
+            if(nam.gt.0) then
+              iamload(1,id+1)=0
+              iamload(2,id+1)=0
+            endif
+            iloadm=id+1
+          else
+            iloadm=id
+          endif
+!          
+          imastload(1,nintpoint)=ifaces
+          imastload(2,nintpoint)=nelemload(2,iloadm)
+          nelemload(2,iloadm)=nintpoint
+!          
         enddo
       enddo
 !     

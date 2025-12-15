@@ -22,14 +22,14 @@
 !
       subroutine sutherland_hodgman(nopes,xn,xl2sp,xl2mp,
      &  nodem,ipe,ime,iactiveline,nactiveline,
-     &  nelemm,nnodelem,nvertex,pvertex)
+     &  ifacem,nnodelem,nvertex,pvertex)
 !     
       implicit none 
 !     
       logical invert,oldactive,altered,border
 !
       integer nvertex,nopes,ipe(*),ime(4,*),iactiveline(2,*),
-     &  nactiveline,itri,nelemm,i,ii,j,k,nnodelem,id,
+     &  nactiveline,itri,ifacem,i,ii,j,k,nnodelem,id,
      &  nodem(*),ncvertex,node1,node2,modf,node,indexl,itwo, 
      &  insertl(3),ninsertl
 !
@@ -169,7 +169,7 @@
                         enddo
                      enddo
                      iactiveline(1,id+1)=indexl
-                     iactiveline(2,id+1)=nelemm
+                     iactiveline(2,id+1)=ifacem
                      ninsertl=ninsertl+1
                      insertl(ninsertl)=indexl
                   endif
@@ -202,7 +202,7 @@
                            enddo
                         enddo
                         iactiveline(1,id+1)=indexl
-                        iactiveline(2,id+1)=nelemm
+                        iactiveline(2,id+1)=ifacem
                         ninsertl=ninsertl+1
                         insertl(ninsertl)=indexl
                      endif
@@ -217,7 +217,7 @@
                         enddo
                      enddo
                      iactiveline(1,id+1)=indexl
-                     iactiveline(2,id+1)=nelemm
+                     iactiveline(2,id+1)=ifacem
                      ninsertl=ninsertl+1
                      insertl(ninsertl)=indexl
                   endif    

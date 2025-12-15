@@ -17,37 +17,41 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
 !
-!     Determining the location of the integration points in slave
-!     surface ifaces. This location depends on the triangulation of 
-!     the opposite master surface. For the slave surface the local
-!     coordinates and the integration weight is stored in pslavsurf
+!     Determining the location of the integration points in the
+!     master surfaces opposite of slave surface sideloadloc(2:2)
+!     of element nelemloadloc. This location depends on the triangulation of 
+!     the master surface. For the master surface loads the local
+!     coordinates and the integration weight is stored in pmastload,
+!     the slave surface is stored in imastload
 !
-      subroutine slavintpoints(ntie,itietri,ipkon,kon,lakon,straight,
+      subroutine mastintpoints(ipkon,kon,lakon,straight,
      &     nintpoint,koncont,co,vold,xo,yo,zo,x,y,z,nx,ny,nz,
-     &     islavsurf,imastop,mi,ncont,ipe,ime,pslavsurf,i,l,ntri)
+     &     imastop,mi,ncont,ipe,ime,
+     &     nelemload,sideload,nload,nload_,imastload,pmastload,
+     &     nelemloadloc,sideloadloc)
 !
-!     Author: Li, Yang; Rakotonanahary, Samoela; Sitzmann,Saskia
+!     Based on slavintpoints.f
 !
       implicit none
 !
       character*8 lakon(*)
+      character*20 sideload(*),sideloadloc
 !     
-      integer ntie,nintpoint,imastop(3,*),ncont,itietri(2,ntie),
-     &     ipkon(*),kon(*),koncont(4,*),node,neigh(10),iflag,kneigh,i,
-     &     j,k,l,ii,itri,nx(*),ny(*),nz(*),nelemm,jfacem,
-     &     indexe,nopesm,nope,islavsurf(2,*),ifaces,nelems,jfaces,mi(*),
-     &     m,nopes,konl(20),id,maface(8),nmaface,
+      integer nintpoint,imastop(3,*),ncont,nelemload(2,*),nload,
+     &     ipkon(*),kon(*),koncont(4,*),node,neigh(10),iflag,kneigh,
+     &     j,k,l,ii,itri,nx(*),ny(*),nz(*),nelemm,jfacem,nload_,
+     &     indexe,nopesm,nope,ifaces,nelems,jfaces,mi(*),
+     &     m,nopes,konl(20),id,maface(8),nmaface,imastload(2,*),
      &     mafacecorner(8,8),line,iactiveline(2,3*ncont),
      &     icoveredmelem(3*ncont),nactiveline,ipe(*),ime(4,*),k1,j1,
-     &     ncoveredmelem,ntri,nintpfirst,nodem(8),nodepg(8),
+     &     ncoveredmelem,nodem(8),nodepg(8),nelemloadloc,
      &     il,nodel,getnodel,ifacem,idummy,nopem,npg,k2,j2
 !     
-      real*8 straight(16,*),co(3,*),vold(0:mi(2),*),
+      real*8 straight(16,*),co(3,*),vold(0:mi(2),*),pmastload(3,*),
      &     xo(*),yo(*),zo(*),x(*),y(*),z(*),
      &     xl2m(3,8),xl2s(3,8),xlpg(3,8),
      &     pmiddle(3),xl2sr(3,8),xl3sp(3,8),xl3s(3,8),
-     &     dd,areaslav,al,xn(3),slavstraight(36),
-     &     pslavsurf(3,*),err,xquad(2,8),
+     &     dd,areaslav,al,xn(3),slavstraight(36),err,xquad(2,8),
      &     xtri(2,6),xi,et,xsj2(3),xs2(3,2),shp2(7,8),anglesm
 !
       data iflag /2/
@@ -71,20 +75,18 @@
       kneigh=1
       err=0.1d0
       areaslav=0.d0
-      nintpfirst=nintpoint
-      islavsurf(2,l)=nintpoint
 !     
 !     Research of the contact integration points
 !     
-      ifaces=islavsurf(1,l)
-      nelems=int(ifaces/10)
+      nelems=nelemloadloc
       if(ipkon(nelems).lt.0) then
         write(*,*) '*WARNING in slavintpoints'
         write(*,*) '         element ',nelems,' on slave contact'
         write(*,*) '         surface does not exist'
         return
       endif
-      jfaces=ifaces-nelems*10
+      read(sideloadloc(2:2),'(i1)') jfaces
+      ifaces=10*nelems+jfaces
 !     
 !     get nope,nopes
 !     
@@ -221,13 +223,11 @@
          enddo
       enddo
       do j=1,nopes
-         call neartriangle(xl2sr(1,j),xn,xo,yo,zo,x,y,z,nx,ny,nz,
-     &        ntri,neigh,kneigh,itietri,ntie,straight,imastop,itri,i)
+         call neartriangle_load(xl2sr(1,j),xn,xo,yo,zo,x,y,z,nx,ny,nz,
+     &        neigh,kneigh,ncont,straight,imastop,itri)
          nodel=getnodel(j,jfaces,nope)
          node=konl(nodel) 
-         if(itri.eq.0) then  
-            cycle
-         endif
+         if(itri.eq.0) cycle
          ifacem=koncont(4,itri)
 !     
          call nident(maface,ifacem,nmaface,id)
@@ -323,11 +323,11 @@
                   xlpg(j2,k2)=xl2m(j2,k2)
                enddo
             enddo
-            call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+            call treatmasterface_load(
+     &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifacem,nintpoint,pslavsurf,
-     &           xlpg,npg,nodepg,areaslav)
+     &           ifacem,nintpoint,imastload,pmastload,
+     &           xlpg,npg,nodepg,areaslav,nopem)
 !     
          elseif(nopesm.eq.6)then
 !
@@ -348,11 +348,11 @@
             do j2=1,3
                xlpg(j2,3)=xl2m(j2,6)
             enddo
-            call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+            call treatmasterface_load(
+     &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifacem,nintpoint,pslavsurf,
-     &           xlpg,npg,nodepg,areaslav)
+     &           ifacem,nintpoint,imastload,pmastload,
+     &           xlpg,npg,nodepg,areaslav,nopem)
 !     
 !     2. triangle
 !     
@@ -369,11 +369,11 @@
             do j2=1,3
                xlpg(j2,3)=xl2m(j2,5)
             enddo
-            call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+            call treatmasterface_load(
+     &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifacem,nintpoint,pslavsurf,
-     &           xlpg,npg,nodepg,areaslav)
+     &           ifacem,nintpoint,imastload,pmastload,
+     &           xlpg,npg,nodepg,areaslav,nopem)
 !     
 !     3. triangle
 !     
@@ -390,11 +390,11 @@
             do j2=1,3
                xlpg(j2,3)=xl2m(j2,6)
             enddo
-            call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+            call treatmasterface_load(
+     &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifacem,nintpoint,pslavsurf,
-     &           xlpg,npg,nodepg,areaslav)
+     &           ifacem,nintpoint,imastload,pmastload,
+     &           xlpg,npg,nodepg,areaslav,nopem)
 !     
 !     4. triangle
 !     
@@ -411,11 +411,11 @@
             do j2=1,3
                xlpg(j2,3)=xl2m(j2,6)
             enddo
-            call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+            call treatmasterface_load(
+     &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifacem,nintpoint,pslavsurf,
-     &           xlpg,npg,nodepg,areaslav)
+     &           ifacem,nintpoint,imastload,pmastload,
+     &           xlpg,npg,nodepg,areaslav,nopem)
 !
          elseif(nopesm.eq.8)then
 !     
@@ -436,11 +436,11 @@
             do j2=1,3
                xlpg(j2,3)=xl2m(j2,8)
             enddo
-            call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+            call treatmasterface_load(
+     &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifacem,nintpoint,pslavsurf,
-     &           xlpg,npg,nodepg,areaslav)
+     &           ifacem,nintpoint,imastload,pmastload,
+     &           xlpg,npg,nodepg,areaslav,nopem)
 !     
 !     2. triangle
 !     
@@ -457,11 +457,11 @@
             do j2=1,3
                xlpg(j2,3)=xl2m(j2,6)
             enddo
-            call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+            call treatmasterface_load(
+     &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifacem,nintpoint,pslavsurf,
-     &           xlpg,npg,nodepg,areaslav)
+     &           ifacem,nintpoint,imastload,pmastload,
+     &           xlpg,npg,nodepg,areaslav,nopem)
 !     
 !     3. triangle
 !     
@@ -478,11 +478,11 @@
             do j2=1,3
                xlpg(j2,3)=xl2m(j2,7)
             enddo
-            call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+            call treatmasterface_load(
+     &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifacem,nintpoint,pslavsurf,
-     &           xlpg,npg,nodepg,areaslav)
+     &           ifacem,nintpoint,imastload,pmastload,
+     &           xlpg,npg,nodepg,areaslav,nopem)
 !     
 !     4. triangle
 !     
@@ -499,11 +499,11 @@
             do j2=1,3
                xlpg(j2,3)=xl2m(j2,8)
             enddo
-            call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+            call treatmasterface_load(
+     &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifacem,nintpoint,pslavsurf,
-     &           xlpg,npg,nodepg,areaslav)
+     &           ifacem,nintpoint,imastload,pmastload,
+     &           xlpg,npg,nodepg,areaslav,nopem)
 !     
 !     quad
 !     
@@ -524,11 +524,11 @@
            do j2=1,3
               xlpg(j2,4)=xl2m(j2,8)
            enddo
-           call treatmasterface(
-     &          nopes,slavstraight,xn,xl2s,xl3sp,
+           call treatmasterface_load(
+     &          nopes,slavstraight,xn,xl2m,xl3sp,
      &          ipe,ime,iactiveline,nactiveline,
-     &          ifacem,nintpoint,pslavsurf,
-     &          xlpg,npg,nodepg,areaslav)
+     &          ifacem,nintpoint,imastload,pmastload,
+     &          xlpg,npg,nodepg,areaslav,nopem)
         endif
       enddo
 !     
@@ -551,7 +551,7 @@
 !
 !     check whether still in contact tie
 !
-         if((itri.gt.itietri(2,i)).or.(itri.lt.itietri(1,i)))then
+         if((itri.gt.ncont).or.(itri.lt.0))then
             itri=0
          endif                            
          
@@ -625,11 +625,11 @@
                   xlpg(j2,k2)=xl2m(j2,k2)
                enddo
             enddo
-            call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+            call treatmasterface_load(
+     &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifacem,nintpoint,pslavsurf,
-     &           xlpg,npg,nodepg,areaslav)
+     &           ifacem,nintpoint,imastload,pmastload,
+     &           xlpg,npg,nodepg,areaslav,nopem)
 !     
          elseif(nopesm.eq.6)then
 !
@@ -650,11 +650,11 @@
             do j2=1,3
                xlpg(j2,3)=xl2m(j2,6)
             enddo
-            call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+            call treatmasterface_load(
+     &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifacem,nintpoint,pslavsurf,
-     &           xlpg,npg,nodepg,areaslav)
+     &           ifacem,nintpoint,imastload,pmastload,
+     &           xlpg,npg,nodepg,areaslav,nopem)
 !     
 !     2. triangle
 !     
@@ -671,11 +671,11 @@
             do j2=1,3
                xlpg(j2,3)=xl2m(j2,5)
             enddo
-            call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+            call treatmasterface_load(
+     &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifacem,nintpoint,pslavsurf,
-     &           xlpg,npg,nodepg,areaslav)
+     &           ifacem,nintpoint,imastload,pmastload,
+     &           xlpg,npg,nodepg,areaslav,nopem)
 !     
 !     3. triangle
 !     
@@ -692,11 +692,11 @@
             do j2=1,3
                xlpg(j2,3)=xl2m(j2,6)
             enddo
-            call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+            call treatmasterface_load(
+     &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifacem,nintpoint,pslavsurf,
-     &           xlpg,npg,nodepg,areaslav)
+     &           ifacem,nintpoint,imastload,pmastload,
+     &           xlpg,npg,nodepg,areaslav,nopem)
 !     
 !     4. triangle
 !     
@@ -713,11 +713,11 @@
             do j2=1,3
                xlpg(j2,3)=xl2m(j2,6)
             enddo
-            call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+            call treatmasterface_load(
+     &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifacem,nintpoint,pslavsurf,
-     &           xlpg,npg,nodepg,areaslav)
+     &           ifacem,nintpoint,imastload,pmastload,
+     &           xlpg,npg,nodepg,areaslav,nopem)
 !
          elseif(nopesm.eq.8)then
 !     
@@ -738,11 +738,11 @@
             do j2=1,3
                xlpg(j2,3)=xl2m(j2,8)
             enddo
-            call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+            call treatmasterface_load(
+     &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifacem,nintpoint,pslavsurf,
-     &           xlpg,npg,nodepg,areaslav)
+     &           ifacem,nintpoint,imastload,pmastload,
+     &           xlpg,npg,nodepg,areaslav,nopem)
 !     
 !     2. triangle
 !     
@@ -759,11 +759,11 @@
             do j2=1,3
                xlpg(j2,3)=xl2m(j2,6)
             enddo
-            call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+            call treatmasterface_load(
+     &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifacem,nintpoint,pslavsurf,
-     &           xlpg,npg,nodepg,areaslav)
+     &           ifacem,nintpoint,imastload,pmastload,
+     &           xlpg,npg,nodepg,areaslav,nopem)
 !     
 !     3. triangle
 !     
@@ -780,11 +780,11 @@
             do j2=1,3
                xlpg(j2,3)=xl2m(j2,7)
             enddo
-            call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+            call treatmasterface_load(
+     &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifacem,nintpoint,pslavsurf,
-     &           xlpg,npg,nodepg,areaslav)
+     &           ifacem,nintpoint,imastload,pmastload,
+     &           xlpg,npg,nodepg,areaslav,nopem)
 !     
 !     4. triangle
 !     
@@ -801,11 +801,11 @@
             do j2=1,3
                xlpg(j2,3)=xl2m(j2,8)
             enddo
-            call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+            call treatmasterface_load(
+     &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
-     &           ifacem,nintpoint,pslavsurf,
-     &           xlpg,npg,nodepg,areaslav)
+     &           ifacem,nintpoint,imastload,pmastload,
+     &           xlpg,npg,nodepg,areaslav,nopem)
 !     
 !     quad
 !     
@@ -826,14 +826,13 @@
            do j2=1,3
               xlpg(j2,4)=xl2m(j2,8)
            enddo
-           call treatmasterface(
-     &          nopes,slavstraight,xn,xl2s,xl3sp,
+           call treatmasterface_load(
+     &          nopes,slavstraight,xn,xl2m,xl3sp,
      &          ipe,ime,iactiveline,nactiveline,
-     &          ifacem,nintpoint,pslavsurf,
-     &          xlpg,npg,nodepg,areaslav)
+     &          ifacem,nintpoint,imastload,pmastload,
+     &          xlpg,npg,nodepg,areaslav,nopem)
         endif
       enddo
-      islavsurf(2,l+1)=nintpoint
 !     
       return
       end
