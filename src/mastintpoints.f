@@ -26,9 +26,9 @@
 !
       subroutine mastintpoints(ipkon,kon,lakon,straight,
      &     nintpoint,koncont,co,vold,xo,yo,zo,x,y,z,nx,ny,nz,
-     &     imastop,mi,ncont,ipe,ime,
-     &     nelemload,sideload,nload,nload_,imastload,pmastload,
-     &     nelemloadloc,sideloadloc)
+     &     imastop,mi,ncont,ipe,ime,nelemload,sideload,nload,nload_,
+     &     imastload,pmastload,nelemloadloc,sideloadloc,
+     &     xload,iamload,nam)
 !
 !     Based on slavintpoints.f
 !
@@ -39,16 +39,17 @@
 !     
       integer nintpoint,imastop(3,*),ncont,nelemload(2,*),nload,
      &     ipkon(*),kon(*),koncont(4,*),node,neigh(10),iflag,kneigh,
-     &     j,k,l,ii,itri,nx(*),ny(*),nz(*),nelemm,jfacem,nload_,
+     &     j,k,ii,itri,nx(*),ny(*),nz(*),nelemm,jfacem,nload_,
      &     indexe,nopesm,nope,ifaces,nelems,jfaces,mi(*),
      &     m,nopes,konl(20),id,maface(8),nmaface,imastload(2,*),
      &     mafacecorner(8,8),line,iactiveline(2,3*ncont),
      &     icoveredmelem(3*ncont),nactiveline,ipe(*),ime(4,*),k1,j1,
      &     ncoveredmelem,nodem(8),nodepg(8),nelemloadloc,
-     &     il,nodel,getnodel,ifacem,idummy,nopem,npg,k2,j2
+     &     il,nodel,getnodel,ifacem,idummy,nopem,npg,k2,j2,
+     &     iamload(2,*),nam
 !     
       real*8 straight(16,*),co(3,*),vold(0:mi(2),*),pmastload(3,*),
-     &     xo(*),yo(*),zo(*),x(*),y(*),z(*),
+     &     xo(*),yo(*),zo(*),x(*),y(*),z(*),xload(2,*),
      &     xl2m(3,8),xl2s(3,8),xlpg(3,8),
      &     pmiddle(3),xl2sr(3,8),xl3sp(3,8),xl3s(3,8),
      &     dd,areaslav,al,xn(3),slavstraight(36),err,xquad(2,8),
@@ -327,7 +328,8 @@
      &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem)
+     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xload,nload,nload_,iamload,nam,ifaces)
 !     
          elseif(nopesm.eq.6)then
 !
@@ -352,7 +354,8 @@
      &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem)
+     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     2. triangle
 !     
@@ -373,7 +376,8 @@
      &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem)
+     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     3. triangle
 !     
@@ -394,7 +398,8 @@
      &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem)
+     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     4. triangle
 !     
@@ -415,7 +420,8 @@
      &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem)
+     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xload,nload,nload_,iamload,nam,ifaces)
 !
          elseif(nopesm.eq.8)then
 !     
@@ -440,7 +446,8 @@
      &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem)
+     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     2. triangle
 !     
@@ -461,7 +468,8 @@
      &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem)
+     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     3. triangle
 !     
@@ -482,7 +490,8 @@
      &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem)
+     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     4. triangle
 !     
@@ -503,7 +512,8 @@
      &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem)
+     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     quad
 !     
@@ -528,7 +538,8 @@
      &          nopes,slavstraight,xn,xl2m,xl3sp,
      &          ipe,ime,iactiveline,nactiveline,
      &          ifacem,nintpoint,imastload,pmastload,
-     &          xlpg,npg,nodepg,areaslav,nopem)
+     &          xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &          xload,nload,nload_,iamload,nam,ifaces)
         endif
       enddo
 !     
@@ -629,7 +640,8 @@
      &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem)
+     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xload,nload,nload_,iamload,nam,ifaces)
 !     
          elseif(nopesm.eq.6)then
 !
@@ -654,7 +666,8 @@
      &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem)
+     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     2. triangle
 !     
@@ -675,7 +688,8 @@
      &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem)
+     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &     xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     3. triangle
 !     
@@ -696,7 +710,8 @@
      &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem)
+     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     4. triangle
 !     
@@ -717,7 +732,8 @@
      &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem)
+     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xload,nload,nload_,iamload,nam,ifaces)
 !
          elseif(nopesm.eq.8)then
 !     
@@ -742,7 +758,8 @@
      &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem)
+     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     2. triangle
 !     
@@ -763,7 +780,8 @@
      &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem)
+     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     3. triangle
 !     
@@ -784,7 +802,8 @@
      &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem)
+     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     4. triangle
 !     
@@ -805,7 +824,8 @@
      &           nopes,slavstraight,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem)
+     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     quad
 !     
@@ -830,7 +850,8 @@
      &          nopes,slavstraight,xn,xl2m,xl3sp,
      &          ipe,ime,iactiveline,nactiveline,
      &          ifacem,nintpoint,imastload,pmastload,
-     &          xlpg,npg,nodepg,areaslav,nopem)
+     &          xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &          xload,nload,nload_,iamload,nam,ifaces)
         endif
       enddo
 !     

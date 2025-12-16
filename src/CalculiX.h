@@ -2185,6 +2185,14 @@ void insertrad(ITG *ipointer,ITG **mast1p,ITG **mast2p,ITG *i1,
 void FORTRAN(integral_boundary,(double *sumfix,double *sumfree,ITG *ifaext,
                                 ITG *nfaext,ITG *ielfa,ITG *ifabou,double *vfa,
 				ITG *ipnei,double *xxn));
+
+void interfaceload(ITG *ne,ITG *ipkon,ITG *kon,char *lakon,ITG *nk,char*set,
+		   ITG *istartset,ITG *iendset,ITG *ialset,ITG *nset,
+		   ITG *nset_,ITG *nalset,double *co,double *vold,ITG *mi,
+		   double *cs,ITG *mcs,ITG *ics,ITG **nelemloadp,
+		   char **sideloadp,double **xloadp,double **xloadoldp,
+		   ITG **iamloadp,ITG *nam,ITG *nload,ITG *nload_,
+		   ITG **imatloadp,double **pmastloadp);
 				
 void FORTRAN(interpolateinface,(ITG *kk,double *xstate1,double *xstateini1,
 				ITG *numpts,ITG *nstate1_,ITG *mi1,
@@ -3010,6 +3018,16 @@ void *massless1mt(ITG *i);
 void *massless2mt(ITG *i);
 
 void *massless3mt(ITG *i);
+
+void  FORTRAN(mastintpoints,(ITG *ipkon,ITG *kon,char *lakon,double *straight,
+			     ITG *nintpoint,ITG *koncont,double *co,
+			     double *vold,double *xo,double *yo,double *zo,
+			     double *x,double *y,double *z,ITG *nx,ITG *ny,
+			     ITG *nz,ITG *imastop,ITG *mi,ITG *ncont,ITG *ipe,
+			     ITG *ime,ITG *nelemload,char *sideload,ITG *nload,
+			     ITG *nload_,ITG *imastload,double *pmastload,
+			     ITG *nelemloadcpy,char *sideloadcpy,double *xload,
+			     ITG *iamload,ITG *nam));
 
 void mastruct(ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
               ITG *nodeboun,ITG *ndirboun,ITG *nboun,ITG *ipompc,
