@@ -72,7 +72,8 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	      ITG *ipobody, ITG *ibody,double *xbody, ITG *nbody, 
 	      double *thicke,char *jobnamec,ITG *nmat,ITG *ielprop,
 	      double *prop,char *orname,char *typeboun,double *t0g,
-	      double *t1g,ITG *mcs,ITG *istep){
+	      double *t1g,ITG *mcs,ITG *istep,ITG *imastload,
+	      double *pmastload){
   
   char bmat[2]="G",which[3]="LM",howmny[2]="A",fneig[132]="",
     description[13]="            ",*tieset=NULL;
@@ -229,10 +230,13 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		 shcon,nshcon,cocon,ncocon,ttime,&time,istep,&iinc,&coriolis,
 		 ibody,xloadold,&reltime,veold,springarea,nstate_,
 		 xstateini,xstate,thicke,integerglob,doubleglob,
-		 tieset,istartset,iendset,ialset,&ntie,&nasym,pslavsurf,pmastsurf,
-		 &mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,iponoeln,inoeln,
+		 tieset,istartset,iendset,ialset,&ntie,&nasym,pslavsurf,
+		 pmastsurf,
+		 &mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,iponoeln,
+		 inoeln,
 		 &network,ntrans,inotr,trab,smscale,&mscalmethod,set,nset,
-		 islavquadel,aut,irowt,jqt,&mortartrafoflag);
+		 islavquadel,aut,irowt,jqt,&mortartrafoflag,imastload,
+		 pmastload);
   }
   else{
     mafillsmmain(co,nk,kon,ipkon,lakon,ne,nodeboun,ndirboun,xboun,nboun,
@@ -251,8 +255,10 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		 xstateini,xstate,thicke,integerglob,doubleglob,
 		 tieset,istartset,iendset,ialset,&ntie,&nasym,pslavsurf,
 		 pmastsurf,&mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
-		 iponoeln,inoeln,&network,ntrans,inotr,trab,smscale,&mscalmethod,
-		 set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag);
+		 iponoeln,inoeln,&network,ntrans,inotr,trab,smscale,
+		 &mscalmethod,
+		 set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag,
+		 imastload,pmastload);
   }
 
   /* determining the right hand side */
@@ -462,8 +468,10 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		 xstateini,xstate,thicke,integerglob,doubleglob,
 		 tieset,istartset,iendset,ialset,&ntie,&nasym,pslavsurf,
 		 pmastsurf,&mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
-		 iponoeln,inoeln,&network,ntrans,inotr,trab,smscale,&mscalmethod,
-		 set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag);
+		 iponoeln,inoeln,&network,ntrans,inotr,trab,smscale,
+		 &mscalmethod,
+		 set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag,
+		 imastload,pmastload);
   }
   else{
     mafillsmmain(co,nk,kon,ipkon,lakon,ne,nodeboun,ndirboun,xboun,nboun,
@@ -482,8 +490,10 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		 xstateini,xstate,thicke,integerglob,doubleglob,
 		 tieset,istartset,iendset,ialset,&ntie,&nasym,pslavsurf,
 		 pmastsurf,&mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
-		 iponoeln,inoeln,&network,ntrans,inotr,trab,smscale,&mscalmethod,
-		 set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag);
+		 iponoeln,inoeln,&network,ntrans,inotr,trab,smscale,
+		 &mscalmethod,
+		 set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag,
+		 imastload,pmastload);
   }
 
   SFREE(stx);SFREE(fext);

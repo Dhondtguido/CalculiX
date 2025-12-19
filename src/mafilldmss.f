@@ -30,7 +30,7 @@
      &     xstateini,xstate,thicke,integerglob,doubleglob,
      &     tieset,istartset,iendset,ialset,ntie,nasym,pslavsurf,
      &     pmastsurf,mortar,clearini,ielprop,prop,ne0,nea,neb,
-     &     freq,ndamp,dacon,set,nset)
+     &     freq,ndamp,dacon,set,nset,imastload,pmastload)
 !     
 !     filling the damping matrix in spare matrix format for
 !     steady state calculations(dmss)
@@ -51,7 +51,7 @@
      &     jfaces,ielorien(mi(3),*),integerglob(*),istartset(*),
      &     iendset(*),ipkon(*),intscheme,ipobody(2,*),nbody,nset,
      &     ibody(3,*),nk,ne,nmpc,nload,neq(2),nmethod,mscalmethod,
-     &     ithermal(*),iperturb(*),i,j,k,l,m,idist,jj,
+     &     ithermal(*),iperturb(*),i,j,k,l,m,idist,jj,imastload(2,*),
      &     ll,id,id1,id2,ist,ist1,ist2,index,jdof1,jdof2,idof1,idof2,
      &     mpc1,mpc2,index1,index2,node1,node2,kflag,icalccg,ndamp,
      &     ntmat_,indexe,nope,norien,iexpl,i0,ncmat_,istep,iinc,imat,
@@ -59,9 +59,9 @@
      &     nea,neb,kscale,ndof,ii,igauss,islavquadel(1),irowt(1),
      &     jqt(1),mortartrafoflag,kk
 !     
-      real*8 co(3,*),coefmpc(*),xload(2,*),p1(3),smscale(1),dd,
+      real*8 co(3,*),coefmpc(*),xload(2,*),p1(3),smscale(1),
      &     p2(3),ad(*),au(*),bodyf(3),xloadold(2,*),reltime,
-     &     t0(*),t1(*),vold(0:mi(2),*),s(60,60),
+     &     t0(*),t1(*),vold(0:mi(2),*),s(60,60),pmastload(3,*),
      &     ff(60),xl(3,20),voldl(0:mi(2),20),
      &     sti(6,mi(1),*),sm(60,60),stx(6,mi(1),*),
      &     elcon(0:ncmat_,ntmat_,*),rhcon(0:1,ntmat_,*),springarea(2,*),
@@ -293,7 +293,7 @@ c     Bernhardi end
      &           iendset,ialset,ntie,nasym,pslavsurf,pmastsurf,mortar,
      &           clearini,ielprop,prop,kscale,smscale(1),mscalmethod,
      &           set,nset,islavquadel,
-     &           aut,irowt,jqt,mortartrafoflag)
+     &           aut,irowt,jqt,mortartrafoflag,imastload,pmastload)
           else
             call e_c3d_u(co,kon,lakon(i),p1,p2,om,bodyf,nbody,s,sm,
      &           ff,i,nmethod,elcon,nelcon,rhcon,nrhcon,alcon,nalcon,

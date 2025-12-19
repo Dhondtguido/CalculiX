@@ -208,7 +208,8 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
     nzsprevstep[3],memmpcref_,mpcfreeref,maxlenmpcref,*nodempcref=NULL,
     *ikmpcref=NULL,isens,namtot,nstam,ndamp,nef,inp_size,maxsectors_,
     *ipoinp_sav=NULL,*inp_sav=NULL,irefineloop=0,icoordinate=0,
-    *nodedesi=NULL,ndesi=0,nobjectstart=0,nfc_,ndc_,nfc,ndc,*ikdc=NULL;
+    *nodedesi=NULL,ndesi=0,nobjectstart=0,nfc_,ndc_,nfc,ndc,*ikdc=NULL,
+    *imastload=NULL;
 
   static ITG *meminset=NULL,*rmeminset=NULL;
 
@@ -216,7 +217,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
     ntrans_,ncs_,nstate_,ncmat_,memmpc_,nprint_,nuel_=0;
     
   static double *coefmpc=NULL,*xforc=NULL,*clearini=NULL,
-    *xbounold=NULL,*xforcold=NULL,*randomval=NULL,
+    *xbounold=NULL,*xforcold=NULL,*randomval=NULL,*pmastload=NULL,
     *sti=NULL,*xloadold=NULL,*xnor=NULL,*dmcon=NULL,
     *reorder=NULL,*dcs=NULL,*thickn=NULL,*thicke=NULL,*offset=NULL,
     *elcon=NULL,*rhcon=NULL,*alcon=NULL,*alzero=NULL,*t0=NULL,*t1=NULL,
@@ -301,7 +302,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
     printf("software, and you are welcome to redistribute it under\n");
     printf("certain conditions, see gpl.htm\n\n");
     printf("************************************************************\n\n");
-    printf("You are using an executable made on Tue Dec 16 19:07:54 CET 2025\n");
+    printf("You are using an executable made on Fri Dec 19 15:51:39 CET 2025\n");
     fflush(stdout);
 
     NNEW(ipoinp,ITG,2*nentries);
@@ -1415,7 +1416,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 		    &nbody,
 		    xbodyold,timepar,thicke,jobnamec,tieset,&ntie,&istep,&nmat,
 		    ielprop,prop,typeboun,&mortar,mpcinfo,tietol,ics,
-		    orname,itempuser,t0g,t1g,jmax);
+		    orname,itempuser,t0g,t1g,jmax,imastload,pmastload);
 
 	  for(i=0;i<3;i++){nzsprevstep[i]=nzs[i];}
 
@@ -1450,7 +1451,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 		    &pslavsurf,&clearini,&nmat,xmodal,&iaxial,&inext,&nprop,
 		    &network,orname,vel,&nef,velo,veloo,energy,itempuser,
 		    ipobody,&inewton,t0g,t1g,&ifreebody,nlabel,&ndmat_,ndmcon,
-		    dmcon,dam);
+		    dmcon,dam,imastload,pmastload);
 
 	  memmpc_=mpcinfo[0];mpcfree=mpcinfo[1];icascade=mpcinfo[2];
 	  maxlenmpc=mpcinfo[3];
@@ -1484,7 +1485,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 	       ibody,xbody,&nbody,thicke,&nslavs,tietol,&nkon,mpcinfo,
 	       &ntie,&istep,&mcs,ics,tieset,cs,&nintpoint,&mortar,&ifacecount,
 	       &islavsurf,&pslavsurf,&clearini,&nmat,typeboun,ielprop,prop,
-	       orname,&inewton,t0g,t1g,alpha);
+	       orname,&inewton,t0g,t1g,alpha,imastload,pmastload);
 
 	memmpc_=mpcinfo[0];mpcfree=mpcinfo[1];icascade=mpcinfo[2];
 	maxlenmpc=mpcinfo[3];
@@ -1520,7 +1521,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 		 ibody,xbody,&nbody,&nevtot,thicke,&nslavs,tietol,mpcinfo,
 		 &ntie,&istep,tieset,&nintpoint,&mortar,&ifacecount,&islavsurf,
 		 &pslavsurf,&clearini,&nmat,typeboun,ielprop,prop,orname,
-		 &inewton,t0g,t1g,alpha);
+		 &inewton,t0g,t1g,alpha,imastload,pmastload);
 
 	memmpc_=mpcinfo[0];mpcfree=mpcinfo[1];icascade=mpcinfo[2];
 	maxlenmpc=mpcinfo[3];
@@ -1550,7 +1551,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 	       set,&nset,istartset,iendset,ialset,&nprint,prlab,
 	       prset,&nener,&isolver,trab,inotr,&ntrans,&ttime,fmpc,ipobody,
 	       ibody,xbody,&nbody,thicke,jobnamec,&nmat,ielprop,prop,
-	       orname,typeboun,t0g,t1g,&mcs,&istep);
+	       orname,typeboun,t0g,t1g,&mcs,&istep,imastload,pmastload);
 #else
       printf(" *ERROR in CalculiX: the ARPACK library is not linked\n\n");
       FORTRAN(stop,());
@@ -1586,7 +1587,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 	     xbodyold,&istep,&isolver,jq,output,&mcs,&nkon,&mpcend,ics,cs,
 	     &ntie,tieset,&idrct,jmax,ctrl,&itpamp,tietol,&nalset,
 	     ikforc,ilforc,thicke,&nslavs,&nmat,typeboun,ielprop,prop,orname,
-	     t0g,t1g);
+	     t0g,t1g,imastload,pmastload);
       }
     else if(*nmethod==5)
       {
@@ -1623,7 +1624,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 		    &mpcend,
 		    ctrl,ikforc,ilforc,thicke,&nmat,typeboun,ielprop,prop,
 		    orname,
-		    &ndamp,dacon,t0g,t1g);
+		    &ndamp,dacon,t0g,t1g,imastload,pmastload);
       }
     else if((*nmethod==6)||(*nmethod==7))
       {
@@ -1685,7 +1686,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 		       &ntie,&tieset,&itpamp,&iviewfile,jobnamec,&tietol,
 		       &nslavs,thicke,
 		       ics,&nalset,&nmpc_,&nmat,typeboun,&iaxial,&nload_,&nprop,
-		       &network,orname,t0g,t1g);
+		       &network,orname,t0g,t1g,imastload,pmastload);
 
       memmpc_=mpcinfo[0];mpcfree=mpcinfo[1];icascade=mpcinfo[2];
       maxlenmpc=mpcinfo[3];

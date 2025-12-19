@@ -62,7 +62,7 @@ int main(int argc,char *argv[])
     *ncocon=NULL,*ibody=NULL,*ielprop=NULL,*islavsurf=NULL,
     *ipoinpc=NULL,mt,nxstate,nload0,iload,*iuel=NULL,*ne2boun=NULL,
     *irandomtype=NULL,irobustdesign[3],*iparentel=NULL,ifreebody,
-    *ipobody=NULL,inewton=0,*iprfn=NULL,*konrfn=NULL;
+    *ipobody=NULL,inewton=0,*iprfn=NULL,*konrfn=NULL,*imastload=NULL;
      
   ITG nk,ne,nboun,nmpc,nforc,nload,nprint,nset,nalset,nentries=19,
     nmethod,neq[3],i,mpcfree,mei[4]={0,0,0,0},j,nzl,nam,nbounold,
@@ -98,7 +98,8 @@ int main(int argc,char *argv[])
     *cs=NULL,*tietol=NULL,*fmpc=NULL,*prop=NULL,*t0g=NULL,*t1g=NULL,
     *xbody=NULL,*xbodyold=NULL,*coefmpcref=NULL,*dacon=NULL,*vel=NULL,
     *velo=NULL,*veloo=NULL,energy[5],*ratiorfn=NULL,*dgdxglob=NULL,
-    *g0=NULL,*xdesi=NULL,*coeffc=NULL,*edc=NULL,*coini=NULL,*dam=NULL;
+    *g0=NULL,*xdesi=NULL,*coeffc=NULL,*edc=NULL,*coini=NULL,*dam=NULL,
+    *pmastload=NULL;
     
   double ctrl[60];
 
@@ -158,7 +159,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Tue Dec 16 19:07:54 CET 2025\n");
+  printf("You are using an executable made on Fri Dec 19 15:51:39 CET 2025\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -1264,7 +1265,7 @@ int main(int argc,char *argv[])
 		    &nbody,
 		    xbodyold,timepar,thicke,jobnamec,tieset,&ntie,&istep,&nmat,
 		    ielprop,prop,typeboun,&mortar,mpcinfo,tietol,ics,
-		    orname,itempuser,t0g,t1g,jmax);
+		    orname,itempuser,t0g,t1g,jmax,imastload,pmastload);
 
 	  for(i=0;i<3;i++){nzsprevstep[i]=nzs[i];}
 
@@ -1299,7 +1300,7 @@ int main(int argc,char *argv[])
 		    &pslavsurf,&clearini,&nmat,xmodal,&iaxial,&inext,&nprop,
 		    &network,orname,vel,&nef,velo,veloo,energy,itempuser,
 		    ipobody,&inewton,t0g,t1g,&ifreebody,&nlabel,&ndmat_,ndmcon,
-		    dmcon,dam);
+		    dmcon,dam,imastload,pmastload);
 
 	  memmpc_=mpcinfo[0];mpcfree=mpcinfo[1];icascade=mpcinfo[2];
 	  maxlenmpc=mpcinfo[3];
@@ -1333,7 +1334,7 @@ int main(int argc,char *argv[])
 	       ibody,xbody,&nbody,thicke,&nslavs,tietol,&nkon,mpcinfo,
 	       &ntie,&istep,&mcs,ics,tieset,cs,&nintpoint,&mortar,&ifacecount,
 	       &islavsurf,&pslavsurf,&clearini,&nmat,typeboun,ielprop,prop,
-	       orname,&inewton,t0g,t1g,alpha);
+	       orname,&inewton,t0g,t1g,alpha,imastload,pmastload);
 
 	memmpc_=mpcinfo[0];mpcfree=mpcinfo[1];icascade=mpcinfo[2];
 	maxlenmpc=mpcinfo[3];
@@ -1369,7 +1370,7 @@ int main(int argc,char *argv[])
 		 ibody,xbody,&nbody,&nevtot,thicke,&nslavs,tietol,mpcinfo,
 		 &ntie,&istep,tieset,&nintpoint,&mortar,&ifacecount,&islavsurf,
 		 &pslavsurf,&clearini,&nmat,typeboun,ielprop,prop,orname,
-		 &inewton,t0g,t1g,alpha);
+		 &inewton,t0g,t1g,alpha,imastload,pmastload);
 
 	memmpc_=mpcinfo[0];mpcfree=mpcinfo[1];icascade=mpcinfo[2];
 	maxlenmpc=mpcinfo[3];
@@ -1399,7 +1400,7 @@ int main(int argc,char *argv[])
 	       set,&nset,istartset,iendset,ialset,&nprint,prlab,
 	       prset,&nener,&isolver,trab,inotr,&ntrans,&ttime,fmpc,ipobody,
 	       ibody,xbody,&nbody,thicke,jobnamec,&nmat,ielprop,prop,
-	       orname,typeboun,t0g,t1g,&mcs,&istep);
+	       orname,typeboun,t0g,t1g,&mcs,&istep,imastload,pmastload);
 #else
       printf(" *ERROR in CalculiX: the ARPACK library is not linked\n\n");
       FORTRAN(stop,());
@@ -1435,7 +1436,7 @@ int main(int argc,char *argv[])
 	     xbodyold,&istep,&isolver,jq,output,&mcs,&nkon,&mpcend,ics,cs,
 	     &ntie,tieset,&idrct,jmax,ctrl,&itpamp,tietol,&nalset,
 	     ikforc,ilforc,thicke,&nslavs,&nmat,typeboun,ielprop,prop,orname,
-	     t0g,t1g);
+	     t0g,t1g,imastload,pmastload);
       }
     else if(nmethod==5)
       {
@@ -1472,7 +1473,7 @@ int main(int argc,char *argv[])
 		    &mpcend,
 		    ctrl,ikforc,ilforc,thicke,&nmat,typeboun,ielprop,prop,
 		    orname,
-		    &ndamp,dacon,t0g,t1g);
+		    &ndamp,dacon,t0g,t1g,imastload,pmastload);
       }
     else if((nmethod==6)||(nmethod==7))
       {
@@ -1534,7 +1535,7 @@ int main(int argc,char *argv[])
 		       &ntie,&tieset,&itpamp,&iviewfile,jobnamec,&tietol,
 		       &nslavs,thicke,
 		       ics,&nalset,&nmpc_,&nmat,typeboun,&iaxial,&nload_,&nprop,
-		       &network,orname,t0g,t1g);
+		       &network,orname,t0g,t1g,imastload,pmastload);
 
       memmpc_=mpcinfo[0];mpcfree=mpcinfo[1];icascade=mpcinfo[2];
       maxlenmpc=mpcinfo[3];

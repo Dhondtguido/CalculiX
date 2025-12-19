@@ -72,7 +72,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	       ITG *istep,ITG *nmat,ITG *ielprop,double *prop,char *typeboun,
 	       ITG *mortar,ITG *mpcinfo,double *tietol,ITG *ics,
 	       char *orname,ITG *itempuser,double *t0g,double *t1g,
-	       ITG *jmax){
+	       ITG *jmax,ITG *imastload,double *pmastload){
   
   char description[13]="            ",*lakon=NULL,stiffmatrix[132]="",
     jobnamef[396]="";
@@ -446,7 +446,8 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	       tieset,istartset,iendset,ialset,ntie,&nasym,pslavsurf,
 	       pmastsurf,mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
 	       iponoeln,inoeln,&network,ntrans,inotr,trab,smscale,&mscalmethod,
-	       set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag);
+	       set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag,
+	       imastload,pmastload);
 
   /* check for negative Jacobians */
 
@@ -472,7 +473,8 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		   xstateini,xstate,thicke,
 		   integerglob,doubleglob,tieset,istartset,iendset,
 		   ialset,ntie,&nasym,pslavsurf,pmastsurf,mortar,clearini,
-		   ielprop,prop,&ne0,&kscale,iponoeln,inoeln,&network,set,nset);
+		   ielprop,prop,&ne0,&kscale,iponoeln,inoeln,&network,set,
+		   nset,imastload,pmastload);
   }
 
   /* determining the right hand side */

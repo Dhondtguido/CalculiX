@@ -104,7 +104,7 @@ void premortar(ITG *nzs,ITG *nzsc2,
 	       char *orname,ITG *network,
 	       char *typeboun,ITG *num_cpus,double *t0g,double *t1g,
 	       double *smscale,ITG *mscalmethod,ITG *nslavquadel,
-	       ITG *iponoel){
+	       ITG *iponoel,ITG *imastload,double *pmastload){
   
   ITG im,i,k,mt=mi[1]+1,*irowc2=NULL,*icolc2=NULL,*jqc2=NULL,*irowbd=NULL,
     *jqbd=NULL,*irowbdtil=NULL,*jqbdtil=NULL,*irowbdtil2=NULL,*jqbdtil2=NULL,
@@ -270,7 +270,7 @@ void premortar(ITG *nzs,ITG *nzsc2,
 		 pmastsurf,mortar,clearini,ielprop,prop,ne0,fnext,kscale,
 		 iponoeln,inoeln,network,ntrans,inotr,trab,smscale,
 		 mscalmethod,set,nset,islavquadel,aut,irowt,jqt,
-		 &mortartrafoflag);
+		 &mortartrafoflag,imastload,pmastload);
 
     /* calculating the residual b */
   

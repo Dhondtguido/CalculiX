@@ -41,12 +41,10 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 		      char **lakonp,ITG *ne,
 		      ITG *nodeboun,ITG *ndirboun,double *xboun,ITG *nboun,
 		      ITG **ipompcp,ITG **nodempcp,double **coefmpcp,
-		      char **labmpcp,
-		      ITG *nmpc,
+		      char **labmpcp,ITG *nmpc,
 		      ITG *nodeforc,ITG *ndirforc,double *xforc,ITG *nforc,
 		      ITG **nelemloadp,char **sideloadp,double *xload,
-		      ITG *nload,
-		      ITG *nactdof,
+		      ITG *nload,ITG *nactdof,
 		      ITG **icolp,ITG **jqp,ITG **irowp,ITG *neq,ITG *nzl,
 		      ITG *nmethod,ITG **ikmpcp,ITG **ilmpcp,ITG *ikboun,
 		      ITG *ilboun,
@@ -86,7 +84,8 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 		      ITG *nmpc_,
 		      ITG *nmat,char *typeboun,ITG *iaxial,ITG *nload_,
 		      ITG *nprop,
-		      ITG *network,char *orname,double *t0g,double *t1g){
+		      ITG *network,char *orname,double *t0g,double *t1g,
+		      ITG *imastload,double *pmastload){
 
   char description[13]="            ",*lakon=NULL,jobnamef[396]="",
     *labmpc=NULL,kind1[2]="E",kind2[2]="E",*set=NULL,*tieset=NULL,
@@ -534,7 +533,8 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 	       tieset,istartset,iendset,ialset,ntie,&nasym,pslavsurf,
 	       pmastsurf,&mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
 	       iponoeln,inoeln,network,ntrans,inotr,trab,smscale,&mscalmethod,
-	       set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag);
+	       set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag,
+	       imastload,pmastload);
   
   if(nmethodact==0){
       

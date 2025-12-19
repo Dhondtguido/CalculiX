@@ -88,7 +88,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	       double *velo,double *veloo,double *energy,ITG *itempuser,
 	       ITG *ipobody,ITG *inewton,double *t0g,double *t1g,
 	       ITG *ifreebody,ITG *nlabel,ITG *ndmat_,ITG *ndmcon,
-	       double *dmcon,double *dam){
+	       double *dmcon,double *dam,ITG *imastload,double *pmastload){
 
   char description[13]="            ",*lakon=NULL,jobnamef[396]="",
     *sideface=NULL,*labmpc=NULL,*lakonf=NULL,*env,*envsys,fneig[132]="",
@@ -1094,7 +1094,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		 tieset,istartset,iendset,ialset,ntie,&nasym,pslavsurf,
 		 pmastsurf,mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
 		 iponoeln,inoeln,network,ntrans,inotr,trab,smscale,&mscalmethod,
-		 set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag);
+		 set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag,
+	         imastload,pmastload);
     
     if(*nmethod==0){
 	  
@@ -2510,8 +2511,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		     pmastsurf,mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
 		     iponoeln,inoeln,network,ntrans,inotr,trab,smscale,
 		     &mscalmethod,set,nset,islavquadel,aut,irowt,jqt,
-		     &mortartrafoflag);
-	//		     &nslavquadel);
+		     &mortartrafoflag,imastload,pmastload);
 
 	if(nasym==1){
 	  RENEW(au,double,2*nzs[1]);
@@ -2541,7 +2541,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 			 integerglob,doubleglob,tieset,istartset,iendset,
 			 ialset,ntie,&nasym,pslavsurf,pmastsurf,mortar,clearini,
 			 ielprop,prop,&ne0,&kscale,iponoeln,inoeln,network,set,
-			 nset);
+			 nset,imastload,pmastload);
 	}
 
 	iperturb[0]=iperturb_sav[0];
@@ -2583,7 +2583,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		    npmat_,ttime,&time,istep,&iinc,&dtime,physcon,ibody,
 		    xbodyold,&reltime,veold,matname,mi,ikactmech,
 		    &nactmech,ielprop,prop,sti,xstateini,xstate,nstate_,
-		    ntrans,inotr,trab,fnext);
+		    ntrans,inotr,trab,fnext,imastload,pmastload);
 	  }
 	}
 
@@ -2602,7 +2602,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	  	npmat_,ttime,&time,istep,&iinc,&dtime,physcon,ibody,
 	  	xbodyold,&reltime,veold,matname,mi,ikactmech,
 	  	&nactmech,ielprop,prop,sti,xstateini,xstate,nstate_,
-	        ntrans,inotr,trab,fnext);
+	        ntrans,inotr,trab,fnext,imastload,pmastload);
 	//   for(k=0;k<neq[1];++k){printf("fext=%" ITGFORMAT ",%f\n",k,fext[k]);}
 
 	/* adding fextload due to distributed loading */
@@ -2719,7 +2719,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		  &idamping,&iforbou,iperturb_sav,
 		  itietri,cg,straight,koncont,energyini,energy,&kscale,
 		  iponoeln,inoeln,nener,orname,network,typeboun,&num_cpus,
-		  t0g,t1g,smscale,&mscalmethod,&nslavquadel,iponoel);
+		  t0g,t1g,smscale,&mscalmethod,&nslavquadel,iponoel,
+		  imastload,pmastload);
 	
 	/* calculating coupling matrices and embedding weak 
 	   contact conditions */ 
