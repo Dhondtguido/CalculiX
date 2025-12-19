@@ -48,7 +48,7 @@
      &     mpcfreeref,maxlenmpcref,memmpc_,isens,namtot,nstam,dacon,
      &     vel,nef,velo,veloo,ne2boun,itempuser,irobustdesign,
      &     irandomtype,randomval,nfc,nfc_,coeffc,ikdc,ndc,ndc_,edc,
-     &     coini,ndmat_,ndmcon,dmcon,dam,irefineloop)
+     &     coini,ndmat_,ndmcon,dmcon,dam,irefineloop,interfaceload)
 !     
       implicit none
 !     
@@ -106,7 +106,7 @@
      &     iamboun(*),inotr(2,*),ikboun(*),ilboun(*),ikmpc(*),ilmpc(*),
      &     iponor(2,*),knor(*),ikforc(*),ilforc(*),iponoel2d(*),
      &     inoel2d(3,*),infree(4),ixfree,ikfree,inoel2dfree,
-     &     iponoel2dmax,
+     &     iponoel2dmax,interfaceload,
      &     rig(*),nshcon(*),ncocon(2,*),nodebounold(*),ielprop(*),nprop,
      &     nprop_,maxsectors,irestartread,ndmat_,irefineloop,
      &     ndirbounold(*),ipoinp(2,*),inp(3,*),nintpoint,ifacecount,
@@ -613,7 +613,7 @@ c
      &       iline,ipol,inl,ipoinp,inp,cbody,ibody,xbody,nbody,nbody_,
      &       xbodyold,iperturb,physcon,nam_,namtot_,namta,amta,nmethod,
      &       ipoinpc,maxsectors,mi,idefload,idefbody,ipkon,thicke,
-     &       iamplitudedefault,namtot,ier)
+     &       iamplitudedefault,namtot,ier,interfaceload)
         dload_flag=.true.
 !     
       elseif(textpart(1)(1:8).eq.'*DYNAMIC') then

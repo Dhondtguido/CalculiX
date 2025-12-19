@@ -209,7 +209,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
     *ikmpcref=NULL,isens,namtot,nstam,ndamp,nef,inp_size,maxsectors_,
     *ipoinp_sav=NULL,*inp_sav=NULL,irefineloop=0,icoordinate=0,
     *nodedesi=NULL,ndesi=0,nobjectstart=0,nfc_,ndc_,nfc,ndc,*ikdc=NULL,
-    *imastload=NULL;
+    *imastload=NULL,interfaceload=0;
 
   static ITG *meminset=NULL,*rmeminset=NULL;
 
@@ -302,7 +302,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
     printf("software, and you are welcome to redistribute it under\n");
     printf("certain conditions, see gpl.htm\n\n");
     printf("************************************************************\n\n");
-    printf("You are using an executable made on Fri Dec 19 15:51:39 CET 2025\n");
+    printf("You are using an executable made on Fri Dec 19 18:41:56 CET 2025\n");
     fflush(stdout);
 
     NNEW(ipoinp,ITG,2*nentries);
@@ -817,7 +817,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 			dacon,vel,&nef,velo,veloo,ne2boun,itempuser,
 			irobustdesign,irandomtype,randomval,&nfc,&nfc_,coeffc,
 			ikdc,&ndc,&ndc_,edc,coini,&ndmat_,ndmcon,dmcon,dam,
-			&irefineloop));
+			&irefineloop,&interfaceload));
 
 
       // start change DLR

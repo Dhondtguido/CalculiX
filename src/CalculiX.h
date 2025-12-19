@@ -584,7 +584,8 @@ void FORTRAN(calinput,(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		       ITG *irobustdesign,ITG *irandomtype,double *randomval,
 		       ITG *nfc,ITG *nfc_,double *coeffc,ITG *idck,ITG *ndc,
 		       ITG *ndc_,double *edc,double *coini,ITG *ndmat_,
-		       ITG *ndmcon,double *dmcon,double *dam,ITG *irefineloop));
+		       ITG *ndmcon,double *dmcon,double *dam,ITG *irefineloop,
+		       ITG *interfaceload));
 
 void FORTRAN(calinput_rfn,(double *co,char *filab,char *set,ITG *istartset,
 			   ITG *iendset,ITG *ialset,ITG *nset,ITG *nset_,

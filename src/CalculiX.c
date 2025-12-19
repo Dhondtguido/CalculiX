@@ -47,7 +47,7 @@ int main(int argc,char *argv[])
     kind1[2],kind2[2],*heading=NULL,*objectset=NULL;
   
   ITG *kon=NULL,*nodeboun=NULL,*ndirboun=NULL,*ipompc=NULL,
-    *nodempc=NULL,*nodeforc=NULL,*ndirforc=NULL,
+    *nodempc=NULL,*nodeforc=NULL,*ndirforc=NULL,interfaceload=0,
     *nelemload=NULL,im,*inodesd=NULL,nload1,*idefforc=NULL,
     *nactdof=NULL,*icol=NULL,*ics=NULL,itempuser[3],
     *jq=NULL,*mast1=NULL,*irow=NULL,*rig=NULL,*idefbody=NULL,
@@ -159,7 +159,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Fri Dec 19 15:51:39 CET 2025\n");
+  printf("You are using an executable made on Fri Dec 19 18:41:56 CET 2025\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -646,7 +646,7 @@ int main(int argc,char *argv[])
 		      dacon,vel,&nef,velo,veloo,ne2boun,itempuser,
 		      irobustdesign,irandomtype,randomval,&nfc,&nfc_,coeffc,
 		      ikdc,&ndc,&ndc_,edc,coini,&ndmat_,ndmcon,dmcon,dam,
-		      &irefineloop));
+		      &irefineloop,&interfaceload));
     
     SFREE(idefforc);SFREE(idefload);SFREE(idefbody);
 
@@ -1064,7 +1064,7 @@ int main(int argc,char *argv[])
       RENEW(iamboun,ITG,nboun);
     }
 
-    /* generate force convection elements */
+    /* generate forced convection elements */
 
     if(network>0){
       ne1=ne;nkon0=nkon;nload1=nload;
@@ -1796,7 +1796,7 @@ int main(int argc,char *argv[])
       }
     }
 
-    /* removing the advective elements, if any */
+    /* removing the force convection elements, if any */
 
     if(network>0){
       RENEW(ipkon,ITG,ne1);
@@ -1829,17 +1829,18 @@ int main(int argc,char *argv[])
 
       /* reactivating the original load labels */
 
-      for(i=nload-1;i>=nload0;i--){
+      //      for(i=nload-1;i>=nload0;i--){
+      for(i=nload-1;i>=nload1;i--){
 	if(strcmp2(&sideload[20*i],"                    ",20)==0){
 	  iload=nelemload[2*i+1];
 	  strcpy1(&sideload[20*(iload-1)],"F",1);
 	}
       }
-      ne=ne1;nkon=nkon0;
+      ne=ne1;nkon=nkon0;nload=nload1;
 
     }
 
-    nload=nload0;
+    //    nload=nload0;
 
     if((nmethod==4)&&(iperturb[0]>1)) SFREE(accold);
 
