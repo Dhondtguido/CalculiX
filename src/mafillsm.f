@@ -145,7 +145,7 @@ c     Bernhardi end
           elseif(lakon(i)(4:4).eq.'6') then
             nope=6
             ndof=3
-          elseif((lakon(i)(1:2).eq.'ES').and.(lakon(i)(7:7).ne.'F'))
+         elseif((lakon(i)(1:2).eq.'ES').and.(lakon(i)(7:7).ne.'F'))
      &           then
 !     
 !     spring and contact spring elements (NO dashpot elements
@@ -153,6 +153,33 @@ c     Bernhardi end
 !     
             nope=ichar(lakon(i)(8:8))-47
             ndof=3
+            if((lakon(i)(7:7).eq.'1').or.(lakon(i)(7:7).eq.'2')) then
+              imat=ielmat(1,i)
+              idof1=nint(elcon(3,1,imat))
+              idof2=0
+              if(lakon(i)(7:7).eq.'2') then
+                idof2=nint(elcon(4,1,imat))
+              endif
+              if((idof1.gt.3).or.(idof2.gt.3)) ndof=mi(2)
+              if(idof1.gt.3) then
+                node1=kon(indexe+1)
+                if((idof1.gt.mi(2)).or.(nactdof(idof1,node1).le.0))
+     &             then
+                  write(*,*) '*ERROR: Rotational spring DOF requested',
+     &                 ' but rotational DOF not active for these nodes.'
+                  call exit(201)
+                endif
+              endif
+              if(idof2.gt.3) then
+                node2=kon(indexe+2)
+                if((idof2.gt.mi(2)).or.(nactdof(idof2,node2).le.0))
+     &             then
+                  write(*,*) '*ERROR: Rotational spring DOF requested',
+     &                 ' but rotational DOF not active for these nodes.'
+                  call exit(201)
+                endif
+              endif
+            endif
 !     
 !     local contact spring number
 !     if friction is involved, the contact spring element

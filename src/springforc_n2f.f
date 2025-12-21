@@ -35,7 +35,8 @@
      &  iorien,idof,idof1,idof2,mscalmethod
 !
       real*8 xl(3,10),stiff(21),ratio(9),t1l,al(3),vl(0:mi(2),10),
-     &  pl(3,10),xn(3),dm,alpha,beta,fnl(3,10),tp(3),te(3),ftrial(3),
+     &  pl(3,10),xn(3),dm,alpha,beta,fnl(0:mi(2),10),tp(3),te(3),
+     &  ftrial(3),
      &  dist,t(3),dftrial,overclosure,venergy,orab(7,*),a(3,3),
      &  elcon(0:ncmat_,ntmat_,*),pproj(3),xsj2(3),xs2(3,7),clear,
      &  shp2(7,9),xi,et,elconloc(*),plconloc(802),xk,fk,dd,val,
@@ -68,6 +69,12 @@
          enddo
       endif
 !     
+      do i=1,nope
+         do j=0,mi(2)
+            fnl(j,i)=0.d0
+         enddo
+      enddo
+!
       if(lakonl(7:7).eq.'A') then
          if(lakonl(4:6).eq.'RNG') then
 !
@@ -134,30 +141,43 @@
             iorien=0
          endif
 !
-         if(iorien.eq.0) then
-            do i=1,3
-               xn(i)=0.d0
-            enddo
-            xn(idof)=1.d0
+         if(idof.le.3) then
+            if(iorien.eq.0) then
+               do i=1,3
+                  xn(i)=0.d0
+               enddo
+               xn(idof)=1.d0
+            else
+               call transformatrix(orab(1,iorien),xl(1,1),a)
+               do i=1,3
+                  xn(i)=a(i,idof)
+               enddo
+            endif
+!
+!           change in spring length
+!
+            val=vl(1,1)*xn(1)+vl(2,1)*xn(2)+vl(3,1)*xn(3)
          else
-            call transformatrix(orab(1,iorien),xl(1,1),a)
-            do i=1,3
-               xn(i)=a(i,idof)
-            enddo
+            if(idof.gt.mi(2)) then
+               write(*,*) '*ERROR in springforc_n2f: rotational',
+     &              ' DOF not active for spring node'
+               call exit(201)
+            endif
+            val=vl(idof,1)
          endif
-!
-!        change in spring length
-!
-         val=vl(1,1)*xn(1)+vl(2,1)*xn(2)+vl(3,1)*xn(3)
 !     
 !        calculating the spring force and the spring energy
 !     
          call calcspringforc(imat,elcon,nelcon,ncmat_,ntmat_,t1l,
      &        kode,plicon,nplicon,npmat_,senergy,nener,fk,val)
 !
-         do i=1,3
-            fnl(i,1)=fk*xn(i)
-         enddo
+         if(idof.le.3) then
+            do i=1,3
+               fnl(i,1)=fk*xn(i)
+            enddo
+         else
+            fnl(idof,1)=fk
+         endif
          return
       elseif(lakonl(7:7).eq.'2') then
 !
@@ -173,38 +193,69 @@
             iorien=0
          endif
 !
-         if(iorien.eq.0) then
-            do i=1,3
-               xn1(i)=0.d0
-               xn2(i)=0.d0
-            enddo
-            xn1(idof1)=1.d0
-            xn2(idof2)=1.d0
+         val=0.d0
+         if(idof1.le.3) then
+            if(iorien.eq.0) then
+               do i=1,3
+                  xn1(i)=0.d0
+               enddo
+               xn1(idof1)=1.d0
+            else
+               call transformatrix(orab(1,iorien),xl(1,1),a)
+               do i=1,3
+                  xn1(i)=a(i,idof1)
+               enddo
+            endif
+            val=val+(vl(1,1)*xn1(1)+vl(2,1)*xn1(2)+vl(3,1)*xn1(3))
          else
-            call transformatrix(orab(1,iorien),xl(1,1),a)
-            do i=1,3
-               xn1(i)=a(i,idof1)
-            enddo
-            call transformatrix(orab(1,iorien),xl(1,2),a)
-            do i=1,3
-               xn2(i)=a(i,idof2)
-            enddo
+            if(idof1.gt.mi(2)) then
+               write(*,*) '*ERROR in springforc_n2f: rotational',
+     &              ' DOF not active for spring nodes'
+               call exit(201)
+            endif
+            val=val+vl(idof1,1)
          endif
-!
-!        change in spring length
-!
-         val=(vl(1,1)*xn1(1)+vl(2,1)*xn1(2)+vl(3,1)*xn1(3))
-     &      -(vl(1,2)*xn2(1)+vl(2,2)*xn2(2)+vl(3,2)*xn2(3))
+         if(idof2.le.3) then
+            if(iorien.eq.0) then
+               do i=1,3
+                  xn2(i)=0.d0
+               enddo
+               xn2(idof2)=1.d0
+            else
+               call transformatrix(orab(1,iorien),xl(1,2),a)
+               do i=1,3
+                  xn2(i)=a(i,idof2)
+               enddo
+            endif
+            val=val-(vl(1,2)*xn2(1)+vl(2,2)*xn2(2)+vl(3,2)*xn2(3))
+         else
+            if(idof2.gt.mi(2)) then
+               write(*,*) '*ERROR in springforc_n2f: rotational',
+     &              ' DOF not active for spring nodes'
+               call exit(201)
+            endif
+            val=val-vl(idof2,2)
+         endif
 !     
 !        calculating the spring force and the spring energy
 !     
          call calcspringforc(imat,elcon,nelcon,ncmat_,ntmat_,t1l,
      &        kode,plicon,nplicon,npmat_,senergy,nener,fk,val)
 !
-         do i=1,3
-            fnl(i,1)=fk*xn1(i)
-            fnl(i,2)=-fk*xn2(i)
-         enddo
+         if(idof1.le.3) then
+            do i=1,3
+               fnl(i,1)=fk*xn1(i)
+            enddo
+         else
+            fnl(idof1,1)=fk
+         endif
+         if(idof2.le.3) then
+            do i=1,3
+               fnl(i,2)=-fk*xn2(i)
+            enddo
+         else
+            fnl(idof2,2)=-fk
+         endif
          return
       endif
 !
@@ -544,4 +595,3 @@ c     write(*,*)'STICK'
 !
       return
       end
-

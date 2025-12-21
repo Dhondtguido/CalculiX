@@ -77,7 +77,7 @@
      &     nplicon(0:ntmat_,*),nplkcon(0:ntmat_,*),npmat_,nopered,
      &     mscalmethod,nset,islavquadel(*),jqte(*),irowte(*),nelems,
      &     node1,node2,irowtf(16),jqtf(9),j2,mortartrafoflag,jface,
-     &     indexs,igs,ids,imastload(2,*)
+     &     indexs,igs,ids,imastload(2,*),ndof,idof1,idof2
 !     
       real*8 co(3,*),xl(3,20),shp(4,20),xs2(3,7),veold(0:mi(2),*),
      &     s(60,60),w(3,3),p1(3),p2(3),bodyf(3),bodyfx(3),ff(60),
@@ -272,6 +272,15 @@ c     Bernhardi end
 !     
       endif
 !     
+      ndof=3
+      if((lakonl(1:2).eq.'ES').and.
+     &     ((lakonl(7:7).eq.'1').or.(lakonl(7:7).eq.'2'))) then
+        idof1=nint(elcon(3,1,imat))
+        idof2=0
+        if(lakonl(7:7).eq.'2') idof2=nint(elcon(4,1,imat))
+        if((idof1.gt.3).or.(idof2.gt.3)) ndof=mi(2)
+      endif
+!
       if(lakonl(4:5).eq.'8R') then
         mint2d=1
         if(intscheme.eq.0) then
@@ -343,7 +352,7 @@ c     Bernhardi end
 !     
       if(rhsi.eq.1) then
         if(idist.ne.0) then
-          do i=1,3*nope
+          do i=1,ndof*nope
             ff(i)=0.d0
           enddo
         endif
@@ -354,7 +363,7 @@ c     Bernhardi end
       if(((iperturb(1).eq.1).or.(iperturb(2).eq.1)).and.
      &     (stiffness.eq.1).and.(buckling.eq.0)) then
         do i1=1,nope
-          do i2=1,3
+          do i2=1,ndof
             voldl(i2,i1)=vold(i2,konl(i1))
           enddo
         enddo
@@ -363,8 +372,8 @@ c     Bernhardi end
 !     initialisation of sm
 !     
       if((mass.eq.1).or.(buckling.eq.1).or.(coriolis.eq.1)) then
-        do i=1,3*nope
-          do j=1,3*nope
+        do i=1,ndof*nope
+          do j=1,ndof*nope
             sm(i,j)=0.d0
           enddo
         enddo
@@ -372,8 +381,8 @@ c     Bernhardi end
 !     
 !     initialisation of s
 !     
-      do i=1,3*nope
-        do j=1,3*nope
+      do i=1,ndof*nope
+        do j=1,ndof*nope
           s(i,j)=0.d0
         enddo
       enddo
@@ -390,7 +399,7 @@ c     Bernhardi end
 !     
         if(iperturb(2).eq.0) then
           do i1=1,nope
-            do i2=1,3
+            do i2=1,ndof
               voldl(i2,i1)=vold(i2,konl(i1))
             enddo
           enddo

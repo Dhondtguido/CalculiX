@@ -1,0 +1,43 @@
+**
+** 2D portal frame with rotational springs at the bases (elastic joints).
+** DOF 6 = rotation about z for a 2D frame in the x-y plane.
+**
+*NODE
+1, 0., 0., 0.
+2, 0., 3., 0.
+3, 4., 3., 0.
+4, 4., 0., 0.
+101, 0., 0., 0.
+104, 4., 0., 0.
+*NSET, NSET=TOP
+2, 3
+*ELEMENT, TYPE=B31, ELSET=E_FRAME
+1, 1, 2
+2, 2, 3
+3, 3, 4
+*ELEMENT, TYPE=SPRING2, ELSET=E_BASE_SPRING
+101, 1, 101
+102, 4, 104
+*MATERIAL, NAME=STEEL
+*ELASTIC
+210000., 0.3
+*BEAM SECTION, MATERIAL=STEEL, ELSET=E_FRAME, SECTION=RECT
+0.2, 0.2
+0., 0., 1.
+*BOUNDARY
+1, 1, 5
+4, 1, 5
+101, 1, 6
+104, 1, 6
+*SPRING, ELSET=E_BASE_SPRING
+6, 6
+1.0E6
+*DLOAD
+E_FRAME, GRAV, 9.81, 0., -1., 0.
+*STEP
+*STATIC
+*CLOAD
+3, 1, 10.
+*NODE PRINT, NSET=TOP
+U
+*END STEP

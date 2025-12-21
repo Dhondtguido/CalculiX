@@ -57,7 +57,7 @@
      &     elcon(0:ncmat_,ntmat_,*),rhcon(0:1,ntmat_,*),xs2(3,7),
      &     alcon(0:6,ntmat_,*),vini(0:mi(2),*),thickness,
      &     alzero(*),orab(7,*),stiff(21),rho,fn(0:mi(2),*),
-     &     fnl(3,10),skl(3,3),beta(6),xl2(3,8),qa(4),xthi(3,3),
+     &     fnl(0:mi(2),10),skl(3,3),beta(6),xl2(3,8),qa(4),xthi(3,3),
      &     vkl(0:3,3),t0(*),t1(*),prestr(6,mi(1),*),eme(6,mi(1),*),
      &     ckl(3,3),vold(0:mi(2),*),eloc(9),veold(0:mi(2),*),
      &     springarea(2,*),elconloc(ncmat_),eth(6),xkl(3,3),
@@ -496,13 +496,13 @@ c     Bernhardi end
      &           then
               if(idesvar.eq.0) then
                 do j=1,nope
-                  do k=1,3
+                  do k=1,mi(2)
                     fn0(k,indexe+j)=fn0(k,indexe+j)+fnl(k,j)
                   enddo
                 enddo
               else
                 do j=1,nope
-                  do k=1,3
+                  do k=1,mi(2)
                     dfn(k,konl(j))=dfn(k,konl(j))+fnl(k,j)
                   enddo
                 enddo
