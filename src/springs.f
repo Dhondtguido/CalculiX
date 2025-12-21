@@ -37,7 +37,7 @@
      &     n,key,i,nplicon(0:ntmat_,*),ncmat_,istat,istartset(*),id,
      &     iendset(*),irstrt(*),iline,ipol,inl,ipoinp(2,*),inp(3,*),
      &     ialset(*),ipos,nset,j,k,ielmat(mi(3),*),ielorien(mi(3),*),
-     &     ipoinpc(0:*),idof,iorientation,norien,idof2,ier,nmat_  
+     &     ipoinpc(0:*),idof,iorientation,norien,idof2,idof1,ier,nmat_  
 !     
       real*8 plicon(0:2*npmat_,ntmat_,*),temperature,
      &     elcon(0:ncmat_,ntmat_,*)
@@ -150,6 +150,14 @@
                 endif
                 read(textpart(1)(1:20),'(f20.0)',iostat=istat) 
      &               elcon(3,1,nmat)
+                idof1=nint(elcon(3,1,nmat))
+                if((idof1.lt.1).or.(idof1.gt.6)) then
+                  write(*,*) '*ERROR reading *SPRING: degree of freedom'
+                  write(*,*) '       must be between 1 and 6'
+                  call inputerror(inpc,ipoinpc,iline,
+     &                 "*SPRING%",ier)
+                  return
+                endif
               else
                 if(ncmat_.lt.4) then
                   write(*,*) '*ERROR reading *SPRING: two degrees'
@@ -166,6 +174,16 @@
      &               elcon(3,1,nmat)
                 read(textpart(2)(1:20),'(f20.0)',iostat=istat) 
      &               elcon(4,1,nmat)
+                idof1=nint(elcon(3,1,nmat))
+                idof2=nint(elcon(4,1,nmat))
+                if((idof1.lt.1).or.(idof1.gt.6).or.
+     &             (idof2.lt.1).or.(idof2.gt.6)) then
+                  write(*,*) '*ERROR reading *SPRING: degree of freedom'
+                  write(*,*) '       must be between 1 and 6'
+                  call inputerror(inpc,ipoinpc,iline,
+     &                 "*SPRING%",ier)
+                  return
+                endif
               endif
               cycle
             endif
@@ -244,6 +262,14 @@
                 endif
                 read(textpart(1)(1:20),'(f20.0)',iostat=istat) 
      &               elcon(3,1,nmat)
+                idof1=nint(elcon(3,1,nmat))
+                if((idof1.lt.1).or.(idof1.gt.6)) then
+                  write(*,*) '*ERROR reading *SPRING: degree of freedom'
+                  write(*,*) '       must be between 1 and 6'
+                  call inputerror(inpc,ipoinpc,iline,
+     &                 "*SPRING%",ier)
+                  return
+                endif
               else
                 if(ncmat_.lt.4) then
                   write(*,*) '*ERROR reading *SPRING: a degree'
@@ -260,6 +286,16 @@
      &               elcon(3,1,nmat)
                 read(textpart(2)(1:20),'(f20.0)',iostat=istat) 
      &               elcon(4,1,nmat)
+                idof1=nint(elcon(3,1,nmat))
+                idof2=nint(elcon(4,1,nmat))
+                if((idof1.lt.1).or.(idof1.gt.6).or.
+     &             (idof2.lt.1).or.(idof2.gt.6)) then
+                  write(*,*) '*ERROR reading *SPRING: degree of freedom'
+                  write(*,*) '       must be between 1 and 6'
+                  call inputerror(inpc,ipoinpc,iline,
+     &                 "*SPRING%",ier)
+                  return
+                endif
               endif
               cycle
             endif
@@ -360,4 +396,3 @@ c     enddo
 !     
       return
       end
-
