@@ -57,7 +57,7 @@
      &     elcon(0:ncmat_,ntmat_,*),rhcon(0:1,ntmat_,*),xs2(3,7),
      &     alcon(0:6,ntmat_,*),vini(0:mi(2),*),thickness,xthi(3,3),
      &     alzero(*),orab(7,*),stiff(21),rho,qa(4),elineng(6),
-     &     fnl(3,10),beta(6),q(0:mi(2),20),xl2(3,8),vthj,
+     &     fnl(0:mi(2),10),beta(6),q(0:mi(2),20),xl2(3,8),vthj,
      &     vkl(0:3,3),t0(*),t1(*),prestr(6,mi(1),*),
      &     ckl(3,3),vold(0:mi(2),*),eloc(9),veold(0:mi(2),*),
      &     springarea(2,*),elconloc(ncmat_),eth(6),xkl(3,3),

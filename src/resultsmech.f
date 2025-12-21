@@ -56,7 +56,7 @@
      &     elcon(0:ncmat_,ntmat_,*),rhcon(0:1,ntmat_,*),xs2(3,7),
      &     alcon(0:6,ntmat_,*),vini(0:mi(2),*),thickness,
      &     alzero(*),orab(7,*),stiff(21),rho,fn(0:mi(2),*),
-     &     fnl(3,10),skl(3,3),beta(6),q(0:mi(2),20),xl2(3,8),
+     &     fnl(0:mi(2),10),skl(3,3),beta(6),q(0:mi(2),20),xl2(3,8),
      &     vkl(0:3,3),t0(*),t1(*),prestr(6,mi(1),*),eme(6,mi(1),*),
      &     ckl(3,3),vold(0:mi(2),*),eloc(6),veold(0:mi(2),*),
      &     springarea(2,*),elconloc(ncmat_),eth(6),xkl(3,3),
@@ -449,7 +449,7 @@ c              if(nener.eq.1) venergy=enerini(2,1,ne0+igauss)
      &           ((nmethod.ne.1).or.(iperturb(1).ge.2).or.(iout.ne.-1)))
      &           then
               do j=1,nope
-                do k=1,3
+                do k=1,mi(2)
                   fn(k,konl(j))=fn(k,konl(j))+fnl(k,j)
                 enddo
               enddo

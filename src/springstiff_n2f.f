@@ -33,7 +33,7 @@
       integer konl(20),i,j,imat,ncmat_,ntmat_,k,l,nope,nterms,iflag,
      &  i1,kode,niso,id,nplicon(0:ntmat_,*),npmat_,nelcon(2,*),
      &  iperturb(*),nmethod,mi(*),ne0,nstate_,nasym,ielorien(mi(3),*),
-     &  norien,nelem,idof,idof1,idof2,iorien
+     &  norien,nelem,idof,idof1,idof2,iorien,ndof
 !
       real*8 xl(3,10),stiff(21),ratio(9),pproj(3),val,shp2(7,9),
      &  al(3),s(60,60),voldl(0:mi(2),10),pl(3,10),xn(3),dm,
@@ -162,6 +162,8 @@
 !        determine the direction of action of the spring
 !
          idof=nint(elcon(3,1,imat))
+         ndof=3
+         if(idof.gt.3) ndof=mi(2)
 !
          if(norien.gt.0) then
             iorien=max(0,ielorien(1,nelem))
@@ -169,16 +171,26 @@
             iorien=0
          endif
 !
-         if(iorien.eq.0) then
-            do i=1,3
-               xn(i)=0.d0
-            enddo
-            xn(idof)=1.d0
+         if(idof.le.3) then
+            if(iorien.eq.0) then
+               do i=1,3
+                  xn(i)=0.d0
+               enddo
+               xn(idof)=1.d0
+            else
+               call transformatrix(orab(1,iorien),xl(1,1),a)
+               do i=1,3
+                  xn(i)=a(i,idof)
+               enddo
+            endif
+            val=voldl(1,1)*xn(1)+voldl(2,1)*xn(2)+voldl(3,1)*xn(3)
          else
-            call transformatrix(orab(1,iorien),xl(1,1),a)
-            do i=1,3
-               xn(i)=a(i,idof)
-            enddo
+            if(idof.gt.mi(2)) then
+               write(*,*) '*ERROR in springstiff_n2f: rotational',
+     &              ' DOF not active for spring node'
+               call exit(201)
+            endif
+            val=voldl(idof,1)
          endif
 !     
 !     interpolating the material data
@@ -208,11 +220,15 @@
 !
 !        assembling the stiffness matrix
 !
-         do i=1,3
-            do j=1,3
-               s(i,j)=xk*xn(i)*xn(j)
+         if(idof.le.3) then
+            do i=1,3
+               do j=1,3
+                  s(i,j)=xk*xn(i)*xn(j)
+               enddo
             enddo
-         enddo
+         else
+            s(idof,idof)=xk
+         endif
          return
       elseif(lakonl(7:7).eq.'2') then
 !
@@ -221,6 +237,8 @@
 !
          idof1=nint(elcon(3,1,imat))
          idof2=nint(elcon(4,1,imat))
+         ndof=3
+         if((idof1.gt.3).or.(idof2.gt.3)) ndof=mi(2)
 !
          if(norien.gt.0) then
             iorien=max(0,ielorien(1,nelem))
@@ -228,22 +246,50 @@
             iorien=0
          endif
 !
-         if(iorien.eq.0) then
-            do i=1,3
-               xn1(i)=0.d0
-               xn2(i)=0.d0
-            enddo
-            xn1(idof1)=1.d0
-            xn2(idof2)=1.d0
+         val=0.d0
+         if(idof1.le.3) then
+            if(iorien.eq.0) then
+               do i=1,3
+                  xn1(i)=0.d0
+               enddo
+               xn1(idof1)=1.d0
+            else
+               call transformatrix(orab(1,iorien),xl(1,1),a)
+               do i=1,3
+                  xn1(i)=a(i,idof1)
+               enddo
+            endif
+            val=val+(voldl(1,1)*xn1(1)+voldl(2,1)*xn1(2)
+     &         +voldl(3,1)*xn1(3))
          else
-            call transformatrix(orab(1,iorien),xl(1,1),a)
-            do i=1,3
-               xn1(i)=a(i,idof1)
-            enddo
-            call transformatrix(orab(1,iorien),xl(1,2),a)
-            do i=1,3
-               xn2(i)=a(i,idof2)
-            enddo
+            if(idof1.gt.mi(2)) then
+               write(*,*) '*ERROR in springstiff_n2f: rotational',
+     &              ' DOF not active for spring nodes'
+               call exit(201)
+            endif
+            val=val+voldl(idof1,1)
+         endif
+         if(idof2.le.3) then
+            if(iorien.eq.0) then
+               do i=1,3
+                  xn2(i)=0.d0
+               enddo
+               xn2(idof2)=1.d0
+            else
+               call transformatrix(orab(1,iorien),xl(1,2),a)
+               do i=1,3
+                  xn2(i)=a(i,idof2)
+               enddo
+            endif
+            val=val-(voldl(1,2)*xn2(1)+voldl(2,2)*xn2(2)
+     &         +voldl(3,2)*xn2(3))
+         else
+            if(idof2.gt.mi(2)) then
+               write(*,*) '*ERROR in springstiff_n2f: rotational',
+     &              ' DOF not active for spring nodes'
+               call exit(201)
+            endif
+            val=val-voldl(idof2,2)
          endif
 !     
 !     interpolating the material data
@@ -273,14 +319,39 @@
 !
 !        assembling the stiffness matrix
 !
-         do i=1,3
-            do j=1,3
-               s(i,j)=xk*xn1(i)*xn1(j)
-               s(i,j+3)=-xk*xn1(i)*xn2(j)
-               s(i+3,j)=-xk*xn2(i)*xn1(j)
-               s(i+3,j+3)=xk*xn2(i)*xn2(j)
+         if((idof1.le.3).and.(idof2.le.3)) then
+            do i=1,3
+               do j=1,3
+                  s(i,j)=xk*xn1(i)*xn1(j)
+                  s(i,j+ndof)=-xk*xn1(i)*xn2(j)
+                  s(i+ndof,j)=-xk*xn2(i)*xn1(j)
+                  s(i+ndof,j+ndof)=xk*xn2(i)*xn2(j)
+               enddo
             enddo
-         enddo
+         elseif((idof1.le.3).and.(idof2.gt.3)) then
+            do i=1,3
+               do j=1,3
+                  s(i,j)=xk*xn1(i)*xn1(j)
+               enddo
+               s(i,idof2+ndof)=-xk*xn1(i)
+               s(idof2+ndof,i)=-xk*xn1(i)
+            enddo
+            s(idof2+ndof,idof2+ndof)=xk
+         elseif((idof1.gt.3).and.(idof2.le.3)) then
+            do i=1,3
+               do j=1,3
+                  s(i+ndof,j+ndof)=xk*xn2(i)*xn2(j)
+               enddo
+               s(idof1,i+ndof)=-xk*xn2(i)
+               s(i+ndof,idof1)=-xk*xn2(i)
+            enddo
+            s(idof1,idof1)=xk
+         else
+            s(idof1,idof1)=xk
+            s(idof1,idof2+ndof)=-xk
+            s(idof2+ndof,idof1)=-xk
+            s(idof2+ndof,idof2+ndof)=xk
+         endif
          return
 !
       endif
@@ -771,4 +842,3 @@
 !
       return
       end
-
