@@ -1,0 +1,66 @@
+*HEADING
+Test 1: Cantilever Beam with Tip Load
+Validates beam deflection against analytical solution
+**
+** Geometry: L=1.0m, rectangular section 0.01m x 0.1m (b x h)
+** Material: Steel E=210e9 Pa, nu=0.3
+** Load: P = 1000 N at tip (downward in z-direction)
+**
+** Analytical solution (Euler-Bernoulli):
+**   delta = P*L^3/(3*E*I) where I = b*h^3/12
+**   I = 0.01 * 0.1^3 / 12 = 8.333e-7 m^4
+**   delta = 1000 * 1.0^3 / (3 * 210e9 * 8.333e-7)
+**   delta = 0.0019048 m = 1.905 mm
+**
+*NODE
+1, 0.0, 0.0, 0.0
+2, 0.2, 0.0, 0.0
+3, 0.4, 0.0, 0.0
+4, 0.6, 0.0, 0.0
+5, 0.8, 0.0, 0.0
+6, 1.0, 0.0, 0.0
+**
+*ELEMENT, TYPE=B31, ELSET=beam
+1, 1, 2
+2, 2, 3
+3, 3, 4
+4, 4, 5
+5, 5, 6
+**
+*NSET, NSET=fixed
+1
+*NSET, NSET=tip
+6
+*NSET, NSET=all
+1, 2, 3, 4, 5, 6
+**
+*MATERIAL, NAME=steel
+*ELASTIC
+210e9, 0.3
+**
+*BEAM SECTION, ELSET=beam, MATERIAL=steel, SECTION=RECT
+0.01, 0.1
+0.0, 0.0, 1.0
+**
+*STEP
+*STATIC
+**
+*BOUNDARY
+fixed, 1, 6
+**
+*CLOAD
+tip, 3, -1000.0
+**
+*NODE PRINT, NSET=all
+U
+**
+*EL PRINT, ELSET=beam
+S
+**
+*NODE FILE
+U
+**
+*EL FILE
+S
+**
+*END STEP
