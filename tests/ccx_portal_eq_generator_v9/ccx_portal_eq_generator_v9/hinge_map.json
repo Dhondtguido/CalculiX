@@ -1,0 +1,21 @@
+{
+  "rot_nodes": {
+    "ROT_L_COL": 1118,
+    "ROT_L_BEM": 1120,
+    "ROT_R_COL": 1122,
+    "ROT_R_BEM": 1124
+  },
+  "hinges": [
+    {
+      "name": "H_L",
+      "nodeA": 1118,
+      "nodeB": 1120
+    },
+    {
+      "name": "H_R",
+      "nodeA": 1122,
+      "nodeB": 1124
+    }
+  ],
+  "note": "Rigid-body ROT nodes: U1/U2/U3 are rotations about global X/Y/Z in radians."
+}

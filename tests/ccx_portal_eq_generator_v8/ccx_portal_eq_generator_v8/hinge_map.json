@@ -1,0 +1,19 @@
+{
+  "rot_dummy_meaning": "U1(dummy) == UR3(node) [rad]",
+  "hinges": [
+    {
+      "name": "H_TL",
+      "nodeA": 11,
+      "nodeB": 34,
+      "dummyA": 36,
+      "dummyB": 37
+    },
+    {
+      "name": "H_TR",
+      "nodeA": 22,
+      "nodeB": 35,
+      "dummyA": 38,
+      "dummyB": 39
+    }
+  ]
+}
