@@ -1,0 +1,45 @@
+
+# ---------------------------
+# Build artifacts (CalculiX)
+# ---------------------------
+src/*.o
+src/*.a
+src/*.mod
+src/CalculiX
+src/ccx
+src/ccx_*
+src/*.so
+src/*.so.*
+src/*.dylib
+src/*.dll
+
+# ---------------------------
+# Test/run outputs
+# ---------------------------
+tests/**/*.dat
+tests/**/*.frd
+tests/**/*.sta
+tests/**/*.cvg
+tests/**/*.12d
+tests/**/*.log
+tests/**/spooles.out
+
+# Zips / bundles (keep generators, not archives)
+*.zip
+tests/**/*.zip
+
+# Python
+__pycache__/
+*.pyc
+
+# Editors / OS
+*~
+.DS_Store
+
+# Example run outputs
+examples/**/*.dat
+examples/**/*.sta
+examples/**/*.cvg
+examples/**/*.12d
+examples/**/*.frd
+examples/**/*.log
