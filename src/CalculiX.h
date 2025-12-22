@@ -2189,13 +2189,13 @@ void FORTRAN(integral_boundary,(double *sumfix,double *sumfree,ITG *ifaext,
                                 ITG *nfaext,ITG *ielfa,ITG *ifabou,double *vfa,
 				ITG *ipnei,double *xxn));
 
-void interfaceload(ITG *ne,ITG *ipkon,ITG *kon,char *lakon,ITG *nk,char*set,
-		   ITG *istartset,ITG *iendset,ITG *ialset,ITG *nset,
-		   ITG *nset_,ITG *nalset,double *co,double *vold,ITG *mi,
-		   double *cs,ITG *mcs,ITG *ics,ITG **nelemloadp,
-		   char **sideloadp,double **xloadp,double **xloadoldp,
-		   ITG **iamloadp,ITG *nam,ITG *nload,ITG *nload_,
-		   ITG **imatloadp,double **pmastloadp);
+void interfaceloading(ITG *ne,ITG *ipkon,ITG *kon,char *lakon,ITG *nk,char*set,
+		      ITG *istartset,ITG *iendset,ITG *ialset,ITG *nset,
+		      ITG *nset_,ITG *nalset,double *co,double *vold,ITG *mi,
+		      double *cs,ITG *mcs,ITG *ics,ITG **nelemloadp,
+		      char **sideloadp,double **xloadp,double **xloadoldp,
+		      ITG **iamloadp,ITG *nam,ITG *nload,ITG *nload_,
+		      ITG **imatloadp,double **pmastloadp,ITG *interfaceload);
 				
 void FORTRAN(interpolateinface,(ITG *kk,double *xstate1,double *xstateini1,
 				ITG *numpts,ITG *nstate1_,ITG *mi1,
@@ -5274,6 +5274,13 @@ void FORTRAN(updatecontpen,(ITG *koncont,ITG *ncont,double *co,double *vold,
                          char *tieset,ITG *nset,char *set,ITG *istartset,
                          ITG *iendset,ITG *ialset,ITG *ipkon,char *lakon,
                          ITG *kon,double *cs,ITG *mcs,ITG *ics));
+
+void FORTRAN(updatecontpen_load,(ITG *koncont,double *co,double *vold,
+				 double *cg,double *straight,ITG *mi,
+				 ITG *imastnode,ITG *nmasts,double *xmastnor,
+				 ITG *istartset,ITG *iendset,ITG *ialset,
+				 ITG *ipkon,char *lakon,ITG *kon,double *cs,
+				 ITG *mcs,ITG *ics,ITG *imastset));
 
 void FORTRAN(updategeodata,(ITG *nktet,ITG *netet_,double *h,double *d,
 			    double *dmin,ITG *ipoed,ITG *iedg,double *cotet,

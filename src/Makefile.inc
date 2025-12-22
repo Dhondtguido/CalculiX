@@ -574,6 +574,7 @@ near2d.f \
 near3d.f \
 near3d_se.f \
 neartriangle.f \
+neartriangle_load.f \
 negativepressure.f \
 networkelementpernode.f \
 networkextrapolate.f \
@@ -1065,6 +1066,7 @@ insert.c \
 insertcbs.c \
 insertfreq.c \
 insertrad.c \
+interfaceloading.c \
 interpolatestatemain.c \
 interpoltetmain.c \
 linstatic.c \

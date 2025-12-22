@@ -159,7 +159,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Mon Dec 22 11:12:54 CET 2025\n");
+  printf("You are using an executable made on Mon Dec 22 11:50:10 CET 2025\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -1064,6 +1064,15 @@ int main(int argc,char *argv[])
       RENEW(iamboun,ITG,nboun);
     }
 
+    /* check for interfaceloading */
+
+    if(interfaceload>0){
+      interfaceloading(&ne,ipkon,kon,lakon,&nk,set,istartset,iendset,ialset,
+		       &nset,&nset_,&nalset,co,vold,mi,cs,&mcs,ics,&nelemload,
+		       &sideload,&xload,&xloadold,&iamload,&nam,&nload,
+		       &nload_,&imastload,&pmastload,&interfaceload);
+    }
+    
     /* generate forced convection elements */
 
     if(network>0){
