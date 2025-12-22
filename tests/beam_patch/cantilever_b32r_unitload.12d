@@ -1,0 +1,15 @@
+ ELEMENT            1 with label "B32R   R" and with nodes:
+          1          2          3
+  is expanded into a "C3D20RBR" element with topology:
+          4         20         21          5          7         23         22          6         12         24
+         13          8         15         26         14         10         11         27         25          9
+
+ a MEAN ROTATION MPC was generated in node            3
+                 about the axis (   1.0000000000000000      ,   0.0000000000000000      ,   0.0000000000000000      )
+
+ a MEAN ROTATION MPC was generated in node            3
+                 about the axis (   0.0000000000000000      ,   1.0000000000000000      ,   0.0000000000000000      )
+
+ a MEAN ROTATION MPC was generated in node            3
+                 about the axis (   0.0000000000000000      ,   0.0000000000000000      ,   1.0000000000000000      )
+
