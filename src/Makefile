@@ -1,5 +1,5 @@
 
-CFLAGS = -Wall -g  -I ../../SPOOLES.2.2 -DARCH="Linux" -DSPOOLES -DARPACK -DMATRIXSTORAGE -DNETWORKOUT
+CFLAGS = -Wall -g  -I /deps/SPOOLES.2.2 -I /deps/SPOOLES.2.2/Misc -I /deps/SPOOLES.2.2/Utilities -DARCH="Linux" -DSPOOLES -DARPACK -DMATRIXSTORAGE -DNETWORKOUT
 FFLAGS = -Wall -g -cpp 
 
 CC=cc
@@ -18,11 +18,11 @@ OCCXF = $(SCCXF:.f=.o)
 OCCXC = $(SCCXC:.c=.o)
 OCCXMAIN = $(SCCXMAIN:.c=.o)
 
-DIR=../../SPOOLES.2.2
+DIR=/deps/SPOOLES.2.2
 
 LIBS = \
        $(DIR)/spooles.a \
-	../../ARPACK/libarpack_INTEL.a \
+	-larpack -lopenblas -llapack -lblas \
        -lpthread -lm -lc
 
 CalculiX: $(OCCXMAIN) CalculiX.a  $(LIBS)
@@ -32,5 +32,6 @@ CalculiX.a: $(OCCXF) $(OCCXC)
 	ar vr $@ $?
 
 # --- fix: springs.f needs long fixed-form lines ---
+# --- fix: springs.f must compile as fixed-form with long lines ---
 springs.o: springs.f
-	gfortran -Wall -g -cpp -ffixed-line-length-none -c springs.f -o springs.o
+	gfortran -Wall -g -cpp -ffixed-form -ffixed-line-length-none -c springs.f -o springs.o

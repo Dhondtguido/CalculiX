@@ -33,7 +33,7 @@
       character*81 set(*),elset
       character*132 textpart(16)
 !     
-     integer mi(*),nelcon(2,*),nmat,ntmat_,ntmat,npmat_,npmat,istep,
+      integer mi(*),nelcon(2,*),nmat,ntmat_,ntmat,npmat_,npmat,istep,
      &     n,key,i,nplicon(0:ntmat_,*),ncmat_,istat,istartset(*),id,
      &     iendset(*),irstrt(*),iline,ipol,inl,ipoinp(2,*),inp(3,*),
      &     ialset(*),ipos,nset,j,k,ielmat(mi(3),*),ielorien(mi(3),*),
