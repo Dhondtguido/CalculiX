@@ -1,0 +1,118 @@
+** ------------------------------------------------------------
+** Portal frame (Problem 4 style) with rotational plastic hinges
+** via SPRING2 on DOF 6 (Rz) using duplicated joint nodes.
+**
+** Units assumed: N, m, s
+**   E in Pa (N/m^2), density in kg/m^3, moments N*m
+** ------------------------------------------------------------
+
+*HEADING
+Portal frame with SPRING2 rotational hinges (DOF 6)
+
+** Nodes (2D frame in XY)
+** Duplicate joint nodes at beam-column connections:
+**   3  = joint node used by LEFT COLUMN
+**   103= coincident joint node used by BEAM (left end)
+**   4  = joint node used by RIGHT COLUMN
+**   104= coincident joint node used by BEAM (right end)
+*NODE
+1,   0.0, 0.0, 0.0
+2,   4.0, 0.0, 0.0
+3,   0.0, 3.0, 0.0
+4,   4.0, 3.0, 0.0
+103, 0.0, 3.0, 0.0
+104, 4.0, 3.0, 0.0
+
+*NSET, NSET=NALL
+1,2,3,4,103,104
+
+*NSET, NSET=NTOP
+103,104
+
+** Beam elements (B31)
+*ELEMENT, TYPE=B31, ELSET=E_COL_L
+1, 1, 3
+*ELEMENT, TYPE=B31, ELSET=E_COL_R
+2, 2, 4
+*ELEMENT, TYPE=B31, ELSET=E_BEAM
+3, 103, 104
+
+*ELSET, ELSET=E_FRAME
+E_COL_L, E_COL_R, E_BEAM
+
+** Rotational springs at joints (plastic hinges)
+*ELEMENT, TYPE=SPRING2, ELSET=E_HINGE_L
+101, 3, 103
+*ELEMENT, TYPE=SPRING2, ELSET=E_HINGE_R
+102, 4, 104
+
+** Tie translations across duplicated nodes (ONLY U1,U2).
+** U3,Rx,Ry are constrained globally for 2D; do NOT tie them here.
+*EQUATION
+2
+3,   1,  1.0
+103, 1, -1.0
+*EQUATION
+2
+3,   2,  1.0
+103, 2, -1.0
+*EQUATION
+2
+4,   1,  1.0
+104, 1, -1.0
+*EQUATION
+2
+4,   2,  1.0
+104, 2, -1.0
+
+** Material + section
+*MATERIAL, NAME=STEEL
+*ELASTIC
+2.10E11, 0.30
+*DENSITY
+7850.
+
+*BEAM SECTION, MATERIAL=STEEL, ELSET=E_FRAME, SECTION=RECT
+0.30, 0.30
+0., 0., 1.
+
+** Boundary conditions:
+** - Enforce 2D: U3=0, Rx=0, Ry=0 for all nodes
+** - Bases fixed: U1=U2=Rz=0
+*BOUNDARY
+NALL, 3, 5
+1, 1, 2
+1, 6, 6
+2, 1, 2
+2, 6, 6
+
+** Rotational hinge law: nonlinear M-θ on DOF 6
+** theta [rad], M [N*m]
+*SPRING, ELSET=E_HINGE_L, NONLINEAR
+6, 6
+0.0,     0.0
+0.002,  2.0E5
+0.020,  2.2E5
+
+*SPRING, ELSET=E_HINGE_R, NONLINEAR
+6, 6
+0.0,     0.0
+0.002,  2.0E5
+0.020,  2.2E5
+
+*STEP
+*STATIC
+
+** Gravity in -Y
+*DLOAD
+E_FRAME, GRAV, 9.81, 0., -1., 0.
+
+** Lateral load at top (apply at beam-side nodes)
+*CLOAD
+103, 1, 5.0E4
+104, 1, 5.0E4
+
+*NODE PRINT, NSET=NTOP
+U
+
+*END STEP

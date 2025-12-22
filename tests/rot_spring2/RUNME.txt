@@ -1,0 +1,4 @@
+Run:
+  ../../src/CalculiX -i portal_frame_solids_hinges_v6
+Then:
+  python3 extract_hinge_mtheta.py portal_frame_solids_hinges_v6.dat

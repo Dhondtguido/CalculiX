@@ -1,0 +1,68 @@
+** ----------------------------------------------------------------
+** Same as linear, but with a piecewise Mz-theta_z curve.
+** ----------------------------------------------------------------
+*HEADING
+Nonlinear rotational spring via rigid-body rotational nodes (Mz-theta_z)
+
+*NODE
+1,   0.,   0.,   0.
+2,   1.,   0.,   0.
+11,  0.,  1.E-3, 0.
+12,  0.,  0.,  1.E-3
+21,  1.,  1.E-3, 0.
+22,  1.,  0.,  1.E-3
+101, 0.,  0.,  0.
+102, 0.,  0.,  0.
+201, 1.,  0.,  0.
+202, 1.,  0.,  0.
+
+*ELEMENT, TYPE=B31, ELSET=E_BEAM
+1, 1, 2
+*ELEMENT, TYPE=SPRING2, ELSET=E_RS
+2, 102, 202
+
+*NSET, NSET=RB_LEFT
+1, 11, 12
+*NSET, NSET=RB_RIGHT
+2, 21, 22
+*NSET, NSET=ROT_LEFT
+102
+*NSET, NSET=ROT_RIGHT
+202
+*NSET, NSET=REF_LEFT
+101
+*NSET, NSET=REF_RIGHT
+201
+
+*RIGID BODY, NSET=RB_LEFT,  REF NODE=101, ROT NODE=102
+*RIGID BODY, NSET=RB_RIGHT, REF NODE=201, ROT NODE=202
+
+*MATERIAL, NAME=SOFT_BEAM
+*ELASTIC
+1.0E-9, 0.3
+*DENSITY
+7850.
+
+*BEAM SECTION, MATERIAL=SOFT_BEAM, ELSET=E_BEAM, SECTION=RECT
+1.0E-6, 1.0E-6
+0., 0., 1.
+
+*SPRING, ELSET=E_RS, NONLINEAR
+3, 3
+0.0,   0.0
+0.001, 1.0
+0.01,  1.1
+
+*BOUNDARY
+REF_LEFT,  1, 3, 0.
+REF_RIGHT, 1, 3, 0.
+ROT_LEFT,  1, 3, 0.
+ROT_RIGHT, 1, 2, 0.
+
+*STEP
+*STATIC
+*CLOAD
+ROT_RIGHT, 3, 1.05
+*NODE PRINT, NSET=ROT_RIGHT
+U
+*END STEP

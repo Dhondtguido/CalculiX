@@ -1,0 +1,206 @@
+** ------------------------------------------------------------
+** Portal frame "Problem 4"-ish using SOLIDS + rigid-body hinge faces
+** Hinges: rotational spring about global Z using ROT NODE U3
+**
+** Units: N, m, s (E in Pa, density kg/m^3, moments N*m)
+**
+** Why solids?
+**  - CalculiX forbids BEAM-element nodes from being subject to *RIGID BODY MPC
+**  - With solids, rigid bodies are allowed, so ROT NODE springs work.
+**
+** Geometry (very coarse!):
+**  - left column:  0.2 x 0.2 x 3.0 (one hex)
+**  - right column: 0.2 x 0.2 x 3.0 (one hex)
+**  - beam:         4.0 x 0.2 x 0.2 (one hex)
+** Members overlap in space but are NOT connected by shared nodes;
+** connectivity is via rigid-body coupling + equations + hinge springs.
+** ------------------------------------------------------------
+
+*HEADING
+Portal frame solids + SPRING2 rotational hinges (about Z)
+
+*NODE
+** Left column hex (x=-0.1..0.1, y=0..3, z=-0.1..0.1)
+1, -0.1, 0.0, -0.1
+2,  0.1, 0.0, -0.1
+3,  0.1, 0.0,  0.1
+4, -0.1, 0.0,  0.1
+5, -0.1, 3.0, -0.1
+6,  0.1, 3.0, -0.1
+7,  0.1, 3.0,  0.1
+8, -0.1, 3.0,  0.1
+
+** Right column hex (x=3.9..4.1, y=0..3, z=-0.1..0.1)
+11, 3.9, 0.0, -0.1
+12, 4.1, 0.0, -0.1
+13, 4.1, 0.0,  0.1
+14, 3.9, 0.0,  0.1
+15, 3.9, 3.0, -0.1
+16, 4.1, 3.0, -0.1
+17, 4.1, 3.0,  0.1
+18, 3.9, 3.0,  0.1
+
+** Beam hex (x=0..4, y=2.9..3.1, z=-0.1..0.1)
+21, 0.0, 2.9, -0.1
+22, 4.0, 2.9, -0.1
+23, 4.0, 2.9,  0.1
+24, 0.0, 2.9,  0.1
+25, 0.0, 3.1, -0.1
+26, 4.0, 3.1, -0.1
+27, 4.0, 3.1,  0.1
+28, 0.0, 3.1,  0.1
+
+** Reference + rotational nodes (coordinates irrelevant)
+1001, 0.0, 3.0, 0.0
+1101, 0.0, 3.0, 0.0
+1002, 0.0, 3.0, 0.0
+1102, 0.0, 3.0, 0.0
+
+1003, 4.0, 3.0, 0.0
+1103, 4.0, 3.0, 0.0
+1004, 4.0, 3.0, 0.0
+1104, 4.0, 3.0, 0.0
+
+*NSET, NSET=COL_L_BASE
+1,2,3,4
+*NSET, NSET=COL_R_BASE
+11,12,13,14
+
+*NSET, NSET=COL_L_TOP
+5,6,7,8
+*NSET, NSET=COL_R_TOP
+15,16,17,18
+
+*NSET, NSET=BEAM_L_END
+21,24,28,25
+*NSET, NSET=BEAM_R_END
+22,23,27,26
+
+*NSET, NSET=REF_L_COL
+1001
+*NSET, NSET=ROT_L_COL
+1101
+*NSET, NSET=REF_L_BEM
+1002
+*NSET, NSET=ROT_L_BEM
+1102
+
+*NSET, NSET=REF_R_COL
+1003
+*NSET, NSET=ROT_R_COL
+1103
+*NSET, NSET=REF_R_BEM
+1004
+*NSET, NSET=ROT_R_BEM
+1104
+
+*NSET, NSET=ROT_ALL
+1101,1102,1103,1104
+*NSET, NSET=REF_ALL
+1001,1002,1003,1004
+
+** Elements (solids)
+*ELEMENT, TYPE=C3D8R, ELSET=E_COL_L
+1, 1,2,3,4, 5,6,7,8
+*ELEMENT, TYPE=C3D8R, ELSET=E_COL_R
+2, 11,12,13,14, 15,16,17,18
+*ELEMENT, TYPE=C3D8R, ELSET=E_BEAM
+3, 21,22,23,24, 25,26,27,28
+
+*ELSET, ELSET=E_ALL
+E_COL_L, E_COL_R, E_BEAM
+
+** Material
+*MATERIAL, NAME=STEEL
+*ELASTIC
+2.10E11, 0.30
+*DENSITY
+7850.
+
+*SOLID SECTION, ELSET=E_ALL, MATERIAL=STEEL
+
+** Rigid body couplings (allowed for solids)
+*RIGID BODY, NSET=COL_L_TOP, REF NODE=1001, ROT NODE=1101
+*RIGID BODY, NSET=BEAM_L_END, REF NODE=1002, ROT NODE=1102
+
+*RIGID BODY, NSET=COL_R_TOP, REF NODE=1003, ROT NODE=1103
+*RIGID BODY, NSET=BEAM_R_END, REF NODE=1004, ROT NODE=1104
+
+** Tie translations at each joint (pin in translation)
+*EQUATION
+2
+1001, 1, 1.0
+1002, 1,-1.0
+*EQUATION
+2
+1001, 2, 1.0
+1002, 2,-1.0
+*EQUATION
+2
+1001, 3, 1.0
+1002, 3,-1.0
+
+*EQUATION
+2
+1003, 1, 1.0
+1004, 1,-1.0
+*EQUATION
+2
+1003, 2, 1.0
+1004, 2,-1.0
+*EQUATION
+2
+1003, 3, 1.0
+1004, 3,-1.0
+
+** Rotational springs (about global Z) between the two sides of each joint
+*ELEMENT, TYPE=SPRING2, ELSET=E_HINGE_L
+101, 1101, 1102
+*ELEMENT, TYPE=SPRING2, ELSET=E_HINGE_R
+102, 1103, 1104
+
+** Lock other rotations at joint (about X,Y) by constraining ROT-node U1,U2
+*BOUNDARY
+ROT_ALL, 1, 2, 0.
+
+** Hinge law: nonlinear M-θ (theta rad, moment N*m)
+** Adjust to taste; these numbers are just to see plastic-like behavior.
+*SPRING, ELSET=E_HINGE_L, NONLINEAR
+3,3
+0.0,     0.0
+0.002,  2.0E5
+0.020,  2.2E5
+
+*SPRING, ELSET=E_HINGE_R, NONLINEAR
+3,3
+0.0,     0.0
+0.002,  2.0E5
+0.020,  2.2E5
+
+** Base fixity (both columns base face nodes)
+*BOUNDARY
+COL_L_BASE, 1, 3, 0.
+COL_R_BASE, 1, 3, 0.
+
+** Keep reference nodes from drifting in translation (optional safety)
+** (They are already tied to faces and bases, but harmless)
+*BOUNDARY
+REF_ALL, 3, 3, 0.
+
+*STEP
+*STATIC
+
+** Gravity
+*DLOAD
+E_ALL, GRAV, 9.81, 0., -1., 0.
+
+** Lateral load applied at right beam-side reference node
+*CLOAD
+1004, 1, 5.0E4
+
+*NODE PRINT, NSET=ROT_ALL
+U
+*NODE PRINT, NSET=REF_ALL
+U
+
+*END STEP

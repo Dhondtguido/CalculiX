@@ -1,0 +1,80 @@
+** ----------------------------------------------------------------
+** Minimal "rotational spring" test in CalculiX using *RIGID BODY.
+** Important: CalculiX emulates rotations using a dummy rotational node
+** whose *translational* DOFs (1..3) are interpreted as rotations about
+** the REF NODE (x,y,z respectively). So rotation about global Z = U3
+** of the ROT NODE, and a "force" in DOF3 is a moment Mz.
+** ----------------------------------------------------------------
+*HEADING
+Minimal rotational spring via rigid-body rotational nodes (Mz-theta_z)
+
+*NODE
+** beam end nodes
+1,   0.,   0.,   0.
+2,   1.,   0.,   0.
+** extra nodes to avoid "all nodes colinear" rigid-body error
+11,  0.,  1.E-3, 0.
+12,  0.,  0.,  1.E-3
+21,  1.,  1.E-3, 0.
+22,  1.,  0.,  1.E-3
+** explicit ref + rot nodes
+101, 0.,  0.,  0.
+102, 0.,  0.,  0.
+201, 1.,  0.,  0.
+202, 1.,  0.,  0.
+
+*ELEMENT, TYPE=B31, ELSET=E_BEAM
+1, 1, 2
+
+** spring between rotational nodes (DOF3 = rotation about global Z)
+*ELEMENT, TYPE=SPRING2, ELSET=E_RS
+2, 102, 202
+
+*NSET, NSET=RB_LEFT
+1, 11, 12
+*NSET, NSET=RB_RIGHT
+2, 21, 22
+*NSET, NSET=ROT_LEFT
+102
+*NSET, NSET=ROT_RIGHT
+202
+*NSET, NSET=REF_LEFT
+101
+*NSET, NSET=REF_RIGHT
+201
+
+*RIGID BODY, NSET=RB_LEFT,  REF NODE=101, ROT NODE=102
+*RIGID BODY, NSET=RB_RIGHT, REF NODE=201, ROT NODE=202
+
+*MATERIAL, NAME=SOFT_BEAM
+*ELASTIC
+1.0E-9, 0.3
+*DENSITY
+7850.
+
+*BEAM SECTION, MATERIAL=SOFT_BEAM, ELSET=E_BEAM, SECTION=RECT
+1.0E-6, 1.0E-6
+0., 0., 1.
+
+** linear spring stiffness k_theta (N*m / rad)
+*SPRING, ELSET=E_RS
+3, 3
+1000.
+
+** boundary:
+** - fix both reference nodes translations (no rigid-body motion)
+** - clamp left rotation (rot node) completely
+** - allow right only theta_z (rot node DOF3)
+*BOUNDARY
+REF_LEFT,  1, 3, 0.
+REF_RIGHT, 1, 3, 0.
+ROT_LEFT,  1, 3, 0.
+ROT_RIGHT, 1, 2, 0.
+
+*STEP
+*STATIC
+*CLOAD
+ROT_RIGHT, 3, 1.0
+*NODE PRINT, NSET=ROT_RIGHT
+U
+*END STEP

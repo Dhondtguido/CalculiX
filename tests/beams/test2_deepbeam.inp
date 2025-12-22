@@ -1,0 +1,74 @@
+*HEADING
+Test 2: Deep Beam - Check for Shear Locking
+Validates that beam does not lock when shear deformation is significant
+**
+** Geometry: L=0.5m, rectangular section 0.05m x 0.2m (b x h)
+**           L/h = 0.5/0.2 = 2.5 (deep beam, shear matters!)
+** Material: Steel E=210e9 Pa, nu=0.3, G=E/(2*(1+nu)) = 80.77e9 Pa
+** Load: P = 10000 N at midspan (downward)
+**
+** Analytical solution (Timoshenko):
+**   delta_flexure = P*L^3/(48*E*I)
+**   delta_shear = P*L/(4*kappa*G*A)
+**   delta_total = delta_flexure + delta_shear
+**
+**   I = 0.05 * 0.2^3 / 12 = 3.333e-5 m^4
+**   A = 0.05 * 0.2 = 0.01 m^2
+**   kappa = 5/6 (rectangular section)
+**
+**   delta_flexure = 10000 * 0.5^3 / (48 * 210e9 * 3.333e-5) = 0.000037 m
+**   delta_shear = 10000 * 0.5 / (4 * 5/6 * 80.77e9 * 0.01) = 0.0000186 m
+**   delta_total = 0.0000556 m = 0.0556 mm
+**
+*NODE
+1, 0.0, 0.0, 0.0
+2, 0.125, 0.0, 0.0
+3, 0.25, 0.0, 0.0
+4, 0.375, 0.0, 0.0
+5, 0.5, 0.0, 0.0
+**
+*ELEMENT, TYPE=B31, ELSET=beam
+1, 1, 2
+2, 2, 3
+3, 3, 4
+4, 4, 5
+**
+*NSET, NSET=ends
+1, 5
+*NSET, NSET=mid
+3
+*NSET, NSET=all
+1, 2, 3, 4, 5
+**
+*MATERIAL, NAME=steel
+*ELASTIC
+210e9, 0.3
+**
+*BEAM SECTION, ELSET=beam, MATERIAL=steel, SECTION=RECT
+0.05, 0.2
+0.0, 0.0, 1.0
+**
+*STEP
+*STATIC
+**
+*BOUNDARY
+ends, 3, 3
+1, 1, 2
+5, 1, 2
+**
+*CLOAD
+mid, 3, -10000.0
+**
+*NODE PRINT, NSET=all
+U
+**
+*EL PRINT, ELSET=beam
+S
+**
+*NODE FILE
+U
+**
+*EL FILE
+S
+**
+*END STEP

@@ -493,12 +493,24 @@ c      write(*,*) 'u1 element ',i
           write(*,*) '       this user element'
           call exit(201)
         endif
-!     
+!
 !     calculating the section forces
 !     simplified version of Eqn. (11) in Luo (symmetric case
 !     for which Ay=Az=J=0)
-!       stre(1...6)=N,M2,M1,Q1,Q2,T        
-!     
+!
+!     Section forces in LOCAL beam coordinates:
+!       stre(1) = N  = axial force
+!       stre(2) = M2 = moment about local axis 2 (conventionally My)
+!       stre(3) = M1 = moment about local axis 1 (conventionally Mz)
+!       stre(4) = Q1 = shear force in direction 1 (conventionally Vy)
+!       stre(5) = Q2 = shear force in direction 2 (conventionally Vz)
+!       stre(6) = T  = torque about beam axis
+!
+!     Local coordinate system:
+!       e1: along beam axis (from node 1 to node 2)
+!       e2: user-specified direction (from *BEAM SECTION input)
+!       e3: e1 x e2 (right-hand rule)
+!
         stre(1)=e*a*emec(1)
         stre(2)=e*xi11*emec(2)
         stre(3)=e*xi22*emec(3)
@@ -628,13 +640,27 @@ c     &           +tm(3,j)*stre(6)
           enddo
         endif
       enddo
-!     
+!
+!     Output beam section forces in local coordinates
+!     (if output is requested and this is the first time through)
+!
+      if(iout.eq.1) then
+        write(*,*)
+        write(*,*) 'Beam element ',i,' section forces (local coords):'
+        write(*,'(a,6(1x,e12.5))') '  Node 1: N, Vy, Vz, T, My, Mz =',
+     &       stx(1,1,i),stx(4,1,i),stx(5,1,i),stx(6,1,i),
+     &       stx(2,1,i),stx(3,1,i)
+        write(*,'(a,6(1x,e12.5))') '  Node 2: N, Vy, Vz, T, My, Mz =',
+     &       stx(1,2,i),stx(4,2,i),stx(5,2,i),stx(6,2,i),
+     &       stx(2,2,i),stx(3,2,i)
+      endif
+!
 !     q contains the contributions to the nodal force in the nodes
 !     belonging to the element at stake from other elements (elements
 !     already treated). These contributions have to be
 !     subtracted to get the contributions attributable to the element
 !     at stake only
-!     
+!
       if(calcul_qa.eq.1) then
         do m1=1,nope
           do m2=1,3

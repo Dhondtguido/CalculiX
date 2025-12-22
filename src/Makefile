@@ -30,3 +30,7 @@ CalculiX: $(OCCXMAIN) CalculiX.a  $(LIBS)
 
 CalculiX.a: $(OCCXF) $(OCCXC)
 	ar vr $@ $?
+
+# --- fix: springs.f needs long fixed-form lines ---
+springs.o: springs.f
+	gfortran -Wall -g -cpp -ffixed-line-length-none -c springs.f -o springs.o

@@ -1,0 +1,194 @@
+** ------------------------------------------------------------
+** Portal frame solids + SPRING2 rotational hinges (about Z) - v4
+** Fix: Positive Jacobian for C3D8R by using Abaqus/CalculiX hex node ordering
+**      with thickness along global Z (bottom face at z=-0.1, top at z=+0.1).
+**
+** This eliminates: *ERROR in e_c3d: nonpositive jacobian determinant
+**
+** Hinges: rotational spring about global Z using ROT NODE U3 (theta_z in rad)
+** ------------------------------------------------------------
+
+*HEADING
+Portal frame solids + SPRING2 rotational hinges (about Z) - v4 (Jacobian fix)
+
+*NODE
+** Left column block (x=-0.1..0.1, y=0..3, z=-0.1..0.1)
+1, -0.1, 0.0, -0.1
+2,  0.1, 0.0, -0.1
+3,  0.1, 0.0,  0.1
+4, -0.1, 0.0,  0.1
+5, -0.1, 3.0, -0.1
+6,  0.1, 3.0, -0.1
+7,  0.1, 3.0,  0.1
+8, -0.1, 3.0,  0.1
+
+** Right column block (x=3.9..4.1, y=0..3, z=-0.1..0.1)
+11, 3.9, 0.0, -0.1
+12, 4.1, 0.0, -0.1
+13, 4.1, 0.0,  0.1
+14, 3.9, 0.0,  0.1
+15, 3.9, 3.0, -0.1
+16, 4.1, 3.0, -0.1
+17, 4.1, 3.0,  0.1
+18, 3.9, 3.0,  0.1
+
+** Beam block (x=0..4, y=2.9..3.1, z=-0.1..0.1)
+21, 0.0, 2.9, -0.1
+22, 4.0, 2.9, -0.1
+23, 4.0, 2.9,  0.1
+24, 0.0, 2.9,  0.1
+25, 0.0, 3.1, -0.1
+26, 4.0, 3.1, -0.1
+27, 4.0, 3.1,  0.1
+28, 0.0, 3.1,  0.1
+
+** Reference + rotational nodes (rigid joints)
+1001, 0.0, 3.0, 0.0
+1101, 0.0, 3.0, 0.0
+1002, 0.0, 3.0, 0.0
+1102, 0.0, 3.0, 0.0
+
+1003, 4.0, 3.0, 0.0
+1103, 4.0, 3.0, 0.0
+1004, 4.0, 3.0, 0.0
+1104, 4.0, 3.0, 0.0
+
+*NSET, NSET=COL_L_BASE
+1,2,3,4
+*NSET, NSET=COL_R_BASE
+11,12,13,14
+
+*NSET, NSET=COL_L_TOP
+5,6,7,8
+*NSET, NSET=COL_R_TOP
+15,16,17,18
+
+*NSET, NSET=BEAM_L_END
+21,24,28,25
+*NSET, NSET=BEAM_R_END
+22,23,27,26
+
+*NSET, NSET=REF_COL
+1001,1003
+*NSET, NSET=REF_BEM
+1002,1004
+*NSET, NSET=ROT_ALL
+1101,1102,1103,1104
+
+** ------------------------------------------------------------
+** Elements (C3D8R)
+** IMPORTANT: node ordering so z is thickness (bottom z=-0.1, top z=+0.1)
+** Left column bottom face: 1-2-6-5  (z=-0.1), top face: 4-3-7-8 (z=+0.1)
+** Right column bottom face: 11-12-16-15, top: 14-13-17-18
+** Beam bottom face: 21-22-26-25, top: 24-23-27-28
+** ------------------------------------------------------------
+
+*ELEMENT, TYPE=C3D8R, ELSET=E_COL_L
+1, 1,2,6,5, 4,3,7,8
+*ELEMENT, TYPE=C3D8R, ELSET=E_COL_R
+2, 11,12,16,15, 14,13,17,18
+*ELEMENT, TYPE=C3D8R, ELSET=E_BEAM
+3, 21,22,26,25, 24,23,27,28
+
+*ELSET, ELSET=E_ALL
+E_COL_L, E_COL_R, E_BEAM
+
+** Material
+*MATERIAL, NAME=STEEL
+*ELASTIC
+2.10E11, 0.30
+*DENSITY
+7850.
+*SOLID SECTION, ELSET=E_ALL, MATERIAL=STEEL
+
+** Rigid body couplings (solids OK)
+*RIGID BODY, NSET=COL_L_TOP, REF NODE=1001, ROT NODE=1101
+*RIGID BODY, NSET=BEAM_L_END, REF NODE=1002, ROT NODE=1102
+*RIGID BODY, NSET=COL_R_TOP, REF NODE=1003, ROT NODE=1103
+*RIGID BODY, NSET=BEAM_R_END, REF NODE=1004, ROT NODE=1104
+
+** Tie translations at each joint (pin in translation)
+** BEAM ref nodes are dependent (listed first)
+*EQUATION
+2
+1002, 1, 1.0
+1001, 1,-1.0
+*EQUATION
+2
+1002, 2, 1.0
+1001, 2,-1.0
+*EQUATION
+2
+1002, 3, 1.0
+1001, 3,-1.0
+
+*EQUATION
+2
+1004, 1, 1.0
+1003, 1,-1.0
+*EQUATION
+2
+1004, 2, 1.0
+1003, 2,-1.0
+*EQUATION
+2
+1004, 3, 1.0
+1003, 3,-1.0
+
+** Rotational springs about global Z (ROT node U3)
+*ELEMENT, TYPE=SPRING2, ELSET=E_HINGE_L
+101, 1101, 1102
+*ELEMENT, TYPE=SPRING2, ELSET=E_HINGE_R
+102, 1103, 1104
+
+** Lock other rotations (about X,Y): ROT node U1,U2 = 0
+*BOUNDARY
+ROT_ALL, 1, 2, 0.
+
+** Optional out-of-plane translation fix on independent joint refs only
+*BOUNDARY
+REF_COL, 3, 3, 0.
+
+** Hinge law (nonlinear M-θ)
+*SPRING, ELSET=E_HINGE_L, NONLINEAR
+3,3
+0.0,     0.0
+0.002,  2.0E5
+0.020,  2.2E5
+
+*SPRING, ELSET=E_HINGE_R, NONLINEAR
+3,3
+0.0,     0.0
+0.002,  2.0E5
+0.020,  2.2E5
+
+** Base fixity
+*BOUNDARY
+COL_L_BASE, 1, 3, 0.
+COL_R_BASE, 1, 3, 0.
+
+*STEP
+*STATIC
+
+** Gravity
+*DLOAD
+E_ALL, GRAV, 9.81, 0., -1., 0.
+
+** Lateral load at right joint (apply on independent column ref 1003)
+*CLOAD
+1003, 1, 5.0E4
+
+** Request an FRD (for cgx/paraview) and a simple node print
+*NODE FILE
+U
+*EL FILE
+S
+
+*NODE PRINT, NSET=ROT_ALL
+U
+*NODE PRINT, NSET=REF_COL
+U
+*NODE PRINT, NSET=REF_BEM
+U
+
+*END STEP

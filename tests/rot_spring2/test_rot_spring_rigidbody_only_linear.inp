@@ -1,0 +1,75 @@
+** ------------------------------------------------------------
+** Minimal rotational spring test (NO beam elements)
+** Uses rigid bodies with REF/ROT nodes. ROT-node translations U1/U2/U3
+** represent rotations about global X/Y/Z (rad) in CalculiX rigid-body formulation.
+**
+** We connect ROT nodes with a SPRING2 and apply a moment about Z via CLOAD on U3.
+**
+** Expected (linear): theta_z = Mz / kθ = 1.0 / 1000 = 0.001 rad (at node 202, U3)
+** ------------------------------------------------------------
+
+*HEADING
+Rigid-body rotational spring (linear)
+
+*NODE
+** Left rigid body points (non-collinear)
+11, 0.0, 0.0, 0.0
+12, 0.0, 1.0, 0.0
+13, 0.0, 0.0, 1.0
+** Right rigid body points (non-collinear)
+21, 1.0, 0.0, 0.0
+22, 1.0, 1.0, 0.0
+23, 1.0, 0.0, 1.0
+
+** Reference + rotational nodes
+101, 0.0, 0.0, 0.0
+102, 0.0, 0.0, 0.0
+201, 1.0, 0.0, 0.0
+202, 1.0, 0.0, 0.0
+
+*NSET, NSET=RB_LEFT
+11,12,13
+*NSET, NSET=RB_RIGHT
+21,22,23
+
+*NSET, NSET=REF_LEFT
+101
+*NSET, NSET=REF_RIGHT
+201
+*NSET, NSET=ROT_LEFT
+102
+*NSET, NSET=ROT_RIGHT
+202
+
+*RIGID BODY, NSET=RB_LEFT,  REF NODE=101, ROT NODE=102
+*RIGID BODY, NSET=RB_RIGHT, REF NODE=201, ROT NODE=202
+
+** Spring2 between ROT nodes
+*ELEMENT, TYPE=SPRING2, ELSET=E_RS
+1, 102, 202
+
+** Linear rotational stiffness about Z: kθ = 1000 N*m/rad
+*SPRING, ELSET=E_RS
+3, 3
+1000.
+
+** Fix reference translations (prevent rigid-body drift)
+*BOUNDARY
+REF_LEFT,  1, 3, 0.
+REF_RIGHT, 1, 3, 0.
+
+** Lock all rotations of the left body (ROT node U1..U3)
+ROT_LEFT,  1, 3, 0.
+
+** Right body: allow only rotation about Z (U3), block X/Y rotations (U1,U2)
+ROT_RIGHT, 1, 2, 0.
+
+*STEP
+*STATIC
+*CLOAD
+ROT_RIGHT, 3, 1.0
+
+*NODE PRINT, NSET=ROT_RIGHT
+U
+
+*END STEP
