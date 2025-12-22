@@ -71,7 +71,7 @@ int main(int argc,char *argv[])
     iperturb[2],nmat,ntmat_,norien,ithermal[2]={0,0},nmpcold,
     iprestr,kode,isolver,nslavs,nkon_,ne1,nkon0,mortar,ndmat_,
     jout[2],nlabel,nkon,idrct,jmax[2],iexpl,nevtot,ifacecount,
-    iplas,npmat_,mi[3],ntrans,mpcend,namtot_,iheading,
+    iplas,npmat_,mi[3],ntrans,mpcend,namtot_,iheading,ishift,
     icascade,maxlenmpc,mpcinfo[4],ne1d,ne2d,infree[4],
     callfrommain,nflow,jin=0,irstrt[2],nener,jrstrt,nenerold,
     nline,*ipoinp=NULL,*inp=NULL,ntie,ntie_,mcs,nprop_,
@@ -159,7 +159,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Fri Dec 19 18:41:56 CET 2025\n");
+  printf("You are using an executable made on Mon Dec 22 11:12:54 CET 2025\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -1840,7 +1840,32 @@ int main(int argc,char *argv[])
 
     }
 
-    //    nload=nload0;
+    /* deactivating the interface loading */
+
+    if(interfaceload>0){
+      ishift=0;
+      for(i=0;i<nload1;i++){
+	if(strcmp1(&sideload[20*i],"I")==0){
+	  if(ipkon[nelemload[2*i]-1]>=0){
+	    ishift++;
+	    continue;
+	  }
+	}
+	nelemload[2*(i-ishift)]=nelemload[2*i];
+	nelemload[2*(i-ishift)+1]=nelemload[2*i+1];
+	strcpy1(&sideload[20*(i-ishift)],&sideload[20*i],20);
+	xload[2*(i-ishift)]=xload[2*i];
+	xload[2*(i-ishift)+1]=xload[2*i+1];
+	xloadold[2*(i-ishift)]=xloadold[2*i];
+	xloadold[2*(i-ishift)+1]=xloadold[2*i+1];
+	if(nam>0){
+	  iamload[2*(i-ishift)]=iamload[2*i];
+	  iamload[2*(i-ishift)+1]=iamload[2*i+1];
+	}
+      }
+    }
+    
+    nload=nload0;
 
     if((nmethod==4)&&(iperturb[0]>1)) SFREE(accold);
 

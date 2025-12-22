@@ -19,7 +19,7 @@
 !     cuts a 3- or 4-noded polygon of the master surface with a slave surface
 !     inserts new active edges into iactiveline for current triangle
 !     
-      subroutine treatmasterface(nopes,slavstraight,xn,xl2s,xl2sp,ipe,
+      subroutine treatmasterface(nopes,slavstraight,xn,xl2s,xl3sp,ipe,
      &     ime,iactiveline,nactiveline,ifacem,nintpoint,pslavsurf,
      &     xlpg,npg,nodepg,areaslav)
 !     
@@ -34,7 +34,7 @@
       real*8 pvertex(3,13),slavstraight(36),xn(3),
      &     xl2s(3,*),p1(2),p2(2),pslavsurf(3,*),xil,etl,p(3),dist,
      &     area,xlpg(3,8),al,err,
-     &     xl2sp(3,*),xlpgp(3,8),cgp(3),xit(3),etat(3),
+     &     xl3sp(3,*),xlpgp(3,8),cgp(3),xit(3),etat(3),
      &     areaslav
 !     
       include "gauss.f"
@@ -55,7 +55,7 @@
 !     
 !     call Sutherland-Hodgman Algo
 !     
-      call sutherland_hodgman(nopes,xn,xl2sp,xlpgp,nodepg,
+      call sutherland_hodgman(nopes,xn,xl3sp,xlpgp,nodepg,
      &     ipe,ime,iactiveline,nactiveline,
      &     ifacem,npg,nvertex,pvertex) 
 !     
