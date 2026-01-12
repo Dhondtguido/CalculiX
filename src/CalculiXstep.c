@@ -209,7 +209,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
     *ikmpcref=NULL,isens,namtot,nstam,ndamp,nef,inp_size,maxsectors_,
     *ipoinp_sav=NULL,*inp_sav=NULL,irefineloop=0,icoordinate=0,
     *nodedesi=NULL,ndesi=0,nobjectstart=0,nfc_,ndc_,nfc,ndc,*ikdc=NULL,
-    *imastload=NULL,interfaceload=0;
+    *imastload=NULL,interfaceload;
 
   static ITG *meminset=NULL,*rmeminset=NULL;
 
@@ -302,7 +302,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
     printf("software, and you are welcome to redistribute it under\n");
     printf("certain conditions, see gpl.htm\n\n");
     printf("************************************************************\n\n");
-    printf("You are using an executable made on Mon Dec 22 11:50:10 CET 2025\n");
+    printf("You are using an executable made on Mon Jan 12 20:18:17 CET 2026\n");
     fflush(stdout);
 
     NNEW(ipoinp,ITG,2*nentries);
@@ -333,7 +333,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 	    &ntrans_,&ncs_,&nstate_,&ncmat_,&memmpc_,&nprint_,energy,ctrl,alpha,
 	    qaold,physcon,&istep,&istat,&iprestr,&kode,nload,&nbody,&nforc,
 	    nboun,nk,&nmpc,&nam,&nzs_,nlabel,&ttime,&iheading,&nfc,&nfc_,&ndc,
-	    &ndc_,&ndmat_);
+	    &ndc_,&ndmat_,&interfaceload);
   
     NNEW(set,char,81*nset_);
     NNEW(meminset,ITG,nset_);
@@ -1847,7 +1847,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 	      &ncs_,&nstate_,&ncmat_,&memmpc_,&nprint_,energy,ctrl,alpha,
 	      qaold,physcon,&istep,&istat,&iprestr,&kode,nload,&nbody,&nforc,
 	      nboun,nk,&nmpc,&nam,&nzs_,nlabel,&ttime,&iheading,&nfc,&nfc_,
-	      &ndc,&ndc_,&ndmat_);
+	      &ndc,&ndc_,&ndmat_,&interfaceload);
   
       NNEW(set,char,81*nset_);
       NNEW(meminset,ITG,nset_);

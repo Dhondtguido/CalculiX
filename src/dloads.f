@@ -315,9 +315,7 @@
         elseif(((label(1:2).ne.'P1').and.(label(1:2).ne.'P2').and.
      &         (label(1:2).ne.'P3').and.(label(1:2).ne.'P4').and.
      &         (label(1:2).ne.'P5').and.(label(1:2).ne.'P6').and.
-     &         (label(1:2).ne.'I1').and.(label(1:2).ne.'I2').and.
-     &         (label(1:2).ne.'I3').and.(label(1:2).ne.'I4').and.
-     &         (label(1:2).ne.'I5').and.(label(1:2).ne.'I6').and.
+     &         (label(1:2).ne.'I ').and.
      &         (label(1:2).ne.'P ').and.(label(1:2).ne.'BX').and.
      &         (label(1:2).ne.'BY').and.(label(1:2).ne.'BZ').and.
 c     BernhardiStart

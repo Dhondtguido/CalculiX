@@ -41,7 +41,7 @@ void ini_cal(char *jobnamec,char *output,char *fneig,char *kind1,char *kind2,
 	     ITG *istep,ITG *istat,ITG *iprestr,ITG *kode,ITG *nload,
 	     ITG *nbody,ITG *nforc,ITG *nboun,ITG *nk,ITG *nmpc,ITG *nam,
 	     ITG *nzs_,ITG *nlabel,double *ttime,ITG *iheading,ITG *nfc,
-	     ITG *nfc_,ITG *ndc,ITG *ndc_,ITG *ndmat_){
+	     ITG *nfc_,ITG *ndc,ITG *ndc_,ITG *ndmat_,ITG *interfaceload){
 
   /* used for initialization and re-initialization */
   
@@ -64,6 +64,7 @@ void ini_cal(char *jobnamec,char *output,char *fneig,char *kind1,char *kind2,
   *nloadold=0;
   *nload_=0;
   *nload=0;
+  *interfaceload=0;
 
   /* body loading */
   

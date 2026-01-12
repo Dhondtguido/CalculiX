@@ -47,7 +47,7 @@ int main(int argc,char *argv[])
     kind1[2],kind2[2],*heading=NULL,*objectset=NULL;
   
   ITG *kon=NULL,*nodeboun=NULL,*ndirboun=NULL,*ipompc=NULL,
-    *nodempc=NULL,*nodeforc=NULL,*ndirforc=NULL,interfaceload=0,
+    *nodempc=NULL,*nodeforc=NULL,*ndirforc=NULL,interfaceload,
     *nelemload=NULL,im,*inodesd=NULL,nload1,*idefforc=NULL,
     *nactdof=NULL,*icol=NULL,*ics=NULL,itempuser[3],
     *jq=NULL,*mast1=NULL,*irow=NULL,*rig=NULL,*idefbody=NULL,
@@ -159,7 +159,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Mon Dec 22 11:50:10 CET 2025\n");
+  printf("You are using an executable made on Mon Jan 12 20:18:17 CET 2026\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -190,7 +190,7 @@ int main(int argc,char *argv[])
 	  &ntrans_,&ncs_,&nstate_,&ncmat_,&memmpc_,&nprint_,energy,ctrl,alpha,
 	  qaold,physcon,&istep,&istat,&iprestr,&kode,&nload,&nbody,&nforc,
 	  &nboun,&nk,&nmpc,&nam,&nzs_,&nlabel,&ttime,&iheading,&nfc,&nfc_,&ndc,
-	  &ndc_,&ndmat_);
+	  &ndc_,&ndmat_,&interfaceload);
   
   NNEW(set,char,81*nset_);
   NNEW(meminset,ITG,nset_);
@@ -1713,7 +1713,7 @@ int main(int argc,char *argv[])
 		&ncs_,&nstate_,&ncmat_,&memmpc_,&nprint_,energy,ctrl,alpha,
 		qaold,physcon,&istep,&istat,&iprestr,&kode,&nload,&nbody,&nforc,
 		&nboun,&nk,&nmpc,&nam,&nzs_,&nlabel,&ttime,&iheading,&nfc,
-		&nfc_,&ndc,&ndc_,&ndmat_);
+		&nfc_,&ndc,&ndc_,&ndmat_,&interfaceload);
   
 	NNEW(set,char,81*nset_);
 	NNEW(meminset,ITG,nset_);

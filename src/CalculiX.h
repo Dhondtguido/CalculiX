@@ -2165,7 +2165,7 @@ void ini_cal(char *jobnamec,char *output,char *fneig,char *kind1,char *kind2,
 	     ITG *istep,ITG *istat,ITG *iprestr,ITG *kode,ITG *nload,
 	     ITG *nbody,ITG *nforc,ITG *nboun,ITG *nk,ITG *nmpc,ITG *nam,
 	     ITG *nzs_,ITG *nlabel,double *ttime,ITG *iheading,ITG *nfc,
-	     ITG *nfc_,ITG *ndc,ITG *ndc_,ITG *ndam);
+	     ITG *nfc_,ITG *ndc,ITG *ndc_,ITG *ndmat_,ITG *interfaceload);
 
 void insert_cmatrix(ITG *ipointer,ITG **mast1p,ITG **nextp,ITG *i1,
 		    ITG *i2,ITG *ifree,ITG *nzs_);
