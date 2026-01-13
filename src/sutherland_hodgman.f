@@ -26,16 +26,16 @@
 !     
       implicit none 
 !     
-      logical invert,oldactive,altered,border
+      logical invert,oldactive,altered
 !     
       integer nvertex,nopes,ipe(*),ime(4,*),iactiveline(2,*),
      &     nactiveline,itri,ifacem,i,ii,j,k,npg,id,
      &     nodepg(*),ncvertex,node1,node2,modf,node,indexline,itwo, 
-     &     insertl(3),ninsertl
+     &     insertl(3),ninsertl,node1loc,node2loc,node3loc
 !     
       real*8 pvertex(3,*),xn(3),xl3sp(3,*),pa(3),pb(3),xinters(3),
      &     xcp(3),diff,dd,xlpgp(3,*),c_pvertex(3,13),t,cedge(3),
-     &     xtest(3),eplane,area,areax,areay,areaz,p1(3),p2(3),areaface
+     &     xtest(3),eplane
 !     
       data itwo /2/
 !     
@@ -58,9 +58,13 @@
         altered=.false.
 !     
 !     generate clipping plane
-!     
-        node1=nodepg(modf(npg,i))
-        node2=nodepg(modf(npg,i+1))
+!
+        node1loc=modf(npg,i)
+        node2loc=modf(npg,i+1)
+        node3loc=modf(npg,i+2)
+!        
+        node1=nodepg(node1loc)
+        node2=nodepg(node2loc)
         invert=.false.
         if(node2.lt.node1) then
           node=node1
@@ -80,8 +84,7 @@
           endif 
         enddo
         do k=1,3
-          cedge(k)=xlpgp(k,modf(npg,i+1))
-     &         -xlpgp(k,modf(npg,i))
+          cedge(k)=xlpgp(k,node2loc)-xlpgp(k,node1loc)
         enddo
         xcp(1)=xn(2)*cedge(3)-xn(3)*cedge(2)
         xcp(2)=xn(3)*cedge(1)-xn(1)*cedge(3)
@@ -90,12 +93,12 @@
         do k=1,3
           xcp(k)=xcp(k)/dd
         enddo
-        t=-eplane(xlpgp(1,modf(npg,i)),xcp,0.d0)
+        t=-eplane(xlpgp(1,node1loc),xcp,0.d0)
 !     
 !     inside-outside-test 
 !     
         do k=1,3 
-          xtest(k)=xlpgp(k,modf(npg,i+2))
+          xtest(k)=xlpgp(k,node3loc)
         enddo
         if(eplane(xtest,xcp,t).gt.0) then
           t=-t
@@ -179,7 +182,7 @@
                 enddo
               endif       
               if((.not.oldactive).and.(.not.altered)) then
-                if(eplane(pb,xcp,t).lt.0.d0.and.nvertex.gt.2) then
+                if((eplane(pb,xcp,t).lt.0.d0).and.(nvertex.gt.2)) then
                   altered=.true.
                   nactiveline=nactiveline+1
                   do ii=nactiveline,id+2,-1

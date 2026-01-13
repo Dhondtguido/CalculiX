@@ -96,9 +96,9 @@ c     cgp(k)=cgp(k)+pvertex(k,i)/nvertex
 !     
 !     Project back on slave surface
 !     
-        call attachline(xl2m,pvertex(1:3,modf(nvertex,k)),
+        call attachline(xl2m,pvertex(1,modf(nvertex,k)),
      &       nopem,xit(1),etat(1),xn,p,dist)
-        call attachline(xl2m,pvertex(1:3,modf(nvertex,k+1)),
+        call attachline(xl2m,pvertex(1,modf(nvertex,k+1)),
      &       nopem,xit(2),etat(2),xn,p,dist)
 !     
         p1(1)=xit(1)-xit(3)

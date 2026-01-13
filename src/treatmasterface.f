@@ -29,13 +29,11 @@
 !     
       integer nvertex,nopes,ipe(*),ime(4,*),iactiveline(2,*),
      &     nactiveline,npg,i,j,k,nintpoint,
-     &     nodepg(*),modf,ifacem,k_max
+     &     nodepg(*),modf,ifacem,num_of_tria
 !     
-      real*8 pvertex(3,13),xn(4),
-     &     xl2s(3,*),p1(2),p2(2),pslavsurf(3,*),xil,etl,p(3),dist,
-     &     area,xlpg(3,8),al,err,
-     &     xl3sp(3,*),xlpgp(3,8),cgp(3),xit(3),etat(3),
-     &     areaslav
+      real*8 pvertex(3,13),xn(4),xl2s(3,*),p1(2),p2(2),pslavsurf(3,*),
+     &     xil,etl,p(3),dist,area,xlpg(3,8),al,err,xl3sp(3,*),
+     &     xlpgp(3,8),cgp(3),xit(3),etat(3),areaslav
 !     
       include "gauss.f"
 !     
@@ -44,16 +42,14 @@
 !     
 !     Project master nodes to meanplane, needed for Sutherland-Hodgman
 !     
-      do j=1, npg
-        al=-xn(1)*xlpg(1,j)-xn(2)*
-     &       xlpg(2,j)-xn(3)*
-     &       xlpg(3,j)-xn(4)
+      do j=1,npg
+        al=-xn(1)*xlpg(1,j)-xn(2)*xlpg(2,j)-xn(3)*xlpg(3,j)-xn(4)
         do k=1,3
           xlpgp(k,j)=xlpg(k,j)+al*xn(k)    
         enddo
       enddo 
 !     
-!     call Sutherland-Hodgman Algo
+!     Sutherland-Hodgman algorithm
 !     
       call sutherland_hodgman(nopes,xn,xl3sp,xlpgp,nodepg,
      &     ipe,ime,iactiveline,nactiveline,
@@ -69,18 +65,17 @@
           cgp(k)=pvertex(k,nvertex)
         enddo
         nvertex=nvertex-1
-        k_max=1
+        num_of_tria=1
       else
         do i=1,nvertex
           do k=1,3
-c     cgp(k)=cgp(k)+pvertex(k,i)/nvertex
             cgp(k)=cgp(k)+pvertex(k,i)
           enddo
         enddo
         do k=1,3
           cgp(k)=cgp(k)/nvertex
         enddo
-        k_max=nvertex
+        num_of_tria=nvertex
       endif 
 !     
 !     Project center point back on slave face
@@ -89,13 +84,13 @@ c     cgp(k)=cgp(k)+pvertex(k,i)/nvertex
 !     
 !     generating integration points on the slave surface S
 !     
-      do k=1,k_max
+      do k=1,num_of_tria
 !     
 !     Project back on slave surface
 !     
-        call attachline(xl2s,pvertex(1:3,modf(nvertex,k)),
+        call attachline(xl2s,pvertex(1,modf(nvertex,k)),
      &       nopes,xit(1),etat(1),xn,p,dist)
-        call attachline(xl2s,pvertex(1:3,modf(nvertex,k+1)),
+        call attachline(xl2s,pvertex(1,modf(nvertex,k+1)),
      &       nopes,xit(2),etat(2),xn,p,dist)
 !     
         p1(1)=xit(1)-xit(3)
@@ -108,7 +103,7 @@ c     cgp(k)=cgp(k)+pvertex(k,i)/nvertex
 !     
         if(area.lt.1.d-4) cycle
         if(((nopes.eq.4).or.(nopes.eq.8))
-     &       .and.(areaslav+area-4.0d0.gt.1.d-3)
+     &       .and.(areaslav+area-4.d0.gt.1.d-3)
      &       .and.(nactiveline.gt.0))then
           nactiveline=0
           return
