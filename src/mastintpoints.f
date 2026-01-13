@@ -77,8 +77,6 @@
       err=0.1d0
       areaslav=0.d0
 !     
-!     Research of the contact integration points
-!     
       nelems=nelemloadloc
       if((ipkon(nelems).ge.0).or.(lakon(nelems)(1:1).ne.'S')) then
         write(*,*) '*WARNING in mastintpoints'
@@ -107,17 +105,6 @@
      &           vold(j,konl(m))     
          enddo
       enddo  
-!     
-!     slightly reducing the size of the slave surface in
-!     an aleatoric way
-!     
-      do j=1,3
-         pmiddle(j)=0.d0
-         do m=1,nopes
-            pmiddle(j)=pmiddle(j)+xl2s(j,m)
-         enddo
-         pmiddle(j)=pmiddle(j)/nopes
-      enddo
 !
 !     sort vertices for quadratic elements in ccw direction
 !     
@@ -216,6 +203,18 @@
             mafacecorner(j,k)=0
          enddo
       enddo
+!     
+!     calculating a middle point in the face
+!     
+      do j=1,3
+         pmiddle(j)=0.d0
+         do m=1,nopes
+            pmiddle(j)=pmiddle(j)+xl2s(j,m)
+         enddo
+         pmiddle(j)=pmiddle(j)/nopes
+      enddo
+!     
+!     moving the nodes towards the middle     
 !     
       do j=1,3
          do m=1,nopes
