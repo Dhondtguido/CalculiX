@@ -42,7 +42,7 @@
       nvertex=0
       ninsertl=0
 !     
-!     Initialize Polygon
+!     Initialize slave polygon
 !     
       do j=1,nopes
         nvertex=nvertex+1
@@ -62,7 +62,7 @@
         node1=nodepg(modf(npg,i))
         node2=nodepg(modf(npg,i+1))
         invert=.false.
-        if(node2.lt.node1)then
+        if(node2.lt.node1) then
           node=node1
           node1=node2
           node2=node
@@ -73,9 +73,9 @@
           if(ime(1,indexline).eq.node2) exit
           indexline=ime(4,indexline)
           if(indexline.eq.0) then
-            write(*,*) 
-     &           '*ERROR in SH:line was not properly catalogued'
-            write(*,*) 'itri',itri,'node1',node1,'node2',node2
+            write(*,*) '*ERROR in sutherland_hodgman:'
+            write(*,*) '       line was not properly catalogued'
+            write(*,*) '       itri',itri,'node1',node1,'node2',node2
             call exit(201)
           endif 
         enddo
@@ -97,7 +97,7 @@
         do k=1,3 
           xtest(k)=xlpgp(k,modf(npg,i+2))
         enddo
-        if(eplane(xtest,xcp,t).gt.0)then
+        if(eplane(xtest,xcp,t).gt.0) then
           t=-t
           do k=1,3
             xcp(k)=-xcp(k)
@@ -105,10 +105,10 @@
         endif
         oldactive=.false.
         call nidentk(iactiveline,indexline,nactiveline,id,itwo)
-        if(id.gt.0.and.iactiveline(1,id).eq.indexline)then
+        if((id.gt.0).and.(iactiveline(1,id).eq.indexline)) then
           oldactive=.true.
         endif    
-        if(oldactive)then
+        if(oldactive) then
           nactiveline=nactiveline-1
           do ii=id,nactiveline
             do k=1,2
@@ -119,7 +119,7 @@
 !     
         if(nvertex.lt.3) cycle
 !     
-!     loop over polygon vertices
+!     loop over slave face vertices
 !     
         do j=0,nvertex-1
           do k=1,3
@@ -127,18 +127,18 @@
             pb(k)=pvertex(k,modf(nvertex,j+1))
           enddo 
           if(eplane(pa,xcp,t).le.1.d-12) then
-            if(eplane(pb,xcp,t).le.1.d-12)then
+            if(eplane(pb,xcp,t).le.1.d-12) then
               ncvertex=ncvertex+1
               do k=1,3
                 c_pvertex(k,ncvertex)=pb(k)
               enddo 
             else
-              if(abs(eplane(pa,xcp,t)).gt.1.d-10)then
+              if(abs(eplane(pa,xcp,t)).gt.1.d-10) then
                 call intersectionpoint(pa,pb,xcp,t,xinters)
                 diff=(xinters(1)-pa(1))**2+(xinters(2)-pa(2))**2+
      &               (xinters(3)-pa(3))**2
                 diff=dsqrt(diff)
-                if(diff.gt.1.d-11)then
+                if(diff.gt.1.d-11) then
                   ncvertex=ncvertex+1
                   do k=1,3
                     c_pvertex(k,ncvertex)=xinters(k)
@@ -146,7 +146,7 @@
                 endif
               endif 
 !     
-              if((.not.oldactive).and.(.not.altered))then
+              if((.not.oldactive).and.(.not.altered)) then
                 altered=.true.
                 nactiveline=nactiveline+1
                 do ii=nactiveline,id+2,-1
@@ -161,8 +161,8 @@
               endif
             endif
           else
-            if(eplane(pb,xcp,t).le.1.d-12)then
-              if(abs(eplane(pb,xcp,t)).lt.1.d-10)then
+            if(eplane(pb,xcp,t).le.1.d-12) then
+              if(abs(eplane(pb,xcp,t)).lt.1.d-10) then
                 do ii=1,3
                   xinters(ii)=pb(ii)
                 enddo
@@ -178,8 +178,8 @@
                   c_pvertex(k,ncvertex)=pb(k)
                 enddo
               endif       
-              if((.not.oldactive).and.(.not.altered))then
-                if(eplane(pb,xcp,t).lt.0.d0.and.nvertex.gt.2)then
+              if((.not.oldactive).and.(.not.altered)) then
+                if(eplane(pb,xcp,t).lt.0.d0.and.nvertex.gt.2) then
                   altered=.true.
                   nactiveline=nactiveline+1
                   do ii=nactiveline,id+2,-1
@@ -194,7 +194,7 @@
                 endif
               endif
             else
-              if((.not.oldactive).and.(.not.altered))then
+              if((.not.oldactive).and.(.not.altered)) then
                 altered=.true.
                 nactiveline=nactiveline+1
                 do ii=nactiveline,id+2,-1
@@ -226,34 +226,16 @@
 !     
 !     remove inserted active lines,if polygon is degenerated
 !     
-c      if(nvertex.ge.3)then
-c     area=0
-c     do k=1,nvertex-2
-c     p1(1)=pvertex(1,k+1)-pvertex(1,1)
-c     p1(2)=pvertex(2,k+1)-pvertex(2,1)
-c     p1(3)=pvertex(3,k+1)-pvertex(3,1)
-c     p2(1)=pvertex(1,k+2)-pvertex(1,1)
-c     p2(2)=pvertex(2,k+2)-pvertex(2,1)
-c     p2(3)=pvertex(3,k+2)-pvertex(3,1)
-c     areax=((p1(2)*p2(3))-(p2(2)*p1(3)))**2
-c     areay=(-(p1(1)*p2(3))+(p2(1)*p1(3)))**2
-c     areaz=((p1(1)*p2(2))-(p2(1)*p1(2)))**2
-c     area=area+dsqrt(areax+areay+areaz)/2.d0
-c     enddo
-c     if(border)write(20,*)'border reached'
-c      endif
-c     if(nvertex.lt.3.or.border)then
-!     
-      if(nvertex.lt.3)then
+      if(nvertex.lt.3) then
         do i=1,ninsertl
           oldactive=.false.
           indexline=insertl(i)
           call nidentk(iactiveline,indexline, nactiveline,id,itwo)
-          if(id.gt.0)then
+          if(id.gt.0) then
             if(iactiveline(1,id).eq.indexline) oldactive=.true.
           endif
           
-          if(oldactive)then
+          if(oldactive) then
             nactiveline=nactiveline-1
             do ii=id,nactiveline
               do k=1,2
