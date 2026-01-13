@@ -29,7 +29,7 @@
       integer koncont(4,*),j,k,node,mi(*),imastnode(*),
      &     iplaneaxial,noeq,imastset,nmasts,
      &     istartset(*),iendset(*),ialset(*),ifacem,nelemm,
-     &     jfacem,indexe,ipkon(*),nopem,nope,konl(26),kon(*),m,
+     &     jfacem,indexe,ipkon(*),nopem,nope,konl(20),kon(*),m,
      &     ifaceq(8,6),ifacet(6,4),ifacew1(4,5),
      &     ifacew2(8,5),id,index1,indexnode(9),l,iflag,itriact,
      &     ntrifaces,noeq4(2),noeq8(6),mcs,ics(*),icyc(3),

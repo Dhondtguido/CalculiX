@@ -159,7 +159,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Mon Jan 12 20:18:17 CET 2026\n");
+  printf("You are using an executable made on Tue Jan 13 17:05:38 CET 2026\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -1067,8 +1067,8 @@ int main(int argc,char *argv[])
     /* check for interfaceloading */
 
     if(interfaceload>0){
-      interfaceloading(&ne,ipkon,kon,lakon,&nk,set,istartset,iendset,ialset,
-		       &nset,&nset_,&nalset,co,vold,mi,cs,&mcs,ics,&nelemload,
+      interfaceloading(&ne,ipkon,kon,lakon,&nk,&set,&istartset,&iendset,&ialset,
+		       &nset,&nalset,co,vold,mi,cs,&mcs,ics,&nelemload,
 		       &sideload,&xload,&xloadold,&iamload,&nam,&nload,
 		       &nload_,&imastload,&pmastload,&interfaceload);
     }

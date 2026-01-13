@@ -23,30 +23,37 @@
 
 #include "CalculiX.h"
 
-void interfaceloading(ITG *ne,ITG *ipkon,ITG *kon,char *lakon,ITG *nk,char*set,
-		      ITG *istartset,ITG *iendset,ITG *ialset,ITG *nset,
-		      ITG *nset_,ITG *nalset,double *co,double *vold,ITG *mi,
+void interfaceloading(ITG *ne,ITG *ipkon,ITG *kon,char *lakon,ITG *nk,
+		      char **setp,
+		      ITG **istartsetp,ITG **iendsetp,ITG **ialsetp,ITG *nset,
+		      ITG *nalset,double *co,double *vold,ITG *mi,
 		      double *cs,ITG *mcs,ITG *ics,ITG **nelemloadp,
 		      char **sideloadp,double **xloadp,double **xloadoldp,
 		      ITG **iamloadp,ITG *nam,ITG *nload,ITG *nload_,
 		      ITG **imastloadp,double **pmastloadp,ITG *interfaceload){
 
-  char *sideload=NULL,*sideloadcpy=NULL;
+  char *sideload=NULL,*sideloadcpy=NULL,*set=NULL;
   
   ITG imastset,nmastface,*koncont=NULL,ncont,*ipe=NULL,*ime=NULL,im,
     *imastop=NULL,*imastnode=NULL,nmasts,*nelemload=NULL,*iamload=NULL,
     *nx=NULL,*ny=NULL,*nz=NULL,kflag,nintpoint,*imastload=NULL,ifreeme,
-    *nelemloadcpy=NULL,i,j;
+    *nelemloadcpy=NULL,i,j,*istartset=NULL,*iendset=NULL,*ialset=NULL;
 
   double *cg=NULL,*straight=NULL,*xmastnor=NULL,*xload=NULL,*xloadold=NULL,
     *x=NULL,*y=NULL,*z=NULL,*xo=NULL,*yo=NULL,*zo=NULL,*pmastload=NULL;
 
   nelemload=*nelemloadp;sideload=*sideloadp;xload=*xloadp;xloadold=*xloadoldp;
   iamload=*iamloadp;imastload=*imastloadp;pmastload=*pmastloadp;
+  set=*setp;istartset=*istartsetp;iendset=*iendsetp;ialset=*ialsetp;
 
   if(*interfaceload==1){
+    RENEW(set,char,81*(*nset+1));
+    RENEW(istartset,ITG,*nset+1);
+    RENEW(iendset,ITG,*nset+1);
+    RENEW(ialset,ITG,*nalset+6**ne);
     FORTRAN(calcglobmastsurf,(ne,ipkon,kon,lakon,nk,set,istartset,iendset,
-			      ialset,nset,nset_,nalset,&imastset,&nmastface));
+			      ialset,nset,nalset,&imastset,&nmastface));
+    RENEW(ialset,ITG,*nalset);
     *interfaceload=2;
   }
 
@@ -78,7 +85,7 @@ void interfaceloading(ITG *ne,ITG *ipkon,ITG *kon,char *lakon,ITG *nk,char*set,
   FORTRAN(catmastnodes,(lakon,ipkon,kon,istartset,iendset,ialset,imastnode,
 			&nmasts,&imastset));
 
-  NNEW(imastnode,ITG,nmasts);
+  RENEW(imastnode,ITG,nmasts);
 
   /* calculate geometric data of the master surface triangulation 
      (normals, bounding planes..) */
@@ -170,6 +177,7 @@ void interfaceloading(ITG *ne,ITG *ipkon,ITG *kon,char *lakon,ITG *nk,char*set,
 
   *nelemloadp=nelemload;*sideloadp=sideload;*xloadp=xload;*xloadoldp=xloadold;
   *iamloadp=iamload;*imastloadp=imastload;*pmastloadp=pmastload;
+  *setp=set;*istartsetp=istartset;*iendsetp=iendset;*ialsetp=ialset;
   
   return;
 }

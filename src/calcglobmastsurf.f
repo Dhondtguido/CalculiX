@@ -17,7 +17,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
       subroutine calcglobmastsurf(ne,ipkon,kon,lakon,nk,
-     &     set,istartset,iendset,ialset,nset,nset_,nalset,
+     &     set,istartset,iendset,ialset,nset,nalset,
      &     imastset,nmastface)
 !     
 !     preliminary calculations for I-type loading applications:
@@ -31,7 +31,7 @@
 !     
       integer nodes(4),ne,ipkon(*),kon(*),
      &     indexe,ifaceq(8,6),ifacet(7,4),index,ifacew(8,5),ithree,
-     &     ifour,iaux,kflag,nset_,nalset,id,nk,i,j,k,m,ifree,indexold,
+     &     ifour,iaux,kflag,nalset,id,nk,i,j,k,m,ifree,indexold,
      &     ifreenew,istartset(*),iendset(*),ialset(*),nset,imastset,
      &     nmastface
 !
@@ -240,10 +240,6 @@
         endif
       endif
       nset=nset+1
-      if(nset.gt.nset_) then
-        write(*,*) '*ERROR reading *SURFACE: increase nset_'
-        call exit(201)
-      endif
       do j=nset,id+2,-1
         istartset(j)=istartset(j-1)
         iendset(j)=iendset(j-1)

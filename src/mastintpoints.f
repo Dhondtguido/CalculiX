@@ -38,9 +38,9 @@
       character*20 sideload(*),sideloadloc
 !     
       integer nintpoint,imastop(3,*),ncont,nelemload(2,*),nload,
-     &     ipkon(*),kon(*),koncont(4,*),node,neigh(10),iflag,kneigh,
+     &     ipkon(*),kon(*),koncont(4,*),neigh(10),iflag,kneigh,
      &     j,k,ii,itri,nx(*),ny(*),nz(*),nelemm,jfacem,nload_,
-     &     indexe,nopesm,nope,ifaces,nelems,jfaces,mi(*),
+     &     indexe,nopesm,ifaces,nelems,jfaces,mi(*),
      &     m,nopes,konl(20),id,maface(8),nmaface,imastload(2,*),
      &     mafacecorner(8,8),line,iactiveline(2,3*ncont),
      &     icoveredmelem(3*ncont),nactiveline,ipe(*),ime(4,*),k1,j1,
@@ -80,31 +80,31 @@
 !     Research of the contact integration points
 !     
       nelems=nelemloadloc
-      if(ipkon(nelems).lt.0) then
-        write(*,*) '*WARNING in slavintpoints'
-        write(*,*) '         element ',nelems,' on slave contact'
-        write(*,*) '         surface does not exist'
+      if((ipkon(nelems).ge.0).or.(lakon(nelems)(1:1).ne.'S')) then
+        write(*,*) '*WARNING in mastintpoints'
+        write(*,*) '         element ',nelems,' with interface loading'
+        write(*,*) '         is not a shell element with the attribute'
+        write(*,*) '         DLOAD'
         return
       endif
       read(sideloadloc(2:2),'(i1)') jfaces
       ifaces=10*nelems+jfaces
 !     
-!     get nope,nopes
+!     get nopes
 !     
-      call faceinfo(nelems,jfaces,lakon,nope,nopes,idummy)
+      read(lakon(nelems)(2:2),'(i1)') nopes
 !     
 !     actual position of the nodes belonging to the
 !     slave surface
 !     
-      do j=1,nope
-         konl(j)=kon(ipkon(nelems)+j)
+      do j=1,nopes
+         konl(j)=kon(-2-ipkon(nelems)+j)
       enddo
 !     
       do m=1,nopes
          do j=1,3
-            nodel=getnodel(m,jfaces,nope)
-            xl2s(j,m)=co(j,konl(nodel))+
-     &           vold(j,konl(nodel))     
+            xl2s(j,m)=co(j,m)+
+     &           vold(j,konl(m))     
          enddo
       enddo  
 !     
@@ -176,8 +176,7 @@
             xsj2(3)=xsj2(3)/dd
 !     
             do k=1,3
-               xn(k)=xn(k)
-     &              +xsj2(k)
+               xn(k)=xn(k)+xsj2(k)
             enddo
          enddo 
 !     
@@ -226,8 +225,7 @@
       do j=1,nopes
          call neartriangle_load(xl2sr(1,j),xn,xo,yo,zo,x,y,z,nx,ny,nz,
      &        neigh,kneigh,ncont,straight,imastop,itri)
-         nodel=getnodel(j,jfaces,nope)
-         node=konl(nodel) 
+c         node=konl(j) 
          if(itri.eq.0) cycle
          ifacem=koncont(4,itri)
 !     

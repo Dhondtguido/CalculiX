@@ -26592,7 +26592,16 @@ state (a zero state if the parameter PERTURBATION was not used on the *STEP card
 is removed. The loading defined within the
 step is multiplied by the amplitude history for each load as specified by the
 AMPLITUDE parameter on the loading card, if any. If no amplitude applies all
-loading is applied at the start of the step. Loading histories extending beyond the amplitude time scale are extrapolated in a constant way. The absence of the AMPLITUDE parameter on a loading card leads to a constant load.
+loading is applied at the start of the step. Loading histories extending
+beyond the amplitude time scale are extrapolated in a constant way. The
+absence of the AMPLITUDE parameter on a loading card leads to a constant load.
+
+Notice that if the *FREQUENCY step is in the same input deck, any *INITIAL
+CONDITIONS on the displacement or velocity field are removed during that
+step. Therefore, if the user wants to introduce such initial conditions, the
+*FREQUENCY step must be performed in a separate calculation with the option
+STORAGE=YES. The appropriate initial condition cards should be introduced in a
+second input deck containing the *MODAL DYNAMIC card.
 
 There are four optional parameters: SOLVER, DIRECT, DELTMX, and STEADY STATE. SOLVER determines the
 package used to solve for the steady state solution in the presence of nonzero

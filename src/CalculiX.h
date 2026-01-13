@@ -387,7 +387,7 @@ void FORTRAN(calcenergy,(ITG *ipkon,char *lakon,ITG *kon,double *co,
 
 void FORTRAN(calcglobmastsurf,(ITG *ne,ITG *ipkon,ITG *kon,char *lakon,
 			       ITG *nk,char *set,ITG *istartset,ITG *iendset,
-			       ITG *ialset,ITG *nset,ITG *nset_,ITG *nalset,
+			       ITG *ialset,ITG *nset,ITG *nalset,
 			       ITG *imastset,ITG *nmastface));
 
 void *calcenergymt(ITG *i);
@@ -2189,9 +2189,10 @@ void FORTRAN(integral_boundary,(double *sumfix,double *sumfree,ITG *ifaext,
                                 ITG *nfaext,ITG *ielfa,ITG *ifabou,double *vfa,
 				ITG *ipnei,double *xxn));
 
-void interfaceloading(ITG *ne,ITG *ipkon,ITG *kon,char *lakon,ITG *nk,char*set,
-		      ITG *istartset,ITG *iendset,ITG *ialset,ITG *nset,
-		      ITG *nset_,ITG *nalset,double *co,double *vold,ITG *mi,
+void interfaceloading(ITG *ne,ITG *ipkon,ITG *kon,char *lakon,ITG *nk,
+		      char **set,
+		      ITG **istartset,ITG **iendset,ITG **ialset,ITG *nset,
+		      ITG *nalset,double *co,double *vold,ITG *mi,
 		      double *cs,ITG *mcs,ITG *ics,ITG **nelemloadp,
 		      char **sideloadp,double **xloadp,double **xloadoldp,
 		      ITG **iamloadp,ITG *nam,ITG *nload,ITG *nload_,
