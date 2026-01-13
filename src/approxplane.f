@@ -44,8 +44,6 @@
       integer i,j,k,nopes
 !
       real*8 col(3,nopes),colmean(3),straight(36),ps(8,3),dd,xn(3)
-!
-!
 !     
 !     sides of the quadrilateral
 !

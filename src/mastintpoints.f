@@ -38,7 +38,7 @@
       character*20 sideload(*),sideloadloc
 !     
       integer nintpoint,imastop(3,*),ncont,nelemload(2,*),nload,
-     &     ipkon(*),kon(*),koncont(4,*),neigh(10),iflag,kneigh,
+     &     ipkon(*),kon(*),koncont(4,*),neigh(10),iflag,kneigh,i,
      &     j,k,ii,itri,nx(*),ny(*),nz(*),nelemm,jfacem,nload_,
      &     indexe,nopesm,ifaces,nelems,jfaces,mi(*),
      &     m,nopes,konl(20),id,maface(8),nmaface,imastload(2,*),
@@ -49,8 +49,8 @@
      &     iamload(2,*),nam
 !     
       real*8 straight(16,*),co(3,*),vold(0:mi(2),*),pmastload(3,*),
-     &     xo(*),yo(*),zo(*),x(*),y(*),z(*),xload(2,*),
-     &     xl2m(3,8),xl2s(3,8),xlpg(3,8),
+     &     xo(*),yo(*),zo(*),x(*),y(*),z(*),xload(2,*),p12(3),
+     &     xl2m(3,8),xl2s(3,8),xlpg(3,8),p23(3),p31(3),
      &     pmiddle(3),xl2sr(3,8),xl3sp(3,8),xl3s(3,8),
      &     dd,areaslav,al,xn(3),slavstraight(36),err,xquad(2,8),
      &     xtri(2,6),xi,et,xsj2(3),xs2(3,2),shp2(7,8),anglesm
@@ -123,6 +123,16 @@
          enddo
       endif
 !     
+!     calculating a middle point in the face
+!     
+      do j=1,3
+         pmiddle(j)=0.d0
+         do m=1,nopes
+            pmiddle(j)=pmiddle(j)+xl2s(j,m)
+         enddo
+         pmiddle(j)=pmiddle(j)/nopes
+      enddo
+!     
 !     calculate the mean normal vector xn on the slave face
 !     +
 !     determine the equations of the slave face
@@ -130,10 +140,23 @@
 !     piecewise linear approximation 
 !     
       if(nopes.eq.3) then
-         call straighteq3d(xl3s,slavstraight)
-         do k=1,3
-            xn(k)=slavstraight(4*nopes+k)
-         enddo               
+        do i=1,3
+          p12(i)=xl3s(i,2)-xl3s(i,1)
+          p23(i)=xl3s(i,3)-xl3s(i,2)
+          p31(i)=xl3s(i,1)-xl3s(i,3)
+        enddo
+!     
+!     normalized vector normal to the triangle: xn = p12 x p23
+!     
+        xn(1)=p12(2)*p23(3)-p12(3)*p23(2)
+        xn(2)=p12(3)*p23(1)-p12(1)*p23(3)
+        xn(3)=p12(1)*p23(2)-p12(2)*p23(1)
+        dd=dsqrt(xn(1)*xn(1)+xn(2)*xn(2)+xn(3)*xn(3))
+        do i=1,3
+          xn(i)=xn(i)/dd
+        enddo
+        slavstraight(16)=-xn(1)*xl3s(1,1)-xn(2)*xl3s(2,1)-
+     &       xn(3)*xl3s(3,1)
       else
          do k=1,3
             xn(k)=0.d0
@@ -173,7 +196,9 @@
          do k=1,3
             xn(k)=xn(k)/dd
          enddo           
-         call approxplane(xl3s,slavstraight,xn,nopes)
+c         call approxplane(xl3s,slavstraight,xn,nopes)
+         slavstraight(nopes*4+4)=
+     &        -xn(1)*pmiddle(1)-xn(2)*pmiddle(2)-xn(3)*pmiddle(3)
       endif
 !     
 !     Project slave nodes to meanplane, needed for Sutherland-Hodgman
@@ -202,16 +227,6 @@
          do k=1,8
             mafacecorner(j,k)=0
          enddo
-      enddo
-!     
-!     calculating a middle point in the face
-!     
-      do j=1,3
-         pmiddle(j)=0.d0
-         do m=1,nopes
-            pmiddle(j)=pmiddle(j)+xl2s(j,m)
-         enddo
-         pmiddle(j)=pmiddle(j)/nopes
       enddo
 !     
 !     moving the nodes towards the middle     
