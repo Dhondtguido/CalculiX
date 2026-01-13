@@ -46,7 +46,7 @@
      &     xo(*),yo(*),zo(*),x(*),y(*),z(*),p31(3),
      &     xl2m(3,8),xl2s(3,8),xlpg(3,8),
      &     pmiddle(3),xl2sr(3,8),xl3sp(3,8),xl3s(3,8),
-     &     dd,areaslav,al,xn(3),slavstraight(36),
+     &     dd,areaslav,al,xn(4),
      &     pslavsurf(3,*),err,xquad(2,8),
      &     xtri(2,6),xi,et,xsj2(3),xs2(3,2),shp2(7,8),anglesm
 !
@@ -152,7 +152,7 @@
         do i=1,3
           xn(i)=xn(i)/dd
         enddo
-        slavstraight(16)=-xn(1)*xl3s(1,1)-xn(2)*xl3s(2,1)-
+        xn(4)=-xn(1)*xl3s(1,1)-xn(2)*xl3s(2,1)-
      &       xn(3)*xl3s(3,1)
       else
          do k=1,3
@@ -194,17 +194,14 @@
          do k=1,3
             xn(k)=xn(k)/dd
          enddo           
-c         call approxplane(xl3s,slavstraight,xn,nopes)
-         slavstraight(nopes*4+4)=
-     &        -xn(1)*pmiddle(1)-xn(2)*pmiddle(2)-xn(3)*pmiddle(3)
+         xn(4)=-xn(1)*pmiddle(1)-xn(2)*pmiddle(2)-xn(3)*pmiddle(3)
       endif
 !     
 !     Project slave nodes to meanplane, needed for Sutherland-Hodgman
 !     
       do j=1,nopes
          al=-xn(1)*xl3s(1,j)-xn(2)*
-     &        xl3s(2,j)-xn(3)*xl3s(3,j)-
-     &        slavstraight(nopes*4+4)
+     &        xl3s(2,j)-xn(3)*xl3s(3,j)-xn(4)
          if(nopes.ne.3)then
             do k=1,3
                xl3sp(k,j)=xl3s(k,j)+al*xn(k)
@@ -338,7 +335,7 @@ c         call approxplane(xl3s,slavstraight,xn,nopes)
                enddo
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+     &           nopes,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,pslavsurf,
      &           xlpg,npg,nodepg,areaslav)
@@ -363,7 +360,7 @@ c         call approxplane(xl3s,slavstraight,xn,nopes)
                xlpg(j2,3)=xl2m(j2,6)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+     &           nopes,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,pslavsurf,
      &           xlpg,npg,nodepg,areaslav)
@@ -384,7 +381,7 @@ c         call approxplane(xl3s,slavstraight,xn,nopes)
                xlpg(j2,3)=xl2m(j2,5)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+     &           nopes,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,pslavsurf,
      &           xlpg,npg,nodepg,areaslav)
@@ -405,7 +402,7 @@ c         call approxplane(xl3s,slavstraight,xn,nopes)
                xlpg(j2,3)=xl2m(j2,6)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+     &           nopes,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,pslavsurf,
      &           xlpg,npg,nodepg,areaslav)
@@ -426,7 +423,7 @@ c         call approxplane(xl3s,slavstraight,xn,nopes)
                xlpg(j2,3)=xl2m(j2,6)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+     &           nopes,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,pslavsurf,
      &           xlpg,npg,nodepg,areaslav)
@@ -451,7 +448,7 @@ c         call approxplane(xl3s,slavstraight,xn,nopes)
                xlpg(j2,3)=xl2m(j2,8)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+     &           nopes,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,pslavsurf,
      &           xlpg,npg,nodepg,areaslav)
@@ -472,7 +469,7 @@ c         call approxplane(xl3s,slavstraight,xn,nopes)
                xlpg(j2,3)=xl2m(j2,6)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+     &           nopes,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,pslavsurf,
      &           xlpg,npg,nodepg,areaslav)
@@ -493,7 +490,7 @@ c         call approxplane(xl3s,slavstraight,xn,nopes)
                xlpg(j2,3)=xl2m(j2,7)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+     &           nopes,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,pslavsurf,
      &           xlpg,npg,nodepg,areaslav)
@@ -514,7 +511,7 @@ c         call approxplane(xl3s,slavstraight,xn,nopes)
                xlpg(j2,3)=xl2m(j2,8)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+     &           nopes,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,pslavsurf,
      &           xlpg,npg,nodepg,areaslav)
@@ -539,7 +536,7 @@ c         call approxplane(xl3s,slavstraight,xn,nopes)
               xlpg(j2,4)=xl2m(j2,8)
            enddo
            call treatmasterface(
-     &          nopes,slavstraight,xn,xl2s,xl3sp,
+     &          nopes,xn,xl2s,xl3sp,
      &          ipe,ime,iactiveline,nactiveline,
      &          ifacem,nintpoint,pslavsurf,
      &          xlpg,npg,nodepg,areaslav)
@@ -640,7 +637,7 @@ c         call approxplane(xl3s,slavstraight,xn,nopes)
                enddo
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+     &           nopes,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,pslavsurf,
      &           xlpg,npg,nodepg,areaslav)
@@ -665,7 +662,7 @@ c         call approxplane(xl3s,slavstraight,xn,nopes)
                xlpg(j2,3)=xl2m(j2,6)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+     &           nopes,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,pslavsurf,
      &           xlpg,npg,nodepg,areaslav)
@@ -686,7 +683,7 @@ c         call approxplane(xl3s,slavstraight,xn,nopes)
                xlpg(j2,3)=xl2m(j2,5)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+     &           nopes,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,pslavsurf,
      &           xlpg,npg,nodepg,areaslav)
@@ -707,7 +704,7 @@ c         call approxplane(xl3s,slavstraight,xn,nopes)
                xlpg(j2,3)=xl2m(j2,6)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+     &           nopes,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,pslavsurf,
      &           xlpg,npg,nodepg,areaslav)
@@ -728,7 +725,7 @@ c         call approxplane(xl3s,slavstraight,xn,nopes)
                xlpg(j2,3)=xl2m(j2,6)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+     &           nopes,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,pslavsurf,
      &           xlpg,npg,nodepg,areaslav)
@@ -753,7 +750,7 @@ c         call approxplane(xl3s,slavstraight,xn,nopes)
                xlpg(j2,3)=xl2m(j2,8)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+     &           nopes,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,pslavsurf,
      &           xlpg,npg,nodepg,areaslav)
@@ -774,7 +771,7 @@ c         call approxplane(xl3s,slavstraight,xn,nopes)
                xlpg(j2,3)=xl2m(j2,6)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+     &           nopes,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,pslavsurf,
      &           xlpg,npg,nodepg,areaslav)
@@ -795,7 +792,7 @@ c         call approxplane(xl3s,slavstraight,xn,nopes)
                xlpg(j2,3)=xl2m(j2,7)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+     &           nopes,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,pslavsurf,
      &           xlpg,npg,nodepg,areaslav)
@@ -816,7 +813,7 @@ c         call approxplane(xl3s,slavstraight,xn,nopes)
                xlpg(j2,3)=xl2m(j2,8)
             enddo
             call treatmasterface(
-     &           nopes,slavstraight,xn,xl2s,xl3sp,
+     &           nopes,xn,xl2s,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,pslavsurf,
      &           xlpg,npg,nodepg,areaslav)
@@ -841,7 +838,7 @@ c         call approxplane(xl3s,slavstraight,xn,nopes)
               xlpg(j2,4)=xl2m(j2,8)
            enddo
            call treatmasterface(
-     &          nopes,slavstraight,xn,xl2s,xl3sp,
+     &          nopes,xn,xl2s,xl3sp,
      &          ipe,ime,iactiveline,nactiveline,
      &          ifacem,nintpoint,pslavsurf,
      &          xlpg,npg,nodepg,areaslav)

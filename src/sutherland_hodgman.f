@@ -41,7 +41,6 @@
 !     
       nvertex=0
       ninsertl=0
-c     border=.false.
 !     
 !     Initialize Polygon
 !     
@@ -51,19 +50,6 @@ c     border=.false.
           pvertex(k,nvertex)=xl3sp(k,j)
         enddo
       enddo
-c     areaface=0.d0
-c     do k=1,nvertex-2
-c     p1(1)=pvertex(1,k+1)-pvertex(1,1)
-c     p1(2)=pvertex(2,k+1)-pvertex(2,1)
-c     p1(3)=pvertex(3,k+1)-pvertex(3,1)
-c     p2(1)=pvertex(1,k+2)-pvertex(1,1)
-c     p2(2)=pvertex(2,k+2)-pvertex(2,1)
-c     p2(3)=pvertex(3,k+2)-pvertex(3,1)
-c     areax=((p1(2)*p2(3))-(p2(2)*p1(3)))**2
-c     areay=(-(p1(1)*p2(3))+(p2(1)*p1(3)))**2
-c     areaz=((p1(1)*p2(2))-(p2(1)*p1(2)))**2
-c     areaface=areaface+dsqrt(areax+areay+areaz)/2.d0
-c     enddo
 !     
 !     loop over clipping edges
 !     

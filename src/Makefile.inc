@@ -32,7 +32,6 @@ anisonl.f \
 anisotropic.f \
 applybounfem.f \
 applybounp.f \
-approxplane.f \
 assigndomtonodes.f \
 attach_1d.f \
 attach_1d_cracklength.f \

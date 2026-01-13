@@ -22,7 +22,6 @@
 !     calling sutherland-hodgeman algorithm
 !     
 !     [in]       nopes		number of slave nodes for current slave surface
-!     [in]       slavstraight	plane equations for mean slave plane	
 !     [in]       xn			mean slave normal
 !     [in]       xns		slave normals in nodes of slave surface
 !     [in]       xl2s		current positions of lsave nodes
@@ -46,7 +45,7 @@
 !     [in,out]   areaslav		current covering of the slave surface (in the reference element) 
 !     
       subroutine treatmasterface_mortar(
-     &     nopes,slavstraight,xn,xns,xl2s,xl2sp,
+     &     nopes,xn,xns,xl2s,xl2sp,
      &     ipe,ime,iactiveline,nactiveline,
      &     nelemm,nintpoint,pslavsurf,
      &     imastsurf,pmastsurf,xl2m,nnodelem,xl2m2,nmp,
@@ -63,7 +62,7 @@
      &     nactiveline,nmp,i,j,k,nintpoint,imastsurf(*),
      &     nnodelem,ijk,nodem(*),modf,nelemm,k_max,issurf,ii,jj,nipold
 !     
-      real*8 pvertex(3,13),slavstraight(36),xn(3),
+      real*8 pvertex(3,13),xn(4),
      &     xilm,etlm,xnl(3),clearance,p(3),dist,
      &     xl2s(3,*),p1(3),p2(3),pslavsurf(3,*),
      &     xil,etl,area,areax,areay,areaz,pmastsurf(2,*),
@@ -86,7 +85,7 @@
       do j=1,nmp
         al=-xn(1)*xl2m2(1,j)-xn(2)*
      &       xl2m2(2,j)-xn(3)*
-     &       xl2m2(3,j)-slavstraight(nopes*4+4)
+     &       xl2m2(3,j)-xn(4)
         do k=1,3
           xl2mp(k,j)=xl2m2(k,j)+al*xn(k)    
         enddo

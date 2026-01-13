@@ -19,7 +19,7 @@
 !     cuts a 3- or 4-noded polygon of the master surface with a slave surface
 !     inserts new active edges into iactiveline for current triangle
 !     
-      subroutine treatmasterface_load(nopes,slavstraight,xn,xl2m,xl3sp,
+      subroutine treatmasterface_load(nopes,xn,xl2m,xl3sp,
      &     ipe,ime,iactiveline,nactiveline,ifacem,nintpoint,imastload,
      &     pmastload,xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
      &     xload,nload,nload_,iamload,nam,ifaces)
@@ -35,7 +35,7 @@
      &     nodepg(*),modf,ifacem,k_max,nelemload(2,*),iamload(2,*),
      &     nload,nload_,nam,nelemm,id,iloadm,ifaces
 !     
-      real*8 pvertex(3,13),slavstraight(36),xn(3),xl2m(3,*),p1(2),p2(2),
+      real*8 pvertex(3,13),xn(4),xl2m(3,*),p1(2),p2(2),
      &     pmastload(3,*),xil,etl,p(3),dist,area,xlpg(3,8),al,err,
      &     xl3sp(3,*),xlpgp(3,8),cgp(3),xit(3),etat(3),areaslav,
      &     xload(2,*)
@@ -50,7 +50,7 @@
       do j=1, npg
         al=-xn(1)*xlpg(1,j)-xn(2)*
      &       xlpg(2,j)-xn(3)*
-     &       xlpg(3,j)-slavstraight(nopes*4+4)
+     &       xlpg(3,j)-xn(4)
         do k=1,3
           xlpgp(k,j)=xlpg(k,j)+al*xn(k)    
         enddo
