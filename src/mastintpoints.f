@@ -101,7 +101,7 @@
 !     
       do m=1,nopes
          do j=1,3
-            xl2s(j,m)=co(j,m)+
+            xl2s(j,m)=co(j,konl(m))+
      &           vold(j,konl(m))     
          enddo
       enddo  
@@ -235,8 +235,7 @@
       enddo
       do j=1,nopes
          call neartriangle_load(xl2sr(1,j),xn,xo,yo,zo,x,y,z,nx,ny,nz,
-     &        neigh,kneigh,ncont,straight,imastop,itri)
-c         node=konl(j) 
+     &        ncont,neigh,kneigh,straight,imastop,itri)
          if(itri.eq.0) cycle
          ifacem=koncont(4,itri)
 !     
@@ -337,7 +336,7 @@ c         node=konl(j)
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
          elseif(nopesm.eq.6)then
@@ -363,7 +362,7 @@ c         node=konl(j)
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     2. triangle
@@ -385,7 +384,7 @@ c         node=konl(j)
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     3. triangle
@@ -407,7 +406,7 @@ c         node=konl(j)
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     4. triangle
@@ -429,7 +428,7 @@ c         node=konl(j)
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !
          elseif(nopesm.eq.8)then
@@ -455,7 +454,7 @@ c         node=konl(j)
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     2. triangle
@@ -477,7 +476,7 @@ c         node=konl(j)
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     3. triangle
@@ -499,7 +498,7 @@ c         node=konl(j)
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     4. triangle
@@ -521,7 +520,7 @@ c         node=konl(j)
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     quad
@@ -547,7 +546,7 @@ c         node=konl(j)
      &          nopes,xn,xl2m,xl3sp,
      &          ipe,ime,iactiveline,nactiveline,
      &          ifacem,nintpoint,imastload,pmastload,
-     &          xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &          xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
      &          xload,nload,nload_,iamload,nam,ifaces)
         endif
       enddo
@@ -649,7 +648,7 @@ c         node=konl(j)
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
          elseif(nopesm.eq.6)then
@@ -675,7 +674,7 @@ c         node=konl(j)
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     2. triangle
@@ -697,7 +696,7 @@ c         node=konl(j)
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
      &     xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     3. triangle
@@ -719,7 +718,7 @@ c         node=konl(j)
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     4. triangle
@@ -741,7 +740,7 @@ c         node=konl(j)
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !
          elseif(nopesm.eq.8)then
@@ -767,7 +766,7 @@ c         node=konl(j)
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     2. triangle
@@ -789,7 +788,7 @@ c         node=konl(j)
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     3. triangle
@@ -811,7 +810,7 @@ c         node=konl(j)
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     4. triangle
@@ -833,7 +832,7 @@ c         node=konl(j)
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     quad
@@ -859,7 +858,7 @@ c         node=konl(j)
      &          nopes,xn,xl2m,xl3sp,
      &          ipe,ime,iactiveline,nactiveline,
      &          ifacem,nintpoint,imastload,pmastload,
-     &          xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &          xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
      &          xload,nload,nload_,iamload,nam,ifaces)
         endif
       enddo

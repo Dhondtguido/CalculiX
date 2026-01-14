@@ -18,7 +18,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine neartriangle_load(p,xn,xo,yo,zo,x,y,z,nx,ny,nz,n,neigh,
-     &  kneigh,ncont,straight,imastop,itri)
+     &  kneigh,straight,imastop,itri)
 !
 !     check for a triangle such that a straight line
 !     through p and with direction xn cuts this triangle
@@ -26,7 +26,7 @@
       implicit none
 !     
       integer nx(*),ny(*),nz(*),n,kneigh,neigh(*),k,m1,
-     &     isol,itri,imastop(3,*),ncont,itel
+     &     isol,itri,imastop(3,*),itel
 !     
       real*8 p(3),xn(3),xo(*),yo(*),zo(*),x(*),y(*),z(*),straight(16,*),
      &     al,al1,al2
@@ -58,8 +58,7 @@
      &           straight(4*m1-1,itri)*xn(3)
             if(al1+al*al2+straight(4*m1,itri).gt.1.d-10)then
               itri=imastop(m1,itri)
-              if(itri.gt.ncont.or. 
-     &             itri.lt.0) cycle loop1
+              if((itri.gt.n).or.(itri.lt.0)) cycle loop1
             endif
           enddo
 !     

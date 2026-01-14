@@ -159,7 +159,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Tue Jan 13 19:00:58 CET 2026\n");
+  printf("You are using an executable made on Wed Jan 14 17:53:58 CET 2026\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -1853,7 +1853,8 @@ int main(int argc,char *argv[])
 
     if(interfaceload>0){
       ishift=0;
-      for(i=0;i<nload1;i++){
+      //      for(i=0;i<nload1;i++){
+      for(i=0;i<nload;i++){
 	if(strcmp1(&sideload[20*i],"I")==0){
 	  if(ipkon[nelemload[2*i]-1]>=0){
 	    ishift++;

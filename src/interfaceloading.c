@@ -37,7 +37,8 @@ void interfaceloading(ITG *ne,ITG *ipkon,ITG *kon,char *lakon,ITG *nk,
   ITG imastset,nmastface,*koncont=NULL,ncont,*ipe=NULL,*ime=NULL,im,
     *imastop=NULL,*imastnode=NULL,nmasts,*nelemload=NULL,*iamload=NULL,
     *nx=NULL,*ny=NULL,*nz=NULL,kflag,nintpoint,*imastload=NULL,ifreeme,
-    *nelemloadcpy=NULL,i,j,*istartset=NULL,*iendset=NULL,*ialset=NULL;
+    *nelemloadcpy=NULL,i,j,*istartset=NULL,*iendset=NULL,*ialset=NULL,
+    nloadcpy;
 
   double *cg=NULL,*straight=NULL,*xmastnor=NULL,*xload=NULL,*xloadold=NULL,
     *x=NULL,*y=NULL,*z=NULL,*xo=NULL,*yo=NULL,*zo=NULL,*pmastload=NULL;
@@ -99,7 +100,8 @@ void interfaceloading(ITG *ne,ITG *ipkon,ITG *kon,char *lakon,ITG *nk,
 			     ipkon,lakon,kon,cs,mcs,ics,&imastset));
   
   SFREE(imastnode);SFREE(xmastnor);
- 
+
+  nloadcpy=*nload;
   NNEW(nelemloadcpy,ITG,2**nload);
   NNEW(sideloadcpy,char,20**nload);
   memcpy(nelemloadcpy,nelemload,sizeof(ITG)*2**nload);
@@ -136,16 +138,19 @@ void interfaceloading(ITG *ne,ITG *ipkon,ITG *kon,char *lakon,ITG *nk,
   SFREE(cg);
 
   /* check for interface loads (on shell elements) */
-  
-  RENEW(nelemload,ITG,2*(*nload+nmastface));
-  RENEW(sideload,char,20*(*nload+nmastface));
-  RENEW(xload,double,2*(*nload+nmastface));
+
+  *nload_=*nload+nmastface;
+  RENEW(nelemload,ITG,2**nload_);
+  RENEW(sideload,char,20**nload_);
+  RENEW(xload,double,2**nload_);
+  RENEW(xloadold,double,2**nload_);
+  for(i=2*nloadcpy;i<2**nload_;i++){xloadold[i]=0;}
   if(*nam>0){
-    RENEW(iamload,ITG,2*(*nload+nmastface));
+    RENEW(iamload,ITG,2**nload_);
   }
 
   nintpoint=0;
-  for(i=0;i<*nload;i++){
+  for(i=0;i<nloadcpy;i++){
     
     if(strcmp1(&sideloadcpy[20*i],"I")==0){
 
@@ -155,16 +160,17 @@ void interfaceloading(ITG *ne,ITG *ipkon,ITG *kon,char *lakon,ITG *nk,
 			     co,vold,xo,yo,zo,x,y,z,nx,ny,nz,imastop,mi,
 			     &ncont,ipe,ime,nelemload,sideload,nload,
 			     nload_,imastload,pmastload,&nelemloadcpy[2*i],
-			     &sideloadcpy[20*i],xload,
-			     iamload,nam));
+			     &sideloadcpy[20*i],xload,iamload,nam));
     }
   }
-    
+
+  *nload_=*nload;
   RENEW(imastload,ITG,2*nintpoint);
   RENEW(pmastload,double,3*nintpoint);
   RENEW(nelemload,ITG,2**nload);
   RENEW(sideload,char,20**nload);
   RENEW(xload,double,2**nload);
+  RENEW(xloadold,double,2**nload);
   if(*nam>0){
     RENEW(iamload,ITG,2**nload);
   }
