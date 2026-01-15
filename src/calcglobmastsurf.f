@@ -105,6 +105,9 @@
 !     only
 !     
       ifree=1
+      do i=1,nk
+        ipoface(i)=0
+      enddo
       do i=1,6*ne-1
         nodface(5,i)=i+1
       enddo

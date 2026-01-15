@@ -18457,6 +18457,27 @@ In a large deformation analysis the pressure is applied to the deformed face of 
 \epsfig{file=TetPres.eps,width=10cm}
 \caption{\label{tetpres}Equivalent nodal forces for a face of a C3D10 element}
 \end{figure}
+
+\subsubsection{\label{ifloading}Interface loading}
+
+The concept of interface loading allows for the application of a facial
+distributed pressure on an arbitrary part of the body's external surface. This
+part does not have to coincide with external faces of the body's volumetric
+mesh. In order to apply the interface loading the user has to:
+
+\begin{itemize}
+\item Mesh the part of the body's external surface to be loaded using shell elements (S3,
+  S4, S6 or S8).
+\item Declare that the sole purpose of these elements is to apply facial
+  loading by specifying the parameter DLOAD on the
+  \htmlref{*ELEMENT}{element} card  used to define these shells.
+\item Apply a pressure to these shell elements using the label 'I' (for
+  Interface) instead of the label 'P' (which is the conventional label for
+  pressure loading on faces) on a \htmlref{*DLOAD}{dload} card. The pressure loading acts in the direction of
+  the normal to the shell elements. The normal on a shell element is such,
+  that while looking in the direction of the normal the node numbering is
+  clockwise.
+\end{itemize}
  
 \subsubsection{Centrifugal distributed loading}
 Centrifugal loading is selected by the \htmlref{*DLOAD}{dload} card,
@@ -22662,7 +22683,13 @@ patterns (maximum 16 characters). A typical
 example of a nonuniform loading is the hydrostatic pressure. Another option is to assign the pressure of a fluid node to an element
 side. In that case the label takes the form PxNP, where NP stands for network
 pressure. The fluid node must be an corner node of a network element. Instead of a
-concrete pressure value the user must provide the fluid node number.
+concrete pressure value the user must provide the fluid node number. By
+replacing the letter 'P' by 'I' in the load type label (only allowed for
+loading on shell elements) the user specifies that the loading is an interface
+loading. This means that the shell element is fictitious and is only used to
+load an arbitrary part of the body's surface (not coincident with the faces of
+the body's mesh) adjacent to
+the shell element, cf Section \ref{ifloading}.
 
 Edge loading is only provided for shell elements. Its units are force per unit
 length. The label is EDNORx where x can take a value between one and three for
@@ -22805,7 +22832,7 @@ Se1,P3,10.
 assigns a pressure loading with magnitude 10. times the amplitude curve of amplitude A1 to face number three of all elements belonging to set Se1.
 
 \bigskip
-Example files: beamd.
+Example files: beamd, interface1.
 
 \bigskip
 Following line for centrifugal loading:
@@ -23415,7 +23442,7 @@ Example files: induction, induction2, induction3.
 Keyword type: model definition
 
 With this option elements are defined. There is one required
-parameter, TYPE and one optional parameter, ELSET. The parameter TYPE
+parameter, TYPE and two optional parameters, ELSET and DLOAD. The parameter TYPE
 defines the kind of element which is being defined. The following
 types can be selected:
 
@@ -23524,7 +23551,15 @@ types can be selected:
 
 Notice that the S8, S8R, CPS8, CPS8R, CPE8, CPE8R, CAX8, CAX8R, B32
 and B32R element are internally expanded into 20-node brick
-elements. Please have a look at Section \ref{elements} for details and decision criteria which element to take. The element choice determines to a large extent the quality of the results. Do not take element choice lightheartedly! The parameter ELSET is used to assign the elements to an element set. If the set already exists, the elements are ADDED to the set.
+elements. Please have a look at Section \ref{elements} for details and
+decision criteria which element to take. The element choice determines to a
+large extent the quality of the results. Do not take element choice
+lightheartedly! The parameter ELSET is used to assign the elements to an
+element set. If the set already exists, the elements are ADDED to the set.
+
+Finally, the parameter DLOAD can only be used for shell elements. It specifies
+that the shell elements are fictitious and are defined to apply a pressure on
+an arbitrary part of a body's surface adjacent to the shells, cf Section \ref{ifloading}.
 \bigskip
 
 First line:
@@ -23551,7 +23586,7 @@ Example:
 defines one 20-node element with reduced integration and stores it in set Eall.
 
 \bigskip
-Example files: beam8p, beam10p, beam20p.
+Example files: beam8p, beam10p, beam20p, interface1.
 
 \subsection{\label{elementoutput}*ELEMENT OUTPUT}
 

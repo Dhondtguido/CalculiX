@@ -37,9 +37,9 @@
      &     j,k,l,ii,itri,nx(*),ny(*),nz(*),nelemm,jfacem,
      &     indexe,nopesm,nope,islavsurf(2,*),ifaces,nelems,jfaces,mi(*),
      &     m,nopes,konl(20),id,maface(8),nmaface,
-     &     mafacecorner(8,8),line,iactiveline(2,3*ncont),
-     &     icoveredmelem(3*ncont),nactiveline,ipe(*),ime(4,*),k1,j1,
-     &     ncoveredmelem,ntri,nintpfirst,nodem(8),nodepg(8),
+     &     line,iactiveline(2,3*ncont),
+     &     icovered(3*ncont),nactiveline,ipe(*),ime(4,*),k1,j1,
+     &     ncovered,ntri,nintpfirst,nodem(8),nodepg(8),
      &     il,nodel,getnodel,ifacem,idummy,nopem,npg,k2,j2
 !     
       real*8 straight(16,*),co(3,*),vold(0:mi(2),*),p12(3),p23(3),
@@ -219,9 +219,6 @@
       nmaface=0
       do j=1,8
          maface(j)=0
-         do k=1,8
-            mafacecorner(j,k)=0
-         enddo
       enddo
 !     
 !     moving the nodes towards the middle     
@@ -244,7 +241,6 @@
          call nident(maface,ifacem,nmaface,id)
          if(id.gt.0) then
             if(maface(id).eq.ifacem) then
-               mafacecorner(j,id)=1
                cycle
             endif
          endif
@@ -263,15 +259,8 @@
             nmaface=nmaface+1
             do k=nmaface,id+2,-1
                maface(k)=maface(k-1)
-               do m=1,j-1
-                  mafacecorner(m,k)=mafacecorner(m,k-1)
-               enddo
             enddo
             maface(id+1)=ifacem
-            mafacecorner(j,id+1)=1
-            do m=1,j-1
-               mafacecorner(m,id+1)=0
-            enddo 
          endif              
       enddo
 !     
@@ -279,7 +268,7 @@
 !     
 !     treating the corner elements first
 !     
-      ncoveredmelem=0
+      ncovered=0
       do j=1,nmaface
          ifacem=maface(j)
          nelemm=int(ifacem/10.d0)
@@ -287,17 +276,21 @@
 !
 !        add master element to covered stack
 !
-         call nident(icoveredmelem,nelemm,ncoveredmelem,id)
-         if((id.ne.0).and.(icoveredmelem(id).eq.nelemm)) then
+         call nident(icovered,ifacem,ncovered,id)
+         if((id.ne.0).and.(icovered(id).eq.ifacem)) then
+!
 !     master element was already treated
+!
             cycle
          else
+!
 !     add master element to covered elements
-            ncoveredmelem=ncoveredmelem+1
-            do ii=ncoveredmelem,id+2,-1
-               icoveredmelem(ii)=icoveredmelem(ii-1)
+!
+            ncovered=ncovered+1
+            do ii=ncovered,id+2,-1
+               icovered(ii)=icovered(ii-1)
             enddo
-            icoveredmelem(id+1)=nelemm
+            icovered(id+1)=ifacem
          endif
          call faceinfo(nelemm,jfacem,lakon,nopem,
      &        nopesm,idummy)     
@@ -315,7 +308,6 @@
      &              vold(j1,konl(nodel))
             enddo
          enddo 
-         dd=dsqrt(xn(1)**2+xn(2)**2+xn(3)**2)
 !     
 !     divide master element into konvex subelements
 !
@@ -543,12 +535,6 @@
         endif
       enddo
 !     
-!     corners of the Slave surface have already been treated
-!     
-      do j=1,nopes
-         mafacecorner(j,1)=0
-      enddo
-!     
 !     retrieving all triangles by neighborhood search
 !     
       do
@@ -575,7 +561,6 @@
             enddo
             cycle
          endif
-         
 !     
          ifacem=koncont(4,itri)
          nelemm=int(koncont(4,itri)/10.d0)
@@ -583,8 +568,8 @@
 !     
 !     add master element to covered stack
 !     
-         call nident(icoveredmelem,nelemm,ncoveredmelem,id)
-         if((id.gt.0).and.(icoveredmelem(id).eq.nelemm)) then
+         call nident(icovered,ifacem,ncovered,id)
+         if((id.gt.0).and.(icovered(id).eq.ifacem)) then
 !
 !     master element was already treated
 !
@@ -599,11 +584,11 @@
 !
 !     add master element to covered elements
 !
-            ncoveredmelem=ncoveredmelem+1
-            do ii=ncoveredmelem,id+2,-1
-               icoveredmelem(ii)=icoveredmelem(ii-1)
+            ncovered=ncovered+1
+            do ii=ncovered,id+2,-1
+               icovered(ii)=icovered(ii-1)
             enddo
-            icoveredmelem(id+1)=nelemm
+            icovered(id+1)=ifacem
          endif 
          indexe=ipkon(nelemm)
          call faceinfo(nelemm,jfacem,lakon,nopem,
