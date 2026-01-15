@@ -18,7 +18,7 @@
 !     
       subroutine calcglobmastsurf(ne,ipkon,kon,lakon,nk,
      &     set,istartset,iendset,ialset,nset,nalset,
-     &     imastset,nmastface)
+     &     imastset,nmastface,interfaceload)
 !     
 !     preliminary calculations for I-type loading applications:
 !     determining the external faces of the mesh and storing
@@ -33,7 +33,7 @@
      &     indexe,ifaceq(8,6),ifacet(7,4),index,ifacew(8,5),ithree,
      &     ifour,iaux,kflag,nalset,id,nk,i,j,k,m,ifree,indexold,
      &     ifreenew,istartset(*),iendset(*),ialset(*),nset,imastset,
-     &     nmastface
+     &     nmastface,interfaceload
 !
       integer,dimension(:),allocatable::ipoface
       integer,dimension(:,:),allocatable::nodface
@@ -56,6 +56,33 @@
      &     1,2,5,4,7,14,10,13,
      &     2,3,6,5,8,15,11,14,
      &     4,6,3,1,12,15,9,13/
+!
+!     an interface load has already been defined in a prevous step   
+!
+      if(interfaceload.eq.2) then
+        noelset='EXTERNALFACES1235711T'
+        do i=22,81
+          noelset(i:i)=' '
+        enddo
+        call cident81(set,noelset,nset,id)
+        if(id.eq.0) then
+          write(*,*) '*ERROR in calcglobmastsurf: a facial surface'
+          write(*,*) '       with the name EXTERNALFACES1235711'
+          write(*,*) '       does not exist.'
+          call exit(201)
+        elseif(set(id).ne.noelset) then
+          write(*,*) '*ERROR in calcglobmastsurf: a facial surface'
+          write(*,*) '       with the name EXTERNALFACES1235711'
+          write(*,*) '       does not exist.'
+          call exit(201)
+        endif
+        imastset=id
+        nmastface=iendset(imastset)-istartset(imastset)+1
+        return
+      endif
+!     
+!     first occurrence of an interface load in the input deck:    
+!     external faces have to be determined    
 !     
       kflag=1
       ithree=3

@@ -21,7 +21,7 @@
 !     
       subroutine treatmasterface_load(nopes,xn,xl2m,xl3sp,
      &     ipe,ime,iactiveline,nactiveline,ifacem,nintpoint,imastload,
-     &     pmastload,xlpg,npg,nodepg,areaslav,nopem,nelemload,sideload,
+     &     pmastload,xlpg,npg,nodepg,nopem,nelemload,sideload,
      &     xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     based on treatmasterface.f    
@@ -32,20 +32,21 @@
 !     
       integer nvertex,nopes,ipe(*),ime(4,*),iactiveline(2,*),nopem,
      &     nactiveline,npg,i,j,k,nintpoint,imastload(2,*),jfacem,ier,
-     &     nodepg(*),modf,ifacem,k_max,nelemload(2,*),iamload(2,*),
-     &     nload,nload_,nam,nelemm,id,iloadm,ifaces
+     &     nodepg(*),modf,ifacem,num_of_tria,nelemload(2,*),iflag,
+     &     nload,nload_,nam,nelemm,id,iloadm,ifaces,iamload(2,*)
 !     
-      real*8 pvertex(3,13),xn(4),xl2m(3,*),p1(2),p2(2),
+      real*8 pvertex(3,13),xn(4),xl2m(3,*),p1(2),p2(2),x,y,z,
      &     pmastload(3,*),xil,etl,p(3),dist,area,xlpg(3,8),al,err,
-     &     xl3sp(3,*),xlpgp(3,8),cgp(3),xit(3),etat(3),areaslav,
-     &     xload(2,*)
+     &     xl3sp(3,*),xlpgp(3,8),cgp(3),xit(3),etat(3),
+     &     xload(2,*),xsj2(3),xs2(3,2),shp2(7,8)
 !     
       include "gauss.f"
 !     
       err=1.d-6
       nvertex=0
+      iflag=1
 !     
-!     Project master nodes to meanplane, needed for Sutherland-Hodgman
+!     project master nodes to meanplane, needed for Sutherland-Hodgman
 !     
       do j=1, npg
         al=-xn(1)*xlpg(1,j)-xn(2)*
@@ -56,7 +57,7 @@
         enddo
       enddo 
 !     
-!     call Sutherland-Hodgman Algo
+!     call Sutherland-Hodgman algorithm
 !     
       call sutherland_hodgman(nopes,xn,xl3sp,xlpgp,nodepg,
      &     ipe,ime,iactiveline,nactiveline,
@@ -72,27 +73,26 @@
           cgp(k)=pvertex(k,nvertex)
         enddo
         nvertex=nvertex-1
-        k_max=1
+        num_of_tria=1
       else
         do i=1,nvertex
           do k=1,3
-c     cgp(k)=cgp(k)+pvertex(k,i)/nvertex
             cgp(k)=cgp(k)+pvertex(k,i)
           enddo
         enddo
         do k=1,3
           cgp(k)=cgp(k)/nvertex
         enddo
-        k_max=nvertex
+        num_of_tria=nvertex
       endif 
 !     
-!     Project center point back on slave face
+!     project center point back on the master face
 !     
       call attachline(xl2m,cgp,nopem,xit(3),etat(3),xn,p,dist)
 !     
-!     generating integration points on the slave surface S
+!     generating integration points on the master face
 !     
-      do k=1,k_max
+      do k=1,num_of_tria
 !     
 !     Project back on slave surface
 !     
@@ -110,19 +110,6 @@ c     cgp(k)=cgp(k)+pvertex(k,i)/nvertex
         area=dabs(p1(1)*p2(2)-p2(1)*p1(2))/2.d0
 !     
         if(area.lt.1.d-4) cycle
-        if(((nopes.eq.4).or.(nopes.eq.8))
-     &       .and.(areaslav+area-4.0d0.gt.1.d-3)
-     &       .and.(nactiveline.gt.0))then
-          nactiveline=0
-          return
-        endif
-        if(((nopes.eq.3).or.(nopes.eq.6))
-     &       .and.(areaslav+area-0.5d0.gt.1.d-4)
-     &       .and.(nactiveline.gt.0))then
-          nactiveline=0
-          return
-        endif
-        areaslav=areaslav+area
 !     
 !     7 points scheme
 !     
@@ -140,9 +127,45 @@ c     cgp(k)=cgp(k)+pvertex(k,i)/nvertex
           pmastload(1,nintpoint)=xil
           pmastload(2,nintpoint)=etl
 !     
-!     weights sum up to 0.5 for triangles in local coordinates
+!         weights sum up to 0.5 for triangles in local coordinates
 !     
           pmastload(3,nintpoint)=2.d0*area*weight2d6(i)
+!
+!         print integration point coordinates (for checking)
+!
+          if(nopem.eq.8)then
+            call shape8q(xil,etl,xl2m,xsj2,xs2,shp2,iflag)
+          elseif(nopem.eq.4)then
+            call shape4q(xil,etl,xl2m,xsj2,xs2,shp2,iflag)
+          elseif(nopem.eq.6)then
+            call shape6tri(xil,etl,xl2m,xsj2,xs2,shp2,iflag)
+          else
+            call shape3tri(xil,etl,xl2m,xsj2,xs2,shp2,iflag)
+          endif
+          x=0.d0
+          y=0.d0
+          z=0.d0
+          do j=1,nopem
+            x=x+shp2(4,j)*xl2m(1,j)
+            y=y+shp2(4,j)*xl2m(2,j)
+            z=z+shp2(4,j)*xl2m(3,j)
+          enddo
+          if(nintpoint.lt.10) then
+            write(*,101) nintpoint,x,y,z
+          elseif(nintpoint.lt.100) then
+            write(*,102) nintpoint,x,y,z
+          elseif(nintpoint.lt.1000) then
+            write(*,103) nintpoint,x,y,z
+          elseif(nintpoint.lt.10000) then
+            write(*,104) nintpoint,x,y,z
+          elseif(nintpoint.lt.100000) then
+            write(*,105) nintpoint,x,y,z
+          endif
+ 101      format('pnt p',i1,1x,e11.4,1x,e11.4,1x,e11.4)
+ 102      format('pnt p',i2,1x,e11.4,1x,e11.4,1x,e11.4)
+ 103      format('pnt p',i3,1x,e11.4,1x,e11.4,1x,e11.4)
+ 104      format('pnt p',i4,1x,e11.4,1x,e11.4,1x,e11.4)
+ 105      format('pnt p',i5,1x,e11.4,1x,e11.4,1x,e11.4)
 !
 !         creating load
 !

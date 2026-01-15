@@ -52,8 +52,13 @@ void interfaceloading(ITG *ne,ITG *ipkon,ITG *kon,char *lakon,ITG *nk,
     RENEW(istartset,ITG,*nset+1);
     RENEW(iendset,ITG,*nset+1);
     RENEW(ialset,ITG,*nalset+6**ne);
-    FORTRAN(calcglobmastsurf,(ne,ipkon,kon,lakon,nk,set,istartset,iendset,
-			      ialset,nset,nalset,&imastset,&nmastface));
+  }
+  
+  FORTRAN(calcglobmastsurf,(ne,ipkon,kon,lakon,nk,set,istartset,iendset,
+			    ialset,nset,nalset,&imastset,&nmastface,
+			    interfaceload));
+  
+  if(*interfaceload==1){
     RENEW(ialset,ITG,*nalset);
     *interfaceload=2;
   }

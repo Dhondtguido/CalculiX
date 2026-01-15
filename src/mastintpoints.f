@@ -52,7 +52,7 @@
      &     xo(*),yo(*),zo(*),x(*),y(*),z(*),xload(2,*),p12(3),
      &     xl2m(3,8),xl2s(3,8),xlpg(3,8),p23(3),p31(3),
      &     pmiddle(3),xl2sr(3,8),xl3sp(3,8),xl3s(3,8),
-     &     dd,areaslav,al,xn(4),err,xquad(2,8),
+     &     dd,al,xn(4),err,xquad(2,8),
      &     xtri(2,6),xi,et,xsj2(3),xs2(3,2),shp2(7,8),anglesm
 !
       data iflag /2/
@@ -75,7 +75,6 @@
 !     
       kneigh=1
       err=0.1d0
-      areaslav=0.d0
 !     
       nelems=nelemloadloc
       if((ipkon(nelems).ge.0).or.(lakon(nelems)(1:1).ne.'S')) then
@@ -336,7 +335,7 @@
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
+     &           xlpg,npg,nodepg,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
          elseif(nopesm.eq.6)then
@@ -362,7 +361,7 @@
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
+     &           xlpg,npg,nodepg,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     2. triangle
@@ -384,7 +383,7 @@
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
+     &           xlpg,npg,nodepg,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     3. triangle
@@ -406,7 +405,7 @@
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
+     &           xlpg,npg,nodepg,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     4. triangle
@@ -428,7 +427,7 @@
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
+     &           xlpg,npg,nodepg,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !
          elseif(nopesm.eq.8)then
@@ -454,7 +453,7 @@
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
+     &           xlpg,npg,nodepg,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     2. triangle
@@ -476,7 +475,7 @@
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
+     &           xlpg,npg,nodepg,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     3. triangle
@@ -498,7 +497,7 @@
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
+     &           xlpg,npg,nodepg,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     4. triangle
@@ -520,7 +519,7 @@
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
+     &           xlpg,npg,nodepg,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     quad
@@ -546,7 +545,7 @@
      &          nopes,xn,xl2m,xl3sp,
      &          ipe,ime,iactiveline,nactiveline,
      &          ifacem,nintpoint,imastload,pmastload,
-     &          xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
+     &          xlpg,npg,nodepg,nopesm,nelemload,sideload,
      &          xload,nload,nload_,iamload,nam,ifaces)
         endif
       enddo
@@ -648,7 +647,7 @@
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
+     &           xlpg,npg,nodepg,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
          elseif(nopesm.eq.6)then
@@ -674,7 +673,7 @@
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
+     &           xlpg,npg,nodepg,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     2. triangle
@@ -696,7 +695,7 @@
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
+     &           xlpg,npg,nodepg,nopesm,nelemload,sideload,
      &     xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     3. triangle
@@ -718,7 +717,7 @@
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
+     &           xlpg,npg,nodepg,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     4. triangle
@@ -740,7 +739,7 @@
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
+     &           xlpg,npg,nodepg,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !
          elseif(nopesm.eq.8)then
@@ -766,7 +765,7 @@
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
+     &           xlpg,npg,nodepg,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     2. triangle
@@ -788,7 +787,7 @@
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
+     &           xlpg,npg,nodepg,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     3. triangle
@@ -810,7 +809,7 @@
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
+     &           xlpg,npg,nodepg,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     4. triangle
@@ -832,7 +831,7 @@
      &           nopes,xn,xl2m,xl3sp,
      &           ipe,ime,iactiveline,nactiveline,
      &           ifacem,nintpoint,imastload,pmastload,
-     &           xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
+     &           xlpg,npg,nodepg,nopesm,nelemload,sideload,
      &           xload,nload,nload_,iamload,nam,ifaces)
 !     
 !     quad
@@ -858,7 +857,7 @@
      &          nopes,xn,xl2m,xl3sp,
      &          ipe,ime,iactiveline,nactiveline,
      &          ifacem,nintpoint,imastload,pmastload,
-     &          xlpg,npg,nodepg,areaslav,nopesm,nelemload,sideload,
+     &          xlpg,npg,nodepg,nopesm,nelemload,sideload,
      &          xload,nload,nload_,iamload,nam,ifaces)
         endif
       enddo

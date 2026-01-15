@@ -1997,7 +1997,7 @@ c     Bernhardi end
                 do
                   if(ids.eq.0) exit
                   if(nelemload(1,ids).ne.nelems) exit
-                  if(sideload(id)(1:1).ne.'I') then
+                  if(sideload(ids)(1:1).ne.'I') then
                     ids=ids-1
                     cycle
                   endif

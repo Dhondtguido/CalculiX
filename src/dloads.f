@@ -380,7 +380,7 @@ c     BernhardiStart
                 edgeload=.true.
               elseif(label(1:1).eq.'I') then
                 label(1:2)='I1'
-                interfaceload=1
+                if(interfaceload.le.0) interfaceload=1
               else
                 label(1:2)='P1'
               endif
@@ -502,7 +502,7 @@ c     BernhardiStart
                 edgeload=.true.
               elseif(label(1:1).eq.'I') then
                 label(1:2)='I1'
-                interfaceload=1
+                if(interfaceload.le.0) interfaceload=1
               else
                 label(1:2)='P1'
               endif

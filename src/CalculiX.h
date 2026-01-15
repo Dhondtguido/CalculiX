@@ -388,7 +388,8 @@ void FORTRAN(calcenergy,(ITG *ipkon,char *lakon,ITG *kon,double *co,
 void FORTRAN(calcglobmastsurf,(ITG *ne,ITG *ipkon,ITG *kon,char *lakon,
 			       ITG *nk,char *set,ITG *istartset,ITG *iendset,
 			       ITG *ialset,ITG *nset,ITG *nalset,
-			       ITG *imastset,ITG *nmastface));
+			       ITG *imastset,ITG *nmastface,
+			       ITG *interfaceload));
 
 void *calcenergymt(ITG *i);
 
