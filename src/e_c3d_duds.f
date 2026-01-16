@@ -350,35 +350,6 @@ c     if(intscheme.eq.0) then
       else
         mint3d=0
       endif
-c     else
-c     if((lakonl(4:4).eq.'8').or.(lakonl(4:4).eq.'2')) then
-c     mint3d=27
-c     if(lakonl(4:4).eq.'8') then
-c     if(lakonl(5:5).eq.'R') then
-c     mint2d=1
-c     else
-c     mint2d=4
-c     endif
-c     else
-c     if(lakonl(6:6).eq.'R') then
-c     mint2d=4
-c     else
-c     mint2d=9
-c     endif
-c     endif
-c     elseif((lakonl(4:5).eq.'10').or.(lakonl(4:4).eq.'4')) then
-c     mint3d=15
-c     if(lakonl(4:5).eq.'10') then
-c     mint2d=3
-c     else
-c     mint2d=1
-c     endif
-c     elseif((lakonl(4:5).eq.'15').or.(lakonl(4:4).eq.'6')) then
-c     mint3d=9
-c     else
-c     mint3d=0
-c     endif
-c     endif
 !     
 !     displacements for 2nd order static and modal theory
 !     
