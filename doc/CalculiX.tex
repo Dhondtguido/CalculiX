@@ -34401,6 +34401,166 @@ The following remarks are due:
 \item tied pressure-overclosure is only available for face-to-face penalty contact
 \end{itemize}
 
+\subsubsection{Domain decomposition}
+
+In this section the domain decomposition algorithm implemented in CalculiX is
+explained in more detail. It runs as follows:
+
+\begin{enumerate}
+
+\item Triangulate each face of the master surface by appropriately connecting
+its nodes. For instance, for a 8--noded face the triangulation can be performed
+as in Figure (\ref{domcom1}). The number of triangles is stored in ncont, and
+the topology of triangle i in field koncont(1...4,i): the first three entries
+are the node numbers belonging to the triangle in clockwise order when looking
+out of the body, koncont(4,i) contains the master face in the form
+10*elem+localface, where nelem is the master element number and localface is
+the local face number as explained e.g. under the keyword
+\htmlref{*DLOAD}{dload}. 
+
+\begin{figure}
+\begin{center}
+\epsfig{file=domcom1.eps,width=8cm}
+\caption{\label{domcom1}Examplary decomposition of a 8--noded face into
+triangles}
+\end{center}
+\end{figure}
+
+\item Catalogue node, edge and triangle information using the fields ipe, ime
+  and imastop as explained in the previous section.
+
+\item For each triangle, store the normal $\boldsymbol{n}$  and the coordinates of its center of gravity.
+
+\item For each slave face:
+
+\begin{enumerate}
+
+\item Calculate a mean normal $\boldsymbol{n}$ satisfying:
+
+\begin{equation}
+\boldsymbol{n} = \frac{\sum_{i=1}^{n_s} \boldsymbol{n}_i
+}{\| \sum_{i=1}^{n_s} \boldsymbol{n}_i \|},
+\end{equation}
+
+\noindent and its center of gravity
+
+\begin{equation}
+\boldsymbol{x}_{\text{cg}} =  \frac{\sum_{i=1}^{n_s} \boldsymbol{x}_i}{n_s},
+\end{equation} 
+
+\noindent leading to its mean slave plane satisfying:
+
+\begin{equation}
+\boldsymbol{n} \cdot (\boldsymbol{x} - \boldsymbol{x}_{\text{cg}})=0.
+\end{equation}
+
+\noindent Notice that a slave face does not have to be plane.
+
+\item Identify for the nodes of the slave face opposite master faces. To this
+end for each node the triangle is identified the center of gravity of which is
+closest to the slave node (using the neares neighbor algorithm of
+Section \ref{interpolation}. The triangle is considered to be valid if
+$\boldsymbol{n} \cdot \boldsymbol{n}_t < -0.7$ (slave and master face should
+have normals in opposite directions). If valid, store its parent master face
+to stock.
+
+\begin{figure}
+\epsfig{file=domcom2.eps,width=12cm}
+\caption{\label{domcom2}Clipping the slave face with the triangles of a
+triangulated master face}
+\end{figure}
+
+\item For each master face $m^l$ on the stack (cf Figure \ref{domcom2}):
+
+\begin{enumerate}
+
+\item Subdivide the face into convex polygons such that the edges of the
+polygons are a subset of the edges of the master triangulation. The dashed
+line in Figure \ref{domcom2}, for instance, is an edge of the master triangulation but is not
+needed to create the subdivision of the master face in convex polygons.
+
+\item For each polygon:
+
+\begin{enumerate}
+
+\item Apply the Sutherland--Hodgman algorithm (reference) to clip the slave
+face by the polygon after projecting both on the mean slave plane.
+
+\item Determine the edges of the polygon the neighboring master faces of which
+deserve further attention (the so--called active edges).
+
+\item Subdivide the clipped polygons into triangles and determine the local
+slave coordinates of their vertices by projecting back onto the slave face
+(using the finite element containment algorithm in
+Section \ref{interpolation}).
+
+\item Determine the local coordinates of the integration points within each
+clipped polygon triangle using a 7--point integration scheme. The
+corresponding formula amounts to:
+
+\begin{equation}
+\xi_{\text{ip,glob}} = \xi_1 \xi_ {\text{ip,loc}} + \xi_2 \eta _
+{\text{ip,loc}} + \xi_3 (1 - \xi _ {\text{ip,loc}} - \eta_ {\text{ip,loc}}),
+\end{equation}
+
+\noindent where $(\xi_ {\text{ip,loc}}, \eta_ {\text{ip,loc}})$ are the local
+coordinates of the integration point ($0 \le \xi_ {\text{ip,loc}}, \eta_
+{\text{ip,loc}} \le 1$) and $0 \le \xi_ {\text{ip,loc}}+\eta_
+{\text{ip,loc}} \le 1$), $(\xi_1,\xi_2,\xi_3)$ are the local coordinates of
+the vertices of the clipped polygon triangle within the slave face and
+$(\xi_{\text{ip,glob}}, \eta_{\text{ip,glob}})$ are the local coordinates of
+the integration point within the slave face.
+
+\end{enumerate}
+
+\end{enumerate}
+
+\item Analyze the master faces adjacent to the active edges in the same
+way. Keep track of the active edges deactivating them as soon as all adjacent
+master faces were covered and activating new ones as needed.
+
+\end{enumerate}
+
+\end{enumerate}
+
+One notices from the above discussion that the Sutherland--Hodgman algorithm
+is an important element in the overall algorithm. It clips a slave face (face
+a-b-c-d-e-f-g in Figure \ref{domcom2}) by a convex polygon (e.g. polygon 1-2-3 in
+Figure \ref{domcom2}). The viewing angle in the figure is from outside onto
+the slave face, therefore the slave face is numbered counterclockwise, while
+the master polygon is numbered clockwise. The clipping is done taking one
+master polygon edge at a time, starting e.g. by edge 1-2. If the edge is
+active, it is deactivated, since an edge can belong to at most two master
+faces. Now, the edge is extended indefinitely (dot--dashed line in
+Figure \ref{domcom2}) and the state of each slave surface edge w.r.t. this
+line is verified. The following cases arise:
+
+\begin{enumerate}
+
+\item The edge is not cut and lies on the side of the master face (edge d-e)
+in the Figure: the downstream vertex (vertex e) is included in the cli0pped
+polygon description.
+
+\item The edge is cut such that the downstream vertex lies outside of the
+master face (edge -f): the intersection point (A) is determined and included
+into the polygon description. If the master polygon edge (1-2) was not
+deactivated it is activated.
+
+\item The edge is cut such that the upstream vertex lies outside the master
+face (edge c-d): the intersection point (B) and the downstream vertex (d) are
+both included into the polygon description. If the master polygon edge (1-2)
+was not deactivated it is activated.
+
+\item The edge is not cut and lies outside the master face: no vertex is
+included into the polygon description. If the master polygon edge (1-2) was
+not deactivated it is activated.
+
+\end{enumerate}
+
+\noindent After all master polygon edges have been treated, a check is
+performed whether at least 3 vertices belong to the clipped polygon. If not,
+all master polygon edges are deactivated.
+
 \subsubsection{Massless contact}
 
 Massless contact is coded uniquely for explicit dynamics. The underlying
@@ -37968,7 +38128,7 @@ After all increments have been calculated (or if nowhere along the crack front
 propagation occurred or if $K_c$ was exceeded anywhere along the crack
 fronts) the results are stored in frd-format.
 
-\subsection{Interpolation procedure}
+\subsection{Interpolation procedure \label{interpolation}}
 
 Interpolation in between an existing mesh is used in different places in
 CalculiX:
