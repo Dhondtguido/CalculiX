@@ -34405,16 +34405,21 @@ The following remarks are due:
 \subsubsection{Domain decomposition}
 
 In this section the domain decomposition algorithm implemented in CalculiX is
-explained in more detail. It runs as follows:
+explained in more detail, taking interface loading as example (cf. Section
+\ref{ifloading}; the main routine is interfaceloading.c). It runs as follows:
 
 \begin{enumerate}
 
-\item Triangulate each face of the master surface by appropriately connecting
+\item (only for interface loading; subroutine calcglobmastsurf.f) Determine the external faces of the
+  volumetric mesh of the structure. These faces constitute the master surface.
+  
+\item (subroutine triangucont\_load.f) Triangulate each face of the master surface by appropriately connecting
 its nodes. For instance, for a 8--noded face the triangulation can be performed
 as in Figure (\ref{domcom1}). The number of triangles is stored in ncont, and
 the topology of triangle i in field koncont(1...4,i): the first three entries
 are the node numbers belonging to the triangle in clockwise order when looking
-out of the body, koncont(4,i) contains the master face in the form
+out of the body, koncont(4,i) contains the master face the triangle belongs to
+in the form
 10*elem+localface, where nelem is the master element number and localface is
 the local face number as explained e.g. under the keyword
 \htmlref{*DLOAD}{dload}. 
@@ -34427,10 +34432,19 @@ triangles}
 \end{center}
 \end{figure}
 
-\item Catalogue node, edge and triangle information using the fields ipe, ime
+\item (trianeighbor.f) Catalogue the edges of the triangulation and
+  neighboring information of each triangle using the fields ipe, ime
   and imastop as explained in the previous section.
 
-\item For each triangle, store the normal $\boldsymbol{n}$  and the coordinates of its center of gravity.
+\item (catmastnodes.f) Catalogue the master nodes in imastnodes in ascending
+  order (cf previous section).
+  
+\item (updatecontpen\_load.f) For each triangle, store the coordinates of its center of gravity in
+  field cg (3,*) and
+  the coefficients of the plane through each of its edges and bisecting the
+  normal on the triangle and the normal on the triangle adjacent
+  to the edge in straight(1...12,*) (4 coefficients per plane). Store the
+  coefficients of the triangle's plane in straight(13...16,*) (4 coefficients)
 
 \item For each slave face:
 
@@ -34455,13 +34469,16 @@ triangles}
 \boldsymbol{n} \cdot (\boldsymbol{x} - \boldsymbol{x}_{\text{cg}})=0.
 \end{equation}
 
-\noindent Notice that a slave face does not have to be plane.
+\noindent $n_s$ is the number of nodes belonging to the slave face,
+$\boldsymbol{x}_i$ the spatial coordinates and $\boldsymbol{n}_i$ the local
+normal in the spatial configuration. Notice that a slave face does not have to be plane.
 
 \item Identify for the nodes of the slave face opposite master faces. To this
-end for each node the triangle is identified the center of gravity of which is
+end identify for each node the triangle the center of gravity of which is
 closest to the slave node (using the neares neighbor algorithm of
 Section \ref{interpolation}. The triangle is considered to be valid if
-$\boldsymbol{n} \cdot \boldsymbol{n}_t < -0.7$ (slave and master face should
+$\boldsymbol{n} \cdot \boldsymbol{n}_t < -0.7$ ($\boldsymbol{n}_t$ is the
+triangle's normal; slave and master face should
 have normals in opposite directions). If valid, store its parent master face
 to stock.
 
