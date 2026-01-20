@@ -18467,7 +18467,8 @@ mesh. In order to apply the interface loading the user has to:
 
 \begin{itemize}
 \item Mesh the part of the body's external surface to be loaded using shell elements (S3,
-  S4, S6 or S8).
+  S4, S6 or S8). The order of the nodes should be clockwise when looking
+  towards the body, i.e. the normal to the shell should point into the body.
 \item Declare that the sole purpose of these elements is to apply facial
   loading by specifying the parameter DLOAD on the
   \htmlref{*ELEMENT}{element} card  used to define these shells.
