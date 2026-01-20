@@ -18457,6 +18457,27 @@ In a large deformation analysis the pressure is applied to the deformed face of 
 \epsfig{file=TetPres.eps,width=10cm}
 \caption{\label{tetpres}Equivalent nodal forces for a face of a C3D10 element}
 \end{figure}
+
+\subsubsection{\label{ifloading}Interface loading}
+
+The concept of interface loading allows for the application of a facial
+distributed pressure on an arbitrary part of the body's external surface. This
+part does not have to coincide with external faces of the body's volumetric
+mesh. In order to apply the interface loading the user has to:
+
+\begin{itemize}
+\item Mesh the part of the body's external surface to be loaded using shell elements (S3,
+  S4, S6 or S8).
+\item Declare that the sole purpose of these elements is to apply facial
+  loading by specifying the parameter DLOAD on the
+  \htmlref{*ELEMENT}{element} card  used to define these shells.
+\item Apply a pressure to these shell elements using the label 'I' (for
+  Interface) instead of the label 'P' (which is the conventional label for
+  pressure loading on faces) on a \htmlref{*DLOAD}{dload} card. The pressure loading acts in the direction of
+  the normal to the shell elements. The normal on a shell element is such,
+  that while looking in the direction of the normal the node numbering is
+  clockwise.
+\end{itemize}
  
 \subsubsection{Centrifugal distributed loading}
 Centrifugal loading is selected by the \htmlref{*DLOAD}{dload} card,
@@ -22662,7 +22683,13 @@ patterns (maximum 16 characters). A typical
 example of a nonuniform loading is the hydrostatic pressure. Another option is to assign the pressure of a fluid node to an element
 side. In that case the label takes the form PxNP, where NP stands for network
 pressure. The fluid node must be an corner node of a network element. Instead of a
-concrete pressure value the user must provide the fluid node number.
+concrete pressure value the user must provide the fluid node number. By
+replacing the letter 'P' by 'I' in the load type label (only allowed for
+loading on shell elements) the user specifies that the loading is an interface
+loading. This means that the shell element is fictitious and is only used to
+load an arbitrary part of the body's surface (not coincident with the faces of
+the body's mesh) adjacent to
+the shell element, cf Section \ref{ifloading}.
 
 Edge loading is only provided for shell elements. Its units are force per unit
 length. The label is EDNORx where x can take a value between one and three for
@@ -22805,7 +22832,7 @@ Se1,P3,10.
 assigns a pressure loading with magnitude 10. times the amplitude curve of amplitude A1 to face number three of all elements belonging to set Se1.
 
 \bigskip
-Example files: beamd.
+Example files: beamd, interface1.
 
 \bigskip
 Following line for centrifugal loading:
@@ -23415,7 +23442,7 @@ Example files: induction, induction2, induction3.
 Keyword type: model definition
 
 With this option elements are defined. There is one required
-parameter, TYPE and one optional parameter, ELSET. The parameter TYPE
+parameter, TYPE and two optional parameters, ELSET and DLOAD. The parameter TYPE
 defines the kind of element which is being defined. The following
 types can be selected:
 
@@ -23524,7 +23551,15 @@ types can be selected:
 
 Notice that the S8, S8R, CPS8, CPS8R, CPE8, CPE8R, CAX8, CAX8R, B32
 and B32R element are internally expanded into 20-node brick
-elements. Please have a look at Section \ref{elements} for details and decision criteria which element to take. The element choice determines to a large extent the quality of the results. Do not take element choice lightheartedly! The parameter ELSET is used to assign the elements to an element set. If the set already exists, the elements are ADDED to the set.
+elements. Please have a look at Section \ref{elements} for details and
+decision criteria which element to take. The element choice determines to a
+large extent the quality of the results. Do not take element choice
+lightheartedly! The parameter ELSET is used to assign the elements to an
+element set. If the set already exists, the elements are ADDED to the set.
+
+Finally, the parameter DLOAD can only be used for shell elements. It specifies
+that the shell elements are fictitious and are defined to apply a pressure on
+an arbitrary part of a body's surface adjacent to the shells, cf Section \ref{ifloading}.
 \bigskip
 
 First line:
@@ -23551,7 +23586,7 @@ Example:
 defines one 20-node element with reduced integration and stores it in set Eall.
 
 \bigskip
-Example files: beam8p, beam10p, beam20p.
+Example files: beam8p, beam10p, beam20p, interface1.
 
 \subsection{\label{elementoutput}*ELEMENT OUTPUT}
 
@@ -26592,7 +26627,16 @@ state (a zero state if the parameter PERTURBATION was not used on the *STEP card
 is removed. The loading defined within the
 step is multiplied by the amplitude history for each load as specified by the
 AMPLITUDE parameter on the loading card, if any. If no amplitude applies all
-loading is applied at the start of the step. Loading histories extending beyond the amplitude time scale are extrapolated in a constant way. The absence of the AMPLITUDE parameter on a loading card leads to a constant load.
+loading is applied at the start of the step. Loading histories extending
+beyond the amplitude time scale are extrapolated in a constant way. The
+absence of the AMPLITUDE parameter on a loading card leads to a constant load.
+
+Notice that if the *FREQUENCY step is in the same input deck, any *INITIAL
+CONDITIONS on the displacement or velocity field are removed during that
+step. Therefore, if the user wants to introduce such initial conditions, the
+*FREQUENCY step must be performed in a separate calculation with the option
+STORAGE=YES. The appropriate initial condition cards should be introduced in a
+second input deck containing the *MODAL DYNAMIC card.
 
 There are four optional parameters: SOLVER, DIRECT, DELTMX, and STEADY STATE. SOLVER determines the
 package used to solve for the steady state solution in the presence of nonzero
@@ -32922,8 +32966,8 @@ knor & A & & R & & &  infree[1] \\
 thickn & A & & D & & &  - \\
 thicke & A & & R & & &  mi[2]*nkon \\
 offset & A & & R & & network$>$0: R&  2*ne \\
-iponoel & A & & R & & &  infree[3] \\
-inoel & A & & R & & &  3*(infree[2]-1) \\
+iponoel2d & A & & R & & &  infree[3] \\
+inoel2d & A & & R & & &  3*(infree[2]-1) \\
 rig & A & & R & & &  infree[3] \\
 ne2boun & A & & R & & &  2*infree[3] \\
 \hline
@@ -33664,13 +33708,13 @@ The expansion of the elements requires several steps:
 \subsubsection{Cataloguing the elements belonging to a given node}
 
 A node can belong to several elements of different types. The structure to
-store this dependence consists of two fields: a one-dimensional field iponoel
-and a two-dimensional field inoel. For node i the value j1=iponoel(i) points
-to row j1 in field inoel containing in its first column the number k1 of an
+store this dependence consists of two fields: a one-dimensional field iponoel2d
+and a two-dimensional field inoel2d. For node i the value j1=iponoel2d(i) points
+to row j1 in field inoel2d containing in its first column the number k1 of an
 element to which
 node i belongs, in its second column the local number l1 which node i assumes in the
 topology of the element and in its third column the row number j2 in field
-inoel where another element to which node i belongs is listed. If no further
+inoel2d where another element to which node i belongs is listed. If no further
 element exists, this entry is zero (Figure \ref{iponoel}).
 
 \begin{figure}
@@ -34357,6 +34401,166 @@ The following remarks are due:
   case, no friction should be defined.
 \item tied pressure-overclosure is only available for face-to-face penalty contact
 \end{itemize}
+
+\subsubsection{Domain decomposition}
+
+In this section the domain decomposition algorithm implemented in CalculiX is
+explained in more detail. It runs as follows:
+
+\begin{enumerate}
+
+\item Triangulate each face of the master surface by appropriately connecting
+its nodes. For instance, for a 8--noded face the triangulation can be performed
+as in Figure (\ref{domcom1}). The number of triangles is stored in ncont, and
+the topology of triangle i in field koncont(1...4,i): the first three entries
+are the node numbers belonging to the triangle in clockwise order when looking
+out of the body, koncont(4,i) contains the master face in the form
+10*elem+localface, where nelem is the master element number and localface is
+the local face number as explained e.g. under the keyword
+\htmlref{*DLOAD}{dload}. 
+
+\begin{figure}
+\begin{center}
+\epsfig{file=domcom1.eps,width=8cm}
+\caption{\label{domcom1}Examplary decomposition of a 8--noded face into
+triangles}
+\end{center}
+\end{figure}
+
+\item Catalogue node, edge and triangle information using the fields ipe, ime
+  and imastop as explained in the previous section.
+
+\item For each triangle, store the normal $\boldsymbol{n}$  and the coordinates of its center of gravity.
+
+\item For each slave face:
+
+\begin{enumerate}
+
+\item Calculate a mean normal $\boldsymbol{n}$ satisfying:
+
+\begin{equation}
+\boldsymbol{n} = \frac{\sum_{i=1}^{n_s} \boldsymbol{n}_i
+}{\| \sum_{i=1}^{n_s} \boldsymbol{n}_i \|},
+\end{equation}
+
+\noindent and its center of gravity
+
+\begin{equation}
+\boldsymbol{x}_{\text{cg}} =  \frac{\sum_{i=1}^{n_s} \boldsymbol{x}_i}{n_s},
+\end{equation} 
+
+\noindent leading to its mean slave plane satisfying:
+
+\begin{equation}
+\boldsymbol{n} \cdot (\boldsymbol{x} - \boldsymbol{x}_{\text{cg}})=0.
+\end{equation}
+
+\noindent Notice that a slave face does not have to be plane.
+
+\item Identify for the nodes of the slave face opposite master faces. To this
+end for each node the triangle is identified the center of gravity of which is
+closest to the slave node (using the neares neighbor algorithm of
+Section \ref{interpolation}. The triangle is considered to be valid if
+$\boldsymbol{n} \cdot \boldsymbol{n}_t < -0.7$ (slave and master face should
+have normals in opposite directions). If valid, store its parent master face
+to stock.
+
+\begin{figure}
+\epsfig{file=domcom2.eps,width=12cm}
+\caption{\label{domcom2}Clipping the slave face with the triangles of a
+triangulated master face}
+\end{figure}
+
+\item For each master face $m^l$ on the stack (cf Figure \ref{domcom2}):
+
+\begin{enumerate}
+
+\item Subdivide the face into convex polygons such that the edges of the
+polygons are a subset of the edges of the master triangulation. The dashed
+line in Figure \ref{domcom2}, for instance, is an edge of the master triangulation but is not
+needed to create the subdivision of the master face in convex polygons.
+
+\item For each polygon:
+
+\begin{enumerate}
+
+\item Apply the Sutherland--Hodgman algorithm (reference) to clip the slave
+face by the polygon after projecting both on the mean slave plane.
+
+\item Determine the edges of the polygon the neighboring master faces of which
+deserve further attention (the so--called active edges).
+
+\item Subdivide the clipped polygons into triangles and determine the local
+slave coordinates of their vertices by projecting back onto the slave face
+(using the finite element containment algorithm in
+Section \ref{interpolation}).
+
+\item Determine the local coordinates of the integration points within each
+clipped polygon triangle using a 7--point integration scheme. The
+corresponding formula amounts to:
+
+\begin{equation}
+\xi_{\text{ip,glob}} = \xi_1 \xi_ {\text{ip,loc}} + \xi_2 \eta _
+{\text{ip,loc}} + \xi_3 (1 - \xi _ {\text{ip,loc}} - \eta_ {\text{ip,loc}}),
+\end{equation}
+
+\noindent where $(\xi_ {\text{ip,loc}}, \eta_ {\text{ip,loc}})$ are the local
+coordinates of the integration point ($0 \le \xi_ {\text{ip,loc}}, \eta_
+{\text{ip,loc}} \le 1$) and $0 \le \xi_ {\text{ip,loc}}+\eta_
+{\text{ip,loc}} \le 1$), $(\xi_1,\xi_2,\xi_3)$ are the local coordinates of
+the vertices of the clipped polygon triangle within the slave face and
+$(\xi_{\text{ip,glob}}, \eta_{\text{ip,glob}})$ are the local coordinates of
+the integration point within the slave face.
+
+\end{enumerate}
+
+\end{enumerate}
+
+\item Analyze the master faces adjacent to the active edges in the same
+way. Keep track of the active edges deactivating them as soon as all adjacent
+master faces were covered and activating new ones as needed.
+
+\end{enumerate}
+
+\end{enumerate}
+
+One notices from the above discussion that the Sutherland--Hodgman algorithm
+is an important element in the overall algorithm. It clips a slave face (face
+a-b-c-d-e-f-g in Figure \ref{domcom2}) by a convex polygon (e.g. polygon 1-2-3 in
+Figure \ref{domcom2}). The viewing angle in the figure is from outside onto
+the slave face, therefore the slave face is numbered counterclockwise, while
+the master polygon is numbered clockwise. The clipping is done taking one
+master polygon edge at a time, starting e.g. by edge 1-2. If the edge is
+active, it is deactivated, since an edge can belong to at most two master
+faces. Now, the edge is extended indefinitely (dot--dashed line in
+Figure \ref{domcom2}) and the state of each slave surface edge w.r.t. this
+line is verified. The following cases arise:
+
+\begin{enumerate}
+
+\item The edge is not cut and lies on the side of the master face (edge d-e)
+in the Figure: the downstream vertex (vertex e) is included in the cli0pped
+polygon description.
+
+\item The edge is cut such that the downstream vertex lies outside of the
+master face (edge -f): the intersection point (A) is determined and included
+into the polygon description. If the master polygon edge (1-2) was not
+deactivated it is activated.
+
+\item The edge is cut such that the upstream vertex lies outside the master
+face (edge c-d): the intersection point (B) and the downstream vertex (d) are
+both included into the polygon description. If the master polygon edge (1-2)
+was not deactivated it is activated.
+
+\item The edge is not cut and lies outside the master face: no vertex is
+included into the polygon description. If the master polygon edge (1-2) was
+not deactivated it is activated.
+
+\end{enumerate}
+
+\noindent After all master polygon edges have been treated, a check is
+performed whether at least 3 vertices belong to the clipped polygon. If not,
+all master polygon edges are deactivated.
 
 \subsubsection{Massless contact}
 
@@ -37925,7 +38129,7 @@ After all increments have been calculated (or if nowhere along the crack front
 propagation occurred or if $K_c$ was exceeded anywhere along the crack
 fronts) the results are stored in frd-format.
 
-\subsection{Interpolation procedure}
+\subsection{Interpolation procedure \label{interpolation}}
 
 Interpolation in between an existing mesh is used in different places in
 CalculiX:
@@ -38723,14 +38927,14 @@ nuel & number of different user element types \\
                       nodal entries in field kon \\
       offset(2,i) &    offsets (one for shells, two for beams) in
                       element i \\
-      iponoel(i) &     pointer for node i into field inoel, which
+      iponoel2d(i) &     pointer for node i into field inoel2d, which
                       stores the 1D and 2D elements belonging to the
                       node. \\
-      inoel(3,i) &     field containing an element number, a local node
+      inoel2d(3,i) &     field containing an element number, a local node
                       number within this element and a pointer to
                       another entry (or zero if there is no
                       other). \\
-      inoelfree &     next free field in inoel \\
+      inoel2dfree &     next free field in inoel2d \\
       rig(i) &        integer field indicating whether node i is a
                       rigid node (nonzero value) or not (zero value). In a rigid node
                       or knot all expansion nodes except the ones not

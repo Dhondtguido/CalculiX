@@ -72,14 +72,14 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	       ITG *istep,ITG *nmat,ITG *ielprop,double *prop,char *typeboun,
 	       ITG *mortar,ITG *mpcinfo,double *tietol,ITG *ics,
 	       char *orname,ITG *itempuser,double *t0g,double *t1g,
-	       ITG *jmax){
+	       ITG *jmax,ITG *imastload,double *pmastload){
   
   char description[13]="            ",*lakon=NULL,stiffmatrix[132]="",
     jobnamef[396]="";
 
   ITG *inum=NULL,k,*icol=NULL,*irow=NULL,ielas=0,icmd=0,iinc=1,nasym=0,i,j,ic,ir,
     mass[2]={0,0},stiffness=1,buckling=0,rhsi=1,intscheme=0,*ncocon=NULL,
-    *nshcon=NULL,mode=-1,noddiam=-1,coriolis=0,iout,
+    *nshcon=NULL,mode=-1,noddiam=-1,coriolis=0,iout,*inoel=NULL,
     *itg=NULL,ntg=0,symmetryflag=0,inputformat=0,ngraph=1,im,
     mt=mi[1]+1,ne0,*integerglob=NULL,iglob=0,*ipneigh=NULL,*neigh=NULL,
     icfd=0,*inomat=NULL,*islavact=NULL,*islavnode=NULL,*nslavnode=NULL,
@@ -89,7 +89,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *itiefac=NULL,*imastnode=NULL,*nmastnode=NULL,*imastop=NULL,iitsta,
     *iponoels=NULL,*inoels=NULL,*ipe=NULL,*ime=NULL,iit=-1,iflagact=0,
     icutb=0,*kon=NULL,*ipkon=NULL,*ielmat=NULL,ialeatoric=0,kscale=1,
-    *iponoeln=NULL,*inoeln=NULL,*iponoel=NULL,
+    *iponoeln=NULL,*inoeln=NULL,*iponoel=NULL,inoelsize,nramp=-1,
     *ielorien=NULL,network=0,nrhs=1,iperturbsav,mscalmethod=0,*jqw=NULL,
     *iroww=NULL,nzsw,*islavquadel=NULL,*irowt=NULL,*jqt=NULL,
     mortartrafoflag=0,nmethodold=*nmethod;
@@ -126,8 +126,8 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
      (needed in resultsforc.c) */
   
   NNEW(iponoel,ITG,*nk);
-  FORTRAN(nodebelongstoel,(iponoel,lakon,ipkon,kon,ne));
-  
+  FORTRAN(nodebelongstoel,(iponoel,inoel,&inoelsize,lakon,ipkon,kon,ne,&nramp));
+ 
   for(k=0;k<3;k++){
     strcpy1(&jobnamef[k*132],&jobnamec[k*132],132);
   }
@@ -446,7 +446,8 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	       tieset,istartset,iendset,ialset,ntie,&nasym,pslavsurf,
 	       pmastsurf,mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
 	       iponoeln,inoeln,&network,ntrans,inotr,trab,smscale,&mscalmethod,
-	       set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag);
+	       set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag,
+	       imastload,pmastload);
 
   /* check for negative Jacobians */
 
@@ -472,7 +473,8 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		   xstateini,xstate,thicke,
 		   integerglob,doubleglob,tieset,istartset,iendset,
 		   ialset,ntie,&nasym,pslavsurf,pmastsurf,mortar,clearini,
-		   ielprop,prop,&ne0,&kscale,iponoeln,inoeln,&network,set,nset);
+		   ielprop,prop,&ne0,&kscale,iponoeln,inoeln,&network,set,
+		   nset,imastload,pmastload);
   }
 
   /* determining the right hand side */

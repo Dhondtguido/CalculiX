@@ -1232,7 +1232,8 @@ c            call orthotropic(stiff,anisox)
             if(nload.gt.0) then
                call nident2(nelemload,nelem,nload,id)
                do
-                  if((id.eq.0).or.(nelemload(1,id).ne.nelem)) exit
+                  if(id.eq.0) exit
+                  if(nelemload(1,id).ne.nelem) exit
                   if((sideload(id)(1:2).ne.'BX').and.
      &               (sideload(id)(1:2).ne.'BY').and.
      &               (sideload(id)(1:2).ne.'BZ')) then
@@ -1326,24 +1327,19 @@ c                     if(iperturb(1).eq.0) then
 !
       enddo
 !
-!      write(*,*) nelem
-!      write(*,'(6(1x,e11.4))') ((s(i1,j1),i1=1,j1),j1=1,60)
-!      write(*,*)
-!
       if((buckling.eq.0).and.(nload.ne.0)) then
 !
 !       distributed loads
 !
          call nident2(nelemload,nelem,nload,id)
          do
-            if((id.eq.0).or.(nelemload(1,id).ne.nelem)) exit
+            if(id.eq.0) exit
+            if(nelemload(1,id).ne.nelem) exit
             if(sideload(id)(1:1).ne.'P') then
                id=id-1
                cycle
             endif
-c            read(sideload(id)(2:2),'(i1)') ig
             ig=ichar(sideload(id)(2:2))-48
-!
 !
 !         treatment of wedge faces
 !

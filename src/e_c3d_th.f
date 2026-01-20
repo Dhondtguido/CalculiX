@@ -490,7 +490,8 @@ c         if(intscheme.eq.0) then
                call nident2(nelemload,nelem,nload,id)
                areaj=xsj*weight
                do
-                  if((id.eq.0).or.(nelemload(1,id).ne.nelem)) exit
+                  if(id.eq.0) exit
+                  if(nelemload(1,id).ne.nelem) exit
                   if(sideload(id)(1:2).ne.'BF') then
                      id=id-1
                      cycle
@@ -541,7 +542,8 @@ c         if(intscheme.eq.0) then
 !
          call nident2(nelemload,nelem,nload,id)
          do
-            if((id.eq.0).or.(nelemload(1,id).ne.nelem)) exit
+            if(id.eq.0) exit
+            if(nelemload(1,id).ne.nelem) exit
             if((sideload(id)(1:1).ne.'F').and.
      &         (sideload(id)(1:1).ne.'R').and.
      &         (sideload(id)(1:1).ne.'S')) then

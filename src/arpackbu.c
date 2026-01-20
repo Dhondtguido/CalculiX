@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 #include "CalculiX.h"
 #ifdef SPOOLES
 #include "spooles.h"
@@ -71,19 +72,20 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	      ITG *ipobody, ITG *ibody,double *xbody, ITG *nbody, 
 	      double *thicke,char *jobnamec,ITG *nmat,ITG *ielprop,
 	      double *prop,char *orname,char *typeboun,double *t0g,
-	      double *t1g,ITG *mcs,ITG *istep){
+	      double *t1g,ITG *mcs,ITG *istep,ITG *imastload,
+	      double *pmastload){
   
   char bmat[2]="G",which[3]="LM",howmny[2]="A",fneig[132]="",
     description[13]="            ",*tieset=NULL;
 
   ITG *inum=NULL,k,ido,dz,iparam[11],ipntr[11],lworkl,im,nasym=0,
     info,rvec=1,*select=NULL,lfin,j,lint,iout,iconverged=0,ielas=1,icmd=0,
-    iinc=1,*ncocon=NULL,*nshcon=NULL,nev,ncv,mxiter,jrow,
-    coriolis=0,ifreebody,symmetryflag=0,storematrix=0,
+    iinc=1,*ncocon=NULL,*nshcon=NULL,nev,ncv,mxiter,jrow,nramp=-1,
+    coriolis=0,ifreebody,symmetryflag=0,storematrix=0,inoelsize,
     inputformat=0,ngraph=1,mt=mi[1]+1,mass[2]={0,0}, stiffness=1, buckling=0, 
     rhsi=1, intscheme=0, noddiam=-1,*ipneigh=NULL,*neigh=NULL,ne0,
     *integerglob=NULL,ntie,icfd=0,*inomat=NULL,mortar=0,*islavnode=NULL,
-    *islavact=NULL,*nslavnode=NULL,*islavsurf=NULL,kscale=1,
+    *islavact=NULL,*nslavnode=NULL,*islavsurf=NULL,kscale=1,*inoel=NULL,
     *iponoeln=NULL,*inoeln=NULL,network=0,nrhs=1,*itiefac=NULL,mscalmethod=0,
     *islavquadel=NULL,*irowt=NULL,*jqt=NULL,mortartrafoflag=0,*iponoel=NULL;
 
@@ -115,9 +117,9 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 
   /* determining whether a node belongs to at least one element
      (needed in resultsforc.c) */
-  
+
   NNEW(iponoel,ITG,*nk);
-  FORTRAN(nodebelongstoel,(iponoel,lakon,ipkon,kon,ne));
+  FORTRAN(nodebelongstoel,(iponoel,inoel,&inoelsize,lakon,ipkon,kon,ne,&nramp));
  
   ne0=*ne;
 
@@ -228,10 +230,13 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		 shcon,nshcon,cocon,ncocon,ttime,&time,istep,&iinc,&coriolis,
 		 ibody,xloadold,&reltime,veold,springarea,nstate_,
 		 xstateini,xstate,thicke,integerglob,doubleglob,
-		 tieset,istartset,iendset,ialset,&ntie,&nasym,pslavsurf,pmastsurf,
-		 &mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,iponoeln,inoeln,
+		 tieset,istartset,iendset,ialset,&ntie,&nasym,pslavsurf,
+		 pmastsurf,
+		 &mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,iponoeln,
+		 inoeln,
 		 &network,ntrans,inotr,trab,smscale,&mscalmethod,set,nset,
-		 islavquadel,aut,irowt,jqt,&mortartrafoflag);
+		 islavquadel,aut,irowt,jqt,&mortartrafoflag,imastload,
+		 pmastload);
   }
   else{
     mafillsmmain(co,nk,kon,ipkon,lakon,ne,nodeboun,ndirboun,xboun,nboun,
@@ -250,8 +255,10 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		 xstateini,xstate,thicke,integerglob,doubleglob,
 		 tieset,istartset,iendset,ialset,&ntie,&nasym,pslavsurf,
 		 pmastsurf,&mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
-		 iponoeln,inoeln,&network,ntrans,inotr,trab,smscale,&mscalmethod,
-		 set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag);
+		 iponoeln,inoeln,&network,ntrans,inotr,trab,smscale,
+		 &mscalmethod,
+		 set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag,
+		 imastload,pmastload);
   }
 
   /* determining the right hand side */
@@ -461,8 +468,10 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		 xstateini,xstate,thicke,integerglob,doubleglob,
 		 tieset,istartset,iendset,ialset,&ntie,&nasym,pslavsurf,
 		 pmastsurf,&mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
-		 iponoeln,inoeln,&network,ntrans,inotr,trab,smscale,&mscalmethod,
-		 set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag);
+		 iponoeln,inoeln,&network,ntrans,inotr,trab,smscale,
+		 &mscalmethod,
+		 set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag,
+		 imastload,pmastload);
   }
   else{
     mafillsmmain(co,nk,kon,ipkon,lakon,ne,nodeboun,ndirboun,xboun,nboun,
@@ -481,8 +490,10 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		 xstateini,xstate,thicke,integerglob,doubleglob,
 		 tieset,istartset,iendset,ialset,&ntie,&nasym,pslavsurf,
 		 pmastsurf,&mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
-		 iponoeln,inoeln,&network,ntrans,inotr,trab,smscale,&mscalmethod,
-		 set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag);
+		 iponoeln,inoeln,&network,ntrans,inotr,trab,smscale,
+		 &mscalmethod,
+		 set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag,
+		 imastload,pmastload);
   }
 
   SFREE(stx);SFREE(fext);

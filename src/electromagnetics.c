@@ -41,12 +41,10 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 		      char **lakonp,ITG *ne,
 		      ITG *nodeboun,ITG *ndirboun,double *xboun,ITG *nboun,
 		      ITG **ipompcp,ITG **nodempcp,double **coefmpcp,
-		      char **labmpcp,
-		      ITG *nmpc,
+		      char **labmpcp,ITG *nmpc,
 		      ITG *nodeforc,ITG *ndirforc,double *xforc,ITG *nforc,
 		      ITG **nelemloadp,char **sideloadp,double *xload,
-		      ITG *nload,
-		      ITG *nactdof,
+		      ITG *nload,ITG *nactdof,
 		      ITG **icolp,ITG **jqp,ITG **irowp,ITG *neq,ITG *nzl,
 		      ITG *nmethod,ITG **ikmpcp,ITG **ilmpcp,ITG *ikboun,
 		      ITG *ilboun,
@@ -55,7 +53,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 		      ITG **ielorienp,ITG *norien,double *orab,ITG *ntmat_,
 		      double *t0,double *t1,double *t1old,
 		      ITG *ithermal,double *prestr,ITG *iprestr,
-		      double **voldp,ITG *iperturb,double *sti,ITG *nzs, 
+		      double **voldp,ITG *iperturb,double *sti,ITG *nzs,
 		      ITG *kode,char *filab,
 		      ITG *idrct,ITG *jmax,ITG *jout,double *timepar,
 		      double *eme,
@@ -86,7 +84,8 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 		      ITG *nmpc_,
 		      ITG *nmat,char *typeboun,ITG *iaxial,ITG *nload_,
 		      ITG *nprop,
-		      ITG *network,char *orname,double *t0g,double *t1g){
+		      ITG *network,char *orname,double *t0g,double *t1g,
+		      ITG *imastload,double *pmastload){
 
   char description[13]="            ",*lakon=NULL,jobnamef[396]="",
     *labmpc=NULL,kind1[2]="E",kind2[2]="E",*set=NULL,*tieset=NULL,
@@ -99,8 +98,8 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
     *itg=NULL,*ineighe=NULL,null=0,iactive[3],neqterms,ntflag,
     *ieg=NULL,ntg=0,ntr,*kontri=NULL,*nloadtr=NULL,index,
     *ipiv=NULL,ntri,mode=-1,noddiam=-1,nasym=0,*iponoel=NULL,
-    ntrit,*inocs=NULL,*nacteq=NULL,kkv,kkx,kk6,
-    *nactdog=NULL,nteq,nmastnode,imast,massact[2],
+    ntrit,*inocs=NULL,*nacteq=NULL,kkv,kkx,kk6,iramp=0,idel=0,
+    *nactdog=NULL,nteq,nmastnode,imast,massact[2],*inoel=NULL,
     *ipkon=NULL,*kon=NULL,*ielorien=NULL,nmethodact,ne2=0,
     *ielmat=NULL,inext,itp=0,symmetryflag=0,inputformat=0,
     iitterm=0,ngraph=1,ithermalact=2,*islavact=NULL,
@@ -113,10 +112,10 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
     coriolis=0,*ipneigh=NULL,*neigh=NULL,i,icfd=0,id,node,networknode,
     iflagact=0,*nodorig=NULL,*ipivr=NULL,*inomat=NULL,*nodface=NULL,
     *ipoface=NULL,*istartset=NULL,*iendset=NULL,*ialset=NULL,
-    *nelemloadref=NULL,*iamloadref=NULL,nloadref,kscale=1,
+    *nelemloadref=NULL,*iamloadref=NULL,nloadref,kscale=1,nramp=-1,
     *nelemload=NULL,*iamload=NULL,*idefload=NULL,ialeatoric=0,
     *iponoeln=NULL,*inoeln=NULL,inoelnsize,nrhs=1,neqfreq,nzsfreq,
-    *irowfreq=NULL,*icolfreq=NULL,*jqfreq=NULL,*jq=NULL,
+    *irowfreq=NULL,*icolfreq=NULL,*jqfreq=NULL,*jq=NULL,inoelsize,
     *itiefac=NULL,mscalmethod=0,nkon0,*nintpoint=0,num_cpus,sys_cpus,
     *islavquadel=NULL,*irowt=NULL,*jqt=NULL,mortartrafoflag=0;
 
@@ -166,7 +165,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
      (needed in resultsforc.c) */
   
   NNEW(iponoel,ITG,*nk);
-  FORTRAN(nodebelongstoel,(iponoel,lakon,ipkon,kon,ne));
+  FORTRAN(nodebelongstoel,(iponoel,inoel,&inoelsize,lakon,ipkon,kon,ne,&nramp));
 
   num_cpus=0;
   sys_cpus=0;
@@ -534,7 +533,8 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 	       tieset,istartset,iendset,ialset,ntie,&nasym,pslavsurf,
 	       pmastsurf,&mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
 	       iponoeln,inoeln,network,ntrans,inotr,trab,smscale,&mscalmethod,
-	       set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag);
+	       set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag,
+	       imastload,pmastload);
   
   if(nmethodact==0){
       
@@ -763,7 +763,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
     /* tied contact constraints: generate appropriate MPC's */
       
     tiedcontact(ntie,tieset,nset,set,istartset,iendset,ialset,
-		lakon,ipkon,kon,tietol,nmpc, &mpcfree,&memmpc_,
+		lakon,ipkon,kon,tietol,nmpc,&mpcfree,&memmpc_,
 		&ipompc,&labmpc,&ikmpc,&ilmpc,&fmpc,&nodempc,&coefmpc,
 		ithermal,co,vold,&icfd,nmpc_,mi,nk,istep,ikboun,nboun,
 		kind1,kind2,jobnamef);
@@ -1511,26 +1511,27 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
       if(*ithermal<=1) iit=2;
 	  
       // MPADD: need for fake energy values!
-      double energy[4] = {0, 0, 0, 0};
+      double energy[4] = {0,0,0,0};
       double allwk     = 0.0;
       double energyref = 0.0;
-      double emax, enres,enetoll, reswk, dampwk, allwkini;
+      double emax,enres,enetoll,reswk,dampwk,allwkini;
 
-      checkconvergence(co,nk,kon,ipkon,lakon,ne,stn,nmethod, 
-		       kode,filab,een,t1act,&time,epn,ielmat,matname,enern, 
+      checkconvergence(co,nk,kon,ipkon,lakon,ne,stn,nmethod,
+		       kode,filab,een,t1act,&time,epn,ielmat,matname,enern,
 		       xstaten,nstate_,istep,&iinc,iperturb,ener,mi,output,
 		       ithermal,qfn,&mode,&noddiam,trab,inotr,ntrans,orab,
 		       ielorien,norien,description,sti,&icutb,&iit,&dtime,qa,
 		       vold,qam,ram1,ram2,ram,cam,uam,&ntg,ttime,&icntrl,
-		       &theta,&dtheta,veold,vini,idrct,tper,&istab,tmax, 
+		       &theta,&dtheta,veold,vini,idrct,tper,&istab,tmax,
 		       nactdof,b,tmin,ctrl,amta,namta,itpamp,&inext,&dthetaref,
 		       &itp,&jprint,jout,&uncoupled,t1,&iitterm,nelemload,
 		       nload,nodeboun,nboun,itg,ndirboun,&deltmx,&iflagact,
 		       set,nset,istartset,iendset,ialset,emn,thicke,jobnamec,
 		       &mortar,nmat,ielprop,prop,&ialeatoric,&kscale,
-		       energy, &allwk, &energyref,&emax, &enres, &enetoll,        //MPADD
-		       energyini, &allwkini ,&allwk, &reswk, &ne0, &ne0, &dampwk, //MPADD
-		       &dampwk, energy);                                          //MPADD
+		       energy,&allwk,&energyref,&emax,&enres,&enetoll,
+		       energyini,&allwkini,&allwk,&reswk,&ne0,&ne0,&dampwk,
+		       &dampwk,energy,&iramp,&idel,iponoel,inoel,nelcon,
+		       elcon,ncmat_,ntmat_);
     }
       
     /*********************************************************/

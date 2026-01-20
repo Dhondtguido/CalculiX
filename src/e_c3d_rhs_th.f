@@ -137,19 +137,17 @@
 !
 !       initialisation for distributed forces
 !
-c      if(idist.ne.0) then
       do i=1,nope
          ff(i)=0.d0
       enddo
-c     endif
 !     
 !     computation of the body forces
 !     
       ivolumeforce=.false.
-c     if(nload.gt.0) then
       call nident2(nelemload,nelem,nload,id)
       do
-         if((id.eq.0).or.(nelemload(1,id).ne.nelem)) exit
+         if(id.eq.0) exit
+         if(nelemload(1,id).ne.nelem) exit
          if(sideload(id)(1:2).ne.'BF') then
             id=id-1
             cycle
@@ -158,7 +156,6 @@ c     if(nload.gt.0) then
             exit
          endif
       enddo
-c     endif
 !     
 !     computation of the matrix: loop over the Gauss points
 !     
@@ -269,11 +266,11 @@ c     endif
 !     
 !     distributed heat flux
 !     
-c     if(nload.gt.0) then
             call nident2(nelemload,nelem,nload,id)
             areaj=xsj*weight
             do
-               if((id.eq.0).or.(nelemload(1,id).ne.nelem)) exit
+               if(id.eq.0) exit
+               if(nelemload(1,id).ne.nelem) exit
                if(sideload(id)(1:2).ne.'BF') then
                   id=id-1
                   cycle
@@ -301,19 +298,16 @@ c     if(nload.gt.0) then
                enddo
                exit
             enddo
-c     endif
 !     
          enddo
       endif
 !     
 !     distributed loads
 !     
-c     if(nload.eq.0) then
-c     return
-c     endif
       call nident2(nelemload,nelem,nload,id)
       do
-         if((id.eq.0).or.(nelemload(1,id).ne.nelem)) exit
+         if(id.eq.0) exit
+         if(nelemload(1,id).ne.nelem) exit
          if((sideload(id)(1:1).ne.'F').and.
      &        (sideload(id)(1:1).ne.'R').and.
      &        (sideload(id)(1:1).ne.'S')) then

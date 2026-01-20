@@ -46,7 +46,7 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
 		 ITG **ilmpcp,ITG *nk_,ITG *ne_,ITG *nkon_,ITG *istep,
 		 ITG *nprop_,ITG **ielpropp,ITG *ne1d,ITG *ne2d,ITG **iponorp,
 		 double **thicknp,double **thickep,ITG *mi,double **offsetp,
-		 ITG **iponoelp,ITG **rigp,ITG **ne2bounp,ITG **ielorienp,
+		 ITG **iponoel2dp,ITG **rigp,ITG **ne2bounp,ITG **ielorienp,
 		 ITG **inotrp,double **t0p,double **t0gp,double **t1gp,
 		 double **prestrp,double **voldp,double **veoldp,ITG **ielmatp,
 		 ITG *irobustdesign,ITG **irandomtypep,double **randomvalp,
@@ -66,7 +66,7 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
   ITG *integerglob=NULL,iglob=1,irefine=1,*inodestet=NULL,nnodestet=0,i,
     istart,j,iquadratic,nenew,nline,nset_=0,*ipoinp=NULL,nkold,nkmt,
     *inp=NULL,*ipoinpc=NULL,idummy[2]={0,0},nuel_=0,inp_size,nentries=19,
-    nkold_,neold_,nkonold_,*ielprop=NULL,*iponor=NULL,*iponoel=NULL,
+    nkold_,neold_,nkonold_,*ielprop=NULL,*iponor=NULL,*iponoel2d=NULL,
     *rig=NULL,*ne2boun=NULL,*ielorien=NULL,*inotr=NULL,im,mt=mi[1]+1,
     *ielmat=NULL,*irandomtype=NULL,*iparentel=NULL,*ipompc=NULL,*ikmpc=NULL,
     *ilmpc=NULL,*nodempc=NULL,*kon=NULL,*ipkon=NULL,*iamt1=NULL,*ipobody=NULL,
@@ -87,7 +87,7 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
   char *env,*envsys;
 
   ielprop=*ielpropp;iponor=*iponorp;thickn=*thicknp;thicke=*thickep;
-  offset=*offsetp;iponoel=*iponoelp;rig=*rigp;ne2boun=*ne2bounp;
+  offset=*offsetp;iponoel2d=*iponoel2dp;rig=*rigp;ne2boun=*ne2bounp;
   ielorien=*ielorienp;inotr=*inotrp;t0=*t0p;t0g=*t0gp;t1g=*t1gp;
   prestr=*prestrp;vold=*voldp;veold=*veoldp;ielmat=*ielmatp;
   irandomtype=*irandomtypep;randomval=*randomvalp;t1=*t1p;
@@ -167,7 +167,7 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
       RENEW(thickn,double,2**nk_);
       RENEW(thicke,double,mi[2]**nkon_);
       RENEW(offset,double,2**ne_);
-      RENEW(iponoel,ITG,*nk_);
+      RENEW(iponoel2d,ITG,*nk_);
       RENEW(rig,ITG,*nk_);
       RENEW(ne2boun,ITG,2**nk_);
     }
@@ -456,7 +456,7 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
   }
 
   *ielpropp=ielprop;*iponorp=iponor;*thicknp=thickn;*thickep=thicke;
-  *offsetp=offset;*iponoelp=iponoel;*rigp=rig;*ne2bounp=ne2boun;
+  *offsetp=offset;*iponoel2dp=iponoel2d;*rigp=rig;*ne2bounp=ne2boun;
   *ielorienp=ielorien;*inotrp=inotr;*t0p=t0;*t0gp=t0g;*t1gp=t1g;
   *prestrp=prestr;*voldp=vold;*veoldp=veold;*ielmatp=ielmat;
   *irandomtypep=irandomtype;*randomvalp=randomval;*t1p=t1;
@@ -465,7 +465,7 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
   *ipkonp=ipkon;*lakonp=lakon;*iamt1p=iamt1;*ipobodyp=ipobody;
   *iprfnp=iprfn;*konrfnp=konrfn;*ratiorfnp=ratiorfn;
   
-  return NULL;
+  return;
 
 }
 

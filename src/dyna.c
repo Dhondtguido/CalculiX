@@ -72,7 +72,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 	  double *ctrl,ITG *itpamp,double *tietol,ITG *nalset,
 	  ITG *ikforc,ITG *ilforc,double *thicke,ITG *nslavs,ITG *nmat,
 	  char *typeboun,ITG *ielprop,double *prop,char *orname,
-	  double *t0g,double *t1g){
+	  double *t0g,double *t1g,ITG *imastload,double *pmastload){
 
   char fneig[132]="",description[13]="            ",*lakon=NULL,*labmpc=NULL,
     *labmpcold=NULL,*tchar1=NULL,*tchar2=NULL,
@@ -86,7 +86,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
     *ilmpc=NULL,nsectors,nmpcold,mpcendold,*ipompcold=NULL,*nodempcold=NULL,
     *ikmpcold=NULL,*ilmpcold=NULL,kflag=2,nmd,nevd,*nm=NULL,*iamt1=NULL,
     *itg=NULL,ntg=0,symmetryflag=0,inputformat=0,dashpot,lrw,liw,iddebdf=0,
-    *iwork=NULL,ngraph=1,nkg,neg,ncont=0,ne0,
+    *iwork=NULL,ngraph=1,nkg,neg,ncont=0,ne0,*inoel=NULL,inoelsize,nramp=-1,
     *ipneigh=NULL,*neigh=NULL,inext,itp=0,*islavact=NULL,
     isteadystate,im,cyclicsymmetry,
     imax,*icole=NULL,*irowe=NULL,*jqe=NULL,nzse[3],
@@ -166,7 +166,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
      (needed in resultsforc.c) */
   
   NNEW(iponoel,ITG,*nk);
-  FORTRAN(nodebelongstoel,(iponoel,lakon,ipkon,kon,ne));
+  FORTRAN(nodebelongstoel,(iponoel,inoel,&inoelsize,lakon,ipkon,kon,ne,&nramp));
   
   for(k=0;k<3;k++){
     strcpy1(&jobnamef[k*132],&jobnamec[k*132],132);
@@ -1022,7 +1022,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 	  nplicon,plkcon,nplkcon,npmat_,ttime,&time0,istep,&iinc,&dtime,
 	  physcon,ibody,xbodyold,&reltime,veold,matname,mi,ikactmech,
 	  &nactmech,ielprop,prop,sti,xstateini,xstate,nstate_,ntrans,
-	  inotr,trab,fnext);
+	  inotr,trab,fnext,imastload,pmastload);
   
   /*  correction for nonzero SPC's */
   
@@ -1347,7 +1347,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 	      npmat_,ttime,&time,istep,&iinc,&dtime,physcon,ibody,
 	      xbodyold,&reltime,veold,matname,mi,ikactmech,&nactmech,
 	      ielprop,prop,sti,xstateini,xstate,nstate_,ntrans,inotr,
-	      trab,fnext);
+	      trab,fnext,imastload,pmastload);
     }else{
       rhsmain(co,nk,kon,ipkon,lakon,ne,
 	      ipompc,nodempc,coefmpc,nmpc,nodeforc,ndirforc,xforcact,
@@ -1360,7 +1360,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 	      npmat_,ttime,&time,istep,&iinc,&dtime,physcon,ibody,
 	      xbodyold,&reltime,veold,matname,mi,ikactmech,&nactmech,
 	      ielprop,prop,sti,xstateini,xstate,nstate_,ntrans,inotr,
-	      trab,fnext);
+	      trab,fnext,imastload,pmastload);
     }
 	      
     /* correction for nonzero SPC's */
@@ -1466,7 +1466,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 		  npmat_,ttime,&time,istep,&iinc,&dtime,physcon,ibody,
 		  xbodyold,&reltime,veold,matname,mi,ikactmech,&nactmech,
 		  ielprop,prop,sti,xstateini,xstate,nstate_,ntrans,inotr,
-		  trab,fnext);
+		  trab,fnext,imastload,pmastload);
 	}else{
 	  rhsmain(co,nk,kon,ipkon,lakon,ne,
 		  ipompc,nodempc,coefmpc,nmpc,nodeforc,ndirforc,xforcact,
@@ -1479,7 +1479,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 		  npmat_,ttime,&time,istep,&iinc,&dtime,physcon,ibody,
 		  xbodyold,&reltime,veold,matname,mi,ikactmech,&nactmech,
 		  ielprop,prop,sti,xstateini,xstate,nstate_,ntrans,inotr,
-		  trab,fnext);
+		  trab,fnext,imastload,pmastload);
 	}
 	      
 	/* correction for nonzero SPC's */

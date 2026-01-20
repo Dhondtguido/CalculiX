@@ -34,8 +34,8 @@
      &     nplkcon,iplas,npmat_,mi,nk_,trab,inotr,ntrans,ikboun,
      &     ilboun,ikmpc,ilmpc,ics,dcs,ncs_,namtot_,cs,nstate_,ncmat_,
      &     mcs,labmpc,iponor,xnor,knor,thickn,thicke,ikforc,ilforc,
-     &     offset,iponoel,inoel,rig,infree,nshcon,shcon,cocon,ncocon,
-     &     physcon,nflow,ctrl,maxlenmpc,ne1d,
+     &     offset,iponoel2d,inoel2d,rig,infree,nshcon,shcon,cocon,
+     &     ncocon,physcon,nflow,ctrl,maxlenmpc,ne1d,
      &     ne2d,nener,vold,nodebounold,ndirbounold,xbounold,
      &     xforcold,xloadold,t1old,eme,sti,ener,xstate,jobnamec,
      &     irstrt,ttime,qaold,output,typeboun,inpc,
@@ -48,7 +48,7 @@
      &     mpcfreeref,maxlenmpcref,memmpc_,isens,namtot,nstam,dacon,
      &     vel,nef,velo,veloo,ne2boun,itempuser,irobustdesign,
      &     irandomtype,randomval,nfc,nfc_,coeffc,ikdc,ndc,ndc_,edc,
-     &     coini,ndmat_,ndmcon,dmcon,dam,irefineloop)
+     &     coini,ndmat_,ndmcon,dmcon,dam,irefineloop,interfaceload)
 !     
       implicit none
 !     
@@ -84,7 +84,7 @@
      &     dflux_flag,cflux_flag,film_flag,radiate_flag,out3d,
      &     solid,sectionprint_flag,contactprint_flag,pretension,
      &     beamgeneralsection,objective_flag,constraint_flag,
-     &     cyclicsymmetrymodel_flag
+     &     cyclicsymmetrymodel_flag,warning
 !     
       character*1 typeboun(*),inpc(*)
       character*4 output
@@ -104,8 +104,9 @@
      &     ielorien(mi(3),*),icomposite,nsubmodel,mortar,ndmcon(2,*),
      &     namta(3,*),iamforc(*),iamload(2,*),iamt1(*),ipoinpc(0:*),
      &     iamboun(*),inotr(2,*),ikboun(*),ilboun(*),ikmpc(*),ilmpc(*),
-     &     iponor(2,*),knor(*),ikforc(*),ilforc(*),iponoel(*),
-     &     inoel(3,*),infree(4),ixfree,ikfree,inoelfree,iponoelmax,
+     &     iponor(2,*),knor(*),ikforc(*),ilforc(*),iponoel2d(*),
+     &     inoel2d(3,*),infree(4),ixfree,ikfree,inoel2dfree,
+     &     iponoel2dmax,interfaceload,
      &     rig(*),nshcon(*),ncocon(2,*),nodebounold(*),ielprop(*),nprop,
      &     nprop_,maxsectors,irestartread,ndmat_,irefineloop,
      &     ndirbounold(*),ipoinp(2,*),inp(3,*),nintpoint,ifacecount,
@@ -178,8 +179,8 @@
 !     
       ixfree=infree(1)
       ikfree=infree(2)
-      inoelfree=infree(3)
-      iponoelmax=infree(4)
+      inoel2dfree=infree(3)
+      iponoel2dmax=infree(4)
 !     
       iexpl=0
 !     
@@ -612,7 +613,7 @@ c
      &       iline,ipol,inl,ipoinp,inp,cbody,ibody,xbody,nbody,nbody_,
      &       xbodyold,iperturb,physcon,nam_,namtot_,namta,amta,nmethod,
      &       ipoinpc,maxsectors,mi,idefload,idefbody,ipkon,thicke,
-     &       iamplitudedefault,namtot,ier)
+     &       iamplitudedefault,namtot,ier,interfaceload)
         dload_flag=.true.
 !     
       elseif(textpart(1)(1:8).eq.'*DYNAMIC') then
@@ -796,7 +797,8 @@ c
 !     
       elseif(textpart(1)(1:18).eq.'*INITIALCONDITIONS') then
         call initialconditionss(inpc,textpart,set,istartset,iendset,
-     &       ialset,nset,t0,t1,prestr,iprestr,ithermal,veold,inoelfree,
+     &       ialset,nset,t0,t1,prestr,iprestr,ithermal,veold,
+     &       inoel2dfree,
      &       nk_,mi(1),istep,istat,n,iline,ipol,inl,ipoinp,inp,lakon,
      &       kon,co,ne,ipkon,vold,ipoinpc,xstate,nstate_,nk,t0g,
      &       t1g,iaxial,ielprop,prop,ier,nuel_)
@@ -1009,8 +1011,8 @@ c
      &       amname,amta,namta,t0,t1,iamt1,veold,ielmat,
      &       matname,prlab,prset,filab,vold,nodebounold,
      &       ndirbounold,xbounold,xforcold,xloadold,t1old,eme,
-     &       iponor,xnor,knor,thicke,offset,iponoel,
-     &       inoel,rig,shcon,nshcon,cocon,
+     &       iponor,xnor,knor,thicke,offset,iponoel2d,
+     &       inoel2d,rig,shcon,nshcon,cocon,
      &       ncocon,ics,sti,ener,xstate,jobnamec,infree,
      &       irstrt,inpc,textpart,istat,n,key,prestr,iprestr,
      &       cbody,ibody,xbody,nbody,xbodyold,ttime,qaold,
@@ -1147,7 +1149,7 @@ c
       elseif(textpart(1)(1:12).eq.'*TEMPERATURE') then
         call temperatures(inpc,textpart,set,istartset,iendset,
      &       ialset,nset,t0,t1,nk,ithermal,iamt1,amname,nam,
-     &       inoelfree,nk_,nmethod,temp_flag,istep,istat,n,iline,
+     &       inoel2dfree,nk_,nmethod,temp_flag,istep,istat,n,iline,
      &       ipol,inl,ipoinp,inp,nam_,namtot_,namta,amta,ipoinpc,t1g,
      &       iamplitudedefault,namtot,ier,itempuser,jobnamec,nuel_,co)
         temp_flag=.true.
@@ -1325,10 +1327,10 @@ c
       call gen3delem(kon,ipkon,lakon,ne,ipompc,nodempc,coefmpc,
      &     nmpc,nmpc_,mpcfree,ikmpc,ilmpc,labmpc,ikboun,ilboun,nboun,
      &     nboun_,nodeboun,ndirboun,xboun,iamboun,nam,
-     &     inotr,trab,nk,nk_,iponoel,inoel,iponor,xnor,thicke,thickn,
-     &     knor,istep,offset,t0,t1,ikforc,ilforc,rig,nforc,
-     &     nforc_,nodeforc,ndirforc,xforc,iamforc,sideload,
-     &     nload,ithermal,ntrans,co,ixfree,ikfree,inoelfree,iponoelmax,
+     &     inotr,trab,nk,nk_,iponoel2d,inoel2d,iponor,xnor,thicke,
+     &     thickn,knor,istep,offset,t0,t1,ikforc,ilforc,rig,nforc,
+     &     nforc_,nodeforc,ndirforc,xforc,iamforc,sideload,nload,
+     &     ithermal,ntrans,co,ixfree,ikfree,inoel2dfree,iponoel2dmax,
      &     iperturb,tinc,tper,tmin,tmax,ctrl,typeboun,nmethod,nset,set,
      &     istartset,iendset,ialset,prop,ielprop,vold,mi,nkon,ielmat,
      &     icomposite,t0g,t1g,idefforc,iamt1,orname,orab,norien,norien_,
@@ -1390,16 +1392,21 @@ c
 !     
       infree(1)=ixfree
       infree(2)=ikfree
-      infree(3)=inoelfree
-      infree(4)=iponoelmax
+      infree(3)=inoel2dfree
+      infree(4)=iponoel2dmax
 !     
 !     check of the selected options
 !     
       if((filab(11)(1:2).eq.'PU').or.(filab(18)(1:3).eq.'PHS').or.
      &     (filab(19)(1:4).eq.'MAXU').or.(filab(20)(1:4).eq.'MAXS'))
      &     then
-        if((nmethod.eq.1).or.(nmethod.eq.3).or.(nmethod.eq.4).or.
-     &       ((nmethod.eq.2).and.((mcs.eq.0).or.(cs(2,1).lt.0)))) then
+        warning=((nmethod.eq.1).or.(nmethod.eq.3).or.(nmethod.eq.4))
+        if(nmethod.eq.2) then
+          if((mcs.eq.0).or.(cs(2,1).lt.0)) then
+            warning=.true.
+          endif
+        endif
+        if(warning) then
           write(*,*) '*WARNING in calinput: PU, PHS, MAXU or MAXS'
           write(*,*) '         was selected for a static, a non-'
           write(*,*) '         cyclic-symmetric frequency, a'

@@ -72,7 +72,8 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		 ITG *ics,double *cs,ITG *mpcend,double *ctrl,
 		 ITG *ikforc,ITG *ilforc,double *thicke,ITG *nmat,
 		 char *typeboun,ITG *ielprop,double *prop,char *orname,
-		 ITG *ndamp,double *dacon,double *t0g,double *t1g){
+		 ITG *ndamp,double *dacon,double *t0g,double *t1g,
+		 ITG *imastload,double *pmastload){
 
   char fneig[132]="",description[13]="            ",*lakon=NULL,*labmpc=NULL,
     *labmpcold=NULL,cflag[1]=" ";
@@ -97,7 +98,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     *islavnode=NULL,*nslavnode=NULL,*islavsurf=NULL,iit=-1,*iponoel=NULL,
     network=0,kscale=0,nmethodact=1,iperturbsav,coriolis,*itiefac=NULL,
     mscalmethod=0,*islavquadel=NULL,*irowt=NULL,*jqt=NULL,mortartrafoflag=0,
-    *iponoeln=NULL,*inoeln=NULL;
+    *iponoeln=NULL,*inoeln=NULL,*inoel=NULL,inoelsize,nramp=-1;
 
   long long i2;
 
@@ -153,7 +154,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
      (needed in resultsforc.c) */
   
   NNEW(iponoel,ITG,*nk);
-  FORTRAN(nodebelongstoel,(iponoel,lakon,ipkon,kon,ne));
+  FORTRAN(nodebelongstoel,(iponoel,inoel,&inoelsize,lakon,ipkon,kon,ne,&nramp));
 
   pi=4.*atan(1.);
   iout=2;
@@ -1239,7 +1240,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 			 xstateini,xstate,thicke,integerglob,doubleglob,
 			 tieset,istartset,iendset,ialset,&ntie,&nasym,pslavsurf,
 			 pmastsurf,&mortar,clearini,ielprop,prop,&ne0,
-			 &freq[l],ndamp,dacon,set,nset);
+			 &freq[l],ndamp,dacon,set,nset,imastload,pmastload);
 
 	  /*  zc = damping matrix * eigenmodes */
 		  
@@ -1386,7 +1387,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	      npmat_,ttime,&time,istep,&iinc,&dtime,physcon,ibody,
 	      xbodyold,&reltime,veold,matname,mi,ikactmechr,
 	      &nactmechr,ielprop,prop,sti,xstateini,xstate,nstate_,
-	      ntrans,inotr,trab,fnext);
+	      ntrans,inotr,trab,fnext,imastload,pmastload);
 	  
       /* real modal coefficients */
 	  
@@ -1558,7 +1559,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	      npmat_,ttime,&time,istep,&iinc,&dtime,physcon,ibody,
 	      xbodyold,&reltime,veold,matname,mi,ikactmechi,
 	      &nactmechi,ielprop,prop,sti,xstateini,xstate,nstate_,
-	      ntrans,inotr,trab,fnext);
+	      ntrans,inotr,trab,fnext,imastload,pmastload);
 	  
       /* imaginary modal coefficients */
 	  
@@ -2735,9 +2736,10 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 			   ncmat_,physcon,ttime,&time,istep,&iinc,
 			   ibody,xloadold,&reltime,veold,springarea,nstate_,
 			   xstateini,xstate,thicke,integerglob,doubleglob,
-			   tieset,istartset,iendset,ialset,&ntie,&nasym,pslavsurf,
+			   tieset,istartset,iendset,ialset,&ntie,&nasym,
+			   pslavsurf,
 			   pmastsurf,&mortar,clearini,ielprop,prop,&ne0,
-			   &freq[l],ndamp,dacon,set,nset);
+			   &freq[l],ndamp,dacon,set,nset,imastload,pmastload);
 		      
 	    SFREE(xstiff);
 		      
@@ -2865,7 +2867,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		npmat_,ttime,&time,istep,&iinc,&dtime,physcon,ibody,
 		xbodyold,&reltime,veold,matname,mi,ikactmech,&nactmech,
                 ielprop,prop,sti,xstateini,xstate,nstate_,ntrans,inotr,
-                trab,fnext);
+                trab,fnext,imastload,pmastload);
 	  
 	/* real modal coefficients */
 	  

@@ -17,7 +17,8 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
       subroutine gen3dboun(ikboun,ilboun,nboun,nboun_,nodeboun,ndirboun,
-     &     xboun,iamboun,typeboun,iponoel,inoel,iponoelmax,kon,ipkon,
+     &     xboun,iamboun,typeboun,iponoel2d,inoel2d,iponoel2dmax,kon,
+     &     ipkon,
      &     lakon,ne,iponor,xnor,knor,ipompc,nodempc,coefmpc,nmpc,nmpc_,
      &     mpcfree,ikmpc,ilmpc,labmpc,rig,ntrans,inotr,trab,nam,nk,nk_,
      &     co,nmethod,iperturb,istep,vold,mi,ne2boun)
@@ -35,7 +36,8 @@
 !     
       integer ikboun(*),ilboun(*),nboun,nboun_,nodeboun(*),nodeact,
      &     ndirboun(*),idim,ier,matz,ncgnodes,lstart,lend,linc,nnodes,
-     &     iamboun(*),iponoel(*),inoel(3,*),iponoelmax,kon(*),ipkon(*),
+     &     iamboun(*),iponoel2d(*),inoel2d(3,*),iponoel2dmax,kon(*),
+     &     ipkon(*),
      &     iponor(2,*),knor(*),ipompc(*),nodempc(3,*),nmpc,nmpc_,
      &     ikmpc(*),ilmpc(*),rig(*),ntrans,inotr(2,*),nbounold,i,node,
      &     index,ielem,j,indexe,indexk,idir,iamplitude,irotnode,nk,nk_,
@@ -62,7 +64,7 @@
 !     
 !     remove any rotational value applied to shells
 !     
-      do i=1,iponoelmax
+      do i=1,iponoel2dmax
         if(ne2boun(1,i).ne.0) then
           xboun(ne2boun(1,i))=0.d0
           if(ne2boun(2,i).ne.0) then
@@ -76,23 +78,23 @@
       nbounold=nboun
       loop: do i=1,nbounold
         node=nodeboun(i)
-        if(node.gt.iponoelmax) then
+        if(node.gt.iponoel2dmax) then
           cycle
         endif
-        index=iponoel(node)
+        index=iponoel2d(node)
 !
 !     next loop is needed, since an element may have
 !     been deactivated
 !
         do
           if(index.eq.0) cycle loop
-          ielem=inoel(1,index)
+          ielem=inoel2d(1,index)
           indexe=ipkon(ielem)
           if(indexe.ge.0) exit
-          index=inoel(3,index)
+          index=inoel2d(3,index)
         enddo
 !          
-        j=inoel(2,index)
+        j=inoel2d(2,index)
         indexk=iponor(2,indexe+j)
         idir=ndirboun(i)
         val=xboun(i)

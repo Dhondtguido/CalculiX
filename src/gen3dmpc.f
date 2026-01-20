@@ -17,8 +17,8 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
       subroutine gen3dmpc(ipompc,nodempc,coefmpc,nmpc,nmpc_,mpcfree,
-     &     ikmpc,ilmpc,labmpc,iponoel,inoel,iponoelmax,kon,ipkon,lakon,
-     &     ne,iponor,xnor,knor,rig)
+     &     ikmpc,ilmpc,labmpc,iponoel2d,inoel2d,iponoel2dmax,kon,ipkon,
+     &     lakon,ne,iponor,xnor,knor,rig)
 !     
 !     connects nodes of 1-D and 2-D elements, for which MPC's were
 !     defined, to the nodes of their expanded counterparts
@@ -31,7 +31,8 @@
       character*20 labmpc(*)
 !     
       integer ipompc(*),nodempc(3,*),nmpc,nmpc_,mpcfree,ikmpc(*),
-     &     ilmpc(*),iponoel(*),inoel(3,*),iponoelmax,kon(*),ipkon(*),
+     &     ilmpc(*),iponoel2d(*),inoel2d(3,*),iponoel2dmax,kon(*),
+     &     ipkon(*),
      &     ne,iponor(2,*),knor(*),rig(*),i,index1,node,index2,ielem,
      &     indexe,j,indexk,newnode,idir,idof,id,mpcfreenew,k,idofold,
      &     idofnew,idold,idnew
@@ -43,7 +44,7 @@
         dependent=.true.
         loop: do
           node=nodempc(1,index1)
-          if(node.le.iponoelmax) then
+          if(node.le.iponoel2dmax) then
             if(rig(node).ne.0) then
 !
 !             knot, therefore 1D/2D elements are attached
@@ -99,7 +100,7 @@
 !     
               endif
             else
-              index2=iponoel(node)
+              index2=iponoel2d(node)
 !     
 !     next loop is needed, since an element may have
 !     been deactivated
@@ -130,12 +131,12 @@
                   call exit(201)
                 endif
 !
-              ielem=inoel(1,index2)
+              ielem=inoel2d(1,index2)
                 indexe=ipkon(ielem)
                 if(indexe.ge.0) exit
-                index2=inoel(3,index2)
+                index2=inoel2d(3,index2)
               enddo
-              j=inoel(2,index2)
+              j=inoel2d(2,index2)
               indexk=iponor(2,indexe+j)
 !     
 !     2d element shell element

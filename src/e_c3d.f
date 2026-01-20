@@ -1,21 +1,21 @@
-!
+!     
 !     CalculiX - A 3-dimensional finite element program
-!              Copyright (C) 1998-2021 Guido Dhondt
-!
+!     Copyright (C) 1998-2021 Guido Dhondt
+!     
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
 !     published by the Free Software Foundation(version 2);
 !     
-!
+!     
 !     This program is distributed in the hope that it will be useful,
 !     but WITHOUT ANY WARRANTY; without even the implied warranty of 
 !     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
 !     GNU General Public License for more details.
-!
+!     
 !     You should have received a copy of the GNU General Public License
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-!
+!     
       subroutine e_c3d(co,kon,lakonl,p1,p2,omx,bodyfx,nbody,s,sm,
      &     ff,nelem,nmethod,elcon,nelcon,rhcon,nrhcon,alcon,nalcon,
      &     alzero,ielmat,ielorien,norien,orab,ntmat_,
@@ -29,7 +29,7 @@
      &     integerglob,doubleglob,tieset,istartset,iendset,ialset,ntie,
      &     nasym,pslavsurf,pmastsurf,mortar,clearini,ielprop,prop,
      &     kscale,smscalel,mscalmethod,set,nset,islavquadel,aute,
-     &     irowte,jqte,mortartrafoflag)
+     &     irowte,jqte,mortartrafoflag,imastload,pmastload)
 !     
 !     computation of the element matrix and rhs for the element with
 !     the topology in konl
@@ -43,16 +43,18 @@
 !     nmethod=4: stiffness matrix + mass matrix
 !     
 !     intscheme=0: use the integration scheme corresponding to the element     
-!                  type, i.e. reduced integration for reduced integration    
-!                  elements etc.
+!     type, i.e. reduced integration for reduced integration    
+!     elements etc.
 !     intscheme=1: use for C3D8R and C3D20R elements the integration point
-!                  schemes for C3D8 and C3D20, respectively, for all other    
-!                  elements the the integration scheme corresponding to the
-!                  element type     
+!     schemes for C3D8 and C3D20, respectively, for all other    
+!     elements the the integration scheme corresponding to the
+!     element type     
 !     
       implicit none
 !     
       integer mass,stiffness,buckling,rhsi,coriolis
+!     
+      logical interfaceload,faceident
 !     
       character*1 entity
       character*8 lakonl
@@ -73,8 +75,9 @@
      &     nmpc,ikmpc(*),ilmpc(*),iscale,nstate_,ne0,iselect(6),kscale,
      &     istartset(*),iendset(*),ialset(*),ntie,integerglob(*),nasym,
      &     nplicon(0:ntmat_,*),nplkcon(0:ntmat_,*),npmat_,nopered,
-     &     mscalmethod,nset,islavquadel(*),jqte(*),irowte(*),
-     &     node1,node2,irowtf(16),jqtf(9),j2,mortartrafoflag
+     &     mscalmethod,nset,islavquadel(*),jqte(*),irowte(*),nelems,
+     &     node1,node2,irowtf(16),jqtf(9),j2,mortartrafoflag,jface,
+     &     indexs,igs,ids,imastload(2,*)
 !     
       real*8 co(3,*),xl(3,20),shp(4,20),xs2(3,7),veold(0:mi(2),*),
      &     s(60,60),w(3,3),p1(3),p2(3),bodyf(3),bodyfx(3),ff(60),
@@ -96,7 +99,7 @@
      &     sax(60,60),ffax(60),gs(8,4),a,stress(6),stre(3,3),
      &     pslavsurf(3,*),pmastsurf(6,*),xmass,xsjmass,shpmass(4,20),
      &     shpjmass(4,20),smscalel,smfactor,shptil(4,20),aute(*),
-     &     shptil2(7,9),autf(16),doubleglob(*)
+     &     shptil2(7,9),autf(16),doubleglob(*),pmastload(3,*)
 !     
       include "gauss.f"
 !     
@@ -269,63 +272,63 @@ c     Bernhardi end
 !     
       endif
 !     
-        if(lakonl(4:5).eq.'8R') then
-          mint2d=1
-          if(intscheme.eq.0) then
-            mint3d=1
+      if(lakonl(4:5).eq.'8R') then
+        mint2d=1
+        if(intscheme.eq.0) then
+          mint3d=1
+        else
+          mint3d=8
+        endif
+      elseif(lakonl(4:7).eq.'20RB') then
+        if((lakonl(8:8).eq.'R').or.(lakonl(8:8).eq.'C')) then
+          mint2d=4
+          mint3d=50
+        else
+          mint2d=4
+          call beamintscheme(lakonl,mint3d,ielprop(nelem),prop,
+     &         null,xi,et,ze,weight)
+        endif
+      elseif((lakonl(4:4).eq.'8').or.(lakonl(4:6).eq.'20R')) then
+        if((lakonl(7:7).eq.'A').or.(lakonl(7:7).eq.'S').or.
+     &       (lakonl(7:7).eq.'E')) then
+          mint2d=2
+          mint3d=4
+        else
+          mint2d=4
+          if(lakonl(7:8).eq.'LC') then
+            mint3d=8*nlayer
           else
-            mint3d=8
-          endif
-        elseif(lakonl(4:7).eq.'20RB') then
-          if((lakonl(8:8).eq.'R').or.(lakonl(8:8).eq.'C')) then
-            mint2d=4
-            mint3d=50
-          else
-            mint2d=4
-            call beamintscheme(lakonl,mint3d,ielprop(nelem),prop,
-     &           null,xi,et,ze,weight)
-          endif
-        elseif((lakonl(4:4).eq.'8').or.(lakonl(4:6).eq.'20R')) then
-          if((lakonl(7:7).eq.'A').or.(lakonl(7:7).eq.'S').or.
-     &         (lakonl(7:7).eq.'E')) then
-            mint2d=2
-            mint3d=4
-          else
-            mint2d=4
-            if(lakonl(7:8).eq.'LC') then
-              mint3d=8*nlayer
+            if((intscheme.eq.0).or.(lakonl(4:8).ne.'20R  ')) then
+              mint3d=8
             else
-              if((intscheme.eq.0).or.(lakonl(4:8).ne.'20R  ')) then
-                mint3d=8
-              else
-                mint3d=27
-              endif
+              mint3d=27
             endif
           endif
-        elseif(lakonl(4:4).eq.'2') then
-          mint2d=9
-          mint3d=27
-        elseif(lakonl(4:5).eq.'10') then
-          mint2d=3
-          mint3d=4
-        elseif(lakonl(4:4).eq.'4') then
-          mint2d=1
-          if(intscheme.eq.0) then
-            mint3d=1
-          else
-            mint3d=4
-          endif
-        elseif(lakonl(4:5).eq.'15') then
-          if(lakonl(7:8).eq.'LC') then
-            mint3d=6*nlayer
-          else
-            mint3d=9
-          endif
-        elseif(lakonl(4:4).eq.'6') then
-          mint3d=2
-        else
-          mint3d=0
         endif
+      elseif(lakonl(4:4).eq.'2') then
+        mint2d=9
+        mint3d=27
+      elseif(lakonl(4:5).eq.'10') then
+        mint2d=3
+        mint3d=4
+      elseif(lakonl(4:4).eq.'4') then
+        mint2d=1
+        if(intscheme.eq.0) then
+          mint3d=1
+        else
+          mint3d=4
+        endif
+      elseif(lakonl(4:5).eq.'15') then
+        if(lakonl(7:8).eq.'LC') then
+          mint3d=6*nlayer
+        else
+          mint3d=9
+        endif
+      elseif(lakonl(4:4).eq.'6') then
+        mint3d=2
+      else
+        mint3d=0
+      endif
 !     
 !     computation of the coordinates of the local nodes
 !     
@@ -484,164 +487,164 @@ c     write(*,*) 'e_c3d ',nelem
 !     computation of the matrix: loop over the Gauss points
 !     
       do kk=1,mint3d
-          if(lakonl(4:5).eq.'8R') then
-            if(intscheme.eq.0) then
-              xi=gauss3d1(1,kk)
-              et=gauss3d1(2,kk)
-              ze=gauss3d1(3,kk)
-              weight=weight3d1(kk)
-            else
-!
+        if(lakonl(4:5).eq.'8R') then
+          if(intscheme.eq.0) then
+            xi=gauss3d1(1,kk)
+            et=gauss3d1(2,kk)
+            ze=gauss3d1(3,kk)
+            weight=weight3d1(kk)
+          else
+!     
 !     initial acceleration calculation for dynamic calculations:
 !     full integration used
-!
+!     
+            xi=gauss3d2(1,kk)
+            et=gauss3d2(2,kk)
+            ze=gauss3d2(3,kk)
+            weight=weight3d2(kk)
+          endif
+        elseif(lakonl(4:7).eq.'20RB') then
+          if((lakonl(8:8).eq.'R').or.(lakonl(8:8).eq.'C')) then
+            xi=gauss3d13(1,kk)
+            et=gauss3d13(2,kk)
+            ze=gauss3d13(3,kk)
+            weight=weight3d13(kk)
+          else
+            call beamintscheme(lakonl,mint3d,ielprop(nelem),prop,
+     &           kk,xi,et,ze,weight)
+          endif
+        elseif((lakonl(4:4).eq.'8').or.(lakonl(4:6).eq.'20R')) 
+     &         then
+          if(lakonl(7:8).ne.'LC') then
+            if((intscheme.eq.0).or.(lakonl(4:8).ne.'20R  ')) then
               xi=gauss3d2(1,kk)
               et=gauss3d2(2,kk)
               ze=gauss3d2(3,kk)
               weight=weight3d2(kk)
-            endif
-          elseif(lakonl(4:7).eq.'20RB') then
-            if((lakonl(8:8).eq.'R').or.(lakonl(8:8).eq.'C')) then
-              xi=gauss3d13(1,kk)
-              et=gauss3d13(2,kk)
-              ze=gauss3d13(3,kk)
-              weight=weight3d13(kk)
             else
-              call beamintscheme(lakonl,mint3d,ielprop(nelem),prop,
-     &             kk,xi,et,ze,weight)
-            endif
-          elseif((lakonl(4:4).eq.'8').or.(lakonl(4:6).eq.'20R')) 
-     &           then
-            if(lakonl(7:8).ne.'LC') then
-              if((intscheme.eq.0).or.(lakonl(4:8).ne.'20R  ')) then
-                xi=gauss3d2(1,kk)
-                et=gauss3d2(2,kk)
-                ze=gauss3d2(3,kk)
-                weight=weight3d2(kk)
-              else
-!
+!     
 !     initial acceleration calculation for dynamic calculations:
 !     full integration used
-!
-                xi=gauss3d3(1,kk)
-                et=gauss3d3(2,kk)
-                ze=gauss3d3(3,kk)
-                weight=weight3d3(kk)
+!     
+              xi=gauss3d3(1,kk)
+              et=gauss3d3(2,kk)
+              ze=gauss3d3(3,kk)
+              weight=weight3d3(kk)
+            endif
+          else
+            kl=mod(kk,8)
+            if(kl.eq.0) kl=8
+!     
+            xi=gauss3d2(1,kl)
+            et=gauss3d2(2,kl)
+            ze=gauss3d2(3,kl)
+            weight=weight3d2(kl)
+!     
+            ki=mod(kk,4)
+            if(ki.eq.0) ki=4
+!     
+            if(kl.eq.1) then
+              ilayer=ilayer+1
+              if(ilayer.gt.1) then
+                do i=1,4
+                  dlayer(i)=dlayer(i)+xlayer(ilayer-1,i)
+                enddo
               endif
-            else
-              kl=mod(kk,8)
-              if(kl.eq.0) kl=8
-!     
-              xi=gauss3d2(1,kl)
-              et=gauss3d2(2,kl)
-              ze=gauss3d2(3,kl)
-              weight=weight3d2(kl)
-!     
-              ki=mod(kk,4)
-              if(ki.eq.0) ki=4
-!     
-              if(kl.eq.1) then
-                ilayer=ilayer+1
-                if(ilayer.gt.1) then
-                  do i=1,4
-                    dlayer(i)=dlayer(i)+xlayer(ilayer-1,i)
-                  enddo
-                endif
-              endif
-              ze=2.d0*(dlayer(ki)+(ze+1.d0)/2.d0*xlayer(ilayer,ki))/
-     &             tlayer(ki)-1.d0
-              weight=weight*xlayer(ilayer,ki)/tlayer(ki)
+            endif
+            ze=2.d0*(dlayer(ki)+(ze+1.d0)/2.d0*xlayer(ilayer,ki))/
+     &           tlayer(ki)-1.d0
+            weight=weight*xlayer(ilayer,ki)/tlayer(ki)
 !     
 !     material and orientation
 !     
-              imat=ielmat(ilayer,nelem)
-              amat=matname(imat)
-              if(norien.gt.0) then
-                iorien=max(0,ielorien(ilayer,nelem))
-              else
-                iorien=0
-              endif
-!     
-              if(nelcon(1,imat).lt.0) then
-                ihyper=1
-              else
-                ihyper=0
-              endif
+            imat=ielmat(ilayer,nelem)
+            amat=matname(imat)
+            if(norien.gt.0) then
+              iorien=max(0,ielorien(ilayer,nelem))
+            else
+              iorien=0
             endif
-          elseif(lakonl(4:4).eq.'2') then
-            xi=gauss3d3(1,kk)
-            et=gauss3d3(2,kk)
-            ze=gauss3d3(3,kk)
-            weight=weight3d3(kk)
-          elseif(lakonl(4:5).eq.'10') then
+!     
+            if(nelcon(1,imat).lt.0) then
+              ihyper=1
+            else
+              ihyper=0
+            endif
+          endif
+        elseif(lakonl(4:4).eq.'2') then
+          xi=gauss3d3(1,kk)
+          et=gauss3d3(2,kk)
+          ze=gauss3d3(3,kk)
+          weight=weight3d3(kk)
+        elseif(lakonl(4:5).eq.'10') then
+          xi=gauss3d5(1,kk)
+          et=gauss3d5(2,kk)
+          ze=gauss3d5(3,kk)
+          weight=weight3d5(kk)
+        elseif(lakonl(4:4).eq.'4') then
+          if(intscheme.eq.0) then
+            xi=gauss3d4(1,kk)
+            et=gauss3d4(2,kk)
+            ze=gauss3d4(3,kk)
+            weight=weight3d4(kk)
+          else
             xi=gauss3d5(1,kk)
             et=gauss3d5(2,kk)
             ze=gauss3d5(3,kk)
             weight=weight3d5(kk)
-          elseif(lakonl(4:4).eq.'4') then
-            if(intscheme.eq.0) then
-              xi=gauss3d4(1,kk)
-              et=gauss3d4(2,kk)
-              ze=gauss3d4(3,kk)
-              weight=weight3d4(kk)
-            else
-              xi=gauss3d5(1,kk)
-              et=gauss3d5(2,kk)
-              ze=gauss3d5(3,kk)
-              weight=weight3d5(kk)
-            endif
-          elseif(lakonl(4:5).eq.'15') then
-            if(lakonl(7:8).ne.'LC') then
-              xi=gauss3d8(1,kk)
-              et=gauss3d8(2,kk)
-              ze=gauss3d8(3,kk)
-              weight=weight3d8(kk)
-            else
-              kl=mod(kk,6)
-              if(kl.eq.0) kl=6
+          endif
+        elseif(lakonl(4:5).eq.'15') then
+          if(lakonl(7:8).ne.'LC') then
+            xi=gauss3d8(1,kk)
+            et=gauss3d8(2,kk)
+            ze=gauss3d8(3,kk)
+            weight=weight3d8(kk)
+          else
+            kl=mod(kk,6)
+            if(kl.eq.0) kl=6
 !     
-              xi=gauss3d10(1,kl)
-              et=gauss3d10(2,kl)
-              ze=gauss3d10(3,kl)
-              weight=weight3d10(kl)
+            xi=gauss3d10(1,kl)
+            et=gauss3d10(2,kl)
+            ze=gauss3d10(3,kl)
+            weight=weight3d10(kl)
 !     
-              ki=mod(kk,3)
-              if(ki.eq.0) ki=3
+            ki=mod(kk,3)
+            if(ki.eq.0) ki=3
 !     
-              if(kl.eq.1) then
-                ilayer=ilayer+1
-                if(ilayer.gt.1) then
-                  do i=1,3
-                    dlayer(i)=dlayer(i)+xlayer(ilayer-1,i)
-                  enddo
-                endif
+            if(kl.eq.1) then
+              ilayer=ilayer+1
+              if(ilayer.gt.1) then
+                do i=1,3
+                  dlayer(i)=dlayer(i)+xlayer(ilayer-1,i)
+                enddo
               endif
-              ze=2.d0*(dlayer(ki)+(ze+1.d0)/2.d0*xlayer(ilayer,ki))/
-     &             tlayer(ki)-1.d0
-              weight=weight*xlayer(ilayer,ki)/tlayer(ki)
+            endif
+            ze=2.d0*(dlayer(ki)+(ze+1.d0)/2.d0*xlayer(ilayer,ki))/
+     &           tlayer(ki)-1.d0
+            weight=weight*xlayer(ilayer,ki)/tlayer(ki)
 !     
 !     material and orientation
 !     
-              imat=ielmat(ilayer,nelem)
-              amat=matname(imat)
-              if(norien.gt.0) then
-                iorien=max(0,ielorien(ilayer,nelem))
-              else
-                iorien=0
-              endif
-!     
-              if(nelcon(1,imat).lt.0) then
-                ihyper=1
-              else
-                ihyper=0
-              endif
+            imat=ielmat(ilayer,nelem)
+            amat=matname(imat)
+            if(norien.gt.0) then
+              iorien=max(0,ielorien(ilayer,nelem))
+            else
+              iorien=0
             endif
-          elseif(lakonl(4:4).eq.'6') then
-            xi=gauss3d7(1,kk)
-            et=gauss3d7(2,kk)
-            ze=gauss3d7(3,kk)
-            weight=weight3d7(kk)
+!     
+            if(nelcon(1,imat).lt.0) then
+              ihyper=1
+            else
+              ihyper=0
+            endif
           endif
+        elseif(lakonl(4:4).eq.'6') then
+          xi=gauss3d7(1,kk)
+          et=gauss3d7(2,kk)
+          ze=gauss3d7(3,kk)
+          weight=weight3d7(kk)
+        endif
 !     
 !     calculation of the shape functions and their derivatives
 !     in the gauss point
@@ -673,9 +676,9 @@ c     Bernhardi end
           call shape6w(xi,et,ze,xl,xsj,shp,iflag)
         endif
 !     
-!       aute,jqte,irowte: describe local transformation matrix for element    
-!       autf,jqtf,irowtf: describe local transformation matrix for face of
-!                         element
+!     aute,jqte,irowte: describe local transformation matrix for element    
+!     autf,jqtf,irowtf: describe local transformation matrix for face of
+!     element
 !     
 c     mortar start
         if(mortartrafoflag.gt.0) then
@@ -852,7 +855,7 @@ c     call orthotropic(stiff,anisox)
 !     functions
 !     
         xsjj=dsqrt(xsj)
-!        
+!     
 c     mortar start
         if(mortartrafoflag.gt.0) then
           do i1=1,nope
@@ -870,7 +873,7 @@ c     mortar end
             shpj(4,i1)=shp(4,i1)*xsj
           enddo
         endif
-!        
+!     
         if(lakonl(4:5).eq.'8I') then
           do i1=1,nope
             shpjmass(4,i1)=shpmass(4,i1)*xsjmass
@@ -892,7 +895,7 @@ c     mortar end
 !     
             if((mass.eq.1).and.((iexpl.gt.1).or.
      &           ((nmethod.eq.2).and.(mscalmethod.gt.0)))) then
-c            if((mass.eq.1).and.(iexpl.gt.1)) then
+c     if((mass.eq.1).and.(iexpl.gt.1)) then
               summass=summass+rho*xsj*weight
             endif
 !     
@@ -1069,7 +1072,7 @@ c     mortar end
 !     
             if((mass.eq.1).and.((iexpl.gt.1).or.
      &           ((nmethod.eq.2).and.(mscalmethod.gt.0)))) then
-c            if((mass.eq.1).and.(iexpl.gt.1)) then
+c     if((mass.eq.1).and.(iexpl.gt.1)) then
               summass=summass+rho*xsj*weight
             endif
 !     
@@ -1206,7 +1209,8 @@ c     mortar end
           if(nload.gt.0) then
             call nident2(nelemload,nelem,nload,id)
             do
-              if((id.eq.0).or.(nelemload(1,id).ne.nelem)) exit
+              if(id.eq.0) exit
+              if(nelemload(1,id).ne.nelem) exit
               if((sideload(id)(1:2).ne.'BX').and.
      &             (sideload(id)(1:2).ne.'BY').and.
      &             (sideload(id)(1:2).ne.'BZ')) then
@@ -1299,24 +1303,21 @@ c     mortar end
 !     
       enddo
 !     
-c     write(*,*) nelem
-c     write(*,'(6(1x,e11.4))') ((s(i1,j1),i1=1,j1),j1=1,60)
-c     write(*,*)
-c     
       if((buckling.eq.0).and.(nload.ne.0)) then
 !     
 !     distributed loads
 !     
+        interfaceload=.false.
         call nident2(nelemload,nelem,nload,id)
         do
-          if((id.eq.0).or.(nelemload(1,id).ne.nelem)) exit
+          if(id.eq.0) exit
+          if(nelemload(1,id).ne.nelem) exit
           if(sideload(id)(1:1).ne.'P') then
+            if(sideload(id)(1:1).eq.'I') interfaceload=.true.
             id=id-1
             cycle
           endif
-c     read(sideload(id)(2:2),'(i1)') ig
           ig=ichar(sideload(id)(2:2))-48
-!     
 !     
 !     treatment of wedge faces
 !     
@@ -1410,9 +1411,9 @@ c     Bernhardi end
           endif
 !     
 c     mortar start
-!
+!     
 !     generate autf
-!
+!     
           if(mortartrafoflag.gt.0) then
             if(islavquadel(nelem).gt.0) then
               jqtf(1)=1
@@ -1435,7 +1436,7 @@ c     mortar start
                     node2=ifacew(j2,ig)
                   endif
                   id1=0
-                 call nident(irowte(jqte(node1)),node2,length,id1)
+                  call nident(irowte(jqte(node1)),node2,length,id1)
                   if(id1.gt.0) then
                     j1=jqte(node1)+id1-1
                     if(irowte(j1).eq.node2) then
@@ -1450,7 +1451,7 @@ c     mortar start
             endif
           endif
 c     mortar end
-!          
+!     
           do i=1,mint2d
             if((lakonl(4:5).eq.'8R').or.
      &           ((lakonl(4:4).eq.'6').and.(nopes.eq.4))) then
@@ -1857,6 +1858,359 @@ c     mortar end
 !     
           id=id-1
         enddo
+!     
+        if(interfaceload) then
+          call nident2(nelemload,nelem,nload,id)
+          do
+            if(id.eq.0) exit
+            if(nelemload(1,id).ne.nelem) exit
+            if(sideload(id)(1:1).ne.'I') then
+              id=id-1
+              cycle
+            endif
+            ig=ichar(sideload(id)(2:2))-48
+!     
+!     
+!     treatment of wedge faces
+!     
+            if(lakonl(4:4).eq.'6') then
+              if(ig.le.2) then
+                nopes=3
+              else
+                nopes=4
+              endif
+            endif
+            if(lakonl(4:5).eq.'15') then
+              if(ig.le.2) then
+                nopes=6
+              else
+                nopes=8
+              endif
+            endif
+!     
+c     Bernhardi start
+            if((nope.eq.20).or.(nope.eq.8).or.
+     &           (nope.eq.11)) then
+c     Bernhardi end
+              if((iperturb(1).ne.1).and.(iperturb(2).ne.1)) then
+                do i=1,nopes
+                  do j=1,3
+                    xl2(j,i)=co(j,konl(ifaceq(i,ig)))
+                  enddo
+                enddo
+              else
+                if(mass.eq.1) then
+                  do i=1,nopes
+                    do j=1,3
+                      xl1(j,i)=co(j,konl(ifaceq(i,ig)))
+                    enddo
+                  enddo
+                endif
+                do i=1,nopes
+                  do j=1,3
+                    xl2(j,i)=co(j,konl(ifaceq(i,ig)))+
+     &                   vold(j,konl(ifaceq(i,ig)))
+                  enddo
+                enddo
+              endif
+            elseif((nope.eq.10).or.(nope.eq.4)) then
+              if((iperturb(1).ne.1).and.(iperturb(2).ne.1)) then
+                do i=1,nopes
+                  do j=1,3
+                    xl2(j,i)=co(j,konl(ifacet(i,ig)))
+                  enddo
+                enddo
+              else
+                if(mass.eq.1) then
+                  do i=1,nopes
+                    do j=1,3
+                      xl1(j,i)=co(j,konl(ifacet(i,ig)))
+                    enddo
+                  enddo
+                endif
+                do i=1,nopes
+                  do j=1,3
+                    xl2(j,i)=co(j,konl(ifacet(i,ig)))+
+     &                   vold(j,konl(ifacet(i,ig)))
+                  enddo
+                enddo
+              endif
+            else
+              if((iperturb(1).ne.1).and.(iperturb(2).ne.1)) then
+                do i=1,nopes
+                  do j=1,3
+                    xl2(j,i)=co(j,konl(ifacew(i,ig)))
+                  enddo
+                enddo
+              else
+                if(mass.eq.1) then
+                  do i=1,nopes
+                    do j=1,3
+                      xl1(j,i)=co(j,konl(ifacew(i,ig)))
+                    enddo
+                  enddo
+                endif
+                do i=1,nopes
+                  do j=1,3
+                    xl2(j,i)=co(j,konl(ifacew(i,ig)))+
+     &                   vold(j,konl(ifacew(i,ig)))
+                  enddo
+                enddo
+              endif
+            endif
+!     
+!           loop over all integration points in the master face    
+!     
+            indexs=nelemload(2,id)
+            do
+              if(indexs.eq.0) exit
+!     
+!     corresponding slave face (needed to determine the actual
+!     load
+!     
+              iface=imastload(1,indexs)
+              nelems=int(iface/10)
+              jface=iface-10*nelems
+!     
+!     local integration point coordinates and weight within     
+!     the master face
+!     
+              xi=pmastload(1,indexs)
+              et=pmastload(2,indexs)
+              weight=pmastload(3,indexs)
+!     
+              if(rhsi.eq.1) then
+                if(nopes.eq.8) then
+                  call shape8q(xi,et,xl2,xsj2,xs2,shp2,iflag)
+                elseif(nopes.eq.4) then
+                  call shape4q(xi,et,xl2,xsj2,xs2,shp2,iflag)
+                elseif(nopes.eq.6) then
+                  call shape6tri(xi,et,xl2,xsj2,xs2,shp2,iflag)
+                else
+                  call shape3tri(xi,et,xl2,xsj2,xs2,shp2,iflag)
+                endif
+!     
+!     identifying the load on the slave face
+!     
+                call nident2(nelemload,nelems,nload,ids)
+                faceident=.false.
+                do
+                  if(ids.eq.0) exit
+                  if(nelemload(1,ids).ne.nelems) exit
+                  if(sideload(ids)(1:1).ne.'I') then
+                    ids=ids-1
+                    cycle
+                  endif
+                  igs=ichar(sideload(ids)(2:2))-48
+                  if(igs.ne.jface) then
+                    ids=ids-1
+                    cycle
+                  endif
+                  faceident=.true.
+                  exit
+                enddo
+                if(.not.faceident) then
+                  write(*,*) '*ERROR in e_c3d: slave interface'
+                  write(*,*) '       not found'
+                  call exit(201)
+                endif
+!     
+!     for nonuniform load: determine the coordinates of the
+!     point (transferred into the user subroutine)
+!     
+                if(sideload(ids)(3:4).eq.'NU') then
+                  do k=1,3
+                    coords(k)=0.d0
+                    do j=1,nopes
+                      coords(k)=coords(k)+xl2(k,j)*shp2(4,j)
+                    enddo
+                  enddo
+                  jltyp=ichar(sideload(ids)(2:2))-48
+                  jltyp=jltyp+20
+                  iscale=1
+                  call dload(xload(1,ids),istep,iinc,tvar,nelem,i,layer,
+     &                 kspt,coords,jltyp,sideload(ids),vold,co,lakonl,
+     &                 konl,ipompc,nodempc,coefmpc,nmpc,ikmpc,ilmpc,
+     &                 iscale,veold,rho,amat,mi)
+                  if((nmethod.eq.1).and.(iscale.ne.0))
+     &                 xload(1,ids)=xloadold(1,ids)+
+     &                 (xload(1,ids)-xloadold(1,ids))*reltime
+                endif
+!     
+                do k=1,nopes
+c     Bernhardi start
+                  if((nope.eq.20).or.(nope.eq.8).or.
+     &                 (nope.eq.11)) then
+c     Bernhardi end
+                    ipointer=(ifaceq(k,ig)-1)*3
+                  elseif((nope.eq.10).or.(nope.eq.4)) then
+                    ipointer=(ifacet(k,ig)-1)*3
+                  else
+                    ipointer=(ifacew(k,ig)-1)*3
+                  endif
+c     mortar start                
+                  if(mortartrafoflag.gt.0) then
+                    ff(ipointer+1)=ff(ipointer+1)
+     &                   -shptil2(4,k)*xload(1,ids)
+     &                   *xsj2(1)*weight
+                    ff(ipointer+2)=ff(ipointer+2)
+     &                   -shptil2(4,k)*xload(1,ids)
+     &                   *xsj2(2)*weight
+                    ff(ipointer+3)=ff(ipointer+3)
+     &                   -shptil2(4,k)*xload(1,ids)
+     &                   *xsj2(3)*weight
+                  else
+c     mortar end                  
+                    ff(ipointer+1)=ff(ipointer+1)-shp2(4,k)*xload(1,ids)
+     &                   *xsj2(1)*weight
+                    ff(ipointer+2)=ff(ipointer+2)-shp2(4,k)*xload(1,ids)
+     &                   *xsj2(2)*weight
+                    ff(ipointer+3)=ff(ipointer+3)-shp2(4,k)*xload(1,ids)
+     &                   *xsj2(3)*weight
+                  endif
+                enddo
+!     
+!     stiffness< contribution of the distributed load 
+!     reference: Dhondt G., The Finite Element Method for
+!     three-dimensional thermomechanical Applications,
+!     Wiley, 2004, p 153, eqn. (3.54).
+!     
+              elseif((mass.eq.1).and.
+     &               ((iperturb(1).eq.1).or.(iperturb(2).eq.1))) then
+                if(nopes.eq.8) then
+                  call shape8q(xi,et,xl1,xsj2,xs2,shp2,iflag)
+                elseif(nopes.eq.4) then
+                  call shape4q(xi,et,xl1,xsj2,xs2,shp2,iflag)
+                elseif(nopes.eq.6) then
+                  call shape6tri(xi,et,xl1,xsj2,xs2,shp2,iflag)
+                else
+                  call shape3tri(xi,et,xl1,xsj2,xs2,shp2,iflag)
+                endif
+!     
+!     identifying the load on the slave face
+!     
+                call nident2(nelemload,nelems,nload,ids)
+                faceident=.false.
+                do
+                  if(ids.eq.0) exit
+                  if(nelemload(1,ids).ne.nelems) exit
+                  if(sideload(id)(1:1).ne.'I') then
+                    ids=ids-1
+                    cycle
+                  endif
+                  igs=ichar(sideload(ids)(2:2))-48
+                  if(igs.ne.jface) then
+                    ids=ids-1
+                    cycle
+                  endif
+                  faceident=.true.
+                  exit
+                enddo
+                if(.not.faceident) then
+                  write(*,*) '*ERROR in e_c3d: slave interface'
+                  write(*,*) '       not found'
+                  call exit(201)
+                endif
+!     
+!     for nonuniform load: determine the coordinates of the
+!     point (transferred into the user subroutine)
+!     
+                if(sideload(ids)(3:4).eq.'NU') then
+                  do k=1,3
+                    coords(k)=0.d0
+                    do j=1,nopes
+                      coords(k)=coords(k)+xl1(k,j)*shp2(4,j)
+                    enddo
+                  enddo
+                  jltyp=ichar(sideload(ids)(2:2))-48
+                  jltyp=jltyp+20
+                  iscale=1
+                  call dload(xload(1,ids),istep,iinc,tvar,nelem,i,layer,
+     &                 kspt,coords,jltyp,sideload(ids),vold,co,lakonl,
+     &                 konl,ipompc,nodempc,coefmpc,nmpc,ikmpc,ilmpc,
+     &                 iscale,veold,rho,amat,mi)
+                  if((nmethod.eq.1).and.(iscale.ne.0))
+     &                 xload(1,ids)=xloadold(1,ids)+
+     &                 (xload(1,ids)-xloadold(1,ids))*reltime
+                endif
+!     
+!     calculation of the deformation gradient
+!     
+                do k=1,3
+                  do l=1,3
+                    xkl(k,l)=0.d0
+                    do ii=1,nopes
+                      xkl(k,l)=xkl(k,l)+shp2(l,ii)*xl2(k,ii)
+                    enddo
+                  enddo
+                enddo
+!     
+                do ii=1,nopes
+c     Bernhardi start
+                  if((nope.eq.20).or.(nope.eq.8).or.
+     &                 (nope.eq.11)) then
+c     Bernhardi end
+                    ipointeri=(ifaceq(ii,ig)-1)*3
+                  elseif((nope.eq.10).or.(nope.eq.4)) then
+                    ipointeri=(ifacet(ii,ig)-1)*3
+                  else
+                    ipointeri=(ifacew(ii,ig)-1)*3
+                  endif
+                  do jj=1,nopes
+c     Bernhardi start
+                    if((nope.eq.20).or.(nope.eq.8)
+     &                   .or.(nope.eq.11)) then
+c     Bernhardi end
+                      ipointerj=(ifaceq(jj,ig)-1)*3
+                    elseif((nope.eq.10).or.(nope.eq.4)) then
+                      ipointerj=(ifacet(jj,ig)-1)*3
+                    else
+                      ipointerj=(ifacew(jj,ig)-1)*3
+                    endif
+!     
+!     if no submodel: only pressure
+!     else: complete stress vector
+!     
+                    if(sideload(id)(3:4).ne.'SM') then
+                      do k=1,3
+                        do l=1,3
+                          if(k.eq.l) cycle
+                          eknlsign=1.d0
+                          if(k*l.eq.2) then
+                            n=3
+                            if(k.lt.l) eknlsign=-1.d0
+                          elseif(k*l.eq.3) then
+                            n=2
+                            if(k.gt.l) eknlsign=-1.d0
+                          else
+                            n=1
+                            if(k.lt.l) eknlsign=-1.d0
+                          endif
+                          term=weight*xload(1,ids)*shp2(4,ii)*
+     &                         eknlsign*(xsj2(1)*
+     &                         (xkl(n,2)*shp2(3,jj)-xkl(n,3)*
+     &                         shp2(2,jj))+xsj2(2)*
+     &                         (xkl(n,3)*shp2(1,jj)-xkl(n,1)*
+     &                         shp2(3,jj))+xsj2(3)*
+     &                         (xkl(n,1)*shp2(2,jj)-xkl(n,2)*
+     &                         shp2(1,jj)))
+                          s(ipointeri+k,ipointerj+l)=
+     &                         s(ipointeri+k,ipointerj+l)+term/2.d0
+                          s(ipointerj+l,ipointeri+k)=
+     &                         s(ipointerj+l,ipointeri+k)+term/2.d0
+                        enddo
+                      enddo
+                    endif
+                  enddo
+                enddo
+!     
+              endif
+              indexs=imastload(2,indexs)
+            enddo
+!     
+            id=id-1
+          enddo
+        endif
       endif
 !     
 !     for axially symmetric and plane stress/strain elements: 
@@ -1917,10 +2271,10 @@ c     mortar end
           endif
         endif
       endif
-!
+!     
 !     lumping the mass matrix for explicit dynamics
 !     (not for the massless method)
-!
+!     
       if((mass.eq.1).and.(iexpl.gt.1).and.(mortar.ne.-1)) then
 !     
 !     scaling the diagonal terms of the mass matrix such that the total mass
@@ -1973,7 +2327,7 @@ c     mortar end
           enddo
         enddo
       endif
-!
+!     
 !     mscalmethod = 1 or 3: selective mass scaling SMS
 !     
       if((mass.eq.1).and.((iexpl.gt.1).or.

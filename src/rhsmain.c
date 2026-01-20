@@ -24,7 +24,7 @@
 
 static char *lakon1,*matname1,*sideload1;
 
-static ITG *nk1,*kon1,*ipkon1,*ne1,*ipompc1,*nodempc1,
+static ITG *nk1,*kon1,*ipkon1,*ne1,*ipompc1,*nodempc1,*imastload1,
   *nmpc1,*nodeforc1,*ndirforc1,*nforc1,*nelemload1,*nload1,
   *ipobody1,*nbody1,*nactdof1,*neq1,*nmethod1=NULL,*ikmpc1,*ilmpc1,
   *nelcon1,*nrhcon1,*nalcon1,*ielmat1,*ielorien1,*norien1,
@@ -33,7 +33,7 @@ static ITG *nk1,*kon1,*ipkon1,*ne1,*ipompc1,*nodempc1,
   *ikactmech1,*nactmech1,*ielprop1,*nstate_1,*ntrans1,*inotr1,
   num_cpus,*neapar=NULL,*nebpar=NULL;
 
-static double *co1,*coefmpc1,*xforcact1,*xloadact1,
+static double *co1,*coefmpc1,*xforcact1,*xloadact1,*pmastload1,
   *xbodyact1,*xbodyact1,*cgr1,*elcon1,*rhcon1,*alcon1,
   *alzero1,*orab1,*t01,*t1act1,*vold1,*plicon1,*plkcon1,
   *ttime1,*time1,*dtime1,*physcon1,*xbodyold1,*reltime1,*veold1,
@@ -55,7 +55,7 @@ void rhsmain(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 	     double *veold,char *matname,ITG *mi,ITG *ikactmech,ITG *nactmech,
 	     ITG *ielprop,double *prop,double *sti,double *xstateini,
 	     double *xstate,ITG *nstate_,ITG *ntrans,ITG *inotr,double *trab,
-	     double *fnext){
+	     double *fnext,ITG *imastload,double *pmastload){
 
   ITG sys_cpus,*ithread=NULL,i,j,isum,idelta,mt=mi[1]+1;
   char *env,*envloc,*envsys;
@@ -150,7 +150,8 @@ void rhsmain(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
   physcon1=physcon;ibody1=ibody;xbodyold1=xbodyold;reltime1=reltime;
   veold1=veold;matname1=matname;mi1=mi;ielprop1=ielprop;
   prop1=prop;sti1=sti;xstateini1=xstateini;xstate1=xstate;nstate_1=nstate_;
-  ntrans1=ntrans;inotr1=inotr;trab1=trab;
+  ntrans1=ntrans;inotr1=inotr;trab1=trab;imastload1=imastload;
+  pmastload1=pmastload;
 
   NNEW(fext1,double,num_cpus**neq);
   NNEW(ikactmech1,ITG,num_cpus**neq);
@@ -250,7 +251,8 @@ void *rhsmt(ITG *i){
 	       npmat_1,ttime1,time1,istep1,iinc1,dtime1,physcon1,ibody1,
 	       xbodyold1,reltime1,veold1,matname1,mi1,&ikactmech1[indexf],
 	       &nactmech1[*i],ielprop1,prop1,sti1,xstateini1,xstate1,nstate_1,
-	       ntrans1,inotr1,trab1,&fnext1[indexfnext],&nea,&neb));
+	       ntrans1,inotr1,trab1,&fnext1[indexfnext],&nea,&neb,
+	       imastload1,pmastload1));
 
   return NULL;
 }

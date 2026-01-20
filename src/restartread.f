@@ -29,7 +29,7 @@
      &     orab,ielorien,trab,inotr,amname,amta,namta,t0,t1,iamt1,veold,
      &     ielmat,matname,prlab,prset,filab,vold,nodebounold,
      &     ndirbounold,xbounold,xforcold,xloadold,t1old,eme,
-     &     iponor,xnor,knor,thicke,offset,iponoel,inoel,rig,
+     &     iponor,xnor,knor,thicke,offset,iponoel2d,inoel2d,rig,
      &     shcon,nshcon,cocon,ncocon,ics,sti,
      &     ener,xstate,jobnamec,infree,irestartstep,prestr,iprestr,
      &     cbody,ibody,xbody,nbody,xbodyold,ttime,qaold,cs,mcs,
@@ -63,7 +63,7 @@
      &     nrhcon(*),nalcon(*),nplicon(*),nplkcon(*),ielorien(*),
      &     inotr(*),mortar,nintpoint,ifacecount,islavsurf(*),iendset(*),
      &     namta(*),iamt1(*),ielmat(*),nodebounold(*),ndirbounold(*),
-     &     iponor(*),knor(*),iponoel(*),inoel(*),rig(*),nfc,ndc,
+     &     iponor(*),knor(*),iponoel2d(*),inoel2d(*),rig(*),nfc,ndc,
      &     nshcon(*),ncocon(*),ics(*),infree(*),i,ipos,ikdc(*),
      &     nener,irestartstep,istat,iprestr,irstrt(*),
      &     maxlenmpc,mcs,mpcend,ntie,ibody(*),nbody,nslavs,nef,
@@ -427,8 +427,8 @@
         read(15)(knor(i),i=1,infree(2))
         read(15)(thicke(i),i=1,mi(3)*nkon)
         read(15)(offset(i),i=1,2*ne)
-        read(15)(iponoel(i),i=1,infree(4))
-        read(15)(inoel(i),i=1,3*(infree(3)-1))
+        read(15)(iponoel2d(i),i=1,infree(4))
+        read(15)(inoel2d(i),i=1,3*(infree(3)-1))
         read(15)(rig(i),i=1,infree(4))
         read(15)(ne2boun(i),i=1,2*infree(4))
       endif
@@ -478,7 +478,7 @@
 !     
 !     control parameters
 !     
-      read(15) (ctrl(i),i=1,52)
+      read(15) (ctrl(i),i=1,60)
       read(15) (qaold(i),i=1,2)
       read(15) output
       read(15) ttime

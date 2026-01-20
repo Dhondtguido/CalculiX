@@ -63,14 +63,14 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     *lakont=NULL,*turdir=NULL,*labmpc2=NULL;
 
   ITG nev,i,j,k,idof,*inum=NULL,id,
-    iinc=0,l,iout=1,ielas,icmd=3,ifreebody,mode,m,nherm,
+    iinc=0,l,iout=1,ielas,icmd=3,ifreebody,mode,m,nherm,*inoel=NULL,
     *kon=NULL,*ipkon=NULL,*ielmat=NULL,*ielorien=NULL,*islavact=NULL,
     *inotr=NULL,*nodeboun=NULL,*ndirboun=NULL,*iamboun=NULL,*ikboun=NULL,
     *ilboun=NULL,*nactdof=NULL,*ipompc=NULL,*nodempc=NULL,*ikmpc=NULL,
     *ilmpc=NULL,nsectors,nmd,nevd,*nm=NULL,*iamt1=NULL,*islavnode=NULL,
     ngraph=1,nkg,neg,ne0,ij,lprev,nope,indexe,ilength,*nslavnode=NULL,
-    *ipneigh=NULL,*neigh=NULL,index,im,cyclicsymmetry,inode,
-    *ialset=*ialsetp,mt=mi[1]+1,kmin,kmax,i1,iit=-1,network=0,
+    *ipneigh=NULL,*neigh=NULL,index,im,cyclicsymmetry,inode,inoelsize,
+    *ialset=*ialsetp,mt=mi[1]+1,kmin,kmax,i1,iit=-1,network=0,nramp=-1,
     *iter=NULL,lint,lfin,kk,kkv,kk6,kkx,icomplex,igeneralizedforce,
     idir,*inumt=NULL,icntrl,imag,jj,is,l1,*inocs=NULL,ml1,l2,nkt,net,
     *ipkont=NULL,*ielmatt=NULL,*inotrt=NULL,*kont=NULL,node,iel,*ielcs=NULL,
@@ -124,7 +124,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
      (needed in resultsforc.c) */
   
   NNEW(iponoel,ITG,*nk);
-  FORTRAN(nodebelongstoel,(iponoel,lakon,ipkon,kon,ne));
+  FORTRAN(nodebelongstoel,(iponoel,inoel,&inoelsize,lakon,ipkon,kon,ne,&nramp));
 
   pi=4.*atan(1.);
   constant=180./pi;

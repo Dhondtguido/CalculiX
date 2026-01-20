@@ -385,7 +385,7 @@ void premortar(ITG *nzs,ITG *nzsc2,
 	       char *orname,ITG *network,
 	       char *typeboun,ITG *num_cpus,double *t0g,double *t1g,
 	       double *smscale,ITG *mscalmethod,ITG *nslavquadel,
-	       ITG *iponoel);
+	       ITG *iponoel,ITG *imastload,double *pmastload);
        
 void FORTRAN(regularization_gn_c,(double *lambdap,ITG *divmode,ITG *regmode,
 				  double *gnc,double *aninvloc,double *p0,

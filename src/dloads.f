@@ -22,7 +22,7 @@
      &     istat,n,iline,ipol,inl,ipoinp,inp,cbody,ibody,xbody,nbody,
      &     nbody_,xbodyold,iperturb,physcon,nam_,namtot_,namta,amta,
      &     nmethod,ipoinpc,maxsectors,mi,idefload,idefbody,ipkon,
-     &     thicke,iamplitudedefault,namtot,ier)
+     &     thicke,iamplitudedefault,namtot,ier,interfaceload)
 !     
 !     reading the input deck: *DLOAD
 !     
@@ -43,7 +43,8 @@
      &     inl,ipoinp(2,*),inp(3,*),ibody(3,*),nbody,nbody_,nam_,namtot,
      &     namtot_,namta(3,*),idelay,nmethod,lc,isector,node,id,node1,
      &     ipoinpc(0:*),maxsectors,jsector,iglobstep,idefload(*),node2,
-     %     idefbody(*),ipkon(*),k,indexe,iamplitudedefault,ier
+     &     idefbody(*),ipkon(*),k,indexe,iamplitudedefault,ier,
+     &     interfaceload
 !     
       real*8 xload(2,*),xbody(7,*),xmagnitude,dd,p1(3),p2(3),bodyf(3),
      &     xbodyold(7,*),physcon(*),amta(2,*),xxmagnitude,
@@ -68,7 +69,8 @@
       do i=2,n
         if((textpart(i)(1:6).eq.'OP=NEW').and.(.not.dload_flag)) then
           do j=1,nload
-            if(sideload(j)(1:1).eq.'P') then
+            if((sideload(j)(1:1).eq.'P').or.
+     &           (sideload(j)(1:1).eq.'I')) then
               sideload(j)(3:4)='  '
               xload(1,j)=0.d0
             endif
@@ -313,6 +315,7 @@
         elseif(((label(1:2).ne.'P1').and.(label(1:2).ne.'P2').and.
      &         (label(1:2).ne.'P3').and.(label(1:2).ne.'P4').and.
      &         (label(1:2).ne.'P5').and.(label(1:2).ne.'P6').and.
+     &         (label(1:2).ne.'I ').and.
      &         (label(1:2).ne.'P ').and.(label(1:2).ne.'BX').and.
      &         (label(1:2).ne.'BY').and.(label(1:2).ne.'BZ').and.
 c     BernhardiStart
@@ -375,6 +378,9 @@ c     BernhardiStart
               elseif(label(1:6).eq.'EDNOR4') then
                 label(1:2)='P6'
                 edgeload=.true.
+              elseif(label(1:1).eq.'I') then
+                label(1:2)='I1'
+                if(interfaceload.le.0) interfaceload=1
               else
                 label(1:2)='P1'
               endif
@@ -494,6 +500,9 @@ c     BernhardiStart
               elseif(label(1:6).eq.'EDNOR4') then
                 label(1:2)='P6'
                 edgeload=.true.
+              elseif(label(1:1).eq.'I') then
+                label(1:2)='I1'
+                if(interfaceload.le.0) interfaceload=1
               else
                 label(1:2)='P1'
               endif
