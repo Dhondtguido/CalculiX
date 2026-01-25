@@ -108,6 +108,7 @@ rm -f circ10pnl.rfn.inp
 rm -f segmentsmooth.rfn.inp
 rm -f segmentsmooth3.rfn.inp
 rm -f segmentsmooth2.rfn.inp
+rm -f contact4tetrefine.rfn.inp
 
 echo "check the existence of file $errorfile"
 echo "if this file does not exist, the present results"

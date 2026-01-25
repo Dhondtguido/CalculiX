@@ -179,7 +179,7 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
     
     /* calculating the normals w.r.t. to the initial geometry */
     
-    FORTRAN(normalsonsurface_se,(ipkon,kon,lakon,extnor,co,nk,ipoface,
+    FORTRAN(normalsonsurface_se,(ipkon,kon,lakon,extnorini,coini,nk,ipoface,
 			         nodface,nactdof,mi,nodedesiinv,&iregion,
 			         iponoelfa,ndesi,nodedesi,nod2nd3rd,
 			         ikboun,nboun,ne2d,knor2d,iponoel2d,iponor2d,

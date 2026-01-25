@@ -46,6 +46,11 @@ for i in *.inp; do
 	then
 	    continue
 	fi
+	
+	if [ $i = contact4tetrefine.rfn.inp ]
+	then
+	    continue
+	fi
 
 #
 #       executing CalculiX and generating the .dat and

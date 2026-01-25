@@ -41,6 +41,11 @@ for i in *.inp; do
 	    continue
 	fi
 	
+	if [ $i = contact4tetrefine.rfn.inp ]
+	then
+	    continue
+	fi
+	
 #
 #       removing the old .dat and .frd file, if any
 #
