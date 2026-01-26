@@ -34441,12 +34441,12 @@ triangles}
   
 \item (updatecontpen\_load.f) For each triangle, store the coordinates of its center of gravity in
   field cg (3,*) and
-  the coefficients of the plane through each of its edges and bisecting the
+  the coefficients of the plane's equation through each of its edges and bisecting the
   normal on the triangle and the normal on the triangle adjacent
   to the edge in straight(1...12,*) (4 coefficients per plane). Store the
   coefficients of the triangle's plane in straight(13...16,*) (4 coefficients)
 
-\item For each slave face:
+\item For each slave face (mastintpoints.f):
 
 \begin{enumerate}
 
@@ -34470,17 +34470,19 @@ triangles}
 \end{equation}
 
 \noindent $n_s$ is the number of nodes belonging to the slave face,
-$\boldsymbol{x}_i$ the spatial coordinates and $\boldsymbol{n}_i$ the local
-normal in the spatial configuration. Notice that a slave face does not have to be plane.
+$\boldsymbol{x}_i$ the spatial coordinates of the nodes and $\boldsymbol{n}_i$ the local
+normal in the nodes in the spatial configuration. Notice that a slave face does not have to be plane.
 
 \item Identify for the nodes of the slave face opposite master faces. To this
-end identify for each node the triangle the center of gravity of which is
-closest to the slave node (using the neares neighbor algorithm of
+end identify for each node (the coordinates of which are slightly moved
+towards the slave face's center of gravity to avoid numerical difficulties
+for slave faces positioned exactly on one opposite master face) the master triangle the center of gravity of which is
+closest to the slave node (using the nearest neighbor algorithm of
 Section \ref{interpolation}. The triangle is considered to be valid if
 $\boldsymbol{n} \cdot \boldsymbol{n}_t < -0.7$ ($\boldsymbol{n}_t$ is the
 triangle's normal; slave and master face should
 have normals in opposite directions). If valid, store its parent master face
-to stock.
+to in field maface(i), i=1,...,nmaface.
 
 \begin{figure}
 \epsfig{file=domcom2.eps,width=12cm}
@@ -34497,23 +34499,31 @@ polygons are a subset of the edges of the master triangulation. The dashed
 line in Figure \ref{domcom2}, for instance, is an edge of the master triangulation but is not
 needed to create the subdivision of the master face in convex polygons.
 
-\item For each polygon:
+\item For each convex master polygon (e.g. the dashed triangle in Figure \ref{domcom2}):
 
 \begin{enumerate}
 
-\item Apply the Sutherland--Hodgman algorithm (reference) to clip the slave
-face by the polygon after projecting both on the mean slave plane.
+\item Apply the Sutherland--Hodgman algorithm \cite{Sutherland} to clip the slave
+face by the polygon after projecting both on the mean slave plane. The field
+pvertex(1..3,i), i=1,..,nvertex, which contains at the start of the
+Sutherland--Hodgman algorithm the projected coordinates of the slave face,
+contains at the end the projected coordinates of the vertices of the clipped
+slave face.
 
 \item Determine the edges of the polygon the neighboring master faces of which
-deserve further attention (the so--called active edges).
+deserve further attention (the so--called active edges). They are stored in
+iactiveline(1..2,i),i=1,...,nactiveline. The entry iactiveline(1,i) contains
+the edge number from field ime, iactiveline(2,i) contains the parent master
+face of the triangle to which the edge belongs and which has already been
+treated.
 
-\item Subdivide the clipped polygons into triangles and determine the local
+\item Subdivide the clipped slave face (the doubly dashed triangle in Figure \ref{domcom2}) into triangles and determine the local
 slave coordinates of their vertices by projecting back onto the slave face
 (using the finite element containment algorithm in
 Section \ref{interpolation}).
 
 \item Determine the local coordinates of the integration points within each
-clipped polygon triangle using a 7--point integration scheme. The
+clipped slave face triangle using a 7--point integration scheme. The
 corresponding formula amounts to:
 
 \begin{equation}
@@ -34522,7 +34532,7 @@ corresponding formula amounts to:
 \end{equation}
 
 \noindent where $(\xi_ {\text{ip,loc}}, \eta_ {\text{ip,loc}})$ are the local
-coordinates of the integration point ($0 \le \xi_ {\text{ip,loc}}, \eta_
+coordinates of the integration point within the clipped slave face triangle ($0 \le \xi_ {\text{ip,loc}}, \eta_
 {\text{ip,loc}} \le 1$) and $0 \le \xi_ {\text{ip,loc}}+\eta_
 {\text{ip,loc}} \le 1$), $(\xi_1,\xi_2,\xi_3)$ are the local coordinates of
 the vertices of the clipped polygon triangle within the slave face and
@@ -34533,9 +34543,12 @@ the integration point within the slave face.
 
 \end{enumerate}
 
-\item Analyze the master faces adjacent to the active edges in the same
+\item Mark the master face as treated by storing it in field
+  icovered(i),i=1,...,ncovered in the form 10*element+local face number (this
+  field is sorted in ascending order for searching purposes). Analyze the master faces adjacent to the active edges in the same
 way. Keep track of the active edges deactivating them as soon as all adjacent
-master faces were covered and activating new ones as needed.
+master faces were covered and activating new ones as needed. Continue until no master faces are left which can possibly have an intersection
+with the slave face
 
 \end{enumerate}
 
@@ -40237,6 +40250,9 @@ Crystal Modeling for Structural Calculations: Part 2 - Finite Element Implementa
 \bibitem{Studer} Studer, C., \textit{Numerics of Unilateral Contacts and
   Friction}. Lecture Notes in Applied and Computational Mechanics Vol
   47. Springer Verlag Berlin Heidelberg (2009).
+
+\bibitem{Sutherland} Sutherland  and Hodgman, G.W., Reentrant Polygon
+  Clippings. \textit{Communications of the ACM}. \textbf{17} , 32-42 (1974).
 
 \bibitem{Taylor} Taylor, R.L, Beresford, P.J. and Wilson, E.L., A
   non-conforming element for stress analysis. \textit{Int. J. Num. Meth. Engng}. \textbf{10} , 1211-1219 (1976).
