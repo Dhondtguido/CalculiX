@@ -111,7 +111,7 @@ void writenewmesh(ITG *nktet,ITG *netet_,double *cotet,ITG *iquad,
       &kode,filabnew,een,t1,fn,&time,epn,ielmatnew,matname,enern,xstaten,
       &nstate_,&istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
       &ntrans,orab,ielorien,&norien,description,ipneigh,neigh,
-      mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&nenew,
+      mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,NULL,ener,&nenew,
       cs,set,&nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
       thicke,fnewmesh,outputnew,qfx,cdn,&mortar,cdnr,cdni,nmat,ielprop,
       prop,sti,damn,&errn);
