@@ -35,7 +35,7 @@
       character*8 lakon(*)
       character*20 labmpc(*),label
       character*80 orname(*),orientation
-      character*81 set(*),surfset
+      character*81 set(*),surfset,noset
       character*132 textpart(16),name
 !     
       integer istartset(*),iendset(*),ialset(*),norien,irstrt(*),nface,
@@ -110,18 +110,41 @@
       name(1:1)=' '
       do i=2,n
         if(textpart(i)(1:8).eq.'REFNODE=') then
-          read(textpart(i)(9:18),'(i10)',iostat=istat) irefnode
-          if(istat.gt.0) then
-            call inputerror(inpc,ipoinpc,iline,
-     &           "*COUPLING%",ier)
-            return
-          endif
-          if(irefnode.gt.nk) then
-            write(*,*) '*ERROR reading *COUPLING: ref node',irefnode
-            write(*,*) '       has not been defined'
-            ier=1
-            return
-          endif
+           read(textpart(i)(9:18),'(i10)',iostat=istat) irefnode
+           if(istat.gt.0) then
+              read(textpart(i)(9:88),'(a80)',iostat=istat) noset
+              noset(81:81)=' '
+              ipos=index(noset,' ')
+              noset(ipos:ipos)='N'
+              call cident81(set,noset,nset,id)
+              j=nset+1
+              if(id.gt.0) then
+                if(noset.eq.set(id)) then
+                  j=id
+                endif
+              endif
+              if(j.gt.nset) then
+                 write(*,*) '*ERROR reading *COUPLING:'
+                 write(*,*) '       node set ',
+     &               noset(1:index(noset,' ')-2),
+     &               ' is not defined.'
+                 call inputerror(inpc,ipoinpc,iline,
+     &             "*COUPLING%",ier)
+                 return
+              endif
+             if(istartset(id).ne.iendset(id)) then
+                 write(*,*) '*ERROR reading *COUPLING:'
+                 write(*,*) '       exactly one node is allowed in'
+                 write(*,*) '       nodeset ',
+     &                noset(1:index(noset,' ')-2),'.'
+                write(*,*) '       number of nodes: ',
+     &               iendset(id)-istartset(id)+1
+                 call inputerror(inpc,ipoinpc,iline,
+     &                "*COUPLING%",ier)
+                 return
+              endif
+              irefnode=ialset(istartset(id))
+           endif
         else if(textpart(i)(1:8).eq.'SURFACE=') then
           surfset(1:80)=textpart(i)(9:88)
 !     
