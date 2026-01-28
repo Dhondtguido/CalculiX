@@ -1,3 +1,7 @@
+**
+**   Structure: cube.
+**   Test objective: interface loading mit mesh refinement.
+**
 *NODE, NSET=Nall
        1,5.000000000000e-01,0.000000000000e+00,0.000000000000e+00
        2,7.500000000000e-01,0.000000000000e+00,0.000000000000e+00

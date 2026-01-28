@@ -1,6 +1,7 @@
 **
 **   Structure: bolt-like structure.
 **   Test objective: pre-tension force with beam element.
+**                   *PRE-TENSION SECTION with element and node set
 **
 *NODE, NSET=Nall
        1,0.000000000000e+00,0.000000000000e+00,0.000000000000e+00

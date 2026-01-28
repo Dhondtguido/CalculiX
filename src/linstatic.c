@@ -866,18 +866,18 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
     /* mesh refinement */
   
-      if(strcmp1(&filab[4089],"RM")==0){
-	refinemesh(nk,ne,co,ipkon,kon,v,veold,stn,een,emn,epn,enern,
-		   qfn,errn,filab,mi,lakon,jobnamec,istartset,iendset,
-		   ialset,set,nset,matname,ithermal,output,nmat,
-		   nelemload,nload,sideload,nodeforc,
-		   nforc,nodeboun,nboun,nodempc,ipompc,nmpc);
+    if(strcmp1(&filab[4089],"RM")==0){
+      refinemesh(nk,ne,co,ipkon,kon,v,veold,stn,een,emn,epn,enern,
+		 qfn,errn,filab,mi,lakon,jobnamec,istartset,iendset,
+		 ialset,set,nset,matname,ithermal,output,nmat,
+		 nelemload,nload,sideload,nodeforc,
+		 nforc,nodeboun,nboun,nodempc,ipompc,nmpc);
 
-	/* free errn */
+      /* free errn */
 	
-	if(((*nmethod!=5)||(mode==-1))&&
-	    ((strcmp1(&filab[1044],"ERR")==0)&&(*ithermal!=2))) SFREE(errn);
-      }
+      if(((*nmethod!=5)||(mode==-1))&&
+	 ((strcmp1(&filab[1044],"ERR")==0)&&(*ithermal!=2))) SFREE(errn);
+    }
 
     /* updating the .sta file */
 
@@ -892,30 +892,43 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     if(strcmp1(&filab[522],"ENER")==0) SFREE(enern);
     if(strcmp1(&filab[2175],"CONT")==0) SFREE(cdn);
 
-  }
-  else {
+  }else{
 
-    /* error occurred in mafill: storing the geometry in frd format */
+    /* error occurred in mafill: storing the geometry in frd format
+       option 1: smoothing is requested */
+    
+      if(strcmp1(&filab[4089],"RMSMOO")==0){
+	refinemesh(nk,ne,co,ipkon,kon,v,veold,stn,een,emn,epn,enern,
+		   qfn,errn,filab,mi,lakon,jobnamec,istartset,iendset,
+		   ialset,set,nset,matname,ithermal,output,nmat,
+		   nelemload,nload,sideload,nodeforc,
+		   nforc,nodeboun,nboun,nodempc,ipompc,nmpc);
+	SFREE(au);SFREE(ad);SFREE(b);
+	if(iglob<0){SFREE(adb);SFREE(aub);}
+	
+      }else{
 
-    ++*kode;
-    NNEW(inum,ITG,*nk);for(k=0;k<*nk;k++) inum[k]=1;
-    if(strcmp1(&filab[1044],"ZZS")==0){
-      NNEW(neigh,ITG,40**ne);
-      NNEW(ipneigh,ITG,*nk);
-    }
-    ptime=*ttime+time;
-    frd(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,
-	kode,filab,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
-	nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
-	ntrans,orab,ielorien,norien,description,ipneigh,neigh,
-	mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
-	cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
-	thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,ielprop,
-	prop,sti,damn,&errn);
-    if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
-    SFREE(inum);
-    if(nmethodold==0){FORTRAN(stopwithout201,());}else{FORTRAN(stop,());}
-
+	/* option 2: no smoothing; the program stops */
+	
+	++*kode;
+	NNEW(inum,ITG,*nk);for(k=0;k<*nk;k++) inum[k]=1;
+	if(strcmp1(&filab[1044],"ZZS")==0){
+	  NNEW(neigh,ITG,40**ne);
+	  NNEW(ipneigh,ITG,*nk);
+	}
+	ptime=*ttime+time;
+	frd(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,
+	    kode,filab,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
+	    nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
+	    ntrans,orab,ielorien,norien,description,ipneigh,neigh,
+	    mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
+	    cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
+	    thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,ielprop,
+	    prop,sti,damn,&errn);
+	if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
+	SFREE(inum);
+	if(nmethodold==0){FORTRAN(stopwithout201,());}else{FORTRAN(stop,());}
+      }
   }
 
   if(*mortar>-2){

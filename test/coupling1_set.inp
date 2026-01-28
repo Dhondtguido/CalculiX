@@ -1,6 +1,7 @@
 **
 **   Structure: cantilever beam.
 **   Test objective: *COUPLING, *KINEMATIC for translations.
+**                   REFNODE is a nodal set
 **
 *HEADING
 Model: beam     Date: 10-Mar-1998

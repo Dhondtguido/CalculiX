@@ -5561,3 +5561,5 @@ Dec 2002        - started to work on single crystal plasticity
  27 Jan 2026    - allowed for sets on the *PRE-TENSION SECTION and
                   *COUPLING card
 		  
+ 28 Jan 2026    - allowed for *REFINE MESH,SMOOTHING ONLY for linear
+                  static calculations with bad Jacobians.

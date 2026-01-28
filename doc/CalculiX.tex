@@ -21302,7 +21302,9 @@ location of the reference node determines the center of the rigid motion. For
 of the reference node. Choosing another reference node will change the effect
 of these forces (e.g. the moment about the center of gravity of the coupling
 surface will be different).  The
-reference node should not be one of the nodes of the surface to which the constraint applies.
+reference node should not be one of the nodes of the surface to which the
+constraint applies. The user can enter a concrete node number, or a node set
+containing exactly one node.
 
 With SURFACE the nodes are selected to which the constraint applies (so-called
 coupling nodes). This surface must be face-based.
@@ -27906,10 +27908,11 @@ an element face surface can be defined on which the pre-tension acts. This
 is usually a cross section of the bolt. This option is used for volumetric
 elements. Alternatively, the bolt can be modeled with just one linear beam
 element (type B31). In that case the parameter ELEMENT is required pointing to
-the number of the beam element. 
+the number of the beam element or an element set containing exactly one element.
 
 The parameter NODE is used to define a
-reference node. This node should not be used elsewhere in the model. In
+reference node. The user can enter a concrete node number or a node set
+containing exactly one node. This node should not be used elsewhere in the model. In
 particular, it should not belong to any element. The coordinates of this node
 are immaterial. The first degree of freedom of this node is used to define a
 pre-tension force with \htmlref{*CLOAD}{cload} or a differential displacement
