@@ -230,7 +230,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   NNEW(iponoel,ITG,*nk);
   if(nramp>=0) NNEW(inoel,ITG,2**nkon);
   FORTRAN(nodebelongstoel,(iponoel,inoel,&inoelsize,lakon,ipkon,kon,ne,&nramp));
-  if(nramp>=0) RENEW(inoeln,ITG,2*inoelnsize);
+  if(nramp>=0) RENEW(inoel,ITG,2*inoelsize);
 
   if(filab[4]!=' ') ne1d2d=1;
 
@@ -751,6 +751,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
       NNEW(areaslav,double,*ifacecount);
     }else if(*mortar==1){
+      NNEW(springarea,double,2**nintpoint);
       NNEW(islavact,ITG,nslavnode[*ntie]);
       if((*istep==1)||(nslavs_prev_step==0))
 	NNEW(clearini,double,3*9**ifacecount);
@@ -1100,7 +1101,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     if(*nmethod==0){
 	  
       /* error occurred in mafill: storing the geometry in frd format
-       option 1: smoothing is requested */
+	 option 1: smoothing is requested */
     
       if(strcmp1(&filab[4089],"RMSMOO")==0){
 	refinemesh(nk,ne,co,ipkon,kon,v,veold,stn,een,emn,epn,enern,
@@ -1108,6 +1109,54 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		   ialset,set,nset,matname,ithermal,output,nmat,
 		   nelemload,nload,sideload,nodeforc,
 		   nforc,nodeboun,nboun,nodempc,ipompc,nmpc);
+
+	/* freeing allocated fields */
+	
+	SFREE(iponoel);if(nramp>=0){SFREE(inoel);}
+	if((*mortar==1)&&(*nstate_!=0)&&(maxprevcontel!=0))
+	  {SFREE(islavsurfold);SFREE(pslavsurfold);}
+	if(isensitivity){SFREE(adcpy);SFREE(aucpy);}
+	SFREE(ad);SFREE(au);
+	if(*iexpl>1){SFREE(smscale);}
+	SFREE(f);SFREE(b);
+	SFREE(xbounact);SFREE(xforcact);SFREE(xloadact);SFREE(xbodyact);
+	if(*inewton==1){SFREE(cgr);}
+	SFREE(fext);SFREE(ampli);SFREE(xbounini);SFREE(xstiff);
+	if((*ithermal==1)||(*ithermal>=3)){SFREE(t1act);SFREE(t1ini);}
+	if(*ithermal>1){
+	  SFREE(itg);SFREE(ieg);SFREE(kontri);SFREE(nloadtr);
+	  SFREE(nactdog);SFREE(nacteq);SFREE(ineighe);
+	  SFREE(tarea);SFREE(tenv);SFREE(fenv);SFREE(qfx);
+	  SFREE(erad);SFREE(ac);SFREE(bc);SFREE(ipiv);
+	  SFREE(bcr);SFREE(ipivr);SFREE(adview);SFREE(auview);SFREE(adrad);
+	  SFREE(aurad);SFREE(irowrad);SFREE(jqrad);SFREE(icolrad);
+	  if((*mcs>0)&&(ntr>0)){SFREE(inocs);}
+	  if((*network>0)||(ntg>0)){SFREE(iponoeln);SFREE(inoeln);}
+	}
+	SFREE(fini);
+	if(*nmethod==4){
+	  SFREE(aux2);SFREE(fextini);SFREE(veini);SFREE(accini);
+	  SFREE(adb);SFREE(aub);SFREE(cvini);SFREE(cv);SFREE(fnext);
+	  SFREE(fnextini);
+	}
+	SFREE(eei);SFREE(stiini);SFREE(emeini);
+	if(*nener==1)SFREE(enerini);
+	if(*nstate_!=0){SFREE(xstateini);}
+	SFREE(aux);SFREE(iaux);SFREE(vini);
+	if(icascade==2){SFREE(nodempcref);SFREE(coefmpcref);}
+	if(ncont!=0){
+	  if(*mortar<=1){SFREE(springarea);}
+	  SFREE(cg);SFREE(straight);SFREE(xmastnor);
+	  if(*mortar<=0){
+	    SFREE(areaslav);
+	  }else if(*mortar==1){
+	    SFREE(islavact);
+	  }else if(*mortar>1){
+	    SFREE(slavnor);SFREE(slavtan);
+	  }
+	}
+	SFREE(nactdofinv);
+	
 	return;
 	
       }else{
@@ -4118,8 +4167,6 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     SFREE(aurad);SFREE(irowrad);SFREE(jqrad);SFREE(icolrad);
     if((*mcs>0)&&(ntr>0)){SFREE(inocs);}
     if((*network>0)||(ntg>0)){SFREE(iponoeln);SFREE(inoeln);}
-    if(ntr>0){
-    }
   }
 
   if(icfd==1){
@@ -4194,13 +4241,15 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	  }
 	}
       }
+    }else{
+      SFREE(springarea);
     }
       
     SFREE(cg);SFREE(straight);
     SFREE(imastop);SFREE(itiefac);SFREE(islavnode);
     SFREE(nslavnode);SFREE(iponoels);SFREE(inoels);SFREE(imastnode);
     SFREE(nmastnode);SFREE(itietri);SFREE(koncont);SFREE(xnoels);
-    SFREE(springarea);SFREE(xmastnor);
+    SFREE(xmastnor);
 
     if(*mortar==-1){
       if(ncont!=0){SFREE(kslav);SFREE(lslav);SFREE(ktot);SFREE(ltot);
@@ -4275,7 +4324,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   
   (*ttime)+=(*tper);
 
-  SFREE(iponoel);
+  SFREE(iponoel);if(nramp>=0){SFREE(inoel);}
   
   return;
 }

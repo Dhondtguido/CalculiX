@@ -159,7 +159,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Wed Jan 28 19:07:40 CET 2026\n");
+  printf("You are using an executable made on Fri Jan 30 15:06:23 CET 2026\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -1873,6 +1873,7 @@ int main(int argc,char *argv[])
 	  iamload[2*(i-ishift)+1]=iamload[2*i+1];
 	}
       }
+      SFREE(imastload);SFREE(pmastload);
     }
     
     nload=nload0;

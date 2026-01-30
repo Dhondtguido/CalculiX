@@ -155,6 +155,8 @@ void interfaceloading(ITG *ne,ITG *ipkon,ITG *kon,char *lakon,ITG *nk,
   }
 
   nintpoint=0;
+  NNEW(imastload,ITG,2*(10000));
+  NNEW(pmastload,double,3*(10000));
   for(i=0;i<nloadcpy;i++){
     
     if(strcmp1(&sideloadcpy[20*i],"I")==0){

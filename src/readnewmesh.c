@@ -331,6 +331,7 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
     RENEW(iprfn,ITG,*nk+1);
     RENEW(konrfn,ITG,iprfn[*nk]);
     RENEW(ratiorfn,double,iprfn[*nk]);
+    SFREE(ithread);SFREE(nkapar);SFREE(nkbpar);SFREE(integerglob);SFREE(doubleglob);
 
     /* interpolating the initial temperatures t0 */
 
