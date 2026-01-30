@@ -2676,6 +2676,108 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
       }
       
+      if(*nmethod==0){
+	  
+	/* error occurred in mafill: storing the geometry in frd format
+	   option 1: smoothing is requested */
+    
+	if(strcmp1(&filab[4089],"RMSMOO")==0){
+	  refinemesh(nk,ne,co,ipkon,kon,v,veold,stn,een,emn,epn,enern,
+		     qfn,errn,filab,mi,lakon,jobnamec,istartset,iendset,
+		     ialset,set,nset,matname,ithermal,output,nmat,
+		     nelemload,nload,sideload,nodeforc,
+		     nforc,nodeboun,nboun,nodempc,ipompc,nmpc);
+
+	  /* freeing allocated fields */
+	
+	  if(isensitivity){SFREE(adcpy);SFREE(aucpy);}
+	  SFREE(ad);SFREE(au);
+	  if((*ithermal==3)&&(ncont!=0)&&(*mortar==1)&&(*ncmat_>=11)){
+	    SFREE(nelemloadref);if(*nam>0){SFREE(iamloadref);};
+	    SFREE(sideloadref);
+	  }
+	  if(*iexpl>1){SFREE(smscale);}
+	  SFREE(f);SFREE(b);
+	  SFREE(xbounact);SFREE(xforcact);SFREE(xloadact);SFREE(xbodyact);
+	  if(*inewton==1){SFREE(cgr);}
+	  SFREE(fext);SFREE(ampli);SFREE(xbounini);SFREE(xstiff);
+	  if((*ithermal==1)||(*ithermal>=3)){SFREE(t1act);SFREE(t1ini);}
+	  if(*ithermal>1){
+	    SFREE(itg);SFREE(ieg);SFREE(kontri);SFREE(nloadtr);
+	    SFREE(nactdog);SFREE(nacteq);SFREE(ineighe);
+	    SFREE(tarea);SFREE(tenv);SFREE(fenv);SFREE(qfx);
+	    SFREE(erad);SFREE(ac);SFREE(bc);SFREE(ipiv);
+	    SFREE(bcr);SFREE(ipivr);SFREE(adview);SFREE(auview);SFREE(adrad);
+	    SFREE(aurad);SFREE(irowrad);SFREE(jqrad);SFREE(icolrad);
+	    if((*mcs>0)&&(ntr>0)){SFREE(inocs);}
+	    if((*network>0)||(ntg>0)){SFREE(iponoeln);SFREE(inoeln);}
+	  }
+	  SFREE(fini);
+	  if(*nmethod==4){
+	    SFREE(aux2);SFREE(fextini);SFREE(veini);SFREE(accini);
+	    SFREE(adb);SFREE(aub);SFREE(cvini);SFREE(cv);SFREE(fnext);
+	    SFREE(fnextini);
+	  }else{SFREE(resold);}
+	  SFREE(eei);SFREE(stiini);SFREE(emeini);
+	  if(*nener==1)SFREE(enerini);
+	  if(*nstate_!=0){SFREE(xstateini);}
+	  SFREE(aux);SFREE(iaux);SFREE(vini);
+	  if(icascade==2){SFREE(nodempcref);SFREE(coefmpcref);}
+	  if(ncont!=0){
+	    if(*mortar<=1){SFREE(springarea);}
+	    SFREE(cg);SFREE(straight);SFREE(xmastnor);
+	    if(*mortar==-1){
+	      SFREE(kslav);SFREE(lslav);SFREE(ktot);SFREE(ltot);
+	      SFREE(aloc);SFREE(alglob);SFREE(fric);SFREE(adc);SFREE(auc);
+	      SFREE(auw);SFREE(jqw);SFREE(iroww);
+	      if(idispfrdonly==1){SFREE(inumcp);}
+	      if(masslesslinear>0){SFREE(fullgmatrix);SFREE(fullr);}
+	    }
+	    if(*mortar<=0){
+	      SFREE(areaslav);
+	    }else if(*mortar==1){
+	      SFREE(islavact);
+	    }else if(*mortar>1){
+	      SFREE(slavnor);SFREE(slavtan);SFREE(bhat);SFREE(islavactdof);
+	    }
+	  }
+	  SFREE(nactdofinv);
+	  if((*nmethod==4)&&(*ithermal!=2)&&(*iexpl<=1)&&(icfd==0)){
+	    SFREE(adblump);}
+	  SFREE(iponoel);if(nramp>=0){SFREE(inoel);}
+	  if(uncoupled){SFREE(iruc);}
+	
+	  return;
+	
+	}else{
+
+	/* option 2: no smoothing; the program stops */
+	  
+	  ++*kode;
+	  NNEW(inum,ITG,*nk);ITGMEMSET(inum,0,*nk,1);
+	  if(strcmp1(&filab[1044],"ZZS")==0){
+	    NNEW(neigh,ITG,40**ne);
+	    MNEW(ipneigh,ITG,*nk);
+	  }
+	  
+	  ptime=*ttime+time;
+	  frd(co,nk,kon,ipkon,lakon,&ne0,v,stn,inum,nmethod,
+	      kode,filab,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
+	      nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
+	      ntrans,orab,ielorien,norien,description,ipneigh,neigh,
+	      mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
+	      cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
+	      thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
+	      ielprop,prop,sti,damn,&errn);
+
+	  if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);} 
+#ifdef COMPANY
+	  FORTRAN(uout,(v,mi,ithermal,filab,kode,output,jobnamec));
+#endif
+	  SFREE(inum);
+	  if(nmethodold==0){FORTRAN(stopwithout201,());}else{FORTRAN(stop,());}
+	}
+      }
 
       /* calculating the damping matrix for implicit dynamic
          calculations */
@@ -2824,49 +2926,6 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       }
 	  
       newstep=0;
-      
-      if(*nmethod==0){
-	  
-	/* error occurred in mafill: storing the geometry in frd format
-	   option 1: smoothing is requested */
-    
-	if(strcmp1(&filab[4089],"RMSMOO")==0){
-	  refinemesh(nk,ne,co,ipkon,kon,v,veold,stn,een,emn,epn,enern,
-		     qfn,errn,filab,mi,lakon,jobnamec,istartset,iendset,
-		     ialset,set,nset,matname,ithermal,output,nmat,
-		     nelemload,nload,sideload,nodeforc,
-		     nforc,nodeboun,nboun,nodempc,ipompc,nmpc);
-	  return;
-	
-	}else{
-
-	/* option 2: no smoothing; the program stops */
-	  
-	  ++*kode;
-	  NNEW(inum,ITG,*nk);ITGMEMSET(inum,0,*nk,1);
-	  if(strcmp1(&filab[1044],"ZZS")==0){
-	    NNEW(neigh,ITG,40**ne);
-	    MNEW(ipneigh,ITG,*nk);
-	  }
-	  
-	  ptime=*ttime+time;
-	  frd(co,nk,kon,ipkon,lakon,&ne0,v,stn,inum,nmethod,
-	      kode,filab,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
-	      nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
-	      ntrans,orab,ielorien,norien,description,ipneigh,neigh,
-	      mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
-	      cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
-	      thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
-	      ielprop,prop,sti,damn,&errn);
-
-	  if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);} 
-#ifdef COMPANY
-	  FORTRAN(uout,(v,mi,ithermal,filab,kode,output,jobnamec));
-#endif
-	  SFREE(inum);
-	  if(nmethodold==0){FORTRAN(stopwithout201,());}else{FORTRAN(stop,());}
-	}
-      }
       
       /* implicit step (static or dynamic) */
       
@@ -3600,9 +3659,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
     }
 
-    if(uncoupled){
-      SFREE(iruc);
-    }
+    if(uncoupled){SFREE(iruc);}
 
     if(((qa[0]>ea*qam[0])||(qa[1]>ea*qam[1]))&&(icutb==0)){jnz++;}
     iit=0;
