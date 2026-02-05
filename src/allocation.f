@@ -692,7 +692,7 @@ c        itranslation=0
           read(textpart(1)(1:10),'(i10)',iostat=istat) ibounstart
           if(istat.gt.0) then
             call inputerror(inpc,ipoinpc,iline,
-     &           "*BOUNDARY%",ier)
+     &           "*DISTRIBUTING%",ier)
             exit
           endif
 !     
@@ -702,7 +702,7 @@ c        itranslation=0
             read(textpart(2)(1:10),'(i10)',iostat=istat) ibounend
             if(istat.gt.0) then
               call inputerror(inpc,ipoinpc,iline,
-     &             "*BOUNDARY%",ier)
+     &             "*DISTRIBUTING%",ier)
               exit
             endif
           endif
@@ -1564,26 +1564,31 @@ c            nmpc_=nmpc_+3
           nboun_=nboun_+3*numnodes
         endif
 !     
+        ibounstart=0
         do
           call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &         ipoinp,inp,ipoinpc)
-          if((istat.lt.0).or.(key.eq.1)) exit
-!     
-          read(textpart(1)(1:10),'(i10)',iostat=istat) ibounstart
-          if(istat.gt.0) then
-            call inputerror(inpc,ipoinpc,iline,
-     &           "*BOUNDARY%",ier)
-            exit
-          endif
-!     
-          if(textpart(2)(1:1).eq.' ') then
-            ibounend=ibounstart
+          if((istat.lt.0).or.(key.eq.1)) then
+            if(ibounstart.gt.0) exit
+            ibounstart=1
+            ibounend=3
           else
-            read(textpart(2)(1:10),'(i10)',iostat=istat) ibounend
+            read(textpart(1)(1:10),'(i10)',iostat=istat) ibounstart
             if(istat.gt.0) then
               call inputerror(inpc,ipoinpc,iline,
-     &             "*BOUNDARY%",ier)
+     &             "*KINEMATIC%",ier)
               exit
+            endif
+!     
+            if(textpart(2)(1:1).eq.' ') then
+              ibounend=ibounstart
+            else
+              read(textpart(2)(1:10),'(i10)',iostat=istat) ibounend
+              if(istat.gt.0) then
+                call inputerror(inpc,ipoinpc,iline,
+     &               "*KINEMATIC%",ier)
+                exit
+              endif
             endif
           endif
           ibound=ibounend-ibounstart+1
@@ -1599,6 +1604,7 @@ c            nmpc_=nmpc_+3
             nmpc_=nmpc_+ibound*numnodes
             memmpc_=memmpc_+ibound*6*numnodes
           endif
+          if((istat.lt.0).or.(key.eq.1)) exit
         enddo
       elseif(textpart(1)(1:21).eq.'*MAGNETICPERMEABILITY') then
         ntmatl=0
