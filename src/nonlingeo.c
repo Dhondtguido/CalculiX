@@ -139,7 +139,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *kslav=NULL,*lslav=NULL,*ktot=NULL,*ltot=NULL,nmasts,neqtot,
     intpointvarm,calcul_fn,calcul_f,calcul_qa,calcul_cauchy,ikin,
     intpointvart,*jqbi=NULL,*irowbi=NULL,*jqib=NULL,*irowib=NULL,
-    idispfrdonly,*inumcp=NULL,nmethodold=*nmethod,*inoel=NULL;
+    idispfrdonly,*inumcp=NULL,nmethodold=*nmethod,*inoel=NULL,
+    materialchange=0;
 
   double *stn=NULL,*v=NULL,*een=NULL,cam[5],*epn=NULL,*cg=NULL,
     *cdn=NULL,*pslavsurfold=NULL,*fextload=NULL,
@@ -1103,7 +1104,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       /* error occurred in mafill: storing the geometry in frd format
 	 option 1: smoothing is requested */
     
-      if(strcmp1(&filab[4089],"RMSMOO")==0){
+      if(strcmp1(&filab[4089],"RPONLY")==0){
+	strcpy1(&filab[4089],"RMSMOO",6);
 	refinemesh(nk,ne,co,ipkon,kon,v,veold,stn,een,emn,epn,enern,
 		   qfn,errn,filab,mi,lakon,jobnamec,istartset,iendset,
 		   ialset,set,nset,matname,ithermal,output,nmat,
@@ -1584,7 +1586,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     memcpy(&sideloadref[0],&sideload[0],sizeof(char)*20**nload);
   }
   
-  while((1.-theta>1.e-6)||(negpres==1)||(iramp>0)){
+  while((1.-theta>1.e-6)||(negpres==1)||(materialchange>0)){
       
     if(icutb==0){
 	  
@@ -2681,7 +2683,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	/* error occurred in mafill: storing the geometry in frd format
 	   option 1: smoothing is requested */
     
-	if(strcmp1(&filab[4089],"RMSMOO")==0){
+	if(strcmp1(&filab[4089],"RPONLY")==0){
+	  strcpy1(&filab[4089],"RMSMOO",6);
 	  refinemesh(nk,ne,co,ipkon,kon,v,veold,stn,een,emn,epn,enern,
 		     qfn,errn,filab,mi,lakon,jobnamec,istartset,iendset,
 		     ialset,set,nset,matname,ithermal,output,nmat,
@@ -3590,7 +3593,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 			 energy,&allwk,&energyref,&emax,&r_abs,&enetoll,
 			 energyini,&allwkini,&temax,&sizemaxinc,&ne0,&neini,
 			 &dampwk,&dampwkini,energystartstep,&iramp,&idel,
-			 iponoel,inoel,nelcon,elcon,ncmat_,ntmat_);
+			 iponoel,inoel,nelcon,elcon,ncmat_,ntmat_,
+			 &materialchange);
 
 	if(*mortar>1){
 	  SFREE(f_cs);SFREE(f_cm);

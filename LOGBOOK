@@ -5563,3 +5563,6 @@ Dec 2002        - started to work on single crystal plasticity
 		  
  28 Jan 2026    - allowed for *REFINE MESH,SMOOTHING ONLY for linear
                   static calculations with bad Jacobians.
+
+ 6 Feb 2026     - introduced the parameter REPAIR ONLY on the
+                  *REFINE MESH card.

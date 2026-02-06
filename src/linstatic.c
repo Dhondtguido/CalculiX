@@ -897,7 +897,8 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     /* error occurred in mafill: storing the geometry in frd format
        option 1: smoothing is requested */
     
-      if(strcmp1(&filab[4089],"RMSMOO")==0){
+      if(strcmp1(&filab[4089],"RPONLY")==0){
+	strcpy1(&filab[4089],"RMSMOO",6);
 	refinemesh(nk,ne,co,ipkon,kon,v,veold,stn,een,emn,epn,enern,
 		   qfn,errn,filab,mi,lakon,jobnamec,istartset,iendset,
 		   ialset,set,nset,matname,ithermal,output,nmat,

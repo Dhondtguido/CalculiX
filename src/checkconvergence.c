@@ -60,7 +60,8 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		      double *temax,double *sizemaxinc,ITG* ne0,ITG* neini,
 		      double *dampwk,double *dampwkini,double *energystartstep,
 		      ITG *iramp,ITG *idel,ITG *iponoel,ITG *inoel,ITG *nelcon,
-		      double *elcon,ITG *ncmat_,ITG *ntmat_) {
+		      double *elcon,ITG *ncmat_,ITG *ntmat_,
+		      ITG *materialchange) {
   
   ITG i0,ir,ip,ic,il,ig,ia,iest,iest1=0,iest2=0,iconvergence,idivergence,
     ngraph=1,k,*ipneigh=NULL,*neigh=NULL,*inum=NULL,id,istart,iend,inew,
@@ -72,6 +73,15 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
     *cdnr=NULL,*cdni=NULL,tmp,maxdecay=0.0,r_rel,cetol,*damn=NULL,*errn=NULL,
     xramp,xdel,dthetaold;
 
+  /* icntrl=0 : continue with the next iteration after leaving
+                  checkconvergence.c
+     icntrl=1 : leave the iteration loop and start a new increment
+                  (icutb=0) or restart the present increment 
+                  (icutb>0) after leaving checkconvergence.c
+
+		  icutb is only relevant if icntrl=1 */ 
+
+  
   /* reset ialeatoric to zero */
 
   *ialeatoric=0;
@@ -459,16 +469,6 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	inew=id+1;
       }
 
-      /* check whether material ramping was applied; if so,
-         recover the original properties as soon as the
-         step was finished */
-
-      if((1.-*theta<=1.e-6)&&(*iramp>0)){
-	FORTRAN(materialramping,(nelcon,elcon,ncmat_,ntmat_,nmat,iramp,
-				 &xramp,idel,&xdel,nk,mi,nactdof,b,iponoel,
-				 inoel,&idivergence,ipkon));
-      }
-
       /* if the end of the new increment is less than a time
 	 point by less than 1.e-6 (theta-value) dtheta is
 	 enlarged up to this time point */
@@ -490,9 +490,20 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	*itp=1;
 	printf(" the increment size exceeds a time point and is decreased to %e\n\n",*dtheta**tper);
       }else{*itp=0;}
+
+      /* check whether material ramping was applied; if so,
+         recover the original properties as soon as the
+         step was finished */
+
+      *materialchange=0;
+      if((1.-*theta<=1.e-6)&&(*iramp>0)){
+	FORTRAN(materialramping,(nelcon,elcon,ncmat_,ntmat_,nmat,iramp,
+				 &xramp,idel,&xdel,nk,mi,nactdof,b,iponoel,
+				 inoel,&idivergence,ipkon));
+	*materialchange=1;
+      }
     }
-  }
-  else{
+  }else{
 
     /* no convergence */
 	
@@ -705,7 +716,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	      *dtheta=dthetaold;
 	      *dthetaref=*dtheta;
 	      if(*iramp<nramp){
-		iramp++;
+		(*iramp)++;
 		FORTRAN(materialramping,(nelcon,elcon,ncmat_,ntmat_,nmat,iramp,
 					 &xramp,idel,&xdel,nk,mi,nactdof,b,
 					 iponoel,inoel,&idivergence,ipkon));
@@ -755,7 +766,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	      FORTRAN(stop,());
 	    }else{
 	      if(*iramp<nramp){
-		iramp++;
+		(*iramp)++;
 		FORTRAN(materialramping,(nelcon,elcon,ncmat_,ntmat_,nmat,iramp,
 					 &xramp,idel,&xdel,nk,mi,nactdof,b,
 					 iponoel,inoel,&idivergence,ipkon));
@@ -856,7 +867,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	      *dtheta=dthetaold;
 	      *dthetaref=*dtheta;
 	      if(*iramp<nramp){
-		iramp++;
+		(*iramp)++;
 		FORTRAN(materialramping,(nelcon,elcon,ncmat_,ntmat_,nmat,iramp,
 					 &xramp,idel,&xdel,nk,mi,nactdof,b,
 					 iponoel,inoel,&idivergence,ipkon));
@@ -906,7 +917,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	      FORTRAN(stop,());
 	    }else{
 	      if(*iramp<nramp){
-		iramp++;
+		(*iramp)++;
 		FORTRAN(materialramping,(nelcon,elcon,ncmat_,ntmat_,nmat,iramp,
 					 &xramp,idel,&xdel,nk,mi,nactdof,b,
 					 iponoel,inoel,&idivergence,ipkon));
