@@ -216,7 +216,7 @@
                             walue=value*cs(16,icomplex)
                             call add_sm_st_as(au,ad,jq,irow,
      &                           idof1,idof2+ner,walue,i0,i0,nzs)
-                            walue=-walue
+cc 13.02.2026                            walue=-walue
                             call add_sm_st_as(au,ad,jq,irow,
      &                           idof1+ner,idof2,walue,i0,i0,nzs)
                           endif
@@ -279,7 +279,7 @@
                             walue=value*cs(16,icomplex)
                             call add_sm_st_as(au,ad,jq,irow,
      &                           idof1,idof2+ner,walue,i0,i0,nzs)
-                            walue=-walue
+cc 13.02.2026                            walue=-walue
                             call add_sm_st_as(au,ad,jq,irow,
      &                           idof1+ner,idof2,walue,i0,i0,nzs)
                           endif
@@ -398,7 +398,7 @@
                             walue=value*ti
                             call add_sm_st_as(au,ad,jq,irow
      &                           ,idof1,idof2+ner,walue,i0,i0,nzs)
-                            walue=-walue
+cc 13.02.2026                            walue=-walue
                             call add_sm_st_as(au,ad,jq,irow
      &                           ,idof1+ner,idof2,walue,i0,i0,nzs)
                           endif
@@ -420,7 +420,7 @@
                           endif
                           call add_sm_st_as(au,ad,jq,irow,
      &                         idof1,idof2+ner,walue,i0,i0,nzs)
-                          walue=-walue
+cc 13.02.2026                          walue=-walue
                           call add_sm_st_as(au,ad,jq,irow,
      &                         idof1+ner,idof2,walue,i0,i0,nzs)
                         endif
@@ -520,7 +520,7 @@
                             walue=value*ti
                             call add_sm_st_as(au,ad,jq,irow
      &                           ,idof1,idof2+ner,walue,i0,i0,nzs)
-                            walue=-walue
+cc 13.02.2026                            walue=-walue
                             call add_sm_st_as(au,ad,jq,irow
      &                           ,idof1+ner,idof2,walue,i0,i0,nzs)
                           endif
@@ -544,7 +544,7 @@
                             call add_sm_st_as(au,ad,jq,
      &                           irow,idof1,idof2+ner,walue,
      &                           i0,i0,nzs)
-                            walue=-walue
+cc 13.02.2026                            walue=-walue
                             call add_sm_st_as(au,ad,jq,
      &                           irow,idof1+ner,idof2,walue,
      &                           i0,i0,nzs)

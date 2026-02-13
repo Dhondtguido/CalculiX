@@ -352,6 +352,13 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	      xnoels,mortar,pslavsurf,pmastsurf,clearini,&theta,
 	      xstateini,xstate,nstate_,&icutb,&ialeatoric,jobnamef,
 	      &alea,auw,jqw,iroww,&nzsw);
+
+      if(nasym==1){
+	printf("\n*WARNING in arpackcs: asymmetric eigenvalue solver\n");
+	printf("         is not available for cyclic symmetric structures;\n");
+	printf("         the matrix is symmetrized\n\n");
+	nasym=0;
+      }
 	  
       printf("number of contact spring elements=%" ITGFORMAT "\n\n",*ne-ne0);
 	  

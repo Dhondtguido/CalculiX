@@ -31,6 +31,18 @@
      &     xload,iamload,nam)
 !
 !     Based on slavintpoints.f
+!     The routine is called for each slave surface separately
+!
+!     xl2s(3,8)     slave nodes in order defined in input deck
+!     xl2sr(3,8)    slave nodes, reduced (used to determine
+!                   master faces underneath slave nodes)
+!     xl3s(3,8)     slave nodes ordered in ccw direction
+!     xl3sp(3,8)    ordered slave nodes, projected
+!     xl2m(3,8)     master nodes of a master face underneath the
+!                   slave face
+!     xlpg(3,8)     nodes belonging to a convex polygon
+!                   which is part of master face underneath the      
+!                   slave face
 !
       implicit none
 !

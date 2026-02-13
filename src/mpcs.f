@@ -91,8 +91,6 @@
                noset(81:81)=' '
                ipos=index(noset,' ')
                noset(ipos:ipos)='N'
-c               do j=1,nset
-c                  if(noset.eq.set(j)) then
                call cident81(set,noset,nset,j)
                if(j.gt.0) then
                  if(noset.eq.set(j)) then
@@ -127,11 +125,8 @@ c                  if(noset.eq.set(j)) then
      &                      ialeatoric)
                      endif
                    enddo
-c     exit
                  endif
                endif
-c     endif
-c     enddo
                if(j.gt.nset) then
                   noset(ipos:ipos)=' '
                   write(*,*) '*ERROR in nosets: node set ',
