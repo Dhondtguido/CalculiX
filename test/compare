@@ -86,6 +86,18 @@ for i in *.inp; do
 	    mv substructure2.mtx substructure2.dat
 	fi
 
+    if [ $i = beammrlin_diff.inp ]
+	then
+	    rm -f beammrlin_diff.dat
+	    mv beammrlin_diff.mtx beammrlin_diff.dat
+	fi
+
+    if [ $i = beammrlin_same.inp ]
+	then
+	    rm -f beammrlin_same.dat
+	    mv beammrlin_same.mtx beammrlin_same.dat
+	fi
+
 #
 #       check whether the .dat and .dat.ref files exist
 #

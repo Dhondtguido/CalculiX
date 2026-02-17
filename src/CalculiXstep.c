@@ -1715,7 +1715,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 		   &nobject,&objectset,&istat,orname,nzsprevstep,nlabel,
 		   physcon,
 		   jobnamef,iponor,knor,&ne2d,iponoel,inoel,&mpcend,dgdxglob,
-		   g0,&nodedesi,&ndesi,&nobjectstart,&xdesi,rig);
+		   g0,&nodedesi,&ndesi,&nobjectstart,&xdesi,rig,fei);
     
       }else{
         sensi_orien(co,nk,&kon,&ipkon,&lakon,ne,nodeboun,ndirboun,
