@@ -44,6 +44,11 @@
       real*8 thicke(mi(3),*),thickness,pi,cs(18,*),xn(3),co(3,*),p(3),
      &     dd,xnor(*),orab(7,*)
 !
+#ifdef __INTEL_LLVM_COMPILER
+!     workaround for an issue with Intel ifx compilers in -O3 builds
+      volatile cs
+#endif
+!
       if((istep.gt.0).and.(irstrt(1).ge.0)) then
          write(*,*) '*ERROR reading *SOLID SECTION: *SOLID SECTION'
          write(*,*)'       should be placed before all step definitions'
