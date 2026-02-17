@@ -5570,3 +5570,6 @@ Dec 2002        - started to work on single crystal plasticity
  13 Feb 2026    - made a modification to arpackcs.c: nonsymmetric
                   matrices (e.g. with sliding contact) cannot be
 		  treated in combination with cyclic symmetry.
+
+ 17 Feb 2026    - removed frequency interval option for sensitivity
+ 

@@ -766,22 +766,24 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     NNEW(dgdx,double,*ndesi**nobject);
 
     /* Check for user defined lower frequency limit for the output */
-    if(ieigenfrequency==1){
+    
+    /*    if(ieigenfrequency==1){
       if(fmin>-0.5){
         if(fmin*fmin>d[iev]){
 	  continue;
 	}
       }
-    }
+      }*/
 
     /* Check for user defined upper frequency limit for the output */
-    if(ieigenfrequency==1){
+    
+    /*    if(ieigenfrequency==1){
       if(fmax>-0.5){
         if(fmax*fmax<d[iev]){
 	  continue;
 	}
       }
-    }
+      }*/
     
     /* Reading the "raw" sensititities */
 
