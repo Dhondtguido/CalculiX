@@ -133,39 +133,39 @@
 !
 !         print integration point coordinates (for checking)
 !
-          if(nopem.eq.8)then
-            call shape8q(xil,etl,xl2m,xsj2,xs2,shp2,iflag)
-          elseif(nopem.eq.4)then
-            call shape4q(xil,etl,xl2m,xsj2,xs2,shp2,iflag)
-          elseif(nopem.eq.6)then
-            call shape6tri(xil,etl,xl2m,xsj2,xs2,shp2,iflag)
-          else
-            call shape3tri(xil,etl,xl2m,xsj2,xs2,shp2,iflag)
-          endif
-          x=0.d0
-          y=0.d0
-          z=0.d0
-          do j=1,nopem
-            x=x+shp2(4,j)*xl2m(1,j)
-            y=y+shp2(4,j)*xl2m(2,j)
-            z=z+shp2(4,j)*xl2m(3,j)
-          enddo
-          if(nintpoint.lt.10) then
-            write(*,101) nintpoint,x,y,z
-          elseif(nintpoint.lt.100) then
-            write(*,102) nintpoint,x,y,z
-          elseif(nintpoint.lt.1000) then
-            write(*,103) nintpoint,x,y,z
-          elseif(nintpoint.lt.10000) then
-            write(*,104) nintpoint,x,y,z
-          elseif(nintpoint.lt.100000) then
-            write(*,105) nintpoint,x,y,z
-          endif
- 101      format('pnt p',i1,1x,e11.4,1x,e11.4,1x,e11.4)
- 102      format('pnt p',i2,1x,e11.4,1x,e11.4,1x,e11.4)
- 103      format('pnt p',i3,1x,e11.4,1x,e11.4,1x,e11.4)
- 104      format('pnt p',i4,1x,e11.4,1x,e11.4,1x,e11.4)
- 105      format('pnt p',i5,1x,e11.4,1x,e11.4,1x,e11.4)
+c          if(nopem.eq.8)then
+c            call shape8q(xil,etl,xl2m,xsj2,xs2,shp2,iflag)
+c          elseif(nopem.eq.4)then
+c            call shape4q(xil,etl,xl2m,xsj2,xs2,shp2,iflag)
+c          elseif(nopem.eq.6)then
+c            call shape6tri(xil,etl,xl2m,xsj2,xs2,shp2,iflag)
+c          else
+c            call shape3tri(xil,etl,xl2m,xsj2,xs2,shp2,iflag)
+c          endif
+c          x=0.d0
+c          y=0.d0
+c          z=0.d0
+c          do j=1,nopem
+c            x=x+shp2(4,j)*xl2m(1,j)
+c            y=y+shp2(4,j)*xl2m(2,j)
+c            z=z+shp2(4,j)*xl2m(3,j)
+c          enddo
+c          if(nintpoint.lt.10) then
+c            write(*,101) nintpoint,x,y,z
+c          elseif(nintpoint.lt.100) then
+c            write(*,102) nintpoint,x,y,z
+c          elseif(nintpoint.lt.1000) then
+c            write(*,103) nintpoint,x,y,z
+c          elseif(nintpoint.lt.10000) then
+c            write(*,104) nintpoint,x,y,z
+c          elseif(nintpoint.lt.100000) then
+c            write(*,105) nintpoint,x,y,z
+c          endif
+c 101      format('pnt p',i1,1x,e11.4,1x,e11.4,1x,e11.4)
+c 102      format('pnt p',i2,1x,e11.4,1x,e11.4,1x,e11.4)
+c 103      format('pnt p',i3,1x,e11.4,1x,e11.4,1x,e11.4)
+c 104      format('pnt p',i4,1x,e11.4,1x,e11.4,1x,e11.4)
+c 105      format('pnt p',i5,1x,e11.4,1x,e11.4,1x,e11.4)
 !
 !         creating load
 !

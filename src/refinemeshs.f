@@ -67,6 +67,8 @@
           elset(ipos:ipos)='E'
         elseif(textpart(ii)(1:13).eq.'SMOOTHINGONLY') then
           smoothingonly=.true.
+        elseif(textpart(ii)(1:10).eq.'REPAIRONLY') then
+          filab(48)(1:6)='RPONLY'
         else
           write(*,*) 
      &         '*WARNING reading *REFINE MESH:' 

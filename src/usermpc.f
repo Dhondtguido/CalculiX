@@ -334,15 +334,6 @@ c               if(c1.lt.1.d-20) then
             else
               nendnode=nnodes-1
             endif
-c            if(ialeatoric.eq.1) then
-c              call random_seed()
-c              do i=1,nendnode
-c                call random_number(harvest)
-c                coefmpc(index)=coefmpc(index)*(1.d0+harvest*1.d-5)
-c                index=nodempc(3,index)
-c              enddo
-c              index=ipompc(nmpc)
-c            endif
             do i=1,nendnode
                if(dabs(coefmpc(index)).gt.amax) then
                   idir=nodempc(2,index)

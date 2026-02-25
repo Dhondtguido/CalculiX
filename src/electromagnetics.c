@@ -117,7 +117,8 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
     *iponoeln=NULL,*inoeln=NULL,inoelnsize,nrhs=1,neqfreq,nzsfreq,
     *irowfreq=NULL,*icolfreq=NULL,*jqfreq=NULL,*jq=NULL,inoelsize,
     *itiefac=NULL,mscalmethod=0,nkon0,*nintpoint=0,num_cpus,sys_cpus,
-    *islavquadel=NULL,*irowt=NULL,*jqt=NULL,mortartrafoflag=0;
+    *islavquadel=NULL,*irowt=NULL,*jqt=NULL,mortartrafoflag=0,
+    materialchange=0;
 
   double *stn=NULL,*v=NULL,*een=NULL,cam[5],*epn=NULL,*cdn=NULL,
     *f=NULL,*fn=NULL,qa[4]={0.,0.,-1.,0.},qam[2]={0.,0.},dtheta,theta,
@@ -1531,7 +1532,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 		       energy,&allwk,&energyref,&emax,&enres,&enetoll,
 		       energyini,&allwkini,&allwk,&reswk,&ne0,&ne0,&dampwk,
 		       &dampwk,energy,&iramp,&idel,iponoel,inoel,nelcon,
-		       elcon,ncmat_,ntmat_);
+		       elcon,ncmat_,ntmat_,&materialchange);
     }
       
     /*********************************************************/

@@ -18467,7 +18467,8 @@ mesh. In order to apply the interface loading the user has to:
 
 \begin{itemize}
 \item Mesh the part of the body's external surface to be loaded using shell elements (S3,
-  S4, S6 or S8).
+  S4, S6 or S8). The order of the nodes should be clockwise when looking
+  towards the body, i.e. the normal to the shell should point into the body.
 \item Declare that the sole purpose of these elements is to apply facial
   loading by specifying the parameter DLOAD on the
   \htmlref{*ELEMENT}{element} card  used to define these shells.
@@ -21301,7 +21302,9 @@ location of the reference node determines the center of the rigid motion. For
 of the reference node. Choosing another reference node will change the effect
 of these forces (e.g. the moment about the center of gravity of the coupling
 surface will be different).  The
-reference node should not be one of the nodes of the surface to which the constraint applies.
+reference node should not be one of the nodes of the surface to which the
+constraint applies. The user can enter a concrete node number, or a node set
+containing exactly one node.
 
 With SURFACE the nodes are selected to which the constraint applies (so-called
 coupling nodes). This surface must be face-based.
@@ -27906,10 +27909,11 @@ an element face surface can be defined on which the pre-tension acts. This
 is usually a cross section of the bolt. This option is used for volumetric
 elements. Alternatively, the bolt can be modeled with just one linear beam
 element (type B31). In that case the parameter ELEMENT is required pointing to
-the number of the beam element. 
+the number of the beam element or an element set containing exactly one element.
 
 The parameter NODE is used to define a
-reference node. This node should not be used elsewhere in the model. In
+reference node. The user can enter a concrete node number or a node set
+containing exactly one node. This node should not be used elsewhere in the model. In
 particular, it should not belong to any element. The coordinates of this node
 are immaterial. The first degree of freedom of this node is used to define a
 pre-tension force with \htmlref{*CLOAD}{cload} or a differential displacement
@@ -28320,8 +28324,8 @@ gradient based error estimator (label ERR) or a user-defined function (user
 subroutine ucalculateh.f). The size is defined as the absolute value if it
 concerns a scalar quantity and the norm if it concerns a vector or tensor.
 
-There is one required parameter LIMIT and three optional parameters ELSET,
-USER and SMOOTHING ONLY.
+There is one required parameter LIMIT and four optional parameters ELSET,
+USER, SMOOTHING ONLY and REPAIR ONLY.
 
 With the parameter LIMIT the user defines a positive value above which
 refinement is requested. For instance, if the limit is 50. and the value of
@@ -28340,16 +28344,21 @@ should not be longer than 60 characters.
 With the parameter USER a new criterion for the refinement can be coded in
 user subroutine ucalculateh.f.
 
-Finally, the parameter SMOOTHING ONLY the user can perform a smoothing of the
+The parameter SMOOTHING ONLY allows the user to perform a smoothing of the
 existing mesh without refining the mesh, i.e. the existing nodes and elements
 and their numbering is kept. This option does not need any results, therefore,
-the parameter LIMIT does not make sense and no line specifying the criterion is needed either.
+the parameter LIMIT does not make sense and no line specifying the criterion
+is needed either.
 
-If the tetrahedral mesh in the input deck contains at least one quadratic
+Finally, the parameter REPAIR ONLY performs the same actions as SMOOTHING
+ONLY in the case that during the calculation a non--positive Jacobian is
+detected. If all Jacobian values are strictly positive, no action is taken.
+
+Finally, if the tetrahedral mesh in the input deck contains at least one quadratic
 element, the refined mesh contains C3D10 elements only, else it is a pure C3D4
 mesh.
 
-Finally, *REFINE MESH is only available in a
+The keyword *REFINE MESH is only available in a
 \htmlref{*STATIC}{static} or \htmlref{*DYNAMIC}{dynamic} step. If the job name
 is ``test'' the refined mesh is stored in input format in ``test.rfn.inp''
 (can be visualized with CalculiX GraphiX using ``cgx -c test.rfn.inp'') and
@@ -28378,7 +28387,7 @@ S
 requests a refinement based on the size of the stress and a limit of 50.
 
 \bigskip
-Example files: circ10p.
+Example files: circ10p, contact4bad, contact4badnl, segmentsmooth.
 
 
 \subsection{\label{restart}*RESTART}
@@ -34405,16 +34414,21 @@ The following remarks are due:
 \subsubsection{Domain decomposition}
 
 In this section the domain decomposition algorithm implemented in CalculiX is
-explained in more detail. It runs as follows:
+explained in more detail, taking interface loading as example (cf. Section
+\ref{ifloading}; the main routine is interfaceloading.c). It runs as follows:
 
 \begin{enumerate}
 
-\item Triangulate each face of the master surface by appropriately connecting
+\item (only for interface loading; subroutine calcglobmastsurf.f) Determine the external faces of the
+  volumetric mesh of the structure. These faces constitute the master surface.
+  
+\item (subroutine triangucont\_load.f) Triangulate each face of the master surface by appropriately connecting
 its nodes. For instance, for a 8--noded face the triangulation can be performed
 as in Figure (\ref{domcom1}). The number of triangles is stored in ncont, and
 the topology of triangle i in field koncont(1...4,i): the first three entries
 are the node numbers belonging to the triangle in clockwise order when looking
-out of the body, koncont(4,i) contains the master face in the form
+out of the body, koncont(4,i) contains the master face the triangle belongs to
+in the form
 10*elem+localface, where nelem is the master element number and localface is
 the local face number as explained e.g. under the keyword
 \htmlref{*DLOAD}{dload}. 
@@ -34427,12 +34441,21 @@ triangles}
 \end{center}
 \end{figure}
 
-\item Catalogue node, edge and triangle information using the fields ipe, ime
+\item (trianeighbor.f) Catalogue the edges of the triangulation and
+  neighboring information of each triangle using the fields ipe, ime
   and imastop as explained in the previous section.
 
-\item For each triangle, store the normal $\boldsymbol{n}$  and the coordinates of its center of gravity.
+\item (catmastnodes.f) Catalogue the master nodes in imastnodes in ascending
+  order (cf previous section).
+  
+\item (updatecontpen\_load.f) For each triangle, store the coordinates of its center of gravity in
+  field cg (3,*) and
+  the coefficients of the plane's equation through each of its edges and bisecting the
+  normal on the triangle and the normal on the triangle adjacent
+  to the edge in straight(1...12,*) (4 coefficients per plane). Store the
+  coefficients of the triangle's plane in straight(13...16,*) (4 coefficients)
 
-\item For each slave face:
+\item For each slave face (mastintpoints.f):
 
 \begin{enumerate}
 
@@ -34455,15 +34478,20 @@ triangles}
 \boldsymbol{n} \cdot (\boldsymbol{x} - \boldsymbol{x}_{\text{cg}})=0.
 \end{equation}
 
-\noindent Notice that a slave face does not have to be plane.
+\noindent $n_s$ is the number of nodes belonging to the slave face,
+$\boldsymbol{x}_i$ the spatial coordinates of the nodes and $\boldsymbol{n}_i$ the local
+normal in the nodes in the spatial configuration. Notice that a slave face does not have to be plane.
 
 \item Identify for the nodes of the slave face opposite master faces. To this
-end for each node the triangle is identified the center of gravity of which is
-closest to the slave node (using the neares neighbor algorithm of
+end identify for each node (the coordinates of which are slightly moved
+towards the slave face's center of gravity to avoid numerical difficulties
+for slave faces positioned exactly on one opposite master face) the master triangle the center of gravity of which is
+closest to the slave node (using the nearest neighbor algorithm of
 Section \ref{interpolation}. The triangle is considered to be valid if
-$\boldsymbol{n} \cdot \boldsymbol{n}_t < -0.7$ (slave and master face should
+$\boldsymbol{n} \cdot \boldsymbol{n}_t < -0.7$ ($\boldsymbol{n}_t$ is the
+triangle's normal; slave and master face should
 have normals in opposite directions). If valid, store its parent master face
-to stock.
+to in field maface(i), i=1,...,nmaface.
 
 \begin{figure}
 \epsfig{file=domcom2.eps,width=12cm}
@@ -34480,23 +34508,35 @@ polygons are a subset of the edges of the master triangulation. The dashed
 line in Figure \ref{domcom2}, for instance, is an edge of the master triangulation but is not
 needed to create the subdivision of the master face in convex polygons.
 
-\item For each polygon:
+\item For each convex master polygon (e.g. the dashed triangle in Figure \ref{domcom2}):
 
 \begin{enumerate}
 
-\item Apply the Sutherland--Hodgman algorithm (reference) to clip the slave
-face by the polygon after projecting both on the mean slave plane.
+\item Apply the Sutherland--Hodgman algorithm \cite{Sutherland} to clip the slave
+face by the polygon after projecting both on the mean slave plane. The field
+pvertex(1..3,i), i=1,..,nvertex, which contains at the start of the
+Sutherland--Hodgman algorithm the projected coordinates of the slave face,
+contains at the end the projected coordinates of the vertices of the clipped
+slave face.
 
 \item Determine the edges of the polygon the neighboring master faces of which
-deserve further attention (the so--called active edges).
+deserve further attention (the so--called active edges). They are stored in
+iactiveline(1..2,i),i=1,...,nactiveline. The entry iactiveline(1,i) contains
+the edge number from field ime, iactiveline(2,i) contains the parent master
+face of the triangle to which the edge belongs and which has already been
+treated.
 
-\item Subdivide the clipped polygons into triangles and determine the local
-slave coordinates of their vertices by projecting back onto the slave face
+\item Subdivide the clipped slave face (the doubly dashed triangle in Figure \ref{domcom2}) into triangles and determine the local
+master coordinates of their vertices by projecting back onto the master face
 (using the finite element containment algorithm in
-Section \ref{interpolation}).
+Section \ref{interpolation}). This point here is specific for interface
+loading. For contact calculations the projection is done on the slave surface,
+not on the master surface (routine treatmasterface.f).
 
 \item Determine the local coordinates of the integration points within each
-clipped polygon triangle using a 7--point integration scheme. The
+clipped slave face triangle using a 7--point integration scheme. Determine the
+local coordinates of these integrations points within the master face by using
+the local master coordinates of the triangle's vertices. The
 corresponding formula amounts to:
 
 \begin{equation}
@@ -34505,20 +34545,43 @@ corresponding formula amounts to:
 \end{equation}
 
 \noindent where $(\xi_ {\text{ip,loc}}, \eta_ {\text{ip,loc}})$ are the local
-coordinates of the integration point ($0 \le \xi_ {\text{ip,loc}}, \eta_
+coordinates of the integration point within the clipped slave face triangle ($0 \le \xi_ {\text{ip,loc}}, \eta_
 {\text{ip,loc}} \le 1$) and $0 \le \xi_ {\text{ip,loc}}+\eta_
 {\text{ip,loc}} \le 1$), $(\xi_1,\xi_2,\xi_3)$ are the local coordinates of
-the vertices of the clipped polygon triangle within the slave face and
+the vertices of the clipped polygon triangle within the master face and
 $(\xi_{\text{ip,glob}}, \eta_{\text{ip,glob}})$ are the local coordinates of
-the integration point within the slave face.
+the integration point within the master face. For each integration point,
+increment the integration point counter nintpoint by one, store its local
+coordinates within the master face and the weight in pmastload(1..3,nintpoint), store the
+slave face (10*element+local face) into imastload(1,nintpoint) and a pointer
+to any previous interface loading for this master face in
+imastload(2,nintpoint). If an interface loading iload already exists for the master face
+at stake, set nelemload(2,iload)=nintpoint, if not, create such loading. An
+interfaceloading is characterized by a label sideload(iload) starting with 'I'.
+
+The other way around, an interface loading i is characterized by
+sideload(i)(1:1)='I'. The master face with this loading is determined by the
+elenent number nelemload(1) and a local face number sideload(i)(2:2). The
+first integration point for this loading is at location j=nelemload(2) in
+fields imastload and pmastload yielding the local coordinates
+pmastload(1..2,j), the weight pmastload(3,j), the slave face imastload(1,j)
+and a pointer to the next integration point imastload(2,j), and so on until
+imastload(2,k)=0 for some k. The slave face is important, since the interface
+loading defined by the user on this slave face specifies the size of the
+loading and the load amplitude, if applicable.
 
 \end{enumerate}
 
 \end{enumerate}
+
+\item Mark the master face as treated by storing it in field
+  icovered(i),i=1,...,ncovered in the form 10*element+local face number (this
+  field is sorted in ascending order for searching purposes).
 
 \item Analyze the master faces adjacent to the active edges in the same
 way. Keep track of the active edges deactivating them as soon as all adjacent
-master faces were covered and activating new ones as needed.
+master faces were covered and activating new ones as needed. Continue until no master faces are left which can possibly have an intersection
+with the slave face
 
 \end{enumerate}
 
@@ -34526,7 +34589,7 @@ master faces were covered and activating new ones as needed.
 
 One notices from the above discussion that the Sutherland--Hodgman algorithm
 is an important element in the overall algorithm. It clips a slave face (face
-a-b-c-d-e-f-g in Figure \ref{domcom2}) by a convex polygon (e.g. polygon 1-2-3 in
+a-b-c-d-e-f-g-h in Figure \ref{domcom2}) by a convex master polygon (e.g. polygon 1-2-3 in
 Figure \ref{domcom2}). The viewing angle in the figure is from outside onto
 the slave face, therefore the slave face is numbered counterclockwise, while
 the master polygon is numbered clockwise. The clipping is done taking one
@@ -34538,28 +34601,27 @@ line is verified. The following cases arise:
 
 \begin{enumerate}
 
-\item The edge is not cut and lies on the side of the master face (edge d-e)
-in the Figure: the downstream vertex (vertex e) is included in the cli0pped
-polygon description.
+\item The edge is not cut and lies on the side of the master polygon (edge d-e)
+in the Figure: the downstream vertex (vertex e) is included in the clipped
+slave face description.
 
 \item The edge is cut such that the downstream vertex lies outside of the
-master face (edge -f): the intersection point (A) is determined and included
-into the polygon description. If the master polygon edge (1-2) was not
+master polygon (edge e-f): the intersection point (A) is determined and included
+into the clipped slave face description. If the master polygon edge (1-2) was not
 deactivated it is activated.
 
-\item The edge is cut such that the upstream vertex lies outside the master
-face (edge c-d): the intersection point (B) and the downstream vertex (d) are
-both included into the polygon description. If the master polygon edge (1-2)
+\item The edge is cut such that the upstream vertex lies outside the master polygon (edge c-d): the intersection point (B) and the downstream vertex (d) are
+both included into the clipped slave face description. If the master polygon edge (1-2)
 was not deactivated it is activated.
 
-\item The edge is not cut and lies outside the master face: no vertex is
-included into the polygon description. If the master polygon edge (1-2) was
+\item The edge is not cut and lies outside the master polygon: no vertex is
+included into the clipped slave face description. If the master polygon edge (1-2) was
 not deactivated it is activated.
 
 \end{enumerate}
 
 \noindent After all master polygon edges have been treated, a check is
-performed whether at least 3 vertices belong to the clipped polygon. If not,
+performed whether at least 3 vertices belong to the clipped master face. If not,
 all master polygon edges are deactivated.
 
 \subsubsection{Massless contact}
@@ -39926,8 +39988,8 @@ flow over a two-dimensional compression corner. \textit{NASA TR R-385 Report}
   introduction}. Elsevier Butterworth-Heinemann, Oxford (2004).
 
 \bibitem{Chen} Chen, L., Bletzinger, K.-U., Geiser, A. and W\"uchner, R., A
-  modified search direction method for ineauality constrained optimization
-  problems using the singular-value decomposition of normalized resopnse
+  modified search direction method for inequality constrained optimization
+  problems using the singular-value decomposition of normalized response
   gradients. \textit{Structural and Multidisciplinary Optimization}. https://doi.org/10.1007/s00158-019-02320-9.
  
 \bibitem{Ciarlet} Ciarlet, P.G., \textit{ Mathematical Elasticity, Volume I: Three-dimensional Elasticty}. North Holland, New York (1988). 
@@ -40220,6 +40282,9 @@ Crystal Modeling for Structural Calculations: Part 2 - Finite Element Implementa
 \bibitem{Studer} Studer, C., \textit{Numerics of Unilateral Contacts and
   Friction}. Lecture Notes in Applied and Computational Mechanics Vol
   47. Springer Verlag Berlin Heidelberg (2009).
+
+\bibitem{Sutherland} Sutherland  and Hodgman, G.W., Reentrant Polygon
+  Clippings. \textit{Communications of the ACM}. \textbf{17} , 32-42 (1974).
 
 \bibitem{Taylor} Taylor, R.L, Beresford, P.J. and Wilson, E.L., A
   non-conforming element for stress analysis. \textit{Int. J. Num. Meth. Engng}. \textbf{10} , 1211-1219 (1976).

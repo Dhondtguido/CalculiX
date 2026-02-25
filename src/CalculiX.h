@@ -714,7 +714,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
           double *allwkini,double *temax,double *reswk,ITG *ne0,
 	  ITG *neini,double *dampwk,double *dampwkini,double *energystartstep,
 	  ITG *iramp,ITG *idel,ITG *iponoel,ITG *inoel,ITG *nelcon,
-	  double *elcon,ITG *ncmat_,ITG *ntmat_);
+	  double *elcon,ITG *ncmat_,ITG *ntmat_,ITG *materialchange);
 
 void checkconvnet(ITG *icutb,ITG *iin,
                   double *cam1t,double *cam1f,double *cam1p,
@@ -4663,7 +4663,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
              char *jobnamef,ITG *iponor2d,ITG *knor2d,ITG *ne2d,
              ITG *iponoel2d,ITG *inoel2d,ITG *mpcend,
 	     double *dgdxglob,double *g0,ITG **nodedesip,ITG*ndesi,
-	     ITG *nobjectstart,double **xdesip,ITG *rig);
+	     ITG *nobjectstart,double **xdesip,ITG *rig,double *fei);
 
 void sensi_orien(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
              ITG *ne,

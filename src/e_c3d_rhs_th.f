@@ -288,7 +288,8 @@
                   call dflux(xload(1,id),t1l,istep,iinc,tvar,
      &                 nelem,kk,pgauss,jltyp,temp,press,sideload(id),
      &                 areaj,vold,co,lakonl,konl,ipompc,nodempc,coefmpc,
-     &                 nmpc,ikmpc,ilmpc,iscale,mi)
+     &                 nmpc,ikmpc,ilmpc,iscale,mi,
+     &                 sti,xstateini,xstate,nstate_,dtime)
                   if((nmethod.eq.1).and.(iscale.ne.0))
      &                 xload(1,id)=xloadold(1,id)+
      &                 (xload(1,id)-xloadold(1,id))*reltime
@@ -426,7 +427,8 @@
                   call dflux(xload(1,id),temp,istep,iinc,tvar,
      &                 nelem,i,coords,jltyp,temp,press,sideload(id),
      &                 areaj,vold,co,lakonl,konl,ipompc,nodempc,
-     &                 coefmpc,nmpc,ikmpc,ilmpc,iscale,mi)
+     &                 coefmpc,nmpc,ikmpc,ilmpc,iscale,mi,
+     &                 sti,xstateini,xstate,nstate_,dtime)
                   if((nmethod.eq.1).and.(iscale.ne.0))
      &                 xload(1,id)=xloadold(1,id)+
      &                 (xload(1,id)-xloadold(1,id))*reltime

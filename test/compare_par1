@@ -14,38 +14,59 @@ done
 
 for i in *.inp; do
 
+    case "$i" in
+	*.rfn.inp )
+	    continue
+	    ;;
+    esac
+
 #
 #       take out some .inp files created by running the examples
 #
-	if [ $i = circ10pcent.rfn.inp ]
-	then
-	    continue
-	fi
-	
-	if [ $i = circ10p.rfn.inp ]
-	then
-	    continue
-	fi
-	
-	if [ $i = circ11p.rfn.inp ]
-	then
-	    continue
-	fi
-	
-	if [ $i = segmentsmooth.rfn.inp ]
-	then
-	    continue
-	fi
-	
-	if [ $i = segmentsmooth2.rfn.inp ]
-	then
-	    continue
-	fi
-	
-	if [ $i = beam10psmooth.rfn.inp ]
-	then
-	    continue
-	fi
+#	if [ $i = circ10pcent.rfn.inp ]
+#	then
+#	    continue
+#	fi
+#	
+#	if [ $i = circ10p.rfn.inp ]
+#	then
+#	    continue
+#	fi
+#	
+#	if [ $i = circ11p.rfn.inp ]
+#	then
+#	    continue
+#	fi
+#	
+#	if [ $i = segmentsmooth.rfn.inp ]
+#	then
+#	    continue
+#	fi
+#	
+#	if [ $i = segmentsmooth2.rfn.inp ]
+#	then
+#	    continue
+#	fi
+#	
+#	if [ $i = beam10psmooth.rfn.inp ]
+#	then
+#	    continue
+#	fi
+#	
+#	if [ $i = contact4tetrefine.rfn.inp ]
+#	then
+#	    continue
+#	fi
+#	
+#	if [ $i = contact4bad.rfn.inp ]
+#	then
+#	    continue
+#	fi
+#	
+#	if [ $i = contact4badnl.rfn.inp ]
+#	then
+#	    continue
+#	fi
 
 #
 #       executing CalculiX and generating the .dat and
