@@ -22,47 +22,12 @@ for i in *.inp; do
 #       take out some .inp files created by running the examples
 #
 
-    case "$i" in
-	*.rfn.inp )
-	    continue
-	    ;;
-    esac
+	case "$i" in
+	    *.rfn.inp )
+		continue
+		;;
+	esac
 	
-#	if [ $i = circ10pcent.rfn.inp ]
-#	then
-#	    continue
-#	fi
-#	
-#	if [ $i = circ10p.rfn.inp ]
-#	then
-#	    continue
-#	fi
-#	
-#	if [ $i = circ11p.rfn.inp ]
-#	then
-#	    continue
-#	fi
-#	
-#	if [ $i = segmentsmooth.rfn.inp ]
-#	then
-#	    continue
-#	fi
-#	
-#	if [ $i = segmentsmooth2.rfn.inp ]
-#	then
-#	    continue
-#	fi
-#	
-#	if [ $i = beam10psmooth.rfn.inp ]
-#	then
-#	    continue
-#	fi
-#	
-#	if [ $i = contact4tetrefine.rfn.inp ]
-#	then
-#	    continue
-#	fi
-#
 #
 #      executing CalculiX and generating the .dat file
 #
@@ -78,12 +43,28 @@ for i in *.inp; do
 	then
 	    rm -f substructure.dat
 	    mv substructure.mtx substructure.dat
+	    perl -pi -e 's/,/ /g' substructure.dat
 	fi
 	
 	if [ $i = substructure2.inp ]
 	then
 	    rm -f substructure2.dat
 	    mv substructure2.mtx substructure2.dat
+	    perl -pi -e 's/,/ /g' substructure2.dat
+	fi
+
+	if [ $i = beammrlin_diff.inp ]
+	then
+	    rm -f beammrlin_diff.dat
+	    mv beammrlin_diff.mtx beammrlin_diff.dat
+	    perl -pi -e 's/,/ /g' beammrlin_diff.dat
+	fi
+
+	if [ $i = beammrlin_same.inp ]
+	then
+	    rm -f beammrlin_same.dat
+	    mv beammrlin_same.mtx beammrlin_same.dat
+	    perl -pi -e 's/,/ /g' beammrlin_same.dat
 	fi
 
 #
