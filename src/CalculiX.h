@@ -972,17 +972,17 @@ void FORTRAN(contingentsurf,(ITG *ncrack,double *xplanecrack,
 			     double *surfco,double *resarea,double *alambdapj,
 			     double *shape));
 
-void convert2rowbyrow(double *ad,double *au, ITG *icol,ITG *irow,
+void convert2rowbyrow(double *ad,double *au, ITG *icol,ITG *irow, 
 		      ITG *jq,ITG *neq,ITG *nzs,double **aupardisop,
 		      ITG **pointersp,ITG **icolpardisop);
 
 void FORTRAN(copysens,(double *rhs,double *dgdxglob,ITG *iobject,ITG *icopy,
 		       ITG *nk,ITG *ndesi,ITG *nodedesi));
-
+    
 void FORTRAN(coriolissolve,(double *cc,ITG *nev,double *aa,double *bb,
              double *xx,double *eiga,double *eigb,double *eigxx,
              ITG *iter,double *d,double *temp,ITG *nevcomplex));
-
+      
 void FORTRAN(correctem,(double *stx,double *stn,
 			char *prlab,ITG *nprint,ITG *ne,ITG *ipkon,char *lakon,
 			double *elcon,ITG *ncmat_,ITG *ntmat_,ITG *nk,

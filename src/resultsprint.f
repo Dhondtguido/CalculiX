@@ -29,7 +29,7 @@
      &     ielprop,prop,veold,accold,ne0,nmpc,ipompc,nodempc,labmpc,
      &     energyini,energy,orname,xload,itiefac,pmastsurf,springarea,
      &     tieset,ipobody,ibody,xbody,nbody,iinc,dam,damn)
-!
+!     
 !     - stores the results in the .dat file, if requested
 !     - nodal quantities at the nodes
 !     - element quantities at the integration points
@@ -122,11 +122,11 @@
      &     thicke,eme,islavsurf,mortar,time,ielprop,prop,veold,accold,
      &     orname,nelemload,nload,sideload,xload,rhcon,nrhcon,ntmat_,
      &     ipobody,ibody,xbody,nbody,nmethod,dam,nactdof)
-!
+!     
 !     for facial information (*section print): if forces and/or
 !     moments in sections are requested, the stresses have to be
 !     extrapolated from the integration points to the nodes first
-!
+!     
       do i=1,nprint
         if(prlab(i)(1:3).eq.'SOF') then
           nfield=6
@@ -205,9 +205,9 @@ c     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
       endif
 !
 !     check whether forces are requested in the frd-file. If so, but
-!     none are requested in the .dat file, and output=2d,
+!     none are requested in the .dat file, and output=2d, 
 !     map3dto1d2d has to be called
-!
+!     
       if(filab(5)(1:2).eq.'RF') then
         if(filab(5)(5:5).eq.'I') then
           rfprint=.false.

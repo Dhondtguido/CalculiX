@@ -471,7 +471,7 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 			  orname,xload,itiefac,pmastsurf,springarea,tieset,
 			  ipobody,ibody,xbody,nbody,iinc,dam,damn));
   }
-
+  
   return;
 
 }
