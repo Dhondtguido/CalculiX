@@ -17,7 +17,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine printoutnode(prlab,v,t1,fn,ithermal,ii,node,
-     &  rftot,trab,inotr,ntrans,co,mi,veold)
+     &  rftot,trab,inotr,ntrans,co,mi,veold,accold)
 !
 !     stores results in the .dat file
 !
@@ -29,7 +29,7 @@
       integer ithermal(*),node,ii,j,inotr(2,*),ntrans,mi(*)
 !
       real*8 v(0:mi(2),*),t1(*),fn(0:mi(2),*),rftot(0:3),trab(7,*),
-     &  co(3,*),a(3,3),veold(0:mi(2),*)
+     &  co(3,*),a(3,3),veold(0:mi(2),*),accold(0:mi(2),*)
 !
       local='L'
 !
@@ -71,6 +71,24 @@
      &          veold(3,node)*a(3,2),
      &          veold(1,node)*a(1,3)+veold(2,node)*a(2,3)+
      &          veold(3,node)*a(3,3),
+     &          local
+         endif
+      elseif(prlab(ii)(1:4).eq.'A   ') then
+         if((ntrans.eq.0).or.(prlab(ii)(6:6).eq.'G')) then
+            write(5,'(i10,1p,3(1x,e13.6))') node,
+     &           (accold(j,node),j=1,3)
+         elseif(inotr(1,node).eq.0) then
+            write(5,'(i10,1p,3(1x,e13.6))') node,
+     &           (accold(j,node),j=1,3)
+         else
+            call transformatrix(trab(1,inotr(1,node)),co(1,node),a)
+            write(5,'(i10,1p,3(1x,e13.6),1x,a1)') node,
+     &          accold(1,node)*a(1,1)+accold(2,node)*a(2,1)+
+     &          accold(3,node)*a(3,1),
+     &          accold(1,node)*a(1,2)+accold(2,node)*a(2,2)+
+     &          accold(3,node)*a(3,2),
+     &          accold(1,node)*a(1,3)+accold(2,node)*a(2,3)+
+     &          accold(3,node)*a(3,3),
      &          local
          endif
       elseif((prlab(ii)(1:4).eq.'NT  ').or.

@@ -108,7 +108,7 @@ void checkdivergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		xstaten,nstate_,istep,iinc,ithermal,qfn,mode,noddiam,
 		trab,inotr,ntrans,orab,ielorien,norien,description,
 		ipneigh,neigh,mi,sti,vr,vi,stnr,stni,vmax,stnmax,
-		&ngraph,veold,ener,ne,cs,set,nset,istartset,iendset,
+		&ngraph,veold,NULL,ener,ne,cs,set,nset,istartset,iendset,
 		ialset,eenmax,fnr,fni,emn,thicke,jobnamec,output,qfx,cdn,
 		mortar,cdnr,cdni,nmat,ielprop,prop,sti,damn,&errn);
 	    
@@ -143,7 +143,7 @@ void checkdivergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		xstaten,nstate_,istep,iinc,ithermal,qfn,mode,noddiam,
 		trab,inotr,ntrans,orab,ielorien,norien,description,
 		ipneigh,neigh,mi,sti,vr,vi,stnr,stni,vmax,stnmax,
-		&ngraph,veold,ener,ne,cs,set,nset,istartset,iendset,
+		&ngraph,veold,NULL,ener,ne,cs,set,nset,istartset,iendset,
 		ialset,eenmax,fnr,fni,emn,thicke,jobnamec,output,qfx,cdn,
 		mortar,cdnr,cdni,nmat,ielprop,prop,sti,damn,&errn);
 	    

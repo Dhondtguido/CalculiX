@@ -20,9 +20,9 @@
      &     prlab,prset,v,t1,fn,ipkon,lakon,stx,eei,xstate,ener,
      &     mi,nstate_,ithermal,co,kon,qfx,ttime,trab,inotr,ntrans,
      &     orab,ielorien,norien,nk,ne,inum,filab,vold,ikin,ielmat,
-     &     thicke,eme,islavsurf,mortar,time,ielprop,prop,veold,orname,
-     &     nelemload,nload,sideload,xload,rhcon,nrhcon,ntmat_,ipobody,
-     &     ibody,xbody,nbody,nmethod,dam,nactdof)
+     &     thicke,eme,islavsurf,mortar,time,ielprop,prop,veold,accold,
+     &     orname,nelemload,nload,sideload,xload,rhcon,nrhcon,ntmat_,
+     &     ipobody,ibody,xbody,nbody,nmethod,dam,nactdof)
 !     
 !     stores results in the .dat file
 !     
@@ -48,9 +48,9 @@
      &     eei(6,mi(1),*),xstate(nstate_,mi(1),*),ener(2,mi(1),*),
      &     volumetot,co(3,*),qfx(3,mi(1),*),rftot(0:3),ttime,time,
      &     trab(7,*),orab(7,*),vold(0:mi(2),*),enerkintot,
-     &     eme(6,mi(1),*),prop(*),veold(0:mi(2),*),xload(2,*),xmasstot,
-     &     xinertot(6),cg(3),rhcon(0:1,ntmat_,*),xbody(7,*),energytot,
-     &     thicke(mi(3),*),dam(mi(1),*)
+     &     eme(6,mi(1),*),prop(*),veold(0:mi(2),*),accold(0:mi(2),*),
+     &     xload(2,*),xmasstot,xinertot(6),cg(3),rhcon(0:1,ntmat_,*),
+     &     xbody(7,*),energytot,thicke(mi(3),*),dam(mi(1),*)
 !     
       mt=mi(2)+1
 !     
@@ -104,7 +104,7 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
      &      (prlab(ii)(1:4).eq.'RF  ').or.(prlab(ii)(1:4).eq.'RFL ').or. 
      &      (prlab(ii)(1:4).eq.'PS  ').or.(prlab(ii)(1:4).eq.'PN  ').or.
      &      (prlab(ii)(1:4).eq.'MF  ').or.(prlab(ii)(1:4).eq.'V   ').or.
-     &       (prlab(ii)(1:4).eq.'TS  ')) 
+     &      (prlab(ii)(1:4).eq.'A   ').or.(prlab(ii)(1:4).eq.'TS  '))
      &       then
 !     
           ipos=index(prset(ii),' ')
@@ -167,6 +167,12 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
  119        format(' velocities (vx,vy,vz) for set ',A,
      &           ' and time ',e14.7)
             write(5,*)
+          elseif(prlab(ii)(1:4).eq.'A   ') then
+            write(5,*)
+            write(5,150) noset(1:ipos-2),ttime+time
+ 150        format(' accelerations (ax,ay,az) for set ',A,
+     &           ' and time ',e14.7)
+            write(5,*)
           endif
 !     
 !     printing the data
@@ -186,16 +192,16 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
             if(jj.eq.iendset(iset)) then
               node=ialset(jj)
               call printoutnode(prlab,v,t1,fn,ithermal,ii,node,
-     &             rftot,trab,inotr,ntrans,co,mi,veold)
+     &             rftot,trab,inotr,ntrans,co,mi,veold,accold)
             elseif(ialset(jj+1).gt.0) then
               node=ialset(jj)
               call printoutnode(prlab,v,t1,fn,ithermal,ii,node,
-     &             rftot,trab,inotr,ntrans,co,mi,veold)
+     &             rftot,trab,inotr,ntrans,co,mi,veold,accold)
             else
               do node=ialset(jj-1)-ialset(jj+1),ialset(jj),
      &             -ialset(jj+1)
                 call printoutnode(prlab,v,t1,fn,ithermal,ii,node,
-     &               rftot,trab,inotr,ntrans,co,mi,veold)
+     &               rftot,trab,inotr,ntrans,co,mi,veold,accold)
               enddo
             endif
           enddo
