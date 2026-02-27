@@ -26,10 +26,10 @@
      &     shcon,
      &     nshcon,cocon,ncocon,ntmat_,sideload,icfd,inomat,pslavsurf,
      &     islavact,cdn,mortar,islavnode,nslavnode,ntie,islavsurf,time,
-     &     ielprop,prop,veold,ne0,nmpc,ipompc,nodempc,labmpc,energyini,
-     &     energy,orname,xload,itiefac,pmastsurf,springarea,tieset,
-     &     ipobody,ibody,xbody,nbody,iinc,dam,damn)
-!     
+     &     ielprop,prop,veold,accold,ne0,nmpc,ipompc,nodempc,labmpc,
+     &     energyini,energy,orname,xload,itiefac,pmastsurf,springarea,
+     &     tieset,ipobody,ibody,xbody,nbody,iinc,dam,damn)
+!
 !     - stores the results in the .dat file, if requested
 !     - nodal quantities at the nodes
 !     - element quantities at the integration points
@@ -68,7 +68,8 @@
      &     ener(2,mi(1),*),enern(*),eei(6,mi(1),*),rhcon(0:1,ntmat_,*),
      &     ttime,xstate(nstate_,mi(1),*),trab(7,*),xstaten(nstate_,*),
      &     eme(6,mi(1),*),emn(6,*),shcon(0:3,ntmat_,*),
-     &     prop(*),veold(0:mi(2),*),energy(*),energyini(*),xload(2,*),
+     &     prop(*),veold(0:mi(2),*),accold(0:mi(2),*),
+     &     energy(*),energyini(*),xload(2,*),
      &     pmastsurf,springarea(2,*),xbody(7,*),pslavsurf(3,*),
      &     cocon(0:6,ntmat_,*),dam(mi(1),*),damn(*)
 !     
@@ -118,14 +119,14 @@
      &     prlab,prset,v,t1,fn,ipkon,lakon,stx,eei,xstate,ener,
      &     mi(1),nstate_,ithermal,co,kon,qfx,ttime,trab,inotr,ntrans,
      &     orab,ielorien,norien,nk,ne,inum,filab,vold,ikin,ielmat,
-     &     thicke,eme,islavsurf,mortar,time,ielprop,prop,veold,orname,
-     &     nelemload,nload,sideload,xload,rhcon,nrhcon,ntmat_,ipobody,
-     &     ibody,xbody,nbody,nmethod,dam,nactdof)
-!     
+     &     thicke,eme,islavsurf,mortar,time,ielprop,prop,veold,accold,
+     &     orname,nelemload,nload,sideload,xload,rhcon,nrhcon,ntmat_,
+     &     ipobody,ibody,xbody,nbody,nmethod,dam,nactdof)
+!
 !     for facial information (*section print): if forces and/or
 !     moments in sections are requested, the stresses have to be
 !     extrapolated from the integration points to the nodes first
-!     
+!
       do i=1,nprint
         if(prlab(i)(1:3).eq.'SOF') then
           nfield=6
@@ -192,11 +193,21 @@ c     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
      &         ne,cflag,co,vold,iforce,mi,ielprop,prop)
         endif
       endif
-!     
+
+      if(filab(57)(1:4).eq.'A   ') then
+        if(filab(57)(5:5).eq.'I') then
+          nfield=mt
+          cflag=filab(57)(5:5)
+          iforce=0
+          call map3dto1d2d(accold,ipkon,inum,kon,lakon,nfield,nk,
+     &         ne,cflag,co,vold,iforce,mi,ielprop,prop)
+        endif
+      endif
+!
 !     check whether forces are requested in the frd-file. If so, but
-!     none are requested in the .dat file, and output=2d, 
+!     none are requested in the .dat file, and output=2d,
 !     map3dto1d2d has to be called
-!     
+!
       if(filab(5)(1:2).eq.'RF') then
         if(filab(5)(5:5).eq.'I') then
           rfprint=.false.

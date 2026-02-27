@@ -315,10 +315,10 @@ void resultsinduction(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
        nelemload,nload,&ikin,ielmat,thicke,eme,emn,rhcon,nrhcon,shcon,
        nshcon,cocon,ncocon,ntmat_,sideload,icfd,inomat,pslavsurf,islavact,
        cdn,&mortar,islavnode,nslavnode,ntie,islavsurf,time,ielprop,prop,
-       veold,ne0,nmpc,ipompc,nodempc,labmpc,energyini,energy,orname,
+       veold,accold,ne0,nmpc,ipompc,nodempc,labmpc,energyini,energy,orname,
        xload,itiefac,pmastsurf,springarea,tieset,ipobody,ibody,xbody,
        nbody,iinc,dam,damn));
-  
+
   return;
 
 }

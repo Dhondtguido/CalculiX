@@ -71,7 +71,8 @@
      &         (prlab(i)(1:4).eq.'PTF ').or.
      &         (prlab(i)(1:4).eq.'CP  ').or.
      &         (prlab(i)(1:4).eq.'TURB').or.
-     &         (prlab(i)(1:4).eq.'V   ')) cycle
+     &         (prlab(i)(1:4).eq.'V   ').or.
+     &         (prlab(i)(1:4).eq.'A   ')) cycle
             ii=ii+1
             prlab(ii)=prlab(i)
             prset(ii)=prset(i)
@@ -205,6 +206,7 @@
      &         (textpart(ii)(1:4).ne.'PN  ').and.
      &         (textpart(ii)(1:4).ne.'MF  ').and.
      &         (textpart(ii)(1:4).ne.'V   ').and.
+     &         (textpart(ii)(1:4).ne.'A   ').and.
      &         (textpart(ii)(1:4).ne.'VF  ').and.
      &         (textpart(ii)(1:4).ne.'PSF ').and.
      &         (textpart(ii)(1:4).ne.'TSF ').and.
