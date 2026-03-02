@@ -159,7 +159,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Fri Feb 27 10:02:42 CET 2026\n");
+  printf("You are using an executable made on Mon Mar  2 17:58:21 CET 2026\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -588,7 +588,13 @@ int main(int argc,char *argv[])
       if(ithermal[0]!=0) NNEW(t1old,double,nk_); 
       NNEW(sti,double,6*mi[0]*ne);
       NNEW(eme,double,6*mi[0]*ne);
-      if(nener==1)NNEW(ener,double,2*mi[0]*ne);
+      if(nener==1){
+	if(mortar!=1){
+	  NNEW(ener,double,2*mi[0]*(ne+nslavs));
+	}else{
+	  NNEW(ener,double,2*mi[0]*ne);
+	}
+      }
       if(mcs>ntie_) RENEW(cs,double,18*mcs);
       if(mortar==1){
 	NNEW(pslavsurf,double,3*nintpoint);
