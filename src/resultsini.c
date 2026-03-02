@@ -157,11 +157,27 @@ void resultsini(ITG *nk,double *v,ITG *ithermal,char *filab,ITG *iperturb,
     }
     if(*calcul_fn!=1){
       for(i=0;i<*nprint;i++){
-	if((strcmp1(&prlab[6*i],"RF  ")==0)||
-	   (strcmp1(&prlab[6*i],"RFL ")==0)){
-	  *calcul_fn=1;
-	  break;
-	}
+        if((strcmp1(&prlab[6*i],"RF  ")==0)||
+            (strcmp1(&prlab[6*i],"RFL ")==0)){
+                *calcul_fn=1;
+                break;
+        }
+      }
+    }
+  }
+  
+  if(*iout>0){
+    if(strcmp1(&filab[4959],"RR  ")==0){
+      *calcul_fn=1;
+      *calcul_f=1;
+    }
+    if(*calcul_fn!=1 || *calcul_f!=1){
+      for(i=0;i<*nprint;i++){
+        if(strcmp1(&prlab[6*i],"RR  ")==0){
+            *calcul_fn=1;
+            *calcul_f=1;
+            break;
+        }
       }
     }
   }

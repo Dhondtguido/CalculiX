@@ -90,7 +90,8 @@
             een(6,j)=a(2,1)*b(1,3)+a(2,2)*b(2,3)+a(2,3)*b(3,3)
          endif
 !     
-         if(filab(5)(1:4).eq.'RF  ') then
+         if((filab(5)(1:4).eq.'RF  ').or.
+     &      (filab(58)(1:4).eq.'RR  ')) then
             xr=fn(1,j)*a(1,1)+fn(2,j)*a(1,2)+fn(3,j)*a(1,3)
             xt=fn(1,j)*a(2,1)+fn(2,j)*a(2,2)+fn(3,j)*a(2,3)
             xz=fn(1,j)*a(3,1)+fn(2,j)*a(3,2)+fn(3,j)*a(3,3)

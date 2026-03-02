@@ -208,6 +208,7 @@ c            enddo
          if((prlab(i)(1:4).eq.'U   ').or.
      &        (prlab(i)(1:4).eq.'NT  ').or.
      &        (prlab(i)(1:4).eq.'RF  ').or.
+     &        (prlab(i)(1:4).eq.'RR  ').or.
      &        (prlab(i)(1:4).eq.'RFL ').or.
      &        (prlab(i)(1:4).eq.'PS  ').or.
      &        (prlab(i)(1:4).eq.'PN  ').or.

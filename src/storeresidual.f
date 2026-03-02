@@ -66,9 +66,11 @@
       if(ithermal(1).ne.2) then
          filab(1)(1:3)='U  '
          filab(5)(1:4)='RF  '
+         filab(58)(1:4)='RR  '
       else
          filab(1)(1:4)='    '
          filab(5)(1:4)='    '
+         filab(58)(1:4)='    '
       endif
 !
       if(ithermal(1).gt.1) then

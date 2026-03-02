@@ -108,6 +108,7 @@
 !
       nmethod=11
       filab(5)(1:4)='RF  '
+      filab(58)(1:4)='RR  '
 !
       call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &     ipoinp,inp,ipoinpc)
