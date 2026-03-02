@@ -121,7 +121,11 @@
          endif
       elseif(prlab(ii)(1:4).eq.'RR  ') then
          do j=1,3
-            rf0(j)=fn(j,node) - f(nactdof(j,node))
+            if(nactdof(j,node).gt.0) then
+                rf0(j)=fn(j,node) - f(nactdof(j,node))
+            else
+                rf0(j)=fn(j,node)
+            endif
          enddo
          if(prlab(ii)(5:5).ne.'O') then
             if((ntrans.eq.0).or.(prlab(ii)(6:6).eq.'G')) then
