@@ -1231,7 +1231,8 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     NNEW(stnt,double,2*6**nk*ngraph);
   if(strcmp1(&filab[261],"E   ")==0) 
     NNEW(eent,double,2*6**nk*ngraph);
-  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0))
+  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)||
+     (strcmp1(&filab[4959],"RR  ")==0))
 
     // real and imaginary part of the forces
 
@@ -1541,7 +1542,8 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     if(strcmp1(&filab[261],"E   ")==0){
       for(l=0;l<6**nk;l++){eent[l]=een[l];};
       for(l=0;l<6**nk;l++){eent[l+6**nk*ngraph]=een[l+6**nk];}}
-    if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)){
+    if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)||
+       (strcmp1(&filab[4959],"RR  ")==0)){
       for(l=0;l<mt**nk;l++){fnt[l]=fn[l];}
       for(l=0;l<mt**nk;l++){fnt[l+mt**nk*ngraph]=fn[l+mt**nk];}}
     if(strcmp1(&filab[522],"ENER")==0)
@@ -1789,7 +1791,8 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	    }
 	  }
 	  
-	  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)){
+	  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)||
+         (strcmp1(&filab[4959],"RR  ")==0)){
 	    for(l1=0;l1<*nk;l1++){
 	      if(inocs[l1]==jj){
 		
@@ -1817,7 +1820,8 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	  /* imaginary part of the forces in cylindrical
 	     coordinates */
 
-	  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)){
+	  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)||
+         (strcmp1(&filab[4959],"RR  ")==0)){
 	    for(l1=0;l1<*nk;l1++){
 	      if(inocs[l1]==jj){
 		      
@@ -1972,7 +1976,8 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
   if((strcmp1(&filab[174],"S   ")==0)||(strcmp1(&filab[1479],"PHS ")==0)||
      (strcmp1(&filab[1044],"ZZS ")==0)||(strcmp1(&filab[1044],"ERR ")==0)) SFREE(stnt);
   if(strcmp1(&filab[261],"E   ")==0) SFREE(eent);
-  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)) SFREE(fnt);
+  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)||
+     (strcmp1(&filab[4959],"RR  ")==0)) SFREE(fnt);
   if(strcmp1(&filab[522],"ENER")==0) SFREE(enernt);
   if((strcmp1(&filab[1044],"ZZS ")==0)||(strcmp1(&filab[1044],"ERR ")==0)) SFREE(stxt);
   if(strcmp1(&filab[2697],"ME  ")==0) SFREE(emnt);

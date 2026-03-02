@@ -1479,6 +1479,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
   /* storing the forces in the nodes */
   
   if((*nmethod!=5)||(*mode==-1)){
+    // TODO(gmb) filab[4959],"RR  "
     if((strcmp1(&filab[348],"RF  ")==0)&&(*ithermal!=2)){
       iselect=1;
   
@@ -1533,6 +1534,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
          steady state calculations */
 
   if((*noddiam>=0)||((*nmethod==5)&&(*mode==0))){
+    // TODO(gmb) filab[4959],"RR  "
     if((strcmp1(&filab[348],"RF  ")==0)&&(*ithermal!=2)){
 
       /* check for a set in steady state calculations */

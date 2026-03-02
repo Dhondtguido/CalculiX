@@ -458,7 +458,7 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 
   if(*mortartrafoflag==0){
     FORTRAN(resultsprint,(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,ielorien,
-			  norien,orab,t1,ithermal,filab,een,iperturb,fn,nactdof,
+			  norien,orab,t1,ithermal,filab,een,iperturb,fn,f,nactdof,
 			  iout,vold,nodeboun,ndirboun,nboun,nmethod,ttime,
 			  xstate,
 			  epn,mi,nstate_,ener,enern,xstaten,eei,set,nset,
