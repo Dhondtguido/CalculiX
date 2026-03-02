@@ -1223,12 +1223,12 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	  
       NNEW(stnt,double,2*6**nk*ngraph);
     if(strcmp1(&filab[261],"E   ")==0) NNEW(eent,double,2*6**nk*ngraph);
-    if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)||
-       (strcmp1(&filab[4959],"RR  ")==0))
+    if((strcmp1(&filab[348],"RF  ")==0) || (strcmp1(&filab[2610],"PRF ")==0) ||
+       (strcmp1(&filab[4959],"RR  ")==0)) {
 	  
       // real and imaginary part of the forces
 	  
-      NNEW(fnt,double,2*mt**nk*ngraph);
+      NNEW(fnt,double,2*mt**nk*ngraph); }
     if(strcmp1(&filab[2697],"ME  ")==0) NNEW(emnt,double,2*6**nk*ngraph);
     if(((strcmp1(&filab[2175],"CONT")==0)||(strcmp1(&filab[3915],"PCON")==0))
        &&(*mortar==1)) NNEW(cdnt,double,2*6**nk*ngraph);
@@ -2640,7 +2640,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
        (strcmp1(&filab[1044],"ZZS ")==0)||(strcmp1(&filab[1044],"ERR ")==0)) SFREE(stnt);
     if(strcmp1(&filab[261],"E   ")==0) SFREE(eent);
     if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)||
-	   (strcmp1(&filab[4959],"RR  ")==0)) SFREE(fnt);
+	   (strcmp1(&filab[4959],"RR  ")==0)) { SFREE(fnt); }
     if(strcmp1(&filab[522],"ENER")==0) SFREE(enernt);
     if((strcmp1(&filab[1044],"ZZS ")==0)||(strcmp1(&filab[1044],"ERR ")==0)||
        ((strcmp1(&filab[2175],"CONT")==0)&&(*mortar==0))) SFREE(stxt);

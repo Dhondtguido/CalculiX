@@ -1232,11 +1232,11 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
   if(strcmp1(&filab[261],"E   ")==0) 
     NNEW(eent,double,2*6**nk*ngraph);
   if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)||
-     (strcmp1(&filab[4959],"RR  ")==0))
+     (strcmp1(&filab[4959],"RR  ")==0)) {
 
     // real and imaginary part of the forces
 
-    NNEW(fnt,double,2*mt**nk*ngraph);
+    NNEW(fnt,double,2*mt**nk*ngraph); }
   if(strcmp1(&filab[522],"ENER")==0)
     NNEW(enernt,double,*nk*ngraph);
   if((strcmp1(&filab[1044],"ZZS ")==0)||(strcmp1(&filab[1044],"ERR ")==0))
