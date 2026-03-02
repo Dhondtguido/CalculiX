@@ -171,8 +171,8 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
            elseif((prlab(ii)(1:4).eq.'RR  ').or.
      &           (prlab(ii)(1:5).eq.'RR  T')) then
             write(5,*)
-            write(5,150) noset(1:ipos-2),ttime+time
- 150        format(' reaction forces (rfx,rfy,rfz) for set ',A,
+            write(5,151) noset(1:ipos-2),ttime+time
+ 151        format(' reaction forces (rfx,rfy,rfz) for set ',A,
      &           ' and time ',e14.7)
             write(5,*)
           endif
