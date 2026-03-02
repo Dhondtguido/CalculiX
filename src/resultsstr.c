@@ -253,7 +253,7 @@ void resultsstr(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
      interpolation of 3d results for 1d/2d elements */
 
   FORTRAN(resultsprint,(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,ielorien,
-			norien,orab,t1,ithermal,filab,een,iperturb,fn,nactdof,
+			norien,orab,t1,ithermal,filab,een,iperturb,fn,f,nactdof,
 			iout,vold,nodeboun,ndirboun,nboun,nmethod,ttime,xstate,
 			epn,mi,nstate_,ener,enern,xstaten,eei,set,nset,
 			istartset,iendset,ialset,nprint,prlab,prset,qfx,qfn,
