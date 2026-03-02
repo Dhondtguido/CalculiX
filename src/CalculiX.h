@@ -493,11 +493,11 @@ void FORTRAN(calcttfaext,(ITG *nfaext,double *vfa,double *shcon,ITG *nshcon,
 void FORTRAN(calculated,(ITG *nktet,double *d,double *dmin,
                              ITG *ipoed,ITG *iedg,double *cotet));
 
-void FORTRAN(calculateh,(ITG *nk,double *v,double *veold,double *stn,
-                         double *een,double *emn,double *epn,double *enern,
-                         double *qfn,double *errn,double *h,char *filab,
-                         ITG *mi,double *d,ITG *nh,double *dmin,ITG *ipoed,
-                         ITG *iedg,double *cotet,ITG *jfix));
+void FORTRAN(calculateh,(ITG *nk,double *v,double *veold,double *accold,
+                         double *stn,double *een,double *emn,double *epn,
+                         double *enern,double *qfn,double *errn,double *h,
+                         char *filab,ITG *mi,double *d,ITG *nh,double *dmin,
+                         ITG *ipoed,ITG *iedg,double *cotet,ITG *jfix));
 
 void FORTRAN(calculatehmid,(ITG *nktet_,double *h,ITG *ipoed,ITG *iedg,
 			    ITG *iedgmid));
@@ -3974,7 +3974,7 @@ void FORTRAN(reducematrix,(double *au,double *ad,ITG *jq,ITG *irow,
 			   ITG *neq,ITG *neqtot,ITG *ktot));
 
 void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
-                double *v,double *veold,double *stn,double *een,
+                double *v,double *veold,double *accold,double *stn,double *een,
                 double *emn,double *epn,double *enern,double *qfn,
                 double *errn,char *filab,ITG *mi,char *lakon,
                 char *jobnamec,ITG *istartset,ITG *iendset,ITG *ialset,

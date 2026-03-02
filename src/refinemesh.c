@@ -22,7 +22,7 @@
 #include "CalculiX.h"
 
 void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
-		double *v,double *veold,double *stn,double *een,
+		double *v,double *veold,double *accold,double *stn,double *een,
 		double *emn,double *epn,double *enern,double *qfn,
 		double *errn,char *filab,ITG *mi,char *lakon,
                 char *jobnamec,ITG *istartset,ITG *iendset,
@@ -175,7 +175,7 @@ void refinemesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,ITG *kon,
 
     if(ij==0){
       NNEW(nh,ITG,nktet_);
-      FORTRAN(calculateh,(nk,v,veold,stn,een,emn,epn,enern,qfn,errn,h,
+      FORTRAN(calculateh,(nk,v,veold,accold,stn,een,emn,epn,enern,qfn,errn,h,
 			  filab,mi,d,nh,&dmin,ipoed,iedg,cotet,jfix));
       SFREE(nh);
 

@@ -86,6 +86,8 @@
           size=dsqrt(v(1,i)**2+v(2,i)**2+v(3,i)**2)
         elseif(label.eq.'V   ') then
           size=dsqrt(veold(1,i)**2+veold(2,i)**2+veold(3,i)**2)
+        elseif(label.eq.'A   ') then
+          size=dsqrt(accold(1,i)**2+accold(2,i)**2+accold(3,i)**2)
         elseif(label.eq.'S   ') then
           size=dsqrt(stn(1,i)**2+stn(2,i)**2+stn(3,i)**2+
      &         2.d0*(stn(4,i)**2+stn(5,i)**2+stn(6,i)**2))

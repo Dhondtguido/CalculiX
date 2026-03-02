@@ -1106,7 +1106,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     
       if(strcmp1(&filab[4089],"RPONLY")==0){
 	strcpy1(&filab[4089],"RMSMOO",6);
-	refinemesh(nk,ne,co,ipkon,kon,v,veold,stn,een,emn,epn,enern,
+	refinemesh(nk,ne,co,ipkon,kon,v,veold,accold,stn,een,emn,epn,enern,
 		   qfn,errn,filab,mi,lakon,jobnamec,istartset,iendset,
 		   ialset,set,nset,matname,ithermal,output,nmat,
 		   nelemload,nload,sideload,nodeforc,
@@ -2685,7 +2685,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     
 	if(strcmp1(&filab[4089],"RPONLY")==0){
 	  strcpy1(&filab[4089],"RMSMOO",6);
-	  refinemesh(nk,ne,co,ipkon,kon,v,veold,stn,een,emn,epn,enern,
+	  refinemesh(nk,ne,co,ipkon,kon,v,veold,accold,stn,een,emn,epn,enern,
 		     qfn,errn,filab,mi,lakon,jobnamec,istartset,iendset,
 		     ialset,set,nset,matname,ithermal,output,nmat,
 		     nelemload,nload,sideload,nodeforc,
@@ -3887,7 +3887,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       /* mesh refinement */
   
       if(strcmp1(&filab[4089],"RM")==0){
-	refinemesh(nk,ne,co,ipkon,kon,v,veold,stn,een,emn,epn,enern,
+	refinemesh(nk,ne,co,ipkon,kon,v,veold,accold,stn,een,emn,epn,enern,
 		   qfn,errn,filab,mi,lakon,jobnamec,istartset,iendset,
 		   ialset,set,nset,matname,ithermal,output,nmat,
 		   nelemload,nload,sideload,nodeforc,
@@ -4030,7 +4030,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     /* mesh refinement */
   
     if(strcmp1(&filab[4089],"RM")==0){
-      refinemesh(nk,ne,co,ipkon,kon,v,veold,stn,een,emn,epn,enern,
+      refinemesh(nk,ne,co,ipkon,kon,v,veold,accold,stn,een,emn,epn,enern,
 		 qfn,errn,filab,mi,lakon,jobnamec,istartset,iendset,
 		 ialset,set,nset,matname,ithermal,output,nmat,
 		 nelemload,nload,sideload,nodeforc,
