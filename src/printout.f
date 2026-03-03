@@ -17,7 +17,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
       subroutine printout(set,nset,istartset,iendset,ialset,nprint,
-     &     prlab,prset,v,t1,fn,f,ipkon,lakon,stx,eei,xstate,ener,
+     &     prlab,prset,v,t1,fn,rfn,ipkon,lakon,stx,eei,xstate,ener,
      &     mi,nstate_,ithermal,co,kon,qfx,ttime,trab,inotr,ntrans,
      &     orab,ielorien,norien,nk,ne,inum,filab,vold,ikin,ielmat,
      &     thicke,eme,islavsurf,mortar,time,ielprop,prop,veold,orname,
@@ -44,7 +44,7 @@
      &     nelemload(2,*),nrhcon(*),ipobody(2,*),ibody(3,*),nbody,
      &     nmethod,ne,iforce,nactdof(0:mi(2),*)
 !     
-      real*8 v(0:mi(2),*),t1(*),fn(0:mi(2),*),f(*),
+      real*8 v(0:mi(2),*),t1(*),fn(0:mi(2),*),rfn(0:mi(2),*),
      &     stx(6,mi(1),*),bhetot,
      &     eei(6,mi(1),*),xstate(nstate_,mi(1),*),ener(2,mi(1),*),
      &     volumetot,co(3,*),qfx(3,mi(1),*),rftot(0:3),ttime,time,
@@ -193,17 +193,17 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
             if(ialset(jj).lt.0) cycle
             if(jj.eq.iendset(iset)) then
               node=ialset(jj)
-              call printoutnode(prlab,v,t1,fn,f,ithermal,ii,node,
-     &             rftot,trab,inotr,ntrans,co,mi,veold,nactdof)
+              call printoutnode(prlab,v,t1,fn,rfn,ithermal,ii,node,
+     &             rftot,trab,inotr,ntrans,co,mi,veold)
             elseif(ialset(jj+1).gt.0) then
               node=ialset(jj)
-              call printoutnode(prlab,v,t1,fn,f,ithermal,ii,node,
-     &             rftot,trab,inotr,ntrans,co,mi,veold,nactdof)
+              call printoutnode(prlab,v,t1,fn,rfn,ithermal,ii,node,
+     &             rftot,trab,inotr,ntrans,co,mi,veold)
             else
               do node=ialset(jj-1)-ialset(jj+1),ialset(jj),
      &             -ialset(jj+1)
-                call printoutnode(prlab,v,t1,fn,f,ithermal,ii,node,
-     &               rftot,trab,inotr,ntrans,co,mi,veold,nactdof)
+                call printoutnode(prlab,v,t1,fn,rfn,ithermal,ii,node,
+     &               rftot,trab,inotr,ntrans,co,mi,veold)
               enddo
             endif
           enddo

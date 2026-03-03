@@ -109,7 +109,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
     *v=NULL,*aamech=NULL,*emn=NULL,*cdn=NULL,ptime,
     *stn=NULL,*stx=NULL,*een=NULL,*adb=NULL,*xstiff=NULL,*bjp=NULL,
     *aub=NULL,*temp_array1=NULL,*temp_array2=NULL,*aux=NULL,
-    *f=NULL,*fn=NULL,*xbounact=NULL,*epn=NULL,*xstateini=NULL,
+    *f=NULL,*fn=NULL,*rfn=NULL,*xbounact=NULL,*epn=NULL,*xstateini=NULL,
     *enern=NULL,*xstaten=NULL,*eei=NULL,*enerini=NULL,*qfn=NULL,
     *qfx=NULL,*xbodyact=NULL,*cgr=NULL,*au=NULL,*vbounact=NULL,
     *abounact=NULL,dtime,reltime,*t0=NULL,*t1=NULL,*t1old=NULL,
@@ -938,6 +938,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
   
   NNEW(v,double,mt**nk);
   NNEW(fn,double,mt**nk);
+  NNEW(rfn,double,mt**nk);
   NNEW(stn,double,6**nk);
   NNEW(inum,ITG,*nk);
   strcpy1(&cflag[0],&filab[4],1);
@@ -1786,7 +1787,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 	      stx,elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,
 	      ielmat,ielorien,norien,orab,ntmat_,t0,t1,
 	      ithermal,prestr,iprestr,filab,eme,emn,een,
-	      iperturb,f,fn,nactdof,&iout,qa,
+	      iperturb,f,fn,rfn,nactdof,&iout,qa,
 	      vold,b,nodeboun,ndirboun,xbounact,nboun,
 	      ipompc,nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[1],
 	      veold,accold,&bet,&gam,&dtime,&time,ttime,
@@ -1953,7 +1954,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
     memcpy(&vold[0],&v[0],sizeof(double)*mt**nk);
   }
   
-  SFREE(v);SFREE(fn);SFREE(stn);SFREE(inum);SFREE(adb);SFREE(d);SFREE(fext);
+  SFREE(v);SFREE(fn);SFREE(rfn);SFREE(stn);SFREE(inum);SFREE(adb);SFREE(d);SFREE(fext);
   SFREE(aub);SFREE(z);SFREE(b);SFREE(zeta);SFREE(bj);SFREE(cd);SFREE(cv);
   SFREE(xforcact);SFREE(xloadact);SFREE(xbounact);SFREE(aa);SFREE(bb);SFREE(aanew);
   SFREE(ampli);SFREE(xbodyact);SFREE(bjp);SFREE(bp);SFREE(aamech);SFREE(ikactmech);

@@ -86,7 +86,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 
   double *d=NULL,*z=NULL,*stiini=NULL,*cc=NULL,*v=NULL,*zz=NULL,*emn=NULL,
     *stn=NULL,*stx=NULL,*een=NULL,*adb=NULL,*xstiff=NULL,*cdn=NULL,
-    *aub=NULL,*f=NULL,*fn=NULL,*epn=NULL,*xstateini=NULL,*damn=NULL,
+    *aub=NULL,*f=NULL,*fn=NULL,*rfn=NULL,*epn=NULL,*xstateini=NULL,*damn=NULL,
     *enern=NULL,*xstaten=NULL,*eei=NULL,*enerini=NULL,*qfn=NULL,
     *qfx=NULL,*cgr=NULL,*au=NULL,dtime,reltime,*t0=NULL,*t1=NULL,*t1old=NULL,
     sum,qa[4],cam[5],accold[1],bet,gam,*ad=NULL,alpham,betam,*dam=NULL,
@@ -1199,6 +1199,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 
   NNEW(v,double,2*mt**nk);
   NNEW(fn,double,2*mt**nk);
+  NNEW(rfn,double,2*mt**nk);
   if((strcmp1(&filab[174],"S   ")==0)||(strcmp1(&filab[1653],"MAXS")==0)|| 
      (strcmp1(&filab[1479],"PHS ")==0)||(strcmp1(&filab[1044],"ZZS ")==0)||
      (strcmp1(&filab[1044],"ERR ")==0)) 
@@ -1465,7 +1466,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,ielorien,
 		norien,orab,ntmat_,t0,t0,ithermal,
 		prestr,iprestr,filab,eme,&emn[kk6],&een[kk6],iperturb,
-		f,&fn[kkv],nactdof,&iout,qa,vold,&zz[lint+k],
+		f,&fn[kkv],&rfn[kkv],nactdof,&iout,qa,vold,&zz[lint+k],
 		nodeboun,ndirboun,xboun,nboun,ipompc,
 		nodempc,coefmpcnew,labmpc,nmpc,nmethod,cam,&neq[1],veold,accold,
 		&bet,&gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -1488,7 +1489,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,ielorien,
 		norien,orab,ntmat_,t0,t1old,ithermal,
 		prestr,iprestr,filab,eme,&emn[kk6],&een[kk6],iperturb,
-		f,&fn[kkv],nactdof,&iout,qa,vold,&zz[lint+k],
+		f,&fn[kkv],&rfn[kkv],nactdof,&iout,qa,vold,&zz[lint+k],
 		nodeboun,ndirboun,xboun,nboun,ipompc,
 		nodempc,coefmpcnew,labmpc,nmpc,nmethod,cam,&neq[1],veold,accold,
 		&bet,&gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -1965,7 +1966,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
      (strcmp1(&filab[1044],"ERR ")==0)) 
     SFREE(stn);
 
-  SFREE(v);SFREE(fn);SFREE(inum);SFREE(stx);
+  SFREE(v);SFREE(fn);SFREE(rfn);SFREE(inum);SFREE(stx);
 
   if((strcmp1(&filab[261],"E   ")==0)||(strcmp1(&filab[2523],"MAXE")==0)) SFREE(een);
   if(strcmp1(&filab[522],"ENER")==0) SFREE(enern);

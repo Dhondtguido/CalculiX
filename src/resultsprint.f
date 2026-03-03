@@ -18,7 +18,7 @@
 !     
       subroutine resultsprint(co,nk,kon,ipkon,lakon,ne,v,stn,inum,
      &     stx,ielorien,norien,orab,t1,ithermal,filab,een,iperturb,fn,
-     &     f,nactdof,iout,vold,nodeboun,ndirboun,nboun,nmethod,ttime,
+     &     rfn,nactdof,iout,vold,nodeboun,ndirboun,nboun,nmethod,ttime,
      &     xstate,
      &     epn,mi,nstate_,ener,enern,xstaten,eei,set,nset,istartset,
      &     iendset,ialset,nprint,prlab,prset,qfx,qfn,trab,inotr,ntrans,
@@ -64,7 +64,7 @@
 !     
       real*8 co(3,*),v(0:mi(2),*),stx(6,mi(1),*),stn(6,*),cdn(6,*),
      &     qfx(3,mi(1),*),qfn(3,*),orab(7,*),
-     &     fn(0:mi(2),*),f(*),
+     &     fn(0:mi(2),*),rfn(0:mi(2),*),
      &     t1(*),een(6,*),vold(0:mi(2),*),epn(*),thicke(mi(3),*),time,
      &     ener(2,mi(1),*),enern(*),eei(6,mi(1),*),rhcon(0:1,ntmat_,*),
      &     ttime,xstate(nstate_,mi(1),*),trab(7,*),xstaten(nstate_,*),
@@ -117,7 +117,7 @@
 !
         
         call printout(set,nset,istartset,iendset,ialset,nprint,
-     &     prlab,prset,v,t1,fn,f,ipkon,lakon,stx,eei,xstate,ener,
+     &     prlab,prset,v,t1,fn,rfn,ipkon,lakon,stx,eei,xstate,ener,
      &     mi(1),nstate_,ithermal,co,kon,qfx,ttime,trab,inotr,ntrans,
      &     orab,ielorien,norien,nk,ne,inum,filab,vold,ikin,ielmat,
      &     thicke,eme,islavsurf,mortar,time,ielprop,prop,veold,orname,
@@ -214,7 +214,26 @@ c     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
             iforce=1
             call map3dto1d2d(fn,ipkon,inum,kon,lakon,nfield,nk,
      &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
-            call map3dto1d2d(f,ipkon,inum,kon,lakon,nfield,nk,
+          endif
+        endif
+      endif
+      
+      if(filab(5)(1:2).eq.'RR') then
+        if(filab(5)(5:5).eq.'I') then
+          rfprint=.false.
+          do i=1,nprint
+            if(prlab(i)(1:2).eq.'RR') then
+              rfprint=.true.
+              exit
+            endif
+          enddo
+          if(.not.rfprint) then
+            nfield=mt
+            cflag=' '
+            iforce=1
+            call map3dto1d2d(fn,ipkon,inum,kon,lakon,nfield,nk,
+     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
+            call map3dto1d2d(rfn,ipkon,inum,kon,lakon,nfield,nk,
      &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
           endif
         endif
