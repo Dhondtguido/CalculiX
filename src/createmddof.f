@@ -212,7 +212,8 @@ c            enddo
      &        (prlab(i)(1:4).eq.'PS  ').or.
      &        (prlab(i)(1:4).eq.'PN  ').or.
      &        (prlab(i)(1:4).eq.'MF  ').or.
-     &        (prlab(i)(1:4).eq.'V   ')) then
+     &        (prlab(i)(1:4).eq.'V   ').or.
+     &        (prlab(i)(1:4).eq.'A   ')) then
             noset=prset(i)
 c            nrset=0
 c            do k=1,nset

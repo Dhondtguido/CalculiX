@@ -1920,7 +1920,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	kode,filab,eent,t1t,fnt,&freq,epn,ielmatt,matname,enernt,xstaten,
 	nstate_,istep,&iinc,ithermal,qfn,&j,&nm[j],trab,inotrt,
 	ntrans,orab,ielorien,norien,description,ipneigh,neigh,
-	mi,stxt,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&net,
+	mi,stxt,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,accold,ener,&net,
 	cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emnt,
 	thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,ielprop,prop,
 	sti,damn,&errn);

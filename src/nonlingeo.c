@@ -1106,7 +1106,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     
       if(strcmp1(&filab[4089],"RPONLY")==0){
 	strcpy1(&filab[4089],"RMSMOO",6);
-	refinemesh(nk,ne,co,ipkon,kon,v,veold,stn,een,emn,epn,enern,
+	refinemesh(nk,ne,co,ipkon,kon,v,veold,accold,stn,een,emn,epn,enern,
 		   qfn,errn,filab,mi,lakon,jobnamec,istartset,iendset,
 		   ialset,set,nset,matname,ithermal,output,nmat,
 		   nelemload,nload,sideload,nodeforc,
@@ -1176,7 +1176,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	    kode,filab,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
 	    nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
 	    ntrans,orab,ielorien,norien,description,ipneigh,neigh,
-	    mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
+	    mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,accold,ener,ne,
 	    cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	    thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
 	    ielprop,prop,sti,damn,&errn);
@@ -2685,7 +2685,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     
 	if(strcmp1(&filab[4089],"RPONLY")==0){
 	  strcpy1(&filab[4089],"RMSMOO",6);
-	  refinemesh(nk,ne,co,ipkon,kon,v,veold,stn,een,emn,epn,enern,
+	  refinemesh(nk,ne,co,ipkon,kon,v,veold,accold,stn,een,emn,epn,enern,
 		     qfn,errn,filab,mi,lakon,jobnamec,istartset,iendset,
 		     ialset,set,nset,matname,ithermal,output,nmat,
 		     nelemload,nload,sideload,nodeforc,
@@ -2768,7 +2768,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	      kode,filab,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
 	      nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
 	      ntrans,orab,ielorien,norien,description,ipneigh,neigh,
-	      mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
+	      mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,accold,ener,ne,
 	      cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	      thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
 	      ielprop,prop,sti,damn,&errn);
@@ -3870,7 +3870,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	    kode,filab,een,t1act,fn,&ptime,epn,ielmat,matname,enern,xstaten,
 	    nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
 	    ntrans,orab,ielorien,norien,description,ipneigh,neigh,
-	    mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
+	    mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,accold,ener,ne,
 	    cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	    thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,ielprop,
 	    prop,sti,damn,&errn);
@@ -3887,7 +3887,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       /* mesh refinement */
   
       if(strcmp1(&filab[4089],"RM")==0){
-	refinemesh(nk,ne,co,ipkon,kon,v,veold,stn,een,emn,epn,enern,
+	refinemesh(nk,ne,co,ipkon,kon,v,veold,accold,stn,een,emn,epn,enern,
 		   qfn,errn,filab,mi,lakon,jobnamec,istartset,iendset,
 		   ialset,set,nset,matname,ithermal,output,nmat,
 		   nelemload,nload,sideload,nodeforc,
@@ -4013,7 +4013,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	  kode,filab,een,t1act,fn,&ptime,epn,ielmat,matname,enern,xstaten,
 	  nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
 	  ntrans,orab,ielorien,norien,description,ipneigh,neigh,
-	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
+	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,accold,ener,ne,
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	  thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,ielprop,
 	  prop,sti,damn,&errn);
@@ -4030,7 +4030,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     /* mesh refinement */
   
     if(strcmp1(&filab[4089],"RM")==0){
-      refinemesh(nk,ne,co,ipkon,kon,v,veold,stn,een,emn,epn,enern,
+      refinemesh(nk,ne,co,ipkon,kon,v,veold,accold,stn,een,emn,epn,enern,
 		 qfn,errn,filab,mi,lakon,jobnamec,istartset,iendset,
 		 ialset,set,nset,matname,ithermal,output,nmat,
 		 nelemload,nload,sideload,nodeforc,
