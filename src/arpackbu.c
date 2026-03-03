@@ -282,7 +282,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
     }
 
     frd(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,
-	kode,filab,een,t1,fn,&time,epn,ielmat,matname,enern,xstaten,
+	kode,filab,een,t1,fn,rfn,&time,epn,ielmat,matname,enern,xstaten,
 	nstate_,istep,&iinc,ithermal,qfn,&j,&noddiam,trab,inotr,
 	ntrans,orab,ielorien,norien,description,ipneigh,neigh,
 	mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
@@ -426,7 +426,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
   }
 
   frd(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,
-      kode,filab,een,t1,fn,&time,epn,ielmat,matname,enern,xstaten,
+      kode,filab,een,t1,fn,rfn,&time,epn,ielmat,matname,enern,xstaten,
       nstate_,istep,&iinc,ithermal,qfn,&j,&noddiam,trab,inotr,
       ntrans,orab,ielorien,norien,description,ipneigh,neigh,
       mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
@@ -844,7 +844,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
     }
 
     frd(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,
-	kode,filab,een,t1,fn,&d[j],epn,ielmat,matname,enern,xstaten,
+	kode,filab,een,t1,fn,rfn,&d[j],epn,ielmat,matname,enern,xstaten,
 	nstate_,istep,&iinc,ithermal,qfn,&j,&noddiam,trab,inotr,
 	ntrans,orab,ielorien,norien,description,ipneigh,neigh,
 	mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,

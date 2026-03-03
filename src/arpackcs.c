@@ -674,7 +674,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
       }
 	  
       frd(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,
-	  kode,filab,een,t1,fn,&time,epn,ielmat,matname,enern,xstaten,
+	  kode,filab,een,t1,fn,rfn,&time,epn,ielmat,matname,enern,xstaten,
 	  nstate_,istep,&iinc,ithermal,qfn,&j,&nm,trab,inotr,
 	  ntrans,orab,ielorien,norien,description,ipneigh,neigh,
 	  mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
@@ -2540,7 +2540,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	for(k=5;k<11;k++){cs[k]=-cs[k];}
       }
       frd(cot,&nkt,kont,ipkont,lakont,&net,vt,stnt,inumt,nmethod,
-	  kode,filab,eent,t1t,fnt,&freq,epn,ielmatt,matname,enernt,xstaten,
+	  kode,filab,eent,t1t,fnt,rfn,&freq,epn,ielmatt,matname,enernt,xstaten,
 	  nstate_,istep,&iinc,ithermal,qfn,&j,&nm,trab,inotrt,
 	  ntrans,orab,ielorien,norien,description,ipneigh,neigh,
 	  mi,stxt,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&net,

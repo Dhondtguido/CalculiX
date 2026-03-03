@@ -306,7 +306,7 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   /* storing the coordinates and topology (if not already done so) */
 
   frd(co,nk,kon,ipkon,lakon,&ne0,v,stn,inum,&nmethodnew,
-      kode,filabnew,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
+      kode,filabnew,een,t1,fn,NULL,&ptime,epn,ielmat,matname,enern,xstaten,
       nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
       ntrans,orab,ielorien,norien,description,ipneigh,neigh,
       mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
