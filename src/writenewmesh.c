@@ -108,7 +108,7 @@ void writenewmesh(ITG *nktet,ITG *netet_,double *cotet,ITG *iquad,
   /* creating the tetrahedral mesh in frd format */
 
   frd(conew,&nknew,konnew,ipkonnew,lakonnew,&nenew,v,stn,inum,&nmethod,
-      &kode,filabnew,een,t1,fn,&time,epn,ielmatnew,matname,enern,xstaten,
+      &kode,filabnew,een,t1,fn,NULL,&time,epn,ielmatnew,matname,enern,xstaten,
       &nstate_,&istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
       &ntrans,orab,ielorien,&norien,description,ipneigh,neigh,
       mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&nenew,

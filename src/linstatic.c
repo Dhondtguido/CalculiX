@@ -857,7 +857,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       }
       ptime=*ttime+time;
       frd(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,
-	  kode,filab,een,t1act,fn,&ptime,epn,ielmat,matname,enern,xstaten,
+	  kode,filab,een,t1act,fn,rfn,&ptime,epn,ielmat,matname,enern,xstaten,
 	  nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
 	  ntrans,orab,ielorien,norien,description,ipneigh,neigh,
 	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
@@ -922,7 +922,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	}
 	ptime=*ttime+time;
 	frd(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,
-	    kode,filab,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
+	    kode,filab,een,t1,fn,rfn,&ptime,epn,ielmat,matname,enern,xstaten,
 	    nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
 	    ntrans,orab,ielorien,norien,description,ipneigh,neigh,
 	    mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,

@@ -1922,7 +1922,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
       NNEW(ipneigh,ITG,nkt);
     }
     frd(cot,&nkt,kont,ipkont,lakont,&net,vt,stnt,inumt,nmethod,
-	kode,filab,eent,t1t,fnt,&freq,epn,ielmatt,matname,enernt,xstaten,
+	kode,filab,eent,t1t,fnt,rfn,&freq,epn,ielmatt,matname,enernt,xstaten,
 	nstate_,istep,&iinc,ithermal,qfn,&j,&nm[j],trab,inotrt,
 	ntrans,orab,ielorien,norien,description,ipneigh,neigh,
 	mi,stxt,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&net,

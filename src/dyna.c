@@ -1832,7 +1832,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 
       ptime=*ttime+time;
       frd(co,&nkg,kon,ipkon,lakon,&neg,v,stn,inum,nmethod,
-	  kode,filab,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
+	  kode,filab,een,t1,fn,rfn,&ptime,epn,ielmat,matname,enern,xstaten,
 	  nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
 	  ntrans,orab,ielorien,norien,description,ipneigh,neigh,
 	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,

@@ -1753,7 +1753,7 @@ void *forparllmt(ITG *i);
 
 void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
          double *v,double *stn,ITG *inum,ITG *nmethod,ITG *kode,
-         char *filab,double *een,double *t1,double *fn,double *time,
+         char *filab,double *een,double *t1,double *fn,double *rfn,double *time,
          double *epn,ITG *ielmat,char *matname,double *enern,
          double *xstaten,ITG *nstate_,ITG *istep,ITG *iinc,
          ITG *ithermal,double *qfn,ITG *mode,ITG *noddiam,

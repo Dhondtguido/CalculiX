@@ -104,7 +104,7 @@ void checkdivergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	  
 	    strcpy1(&filab[4089],"  ",2);
 	    frd(co,nk,kon,ipkon,lakon,ne,vold,stn,inum,nmethod,
-		kode,filab,een,t1act,fn,ttime,epn,ielmat,matname,enern,
+		kode,filab,een,t1act,fn,NULL,ttime,epn,ielmat,matname,enern,
 		xstaten,nstate_,istep,iinc,ithermal,qfn,mode,noddiam,
 		trab,inotr,ntrans,orab,ielorien,norien,description,
 		ipneigh,neigh,mi,sti,vr,vi,stnr,stni,vmax,stnmax,
@@ -139,7 +139,7 @@ void checkdivergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	  
 	    strcpy1(&filab[4089],"  ",2);
 	    frd(co,nk,kon,ipkon,lakon,ne,vold,stn,inum,nmethod,
-		kode,filab,een,t1act,fn,ttime,epn,ielmat,matname,enern,
+		kode,filab,een,t1act,fn,NULL,ttime,epn,ielmat,matname,enern,
 		xstaten,nstate_,istep,iinc,ithermal,qfn,mode,noddiam,
 		trab,inotr,ntrans,orab,ielorien,norien,description,
 		ipneigh,neigh,mi,sti,vr,vi,stnr,stni,vmax,stnmax,
