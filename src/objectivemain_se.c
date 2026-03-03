@@ -66,7 +66,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		      ITG *ielorien,ITG *norien,double *orab,ITG *ntmat_,
 		      double *t0,double *t1,ITG *ithermal,double *prestr,
 		      ITG *iprestr,char *filab,double *eme,double *emn,
-		      double *een,ITG *iperturb,double *f,double *fn,
+		      double *een,ITG *iperturb,double *f,double *fn,double *rfn,
 		      ITG *nactdof,ITG *iout,double *qa,double *vold,
 		      ITG *nodeboun,ITG *ndirboun,double *xboun,ITG *nboun,
 		      ITG *ipompc,ITG *nodempc,double *coefmpc,char *labmpc,
@@ -1027,6 +1027,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
   
       NNEW(v,double,mt**nk);
       NNEW(fn,double,mt**nk);
+      NNEW(rfn,double,mt**nk);
       NNEW(stn,double,6**nk);
       NNEW(inum,ITG,*nk);
       NNEW(stx,double,6*mi[0]**ne);
@@ -1040,7 +1041,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		 elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 		 ielorien,norien,orab,ntmat_,t0,t1,ithermal,
 		 prestr,iprestr,filabl,eme,emn,een,iperturb,
-		 f,fn,nactdof,iout,qa,vold,b,nodeboun,
+		 f,fn,rfn,nactdof,iout,qa,vold,b,nodeboun,
 		 ndirboun,xboun,nboun,ipompc,
 		 nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[1],veold,accold,
 		 bet,gam,dtime,time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -1058,7 +1059,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	    
       *icmd=0;
 	    
-      SFREE(v);SFREE(fn);SFREE(eei);
+      SFREE(v);SFREE(fn);SFREE(rfn);SFREE(eei);
 	    
 
       /* if the design variables are the coordinates:
@@ -1137,6 +1138,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		
 	  NNEW(v,double,mt**nk);
 	  NNEW(fn,double,mt**nk);
+	  NNEW(rfn,double,mt**nk);
 	  NNEW(stx,double,6*mi[0]**ne);
 	  NNEW(eei,double,6*mi[0]**ne);
 	  NNEW(dstn,double,6**nk);
@@ -1179,7 +1181,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		     elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 		     ielorien,norien,orab,ntmat_,t0,t1,ithermal,
 		     prestr,iprestr,filabl,eme,emn,een,iperturb,
-		     f,fn,nactdof,iout,qa,vold,b,nodeboun,
+		     f,fn,rfn,nactdof,iout,qa,vold,b,nodeboun,
 		     ndirboun,xboun,nboun,ipompc,
 		     nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[1],
 		     veold,accold,
@@ -1198,7 +1200,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		
 	  *icmd=0;
 		
-	  SFREE(v);SFREE(fn);SFREE(stx);SFREE(eei);
+	  SFREE(v);SFREE(fn);SFREE(rfn);SFREE(stx);SFREE(eei);
 		
 	  /* calculate the stress sensitivity */
 		
@@ -1518,6 +1520,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
   
       NNEW(v,double,mt**nk);
       NNEW(fn,double,mt**nk);
+	  NNEW(rfn,double,mt**nk);
       NNEW(epn,double,*nk);
       NNEW(inum,ITG,*nk);
       NNEW(stx,double,6*mi[0]**ne);
@@ -1531,7 +1534,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		 elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 		 ielorien,norien,orab,ntmat_,t0,t1,ithermal,
 		 prestr,iprestr,filabl,eme,emn,een,iperturb,
-		 f,fn,nactdof,iout,qa,vold,b,nodeboun,
+		 f,fn,rfn,nactdof,iout,qa,vold,b,nodeboun,
 		 ndirboun,xboun,nboun,ipompc,
 		 nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[1],veold,accold,
 		 bet,gam,dtime,time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -1549,7 +1552,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	    
       *icmd=0;
 	    
-      SFREE(v);SFREE(fn);SFREE(eei);
+      SFREE(v);SFREE(fn);SFREE(rfn);SFREE(eei);
 
       /* if the design variables are the coordinates:
 	 check for the existence of a target node set */
@@ -1855,6 +1858,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
   
       NNEW(v,double,mt**nk);
       NNEW(fn,double,mt**nk);
+	  NNEW(rfn,double,mt**nk);
       NNEW(stn,double,6**nk);
       NNEW(inum,ITG,*nk);
       NNEW(stx,double,6*mi[0]**ne);
@@ -1880,7 +1884,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		 elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 		 ielorien,norien,orab,ntmat_,t0,t1,ithermal,
 		 prestr,iprestr,filabl,eme,emn,een,iperturb,
-		 f,fn,nactdof,iout,qa,vold,b,nodeboun,
+		 f,fn,rfn,nactdof,iout,qa,vold,b,nodeboun,
 		 ndirboun,xboun,nboun,ipompc,
 		 nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[1],veold,accold,
 		 bet,gam,dtime,time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -1898,7 +1902,7 @@ void objectivemain_se(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	    
       *icmd=0;
 	    
-      SFREE(v);SFREE(fn);SFREE(eei);
+      SFREE(v);SFREE(fn);SFREE(rfn);SFREE(eei);
 
       /* if the design variables are the coordinates:
 	 check for the existence of a target node set */

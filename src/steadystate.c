@@ -107,7 +107,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     *t1act=NULL,*ampli=NULL,*aa=NULL,*bb=NULL,*vr=NULL,*vi=NULL,
     *stn=NULL,*stx=NULL,*een=NULL,*adb=NULL,*xstiff=NULL,ptime,
     *aub=NULL,*bjr=NULL,*bji=NULL,*xbodyr=NULL,*cdn=NULL,
-    *f=NULL,*fn=NULL,*xbounact=NULL,*epn=NULL,*xstateini=NULL,
+    *f=NULL,*fn=NULL,*rfn=NULL,*xbounact=NULL,*epn=NULL,*xstateini=NULL,
     *enern=NULL,*xstaten=NULL,*eei=NULL,*enerini=NULL,*qfn=NULL,
     *qfx=NULL,*xbodyact=NULL,*cgr=NULL,*au=NULL,*xbodyi=NULL,
     time,dtime,reltime=1.,*co=NULL,*xboun=NULL,*xbounold=NULL,
@@ -878,6 +878,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
       
     if(intpointvar==1){
       NNEW(fn,double,mt**nk);
+	  NNEW(rfn,double,mt**nk);
       NNEW(stnr,double,6**nk);
       NNEW(stni,double,6**nk);
       NNEW(stx,double,6*mi[0]**ne);
@@ -1192,13 +1193,14 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	NNEW(f,double,*neq);
 	if(intpointvar!=1){
 	  NNEW(fn,double,mt**nk);
+	  NNEW(rfn,double,mt**nk);
 	  NNEW(stx,double,6*mi[0]**ne);
 	}
 	results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,
 		elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 		ielorien,norien,orab,ntmat_,t0,t1act,ithermal,
 		prestr,iprestr,filab,eme,emn,een,iperturb,
-		f,fn,nactdof,&iout,qa,vold,b,nodeboun,
+		f,fn,rfn,nactdof,&iout,qa,vold,b,nodeboun,
 		ndirboun,xbounact,nboun,ipompc,
 		nodempc,coefmpc,labmpc,nmpc,&nmethodact,cam,neq,veold,accold,
 		&bet,&gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -1216,7 +1218,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		islavquadel,aut,irowt,jqt,&mortartrafoflag,
 		&intscheme,physcon,dam,damn,iponoel);
 	SFREE(v);SFREE(f);
-	if(intpointvar!=1){SFREE(fn);SFREE(stx);}
+	if(intpointvar!=1){SFREE(fn);SFREE(rfn);SFREE(stx);}
 	iout=2;
 
 	for(i=0;i<nev*nev;i++){cc[i]=0.;}
@@ -1992,7 +1994,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		stx,elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,
 		ielmat,ielorien,norien,orab,ntmat_,t0,t1,
 		ithermal,prestr,iprestr,filab,eme,emn,een,
-		iperturb,f,fn,nactdof,&iout,qa,
+		iperturb,f,fn,rfn,nactdof,&iout,qa,
 		vold,br,nodeboun,ndirboun,xbounr,nboun,
 		ipompc,nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[1],
 		veold,accold,&bet,&gam,&dtime,&time,&xnull,
@@ -2024,7 +2026,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		stx,elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,
 		ielmat,ielorien,norien,orab,ntmat_,t0,t1,
 		ithermal,prestr,iprestr,filab,eme,emn,een,
-		iperturb,f,fn,nactdof,&iout,qa,
+		iperturb,f,fn,rfn,nactdof,&iout,qa,
 		vold,br,nodeboun,ndirboun,xbounact,nboun,
 		ipompc,nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[1],
 		veold,accold,&bet,&gam,&dtime,&time,&xnull,
@@ -2087,7 +2089,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		stx,elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,
 		ielmat,ielorien,norien,orab,ntmat_,t0,t1,
 		ithermal,prestr,iprestr,filab,eme,emn,een,
-		iperturb,f,fn,nactdof,&iout,qa,
+		iperturb,f,fn,rfn,nactdof,&iout,qa,
 		vold,bi,nodeboun,ndirboun,xbouni,nboun,
 		ipompc,nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[1],
 		veold,accold,&bet,&gam,&dtime,&time,&xnull,
@@ -2119,7 +2121,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		stx,elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,
 		ielmat,ielorien,norien,orab,ntmat_,t0,t1,
 		ithermal,prestr,iprestr,filab,eme,emn,een,
-		iperturb,f,fn,nactdof,&iout,qa,
+		iperturb,f,fn,rfn,nactdof,&iout,qa,
 		vold,bi,nodeboun,ndirboun,xbounact,nboun,
 		ipompc,nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[1],
 		veold,accold,&bet,&gam,&dtime,&time,&xnull,
@@ -2374,7 +2376,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     SFREE(ikactmechr);SFREE(ikactmechi);
       
     if(intpointvar==1){
-      SFREE(fn);
+      SFREE(fn);SFREE(rfn);
       SFREE(stnr);SFREE(stni);SFREE(stx);SFREE(eei);
 
       if(*ithermal>1) {SFREE(qfn);SFREE(qfx);}
@@ -2690,13 +2692,14 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	  NNEW(f,double,*neq);
 	  if(intpointvar!=1){
 	    NNEW(fn,double,mt**nk);
+		NNEW(rfn,double,mt**nk);
 	    NNEW(stx,double,6*mi[0]**ne);
 	  }
 	  results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,
 		  elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 		  ielorien,norien,orab,ntmat_,t0,t1act,ithermal,
 		  prestr,iprestr,filab,eme,emn,een,iperturb,
-		  f,fn,nactdof,&iout,qa,vold,b,nodeboun,
+		  f,fn,rfn,nactdof,&iout,qa,vold,b,nodeboun,
 		  ndirboun,xbounact,nboun,ipompc,
 		  nodempc,coefmpc,labmpc,nmpc,&nmethodact,cam,neq,veold,accold,
 		  &bet,&gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -2714,7 +2717,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		  islavquadel,aut,irowt,jqt,&mortartrafoflag,
 		  &intscheme,physcon,dam,damn,iponoel);
 	  SFREE(v);SFREE(f);
-	  if(intpointvar!=1){SFREE(fn);SFREE(stx);}
+	  if(intpointvar!=1){SFREE(fn);SFREE(rfn);SFREE(stx);}
 	  iout=2;
 
 	  for(i=0;i<nev*nev;i++){cc[i]=0.;}
@@ -3247,6 +3250,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 
       if(intpointvar==1){
 	NNEW(fn,double,mt**nk);
+	NNEW(rfn,double,mt**nk);
 	NNEW(stn,double,6**nk);
 	NNEW(stx,double,6*mi[0]**ne);
 
@@ -3295,7 +3299,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		stx,elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,
 		ielmat,ielorien,norien,orab,ntmat_,t0,t1,
 		ithermal,prestr,iprestr,filab,eme,emn,een,
-		iperturb,f,fn,nactdof,&iout,qa,
+		iperturb,f,fn,rfn,nactdof,&iout,qa,
 		vold,&btot[l*neq[1]],nodeboun,ndirboun,
 		&xbounacttime[l**nboun],nboun,
 		ipompc,nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[1],
@@ -3340,7 +3344,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
       SFREE(vr);SFREE(btot);SFREE(bp);
 
       if(intpointvar==1){
-	SFREE(fn);SFREE(stn);SFREE(stx);SFREE(eei);
+	SFREE(fn);SFREE(rfn);SFREE(stn);SFREE(stx);SFREE(eei);
 	if(*ithermal>1) {SFREE(qfn);SFREE(qfx);}
 	      
 	if(strcmp1(&filab[261],"E   ")==0) SFREE(een);

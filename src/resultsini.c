@@ -30,7 +30,7 @@ void resultsini(ITG *nk,double *v,ITG *ithermal,char *filab,ITG *iperturb,
 		double *cam,ITG *neq,double *veold,double *accold,
 		double *bet,double *gam,double *dtime,ITG *mi,double *vini,
 		ITG *nprint,char *prlab,ITG *intpointvarm,ITG *calcul_fn,
-		ITG *calcul_f,ITG *calcul_qa,ITG *calcul_cauchy,ITG *ikin,
+		ITG *calcul_f,ITG *calcul_qa,ITG *calcul_cauchy,ITG *calcul_rfn,ITG *ikin,
 		ITG *intpointvart,char *typeboun,ITG *num_cpus,ITG *mortar,
 		ITG *nener,ITG *iponoeln,ITG *network){
 
@@ -135,6 +135,7 @@ void resultsini(ITG *nk,double *v,ITG *ithermal,char *filab,ITG *iperturb,
   *calcul_f=0;
   *calcul_qa=0;
   *calcul_cauchy=0;
+  *calcul_rfn=0;
 
   /* procedure requirements */
     
@@ -168,18 +169,21 @@ void resultsini(ITG *nk,double *v,ITG *ithermal,char *filab,ITG *iperturb,
 
   if(*iout>0){
     if(strcmp1(&filab[4959],"RR  ")==0){
-      *calcul_fn=1;
-      *calcul_f=1;
+      *calcul_rfn=1;
     }
-    if(*calcul_fn!=1 || *calcul_f!=1){
+    if(*calcul_rfn!=1){
       for(i=0;i<*nprint;i++){
         if(strcmp1(&prlab[6*i],"RR  ")==0){
-            *calcul_fn=1;
-            *calcul_f=1;
+            *calcul_rfn=1;
             break;
         }
       }
     }
+  }
+
+  if(*calcul_rfn==1){
+    *calcul_fn=1;
+    *calcul_f=1;
   }
 
   /* initializing fn */

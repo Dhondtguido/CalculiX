@@ -91,7 +91,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 
   double *stn=NULL,*v=NULL,*resid=NULL,*z=NULL,*workd=NULL,
     *workl=NULL,*d=NULL,sigma,*temp_array=NULL,*fnext=NULL,
-    *een=NULL,cam[5],*f=NULL,*fn=NULL,qa[4],*fext=NULL,
+    *een=NULL,cam[5],*f=NULL,*fn=NULL,*rfn=NULL,qa[4],*fext=NULL,
     time=0.,*epn=NULL,*fnr=NULL,*fni=NULL,*emn=NULL,*cdn=NULL,
     *xstateini=NULL,*xstiff=NULL,*stiini=NULL,*vini=NULL,*stx=NULL,
     *enern=NULL,*xstaten=NULL,*eei=NULL,*enerini=NULL,*cocon=NULL,
@@ -145,6 +145,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 
   NNEW(v,double,mt**nk);
   NNEW(fn,double,mt**nk);
+  NNEW(rfn,double,mt**nk);
   NNEW(stx,double,6*mi[0]**ne);
 
   /* following fields are needed if *ener==1 or kode<-100 */
@@ -162,7 +163,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	    elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 	    ielorien,norien,orab,ntmat_,t0,t0,ithermal,
 	    prestr,iprestr,filab,eme,emn,een,iperturb,
-	    f,fn,nactdof,&iout,qa,vold,b,nodeboun,
+	    f,fn,rfn,nactdof,&iout,qa,vold,b,nodeboun,
 	    ndirboun,xboun,nboun,ipompc,
 	    nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[0],veold,accold,
 	    &bet,&gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -184,7 +185,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	    elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 	    ielorien,norien,orab,ntmat_,t0,t1old,ithermal,
 	    prestr,iprestr,filab,eme,emn,een,iperturb,
-	    f,fn,nactdof,&iout,qa,vold,b,nodeboun,
+	    f,fn,rfn,nactdof,&iout,qa,vold,b,nodeboun,
 	    ndirboun,xboun,nboun,ipompc,
 	    nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[0],veold,accold,
 	    &bet,&gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -206,7 +207,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
   SFREE(eei);SFREE(stiini);SFREE(emeini);SFREE(vini);
   if(*nener==1) SFREE(enerini);
 
-  SFREE(v);SFREE(fn);SFREE(stx);SFREE(inum);
+  SFREE(v);SFREE(fn);SFREE(rfn);SFREE(stx);SFREE(inum);
   iout=1;
 
   /* determining the system matrix and the external forces */
@@ -352,6 +353,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 
   NNEW(v,double,mt**nk);
   NNEW(fn,double,mt**nk);
+  NNEW(rfn,double,mt**nk);
   NNEW(stn,double,6**nk);
   NNEW(inum,ITG,*nk);
   NNEW(stx,double,6*mi[0]**ne);
@@ -372,7 +374,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	    rhcon,nrhcon,alcon,nalcon,alzero,ielmat,ielorien,norien,orab,
 	    ntmat_,t0,t0,ithermal,
 	    prestr,iprestr,filab,eme,emn,een,iperturb,
-	    f,fn,nactdof,&iout,qa,vold,b,nodeboun,
+	    f,fn,rfn,nactdof,&iout,qa,vold,b,nodeboun,
 	    ndirboun,xboun,nboun,ipompc,
 	    nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[0],veold,accold,&bet,
 	    &gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -394,7 +396,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	    stx,elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 	    ielorien,norien,orab,ntmat_,t0,t1old,ithermal,
 	    prestr,iprestr,filab,eme,emn,een,iperturb,
-	    f,fn,nactdof,&iout,qa,vold,b,nodeboun,
+	    f,fn,rfn,nactdof,&iout,qa,vold,b,nodeboun,
 	    ndirboun,xboun,nboun,ipompc,
 	    nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[0],veold,accold,&bet,
 	    &gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -433,7 +435,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
       ielprop,prop,sti,damn,&errn);
 
   if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
-  SFREE(v);SFREE(fn);SFREE(stn);SFREE(inum);
+  SFREE(v);SFREE(fn);SFREE(rfn);SFREE(stn);SFREE(inum);
 
   if(strcmp1(&filab[261],"E   ")==0) SFREE(een);
   if(strcmp1(&filab[2697],"ME  ")==0) SFREE(emn);
@@ -766,6 +768,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 
   NNEW(v,double,mt**nk);
   NNEW(fn,double,mt**nk);
+  NNEW(rfn,double,mt**nk);
   NNEW(stn,double,6**nk);
   NNEW(inum,ITG,*nk);
   NNEW(stx,double,6*mi[0]**ne);
@@ -792,7 +795,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	      nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,ielorien,
 	      norien,orab,ntmat_,t0,t0,ithermal,
 	      prestr,iprestr,filab,eme,emn,een,iperturb,
-	      f,fn,nactdof,&iout,qa,vold,&z[lint],
+	      f,fn,rfn,nactdof,&iout,qa,vold,&z[lint],
 	      nodeboun,ndirboun,xboun,nboun,ipompc,
 	      nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[0],veold,accold,&bet,
 	      &gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -815,7 +818,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	      nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,ielorien,
 	      norien,orab,ntmat_,t0,t1old,ithermal,
 	      prestr,iprestr,filab,eme,emn,een,iperturb,
-	      f,fn,nactdof,&iout,qa,vold,&z[lint],
+	      f,fn,rfn,nactdof,&iout,qa,vold,&z[lint],
 	      nodeboun,ndirboun,xboun,nboun,ipompc,
 	      nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[0],veold,accold,&bet,
 	      &gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -852,7 +855,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
     if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
   }
 
-  SFREE(v);SFREE(fn);SFREE(stn);SFREE(inum);SFREE(stx);SFREE(z);SFREE(d);
+  SFREE(v);SFREE(fn);SFREE(rfn);SFREE(stn);SFREE(inum);SFREE(stx);SFREE(z);SFREE(d);
   SFREE(eei);SFREE(xstiff);SFREE(stiini);SFREE(emeini);SFREE(vini);
   if(*nener==1)SFREE(enerini);
 
