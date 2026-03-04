@@ -26,7 +26,7 @@
 
 void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	 double *v,double *stn,ITG *inum,ITG *nmethod,ITG *kode,
-	 char *filab,double *een,double *t1,double *fn,double *time,
+	 char *filab,double *een,double *t1,double *fn,double *rfn,double *time,
 	 double *epn,ITG *ielmat,char *matname,double *enern,
 	 double *xstaten,ITG *nstate_,ITG *istep,ITG *iinc,
 	 ITG *ithermal,double *qfn,ITG *mode,ITG *noddiam,
@@ -1526,6 +1526,69 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	printf("          output request ist not performed;\n");
       }
     }
+    
+    if((strcmp1(&filab[4959],"RR  ")==0)&&(*ithermal!=2)){
+      if (rfn==NULL) {
+        printf(" *WARNING in frd:\n");
+        printf("          RR output is not supported\n");
+      } else {
+        iselect=1;
+        frdset(&filab[4959],set,&iset,istartset,iendset,ialset,
+               inum,&noutloc,&nout,nset,&noutmin,&noutplus,&iselect,
+               ngraph);
+
+        frdheader(&icounter,&oner,time,&pi,noddiam,cs,&null,mode,
+                  &noutloc,description,kode,nmethod,f1,output,istep,iinc);
+
+        if(mi[1]==3){
+          fprintf(f1," -4  REFO        4    1\n");
+          fprintf(f1," -5  R1          1    2    1    0\n");
+          fprintf(f1," -5  R2          1    2    2    0\n");
+          fprintf(f1," -5  R3          1    2    3    0\n");
+          fprintf(f1," -5  ALL         1    2    0    0    1ALL\n");
+
+          if((iaxial==1)&&(strcmp1(&filab[4963],"I")==0)){
+            for(i=0;i<*nk;i++){
+              rfn[1+i*mt]*=180.;
+              rfn[2+i*mt]*=180.;
+              rfn[3+i*mt]*=180.;
+            }
+          }
+
+          frdvector(rfn,&iset,ntrans,&filab[4959],&nkcoords,inum,m1,inotr,
+                    trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3,
+                    &ioutall);
+
+          if((iaxial==1)&&(strcmp1(&filab[4963],"I")==0)){
+            for(i=0;i<*nk;i++){
+              rfn[1+i*mt]/=180.;
+              rfn[2+i*mt]/=180.;
+              rfn[3+i*mt]/=180.;
+            }
+          }
+        }else if((mi[1]>3)&&(mi[1]<7)){
+          fprintf(f1," -4  REFO        %1" ITGFORMAT "    1\n",mi[1]+1);
+          fprintf(f1," -5  R1          1    2    1    0\n");
+          fprintf(f1," -5  R2          1    2    2    0\n");
+          fprintf(f1," -5  R3          1    2    3    0\n");
+          for(j=4;j<=mi[1];j++){
+            fprintf(f1," -5  R%1" ITGFORMAT "          1    1    0    0\n",j);
+          }
+          fprintf(f1," -5  ALL         1    2    0    0    1ALL\n");
+
+          frdgeneralvector(rfn,&iset,ntrans,&filab[4959],&nkcoords,inum,m1,
+                           inotr,trab,co,istartset,iendset,ialset,mi,ngraph,f1,
+                           output,m3,&ioutall);
+        }else{
+          printf(" *WARNING in frd:\n");
+          printf("          for output purposes only 4, 5 or 6\n");
+          printf("          degrees of freedom are allowed\n");
+          printf("          for generalized vectors;\n");
+          printf("          actual degrees of freedom = %"ITGFORMAT"\n",mi[1]);
+          printf("          output request is not performed;\n");
+        }
+      }
+    }
   }
 
   /*     storing the imaginary part of the forces in the nodes
@@ -1561,6 +1624,39 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	frdvector(fn,&iset,ntrans,filab,&nkcoords,inum,m1,inotr,
 		  trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3,
 		  &ioutall);
+      }
+    }
+
+    if((strcmp1(&filab[4959],"RR  ")==0)&&(*ithermal!=2)){
+      if (rfn==NULL) {
+        printf(" *WARNING in frd:\n");
+        printf("          RR output is not supported\n");
+      } else {
+        if((*nmethod==5)&&(*mode==0)){
+          iselect=1;
+          frdset(&filab[4959],set,&iset,istartset,iendset,ialset,
+                 inum,&noutloc,&nout,nset,&noutmin,&noutplus,&iselect,
+                 ngraph);
+        }
+
+        frdheader(&icounter,&oner,time,&pi,noddiam,cs,&null,mode,
+                  &noutloc,description,kode,nmethod,f1,output,istep,iinc);
+
+        fprintf(f1," -4  REFOI       4    1\n");
+        fprintf(f1," -5  R1          1    2    1    0\n");
+        fprintf(f1," -5  R2          1    2    2    0\n");
+        fprintf(f1," -5  R3          1    2    3    0\n");
+        fprintf(f1," -5  ALL         1    2    0    0    1ALL\n");
+
+        if(*noddiam>=0){
+          frdvector(&rfn[*nk*mt],&iset,ntrans,filab,&nkcoords,inum,m1,inotr,
+                    trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3,
+                    &ioutall);
+        }else{
+          frdvector(rfn,&iset,ntrans,filab,&nkcoords,inum,m1,inotr,
+                    trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3,
+                    &ioutall);
+        }
       }
     }
   }

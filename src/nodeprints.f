@@ -58,6 +58,7 @@
      &         (prlab(i)(1:4).eq.'NT  ').or.
      &         (prlab(i)(1:4).eq.'TS  ').or.
      &         (prlab(i)(1:4).eq.'RF  ').or.
+     &         (prlab(i)(1:4).eq.'RR  ').or.
      &         (prlab(i)(1:4).eq.'RFL ').or.
      &         (prlab(i)(1:4).eq.'PS  ').or.
      &         (prlab(i)(1:4).eq.'PN  ').or.
@@ -200,6 +201,7 @@
      &         (textpart(ii)(1:4).ne.'NT  ').and.
      &         (textpart(ii)(1:4).ne.'TS  ').and.
      &         (textpart(ii)(1:4).ne.'RF  ').and.
+     &         (textpart(ii)(1:4).ne.'RR  ').and.
      &         (textpart(ii)(1:4).ne.'RFL ').and.
      &         (textpart(ii)(1:4).ne.'PS  ').and.
      &         (textpart(ii)(1:4).ne.'PN  ').and.

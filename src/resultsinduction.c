@@ -48,7 +48,8 @@ void resultsinduction(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
        double *t0,
        double *t1,ITG *ithermal,double *prestr,ITG *iprestr,char *filab,
        double *eme,double *emn,
-       double *een,ITG *iperturb,double *f,double *fn,ITG *nactdof,ITG *iout,
+       double *een,ITG *iperturb,double *f,double *fn,double *rfn,
+       ITG *nactdof,ITG *iout,
        double *qa,double *vold,double *b,ITG *nodeboun,ITG *ndirboun,
        double *xboun,ITG *nboun,ITG *ipompc,ITG *nodempc,double *coefmpc,
        char *labmpc,ITG *nmpc,ITG *nmethod,double *cam,ITG *neq,double *veold,
@@ -77,7 +78,7 @@ void resultsinduction(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
     
   char *env,*envloc,*envsys,*tieset=NULL;
 
-    ITG intpointvarm,calcul_fn,calcul_f,calcul_qa,calcul_cauchy,nener,ikin,
+    ITG intpointvarm,calcul_fn,calcul_f,calcul_qa,calcul_cauchy,calcul_rfn,nener,ikin,
         intpointvart,mt=mi[1]+1,i,j,*ithread=NULL,*islavsurf=NULL,
       sys_cpus,mortar=0,*islavact=NULL,*itiefac=NULL;
 
@@ -164,7 +165,7 @@ void resultsinduction(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
        nactdof,iout,qa,b,nodeboun,ndirboun,
        xboun,nboun,ipompc,nodempc,coefmpc,labmpc,nmpc,nmethod,cam,neq,
        veold,dtime,mi,vini,nprint,prlab,
-       &intpointvarm,&calcul_fn,&calcul_f,&calcul_qa,&calcul_cauchy,&nener,
+       &intpointvarm,&calcul_fn,&calcul_f,&calcul_qa,&calcul_cauchy,&calcul_rfn,&nener,
        &ikin,&intpointvart,xforc,nforc));
 
     /* electromagnetic calculation is linear: should not be taken
@@ -307,7 +308,7 @@ void resultsinduction(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
        interpolation of 3d results for 1d/2d elements */
 
     FORTRAN(resultsprint,(co,nk,kon,ipkon,lakon,ne,v,stn,inum,
-       sti,ielorien,norien,orab,t1,ithermal,filab,een,iperturb,fn,
+       sti,ielorien,norien,orab,t1,ithermal,filab,een,iperturb,fn,rfn,
        nactdof,iout,vold,nodeboun,ndirboun,nboun,nmethod,ttime,xstate,
        epn,mi,
        nstate_,ener,enern,xstaten,eei,set,nset,istartset,iendset,

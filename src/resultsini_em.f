@@ -20,8 +20,8 @@
      &  nactdof,iout,qa,b,nodeboun,ndirboun,
      &  xboun,nboun,ipompc,nodempc,coefmpc,labmpc,nmpc,nmethod,cam,neq,
      &  veold,dtime,mi,vini,nprint,prlab,
-     &  intpointvarm,calcul_fn,calcul_f,calcul_qa,calcul_cauchy,nener,
-     &  ikin,intpointvart,xforc,nforc)
+     &  intpointvarm,calcul_fn,calcul_f,calcul_qa,calcul_cauchy,
+     &  calcul_rfn,nener,ikin,intpointvart,xforc,nforc)
 !
 !     initialization 
 !
@@ -39,7 +39,7 @@
       integer mi(*),nactdof(0:mi(2),*),nodeboun(*),ndirboun(*),
      &  ipompc(*),nodempc(3,*),mt,nk,ithermal(*),i,j,
      &  nener,iperturb(*),iout,nboun,nmpc,nmethod,ist,ndir,node,index,
-     &  neq,nprint,ikin,calcul_fn,nforc,
+     &  neq,nprint,ikin,calcul_fn,calcul_rfn,nforc,
      &  calcul_f,calcul_cauchy,calcul_qa,intpointvarm,intpointvart,
      &  irefnode,irotnode,iexpnode,irefnodeprev
 !
@@ -138,6 +138,7 @@ c                     v(j,i)=v(j,i)+bnac
       calcul_f=0
       calcul_qa=0
       calcul_cauchy=0
+      calcul_rfn=0
 !     
 !     determining which quantities have to be calculated
 !     
@@ -166,6 +167,24 @@ c                     v(j,i)=v(j,i)+bnac
             enddo
          endif
       endif
+      
+      if(iout.gt.0) then
+         if(filab(58)(1:4).eq.'RR  ') then
+            calcul_rfn=1
+         else
+            do i=1,nprint
+               if(prlab(i)(1:4).eq.'RR  ') then
+                  calcul_rfn=1
+                  exit
+               endif
+            enddo
+         endif
+      endif
+      
+      if(calcul_rfn.eq.1) then
+         calcul_fn=1
+         calcul_f=1
+      endif
 !     
 !     check whether user-defined concentrated forces were defined
 !     
@@ -176,6 +195,7 @@ c                     v(j,i)=v(j,i)+bnac
             exit
          endif
       enddo
+      
 !     
 !     initializing fn
 !     
@@ -294,6 +314,7 @@ c            endif
          if((filab(3)(1:4).eq.'S   ').or.
      &      (filab(4)(1:4).eq.'E   ').or.
      &      (filab(5)(1:4).eq.'RF  ').or.
+     &      (filab(58)(1:4).eq.'RR  ').or.
      &      (filab(6)(1:4).eq.'PEEQ').or.
      &      (filab(7)(1:4).eq.'ENER').or.
      &      (filab(8)(1:4).eq.'SDV ').or.
@@ -313,7 +334,8 @@ c            endif
      &           (prlab(i)(1:4).eq.'CSTR').or.
      &           (prlab(i)(1:4).eq.'CELS').or.
      &           (prlab(i)(1:4).eq.'SDV ').or.
-     &           (prlab(i)(1:4).eq.'RF  ')) then
+     &           (prlab(i)(1:4).eq.'RF  ').or.
+     &           (prlab(i)(1:4).eq.'RR  ')) then
                intpointvarm=1
                exit
             endif

@@ -27189,6 +27189,7 @@ real part is stored):
 \htmlref{*FREQUENCY}{frequency} calculations with cyclic symmetry).
 \item RF [FORC(real), FORCI(imaginary)]: External forces (only static forces;
   dynamic forces, such as those caused by dashpots, are not included)
+\item RR [REFO(real), REFOI(imaginary)]: Reaction forces.
 \item RFL [RFL]: External concentrated heat sources.
 \item SEN [SEN]: Sensitivities.
 \item TS [STTEMP]: Static temperatures in networks.
@@ -27405,6 +27406,7 @@ selected:
 \item External forces (key=RF) (only static forces;
   dynamic forces, such as those caused by dashpots, are not included)
 \item External concentrated heat sources (key=RFL)
+\item Only reaction forces without point loads (key=RR)
 \end{itemize}
 
 The external forces are the sum of

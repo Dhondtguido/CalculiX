@@ -116,7 +116,7 @@ void premortar(ITG *nzs,ITG *nzsc2,
   double alpha,*auc2=NULL,*adc2=NULL,*aubd=NULL,*aux2=NULL,*cv=NULL,
     *aubdtil=NULL,*aubdtil2=NULL,*f=NULL,*fext=NULL,*cvini=NULL,
     *audd=NULL,*auddtil=NULL,*auddinv=NULL,*auddtil2=NULL,*v=NULL,
-    *stx=NULL,*fn=NULL,*fini=NULL,*fextini=NULL,*dam=NULL,*damn=NULL,
+    *stx=NULL,*fn=NULL,*rfn=NULL,*fini=NULL,*fextini=NULL,*dam=NULL,*damn=NULL,
     *fmpc2=NULL,*aub=NULL,*adb=NULL,
     *adc=NULL,*auc=NULL,*volddummy=NULL,
     *vectornull=NULL,*f_cs=NULL,*f_cm=NULL,*fnext=NULL;
@@ -209,6 +209,7 @@ void premortar(ITG *nzs,ITG *nzsc2,
     NNEW(v,double,mt**nk);
     NNEW(stx,double,6*mi[0]**ne);
     NNEW(fn,double,mt**nk);
+    NNEW(rfn,double,mt**nk);
     NNEW(fmpc2,double,*nmpc);
     memcpy(&v[0],&vold[0],sizeof(double)*mt**nk);
     *iout=-1;
@@ -223,7 +224,7 @@ void premortar(ITG *nzs,ITG *nzsc2,
 	    elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 	    ielorien,norien,orab,ntmat_,t0,t1act,ithermal,
 	    prestr,iprestr,filab,eme,emn,een,iperturb,
-	    f,fn,nactdof,iout,qa,vold,b,nodeboun,
+	    f,fn,rfn,nactdof,iout,qa,vold,b,nodeboun,
 	    ndirboun,xbounact,nboun,ipompc,
 	    nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[1],veold,accold,
 	    bet,gam,dtime,time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -241,7 +242,7 @@ void premortar(ITG *nzs,ITG *nzsc2,
 	    islavquadel,aut,irowt,jqt,&mortartrafoflag,
 	    intscheme,physcon,dam,damn,iponoel);
   
-    SFREE(v);SFREE(stx);SFREE(fn);SFREE(inum);SFREE(fmpc2);
+    SFREE(v);SFREE(stx);SFREE(fn);SFREE(rfn);SFREE(inum);SFREE(fmpc2);
     *iout=0;	    
   
     *rhsi=1;
