@@ -183,9 +183,8 @@ c                     v(j,i)=v(j,i)+bnac
 
       if(calcul_rfn.eq.1) then
          calcul_fn=1
-         calcul_f=1
       endif
-!     
+!
 !     check whether user-defined concentrated forces were defined
 !     
       do i=1,nforc
@@ -195,10 +194,9 @@ c                     v(j,i)=v(j,i)+bnac
             exit
          endif
       enddo
-
-!     
+!
 !     initializing fn
-!     
+!
       if(calcul_fn.eq.1) then
          do i=1,nk
             do j=0,mi(2)
