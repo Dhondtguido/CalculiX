@@ -447,7 +447,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
   if(*nener==1) SFREE(enerini);
     
   SFREE(f);SFREE(v);SFREE(fn);SFREE(rfn);SFREE(stx);SFREE(eme);
-  if(*ithermal>1) {SFREE(qfx);SFREE(inum);}
+  if(*ithermal>1)SFREE(qfx);SFREE(inum);
   iout=1;
       
   if(fei[3]>0.){
