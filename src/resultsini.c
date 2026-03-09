@@ -183,7 +183,6 @@ void resultsini(ITG *nk,double *v,ITG *ithermal,char *filab,ITG *iperturb,
 
   if(*calcul_rfn==1){
     *calcul_fn=1;
-    *calcul_f=1;
   }
 
   /* initializing fn */
