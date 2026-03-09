@@ -71,6 +71,20 @@ void resultsforc(ITG *nk,double *f,double *fn,double *rfn,ITG *nactdof,ITG *ipom
 	    }*/
     }
     
+    /* calculating the reaction forces */
+    // NOTE(gmb): do it in parallel?
+    if(*calcul_rfn==1){
+        for(i=0;i<*nk;i++){
+            for(j=0;j<mt;j++){
+                if(nactdof[mt*i+j]<=0){
+                    rfn[mt*i+j]=fn[mt*i+j];
+                } else {
+                    rfn[mt*i+j]=0;
+                }
+            }
+        }
+    }
+    
     /* adding the mpc force again to fn */
 
     if(*calcul_fn==1){
@@ -139,19 +153,6 @@ void resultsforc(ITG *nk,double *f,double *fn,double *rfn,ITG *nactdof,ITG *ipom
 
 	    }while(1);
 	}
-    }
-    
-    // NOTE(gmb): parallel?
-    if(*calcul_rfn==1){
-        for(i=0;i<*nk;i++){
-            for(j=0;j<mt;j++){
-                if(nactdof[mt*i+j]>0){
-                    rfn[mt*i+j]=fn[mt*i+j] - f[nactdof[mt*i+j]-1];
-                } else {
-                    rfn[mt*i+j] = fn[mt*i+j];
-                }
-            }
-        }
     }
     
     return;
