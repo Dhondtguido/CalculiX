@@ -217,9 +217,9 @@ c     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
           endif
         endif
       endif
-      
-      if(filab(5)(1:2).eq.'RR') then
-        if(filab(5)(5:5).eq.'I') then
+
+      if(filab(58)(1:2).eq.'RR') then
+        if(filab(58)(5:5).eq.'I') then
           rfprint=.false.
           do i=1,nprint
             if(prlab(i)(1:2).eq.'RR') then
@@ -231,8 +231,6 @@ c     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
             nfield=mt
             cflag=' '
             iforce=1
-            call map3dto1d2d(fn,ipkon,inum,kon,lakon,nfield,nk,
-     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
             call map3dto1d2d(rfn,ipkon,inum,kon,lakon,nfield,nk,
      &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
           endif
