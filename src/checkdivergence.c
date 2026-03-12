@@ -7,7 +7,7 @@
 /*                    */
 
 /*     This program is distributed in the hope that it will be useful,   */
-/*     but WITHOUT ANY WARRANTY; without even the implied warranty of    */ 
+/*     but WITHOUT ANY WARRANTY; without even the implied warranty of    */
 /*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the      */
 /*     GNU General Public License for more details.                      */
 
@@ -19,7 +19,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include "CalculiX.h"
-#ifdef SPOOLES 
+#ifdef SPOOLES
    #include "spooles.h"
 #endif
 #ifdef SGI
@@ -30,7 +30,7 @@
 #endif
 
 void checkdivergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
-	  ITG *ne, double *stn, ITG *nmethod, 
+	  ITG *ne, double *stn, ITG *nmethod,
 	  ITG *kode, char *filab, double *een, double *t1act,
           double *time, double *epn,ITG *ielmat,char *matname,
           double *enern, double *xstaten, ITG *nstate_, ITG *istep,
@@ -42,7 +42,7 @@ void checkdivergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
           double *qam, double *ram1, double *ram2, double *ram,
           double *cam, double *uam, ITG *ntg, double *ttime,
           ITG *icntrl, double *theta, double *dtheta, double *veold,
-          double *vini, ITG *idrct, double *tper,ITG *istab, double *tmax, 
+          double *vini, ITG *idrct, double *tper,ITG *istab, double *tmax,
           ITG *nactdof, double *b, double *tmin, double *ctrl, double *amta,
           ITG *namta, ITG *itpamp, ITG *inext, double *dthetaref, ITG *itp,
           ITG *jprint, ITG *jout, ITG *uncoupled, double *t1, ITG *iitterm,
@@ -76,18 +76,18 @@ void checkdivergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	*dthetaref=*dtheta;
 	printf(" divergence; the increment size is decreased to %e\n",*dtheta**tper);
 	printf(" the increment is reattempted\n\n");
-	
+
 	FORTRAN(writestadiv,(istep,iinc,icutb,iit,ttime,time,
 				 dtime));
-	
+
 	*istab=0;
 	if(*itp==1){
 	    *itp=0;
 	    (*inext)--;
 	}
-	
+
 	/* check whether new increment size is smaller than minimum */
-	
+
 	if(*dtheta<*tmin){
 	    printf("\n *ERROR: increment size smaller than minimum\n");
 	    printf(" best solution and residuals are in the frd file\n\n");
@@ -97,11 +97,11 @@ void checkdivergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 				   nk,sti,stn,ipkon,inum,kon,lakon,ne,mi,orab,
 				   ielorien,co,itg,ntg,vold,ielmat,thicke,ielprop,prop));
 	    ++*kode;
-	    
+
 	    (*ttime)+=(*time);
 
 	    /* no mesh refinement */
-	  
+
 	    strcpy1(&filab[4089],"  ",2);
 	    frd(co,nk,kon,ipkon,lakon,ne,vold,stn,inum,nmethod,
 		kode,filab,een,t1act,fn,NULL,ttime,epn,ielmat,matname,enern,
@@ -110,8 +110,8 @@ void checkdivergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		ipneigh,neigh,mi,sti,vr,vi,stnr,stni,vmax,stnmax,
 		&ngraph,veold,ener,ne,cs,set,nset,istartset,iendset,
 		ialset,eenmax,fnr,fni,emn,thicke,jobnamec,output,qfx,cdn,
-		mortar,cdnr,cdni,nmat,ielprop,prop,sti,damn,&errn);
-	    
+		mortar,cdnr,cdni,nmat,ielprop,prop,sti,damn,&errn,nactdof);
+
 	    FORTRAN(stop,());
 	}
 	*icntrl=1;
@@ -120,9 +120,9 @@ void checkdivergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	    *kscale=kscalemax;
 	    printf("\n reducing the constant stiffnesses by a factor of %d \n\n",*kscale);
 	}
-	
+
 	/* check whether too many cutbacks */
-	
+
 	if(*icutb>ia){
 	    printf("\n *ERROR: too many cutbacks\n");
 	    printf(" best solution and residuals are in the frd file\n\n");
@@ -132,11 +132,11 @@ void checkdivergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 				   nk,sti,stn,ipkon,inum,kon,lakon,ne,mi,orab,
 				   ielorien,co,itg,ntg,vold,ielmat,thicke,ielprop,prop));
 	    ++*kode;
-	    
+
 	    (*ttime)+=(*time);
 
 	    /* no mesh refinement */
-	  
+
 	    strcpy1(&filab[4089],"  ",2);
 	    frd(co,nk,kon,ipkon,lakon,ne,vold,stn,inum,nmethod,
 		kode,filab,een,t1act,fn,NULL,ttime,epn,ielmat,matname,enern,
@@ -145,8 +145,8 @@ void checkdivergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		ipneigh,neigh,mi,sti,vr,vi,stnr,stni,vmax,stnmax,
 		&ngraph,veold,ener,ne,cs,set,nset,istartset,iendset,
 		ialset,eenmax,fnr,fni,emn,thicke,jobnamec,output,qfx,cdn,
-		mortar,cdnr,cdni,nmat,ielprop,prop,sti,damn,&errn);
-	    
+		mortar,cdnr,cdni,nmat,ielprop,prop,sti,damn,&errn,nactdof);
+
 	    FORTRAN(stop,());
 	}
 	if(*uncoupled){
@@ -155,11 +155,11 @@ void checkdivergence(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	    }
 	    *ithermal=3;
 	}
-	
+
 	/* default value for qa[2] */
-	
+
 	qa[2]=-1.;
-	
+
 	*iflagact=0;
 
 return;

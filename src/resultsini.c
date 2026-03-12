@@ -7,7 +7,7 @@
 /*                    */
 
 /*     This program is distributed in the hope that it will be useful,   */
-/*     but WITHOUT ANY WARRANTY; without even the implied warranty of    */ 
+/*     but WITHOUT ANY WARRANTY; without even the implied warranty of    */
 /*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the      */
 /*     GNU General Public License for more details.                      */
 
@@ -37,7 +37,7 @@ void resultsini(ITG *nk,double *v,ITG *ithermal,char *filab,ITG *iperturb,
   ITG mt,i,j,node,ndir,ist,index,incrementalmpc;
 
   double bnac,fixed_disp;
-    
+
   mt=mi[1]+1;
 
   if((*iout!=2)&&(*iout>-1)){
@@ -93,7 +93,7 @@ void resultsini(ITG *nk,double *v,ITG *ithermal,char *filab,ITG *iperturb,
 	iniparll(&mt,nactdof,b,v,veold,accold,bet,gam,
 		 dtime,cam,nk,num_cpus,mortar);
       }
-	    
+
       /* transient thermal step */
 
       if(ithermal[0]>1){
@@ -123,7 +123,7 @@ void resultsini(ITG *nk,double *v,ITG *ithermal,char *filab,ITG *iperturb,
 	      cam[2]=fabs(v[mt*i]-vini[mt*i]);
 	    }
 	  }
-	    
+
 	}
       }
     }
@@ -138,7 +138,7 @@ void resultsini(ITG *nk,double *v,ITG *ithermal,char *filab,ITG *iperturb,
   *calcul_rfn=0;
 
   /* procedure requirements */
-    
+
   if((iperturb[0]>=2)||((iperturb[0]<=0)&&(*iout<0))){
     if((*iout<1)&&(*iout>-2)){
       *calcul_fn=1;
@@ -150,7 +150,7 @@ void resultsini(ITG *nk,double *v,ITG *ithermal,char *filab,ITG *iperturb,
   }
 
   /* output requests */
-    
+
   if(*iout>0){
     if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[783],"RFL ")==0)||
        (strcmp1(&filab[2610],"PRF ")==0)){
@@ -190,14 +190,14 @@ void resultsini(ITG *nk,double *v,ITG *ithermal,char *filab,ITG *iperturb,
   if(*calcul_fn==1){
     setpardou(fn,0.,mt**nk,*num_cpus);
   }
-    
+
   /* initializing f */
 
   if(*calcul_f==1){
     setpardou(f,0.,*neq,*num_cpus);
   }
 
-  /* SPC's and MPC's have to be taken into account for 
+  /* SPC's and MPC's have to be taken into account for
      iout=0,1 and -1 */
 
   if(abs(*iout)<2){
@@ -207,29 +207,29 @@ void resultsini(ITG *nk,double *v,ITG *ithermal,char *filab,ITG *iperturb,
     for(i=0;i<*nboun;i++){
       if((ndirboun[i]>mi[1])||(typeboun[i]=='F')) continue;
       fixed_disp=xboun[i];
-	    
+
       /* a discontinuity in the displacements in an initial
 	 acceleration step (recognized by the "special" time
-	 increment) should not lead to a change in 
-	 the acceleration or velocity; actually, such a 
+	 increment) should not lead to a change in
+	 the acceleration or velocity; actually, such a
 	 discontinuity is not allowed since it leads to
 	 infinite accelerations */
-					      
+
       if((*nmethod==4)&&(iperturb[0]>1)){
 	ndir=ndirboun[i];
 	node=nodeboun[i]-1;
 	if(ndir>0){
 	  if(*mortar!=-1){
-	    
+
 	    /* bnac is the change in acceleration */
-		    
+
 	    bnac=(xboun[i]-v[mt*node+ndir])/(*bet**dtime**dtime);
 	    if(floor(*dtime*1.e28+0.5)!=123571113){
 	      veold[mt*node+ndir]+=*gam**dtime*bnac;
 	      accold[mt*node+ndir]+=bnac;
 	    }
 	  }else{
-	    
+
 	    /* massless contact: bnac is the velocity */
 
 	    bnac=(xboun[i]-v[mt*node+ndir])/(*dtime);
@@ -243,9 +243,9 @@ void resultsini(ITG *nk,double *v,ITG *ithermal,char *filab,ITG *iperturb,
     /* multiple point constraints */
 
     /* the parameter incrementalmpc indicates whether the
-       incremental displacements enter the mpc or the total 
+       incremental displacements enter the mpc or the total
        displacements (incrementalmpc=0) */
-	
+
     for(i=0;i<*nmpc;i++){
 
       if((strcmp1(&labmpc[20*i],"                    ")==0)||
@@ -264,7 +264,7 @@ void resultsini(ITG *nk,double *v,ITG *ithermal,char *filab,ITG *iperturb,
       ist=ipompc[i]-1;
       node=nodempc[3*ist]-1;
       ndir=nodempc[3*ist+1];
-	    
+
       if(ndir==0){
 	if(ithermal[0]<2) continue;
       }else if(ndir>mi[1]){
@@ -296,15 +296,15 @@ void resultsini(ITG *nk,double *v,ITG *ithermal,char *filab,ITG *iperturb,
 
       /* a discontinuity in the displacements in an initial
 	 acceleration step (recognized by the "special" time
-	 increment) should not lead to a change in 
-	 the acceleration or velocity; actually, such a 
+	 increment) should not lead to a change in
+	 the acceleration or velocity; actually, such a
 	 discontinuity is not allowed since it leads to
 	 infinite accelerations */
 
       if((*nmethod==4)&&(iperturb[0]>1)){
 	if(ndir>0){
 	  if(*mortar!=-1){
-	    
+
 	    /* bnac is the change in acceleration */
 
 	    bnac=(fixed_disp-v[mt*node+ndir])/(*bet**dtime**dtime);
@@ -314,10 +314,10 @@ void resultsini(ITG *nk,double *v,ITG *ithermal,char *filab,ITG *iperturb,
 
 	    /* different treatment than for xboun: accold is
 	       not included in the above if statement */
-		    
+
 	    accold[mt*node+ndir]+=bnac;
 	  }else{
-	    
+
 	    /* massless contact: bnac is the velocity */
 
 	    bnac=(fixed_disp-v[mt*node+ndir])/(*dtime);
@@ -334,11 +334,11 @@ void resultsini(ITG *nk,double *v,ITG *ithermal,char *filab,ITG *iperturb,
   *ikin=0;
 
   /* dynamic calculations */
-    
+
   if((*nmethod==4)&&(iperturb[0]>1)&&(ithermal[0]<=1)&&(*nener==1)){
     *ikin=1;
   }
-    
+
   /* output requests */
 
   if(*ikin!=1){
@@ -415,6 +415,6 @@ void resultsini(ITG *nk,double *v,ITG *ithermal,char *filab,ITG *iperturb,
       *intpointvart=1;
     }
   }
-    
+
   return;
 }

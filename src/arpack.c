@@ -7,7 +7,7 @@
 /*                    */
 
 /*     This program is distributed in the hope that it will be useful,   */
-/*     but WITHOUT ANY WARRANTY; without even the implied warranty of    */ 
+/*     but WITHOUT ANY WARRANTY; without even the implied warranty of    */
 /*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the      */
 /*     GNU General Public License for more details.                      */
 
@@ -42,23 +42,23 @@
 #endif
 
 void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
-	    ITG *ne, 
-	    ITG *nodeboun, ITG *ndirboun, double *xboun, ITG *nboun, 
-	    ITG *ipompc, ITG *nodempc, double *coefmpc, char *labmpc, 
-	    ITG *nmpc, 
-	    ITG *nodeforc, ITG *ndirforc,double *xforc, ITG *nforc, 
+	    ITG *ne,
+	    ITG *nodeboun, ITG *ndirboun, double *xboun, ITG *nboun,
+	    ITG *ipompc, ITG *nodempc, double *coefmpc, char *labmpc,
+	    ITG *nmpc,
+	    ITG *nodeforc, ITG *ndirforc,double *xforc, ITG *nforc,
 	    ITG *nelemload, char *sideload, double *xload,
-	    ITG *nload, ITG *nactdof, 
-	    ITG *icol, ITG *jq, ITG **irowp, ITG *neq, ITG *nzl, 
-	    ITG *nmethod, ITG *ikmpc, ITG *ilmpc, ITG *ikboun, 
+	    ITG *nload, ITG *nactdof,
+	    ITG *icol, ITG *jq, ITG **irowp, ITG *neq, ITG *nzl,
+	    ITG *nmethod, ITG *ikmpc, ITG *ilmpc, ITG *ikboun,
 	    ITG *ilboun,
 	    double *elcon, ITG *nelcon, double *rhcon, ITG *nrhcon,
 	    double *shcon, ITG *nshcon, double *cocon, ITG *ncocon,
 	    double *alcon, ITG *nalcon, double *alzero, ITG **ielmatp,
 	    ITG **ielorienp, ITG *norien, double *orab, ITG *ntmat_,
-	    double *t0, double *t1, double *t1old, 
-	    ITG *ithermal,double *prestr, ITG *iprestr, 
-	    double *vold,ITG *iperturb, double *sti, ITG *nzs,  
+	    double *t0, double *t1, double *t1old,
+	    ITG *ithermal,double *prestr, ITG *iprestr,
+	    double *vold,ITG *iperturb, double *sti, ITG *nzs,
 	    ITG *kode, ITG *mei, double *fei,char *filab,
 	    ITG *iexpl, double *plicon, ITG *nplicon, double *plkcon,
 	    ITG *nplkcon,
@@ -66,7 +66,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	    ITG *ncmat_, ITG *nstate_, double **enerp, char *jobnamec,
 	    char *output, char *set, ITG *nset, ITG *istartset,
 	    ITG *iendset, ITG *ialset, ITG *nprint, char *prlab,
-	    char *prset, ITG *nener, ITG *isolver, double *trab, 
+	    char *prset, ITG *nener, ITG *isolver, double *trab,
 	    ITG *inotr, ITG *ntrans, double *ttime, double *fmpc,
 	    ITG *ipobody, ITG *ibody,double *xbody, ITG *nbody,
 	    double *thicke, ITG *nslavs, double *tietol, ITG *nkon,
@@ -79,7 +79,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	    double *pmastload){
 
   /* calls the Arnoldi Package (ARPACK) */
-  
+
   char bmat[2]="G", which[3]="LM", howmny[2]="A", fneig[132]="",
     description[13]="            ",*lakon=NULL,jobnamef[396]="";
 
@@ -134,7 +134,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 
   /* determining whether a node belongs to at least one element
      (needed in resultsforc.c) */
-  
+
   NNEW(iponoel,ITG,*nk);
   FORTRAN(nodebelongstoel,(iponoel,inoel,&inoelsize,lakon,ipkon,kon,ne,&nramp));
 
@@ -142,11 +142,11 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     *nmethod=2;
     igreen=1;
   }
-  
+
   for(k=0;k<3;k++){
     strcpy1(&jobnamef[k*132],&jobnamec[k*132],132);
   }
-  
+
   if(*mortar!=1){
     maxprevcontel=*nslavs;
   }else if(*mortar==1){
@@ -190,12 +190,12 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 
     /* Green functions: number of "eigenmodes" is the number of
        unit forces */
-    
+
     nev=*nforc;
     ncv=*nforc;
   }
-  
-  /* assigning the body forces to the elements */ 
+
+  /* assigning the body forces to the elements */
 
   if(*nbody>0){
     if(*inewton==1){
@@ -207,7 +207,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
   ne0=*ne;
 
   /* contact conditions */
-  
+
   if(*iperturb!=0){
 
     memmpc_=mpcinfo[0];mpcfree=mpcinfo[1];icascade=mpcinfo[2];
@@ -223,11 +223,11 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 
       NNEW(cg,double,3*ncont);
       NNEW(straight,double,16*ncont);
-	  
+
       /* 11 instead of 10: last position is reserved for the
 	 local contact spring element number; needed as
 	 pointer into springarea */
-	  
+
       if(*mortar==0){
 	RENEW(kon,ITG,*nkon+11**nslavs);
 	NNEW(springarea,double,2**nslavs);
@@ -237,15 +237,15 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	}
 	RENEW(ipkon,ITG,*ne+*nslavs);
 	RENEW(lakon,char,8*(*ne+*nslavs));
-	      
+
 	if(*norien>0){
 	  RENEW(ielorien,ITG,mi[2]*(*ne+*nslavs));
 	  for(k=mi[2]**ne;k<mi[2]*(*ne+*nslavs);k++) ielorien[k]=0;
 	}
-	      
+
 	RENEW(ielmat,ITG,mi[2]*(*ne+*nslavs));
 	for(k=mi[2]**ne;k<mi[2]*(*ne+*nslavs);k++) ielmat[k]=1;
-	      
+
 	if((maxprevcontel==0)&&(*nslavs!=0)){
 	  RENEW(xstate,double,*nstate_*mi[0]*(*ne+*nslavs));
 	  for(k=*nstate_*mi[0]**ne;k<*nstate_*mi[0]*(*ne+*nslavs);k++){
@@ -253,7 +253,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	  }
 	}
 	maxprevcontel=*nslavs;
-	      
+
 	NNEW(areaslav,double,*ifacecount);
 	NNEW(xmastnor,double,3*nmastnode[*ntie]);
       }else if(*mortar==1){
@@ -263,7 +263,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	NNEW(xmastnor,double,3*nmastnode[*ntie]);
 
 	*nintpoint=0;
-	      
+
 	precontact(&ncont,ntie,tieset,nset,set,istartset,
 		   iendset,ialset,itietri,lakon,ipkon,kon,koncont,ne,
 		   cg,straight,co,vold,istep,&iinc,&iit,itiefac,
@@ -271,20 +271,20 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 		   imastop,mi,ipe,ime,tietol,
 		   nintpoint,&pslavsurf,xmastnor,cs,mcs,ics,clearini,
 		   nslavs);
-	      
+
 	/* changing the dimension of element-related fields */
-	      
+
 	RENEW(kon,ITG,*nkon+22**nintpoint);
 	RENEW(springarea,double,2**nintpoint);
 	RENEW(pmastsurf,double,6**nintpoint);
-	      
+
 	if(*nener==1){
 	  RENEW(ener,double,2*mi[0]*(*ne+*nintpoint));
 	  DMEMSET(ener,0,2*mi[0]*(*ne+*nslavs),0.);
 	}
 	RENEW(ipkon,ITG,*ne+*nintpoint);
 	RENEW(lakon,char,8*(*ne+*nintpoint));
-	      
+
 	if(*norien>0){
 	  RENEW(ielorien,ITG,mi[2]*(*ne+*nintpoint));
 	  for(k=mi[2]**ne;k<mi[2]*(*ne+*nintpoint);k++) ielorien[k]=0;
@@ -303,21 +303,21 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	      xstateini[k]=xstate[k];
 	    }
 	  }
-		  
+
 	  RENEW(xstate,double,*nstate_*mi[0]*(ne0+*nintpoint));
 	  for(k=*nstate_*mi[0]*ne0;k<*nstate_*mi[0]*(ne0+*nintpoint);k++){
 	    xstate[k]=0.;
 	  }
-		  
+
 	  if((*nintpoint>0)&&(maxprevcontel>0)){
-		      
+
 	    /* interpolation of xstate */
-		      
+
 	    FORTRAN(interpolatestate,(ne,ipkon,kon,lakon,
 				      &ne0,mi,xstate,pslavsurf,nstate_,
 				      xstateini,islavsurf,islavsurfold,
 				      pslavsurfold,tieset,ntie,itiefac));
-		      
+
 	  }
 
 	  if(maxprevcontel!=0){
@@ -325,14 +325,14 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	  }
 
 	  maxprevcontel=*nintpoint;
-		  
+
 	  RENEW(xstateini,double,*nstate_*mi[0]*(ne0+*nintpoint));
 	  for(k=0;k<*nstate_*mi[0]*(ne0+*nintpoint);++k){
 	    xstateini[k]=xstate[k];
 	  }
 	}
       }
-	  
+
       /* generating contact spring elements */
 
       contact(&ncont,ntie,tieset,nset,set,istartset,iendset,
@@ -345,11 +345,11 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	      xnoels,mortar,pslavsurf,pmastsurf,clearini,&theta,
 	      xstateini,xstate,nstate_,&icutb,&ialeatoric,jobnamef,&alea,
 	      auw,jqw,iroww,&nzsw);
-	  
+
       printf("number of contact spring elements=%" ITGFORMAT "\n\n",*ne-ne0);
-	  
+
       /* determining the structure of the stiffness/mass matrix */
-	  
+
       remastructar(ipompc,&coefmpc,&nodempc,nmpc,
 		   &mpcfree,nodeboun,ndirboun,nboun,ikmpc,ilmpc,ikboun,ilboun,
 		   labmpc,nk,&memmpc_,&icascade,&maxlenmpc,
@@ -390,13 +390,13 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
   NNEW(inum,ITG,*nk);
 
   /* following fields are needed if *ener==1 or kode<-100 */
-    
+
   NNEW(vini,double,mt**nk);
   NNEW(eei,double,6*mi[0]**ne);
   NNEW(stiini,double,6*mi[0]*ne0);
   NNEW(emeini,double,6*mi[0]*ne0);
   if(*nener==1) NNEW(enerini,double,2*mi[0]*ne0);
-    
+
   if(*iperturb==0){
     results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,
 	    elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
@@ -442,34 +442,34 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	    islavquadel,aut,irowt,jqt,&mortartrafoflag,
 	    &intscheme,physcon,dam,damn,iponoel);
   }
-  
+
   SFREE(eei);SFREE(stiini);SFREE(emeini);SFREE(vini);
   if(*nener==1) SFREE(enerini);
-    
+
   SFREE(f);SFREE(v);SFREE(fn);SFREE(rfn);SFREE(stx);SFREE(eme);
   if(*ithermal>1)SFREE(qfx);SFREE(inum);
   iout=1;
-      
+
   if(fei[3]>0.){
 
     mscalmethod=0;
-	  
+
     /* Explicit: Calculation of stable time increment according to
        Courant's Law  Carlo Monjaraz Tec (CMT) and Selctive Mass Scaling CC*/
 
     /*Mass Scaling
       mscalmethod < 0: no explicit dynamics
       mscalmethod = 0: no mass scaling
-      mscalmethod = 1: selective mass scaling for nonlinearity after 
+      mscalmethod = 1: selective mass scaling for nonlinearity after
       Olovsson et. al 2005
 
-      mscalmethod=2 and mscalmethod=3 correspond to 0 and 1, 
+      mscalmethod=2 and mscalmethod=3 correspond to 0 and 1,
       respectively with in addition contact scaling active; contact
       scaling is activated if the user time increment cannot be satisfied */
 
     dtset=fei[3];
     NNEW(smscale,double,*ne);
-	  
+
     FORTRAN(calcstabletimeincvol,(&ne0,elcon,nelcon,rhcon,nrhcon,alcon,
 				  nalcon,orab,ntmat_,ithermal,alzero,plicon,
 				  nplicon,plkcon,nplkcon,npmat_,mi,&dtime,
@@ -481,7 +481,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
       printf(" Explicit time integration: Volumetric COURANT initial stable time increment:%e\n\n",dtvol);
       if(dtset<dtvol){dtset=dtvol;}
       printf(" SELECTED explicit dynamics time increment:%e\n\n",dtset);
-      
+
   }
 
   /* for the frequency analysis linear strain and elastic properties
@@ -548,7 +548,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
       RENEW(aub,double,nzs[2]+nzs[1]);
       symmetryflag=2;
       inputformat=1;
-	  
+
       mafillsmasmain(co,nk,kon,ipkon,lakon,ne,nodeboun,
 		     ndirboun,xboun,nboun,
 		     ipompc,nodempc,coefmpc,nmpc,nodeforc,ndirforc,xforc,
@@ -572,7 +572,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
   }
 
   SFREE(fext);
-      
+
   /*for(k=0;k<neq[1];++k){printf("ad=%" ITGFORMAT ",%f\n",k,ad[k]);}
   for(k=0;k<nzs[1];++k){printf("au=%" ITGFORMAT ",%f\n",k,au[k]);}
   for(k=0;k<neq[1];++k){printf("adb=%" ITGFORMAT ",%f\n",k,adb[k]);}
@@ -596,8 +596,8 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
-	ielprop,prop,sti,damn,&errn);
-    
+	ielprop,prop,sti,damn,&errn,nactdof);
+
     if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
     SFREE(inum);FORTRAN(stop,());
 
@@ -682,9 +682,9 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
   }
 
   if(igreen==0){
-  
+
     /* calculating the eigenvalues and eigenmodes */
-  
+
     printf(" Calculating the eigenvalues and the eigenmodes\n\n");
 
     ido=0;
@@ -693,7 +693,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     iparam[2]=mxiter;
     iparam[3]=1;
     iparam[6]=3;
-    
+
     info=0;
 
     NNEW(resid,double,neq[1]);
@@ -701,11 +701,11 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     NNEW(workd,double,3*neq[1]);
 
     /* for the limits: look for "ierr = -3" in dsaupd.f and dnaupd.f */
-    
+
     if(nasym==1){
 
       /* nev+2 <= ncv <= n */
-      
+
       if(nev+2>neq[1]){
 	printf(" *ERROR in arpack: too many eigenvalues requested\n");
 	printf("                   number is reduced to: %" ITGFORMAT "\n\n",neq[1]-2);
@@ -723,7 +723,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     }else{
 
       /* nev+1 <= ncv <= n */
-      
+
       if(nev+1>neq[1]){
 	printf(" *ERROR in arpack: too many eigenvalues requested\n");
 	printf("                   number is reduced to: %" ITGFORMAT "\n\n",neq[1]-1);
@@ -739,9 +739,9 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
       FORTRAN(dsaupd,(&ido,bmat,&neq[1],which,&nev,&tol,resid,&ncv,z,&ldz,iparam,ipntr,workd,
 		      workl,&lworkl,&info));
     }
-    
+
     NNEW(temp_array,double,neq[1]);
-    
+
     while((ido==-1)||(ido==1)||(ido==2)){
       if(ido==-1){
 	if(nasym==1){
@@ -751,9 +751,9 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	}
       }
       if((ido==-1)||(ido==1)){
-	
+
 	/* solve the linear equation system  */
-	
+
 	if(ido==-1){
 	  if(*isolver==0){
 #ifdef SPOOLES
@@ -779,10 +779,10 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 #ifdef PASTIX
 #ifdef PARDISO
 	    pardiso_solve(temp_array,&neq[1],&symmetryflag,&inputformat,&nrhs);
-#else	    
+#else
 	    if( pastix_solve(temp_array,&neq[1],&symmetryflag,&nrhs)==-1 )
 	      printf(" *WARNING in arpack: solving step didn't converge! Continuing anyway\n");
-#endif	    
+#endif
 #endif
 	  }
 	  for(jrow=0;jrow<neq[1];jrow++){
@@ -824,9 +824,9 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	    workd[ipntr[1]-1+jrow]=workd[ipntr[2]-1+jrow];
 	  }
 	}
-	
+
       }
-      
+
       if(ido==2){
 	if(nasym==1){
 	  FORTRAN(opas,(&neq[1],&workd[ipntr[0]-1],&workd[ipntr[1]-1],
@@ -836,7 +836,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 		      adb,aub,jq,irow);
 	}
       }
-      
+
       if(nasym==1){
 	FORTRAN(dnaupd,(&ido,bmat,&neq[1],which,&nev,&tol,resid,&ncv,z,&ldz,
                         iparam,ipntr,workd,workl,&lworkl,&info));
@@ -845,14 +845,14 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 			iparam,ipntr,workd,workl,&lworkl,&info));
       }
     }
-    
+
     if(info!=0){
       printf(" *ERROR in d[n,s]aupd: info=%" ITGFORMAT "\n",info);
       printf("       # of converged eigenvalues=%" ITGFORMAT "\n\n",iparam[4]);
-    }         
-    
+    }
+
     NNEW(select,ITG,ncv);
-    
+
     if(nasym==1){
       NNEW(d,double,nev+1);
       NNEW(di,double,nev+1);
@@ -862,9 +862,9 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 		      &ncv,z,&ldz,iparam,ipntr,workd,workl,&lworkl,&info));
       SFREE(workev);
       NNEW(dc,double,2*nev);
-      
+
       /* storing as complex number and taking the square root */
-      
+
       for(j=0;j<nev;j++){
 	dc[2*j]=sqrt(sqrt(d[j]*d[j]+di[j]*di[j])+d[j])/sqrt(2.);
 	dc[2*j+1]=sqrt(sqrt(d[j]*d[j]+di[j]*di[j])-d[j])/sqrt(2.);
@@ -879,13 +879,13 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
       FORTRAN(writeev,(d,&nev,&fmin,&fmax));
     }
     SFREE(select);SFREE(workd);SFREE(workl);SFREE(resid);
-	
+
     if(info!=0){
       printf(" *ERROR in d[n,s]eupd: info=%" ITGFORMAT "\n",info);
-    }         
+    }
 
     /* check the normalization of the eigenmodes */
-    
+
     for(j=0;j<nev;j++){
       kref=j*neq[1];
       if(nasym==1){
@@ -898,14 +898,14 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
       sum=0;
       for(k=0;k<neq[1];k++){sum+=z[kref+k]*temp_array[k];}
       printf("U^T*M*U=%f for eigenmode %" ITGFORMAT "\n",sum,j+1);
-      
+
       if(fabs(sum-1.)>1.e-5){
 	printf("sum=%e\n",sum);
 	printf("normalizing the eigenmode \n");
 	for(k=0;k<neq[1];k++){z[kref+k]/=sqrt(sum);}
       }
     }
-    
+
     SFREE(temp_array);
 
   }else{
@@ -913,21 +913,21 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     /* Green functions */
 
     /* storing omega_0^2 into d */
-    
+
     NNEW(d,double,*nforc);
     for(j=0;j<*nforc;j++){d[j]=xforc[0];}
     NNEW(z,double,neq[1]);
 
   }
-    
-  
+
+
   /* writing the eigenvalues and mass matrix to a binary file */
-  
+
   if(mei[3]==1){
-    
+
     strcpy2(fneig,jobnamec,132);
     strcat(fneig,".eig");
-      
+
     if((f1=fopen(fneig,"wb"))==NULL){
       printf(" *ERROR in arpack: cannot open eigenvalue file for writing...");
 
@@ -1003,10 +1003,10 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
   }
 
   if(igreen==0){
-    
+
     /* calculating the participation factors and the relative effective
        modal mass */
-    
+
     if(*ithermal!=2){
       FORTRAN(effectivemodalmass,(neq,nactdof,mi,adb,aub,jq,irow,&nev,z,co,nk));
     }
@@ -1028,7 +1028,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     NNEW(qfn,double,3**nk);
     NNEW(qfx,double,3*mi[0]**ne);
   }
-  
+
   if(strcmp1(&filab[261],"E   ")==0) NNEW(een,double,6**nk);
   if(strcmp1(&filab[2697],"ME  ")==0) NNEW(emn,double,6**nk);
   if(strcmp1(&filab[522],"ENER")==0) NNEW(enern,double,*nk);
@@ -1036,9 +1036,9 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 
   /* initial stresses should not be added to the modal
      stresses, therefore deactivate the pre-stress */
-  
+
   if(*iprestr!=0){iprestrsav=*iprestr;*iprestr=0;}
-  
+
   lfin=0;
   for(j=0;j<nev;++j){
     lint=lfin;
@@ -1048,24 +1048,24 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     }else{
 
       /* Green function: solve the system ([K]-w**2*[M]){X}={Y} */
-      
+
       node=nodeforc[2*j];
       idir=ndirforc[j];
-      
+
       /* check whether degree of freedom is active */
-      
+
       if(nactdof[mt*(node-1)+idir]==0){
 	printf(" *ERROR in linstatic: degree of freedom corresponding to node %" ITGFORMAT " \n and direction %" ITGFORMAT " is not active: no unit force can be applied\n",node,idir);
 	FORTRAN(stop,());
       }
-      
+
       /* defining a unit force on the rhs */
-      
+
       DMEMSET(z,0,neq[1],0.);
       z[nactdof[mt*(node-1)+idir]-1]=1.;
-      
+
       /* solving the system */
-      
+
       if(neq[1]>0){
 	if(*isolver==0){
 #ifdef SPOOLES
@@ -1086,7 +1086,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
           printf(" *WARNING in arpack: solving step didn't converge! Continuing anyway\n");
 #endif
 #endif
-	  
+
 	}
       }
     }
@@ -1099,10 +1099,10 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     }
 
     if(igreen==0){
-      
+
       /* check whether the frequency belongs to the requested
 	 interval */
-      
+
       if(fmin>-0.5){
 	if(fmin*fmin>d[j]) continue;
       }
@@ -1116,7 +1116,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     NNEW(eei,double,6*mi[0]*ne0);
 
     /* following fields are needed if *ener==1 or kode<-100 */
-    
+
     NNEW(vini,double,mt**nk);
     NNEW(stiini,double,6*mi[0]*ne0);
     NNEW(emeini,double,6*mi[0]*ne0);
@@ -1198,7 +1198,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	  thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
-	  ielprop,prop,sti,damn,&errn);
+	  ielprop,prop,sti,damn,&errn,nactdof);
     }else{
       frd(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,
 	  kode,filab,een,t1old,fn,rfn,&freq,epn,ielmat,matname,enern,xstaten,
@@ -1207,7 +1207,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	  thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
-	  ielprop,prop,sti,damn,&errn);
+	  ielprop,prop,sti,damn,&errn,nactdof);
     }
 
     if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
@@ -1215,12 +1215,12 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     if(*iperturb!=0){
       for(k=0;k<*nstate_*mi[0]*(ne0+maxprevcontel);++k){
 	xstate[k]=xstateini[k];
-      }	  
+      }
     }
   }
 
   if(iprestrsav!=0){*iprestr=iprestrsav;}
-  
+
   /*  free memory */
 
   if(*isolver==0){
@@ -1287,7 +1287,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
       }
     }
   }
-  
+
   SFREE(adb);SFREE(aub);
 
   SFREE(v);SFREE(fn);SFREE(rfn);SFREE(stn);SFREE(inum);SFREE(stx);SFREE(eme);
@@ -1317,7 +1317,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
   *islavsurfp=islavsurf;*pslavsurfp=pslavsurf;*clearinip=clearini;
 
   SFREE(iponoel);
-  
+
   return;
 }
 
