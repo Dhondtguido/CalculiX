@@ -360,6 +360,7 @@ void resultsini(ITG *nk,double *v,ITG *ithermal,char *filab,ITG *iperturb,
     if((strcmp1(&filab[174],"S")==0)||
        (strcmp1(&filab[261],"E")==0)||
        (strcmp1(&filab[348],"RF")==0)||
+       (strcmp1(&filab[4959],"RR")==0)||
        (strcmp1(&filab[435],"PEEQ")==0)||
        (strcmp1(&filab[522],"ENER")==0)||
        (strcmp1(&filab[609],"SDV")==0)||
@@ -383,7 +384,8 @@ void resultsini(ITG *nk,double *v,ITG *ithermal,char *filab,ITG *iperturb,
 	   (strcmp1(&prlab[6*i],"CSTR")==0)||
 	   (strcmp1(&prlab[6*i],"CELS")==0)||
 	   (strcmp1(&prlab[6*i],"SDV")==0)||
-	   (strcmp1(&prlab[6*i],"RF")==0)){
+	   (strcmp1(&prlab[6*i],"RF")==0)||
+       (strcmp1(&prlab[6*i],"RR")==0)){
 	  *intpointvarm=1;
 	  break;
 	}

@@ -1226,6 +1226,7 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
     if((strcmp1(&filab[174],"S")==0)||
        (strcmp1(&filab[261],"E")==0)||
        (strcmp1(&filab[348],"RF")==0)||
+       (strcmp1(&filab[4959],"RR")==0)||
        (strcmp1(&filab[435],"PEEQ")==0)||
        (strcmp1(&filab[522],"ENER")==0)||
        (strcmp1(&filab[609],"SDV")==0)||
@@ -1244,7 +1245,8 @@ void dyna(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG *ne,
 	 (strcmp1(&prlab[6*i],"CDIS")==0)||
 	 (strcmp1(&prlab[6*i],"CSTR")==0)||
 	 (strcmp1(&prlab[6*i],"CELS")==0)||
-	 (strcmp1(&prlab[6*i],"RF")==0)) {intpointvar=1;break;}
+	 (strcmp1(&prlab[6*i],"RF")==0)||
+     (strcmp1(&prlab[6*i],"RR")==0)) {intpointvar=1;break;}
     }
   }else{
 

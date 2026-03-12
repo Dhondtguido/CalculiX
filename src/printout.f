@@ -96,9 +96,26 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
           exit
         endif
        enddo
-!     
+!     NOTE(gmb): Not sure
       do ii=1,nprint
-!     
+        if(prlab(ii)(1:2).eq.'RR') then
+          if(filab(1)(5:5).ne.' ') then
+            nfield=mt
+            cflag=' '
+            iforce=1
+!            call map3dto1d2d(fn,ipkon,inum,kon,lakon,nfield,nk,
+!     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
+!            call map3dto1d2d(rfn,ipkon,inum,kon,lakon,nfield,nk,
+!     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
+          endif
+          exit
+        endif
+       enddo
+
+
+!
+      do ii=1,nprint
+!
 !     nodal values
 !     
         if((prlab(ii)(1:4).eq.'U   ').or.(prlab(ii)(1:4).eq.'NT  ').or.

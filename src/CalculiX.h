@@ -1771,7 +1771,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 
 void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v,
             double *stn,ITG *inum,ITG *nmethod,ITG *kode,char *filab,
-            double *een,double *t1,double *fn,double *time,double *epn,
+            double *een,double *t1,double *fn,double *rfn,double *time,double *epn,
             ITG *ielmat,char *matname,double *cs,ITG *mcs,ITG *nkon,
             double *enern,double *xstaten,ITG *nstate_,ITG *istep,
             ITG *iinc,ITG *iperturb,double *ener,ITG *mi,char *output,
@@ -3947,12 +3947,12 @@ void FORTRAN(rearrangecfd,(ITG *ne,ITG *ipkon,char *lakon,ITG *ielmat,
 			   ITG *inotr,ITG *inotrf,ITG *nam,ITG *ntrans,
 			   ITG *nbody));
 
-void FORTRAN(rectcyl,(double *co,double *v,double *fn,double *stn,
+void FORTRAN(rectcyl,(double *co,double *v,double *fn,double *rfn,double *stn,
                       double *qfn,double *een,double *cs,ITG *nk,
                       ITG *icntrl,double *t,char *filab,ITG *imag,
                       ITG *mi,double *emn));
 
-void FORTRAN(rectcylexp,(double *co,double *v,double *fn,double *stn,
+void FORTRAN(rectcylexp,(double *co,double *v,double *fn,double *rfn,double *stn,
                       double *qfn,double *een,double *cs,ITG *nkt,
                       ITG *icntrl,double *t,char *filab,ITG *imag,ITG *mi,
                       ITG *iznode,ITG *nznode,ITG *nsectors,ITG *nk,
@@ -3961,7 +3961,7 @@ void FORTRAN(rectcylexp,(double *co,double *v,double *fn,double *stn,
 void FORTRAN(rectcyltrfm,(ITG *node,double *co,double *cs,ITG *cntrl,
              double *fin,double *fout));
 
-void FORTRAN(rectcylvi,(double *co,double *v,double *fn,double *stn,
+void FORTRAN(rectcylvi,(double *co,double *v,double *fn,double *rfn,double *stn,
                       double *qfn,double *een,double *cs,ITG *nk,
                       ITG *icntrl,double *t,char *filab,ITG *imag,ITG *mi,
                       double *emn));
