@@ -24,6 +24,26 @@
 #define min(a,b) ((a) <= (b) ? (a) : (b))
 #define max(a,b) ((a) >= (b) ? (a) : (b))
 
+static double *calcurefo(double *fn, ITG *nk, ITG mt,ITG *nactdof)
+{
+    ITG i,j;
+    double *refo = NULL;
+
+    NNEW(refo,double,mt**nk);
+
+    for(i=0;i<*nk;i++){
+        printf("node: %d\n", i+1);
+        for(j=0;j<mt;j++){
+            printf("   %d: nactdof: %d\n", j, nactdof[mt*i+j]);
+            //if(nactdof[mt*i+j]<0){
+            //    refo[mt*i+j]=fn[mt*i+j];
+            //}
+        }
+    }
+
+    return refo;
+}
+
 void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	 double *v,double *stn,ITG *inum,ITG *nmethod,ITG *kode,
 	 char *filab,double *een,double *t1,double *fn,double *rfn,double *time,
@@ -88,6 +108,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
   float fl;
 
   double pi,oner,*errn=NULL,*ethn=NULL;
+  double *refo = NULL;
 
   errn=*errnp;
 
@@ -1529,15 +1550,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
     }
 
     if((strcmp1(&filab[4959],"RR  ")==0)&&(*ithermal!=2)){
-      if(nactdof) {
-        printf("REFO: %s:%d\n", __FILE__, __LINE__);
-        /* allocate refo here */
-        /* do calculations like in printoutnode.f */
-        /* use refo in frdvector() */
-        /* free refo */
-      }
-
-      if (rfn==NULL) {
+       if(nactdof==NULL) {
         printf(" *WARNING in frd:\n");
         printf("          RR output is not supported\n");
       } else {
@@ -1549,6 +1562,8 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
         frdheader(&icounter,&oner,time,&pi,noddiam,cs,&null,mode,
                   &noutloc,description,kode,nmethod,f1,output,istep,iinc);
 
+        refo = calcurefo(fn,nk,mt,nactdof);
+
         if(mi[1]==3){
           fprintf(f1," -4  REFO        4    1\n");
           fprintf(f1," -5  R1          1    2    1    0\n");
@@ -1558,23 +1573,15 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 
           if((iaxial==1)&&(strcmp1(&filab[4963],"I")==0)){
             for(i=0;i<*nk;i++){
-              rfn[1+i*mt]*=180.;
-              rfn[2+i*mt]*=180.;
-              rfn[3+i*mt]*=180.;
+              refo[1+i*mt]*=180.;
+              refo[2+i*mt]*=180.;
+              refo[3+i*mt]*=180.;
             }
           }
 
-          frdvector(rfn,&iset,ntrans,&filab[4959],&nkcoords,inum,m1,inotr,
+          frdvector(refo,&iset,ntrans,&filab[4959],&nkcoords,inum,m1,inotr,
                     trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3,
                     &ioutall);
-
-          if((iaxial==1)&&(strcmp1(&filab[4963],"I")==0)){
-            for(i=0;i<*nk;i++){
-              rfn[1+i*mt]/=180.;
-              rfn[2+i*mt]/=180.;
-              rfn[3+i*mt]/=180.;
-            }
-          }
         }else if((mi[1]>3)&&(mi[1]<7)){
           fprintf(f1," -4  REFO        %1" ITGFORMAT "    1\n",mi[1]+1);
           fprintf(f1," -5  R1          1    2    1    0\n");
@@ -1585,7 +1592,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
           }
           fprintf(f1," -5  ALL         1    2    0    0    1ALL\n");
 
-          frdgeneralvector(rfn,&iset,ntrans,&filab[4959],&nkcoords,inum,m1,
+          frdgeneralvector(refo,&iset,ntrans,&filab[4959],&nkcoords,inum,m1,
                            inotr,trab,co,istartset,iendset,ialset,mi,ngraph,f1,
                            output,m3,&ioutall);
         }else{
@@ -1596,6 +1603,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
           printf("          actual degrees of freedom = %"ITGFORMAT"\n",mi[1]);
           printf("          output request is not performed;\n");
         }
+        SFREE(refo);
       }
     }
   }
@@ -1637,39 +1645,11 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
     }
 
     if((strcmp1(&filab[4959],"RR  ")==0)&&(*ithermal!=2)){
-      if(nactdof) {
-        printf("TODO: %s:%d\n", __FILE__, __LINE__);
-      }
-
-      if (rfn==NULL) {
+      if(nactdof==NULL) {
         printf(" *WARNING in frd:\n");
         printf("          RR output is not supported\n");
       } else {
-        if((*nmethod==5)&&(*mode==0)){
-          iselect=1;
-          frdset(&filab[4959],set,&iset,istartset,iendset,ialset,
-                 inum,&noutloc,&nout,nset,&noutmin,&noutplus,&iselect,
-                 ngraph);
-        }
-
-        frdheader(&icounter,&oner,time,&pi,noddiam,cs,&null,mode,
-                  &noutloc,description,kode,nmethod,f1,output,istep,iinc);
-
-        fprintf(f1," -4  REFOI       4    1\n");
-        fprintf(f1," -5  R1          1    2    1    0\n");
-        fprintf(f1," -5  R2          1    2    2    0\n");
-        fprintf(f1," -5  R3          1    2    3    0\n");
-        fprintf(f1," -5  ALL         1    2    0    0    1ALL\n");
-
-        if(*noddiam>=0){
-          frdvector(&rfn[*nk*mt],&iset,ntrans,filab,&nkcoords,inum,m1,inotr,
-                    trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3,
-                    &ioutall);
-        }else{
-          frdvector(rfn,&iset,ntrans,filab,&nkcoords,inum,m1,inotr,
-                    trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3,
-                    &ioutall);
-        }
+        printf("TODO: %s:%d\n", __FILE__, __LINE__);
       }
     }
   }
