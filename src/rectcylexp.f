@@ -5,19 +5,19 @@
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
 !     published by the Free Software Foundation(version 2);
-!     
+!
 !
 !     This program is distributed in the hope that it will be useful,
-!     but WITHOUT ANY WARRANTY; without even the implied warranty of 
-!     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+!     but WITHOUT ANY WARRANTY; without even the implied warranty of
+!     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 !     GNU General Public License for more details.
 !
 !     You should have received a copy of the GNU General Public License
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-      subroutine rectcylexp(co,v,fn,stn,qfn,een,cs,nkt,icntrl,t,filab,
-     &  imag,mi,iznode,nznode,nsectors,nk,emn)
+      subroutine rectcylexp(co,v,fn,rfn,stn,qfn,een,cs,nkt,icntrl,
+     &  t,filab,imag,mi,iznode,nznode,nsectors,nk,emn)
 !
 !     special version of routine rectcyl for use in expand.c
 !
@@ -37,9 +37,9 @@
       character*87 filab(*)
       integer i,j,nkt,icntrl,imag,mi(*),iznode(*),nznode,nsectors,nk,
      &  ii,jj,node
-      real*8 co(3,*),v(0:mi(2),*),fn(0:mi(2),*),rfn(0:mi(2),*),stn(6,*),
-     &  een(6,*),a(3,3),xr,xt,xz,b(3,3),cs(18,*),t(3),qfn(3,*),csab(7),
-     &  emn(6,*)
+      real*8 co(3,*),v(0:mi(2),*),fn(0:mi(2),*),rfn(0:mi(2),*),
+     &  stn(6,*),een(6,*),a(3,3),xr,xt,xz,b(3,3),cs(18,*),t(3),
+     &  qfn(3,*),csab(7),emn(6,*)
 !
       do i=1,7
          csab(i)=cs(5+i,1)
@@ -52,7 +52,7 @@
             call transformatrix(csab,co(1,i),a)
 !
             if((filab(1)(1:3).eq.'U  ').or.
-     &         (filab(11)(1:4).eq.'PU'))  then 
+     &         (filab(11)(1:4).eq.'PU'))  then
                xr=v(1,j)*a(1,1)+v(2,j)*a(2,1)+v(3,j)*a(3,1)
                xt=v(1,j)*a(1,2)+v(2,j)*a(2,2)+v(3,j)*a(3,2)
                xz=v(1,j)*a(1,3)+v(2,j)*a(2,3)+v(3,j)*a(3,3)
@@ -153,7 +153,7 @@
                j=i+nkt
 !
                if((filab(1)(1:3).eq.'U  ').or.
-     &            (filab(11)(1:4).eq.'PU'))  then 
+     &            (filab(11)(1:4).eq.'PU'))  then
                   xr=v(1,j)*a(1,1)+v(2,j)*a(2,1)+v(3,j)*a(3,1)
                   xt=v(1,j)*a(1,2)+v(2,j)*a(2,2)+v(3,j)*a(3,2)
                   xz=v(1,j)*a(1,3)+v(2,j)*a(2,3)+v(3,j)*a(3,3)
@@ -255,9 +255,9 @@
                i=node+(jj-1)*nk
                j=i
                call transformatrix(csab,co(1,i),a)
-!     
+!
                if((filab(1)(1:3).eq.'U  ').or.
-     &              (filab(11)(1:4).eq.'PU'))  then 
+     &              (filab(11)(1:4).eq.'PU'))  then
                   xr=v(1,j)*a(1,1)+v(2,j)*a(1,2)+v(3,j)*a(1,3)
                   xt=v(1,j)*a(2,1)+v(2,j)*a(2,2)+v(3,j)*a(2,3)
                   xz=v(1,j)*a(3,1)+v(2,j)*a(3,2)+v(3,j)*a(3,3)
@@ -265,7 +265,7 @@
                   v(2,j)=xt
                   v(3,j)=xz
                endif
-!     
+!
                if((filab(3)(1:4).eq.'S   ').or.
      &              (filab(18)(1:4).eq.'PHS ')) then
                   b(1,1)=stn(1,j)*a(1,1)+stn(4,j)*a(1,2)+stn(5,j)*a(1,3)

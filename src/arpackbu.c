@@ -7,7 +7,7 @@
 /*                    */
 
 /*     This program is distributed in the hope that it will be useful,   */
-/*     but WITHOUT ANY WARRANTY; without even the implied warranty of    */ 
+/*     but WITHOUT ANY WARRANTY; without even the implied warranty of    */
 /*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the      */
 /*     GNU General Public License for more details.                      */
 
@@ -42,39 +42,39 @@
 #endif
 
 void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
-	      ITG *ne, 
-	      ITG *nodeboun, ITG *ndirboun, double *xboun, ITG *nboun, 
+	      ITG *ne,
+	      ITG *nodeboun, ITG *ndirboun, double *xboun, ITG *nboun,
 	      ITG *ipompc, ITG *nodempc, double *coefmpc, char *labmpc,
-	      ITG *nmpc, 
-	      ITG *nodeforc, ITG *ndirforc,double *xforc, ITG *nforc, 
+	      ITG *nmpc,
+	      ITG *nodeforc, ITG *ndirforc,double *xforc, ITG *nforc,
 	      ITG *nelemload, char *sideload, double *xload,
-	      ITG *nload, 
-	      ITG *nactdof, 
-	      ITG *icol, ITG *jq, ITG *irow, ITG *neq, ITG *nzl, 
-	      ITG *nmethod, ITG *ikmpc, ITG *ilmpc, ITG *ikboun, 
+	      ITG *nload,
+	      ITG *nactdof,
+	      ITG *icol, ITG *jq, ITG *irow, ITG *neq, ITG *nzl,
+	      ITG *nmethod, ITG *ikmpc, ITG *ilmpc, ITG *ikboun,
 	      ITG *ilboun,
 	      double *elcon, ITG *nelcon, double *rhcon, ITG *nrhcon,
 	      double *alcon, ITG *nalcon, double *alzero, ITG *ielmat,
 	      ITG *ielorien, ITG *norien, double *orab, ITG *ntmat_,
-	      double *t0, double *t1, double *t1old, 
-	      ITG *ithermal,double *prestr, ITG *iprestr, 
-	      double *vold,ITG *iperturb, double *sti, ITG *nzs,  
+	      double *t0, double *t1, double *t1old,
+	      ITG *ithermal,double *prestr, ITG *iprestr,
+	      double *vold,ITG *iperturb, double *sti, ITG *nzs,
 	      ITG *kode, ITG *mei, double *fei,
 	      char *filab, double *eme,
 	      ITG *iexpl, double *plicon, ITG *nplicon, double *plkcon,
 	      ITG *nplkcon,
 	      double *xstate, ITG *npmat_, char *matname, ITG *mi,
-	      ITG *ncmat_, ITG *nstate_, double *ener, char *output, 
+	      ITG *ncmat_, ITG *nstate_, double *ener, char *output,
 	      char *set, ITG *nset, ITG *istartset,
 	      ITG *iendset, ITG *ialset, ITG *nprint, char *prlab,
-	      char *prset, ITG *nener, ITG *isolver, double *trab, 
+	      char *prset, ITG *nener, ITG *isolver, double *trab,
 	      ITG *inotr, ITG *ntrans, double *ttime,double *fmpc,
-	      ITG *ipobody, ITG *ibody,double *xbody, ITG *nbody, 
+	      ITG *ipobody, ITG *ibody,double *xbody, ITG *nbody,
 	      double *thicke,char *jobnamec,ITG *nmat,ITG *ielprop,
 	      double *prop,char *orname,char *typeboun,double *t0g,
 	      double *t1g,ITG *mcs,ITG *istep,ITG *imastload,
 	      double *pmastload){
-  
+
   char bmat[2]="G",which[3]="LM",howmny[2]="A",fneig[132]="",
     description[13]="            ",*tieset=NULL;
 
@@ -82,7 +82,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
     info,rvec=1,*select=NULL,lfin,j,lint,iout,iconverged=0,ielas=1,icmd=0,
     iinc=1,*ncocon=NULL,*nshcon=NULL,nev,ncv,mxiter,jrow,nramp=-1,
     coriolis=0,ifreebody,symmetryflag=0,storematrix=0,inoelsize,
-    inputformat=0,ngraph=1,mt=mi[1]+1,mass[2]={0,0}, stiffness=1, buckling=0, 
+    inputformat=0,ngraph=1,mt=mi[1]+1,mass[2]={0,0}, stiffness=1, buckling=0,
     rhsi=1, intscheme=0, noddiam=-1,*ipneigh=NULL,*neigh=NULL,ne0,
     *integerglob=NULL,ntie,icfd=0,*inomat=NULL,mortar=0,*islavnode=NULL,
     *islavact=NULL,*nslavnode=NULL,*islavsurf=NULL,kscale=1,*inoel=NULL,
@@ -120,7 +120,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 
   NNEW(iponoel,ITG,*nk);
   FORTRAN(nodebelongstoel,(iponoel,inoel,&inoelsize,lakon,ipkon,kon,ne,&nramp));
- 
+
   ne0=*ne;
 
   /* copying the frequency parameters */
@@ -149,7 +149,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
   NNEW(stx,double,6*mi[0]**ne);
 
   /* following fields are needed if *ener==1 or kode<-100 */
-    
+
   NNEW(vini,double,mt**nk);
   NNEW(eei,double,6*mi[0]**ne);
   NNEW(stiini,double,6*mi[0]*ne0);
@@ -203,7 +203,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	    islavquadel,aut,irowt,jqt,&mortartrafoflag,
 	    &intscheme,physcon,dam,damn,iponoel);
   }
-  
+
   SFREE(eei);SFREE(stiini);SFREE(emeini);SFREE(vini);
   if(*nener==1) SFREE(enerini);
 
@@ -288,8 +288,8 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
-	ielprop,prop,sti,damn,&errn);
-    
+	ielprop,prop,sti,damn,&errn,nactdof);
+
     if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
     SFREE(inum);FORTRAN(stop,());
 
@@ -336,7 +336,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 #else
     printf(" *ERROR in arpackbu: the PARDISO library is not linked\n\n");
     FORTRAN(stop,());
-#endif    
+#endif
   }
   else if(*isolver==8){
 #ifdef PASTIX
@@ -345,7 +345,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 #else
     printf(" *ERROR in arpackbu: the PASTIX library is not linked\n\n");
     FORTRAN(stop,());
-#endif    
+#endif
   }
 
   /* calculating the displacements and the stresses and storing */
@@ -357,7 +357,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
   NNEW(stn,double,6**nk);
   NNEW(inum,ITG,*nk);
   NNEW(stx,double,6*mi[0]**ne);
-  
+
   if(strcmp1(&filab[261],"E   ")==0) NNEW(een,double,6**nk);
   if(strcmp1(&filab[2697],"ME  ")==0) NNEW(emn,double,6**nk);
   if(strcmp1(&filab[522],"ENER")==0) NNEW(enern,double,*nk);
@@ -432,7 +432,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
       mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
       cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
       thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
-      ielprop,prop,sti,damn,&errn);
+      ielprop,prop,sti,damn,&errn,nactdof);
 
   if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
   SFREE(v);SFREE(fn);SFREE(rfn);SFREE(stn);SFREE(inum);
@@ -576,7 +576,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
       FORTRAN(stop,());
 #endif
     }
-  
+
 
     /* calculating the bucking factors and buckling modes */
 
@@ -733,7 +733,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
     if(info!=0){
       printf(" *ERROR in arpackbu: info=%" ITGFORMAT "\n",info);
       printf("       # of converged eigenvalues=%" ITGFORMAT "\n\n",iparam[4]);
-    }         
+    }
 
     NNEW(select,ITG,ncv);
     NNEW(d,double,nev);
@@ -742,7 +742,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		    &ncv,z,&dz,iparam,ipntr,workd,workl,&lworkl,&info));
 
     printf("sigma=%f,d[0]=%f\n\n",sigma,d[0]);
-  
+
     /*  if((5.>d[0]/sigma)||(50000.<d[0]/sigma)){
 	if(iconverged<-4) {
 	printf("no convergence for the buckling factor; maybe no buckling occurs");
@@ -754,7 +754,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	SFREE(z);SFREE(d);
 	}
 	else{iconverged=0;}*/
-     
+
     SFREE(resid);SFREE(workd);SFREE(workl);SFREE(select);SFREE(temp_array);
 
   } while(iconverged<0);
@@ -772,7 +772,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
   NNEW(stn,double,6**nk);
   NNEW(inum,ITG,*nk);
   NNEW(stx,double,6*mi[0]**ne);
-  
+
   if(strcmp1(&filab[261],"E   ")==0) NNEW(een,double,6**nk);
   if(strcmp1(&filab[2697],"ME  ")==0) NNEW(emn,double,6**nk);
   if(strcmp1(&filab[522],"ENER")==0) NNEW(enern,double,*nk);
@@ -850,7 +850,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
-	ielprop,prop,sti,damn,&errn);
+	ielprop,prop,sti,damn,&errn,nactdof);
 
     if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
   }
@@ -864,7 +864,7 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
   if(strcmp1(&filab[522],"ENER")==0) SFREE(enern);
 
   SFREE(iponoel);
-  
+
   return;
 }
 

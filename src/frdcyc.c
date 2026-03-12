@@ -7,7 +7,7 @@
 /*                    */
 
 /*     This program is distributed in the hope that it will be useful,   */
-/*     but WITHOUT ANY WARRANTY; without even the implied warranty of    */ 
+/*     but WITHOUT ANY WARRANTY; without even the implied warranty of    */
 /*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the      */
 /*     GNU General Public License for more details.                      */
 
@@ -118,7 +118,7 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
           }
         }while(1);
       }
-    } 
+    }
   }
 
   NNEW(cot,double,3**nk*ngraph);
@@ -388,7 +388,7 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
       }
 
       /* results are only copied for face-to-face penalty contact */
-      
+
       if(strcmp1(&filab[2175],"CONT")==0){
 	if(*mortar==1){
 	  for(l1=0;l1<*nk;l1++){
@@ -401,7 +401,7 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
 	  }
 	}
       }
-    
+
       if(strcmp1(&filab[2697],"ME  ")==0){
         for(l1=0;l1<*nk;l1++){
           if(inocs[l1]==jj){
@@ -425,6 +425,7 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
       NNEW(ipneigh,ITG,nkt);
   }
 
+  //NOTE(gmb): TODO nactdof
   frd(cot,&nkt,kont,ipkont,lakont,&net0,vt,stnt,inumt,nmethod,
       kode,filab,eent,t1t,fnt,NULL,time,epnt,ielmatt,matname,enernt,xstatent,
       nstate_,istep,iinc,ithermal,qfnt,&mode,noddiam,trab,inotrt,
@@ -432,10 +433,10 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
       mi,stit,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&net,
       cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emnt,
       thicke,jobnamec,output,qfx,cdnt,mortar,cdnr,cdni,nmat,ielprop,
-      prop,sti,damn,&errn);
+      prop,sti,damn,&errn,NULL);
 
   if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
-  
+
   if((strcmp1(&filab[0],"U ")==0)||
      (strcmp1(&filab[1131],"TT  ")==0)||
      (strcmp1(&filab[1218],"MF  ")==0)||
@@ -443,7 +444,7 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
      ((strcmp1(&filab[87],"NT  ")==0)&&(*ithermal>=2))) SFREE(vt);
   if((strcmp1(&filab[87],"NT  ")==0)&&(*ithermal<2)) SFREE(t1t);
   if((strcmp1(&filab[174],"S   ")==0)||(strcmp1(&filab[1044],"ZZS ")==0)||
-     (strcmp1(&filab[1044],"ERR ")==0)) 
+     (strcmp1(&filab[1044],"ERR ")==0))
      SFREE(stnt);
   if(strcmp1(&filab[261],"E   ")==0) SFREE(eent);
   if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[783],"RFL ")==0))
@@ -469,7 +470,7 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
   SFREE(inocs);SFREE(ielcs);
 
   *errnp=errn;
-  
+
   return;
 }
 

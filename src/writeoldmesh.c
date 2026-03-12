@@ -7,7 +7,7 @@
 /*                                                                       */
 
 /*     This program is distributed in the hope that it will be useful,   */
-/*     but WITHOUT ANY WARRANTY; without even the implied warranty of    */ 
+/*     but WITHOUT ANY WARRANTY; without even the implied warranty of    */
 /*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the      */
 /*     GNU General Public License for more details.                      */
 
@@ -29,7 +29,7 @@ void writeoldmesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,
   /* writing the old mesh in a mesh refinement calculation */
 
   FILE *f1;
-  
+
   char filabtmp[5]="    ",*description=NULL,*set=NULL,
     foldmesh[132]="",fneig[132]="";
 
@@ -56,13 +56,13 @@ void writeoldmesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,
     printf(" *ERROR in frd: cannot open frd file for writing...");
     exit(0);
   }
-  
+
   fclose(f1);
 
   NNEW(ielmatold,ITG,mi[2]**ne);
-  
+
   /* creating the tetrahedral mesh in frd format*/
-   
+  //NOTE(gmb): TODO nactdof
   frd(co,nk,kon,ipkon,lakon,ne,v,stn,inum,&nmethod,
       &kode,filabtmp,een,t1,fn,NULL,&time,epn,ielmatold,matname,enern,xstaten,
       &nstate_,&istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
@@ -70,8 +70,8 @@ void writeoldmesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,
       mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
       cs,set,&nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
       thicke,foldmesh,output,qfx,cdn,&mortar,cdnr,cdni,nmat,ielprop,
-      prop,sti,damn,&errn);
-  
+      prop,sti,damn,&errn,NULL);
+
   strcat(foldmesh,".frd");
   if((f1=fopen(foldmesh,"ab"))==NULL){
     printf(" *ERROR in frd: cannot open frd file for writing...");
@@ -81,7 +81,7 @@ void writeoldmesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,
   fclose(f1);
 
   SFREE(ielmatold);
-  
+
   return;
-  
+
 }
