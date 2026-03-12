@@ -844,7 +844,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     if(*mcs>0){
       ptime=*ttime+time;
       frdcyc(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,kode,filab,een,t1act,
-	     fn,&ptime,epn,ielmat,matname,cs,mcs,nkon,enern,xstaten,
+	     fn,rfn,&ptime,epn,ielmat,matname,cs,mcs,nkon,enern,xstaten,
 	     nstate_,istep,&iinc,iperturb,ener,mi,output,ithermal,
 	     qfn,ialset,istartset,iendset,trab,inotr,ntrans,orab,
 	     ielorien,norien,sti,veold,&noddiam,set,nset,emn,thicke,

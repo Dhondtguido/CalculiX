@@ -111,7 +111,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     *een=NULL,cam[5],*f=NULL,*fn=NULL,*rfn=NULL,qa[4],*fext=NULL,*emn=NULL,
     *epn=NULL,*stiini=NULL,*fnr=NULL,*fni=NULL,fnreal,fnimag,*emeini=NULL,
     *xstateini=NULL,theta=0,pi,*coefmpcnew=NULL,*xstiff=NULL,*vi=NULL,
-    *vt=NULL,*fnt=NULL,*stnt=NULL,*eent=NULL,*cot=NULL,t[3],ctl,stl,
+    *vt=NULL,*fnt=NULL,*rfnt=NULL,*stnt=NULL,*eent=NULL,*cot=NULL,t[3],ctl,stl,
     *t1t=NULL,freq,*stx=NULL,*enern=NULL,*enernt=NULL,*xstaten=NULL,
     *eei=NULL,*enerini=NULL,*cocon=NULL,*qfx=NULL,*qfn=NULL,*qfnt=NULL,
     tol,fmin,fmax,xreal,ximag,*cgr=NULL,*xloadold=NULL,reltime=1.,constant,
@@ -1185,59 +1185,59 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
       strcpy1(&filab[2697],"ME  ",4);
     }
 
-      
+
     NNEW(v,double,2*mt**nk);
     NNEW(fn,double,2*mt**nk);
-	NNEW(rfn,double,2*mt**nk);
+    NNEW(rfn,double,2*mt**nk);
     NNEW(inum,ITG,*nk);
     NNEW(stx,double,2*6*mi[0]**ne);
     NNEW(eme,double,2*6*mi[0]**ne);
 
-    if((strcmp1(&filab[174],"S   ")==0)||(strcmp1(&filab[1653],"MAXS")==0)|| 
+    if((strcmp1(&filab[174],"S   ")==0)||(strcmp1(&filab[1653],"MAXS")==0)||
        (strcmp1(&filab[1479],"PHS ")==0)||(strcmp1(&filab[1044],"ZZS ")==0)||
-       (strcmp1(&filab[1044],"ERR ")==0)) 
+       (strcmp1(&filab[1044],"ERR ")==0))
       NNEW(stn,double,12**nk);
-      
-    if((strcmp1(&filab[261],"E   ")==0)||(strcmp1(&filab[2523],"MAXE")==0)) 
+
+    if((strcmp1(&filab[261],"E   ")==0)||(strcmp1(&filab[2523],"MAXE")==0))
       NNEW(een,double,12**nk);
     if(strcmp1(&filab[522],"ENER")==0) NNEW(enern,double,2**nk);
     if(strcmp1(&filab[2697],"ME  ")==0) NNEW(emn,double,12**nk);
     if(((strcmp1(&filab[2175],"CONT")==0)||(strcmp1(&filab[3915],"PCON")==0))
        &&(*mortar==1)) NNEW(cdn,double,12**nk);
-      
+
     NNEW(coefmpcnew,double,*mpcend);
-      
+
     /* creating total fields for ngraph segments */
 
     NNEW(cot,double,3**nk*ngraph);
     if(*ntrans>0){NNEW(inotrt,ITG,2**nk*ngraph);}
     if((strcmp1(&filab[0],"U  ")==0)||(strcmp1(&filab[870],"PU  ")==0))
-	  
+
       // real and imaginary part of the displacements
-	  
+
       NNEW(vt,double,2*mt**nk*ngraph);
     if(strcmp1(&filab[87],"NT  ")==0)
       NNEW(t1t,double,*nk*ngraph);
     if((strcmp1(&filab[174],"S   ")==0)||(strcmp1(&filab[1479],"PHS ")==0)||
        (strcmp1(&filab[1044],"ZZS ")==0)||(strcmp1(&filab[1044],"ERR ")==0))
-	  
+
       // real and imaginary part of the stresses
-	  
+
       NNEW(stnt,double,2*6**nk*ngraph);
     if(strcmp1(&filab[261],"E   ")==0) NNEW(eent,double,2*6**nk*ngraph);
-    if((strcmp1(&filab[348],"RF  ")==0) || (strcmp1(&filab[2610],"PRF ")==0) ||
-       (strcmp1(&filab[4959],"RR  ")==0)) {
-	  
+    if((strcmp1(&filab[348],"RF  ")==0) || (strcmp1(&filab[2610],"PRF ")==0))
+
       // real and imaginary part of the forces
-	  
-      NNEW(fnt,double,2*mt**nk*ngraph); }
+
+      NNEW(fnt,double,2*mt**nk*ngraph);
+    if(strcmp1(&filab[4959],"RR  ")==0) NNEW(rfnt,double,2*mt**nk*ngraph);
     if(strcmp1(&filab[2697],"ME  ")==0) NNEW(emnt,double,2*6**nk*ngraph);
     if(((strcmp1(&filab[2175],"CONT")==0)||(strcmp1(&filab[3915],"PCON")==0))
        &&(*mortar==1)) NNEW(cdnt,double,2*6**nk*ngraph);
     if(strcmp1(&filab[522],"ENER")==0)
-	  
+
       // real and imaginary part of the internal energy
-	  
+
       NNEW(enernt,double,*nk*ngraph);
 
     // stresses at the integration points for the error estimator and contact conditions
@@ -1245,39 +1245,39 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     if((strcmp1(&filab[1044],"ZZS ")==0)||(strcmp1(&filab[1044],"ERR ")==0)||
        ((strcmp1(&filab[2175],"CONT")==0)&&(*mortar==0)))
       NNEW(stxt,double,2*6*mi[0]**ne*ngraph);
-      
+
     NNEW(kont,ITG,*nkon*ngraph);
     NNEW(ipkont,ITG,*ne*ngraph);
     for(l=0;l<*ne*ngraph;l++)ipkont[l]=-1;
     NNEW(lakont,char,8**ne*ngraph);
     NNEW(inumt,ITG,*nk*ngraph);
     NNEW(ielmatt,ITG,mi[2]**ne*ngraph);
-      
+
     nkt=ngraph**nk;
     net=ngraph**ne;
-      
+
     /* copying the coordinates of the first sector */
-      
+
     for(l=0;l<3**nk;l++){cot[l]=co[l];}
     if(*ntrans>0){for(l=0;l<*nk;l++){inotrt[2*l]=inotr[2*l];}}
     for(l=0;l<*nkon;l++){kont[l]=kon[l];}
     for(l=0;l<*ne;l++){ipkont[l]=ipkon[l];}
     for(l=0;l<8**ne;l++){lakont[l]=lakon[l];}
     for(l=0;l<*ne;l++){ielmatt[mi[2]*l]=ielmat[mi[2]*l];}
-      
+
     /* generating the coordinates for the other sectors */
-      
+
     icntrl=1;
-      
-    FORTRAN(rectcyl,(cot,v,fn,stn,qfn,een,cs,nk,&icntrl,t,filab,&imag,mi,emn));
-      
+
+    FORTRAN(rectcyl,(cot,v,fn,rfn,stn,qfn,een,cs,nk,&icntrl,t,filab,&imag,mi,emn));
+
     for(jj=0;jj<*mcs;jj++){
       is=cs[18*jj+4];
       for(i=1;i<is;i++){
-	      
+
 	//	theta=i*2.*pi/cs[18*jj];
 	theta=i*2.*pi/cs[18*jj+17];
-	      
+
 	for(l=0;l<*nk;l++){
 	  if(inocs[l]==jj){
 	    cot[3*l+i*3**nk]=cot[3*l];
@@ -1301,123 +1301,123 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	}
       }
     }
-      
+
     icntrl=-1;
-      
-    FORTRAN(rectcyl,(cot,vt,fnt,stnt,qfnt,eent,cs,&nkt,&icntrl,t,filab,
+
+    FORTRAN(rectcyl,(cot,vt,fnt,rfnt,stnt,qfnt,eent,cs,&nkt,&icntrl,t,filab,
 		     &imag,mi,emnt));
-      
+
     /* check that the tensor fields which are extrapolated from the
        integration points are requested in global coordinates */
-      
+
     if(strcmp1(&filab[174],"S   ")==0){
       if((strcmp1(&filab[179],"L")==0)&&(*norien>0)){
 	printf("\n*WARNING in arpackcs: element fields in cyclic symmetry calculations\n cannot be requested in local orientations;\n the global orientation will be used \n\n");
 	strcpy1(&filab[179],"G",1);
       }
     }
-      
+
     if(strcmp1(&filab[261],"E   ")==0){
       if((strcmp1(&filab[266],"L")==0)&&(*norien>0)){
 	printf("\n*WARNING in arpackcs: element fields in cyclic symmetry calculation\n cannot be requested in local orientations;\n the global orientation will be used \n\n");
 	strcpy1(&filab[266],"G",1);
       }
     }
-      
+
     if(strcmp1(&filab[1479],"PHS ")==0){
       if((strcmp1(&filab[1484],"L")==0)&&(*norien>0)){
 	printf("\n*WARNING in arpackcs: element fields in cyclic symmetry calculation\n cannot be requested in local orientations;\n the global orientation will be used \n\n");
 	strcpy1(&filab[1484],"G",1);
       }
     }
-      
+
     if(strcmp1(&filab[1653],"MAXS")==0){
       if((strcmp1(&filab[1658],"L")==0)&&(*norien>0)){
 	printf("\n*WARNING in arpackcs: element fields in cyclic symmetry calculation\n cannot be requested in local orientations;\n the global orientation will be used \n\n");
 	strcpy1(&filab[1658],"G",1);
       }
-    }   
-      
+    }
+
     if(strcmp1(&filab[2523],"MAXE")==0){
       if((strcmp1(&filab[2528],"L")==0)&&(*norien>0)){
 	printf("\n*WARNING in arpackcs: element fields in cyclic symmetry calculation\n cannot be requested in local orientations;\n the global orientation will be used \n\n");
 	strcpy1(&filab[1658],"G",1);
       }
-    }   
-      
+    }
+
     /* allocating fields for magnitude and phase information of
        displacements and stresses */
-      
+
     if(strcmp1(&filab[870],"PU")==0){
       NNEW(vr,double,mt*nkt);
       NNEW(vi,double,mt*nkt);
     }
-      
+
     if(strcmp1(&filab[1479],"PHS")==0){
       NNEW(stnr,double,6*nkt);
       NNEW(stni,double,6*nkt);
     }
-      
+
     if(strcmp1(&filab[2610],"PRF")==0){
       NNEW(fnr,double,mt*nkt);
       NNEW(fni,double,mt*nkt);
     }
-      
+
     if(strcmp1(&filab[3915],"PCON")==0){
       NNEW(cdnr,double,6*nkt);
       NNEW(cdni,double,6*nkt);
     }
-      
+
     if(strcmp1(&filab[1566],"MAXU")==0){
       NNEW(vmax,double,4*nkt);
     }
-      
+
     if(strcmp1(&filab[1653],"MAXS")==0){
       NNEW(stnmax,double,7*nkt);
     }
-      
+
     if(strcmp1(&filab[2523],"MAXE")==0){
       NNEW(eenmax,double,7*nkt);
     }
 
     /* determining a local coordinate system based on the rotation axis */
-      
+
     FORTRAN(localaxescs,(cs,mcs,e1,e2,xn));
     NNEW(turdir,char,nev);
-      
+
     /* start of output calculations */
 
     /* initial stresses should not be added to the modal
        stresses, therefore deactivate the pre-stress */
-  
+
     if(*iprestr!=0){iprestrsav=*iprestr;*iprestr=0;}
-      
+
     lfin=0;
     for(j=0;j<nev;++j){
       lint=lfin;
       if(igreen==0){
 	lfin=lfin+neq[1];
       }else{
-	    
+
 	/* Green function: solve the system ([K]-w**2*[M]){X}={Y} */
-	    
+
 	node=nodeforc[2*j];
 	idir=ndirforc[j];
-	    
+
 	/* check whether degree of freedom is active */
-	    
+
 	if(nactdof[mt*(node-1)+idir]==0){
 	  printf(" *ERROR in linstatic: degree of freedom corresponding to node %" ITGFORMAT " \n and direction %" ITGFORMAT " is not active: no unit force can be applied\n",node,idir);
 	  FORTRAN(stop,());
 	}
-      
+
 	/* defining a unit force on the rhs */
-	    
+
 	DMEMSET(z,0,neq[1],0.);
 	z[nactdof[mt*(node-1)+idir]-1]=1.;
-	    
+
 	/* solving the system */
-	    
+
 	if(neq[1]>0){
 	  if(*isolver==0){
 #ifdef SPOOLES
@@ -1428,7 +1428,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 #ifdef PARDISO
 	    pardiso_solve(z,&neq[1],&symmetryflag,&inputformat,&nrhs);
 #endif
-		
+
 	  }
 	  else if(*isolver==8){
 #ifdef PASTIX
@@ -1439,11 +1439,11 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 		printf(" *WARNING in arpackcs: solving step did not converge! Continuing anyway!\n");
 #endif
 #endif
-		
+
 	  }
 	}
       }
-	  
+
       if(mei[3]==1){
 	if(fwrite(&z[lint],sizeof(double),neq[1],f1)!=neq[1]){
 	  printf(" *ERROR saving data to the eigenvalue file...");
@@ -1452,10 +1452,10 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
       }
 
       if(igreen==0){
-	    
+
 	/* check whether the frequency belongs to the requested
 	   interval */
-	    
+
 	if(fmin>-0.5){
 	  if(fmin*fmin>d[j]) continue;
 	}
@@ -1463,32 +1463,32 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	  if(fmax*fmax<d[j]) continue;
 	}
       }
-	  
+
       if(*nprint>0)FORTRAN(writehe,(&j));
-	  
+
       NNEW(eei,double,6*mi[0]*ne0);
 
       /* following fields are needed if *ener==1 or kode<-100 */
-    
+
       NNEW(vini,double,mt**nk);
       NNEW(stiini,double,6*mi[0]*ne0);
       NNEW(emeini,double,6*mi[0]*ne0);
       if(*nener==1) NNEW(enerini,double,2*mi[0]*ne0);
-	  
+
       DMEMSET(v,0,2*mt**nk,0.);
-	  
+
       /* calculating the strains, stresses... (real and imaginary part) for
 	 one specific eigenvalue */
 
       for(k=0;k<neq[1];k+=neq[1]/2){
-	      
+
 	if(k==0) {kk=0;kkv=0;kk6=0;kkx=0;if(*nprint>0)FORTRAN(writere,());}
 	else {kk=*nk;kkv=mt**nk;kk6=6**nk;kkx=6*mi[0]**ne;
 	  if(*nprint>0)FORTRAN(writeim,());}
-	      
+
 	/* generating the cyclic MPC's (needed for nodal diameters
 	   different from 0 */
-	      
+
 	for(i=0;i<*nmpc;i++){
 	  index=ipompc[i]-1;
 	  /* check whether thermal mpc */
@@ -1498,7 +1498,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	    index=nodempc[3*index+2];
 	    if(index==0) break;
 	    index--;
-		      
+
 	    icomplex=0;
 	    inode=nodempc[3*index];
 	    if(strcmp1(&labmpc[20*i],"CYCLIC")==0){
@@ -1979,19 +1979,19 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 		  }
 		}
 	      }
-	    
+
 	    }while(1);
 	  }
 	}
       }
-    
+
       /* mapping the results to the other sectors */
 
       for(l=0;l<*nk;l++){inumt[l]=inum[l];}
 
       icntrl=2;imag=1;
 
-      FORTRAN(rectcyl,(co,v,fn,stn,qfn,een,cs,nk,&icntrl,t,filab,&imag,mi,emn));
+      FORTRAN(rectcyl,(co,v,fn,rfn,stn,qfn,een,cs,nk,&icntrl,t,filab,&imag,mi,emn));
 
       if((strcmp1(&filab[0],"U  ")==0)||(strcmp1(&filab[870],"PU  ")==0)){
 	for(l=0;l<mt**nk;l++){vt[l]=v[l];}
@@ -2009,10 +2009,12 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
       if(strcmp1(&filab[261],"E   ")==0){
 	for(l=0;l<6**nk;l++){eent[l]=een[l];};
 	for(l=0;l<6**nk;l++){eent[l+6**nk*ngraph]=een[l+6**nk];}}
-      if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)||
-		 (strcmp1(&filab[4959],"RR  ")==0)){
+      if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)){
 	for(l=0;l<mt**nk;l++){fnt[l]=fn[l];}
 	for(l=0;l<mt**nk;l++){fnt[l+mt**nk*ngraph]=fn[l+mt**nk];}}
+      if(strcmp1(&filab[4959],"RR  ")==0){
+	for(l=0;l<mt**nk;l++){rfnt[l]=rfn[l];}
+	for(l=0;l<mt**nk;l++){rfnt[l+mt**nk*ngraph]=rfn[l+mt**nk];}}
       if(strcmp1(&filab[522],"ENER")==0){
 	for(l=0;l<*nk;l++){enernt[l]=enern[l];}}
       //      for(l=0;l<*nk;l++){enernt[l+*nk*ngraph]=enern[l+*nk];}}
@@ -2347,17 +2349,16 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	      }
 	    }
 	  }
-        
+
 	  /* imaginary part of the forces in cylindrical
 	     coordinates */
 
-	  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)||
-         (strcmp1(&filab[4959],"RR  ")==0)){
+	  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)){
 	    for(l1=0;l1<*nk;l1++){
 	      if(inocs[l1]==jj){
-	      
+
 		/* check whether node lies on axis */
-	      
+
 		ml1=-l1-1;
 		FORTRAN(nident,(&ics[lprev],&ml1,&ilength,&id));
 		if(id!=0){
@@ -2377,18 +2378,42 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	    }
 	  }
 
+        /* imaginary part of the reaction forces in cylindrical coordinates */
+        if(strcmp1(&filab[4959],"RR  ")==0){
+            for(l1=0;l1<*nk;l1++){
+                if(inocs[l1]==jj){
+                    /* check whether node lies on axis */
+                    ml1=-l1-1;
+                    FORTRAN(nident,(&ics[lprev],&ml1,&ilength,&id));
+                    if(id!=0){
+                        if(ics[lprev+id-1]==ml1){
+                            for(l2=0;l2<4;l2++){
+                                l=mt*l1+l2;
+                                rfnt[l+mt**nk*(i+ngraph)]=rfn[l+mt**nk];
+                            }
+                            continue;
+                        }
+                    }
+                    for(l2=0;l2<4;l2++){
+                        l=mt*l1+l2;
+                        rfnt[l+mt**nk*(i+ngraph)]=stl*rfn[l]+ctl*rfn[l+mt**nk];
+                    }
+                }
+            }
+        }
+
 	}
       }
-	
+
       icntrl=-2;imag=0;
 
-      FORTRAN(rectcyl,(cot,vt,fnt,stnt,qfnt,eent,cs,&nkt,&icntrl,t,filab,
+      FORTRAN(rectcyl,(cot,vt,fnt,rfnt,stnt,qfnt,eent,cs,&nkt,&icntrl,t,filab,
 		       &imag,mi,emnt));
 
-      FORTRAN(rectcylvi,(cot,&vt[mt**nk*ngraph],&fnt[mt**nk*ngraph],
+      FORTRAN(rectcylvi,(cot,&vt[mt**nk*ngraph],&fnt[mt**nk*ngraph],&rfnt[mt**nk*ngraph],
 			 &stnt[6**nk*ngraph],qfnt,&eent[6**nk*ngraph],cs,&nkt,&icntrl,
 			 t,filab,&imag,mi,&emnt[6**nk*ngraph]));
-        
+
       /* internal energy calculation */
 
       for(jj=0;jj<*mcs;jj++){
@@ -2396,9 +2421,9 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	is=cs[18*jj+4];
 	lprev=cs[18*jj+13];
 	for(i=1;i<is;i++){
-        
+
 	  for(l=0;l<*nk;l++){inumt[l+i**nk]=inum[l];}
-        
+
 	  theta=i*nm*2.*pi/cs[18*jj];
 	  ctl=cos(theta);
 	  stl=sin(theta);
@@ -2641,8 +2666,8 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     if((strcmp1(&filab[174],"S   ")==0)||(strcmp1(&filab[1479],"PHS ")==0)||
        (strcmp1(&filab[1044],"ZZS ")==0)||(strcmp1(&filab[1044],"ERR ")==0)) SFREE(stnt);
     if(strcmp1(&filab[261],"E   ")==0) SFREE(eent);
-    if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)||
-	   (strcmp1(&filab[4959],"RR  ")==0)) { SFREE(fnt); }
+    if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)) SFREE(fnt);
+    if(strcmp1(&filab[4959],"RR  ")==0) SFREE(rfnt);
     if(strcmp1(&filab[522],"ENER")==0) SFREE(enernt);
     if((strcmp1(&filab[1044],"ZZS ")==0)||(strcmp1(&filab[1044],"ERR ")==0)||
        ((strcmp1(&filab[2175],"CONT")==0)&&(*mortar==0))) SFREE(stxt);

@@ -34,12 +34,12 @@ void radcyc(ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
   ITG i,is,nsegments,idtie,nkt,icntrl,imag=0,*kontri=NULL,mt=mi[1]+1,
      node,i1,i2,nope,iel,indexe,j,k,ielset,node1,node2,node3,l,jj;
 
-  double *vt=NULL,*fnt=NULL,*stnt=NULL,*eent=NULL,*qfnt=NULL,t[3],theta,
-     pi,*v=NULL,*fn=NULL,*stn=NULL,*een=NULL,*qfn=NULL,*co=NULL,
+  double *vt=NULL,*fnt=NULL,*rfnt=NULL,*stnt=NULL,*eent=NULL,*qfnt=NULL,t[3],theta,
+     pi,*v=NULL,*fn=NULL,*rfn=NULL,*stn=NULL,*een=NULL,*qfn=NULL,*co=NULL,
      *vold=NULL,*emnt=NULL,*emn=NULL;
 
   pi=4.*atan(1.);
-  
+
   kontri=*kontrip;co=*cop;vold=*voldp;
 
   /* determining the maximum number of sectors */
@@ -138,9 +138,9 @@ void radcyc(ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
   /* generating the coordinates for the other sectors */
   
   icntrl=1;
-  
-  FORTRAN(rectcyl,(co,v,fn,stn,qfn,een,cs,nk,&icntrl,t,filab,&imag,mi,emn));
-  
+
+  FORTRAN(rectcyl,(co,v,fn,rfn,stn,qfn,een,cs,nk,&icntrl,t,filab,&imag,mi,emn));
+
   for(jj=0;jj<*mcs;jj++){
     is=(ITG)(cs[18*jj]);
     for(i=1;i<is;i++){
@@ -158,8 +158,8 @@ void radcyc(ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
   }
 
   icntrl=-1;
-    
-  FORTRAN(rectcyl,(co,vt,fnt,stnt,qfnt,eent,cs,&nkt,&icntrl,t,filab,
+
+  FORTRAN(rectcyl,(co,vt,fnt,rfnt,stnt,qfnt,eent,cs,&nkt,&icntrl,t,filab,
 		   &imag,mi,emnt));
 
   *kontrip=kontri;*cop=co;*voldp=vold;
