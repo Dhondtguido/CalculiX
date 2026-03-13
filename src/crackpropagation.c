@@ -861,7 +861,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
   filab[4]='I';
   //NOTE(gmb): TODO nactdof
   frd(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,
-      &kode,filab,een,t1,fn,NULL,&time,epn,ielmat,matname,enern,xstaten,
+      &kode,filab,een,t1,fn,&time,epn,ielmat,matname,enern,xstaten,
       nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
       ntrans,orab,ielorien,norien,description,ipneigh,neigh,
       mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,

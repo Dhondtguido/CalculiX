@@ -49,7 +49,7 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 	     double *alzero,ITG *ielmat,ITG *ielorien,ITG *norien,double *orab,
 	     ITG *ntmat_,double *t0,double *t1,ITG *ithermal,double *prestr,
 	     ITG *iprestr,char *filab,double *eme,double *emn,double *een,
-	     ITG *iperturb,double *f,double *fn,double *rfn,ITG *nactdof,ITG *iout,
+	     ITG *iperturb,double *f,double *fn,ITG *nactdof,ITG *iout,
 	     double *qa,double *vold,double *b,ITG *nodeboun,ITG *ndirboun,
 	     double *xboun,ITG *nboun,ITG *ipompc,ITG *nodempc,double *coefmpc,
 	     char *labmpc,ITG *nmpc,ITG *nmethod,double *cam,ITG *neq,
@@ -79,7 +79,7 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 	     ITG *intscheme,double *physcon,double *dam,double *damn,
 	     ITG *iponoel){
 
-  ITG intpointvarm,calcul_fn,calcul_f,calcul_qa,calcul_cauchy,calcul_rfn,ikin,
+  ITG intpointvarm,calcul_fn,calcul_f,calcul_qa,calcul_cauchy,ikin,
     intpointvart,mt=mi[1]+1,i,j;
 
   /*
@@ -172,7 +172,7 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 	     xboun,nboun,ipompc,nodempc,coefmpc,labmpc,nmpc,nmethod,cam,neq,
 	     veold,accold,bet,gam,dtime,mi,vini,nprint,prlab,
 	     &intpointvarm,&calcul_fn,&calcul_f,&calcul_qa,&calcul_cauchy,
-	     &calcul_rfn,&ikin,&intpointvart,typeboun,&num_cpus,mortar,nener,
+	     &ikin,&intpointvart,typeboun,&num_cpus,mortar,nener,
 	     iponoeln,network);
 
   /* next statement allows for storing the displacements in each
@@ -390,8 +390,8 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 
   /* calculating the matrix system internal force vector */
 
-  resultsforc(nk,f,fn,rfn,nactdof,ipompc,nodempc,
-	      coefmpc,labmpc,nmpc,mi,fmpc,&calcul_fn,&calcul_f,&calcul_rfn,
+  resultsforc(nk,f,fn,nactdof,ipompc,nodempc,
+	      coefmpc,labmpc,nmpc,mi,fmpc,&calcul_fn,&calcul_f,
 	      &num_cpus,iponoel);
 
   /* calculating the total energy if
@@ -458,7 +458,7 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 
   if(*mortartrafoflag==0){
     FORTRAN(resultsprint,(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,ielorien,
-			  norien,orab,t1,ithermal,filab,een,iperturb,fn,rfn,nactdof,
+			  norien,orab,t1,ithermal,filab,een,iperturb,fn,nactdof,
 			  iout,vold,nodeboun,ndirboun,nboun,nmethod,ttime,
 			  xstate,
 			  epn,mi,nstate_,ener,enern,xstaten,eei,set,nset,

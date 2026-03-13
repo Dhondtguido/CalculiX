@@ -23,7 +23,7 @@
 
 void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v,
 	    double *stn,ITG *inum,ITG *nmethod,ITG *kode,char *filab,
-	    double *een,double *t1,double *fn,double *rfn,double *time,double *epn,
+	    double *een,double *t1,double *fn,double *time,double *epn,
 	    ITG *ielmat,char *matname, double *cs, ITG *mcs, ITG *nkon,
             double *enern, double *xstaten, ITG *nstate_, ITG *istep,
             ITG *iinc, ITG *iperturb, double *ener, ITG *mi, char *output,
@@ -44,7 +44,7 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
       jj,node,i1,i2,nope,iel,indexe,j,ielset,*inotrt=NULL,mt=mi[1]+1,
       *ipneigh=NULL,*neigh=NULL,net0;
 
-  double *vt=NULL,*fnt=NULL,*rfnt=NULL,*stnt=NULL,*eent=NULL,*cot=NULL,*t1t=NULL,
+  double *vt=NULL,*fnt=NULL,*stnt=NULL,*eent=NULL,*cot=NULL,*t1t=NULL,
          *epnt=NULL,*enernt=NULL,*xstatent=NULL,theta,pi,t[3],*qfnt=NULL,
          *vr=NULL,*vi=NULL,*stnr=NULL,*stni=NULL,*vmax=NULL,*stnmax=NULL,
          *stit=NULL,*eenmax=NULL,*fnr=NULL,*fni=NULL,*emnt=NULL,
@@ -137,10 +137,9 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
     NNEW(stnt,double,6**nk*ngraph);
   if(strcmp1(&filab[261],"E   ")==0)
     NNEW(eent,double,6**nk*ngraph);
-  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[783],"RFL ")==0))
+  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[783],"RFL ")==0)||
+     (strcmp1(&filab[4959],"RR  ")==0))
     NNEW(fnt,double,mt**nk*ngraph);
-  if(strcmp1(&filab[4959],"RR  ")==0)
-    NNEW(rfnt,double,mt**nk*ngraph);
   if(strcmp1(&filab[435],"PEEQ")==0)
     NNEW(epnt,double,*nk*ngraph);
   if(strcmp1(&filab[522],"ENER")==0)
@@ -192,7 +191,7 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
 
   icntrl=1;
 
-  FORTRAN(rectcyl,(cot,v,fn,rfn,stn,qfn,een,cs,nk,&icntrl,t,filab,&imag,mi,emn));
+  FORTRAN(rectcyl,(cot,v,fn,stn,qfn,een,cs,nk,&icntrl,t,filab,&imag,mi,emn));
 
   for(jj=0;jj<*mcs;jj++){
     is=cs[18*jj+4];
@@ -235,7 +234,7 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
 
   icntrl=-1;
 
-  FORTRAN(rectcyl,(cot,vt,fnt,rfnt,stnt,qfnt,eent,cs,&nkt,&icntrl,t,filab,
+  FORTRAN(rectcyl,(cot,vt,fnt,stnt,qfnt,eent,cs,&nkt,&icntrl,t,filab,
 		   &imag,mi,emnt));
 
   /* mapping the results to the other sectors */
@@ -244,7 +243,7 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
 
   icntrl=2;
 
-  FORTRAN(rectcyl,(co,v,fn,rfn,stn,qfn,een,cs,nk,&icntrl,t,filab,&imag,mi,emn));
+  FORTRAN(rectcyl,(co,v,fn,stn,qfn,een,cs,nk,&icntrl,t,filab,&imag,mi,emn));
 
   if((strcmp1(&filab[0],"U ")==0)||
      (strcmp1(&filab[1131],"TT  ")==0)||
@@ -258,10 +257,9 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
     for(l=0;l<6**nk;l++){stnt[l]=stn[l];};
   if(strcmp1(&filab[261],"E   ")==0)
     for(l=0;l<6**nk;l++){eent[l]=een[l];};
-  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[783],"RFL ")==0))
+  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[783],"RFL ")==0)||
+     (strcmp1(&filab[4959],"RR  ")==0))
     for(l=0;l<mt**nk;l++){fnt[l]=fn[l];};
-  if(strcmp1(&filab[4959],"RR  ")==0)
-    for(l=0;l<mt**nk;l++){rfnt[l]=rfn[l];};
   if(strcmp1(&filab[435],"PEEQ")==0)
     for(l=0;l<*nk;l++){epnt[l]=epn[l];};
   if(strcmp1(&filab[522],"ENER")==0)
@@ -331,23 +329,13 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
         }
       }
 
-      if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[783],"RFL ")==0)){
+      if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[783],"RFL ")==0)||
+         (strcmp1(&filab[4959],"RR  ")==0)){
         for(l1=0;l1<*nk;l1++){
           if(inocs[l1]==jj){
             for(l2=0;l2<4;l2++){
               l=mt*l1+l2;
               fnt[l+mt**nk*i]=fn[l];
-            }
-          }
-        }
-      }
-
-      if(strcmp1(&filab[4959],"RR  ")==0){
-        for(l1=0;l1<*nk;l1++){
-          if(inocs[l1]==jj){
-            for(l2=0;l2<4;l2++){
-              l=mt*l1+l2;
-              rfnt[l+mt**nk*i]=rfn[l];
             }
           }
         }
@@ -417,7 +405,7 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
 
   icntrl=-2;
 
-  FORTRAN(rectcyl,(cot,vt,fnt,rfnt,stnt,qfnt,eent,cs,&nkt,&icntrl,t,filab,
+  FORTRAN(rectcyl,(cot,vt,fnt,stnt,qfnt,eent,cs,&nkt,&icntrl,t,filab,
 		   &imag,mi,emnt));
 
   if(strcmp1(&filab[1044],"ZZS")==0){
@@ -427,7 +415,7 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
 
   //NOTE(gmb): TODO nactdof
   frd(cot,&nkt,kont,ipkont,lakont,&net0,vt,stnt,inumt,nmethod,
-      kode,filab,eent,t1t,fnt,NULL,time,epnt,ielmatt,matname,enernt,xstatent,
+      kode,filab,eent,t1t,fnt,time,epnt,ielmatt,matname,enernt,xstatent,
       nstate_,istep,iinc,ithermal,qfnt,&mode,noddiam,trab,inotrt,
       ntrans,orab,ielorien,norien,description,ipneigh,neigh,
       mi,stit,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&net,
@@ -447,10 +435,9 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
      (strcmp1(&filab[1044],"ERR ")==0))
      SFREE(stnt);
   if(strcmp1(&filab[261],"E   ")==0) SFREE(eent);
-  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[783],"RFL ")==0))
+  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[783],"RFL ")==0)||
+     (strcmp1(&filab[4959],"RR  ")==0))
         SFREE(fnt);
-  if(strcmp1(&filab[4959],"RR  ")==0)
-     SFREE(rfnt);
   if(strcmp1(&filab[435],"PEEQ")==0) SFREE(epnt);
   if(strcmp1(&filab[522],"ENER")==0) SFREE(enernt);
   if(strcmp1(&filab[609],"SDV ")==0) SFREE(xstatent);

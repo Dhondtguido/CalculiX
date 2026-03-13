@@ -16,8 +16,8 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-      subroutine printoutnode(prlab,v,t1,fn,rfn,ithermal,ii,node,
-     &  rftot,rfntot,trab,inotr,ntrans,co,mi,veold,nactdof)
+      subroutine printoutnode(prlab,v,t1,fn,ithermal,ii,node,
+     &  rftot,refotot,trab,inotr,ntrans,co,mi,veold,nactdof)
 !
 !     stores results in the .dat file
 !
@@ -29,9 +29,9 @@
       integer ithermal(*),node,ii,j,inotr(2,*),ntrans,mi(*),
      & nactdof(0:mi(2),*)
 !
-      real*8 v(0:mi(2),*),t1(*),fn(0:mi(2),*),rfn(0:mi(2),*),
+      real*8 v(0:mi(2),*),t1(*),fn(0:mi(2),*),
      &  rftot(0:3),trab(7,*), co(3,*),a(3,3),veold(0:mi(2),*),
-     &  rfntot(3),refo(1:3)
+     &  refotot(3),refo(1:3)
 !
       local='L'
 !
@@ -120,17 +120,13 @@
      &           fn(0,node)
          endif
       elseif(prlab(ii)(1:4).eq.'RR  ') then
-!        NOTE(gmb): merge rfntot + refo
          do j=1,3
             if(nactdof(j,node).lt.0) then
                 refo(j) = fn(j,node)
+                refotot(j)=refotot(j)+refo(j)
             else
                 refo(j) = 0.0
             endif
-         enddo
-
-         do j=1,3
-            rfntot(j)=rfntot(j)+refo(j)
          enddo
          if(prlab(ii)(5:5).ne.'O') then
             if((ntrans.eq.0).or.(prlab(ii)(6:6).eq.'G')) then

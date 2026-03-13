@@ -16,7 +16,7 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-      subroutine rectcyl(co,v,fn,rfn,stn,qfn,een,cs,n,icntrl,
+      subroutine rectcyl(co,v,fn,stn,qfn,een,cs,n,icntrl,
      &  t,filab,imag,mi,emn)
 !
 !     icntrl=1:  rectangular to cylindrical coordinates for nodal
@@ -41,7 +41,7 @@
 !
       character*87 filab(*)
       integer i,j,n,icntrl,imag,mi(*)
-      real*8 co(3,*),v(0:mi(2),*),fn(0:mi(2),*),rfn(0:mi(2),*),
+      real*8 co(3,*),v(0:mi(2),*),fn(0:mi(2),*),
      &  stn(6,*),een(6,*),a(3,3),emn(6,*),
      &  xr,xt,xz,b(3,3),cs(18,*),t(3),u(3),qfn(3,*),csab(7),
      &  xn(3),r(3),z,theta,rr,c(3,3),ctm,ct,st,ddx,ddy,dd
@@ -209,22 +209,14 @@ c            write(*,*) 'rectcyl',i,co(2,i)
                een(6,j)=a(1,2)*b(1,3)+a(2,2)*b(2,3)+a(3,2)*b(3,3)
             endif
 !
-            if(filab(5)(1:4).eq.'RF  ') then
+            if((filab(5)(1:4).eq.'RF  ').or.
+     &         (filab(58)(1:4).eq.'RR  ')) then
                xr=fn(1,j)*a(1,1)+fn(2,j)*a(2,1)+fn(3,j)*a(3,1)
                xt=fn(1,j)*a(1,2)+fn(2,j)*a(2,2)+fn(3,j)*a(3,2)
                xz=fn(1,j)*a(1,3)+fn(2,j)*a(2,3)+fn(3,j)*a(3,3)
                fn(1,j)=xr
                fn(2,j)=xt
                fn(3,j)=xz
-            endif
-!
-            if(filab(58)(1:4).eq.'RR  ') then
-               xr=rfn(1,j)*a(1,1)+rfn(2,j)*a(2,1)+rfn(3,j)*a(3,1)
-               xt=rfn(1,j)*a(1,2)+rfn(2,j)*a(2,2)+rfn(3,j)*a(3,2)
-               xz=rfn(1,j)*a(1,3)+rfn(2,j)*a(2,3)+rfn(3,j)*a(3,3)
-               rfn(1,j)=xr
-               rfn(2,j)=xt
-               rfn(3,j)=xz
             endif
 !
             if(filab(9)(1:4).eq.'HFL ') then
@@ -310,22 +302,14 @@ c            write(*,*) 'rectcyl',i,co(2,i)
                   een(6,j)=a(1,2)*b(1,3)+a(2,2)*b(2,3)+a(3,2)*b(3,3)
                endif
 !
-               if(filab(5)(1:4).eq.'RF  ') then
+               if((filab(5)(1:4).eq.'RF  ').or.
+     &            (filab(58)(1:4).eq.'RR  ')) then
                   xr=fn(1,j)*a(1,1)+fn(2,j)*a(2,1)+fn(3,j)*a(3,1)
                   xt=fn(1,j)*a(1,2)+fn(2,j)*a(2,2)+fn(3,j)*a(3,2)
                   xz=fn(1,j)*a(1,3)+fn(2,j)*a(2,3)+fn(3,j)*a(3,3)
                   fn(1,j)=xr
                   fn(2,j)=xt
                   fn(3,j)=xz
-               endif
-!
-               if(filab(58)(1:4).eq.'RR  ') then
-                  xr=rfn(1,j)*a(1,1)+rfn(2,j)*a(2,1)+rfn(3,j)*a(3,1)
-                  xt=rfn(1,j)*a(1,2)+rfn(2,j)*a(2,2)+rfn(3,j)*a(3,2)
-                  xz=rfn(1,j)*a(1,3)+rfn(2,j)*a(2,3)+rfn(3,j)*a(3,3)
-                  rfn(1,j)=xr
-                  rfn(2,j)=xt
-                  rfn(3,j)=xz
                endif
 !
                if(filab(9)(1:4).eq.'HFL ') then
@@ -411,22 +395,14 @@ c            write(*,*) 'rectcyl',i,co(2,i)
                een(6,j)=a(2,1)*b(1,3)+a(2,2)*b(2,3)+a(2,3)*b(3,3)
             endif
 !
-            if(filab(5)(1:4).eq.'RF  ') then
+            if((filab(5)(1:4).eq.'RF  ').or.
+     &         (filab(58)(1:4).eq.'RR  ')) then
                xr=fn(1,j)*a(1,1)+fn(2,j)*a(1,2)+fn(3,j)*a(1,3)
                xt=fn(1,j)*a(2,1)+fn(2,j)*a(2,2)+fn(3,j)*a(2,3)
                xz=fn(1,j)*a(3,1)+fn(2,j)*a(3,2)+fn(3,j)*a(3,3)
                fn(1,j)=xr
                fn(2,j)=xt
                fn(3,j)=xz
-            endif
-!
-            if(filab(58)(1:4).eq.'RR  ') then
-               xr=rfn(1,j)*a(1,1)+rfn(2,j)*a(1,2)+rfn(3,j)*a(1,3)
-               xt=rfn(1,j)*a(2,1)+rfn(2,j)*a(2,2)+rfn(3,j)*a(2,3)
-               xz=rfn(1,j)*a(3,1)+rfn(2,j)*a(3,2)+rfn(3,j)*a(3,3)
-               rfn(1,j)=xr
-               rfn(2,j)=xt
-               rfn(3,j)=xz
             endif
 !
             if(filab(9)(1:4).eq.'HFL ') then
@@ -512,22 +488,14 @@ c            write(*,*) 'rectcyl',i,co(2,i)
                   een(6,j)=a(2,1)*b(1,3)+a(2,2)*b(2,3)+a(2,3)*b(3,3)
                endif
 !
-               if(filab(5)(1:4).eq.'RF  ') then
+               if((filab(5)(1:4).eq.'RF  ').or.
+     &            (filab(58)(1:4).eq.'RR  ')) then
                   xr=fn(1,j)*a(1,1)+fn(2,j)*a(1,2)+fn(3,j)*a(1,3)
                   xt=fn(1,j)*a(2,1)+fn(2,j)*a(2,2)+fn(3,j)*a(2,3)
                   xz=fn(1,j)*a(3,1)+fn(2,j)*a(3,2)+fn(3,j)*a(3,3)
                   fn(1,j)=xr
                   fn(2,j)=xt
                   fn(3,j)=xz
-               endif
-!
-               if(filab(58)(1:4).eq.'RR  ') then
-                  xr=rfn(1,j)*a(1,1)+rfn(2,j)*a(1,2)+rfn(3,j)*a(1,3)
-                  xt=rfn(1,j)*a(2,1)+rfn(2,j)*a(2,2)+rfn(3,j)*a(2,3)
-                  xz=rfn(1,j)*a(3,1)+rfn(2,j)*a(3,2)+rfn(3,j)*a(3,3)
-                  rfn(1,j)=xr
-                  rfn(2,j)=xt
-                  rfn(3,j)=xz
                endif
 !
                if(filab(9)(1:4).eq.'HFL ') then

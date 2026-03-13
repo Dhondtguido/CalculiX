@@ -17,7 +17,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine printout(set,nset,istartset,iendset,ialset,nprint,
-     &     prlab,prset,v,t1,fn,rfn,ipkon,lakon,stx,eei,xstate,ener,
+     &     prlab,prset,v,t1,fn,ipkon,lakon,stx,eei,xstate,ener,
      &     mi,nstate_,ithermal,co,kon,qfx,ttime,trab,inotr,ntrans,
      &     orab,ielorien,norien,nk,ne,inum,filab,vold,ikin,ielmat,
      &     thicke,eme,islavsurf,mortar,time,ielprop,prop,veold,orname,
@@ -44,8 +44,8 @@
      &     nelemload(2,*),nrhcon(*),ipobody(2,*),ibody(3,*),nbody,
      &     nmethod,ne,iforce,nactdof(0:mi(2),*)
 !
-      real*8 v(0:mi(2),*),t1(*),fn(0:mi(2),*),rfn(0:mi(2),*),
-     &     stx(6,mi(1),*),bhetot,rfntot(3),
+      real*8 v(0:mi(2),*),t1(*),fn(0:mi(2),*),
+     &     stx(6,mi(1),*),bhetot,refotot(3),
      &     eei(6,mi(1),*),xstate(nstate_,mi(1),*),ener(2,mi(1),*),
      &     volumetot,co(3,*),qfx(3,mi(1),*),rftot(0:3),ttime,time,
      &     trab(7,*),orab(7,*),vold(0:mi(2),*),enerkintot,
@@ -85,7 +85,8 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
         endif
       enddo
       do ii=1,nprint
-        if(prlab(ii)(1:2).eq.'RF') then
+        if((prlab(ii)(1:2).eq.'RF').or.
+     &     (prlab(ii)(1:2).eq.'RR')) then
           if(filab(1)(5:5).ne.' ') then
             nfield=mt
             cflag=' '
@@ -96,23 +97,6 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
           exit
         endif
        enddo
-!     NOTE(gmb): Not sure
-      do ii=1,nprint
-        if(prlab(ii)(1:2).eq.'RR') then
-          if(filab(1)(5:5).ne.' ') then
-            nfield=mt
-            cflag=' '
-            iforce=1
-!            call map3dto1d2d(fn,ipkon,inum,kon,lakon,nfield,nk,
-!     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
-!            call map3dto1d2d(rfn,ipkon,inum,kon,lakon,nfield,nk,
-!     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
-          endif
-          exit
-        endif
-       enddo
-
-
 !
       do ii=1,nprint
 !
@@ -207,23 +191,23 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
             rftot(jj)=0.d0
           enddo
           do jj=1,3
-            rfntot(jj)=0.d0
+            refotot(jj)=0.d0
           enddo
           do jj=istartset(iset),iendset(iset)
             if(ialset(jj).lt.0) cycle
             if(jj.eq.iendset(iset)) then
               node=ialset(jj)
-              call printoutnode(prlab,v,t1,fn,rfn,ithermal,ii,node,
-     &             rftot,rfntot,trab,inotr,ntrans,co,mi,veold,nactdof)
+              call printoutnode(prlab,v,t1,fn,ithermal,ii,node,
+     &             rftot,refotot,trab,inotr,ntrans,co,mi,veold,nactdof)
             elseif(ialset(jj+1).gt.0) then
               node=ialset(jj)
-              call printoutnode(prlab,v,t1,fn,rfn,ithermal,ii,node,
-     &             rftot,rfntot,trab,inotr,ntrans,co,mi,veold,nactdof)
+              call printoutnode(prlab,v,t1,fn,ithermal,ii,node,
+     &             rftot,refotot,trab,inotr,ntrans,co,mi,veold,nactdof)
             else
               do node=ialset(jj-1)-ialset(jj+1),ialset(jj),
      &             -ialset(jj+1)
-                call printoutnode(prlab,v,t1,fn,rfn,ithermal,ii,node,
-     &               rftot,rfntot,trab,inotr,ntrans,co,mi,veold,nactdof)
+                call printoutnode(prlab,v,t1,fn,ithermal,ii,node,
+     &             rftot,refotot,trab,inotr,ntrans,co,mi,veold,nactdof)
               enddo
             endif
           enddo
@@ -253,7 +237,8 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
  152        format(' total reaction force (rfx,rfy,rfz) for set ',A,
      &           ' and time ',e14.7)
             write(5,*)
-            write(5,'(6x,1p,3(1x,e13.6))') rfntot(1),rfntot(2),rfntot(3)
+            write(5,'(6x,1p,3(1x,e13.6))')
+     &            refotot(1),refotot(2),refotot(3)
           endif
 !
 !     integration point values
