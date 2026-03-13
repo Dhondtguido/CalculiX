@@ -86,7 +86,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 
   double *d=NULL,*z=NULL,*stiini=NULL,*cc=NULL,*v=NULL,*zz=NULL,*emn=NULL,
     *stn=NULL,*stx=NULL,*een=NULL,*adb=NULL,*xstiff=NULL,*cdn=NULL,
-    *aub=NULL,*f=NULL,*fn=NULL,*rfn=NULL,*epn=NULL,*xstateini=NULL,*damn=NULL,
+    *aub=NULL,*f=NULL,*fn=NULL,*epn=NULL,*xstateini=NULL,*damn=NULL,
     *enern=NULL,*xstaten=NULL,*eei=NULL,*enerini=NULL,*qfn=NULL,
     *qfx=NULL,*cgr=NULL,*au=NULL,dtime,reltime,*t0=NULL,*t1=NULL,*t1old=NULL,
     sum,qa[4],cam[5],accold[1],bet,gam,*ad=NULL,alpham,betam,*dam=NULL,
@@ -97,7 +97,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     *stnmax=NULL,*cstr=NULL,*sti=*stip,time0=0.0,time=0.0,zero=0.0,
     *springarea=NULL,*eenmax=NULL,*aa=NULL,*bb=NULL,*xx=NULL,
     *eiga=NULL,*eigb=NULL,*eigxx=NULL,*temp=NULL,*coefmpcnew=NULL,xreal,
-    ximag,t[3],*vt=NULL,*t1t=NULL,*stnt=NULL,*eent=NULL,*fnt=NULL,*rfnt=NULL,*enernt=NULL,
+    ximag,t[3],*vt=NULL,*t1t=NULL,*stnt=NULL,*eent=NULL,*fnt=NULL,*enernt=NULL,
     *stxt=NULL,pi,ctl,stl,*cot=NULL,*qfnt=NULL,vreal,vimag,constant,stnreal,
     stnimag,freq,*emnt=NULL,*shcon=NULL,*eig=NULL,*clearini=NULL,
     *eigxr=NULL,*eigxi=NULL,*xmac=NULL,*bett=NULL,*betm=NULL,*xmaccpx=NULL,
@@ -1199,7 +1199,6 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 
   NNEW(v,double,2*mt**nk);
   NNEW(fn,double,2*mt**nk);
-  NNEW(rfn,double,2*mt**nk);
   if((strcmp1(&filab[174],"S   ")==0)||(strcmp1(&filab[1653],"MAXS")==0)||
      (strcmp1(&filab[1479],"PHS ")==0)||(strcmp1(&filab[1044],"ZZS ")==0)||
      (strcmp1(&filab[1044],"ERR ")==0))
@@ -1232,16 +1231,12 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     NNEW(stnt,double,2*6**nk*ngraph);
   if(strcmp1(&filab[261],"E   ")==0)
     NNEW(eent,double,2*6**nk*ngraph);
-  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0))
+  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)||
+     (strcmp1(&filab[4959],"RR  ")==0))
 
     // real and imaginary part of the forces
 
     NNEW(fnt,double,2*mt**nk*ngraph);
-  if(strcmp1(&filab[4959],"RR  ")==0)
-
-    // real and imaginary part of the reaction forces
-
-    NNEW(rfnt,double,2*mt**nk*ngraph);
   if(strcmp1(&filab[522],"ENER")==0)
     NNEW(enernt,double,*nk*ngraph);
   if((strcmp1(&filab[1044],"ZZS ")==0)||(strcmp1(&filab[1044],"ERR ")==0))
@@ -1274,7 +1269,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 
     icntrl=1;
 
-    FORTRAN(rectcyl,(cot,v,fn,rfn,stn,qfn,een,cs,nk,&icntrl,t,filab,&imag,mi,emn));
+    FORTRAN(rectcyl,(cot,v,fn,stn,qfn,een,cs,nk,&icntrl,t,filab,&imag,mi,emn));
 
     for(jj=0;jj<*mcs;jj++){
       is=cs[18*jj+4];
@@ -1308,7 +1303,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 
     icntrl=-1;
 
-    FORTRAN(rectcyl,(cot,vt,fnt,rfnt,stnt,qfnt,eent,cs,&nkt,&icntrl,t,filab,
+    FORTRAN(rectcyl,(cot,vt,fnt,stnt,qfnt,eent,cs,&nkt,&icntrl,t,filab,
 		     &imag,mi,emnt));
   }
 
@@ -1470,7 +1465,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,ielorien,
 		norien,orab,ntmat_,t0,t0,ithermal,
 		prestr,iprestr,filab,eme,&emn[kk6],&een[kk6],iperturb,
-		f,&fn[kkv],&rfn[kkv],nactdof,&iout,qa,vold,&zz[lint+k],
+		f,&fn[kkv],nactdof,&iout,qa,vold,&zz[lint+k],
 		nodeboun,ndirboun,xboun,nboun,ipompc,
 		nodempc,coefmpcnew,labmpc,nmpc,nmethod,cam,&neq[1],veold,accold,
 		&bet,&gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -1493,7 +1488,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,ielorien,
 		norien,orab,ntmat_,t0,t1old,ithermal,
 		prestr,iprestr,filab,eme,&emn[kk6],&een[kk6],iperturb,
-		f,&fn[kkv],&rfn[kkv],nactdof,&iout,qa,vold,&zz[lint+k],
+		f,&fn[kkv],nactdof,&iout,qa,vold,&zz[lint+k],
 		nodeboun,ndirboun,xboun,nboun,ipompc,
 		nodempc,coefmpcnew,labmpc,nmpc,nmethod,cam,&neq[1],veold,accold,
 		&bet,&gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -1530,7 +1525,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 
     if(cyclicsymmetry){
       icntrl=2;imag=1;
-      FORTRAN(rectcyl,(co,v,fn,rfn,stn,qfn,een,cs,nk,&icntrl,t,filab,&imag,mi,emn));
+      FORTRAN(rectcyl,(co,v,fn,stn,qfn,een,cs,nk,&icntrl,t,filab,&imag,mi,emn));
     }
 
     /* copying the basis results (real and imaginary) into
@@ -1547,12 +1542,10 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     if(strcmp1(&filab[261],"E   ")==0){
       for(l=0;l<6**nk;l++){eent[l]=een[l];};
       for(l=0;l<6**nk;l++){eent[l+6**nk*ngraph]=een[l+6**nk];}}
-    if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)){
+    if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)||
+       (strcmp1(&filab[4959],"RR  ")==0)){
       for(l=0;l<mt**nk;l++){fnt[l]=fn[l];}
       for(l=0;l<mt**nk;l++){fnt[l+mt**nk*ngraph]=fn[l+mt**nk];}}
-    if(strcmp1(&filab[4959],"RR  ")==0){
-      for(l=0;l<mt**nk;l++){rfnt[l]=rfn[l];}
-      for(l=0;l<mt**nk;l++){rfnt[l+mt**nk*ngraph]=rfn[l+mt**nk];}}
     if(strcmp1(&filab[522],"ENER")==0)
       for(l=0;l<*nk;l++){enernt[l]=enern[l];};
     if((strcmp1(&filab[1044],"ZZS ")==0)||(strcmp1(&filab[1044],"ERR ")==0)){
@@ -1798,7 +1791,8 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	    }
 	  }
 
-	  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)){
+	  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)||
+         (strcmp1(&filab[4959],"RR  ")==0)){
 	    for(l1=0;l1<*nk;l1++){
 	      if(inocs[l1]==jj){
 
@@ -1823,35 +1817,11 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	    }
 	  }
 
-      if(strcmp1(&filab[4959],"RR  ")==0){
-	    for(l1=0;l1<*nk;l1++){
-	      if(inocs[l1]==jj){
-
-		/* check whether node lies on axis */
-
-		ml1=-l1-1;
-		FORTRAN(nident,(&ics[lprev],&ml1,&ilength,&id));
-		if(id!=0){
-		  if(ics[lprev+id-1]==ml1){
-		    for(l2=0;l2<4;l2++){
-		      l=mt*l1+l2;
-		      rfnt[l+mt**nk*i]=rfn[l];
-		    }
-		    continue;
-		  }
-		}
-		for(l2=0;l2<4;l2++){
-		  l=mt*l1+l2;
-		  rfnt[l+mt**nk*i]=ctl*rfn[l]-stl*rfn[l+mt**nk];
-		}
-	      }
-	    }
-	  }
-
 	  /* imaginary part of the forces in cylindrical
 	     coordinates */
 
-	  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)){
+	  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)||
+         (strcmp1(&filab[4959],"RR  ")==0)){
 	    for(l1=0;l1<*nk;l1++){
 	      if(inocs[l1]==jj){
 
@@ -1876,34 +1846,6 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	    }
 	  }
 
-      /* imaginary part of the reaction forces in cylindrical
-	     coordinates */
-
-	  if(strcmp1(&filab[4959],"RR  ")==0){
-	    for(l1=0;l1<*nk;l1++){
-	      if(inocs[l1]==jj){
-
-		/* check whether node lies on axis */
-
-		ml1=-l1-1;
-		FORTRAN(nident,(&ics[lprev],&ml1,&ilength,&id));
-		if(id!=0){
-		  if(ics[lprev+id-1]==ml1){
-		    for(l2=0;l2<4;l2++){
-		      l=mt*l1+l2;
-		      rfnt[l+mt**nk*(i+ngraph)]=rfn[l+mt**nk];
-		    }
-		    continue;
-		  }
-		}
-		for(l2=0;l2<4;l2++){
-		  l=mt*l1+l2;
-		  rfnt[l+mt**nk*(i+ngraph)]=stl*rfn[l]+ctl*rfn[l+mt**nk];
-		}
-	      }
-	    }
-	  }
-
 	  if(strcmp1(&filab[522],"ENER")==0){
 	    for(l=0;l<*nk;l++){
 	      if(inocs[l]==jj) enernt[l+*nk*i]=0.;
@@ -1914,10 +1856,10 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 
       icntrl=-2;imag=0;
 
-      FORTRAN(rectcyl,(cot,vt,fnt,rfnt,stnt,qfnt,eent,cs,&nkt,&icntrl,t,filab,
+      FORTRAN(rectcyl,(cot,vt,fnt,stnt,qfnt,eent,cs,&nkt,&icntrl,t,filab,
 		       &imag,mi,emnt));
 
-      FORTRAN(rectcylvi,(cot,&vt[mt**nk*ngraph],&fnt[mt**nk*ngraph],&rfnt[mt**nk*ngraph],
+      FORTRAN(rectcylvi,(cot,&vt[mt**nk*ngraph],&fnt[mt**nk*ngraph],
                          &stnt[6**nk*ngraph],qfnt,&eent[6**nk*ngraph],
                          cs,&nkt,&icntrl,t,filab,&imag,mi,&emnt[6**nk*ngraph]));
 
@@ -1979,7 +1921,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
       NNEW(ipneigh,ITG,nkt);
     }
     frd(cot,&nkt,kont,ipkont,lakont,&net,vt,stnt,inumt,nmethod,
-	kode,filab,eent,t1t,fnt,rfn,&freq,epn,ielmatt,matname,enernt,xstaten,
+	kode,filab,eent,t1t,fnt,&freq,epn,ielmatt,matname,enernt,xstaten,
 	nstate_,istep,&iinc,ithermal,qfn,&j,&nm[j],trab,inotrt,
 	ntrans,orab,ielorien,norien,description,ipneigh,neigh,
 	mi,stxt,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&net,
@@ -2023,7 +1965,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
      (strcmp1(&filab[1044],"ERR ")==0))
     SFREE(stn);
 
-  SFREE(v);SFREE(fn);SFREE(rfn);SFREE(inum);SFREE(stx);
+  SFREE(v);SFREE(fn);SFREE(inum);SFREE(stx);
 
   if((strcmp1(&filab[261],"E   ")==0)||(strcmp1(&filab[2523],"MAXE")==0)) SFREE(een);
   if(strcmp1(&filab[522],"ENER")==0) SFREE(enern);
@@ -2034,8 +1976,8 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
   if((strcmp1(&filab[174],"S   ")==0)||(strcmp1(&filab[1479],"PHS ")==0)||
      (strcmp1(&filab[1044],"ZZS ")==0)||(strcmp1(&filab[1044],"ERR ")==0)) SFREE(stnt);
   if(strcmp1(&filab[261],"E   ")==0) SFREE(eent);
-  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)) SFREE(fnt);
-  if(strcmp1(&filab[4959],"RR  ")==0) SFREE(rfnt);
+  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)||
+     (strcmp1(&filab[4959],"RR  ")==0)) SFREE(fnt);
   if(strcmp1(&filab[522],"ENER")==0) SFREE(enernt);
   if((strcmp1(&filab[1044],"ZZS ")==0)||(strcmp1(&filab[1044],"ERR ")==0)) SFREE(stxt);
   if(strcmp1(&filab[2697],"ME  ")==0) SFREE(emnt);

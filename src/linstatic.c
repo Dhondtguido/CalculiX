@@ -95,7 +95,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     mortartrafoflag=0,nmethodold=*nmethod;
 
   double *stn=NULL,*v=NULL,*een=NULL,cam[5],*xstiff=NULL,*stiini=NULL,*tper,
-    *f=NULL,*fn=NULL,*rfn=NULL,qa[4],*fext=NULL,*epn=NULL,*xstateini=NULL,
+    *f=NULL,*fn=NULL,qa[4],*fext=NULL,*epn=NULL,*xstateini=NULL,
     *vini=NULL,*stx=NULL,*enern=NULL,*xbounact=NULL,*xforcact=NULL,
     *xloadact=NULL,*t1act=NULL,*ampli=NULL,*xstaten=NULL,*eei=NULL,
     *enerini=NULL,*cocon=NULL,*shcon=NULL,*physcon=NULL,*qfx=NULL,
@@ -346,14 +346,13 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   iout=-1;
   NNEW(v,double,mt**nk);
   NNEW(fn,double,mt**nk);
-  NNEW(rfn,double,mt**nk);
   NNEW(stx,double,6*mi[0]**ne);
   NNEW(inum,ITG,*nk);
   results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,
 	  elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 	  ielorien,norien,orab,ntmat_,t0,t1act,ithermal,
 	  prestr,iprestr,filab,eme,emn,een,iperturb,
-	  f,fn,rfn,nactdof,&iout,qa,vold,b,nodeboun,
+	  f,fn,nactdof,&iout,qa,vold,b,nodeboun,
 	  ndirboun,xbounact,nboun,ipompc,
 	  nodempc,coefmpc,labmpc,nmpc,nmethod,cam,neq,veold,accold,
 	  &bet,&gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -370,7 +369,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	  itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
 	  islavquadel,aut,irowt,jqt,&mortartrafoflag,
 	  &intscheme,physcon,dam,damn,iponoel);
-  SFREE(v);SFREE(fn);SFREE(rfn);SFREE(stx);SFREE(inum);
+  SFREE(v);SFREE(fn);SFREE(stx);SFREE(inum);
   iout=1;
 
   if((*nmethod==1)&&(iglob<0)&&(iperturb[0]>0)){
@@ -562,7 +561,6 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
       NNEW(v,double,mt**nk);
       NNEW(fn,double,mt**nk);
-      NNEW(rfn,double,mt**nk);
       NNEW(stn,double,6**nk);
       NNEW(inum,ITG,*nk);
       NNEW(stx,double,6*mi[0]**ne);
@@ -585,7 +583,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	      elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 	      ielorien,norien,orab,ntmat_,t0,t1act,ithermal,
 	      prestr,iprestr,filab,eme,emn,een,iperturb,
-	      f,fn,rfn,nactdof,&iout,qa,vold,b,nodeboun,ndirboun,
+	      f,fn,nactdof,&iout,qa,vold,b,nodeboun,ndirboun,
 	      xbounact,nboun,ipompc,
 	      nodempc,coefmpc,labmpc,nmpc,nmethod,cam,neq,veold,
 	      accold,&bet,
@@ -621,7 +619,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	submatrix[i*nretain+j]=fn[mt*(noderetain[j]-1)+ndirretain[j]];
       }
 
-      SFREE(fn);SFREE(rfn);
+      SFREE(fn);
 
     }
 
@@ -792,7 +790,6 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
     NNEW(v,double,mt**nk);
     NNEW(fn,double,mt**nk);
-    NNEW(rfn,double,mt**nk);
     NNEW(stn,double,6**nk);
     NNEW(inum,ITG,*nk);
     NNEW(stx,double,6*mi[0]**ne);
@@ -812,7 +809,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	    elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 	    ielorien,norien,orab,ntmat_,t0,t1act,ithermal,
 	    prestr,iprestr,filab,eme,emn,een,iperturb,
-            f,fn,rfn,nactdof,&iout,qa,vold,b,nodeboun,ndirboun,xbounact,nboun,
+            f,fn,nactdof,&iout,qa,vold,b,nodeboun,ndirboun,xbounact,nboun,
 	    ipompc,
 	    nodempc,coefmpc,labmpc,nmpc,nmethod,cam,neq,veold,accold,&bet,
             &gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -844,7 +841,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     if(*mcs>0){
       ptime=*ttime+time;
       frdcyc(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,kode,filab,een,t1act,
-	     fn,rfn,&ptime,epn,ielmat,matname,cs,mcs,nkon,enern,xstaten,
+	     fn,&ptime,epn,ielmat,matname,cs,mcs,nkon,enern,xstaten,
 	     nstate_,istep,&iinc,iperturb,ener,mi,output,ithermal,
 	     qfn,ialset,istartset,iendset,trab,inotr,ntrans,orab,
 	     ielorien,norien,sti,veold,&noddiam,set,nset,emn,thicke,
@@ -857,7 +854,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       }
       ptime=*ttime+time;
       frd(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,
-	  kode,filab,een,t1act,fn,rfn,&ptime,epn,ielmat,matname,enern,xstaten,
+	  kode,filab,een,t1act,fn,&ptime,epn,ielmat,matname,enern,xstaten,
 	  nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
 	  ntrans,orab,ielorien,norien,description,ipneigh,neigh,
 	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
@@ -888,7 +885,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     FORTRAN(writesta,(istep,&iinc,&icutb,&iitsta,ttime,&time,&dtime));
 
     SFREE(v);SFREE(stn);SFREE(inum);
-    SFREE(b);SFREE(stx);SFREE(fn);SFREE(rfn);
+    SFREE(b);SFREE(stx);SFREE(fn);
 
     if(strcmp1(&filab[261],"E   ")==0) SFREE(een);
     if(strcmp1(&filab[2697],"ME  ")==0) SFREE(emn);
@@ -922,7 +919,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	}
 	ptime=*ttime+time;
 	frd(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,
-	    kode,filab,een,t1,fn,rfn,&ptime,epn,ielmat,matname,enern,xstaten,
+	    kode,filab,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
 	    nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
 	    ntrans,orab,ielorien,norien,description,ipneigh,neigh,
 	    mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,

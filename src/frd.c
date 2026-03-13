@@ -24,7 +24,20 @@
 #define min(a,b) ((a) <= (b) ? (a) : (b))
 #define max(a,b) ((a) >= (b) ? (a) : (b))
 
-static double *calcurefo(double *fn, ITG *nk, ITG mt,ITG *nactdof)
+#if 0
+use this??
+for (ITG i = 0; i < *nboun; i++) {
+    ITG node = nodeboun[i];
+    ITG dir = ndirboun[i];
+    double val = xboun[i];
+    
+    ITG index = (node - 1) * mt + (dir - 1);
+    double force = fn[index];
+
+    printf("node %d, dir %d, %f\n", node, dir, val);
+}
+#endif
+static double *calcurefo(double *fn, ITG *nk, ITG mt,ITG *nactdof, ITG *noddiam)
 {
     ITG i,j;
     double *refo = NULL;
@@ -32,12 +45,12 @@ static double *calcurefo(double *fn, ITG *nk, ITG mt,ITG *nactdof)
     NNEW(refo,double,mt**nk);
 
     for(i=0;i<*nk;i++){
-        printf("node: %d\n", i+1);
+        //printf("node %d: noddiam: %d\n", i+1, noddiam[i]);
         for(j=0;j<mt;j++){
-            printf("   %d: nactdof: %d\n", j, nactdof[mt*i+j]);
-            //if(nactdof[mt*i+j]<0){
-            //    refo[mt*i+j]=fn[mt*i+j];
-            //}
+            //printf("node %d: dir: %d, nactdof: %d\n", i+1, j, nactdof[mt*i+j]);
+            if(nactdof[mt*i+j]<0){
+                refo[mt*i+j]=fn[mt*i+j];
+            }
         }
     }
 
@@ -46,7 +59,7 @@ static double *calcurefo(double *fn, ITG *nk, ITG mt,ITG *nactdof)
 
 void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	 double *v,double *stn,ITG *inum,ITG *nmethod,ITG *kode,
-	 char *filab,double *een,double *t1,double *fn,double *rfn,double *time,
+	 char *filab,double *een,double *t1,double *fn,double *time,
 	 double *epn,ITG *ielmat,char *matname,double *enern,
 	 double *xstaten,ITG *nstate_,ITG *istep,ITG *iinc,
 	 ITG *ithermal,double *qfn,ITG *mode,ITG *noddiam,
@@ -1562,7 +1575,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
         frdheader(&icounter,&oner,time,&pi,noddiam,cs,&null,mode,
                   &noutloc,description,kode,nmethod,f1,output,istep,iinc);
 
-        refo = calcurefo(fn,nk,mt,nactdof);
+        refo = calcurefo(fn,nk,mt,nactdof,noddiam);
 
         if(mi[1]==3){
           fprintf(f1," -4  REFO        4    1\n");

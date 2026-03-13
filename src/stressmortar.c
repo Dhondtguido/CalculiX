@@ -105,13 +105,13 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
   ITG i,j,l,jj,k,idof1,idof2,idof3,nodes,mt=mi[1]+1,nstick=0,nslip=0,ninacti=0,
     nnogap=0,nolm=0,ndiverg,nhelp,idof,node2,dirind,dirdep,index,ist,
     iout,num_cpus=1,keepset,derivmode,regmode,
-    ndof,calcul_fn,calcul_f,calcul_rfn;
+    ndof,calcul_fn,calcul_f;
   
   double aux,stressnormal,ddispnormal,*unitmatrix=NULL,constant=1.E10,
     constantn=1.E10,constantt=1.E10,stresst[2],stressinit[2],stresstildet[2],
     disp_tildet[2],nw_t=0.0,*du=NULL,
     ch,coefdep,disp_t[2],scal,w_t[3],*bhat2=NULL,
-    *fmpc=NULL,lm_t1_av,lm_t2_av,*rc=NULL,*rrc=NULL,f_cs_tot[4],f_cm_tot[4],
+    *fmpc=NULL,lm_t1_av,lm_t2_av,*rc=NULL,f_cs_tot[4],f_cm_tot[4],
     *vectornull=NULL,*u_oldt=NULL,
     *cstress2=NULL,*cstresstil=NULL,*cstressini2=NULL,*u_old=NULL,
     aninvloc,atauinvloc,gnc,gtc[2],*cold=NULL,*cold2=NULL,ln_old,
@@ -658,10 +658,8 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
   
   NNEW(fmpc,double,*nmpc);
   NNEW(rc,double,*nk*mt);
-  NNEW(rrc,double,*nk*mt);
   calcul_fn=1;
   calcul_f=1;
-  calcul_rfn=1;
   for(i=0;i<*nk;i++){
     for(l=0;l<3;l++){      
       if(*nmethod==4){
@@ -677,8 +675,8 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
     }
   }
   
-  resultsforc(nk,f_cs,rc,rrc,nactdof,ipompc,nodempc,coefmpc,labmpc,nmpc,mi,fmpc,
-	      &calcul_fn,&calcul_f,&calcul_rfn,&num_cpus,iponoel);
+  resultsforc(nk,f_cs,rc,nactdof,ipompc,nodempc,coefmpc,labmpc,nmpc,mi,fmpc,
+	      &calcul_fn,&calcul_f,&num_cpus,iponoel);
   SFREE(fmpc);
   
   /* print total contact force per contact tie for debugging purpose */
@@ -765,6 +763,5 @@ void stressmortar(double *bhat,double *adc,double *auc,ITG *jqc,ITG *irowc,
   SFREE(cold2);
   SFREE(vectornull);
   SFREE(rc);
-  SFREE(rrc);
   return;
 }

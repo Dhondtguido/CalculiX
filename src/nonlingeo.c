@@ -137,14 +137,14 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *ikbounf=NULL,*ilbounf=NULL,*ikmpcf=NULL,*ilmpcf=NULL,*iambounf=NULL,
     *iamloadf=NULL,*inotrf=NULL,*jqw=NULL,*iroww=NULL,nzsw,*jqtherm=NULL,
     *kslav=NULL,*lslav=NULL,*ktot=NULL,*ltot=NULL,nmasts,neqtot,
-    intpointvarm,calcul_fn,calcul_f,calcul_qa,calcul_cauchy,calcul_rfn,ikin,
+    intpointvarm,calcul_fn,calcul_f,calcul_qa,calcul_cauchy,ikin,
     intpointvart,*jqbi=NULL,*irowbi=NULL,*jqib=NULL,*irowib=NULL,
     idispfrdonly,*inumcp=NULL,nmethodold=*nmethod,*inoel=NULL,
     materialchange=0;
 
   double *stn=NULL,*v=NULL,*een=NULL,cam[5],*epn=NULL,*cg=NULL,
     *cdn=NULL,*pslavsurfold=NULL,*fextload=NULL,
-    *f=NULL,*fn=NULL,*rfn=NULL,qa[4]={0.,0.,-1.,0.},qam[2]={0.,0.},dtheta,theta,
+    *f=NULL,*fn=NULL,qa[4]={0.,0.,-1.,0.},qam[2]={0.,0.},dtheta,theta,
     err,ram[6]={0.,0.,0.,0.,0.,0.},*areaslav=NULL,
     *springarea=NULL,ram1[6]={0.,0.,0.,0.,0.,0.},
     ram2[6]={0.,0.,0.,0.,0.,0.},deltmx,ptime,smaxls,sminls,
@@ -982,7 +982,6 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     ielas=1;
 
     MNEW(fn,double,mt**nk);
-    MNEW(rfn,double,mt**nk);
     NNEW(stx,double,6*mi[0]**ne);
 
     if((*iexpl<=1)||(*mortar==-1)){intscheme=1;}
@@ -992,7 +991,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	    elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 	    ielorien,norien,orab,ntmat_,t0,t1old,ithermal,
 	    prestr,iprestr,filab,eme,emn,een,iperturb,
-	    f,fn,rfn,nactdof,&iout,qa,vold,b,nodeboun,
+	    f,fn,nactdof,&iout,qa,vold,b,nodeboun,
 	    ndirboun,xbounold,nboun,ipompc,
 	    nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[1],veold,accold,&bet,
 	    &gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -1010,7 +1009,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	    islavquadel,aut,irowt,jqt,&mortartrafoflag,
 	    &intscheme,physcon,dam,damn,iponoel);
 
-    SFREE(fn);SFREE(rfn);SFREE(stx);if(ne1d2d==1)SFREE(inum);
+    SFREE(fn);SFREE(stx);if(ne1d2d==1)SFREE(inum);
 
     if(*mortar<2){
       iout=0;
@@ -1174,7 +1173,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
 	ptime=*ttime+time;
 	frd(co,nk,kon,ipkon,lakon,&ne0,v,stn,inum,nmethod,
-	    kode,filab,een,t1,fn,rfn,&ptime,epn,ielmat,matname,enern,xstaten,
+	    kode,filab,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
 	    nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
 	    ntrans,orab,ielorien,norien,description,ipneigh,neigh,
 	    mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
@@ -1484,7 +1483,6 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
       NNEW(stx,double,6*mi[0]**ne);
       MNEW(fn,double,mt**nk);
-      MNEW(rfn,double,mt**nk);
 
       /* setting a "special" time consisting of the first primes;
 	 used to recognize the initial acceleration procedure
@@ -1496,7 +1494,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	      elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 	      ielorien,norien,orab,ntmat_,t0,t1act,ithermal,
 	      prestr,iprestr,filab,eme,emn,een,iperturb,
-	      f,fn,rfn,nactdof,&iout,qa,vold,b,nodeboun,
+	      f,fn,nactdof,&iout,qa,vold,b,nodeboun,
 	      ndirboun,xbounact,nboun,ipompc,
 	      nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[1],veold,accold,
 	      &bet,&gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -1522,7 +1520,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	cpypardou(sti,stx,&isiz,&num_cpus);
       }
 
-      SFREE(v);SFREE(stx);SFREE(fn);SFREE(rfn);
+      SFREE(v);SFREE(stx);SFREE(fn);
     }
     SFREE(ad);SFREE(au);
 
@@ -2146,7 +2144,6 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     }
 
     MNEW(fn,double,mt**nk);
-    MNEW(rfn,double,mt**nk);
     NNEW(stx,double,6*mi[0]**ne);
 
     /* determining the internal forces at the start of the increment
@@ -2196,7 +2193,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	      elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 	      ielorien,norien,orab,ntmat_,t1ini,t1act,ithermal,
 	      prestr,iprestr,filab,eme,emn,een,iperturb,
-	      f,fn,rfn,nactdof,&iout,qa,vold,b,nodeboun,
+	      f,fn,nactdof,&iout,qa,vold,b,nodeboun,
 	      ndirboun,xbounact,nboun,ipompc,
 	      nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[1],veold,accold,
 	      &bet,&gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -2230,7 +2227,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 		ielorien,norien,orab,ntmat_,t0,t1act,ithermal,
 		prestr,iprestr,filab,eme,emn,een,iperturb,
-		f,fn,rfn,nactdof,&iout,qa,vold,b,nodeboun,
+		f,fn,nactdof,&iout,qa,vold,b,nodeboun,
 		ndirboun,xbounact,nboun,ipompc,
 		nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[1],veold,accold,
 		&bet,&gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -2261,7 +2258,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     ielas=0;
     iout=0;
 
-    SFREE(fn);SFREE(rfn);SFREE(v);
+    SFREE(fn);SFREE(v);
     if((*ithermal!=3)||(ncont==0)||(*mortar!=1)||(*ncmat_<11)) SFREE(stx);
 
     /***************************************************************/
@@ -2479,7 +2476,6 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	  MNEW(v,double,mt**nk);
 	  NNEW(stx,double,6*mi[0]**ne);
 	  MNEW(fn,double,mt**nk);
-	  MNEW(rfn,double,mt**nk);
 
 	  isiz=mt**nk;cpypardou(v,vold,&isiz,&num_cpus);
 	  iout=-1;
@@ -2489,7 +2485,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		  elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 		  ielorien,norien,orab,ntmat_,t0,t1act,ithermal,
 		  prestr,iprestr,filab,eme,emn,een,iperturb,
-		  f,fn,rfn,nactdof,&iout,qa,vold,b,nodeboun,
+		  f,fn,nactdof,&iout,qa,vold,b,nodeboun,
 		  ndirboun,xbounact,nboun,ipompc,
 		  nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[1],veold,accold,
 		  &bet,&gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -2514,7 +2510,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	    cpypardou(sti,stx,&isiz,&num_cpus);
 	  }
 
-	  SFREE(v);SFREE(fn);SFREE(rfn);if(ne1d2d==1)SFREE(inum);
+	  SFREE(v);SFREE(fn);if(ne1d2d==1)SFREE(inum);
 	  if((*ithermal!=3)||(ncont==0)||(*mortar!=1)||(*ncmat_<11)) SFREE(stx);
 	  iout=0;
 	}
@@ -2769,7 +2765,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
 	  ptime=*ttime+time;
 	  frd(co,nk,kon,ipkon,lakon,&ne0,v,stn,inum,nmethod,
-	      kode,filab,een,t1,fn,rfn,&ptime,epn,ielmat,matname,enern,xstaten,
+	      kode,filab,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
 	      nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
 	      ntrans,orab,ielorien,norien,description,ipneigh,neigh,
 	      mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
@@ -3287,7 +3283,6 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
       NNEW(stx,double,6*mi[0]**ne);
       MNEW(fn,double,mt**nk);
-      MNEW(rfn,double,mt**nk);
 
       /* for massless explicit dynamics without energy
          calculation only the displacements have to be calculated
@@ -3301,7 +3296,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		   xboun,nboun,ipompc,nodempc,coefmpc,labmpc,nmpc,nmethod,cam,
 		   neq,veold,accold,&bet,&gam,&dtime,mi,vini,nprint,prlab,
 		   &intpointvarm,&calcul_fn,&calcul_f,&calcul_qa,&calcul_cauchy,
-		   &calcul_rfn,&ikin,&intpointvart,typeboun,&num_cpus,mortar,nener,
+		   &ikin,&intpointvart,typeboun,&num_cpus,mortar,nener,
 		   iponoeln,network);
       }else{
 	if(ne1d2d==1)NNEW(inum,ITG,*nk);
@@ -3309,7 +3304,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 		ielorien,norien,orab,ntmat_,t0,t1act,ithermal,
 		prestr,iprestr,filab,eme,emn,een,iperturb,
-		f,fn,rfn,nactdof,&iout,qa,vold,b,nodeboun,
+		f,fn,nactdof,&iout,qa,vold,b,nodeboun,
 		ndirboun,xbounact,nboun,ipompc,
 		nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[1],veold,accold,
 		&bet,&gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -3358,7 +3353,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
       if((*mortar==1)&&(iit!=1)&&(*ne-ne0>0)&&(*nmethod!=4)){
 
-	SFREE(v);SFREE(stx);SFREE(fn);SFREE(rfn);
+	SFREE(v);SFREE(stx);SFREE(fn);
 
 	/* calculating the residual */
 
@@ -3399,14 +3394,13 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
 	NNEW(stx,double,6*mi[0]**ne);
 	MNEW(fn,double,mt**nk);
-	MNEW(rfn,double,mt**nk);
 
 	if(ne1d2d==1)NNEW(inum,ITG,*nk);
 	results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,
 		elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 		ielorien,norien,orab,ntmat_,t0,t1act,ithermal,
 		prestr,iprestr,filab,eme,emn,een,iperturb,
-		f,fn,rfn,nactdof,&iout,qa,vold,b,nodeboun,
+		f,fn,nactdof,&iout,qa,vold,b,nodeboun,
 		ndirboun,xbounact,nboun,ipompc,
 		nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[1],veold,accold,
 		&bet,&gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -3461,7 +3455,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	}else{pressureratio=0.;}
       }
 
-      SFREE(v);SFREE(stx);SFREE(fn);SFREE(rfn);
+      SFREE(v);SFREE(stx);SFREE(fn);
 
       if((idamping==1)&&(*iexpl<=1)){SFREE(adc);SFREE(auc);}
 
@@ -3780,7 +3774,6 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
       MNEW(v,double,mt**nk);
       MNEW(fn,double,mt**nk);
-      MNEW(rfn,double,mt**nk);
       NNEW(stn,double,6**nk);
       if(*ithermal>1) NNEW(qfn,double,3**nk);
       NNEW(inum,ITG,*nk);
@@ -3815,7 +3808,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 		ielorien,norien,orab,ntmat_,t0,t1act,ithermal,
 		prestr,iprestr,filab,eme,emn,een,iperturb,
-		f,fn,rfn,nactdof,&iout,qa,vold,b,nodeboun,
+		f,fn,nactdof,&iout,qa,vold,b,nodeboun,
 		ndirboun,xbounact,nboun,ipompc,
 		nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[1],veold,accold,
 		&bet,&gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -3849,7 +3842,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	}
 
 	frdcyc(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,kode,filab,een,
-	       t1act,fn,rfn,&ptime,epn,ielmat,matname,cs,mcs,nkon,enern,xstaten,
+	       t1act,fn,&ptime,epn,ielmat,matname,cs,mcs,nkon,enern,xstaten,
                nstate_,istep,&iinc,iperturb,ener,mi,output,ithermal,qfn,
                ialset,istartset,iendset,trab,inotr,ntrans,orab,ielorien,
 	       norien,stx,veold,&noddiam,set,nset,emn,thicke,jobnamec,&ne0,
@@ -3874,7 +3867,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	  mortar_prefrd(ne,nslavs,mi,nk,nkon, &stx,cdisp,fn,cfs,cfm);
 	}
 	frd(co,nk,kon,ipkon,lakon,&ne0,v,stn,inum,nmethod,
-	    kode,filab,een,t1act,fn,rfn,&ptime,epn,ielmat,matname,enern,xstaten,
+	    kode,filab,een,t1act,fn,&ptime,epn,ielmat,matname,enern,xstaten,
 	    nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
 	    ntrans,orab,ielorien,norien,description,ipneigh,neigh,
 	    mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
@@ -3906,7 +3899,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	   ((strcmp1(&filab[1044],"ERR")==0)&&(*ithermal!=2))) SFREE(errn);
       }
 
-      SFREE(v);SFREE(fn);SFREE(rfn);SFREE(stn);SFREE(inum);SFREE(stx);
+      SFREE(v);SFREE(fn);SFREE(stn);SFREE(inum);SFREE(stx);
       if(*ithermal>1){SFREE(qfn);}
 
       if(strcmp1(&filab[261],"E   ")==0) SFREE(een);
@@ -3940,7 +3933,6 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
     MNEW(v,double,mt**nk);
     MNEW(fn,double,mt**nk);
-    MNEW(rfn,double,mt**nk);
     NNEW(stn,double,6**nk);
     if(*ithermal>1) NNEW(qfn,double,3**nk);
     NNEW(inum,ITG,*nk);
@@ -3965,7 +3957,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	    elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 	    ielorien,norien,orab,ntmat_,t0,t1act,ithermal,
 	    prestr,iprestr,filab,eme,emn,een,iperturb,
-	    f,fn,rfn,nactdof,&iout,qa,vold,b,nodeboun,
+	    f,fn,nactdof,&iout,qa,vold,b,nodeboun,
 	    ndirboun,xbounact,nboun,ipompc,
 	    nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[1],veold,accold,
             &bet,&gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -3995,7 +3987,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	mortar_prefrd(ne,nslavs,mi,nk,nkon, &stx,cdisp,fn,cfs,cfm);
       }
       frdcyc(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,kode,filab,een,
-	     t1act,fn,rfn,&ptime,epn,ielmat,matname,cs,mcs,nkon,enern,xstaten,
+	     t1act,fn,&ptime,epn,ielmat,matname,cs,mcs,nkon,enern,xstaten,
              nstate_,istep,&iinc,iperturb,ener,mi,output,ithermal,qfn,
              ialset,istartset,iendset,trab,inotr,ntrans,orab,ielorien,
 	     norien,stx,veold,&noddiam,set,nset,emn,thicke,jobnamec,&ne0,
@@ -4018,7 +4010,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	mortar_prefrd(ne,nslavs,mi,nk,nkon, &stx,cdisp,fn,cfs,cfm);
       }
       frd(co,nk,kon,ipkon,lakon,&ne0,v,stn,inum,nmethod,
-	  kode,filab,een,t1act,fn,rfn,&ptime,epn,ielmat,matname,enern,xstaten,
+	  kode,filab,een,t1act,fn,&ptime,epn,ielmat,matname,enern,xstaten,
 	  nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
 	  ntrans,orab,ielorien,norien,description,ipneigh,neigh,
 	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
@@ -4050,7 +4042,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	 ((strcmp1(&filab[1044],"ERR")==0)&&(*ithermal!=2))) SFREE(errn);
     }
 
-    SFREE(v);SFREE(fn);SFREE(rfn);SFREE(stn);SFREE(inum);SFREE(stx);
+    SFREE(v);SFREE(fn);SFREE(stn);SFREE(inum);SFREE(stx);
     if(*ithermal>1){SFREE(qfn);}
 
     if(strcmp1(&filab[261],"E   ")==0) SFREE(een);

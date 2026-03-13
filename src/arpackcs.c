@@ -108,10 +108,10 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 
   double *stn=NULL,*v=NULL,*resid=NULL,*z=NULL,*workd=NULL,*vr=NULL,
     *workl=NULL,*d=NULL,sigma,*temp_array=NULL,*vini=NULL,dtset,
-    *een=NULL,cam[5],*f=NULL,*fn=NULL,*rfn=NULL,qa[4],*fext=NULL,*emn=NULL,
+    *een=NULL,cam[5],*f=NULL,*fn=NULL,qa[4],*fext=NULL,*emn=NULL,
     *epn=NULL,*stiini=NULL,*fnr=NULL,*fni=NULL,fnreal,fnimag,*emeini=NULL,
     *xstateini=NULL,theta=0,pi,*coefmpcnew=NULL,*xstiff=NULL,*vi=NULL,
-    *vt=NULL,*fnt=NULL,*rfnt=NULL,*stnt=NULL,*eent=NULL,*cot=NULL,t[3],ctl,stl,
+    *vt=NULL,*fnt=NULL,*stnt=NULL,*eent=NULL,*cot=NULL,t[3],ctl,stl,
     *t1t=NULL,freq,*stx=NULL,*enern=NULL,*enernt=NULL,*xstaten=NULL,
     *eei=NULL,*enerini=NULL,*cocon=NULL,*qfx=NULL,*qfn=NULL,*qfnt=NULL,
     tol,fmin,fmax,xreal,ximag,*cgr=NULL,*xloadold=NULL,reltime=1.,constant,
@@ -395,7 +395,6 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
   NNEW(v,double,mt**nk);
   memcpy(&v[0],&vold[0],sizeof(double)*mt**nk);
   NNEW(fn,double,mt**nk);
-  NNEW(rfn,double,mt**nk);
   NNEW(stx,double,6*mi[0]**ne);
   NNEW(eme,double,6*mi[0]**ne);
   NNEW(inum,ITG,*nk);
@@ -413,7 +412,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	    elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 	    ielorien,norien,orab,ntmat_,t0,t0,ithermal,
 	    prestr,iprestr,filab,eme,emn,een,iperturb,
-	    f,fn,rfn,nactdof,&iout,qa,vold,b,nodeboun,
+	    f,fn,nactdof,&iout,qa,vold,b,nodeboun,
 	    ndirboun,xboun,nboun,ipompc,
 	    nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[1],veold,accold,
 	    &bet,&gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -435,7 +434,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	    elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 	    ielorien,norien,orab,ntmat_,t1old,t1old,ithermal,
 	    prestr,iprestr,filab,eme,emn,een,iperturb,
-	    f,fn,rfn,nactdof,&iout,qa,vold,b,nodeboun,
+	    f,fn,nactdof,&iout,qa,vold,b,nodeboun,
 	    ndirboun,xboun,nboun,ipompc,
 	    nodempc,coefmpc,labmpc,nmpc,nmethod,cam,&neq[1],veold,accold,
 	    &bet,&gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -456,7 +455,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
   SFREE(eei);SFREE(stiini);SFREE(emeini);SFREE(vini);
   if(*nener==1) SFREE(enerini);
 
-  SFREE(f);SFREE(v);SFREE(fn);SFREE(rfn);SFREE(stx);SFREE(eme);SFREE(inum);
+  SFREE(f);SFREE(v);SFREE(fn);SFREE(stx);SFREE(eme);SFREE(inum);
   iout=1;
 
   if(fei[3]>0.){
@@ -674,7 +673,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
       }
 
       frd(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,
-	  kode,filab,een,t1,fn,rfn,&time,epn,ielmat,matname,enern,xstaten,
+	  kode,filab,een,t1,fn,&time,epn,ielmat,matname,enern,xstaten,
 	  nstate_,istep,&iinc,ithermal,qfn,&j,&nm,trab,inotr,
 	  ntrans,orab,ielorien,norien,description,ipneigh,neigh,
 	  mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
@@ -1188,7 +1187,6 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 
     NNEW(v,double,2*mt**nk);
     NNEW(fn,double,2*mt**nk);
-    NNEW(rfn,double,2*mt**nk);
     NNEW(inum,ITG,*nk);
     NNEW(stx,double,2*6*mi[0]**ne);
     NNEW(eme,double,2*6*mi[0]**ne);
@@ -1225,12 +1223,12 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 
       NNEW(stnt,double,2*6**nk*ngraph);
     if(strcmp1(&filab[261],"E   ")==0) NNEW(eent,double,2*6**nk*ngraph);
-    if((strcmp1(&filab[348],"RF  ")==0) || (strcmp1(&filab[2610],"PRF ")==0))
+    if((strcmp1(&filab[348],"RF  ")==0) || (strcmp1(&filab[2610],"PRF ")==0)||
+       (strcmp1(&filab[4959],"RR  ")==0))
 
       // real and imaginary part of the forces
 
       NNEW(fnt,double,2*mt**nk*ngraph);
-    if(strcmp1(&filab[4959],"RR  ")==0) NNEW(rfnt,double,2*mt**nk*ngraph);
     if(strcmp1(&filab[2697],"ME  ")==0) NNEW(emnt,double,2*6**nk*ngraph);
     if(((strcmp1(&filab[2175],"CONT")==0)||(strcmp1(&filab[3915],"PCON")==0))
        &&(*mortar==1)) NNEW(cdnt,double,2*6**nk*ngraph);
@@ -1269,7 +1267,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 
     icntrl=1;
 
-    FORTRAN(rectcyl,(cot,v,fn,rfn,stn,qfn,een,cs,nk,&icntrl,t,filab,&imag,mi,emn));
+    FORTRAN(rectcyl,(cot,v,fn,stn,qfn,een,cs,nk,&icntrl,t,filab,&imag,mi,emn));
 
     for(jj=0;jj<*mcs;jj++){
       is=cs[18*jj+4];
@@ -1304,7 +1302,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 
     icntrl=-1;
 
-    FORTRAN(rectcyl,(cot,vt,fnt,rfnt,stnt,qfnt,eent,cs,&nkt,&icntrl,t,filab,
+    FORTRAN(rectcyl,(cot,vt,fnt,stnt,qfnt,eent,cs,&nkt,&icntrl,t,filab,
 		     &imag,mi,emnt));
 
     /* check that the tensor fields which are extrapolated from the
@@ -1538,7 +1536,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 		  nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,ielorien,
 		  norien,orab,ntmat_,t0,t0,ithermal,
 		  prestr,iprestr,filab,&eme[kkx],&emn[kk6],&een[kk6],iperturb,
-		  f,&fn[kkv],&rfn[kkv],nactdof,&iout,qa,vold,&z[lint+k],
+		  f,&fn[kkv],nactdof,&iout,qa,vold,&z[lint+k],
 		  nodeboun,ndirboun,xboun,nboun,ipompc,
 		  nodempc,coefmpcnew,labmpc,nmpc,nmethod,cam,&neq[1],veold,
 		  accold,
@@ -1563,7 +1561,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 		  nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,ielorien,
 		  norien,orab,ntmat_,t1old,t1old,ithermal,
 		  prestr,iprestr,filab,&eme[kkx],&emn[kk6],&een[kk6],iperturb,
-		  f,&fn[kkv],&rfn[kkv],nactdof,&iout,qa,vold,&z[lint+k],
+		  f,&fn[kkv],nactdof,&iout,qa,vold,&z[lint+k],
 		  nodeboun,ndirboun,xboun,nboun,ipompc,
 		  nodempc,coefmpcnew,labmpc,nmpc,nmethod,cam,&neq[1],veold,
 		  accold,
@@ -1991,7 +1989,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 
       icntrl=2;imag=1;
 
-      FORTRAN(rectcyl,(co,v,fn,rfn,stn,qfn,een,cs,nk,&icntrl,t,filab,&imag,mi,emn));
+      FORTRAN(rectcyl,(co,v,fn,stn,qfn,een,cs,nk,&icntrl,t,filab,&imag,mi,emn));
 
       if((strcmp1(&filab[0],"U  ")==0)||(strcmp1(&filab[870],"PU  ")==0)){
 	for(l=0;l<mt**nk;l++){vt[l]=v[l];}
@@ -2009,12 +2007,10 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
       if(strcmp1(&filab[261],"E   ")==0){
 	for(l=0;l<6**nk;l++){eent[l]=een[l];};
 	for(l=0;l<6**nk;l++){eent[l+6**nk*ngraph]=een[l+6**nk];}}
-      if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)){
+      if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)||
+         (strcmp1(&filab[4959],"RR  ")==0)){
 	for(l=0;l<mt**nk;l++){fnt[l]=fn[l];}
 	for(l=0;l<mt**nk;l++){fnt[l+mt**nk*ngraph]=fn[l+mt**nk];}}
-      if(strcmp1(&filab[4959],"RR  ")==0){
-	for(l=0;l<mt**nk;l++){rfnt[l]=rfn[l];}
-	for(l=0;l<mt**nk;l++){rfnt[l+mt**nk*ngraph]=rfn[l+mt**nk];}}
       if(strcmp1(&filab[522],"ENER")==0){
 	for(l=0;l<*nk;l++){enernt[l]=enern[l];}}
       //      for(l=0;l<*nk;l++){enernt[l+*nk*ngraph]=enern[l+*nk];}}
@@ -2353,7 +2349,8 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	  /* imaginary part of the forces in cylindrical
 	     coordinates */
 
-	  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)){
+	  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)||
+         (strcmp1(&filab[4959],"RR  ")==0)){
 	    for(l1=0;l1<*nk;l1++){
 	      if(inocs[l1]==jj){
 
@@ -2377,40 +2374,15 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	      }
 	    }
 	  }
-
-        /* imaginary part of the reaction forces in cylindrical coordinates */
-        if(strcmp1(&filab[4959],"RR  ")==0){
-            for(l1=0;l1<*nk;l1++){
-                if(inocs[l1]==jj){
-                    /* check whether node lies on axis */
-                    ml1=-l1-1;
-                    FORTRAN(nident,(&ics[lprev],&ml1,&ilength,&id));
-                    if(id!=0){
-                        if(ics[lprev+id-1]==ml1){
-                            for(l2=0;l2<4;l2++){
-                                l=mt*l1+l2;
-                                rfnt[l+mt**nk*(i+ngraph)]=rfn[l+mt**nk];
-                            }
-                            continue;
-                        }
-                    }
-                    for(l2=0;l2<4;l2++){
-                        l=mt*l1+l2;
-                        rfnt[l+mt**nk*(i+ngraph)]=stl*rfn[l]+ctl*rfn[l+mt**nk];
-                    }
-                }
-            }
-        }
-
 	}
       }
 
       icntrl=-2;imag=0;
 
-      FORTRAN(rectcyl,(cot,vt,fnt,rfnt,stnt,qfnt,eent,cs,&nkt,&icntrl,t,filab,
+      FORTRAN(rectcyl,(cot,vt,fnt,stnt,qfnt,eent,cs,&nkt,&icntrl,t,filab,
 		       &imag,mi,emnt));
 
-      FORTRAN(rectcylvi,(cot,&vt[mt**nk*ngraph],&fnt[mt**nk*ngraph],&rfnt[mt**nk*ngraph],
+      FORTRAN(rectcylvi,(cot,&vt[mt**nk*ngraph],&fnt[mt**nk*ngraph],
 			 &stnt[6**nk*ngraph],qfnt,&eent[6**nk*ngraph],cs,&nkt,&icntrl,
 			 t,filab,&imag,mi,&emnt[6**nk*ngraph]));
 
@@ -2565,7 +2537,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	for(k=5;k<11;k++){cs[k]=-cs[k];}
       }
       frd(cot,&nkt,kont,ipkont,lakont,&net,vt,stnt,inumt,nmethod,
-	  kode,filab,eent,t1t,fnt,rfn,&freq,epn,ielmatt,matname,enernt,xstaten,
+	  kode,filab,eent,t1t,fnt,&freq,epn,ielmatt,matname,enernt,xstaten,
 	  nstate_,istep,&iinc,ithermal,qfn,&j,&nm,trab,inotrt,
 	  ntrans,orab,ielorien,norien,description,ipneigh,neigh,
 	  mi,stxt,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&net,
@@ -2655,7 +2627,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
        (strcmp1(&filab[1044],"ERR ")==0))
       SFREE(stn);
 
-    SFREE(v);SFREE(fn);SFREE(rfn);SFREE(inum);SFREE(stx);SFREE(eme);SFREE(z);SFREE(d);
+    SFREE(v);SFREE(fn);SFREE(inum);SFREE(stx);SFREE(eme);SFREE(z);SFREE(d);
 
     if((strcmp1(&filab[261],"E   ")==0)||(strcmp1(&filab[2523],"MAXE")==0)) SFREE(een);
     if(strcmp1(&filab[522],"ENER")==0) SFREE(enern);
@@ -2666,8 +2638,8 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     if((strcmp1(&filab[174],"S   ")==0)||(strcmp1(&filab[1479],"PHS ")==0)||
        (strcmp1(&filab[1044],"ZZS ")==0)||(strcmp1(&filab[1044],"ERR ")==0)) SFREE(stnt);
     if(strcmp1(&filab[261],"E   ")==0) SFREE(eent);
-    if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)) SFREE(fnt);
-    if(strcmp1(&filab[4959],"RR  ")==0) SFREE(rfnt);
+    if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)||
+       (strcmp1(&filab[4959],"RR  ")==0)) SFREE(fnt);
     if(strcmp1(&filab[522],"ENER")==0) SFREE(enernt);
     if((strcmp1(&filab[1044],"ZZS ")==0)||(strcmp1(&filab[1044],"ERR ")==0)||
        ((strcmp1(&filab[2175],"CONT")==0)&&(*mortar==0))) SFREE(stxt);

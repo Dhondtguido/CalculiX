@@ -22,9 +22,9 @@
 #include <pthread.h>
 #include "CalculiX.h"
 
-void resultsforc(ITG *nk,double *f,double *fn,double *rfn,ITG *nactdof,ITG *ipompc,
+void resultsforc(ITG *nk,double *f,double *fn,ITG *nactdof,ITG *ipompc,
 		 ITG *nodempc,double *coefmpc,char *labmpc,ITG *nmpc,
-		 ITG *mi,double *fmpc,ITG *calcul_fn,ITG *calcul_f,ITG *calcul_rfn,
+		 ITG *mi,double *fmpc,ITG *calcul_fn,ITG *calcul_f,
                  ITG *num_cpus,ITG *iponoel){
 
     ITG i,j,ist,node,ndir,mt=mi[1]+1,index,index2;
@@ -69,20 +69,6 @@ void resultsforc(ITG *nk,double *f,double *fn,double *rfn,ITG *nactdof,ITG *ipom
 		}
 	    }
 	    }*/
-    }
-    
-    /* calculating the reaction forces */
-    // NOTE(gmb): do it in parallel?
-    if(*calcul_rfn==1){
-        for(i=0;i<*nk;i++){
-            for(j=0;j<mt;j++){
-                if(nactdof[mt*i+j]<=0){
-                    rfn[mt*i+j]=fn[mt*i+j];
-                } else {
-                    rfn[mt*i+j]=0;
-                }
-            }
-        }
     }
     
     /* adding the mpc force again to fn */

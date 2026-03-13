@@ -85,7 +85,7 @@ void sensi_orien(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *nod1st=NULL,ishape=0,nobjectstart=0;
       
   double *stn=NULL,*v=NULL,*een=NULL,cam[5],*xstiff=NULL,*stiini=NULL,*tper,
-    *f=NULL,*fn=NULL,*rfn=NULL,qa[4],*epn=NULL,*xstateini=NULL,*xdesi=NULL,
+    *f=NULL,*fn=NULL,qa[4],*epn=NULL,*xstateini=NULL,*xdesi=NULL,
     *vini=NULL,*stx=NULL,*enern=NULL,*xbounact=NULL,*xforcact=NULL,
     *xloadact=NULL,*t1act=NULL,*ampli=NULL,*xstaten=NULL,*eei=NULL,
     *enerini=NULL,*cocon=NULL,*shcon=NULL,*qfx=NULL,*df2=NULL,
@@ -676,7 +676,6 @@ void sensi_orien(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       if(iorientation==1) NNEW(dxstiff,double,(long long)3*27*mi[0]**ne);
 
       NNEW(fn,double,mt**nk);  /* FAKE */
-      NNEW(rfn,double,mt**nk);  /* FAKE */
       if(!cyclicsymmetry){
 	NNEW(df,double,nzss);
       }else{
@@ -767,7 +766,7 @@ void sensi_orien(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       objectivemain_se(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,elcon,nelcon,
 		       rhcon,nrhcon,alcon,nalcon,alzero,ielmat,ielorien,norien,
 		       orab,ntmat_,t0,t1act,ithermal,prestr,iprestr,filab,eme,
-		       emn,een,iperturb,f,fn,rfn,nactdof,&iout,qa,vold,nodeboun,
+		       emn,een,iperturb,f,fn,nactdof,&iout,qa,vold,nodeboun,
 		       ndirboun,xbounact,nboun,ipompc,nodempc,coefmpc,labmpc,
 		       nmpc,nmethod,cam,neq,veold,accold,&bet,&gam,&dtime,
 		       &time,ttime,plicon,nplicon,plkcon,nplkcon,xstateini,
@@ -791,7 +790,7 @@ void sensi_orien(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		       &nobjectstart,dfm,physcon,ne2d); 
       iout=1;
 
-      SFREE(v);SFREE(f);SFREE(xstiff);SFREE(fn);SFREE(rfn);SFREE(df);SFREE(stx);
+      SFREE(v);SFREE(f);SFREE(xstiff);SFREE(fn);SFREE(df);SFREE(stx);
       if((iperturb[1]==1)&&(ishapeenergy==1)){SFREE(fint);}
 
     }

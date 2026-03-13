@@ -84,7 +84,7 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
     long long lint;
 
     double *stn=NULL,*v=NULL,*temp_array=NULL,*vini=NULL,*csmass=NULL,
-      *een=NULL,cam[5],*f=NULL,*fn=NULL,*rfn=NULL,qa[4],*epn=NULL,summass,
+      *een=NULL,cam[5],*f=NULL,*fn=NULL,qa[4],*epn=NULL,summass,
       *stiini=NULL,*emn=NULL,*emeini=NULL,*clearini=NULL,
       *xstateini=NULL,theta,pi,*coefmpcnew=NULL,t[3],ctl,stl,
       *stx=NULL,*enern=NULL,*xstaten=NULL,*eei=NULL,*enerini=NULL,
@@ -112,7 +112,6 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
     NNEW(vt,double,mt**nk**nsectors);
     
     NNEW(fn,double,2*mt**nk);
-    NNEW(rfn,double,2*mt**nk);
     NNEW(stn,double,12**nk);
     NNEW(inum,ITG,*nk);
     NNEW(stx,double,6*mi[0]**ne);
@@ -251,7 +250,7 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 
     icntrl=1;
 
-    FORTRAN(rectcyl,(co,v,fn,rfn,stn,qfn,een,cs,nk,&icntrl,t,filabt,&imag,mi,emn));
+    FORTRAN(rectcyl,(co,v,fn,stn,qfn,een,cs,nk,&icntrl,t,filabt,&imag,mi,emn));
 
     for(jj=0;jj<*mcs;jj++){
 	is=(ITG)(cs[18*jj]+0.5);
@@ -289,7 +288,7 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 
     icntrl=-1;
 
-    FORTRAN(rectcyl,(co,vt,fn,rfn,stn,qfn,een,cs,&nkt,&icntrl,t,filabt,&imag,mi,emn));
+    FORTRAN(rectcyl,(co,vt,fn,stn,qfn,een,cs,&nkt,&icntrl,t,filabt,&imag,mi,emn));
 
 /* expand nactdof */
 
@@ -458,7 +457,7 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	      nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,ielorien,
 	      norien,orab,ntmat_,t0,t0,ithermal,
 	      prestr,iprestr,filab,eme,&emn[kk6],&een[kk6],iperturb,
-	      f,&fn[kkv],&rfn[kkv],nactdof,&iout,qa,vold,&z[lint+k],
+	      f,&fn[kkv],nactdof,&iout,qa,vold,&z[lint+k],
 	      nodeboun,ndirboun,xboun,nboun,ipompc,
 	      nodempc,coefmpcnew,labmpc,nmpc,nmethod,cam,&neqh,veold,accold,
 	      &bet,&gam,&dtime,&time,ttime,plicon,nplicon,plkcon,nplkcon,
@@ -485,7 +484,7 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 
 	icntrl=2;imag=1;
 
-	FORTRAN(rectcylexp,(co,v,fn,rfn,stn,qfn,een,cs,nk,&icntrl,t,filabt,&imag,mi,
+	FORTRAN(rectcylexp,(co,v,fn,stn,qfn,een,cs,nk,&icntrl,t,filabt,&imag,mi,
 			    iznode,&nznode,nsectors,nk,emn));
 
 	/* basis sector */
@@ -540,7 +539,7 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 
 	icntrl=-2;imag=0;
 
-	FORTRAN(rectcylexp,(co,vt,fn,rfn,stn,qfn,een,cs,&nkt,&icntrl,t,filabt,
+	FORTRAN(rectcylexp,(co,vt,fn,stn,qfn,een,cs,&nkt,&icntrl,t,filabt,
 			    &imag,mi,iznode,&nznode,nsectors,nk,emn));
 
 /* storing the displacements into the expanded eigenvectors */
@@ -914,7 +913,7 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
     *zp=z;*izdofp=izdof;
     
     SFREE(temp_array);SFREE(coefmpcnew);SFREE(noderight);SFREE(coefright);
-    SFREE(v);SFREE(vt);SFREE(fn);SFREE(rfn);SFREE(stn);SFREE(inum);SFREE(stx);
+    SFREE(v);SFREE(vt);SFREE(fn);SFREE(stn);SFREE(inum);SFREE(stx);
     SFREE(inocs);SFREE(ielcs);SFREE(filabt);SFREE(iznode);SFREE(csmass);
 
     return;
