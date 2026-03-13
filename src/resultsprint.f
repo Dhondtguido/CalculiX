@@ -1,21 +1,21 @@
-!     
+!
 !     CalculiX - A 3-dimensional finite element program
 !     Copyright (C) 1998-2015 Guido Dhondt
-!     
+!
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
 !     published by the Free Software Foundation(version 2);
-!     
-!     
+!
+!
 !     This program is distributed in the hope that it will be useful,
-!     but WITHOUT ANY WARRANTY; without even the implied warranty of 
-!     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+!     but WITHOUT ANY WARRANTY; without even the implied warranty of
+!     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 !     GNU General Public License for more details.
-!     
+!
 !     You should have received a copy of the GNU General Public License
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-!     
+!
       subroutine resultsprint(co,nk,kon,ipkon,lakon,ne,v,stn,inum,
      &     stx,ielorien,norien,orab,t1,ithermal,filab,een,iperturb,fn,
      &     nactdof,iout,vold,nodeboun,ndirboun,nboun,nmethod,ttime,
@@ -29,7 +29,7 @@
      &     ielprop,prop,veold,ne0,nmpc,ipompc,nodempc,labmpc,energyini,
      &     energy,orname,xload,itiefac,pmastsurf,springarea,tieset,
      &     ipobody,ibody,xbody,nbody,iinc,dam,damn)
-!     
+!
 !     - stores the results in the .dat file, if requested
 !     - nodal quantities at the nodes
 !     - element quantities at the integration points
@@ -37,11 +37,11 @@
 !     the nodes (if requested for .frd output)
 !     - calculates 1d/2d results for 1d/2d elements by
 !     interpolation
-!     
+!
       implicit none
-!     
+!
       logical rfprint
-!     
+!
       character*1 cflag
       character*6 prlab(*)
       character*8 lakon(*)
@@ -49,7 +49,7 @@
       character*80 orname(*)
       character*81 set(*),prset(*),tieset(3,*)
       character*87 filab(*)
-!     
+!
       integer kon(*),inum(*),iperm(20),mi(*),ielorien(mi(3),*),
      &     ipkon(*),nactdof(0:mi(2),*),nodeboun(*),compressible,
      &     nelemload(2,*),ndirboun(*),ielmat(mi(3),*),nrhcon(*),
@@ -61,9 +61,10 @@
      &     ielprop(*),ne0,index,nmpc,ipompc(*),nodempc(3,*),nactdoh,
      &     iextrapolate,itiefac(2,*),ipobody(2,*),ibody(3,*),nbody,
      &     iforce
-!     
+!
       real*8 co(3,*),v(0:mi(2),*),stx(6,mi(1),*),stn(6,*),cdn(6,*),
-     &     qfx(3,mi(1),*),qfn(3,*),orab(7,*),fn(0:mi(2),*),
+     &     qfx(3,mi(1),*),qfn(3,*),orab(7,*),
+     &     fn(0:mi(2),*),
      &     t1(*),een(6,*),vold(0:mi(2),*),epn(*),thicke(mi(3),*),time,
      &     ener(2,mi(1),*),enern(*),eei(6,mi(1),*),rhcon(0:1,ntmat_,*),
      &     ttime,xstate(nstate_,mi(1),*),trab(7,*),xstaten(nstate_,*),
@@ -71,36 +72,36 @@
      &     prop(*),veold(0:mi(2),*),energy(*),energyini(*),xload(2,*),
      &     pmastsurf,springarea(2,*),xbody(7,*),pslavsurf(3,*),
      &     cocon(0:6,ntmat_,*),dam(mi(1),*),damn(*)
-!     
+!
       data iflag /3/
       data iperm /5,6,7,8,1,2,3,4,13,14,15,16,9,10,11,12,17,18,19,20/
-!     
+!
       mt=mi(2)+1
       iextrapolate=0
-!     
+!
 !     no print requests
-!     
+!
       if(iout.le.0) then
-!     
+!
 !     2d basic dof results (displacements, temperature) are
 !     calculated in each iteration, so that they are available
 !     in the user subroutines
-!     
+!
         if(filab(1)(5:5).ne.' ') then
           nfield=mt
           call map3dto1d2d_v(v,ipkon,inum,kon,lakon,nfield,nk,
      &         ne,nactdof)
         endif
-!     
+!
 !     the total energy should not be calculated:
 !     - for non-dynamical calculations (nmethod!=4)
 !     - for modal dynamics (iperturb(1)<=1)
 !     - for thermal and thermomechanical calculations (ithermal(1)>1)
 !     - for electromagnetic calculations (mi(2)=5)
-!     
+!
         return
       endif
-!     
+!
 !     printing the increment number in the .dat file; only if
 !     data output was requested AND the procedure is static/visco or
 !     dynamic
@@ -114,6 +115,7 @@
 !
 !     output in dat file (with *NODE PRINT or *EL PRINT)
 !
+
         call printout(set,nset,istartset,iendset,ialset,nprint,
      &     prlab,prset,v,t1,fn,ipkon,lakon,stx,eei,xstate,ener,
      &     mi(1),nstate_,ithermal,co,kon,qfx,ttime,trab,inotr,ntrans,
@@ -121,11 +123,11 @@
      &     thicke,eme,islavsurf,mortar,time,ielprop,prop,veold,orname,
      &     nelemload,nload,sideload,xload,rhcon,nrhcon,ntmat_,ipobody,
      &     ibody,xbody,nbody,nmethod,dam,nactdof)
-!     
+!
 !     for facial information (*section print): if forces and/or
 !     moments in sections are requested, the stresses have to be
 !     extrapolated from the integration points to the nodes first
-!     
+!
       do i=1,nprint
         if(prlab(i)(1:3).eq.'SOF') then
           nfield=6
@@ -137,7 +139,7 @@
           endif
           cflag=filab(3)(5:5)
           iforce=0
-!     
+!
           call extrapolate(stx,stn,ipkon,inum,kon,lakon,nfield,nk,
      &         ne,mi(1),ndim,orab,ielorien,co,iorienloc,cflag,
      &         vold,iforce,ielmat,thicke,ielprop,prop)
@@ -145,24 +147,24 @@
           exit
         endif
       enddo
-!     
+!
       compressible=0
       call printoutface(co,ntmat_,v,
      &     cocon,ncocon,istartset,iendset,ipkon,lakon,kon,
      &     ialset,prset,ttime,nset,set,nprint,prlab,ielmat,mi,
      &     time,stn,iperturb)
-!     
+!
       call printoutcontact(co,vold,lakon,ne0,ne,pslavsurf,stx,
      &     prset,ttime,nprint,prlab,mi,ipkon,kon,springarea,
      &     time,tieset,itiefac,ntie,pmastsurf)
-!     
+!
 !     interpolation in the original nodes of 1d and 2d elements
 !     this operation has to be performed in any case since
 !     the interpolated values may be needed as boundary conditions
 !     in the next step (e.g. the temperature in a heat transfer
 !     calculation as boundary condition in a subsequent static
 !     step)
-!     
+!
       if(filab(1)(5:5).ne.' ') then
         nfield=mt
         cflag=filab(1)(5:5)
@@ -172,7 +174,7 @@ c     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
         call map3dto1d2d_v(v,ipkon,inum,kon,lakon,nfield,nk,
      &       ne,nactdof)
       endif
-!     
+!
       if((filab(2)(1:4).eq.'NT  ').and.(ithermal(1).le.1)) then
         if(filab(2)(5:5).eq.'I') then
           nfield=1
@@ -182,7 +184,7 @@ c     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
      &         ne,cflag,co,vold,iforce,mi,ielprop,prop)
         endif
       endif
-!     
+!
       if(filab(21)(1:4).eq.'V   ') then
         if(filab(21)(5:5).eq.'I') then
           nfield=mt
@@ -192,16 +194,18 @@ c     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
      &         ne,cflag,co,vold,iforce,mi,ielprop,prop)
         endif
       endif
-!     
+!
 !     check whether forces are requested in the frd-file. If so, but
-!     none are requested in the .dat file, and output=2d, 
+!     none are requested in the .dat file, and output=2d,
 !     map3dto1d2d has to be called
-!     
-      if(filab(5)(1:2).eq.'RF') then
+!
+      if((filab(5)(1:2).eq.'RF').or.
+     &   (filab(58)(1:2).eq.'RR')) then
         if(filab(5)(5:5).eq.'I') then
           rfprint=.false.
           do i=1,nprint
-            if(prlab(i)(1:2).eq.'RF') then
+            if((prlab(i)(1:2).eq.'RF').or.
+     &         (prlab(i)(1:2).eq.'RR')) then
               rfprint=.true.
               exit
             endif
@@ -233,16 +237,16 @@ c     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
      &         ne,co,ielmat,mi)
         endif
       endif
-!     
+!
 !     determining the contact differential displacements and stresses
 !     in the contact nodes for output in frd format (only for face-
 !     to-face penalty; for node-to-face penalty these quantities are
 !     determined in the slave nodes and no extrapolation is necessary)
-!     
+!
 !     This block must precede all calls to extrapolate, since the
 !     field inum from extrapolatecontact.f is not correct; by a
 !     subsequent call to extrapolate inum is corrected.
-!     
+!
       if((filab(26)(1:4).eq.'CONT').or.(filab(46)(1:4).eq.'PCON')) then
         if(mortar.eq.1) then
           nfield=6
@@ -255,9 +259,9 @@ c     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
      &         ielmat,ne0)
         endif
       endif
-!     
+!
 !     determining the stresses in the nodes for output in frd format
-!     
+!
       if((filab(3)(1:4).eq.'S   ').or.(filab(18)(1:4).eq.'PHS ').or.
      &     (filab(20)(1:4).eq.'MAXS').or.
      &     (((filab(44)(1:4).eq.'EMFE').or.(filab(45)(1:4).eq.'EMFB'))
@@ -271,16 +275,16 @@ c     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
         endif
         cflag=filab(3)(5:5)
         iforce=0
-!     
+!
         call extrapolate(stx,stn,ipkon,inum,kon,lakon,nfield,nk,
      &       ne,mi(1),ndim,orab,ielorien,co,iorienloc,cflag,
      &       vold,iforce,ielmat,thicke,ielprop,prop)
         iextrapolate=1
-!     
+!
       endif
-!     
+!
 !     determining the total strains in the nodes for output in frd format
-!     
+!
       if((filab(4)(1:4).eq.'E   ').or.(filab(30)(1:4).eq.'MAXE'))
      &     then
         nfield=6
@@ -297,10 +301,10 @@ c     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
      &       vold,iforce,ielmat,thicke,ielprop,prop)
         iextrapolate=1
       endif
-!     
-!     determining the mechanical strains in the nodes for output in 
+!
+!     determining the mechanical strains in the nodes for output in
 !     frd format
-!     
+!
       if(filab(32)(1:4).eq.'ME  ') then
         nfield=6
         ndim=6
@@ -316,10 +320,10 @@ c     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
      &       vold,iforce,ielmat,thicke,ielprop,prop)
         iextrapolate=1
       endif
-!     
-!     determining the plastic equivalent strain in the nodes 
+!
+!     determining the plastic equivalent strain in the nodes
 !     for output in frd format
-!     
+!
       if(filab(6)(1:4).eq.'PEEQ') then
         nfield=1
         ndim=nstate_
@@ -331,10 +335,10 @@ c     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
      &       vold,iforce,ielmat,thicke,ielprop,prop)
         iextrapolate=1
       endif
-!     
-!     determining the internal energy in the nodes 
+!
+!     determining the internal energy in the nodes
 !     for output in frd format
-!     
+!
       if(filab(7)(1:4).eq.'ENER') then
         nfield=1
         ndim=2
@@ -346,10 +350,10 @@ c     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
      &       vold,iforce,ielmat,thicke,ielprop,prop)
         iextrapolate=1
       endif
-!     
-!     determining the internal state variables in the nodes 
+!
+!     determining the internal state variables in the nodes
 !     for output in frd format
-!     
+!
       if(filab(8)(1:4).eq.'SDV ') then
         nfield=nstate_
         ndim=nstate_
@@ -366,9 +370,9 @@ c     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
      &       vold,iforce,ielmat,thicke,ielprop,prop)
         iextrapolate=1
       endif
-!     
+!
 !     determining the heat flux in the nodes for output in frd format
-!     
+!
       if(((filab(9)(1:4).eq.'HFL ').and.(ithermal(1).gt.1)).or.
      &     ((filab(42)(1:3).eq.'ECD').and.(ithermal(1).eq.2))) then
         nfield=3
@@ -385,10 +389,10 @@ c     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
      &       vold,iforce,ielmat,thicke,ielprop,prop)
         iextrapolate=1
       endif
-!     
-!     determining the ductile damage initiation in the nodes 
+!
+!     determining the ductile damage initiation in the nodes
 !     for output in frd format
-!     
+!
       if(filab(56)(1:4).eq.'DUCT') then
         nfield=1
         ndim=1
@@ -400,14 +404,14 @@ c     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
      &       vold,iforce,ielmat,thicke,ielprop,prop)
         iextrapolate=1
       endif
-!     
+!
 !     if no element quantities requested in the nodes: calculate
 !     inum if nodal quantities are requested: used in subroutine frd
-!     to determine which nodes are active in the model 
-!     
+!     to determine which nodes are active in the model
+!
       if((iextrapolate.eq.0).and.
      &     ((nmethod.ne.4).or.(iperturb(1).ge.2))) then
-!     
+!
         nfield=0
         ndim=0
         iorienloc=0
@@ -419,23 +423,23 @@ c     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
      &       nload,nodeboun,nboun,ndirboun,ithermal,co,vold,mi,ielmat,
      &       ielprop,prop)
       endif
-!     
+!
       if(ithermal(2).gt.1) then
-!     
+!
 !     next section is executed if at least one step is thermal
 !     or thermomechanical
-!     
+!
 !     extrapolation for the network
 !     -interpolation for the total pressure and temperature
 !     in the middle nodes
 !     -extrapolation for the mass flow in the end nodes
-!     
+!
         call networkextrapolate(v,ipkon,inum,kon,lakon,ne,mi)
-!     
+!
 !     printing values for environmental film and
 !     pressure nodes (these nodes are considered to be network
 !     nodes)
-!     
+!
         do i=1,nload
           if((sideload(i)(3:4).ne.'FC').and.
      &         (sideload(i)(3:4).ne.'NP')) cycle
@@ -450,11 +454,11 @@ c     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
             inum(node)=-1
           endif
         enddo
-!     
-!     printing values radiation 
+!
+!     printing values radiation
 !     (these nodes are considered to be network nodes, unless
 !     they were already assigned to the structure)
-!     
+!
         do i=1,nload
           if((sideload(i)(3:4).ne.'CR')) cycle
           node=nelemload(2,i)
@@ -468,10 +472,10 @@ c     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
             inum(node)=-1
           endif
         enddo
-!     
+!
 !     printing values for nodes belonging to network MPC's
 !     (these nodes are considered to be network nodes)
-!     
+!
         do i=1,nmpc
           if(labmpc(i)(1:7).eq.'NETWORK') then
             index=ipompc(i)
@@ -483,10 +487,10 @@ c     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
             enddo
           endif
         enddo
-!     
+!
 !     printing values of prescribed boundary conditions (these
 !     nodes are considered to be network nodes)
-!     
+!
         do i=1,nboun
           node=nodeboun(i)
           if(inum(node).ne.0) cycle
@@ -497,6 +501,6 @@ c     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
           inum(node)=-1
         enddo
       endif
-!     
+!
       return
       end

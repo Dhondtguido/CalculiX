@@ -1,21 +1,21 @@
-!     
+!
 !     CalculiX - A 3-dimensional finite element program
 !     Copyright (C) 1998-2015 Guido Dhondt
-!     
+!
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
 !     published by the Free Software Foundation(version 2);
-!     
-!     
+!
+!
 !     This program is distributed in the hope that it will be useful,
-!     but WITHOUT ANY WARRANTY; without even the implied warranty of 
-!     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+!     but WITHOUT ANY WARRANTY; without even the implied warranty of
+!     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 !     GNU General Public License for more details.
-!     
+!
 !     You should have received a copy of the GNU General Public License
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-!     
+!
       subroutine printout(set,nset,istartset,iendset,ialset,nprint,
      &     prlab,prset,v,t1,fn,ipkon,lakon,stx,eei,xstate,ener,
      &     mi,nstate_,ithermal,co,kon,qfx,ttime,trab,inotr,ntrans,
@@ -23,11 +23,11 @@
      &     thicke,eme,islavsurf,mortar,time,ielprop,prop,veold,orname,
      &     nelemload,nload,sideload,xload,rhcon,nrhcon,ntmat_,ipobody,
      &     ibody,xbody,nbody,nmethod,dam,nactdof)
-!     
+!
 !     stores results in the .dat file
-!     
+!
       implicit none
-!     
+!
       character*1 cflag
       character*6 prlab(*)
       character*8 lakon(*)
@@ -35,7 +35,7 @@
       character*80 noset,elset,orname(*)
       character*81 set(*),prset(*)
       character*87 filab(*)
-!     
+!
       integer nset,istartset(*),iendset(*),ialset(*),nprint,ipkon(*),
      &     mi(*),nstate_,ii,jj,iset,l,limit,node,ipos,ithermal(*),ielem,
      &     nelem,kon(*),inotr(2,*),ntrans,ielorien(mi(3),*),norien,nk,
@@ -43,19 +43,20 @@
      &     jfaces,mortar,islavsurf(2,*),ielprop(*),nload,i,ntmat_,id,
      &     nelemload(2,*),nrhcon(*),ipobody(2,*),ibody(3,*),nbody,
      &     nmethod,ne,iforce,nactdof(0:mi(2),*)
-!     
-      real*8 v(0:mi(2),*),t1(*),fn(0:mi(2),*),stx(6,mi(1),*),bhetot,
+!
+      real*8 v(0:mi(2),*),t1(*),fn(0:mi(2),*),
+     &     stx(6,mi(1),*),bhetot,refotot(3),
      &     eei(6,mi(1),*),xstate(nstate_,mi(1),*),ener(2,mi(1),*),
      &     volumetot,co(3,*),qfx(3,mi(1),*),rftot(0:3),ttime,time,
      &     trab(7,*),orab(7,*),vold(0:mi(2),*),enerkintot,
      &     eme(6,mi(1),*),prop(*),veold(0:mi(2),*),xload(2,*),xmasstot,
      &     xinertot(6),cg(3),rhcon(0:1,ntmat_,*),xbody(7,*),energytot,
      &     thicke(mi(3),*),dam(mi(1),*)
-!     
+!
       mt=mi(2)+1
-!     
+!
 !     interpolation in the original nodes of 1d and 2d elements
-!     
+!
       do ii=1,nprint
         if((prlab(ii)(1:4).eq.'U   ').or.
      &       ((prlab(ii)(1:4).eq.'NT  ').and.(ithermal(1).gt.1))) then
@@ -84,7 +85,8 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
         endif
       enddo
       do ii=1,nprint
-        if(prlab(ii)(1:2).eq.'RF') then
+        if((prlab(ii)(1:2).eq.'RF').or.
+     &     (prlab(ii)(1:2).eq.'RR')) then
           if(filab(1)(5:5).ne.' ') then
             nfield=mt
             cflag=' '
@@ -94,25 +96,25 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
           endif
           exit
         endif
-      enddo
-!     
+       enddo
+!
       do ii=1,nprint
-!     
+!
 !     nodal values
-!     
+!
         if((prlab(ii)(1:4).eq.'U   ').or.(prlab(ii)(1:4).eq.'NT  ').or.
-     &      (prlab(ii)(1:4).eq.'RF  ').or.(prlab(ii)(1:4).eq.'RFL ').or. 
+     &      (prlab(ii)(1:4).eq.'RF  ').or.(prlab(ii)(1:4).eq.'RFL ').or.
      &      (prlab(ii)(1:4).eq.'PS  ').or.(prlab(ii)(1:4).eq.'PN  ').or.
      &      (prlab(ii)(1:4).eq.'MF  ').or.(prlab(ii)(1:4).eq.'V   ').or.
-     &       (prlab(ii)(1:4).eq.'TS  ')) 
+     &      (prlab(ii)(1:4).eq.'TS  ').or.(prlab(ii)(1:4).eq.'RR  '))
      &       then
-!     
+!
           ipos=index(prset(ii),' ')
           noset='                    '
           noset(1:ipos-1)=prset(ii)(1:ipos-1)
-!     
+!
 !     printing the header
-!     
+!
           if(prlab(ii)(1:4).eq.'U   ') then
             write(5,*)
             if(mi(2).eq.3) then
@@ -167,10 +169,17 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
  119        format(' velocities (vx,vy,vz) for set ',A,
      &           ' and time ',e14.7)
             write(5,*)
+           elseif((prlab(ii)(1:5).eq.'RR   ').or.
+     &            (prlab(ii)(1:5).eq.'RR  T')) then
+            write(5,*)
+            write(5,151) noset(1:ipos-2),ttime+time
+ 151        format(' reaction forces (rfx,rfy,rfz) for set ',A,
+     &           ' and time ',e14.7)
+            write(5,*)
           endif
-!     
+!
 !     printing the data
-!     
+!
           call cident81(set,prset(ii),nset,id)
           iset=nset+1
           if(id.gt.0) then
@@ -181,27 +190,30 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
           do jj=0,3
             rftot(jj)=0.d0
           enddo
+          do jj=1,3
+            refotot(jj)=0.d0
+          enddo
           do jj=istartset(iset),iendset(iset)
             if(ialset(jj).lt.0) cycle
             if(jj.eq.iendset(iset)) then
               node=ialset(jj)
               call printoutnode(prlab,v,t1,fn,ithermal,ii,node,
-     &             rftot,trab,inotr,ntrans,co,mi,veold)
+     &             rftot,refotot,trab,inotr,ntrans,co,mi,veold,nactdof)
             elseif(ialset(jj+1).gt.0) then
               node=ialset(jj)
               call printoutnode(prlab,v,t1,fn,ithermal,ii,node,
-     &             rftot,trab,inotr,ntrans,co,mi,veold)
+     &             rftot,refotot,trab,inotr,ntrans,co,mi,veold,nactdof)
             else
               do node=ialset(jj-1)-ialset(jj+1),ialset(jj),
      &             -ialset(jj+1)
                 call printoutnode(prlab,v,t1,fn,ithermal,ii,node,
-     &               rftot,trab,inotr,ntrans,co,mi,veold)
+     &             rftot,refotot,trab,inotr,ntrans,co,mi,veold,nactdof)
               enddo
             endif
           enddo
-!     
+!
 !     writing total values to file
-!     
+!
           if((prlab(ii)(1:5).eq.'RF  O').or.
      &         (prlab(ii)(1:5).eq.'RF  T')) then
             write(5,*)
@@ -218,10 +230,19 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
      &           ' and time ',e14.7)
             write(5,*)
             write(5,'(6x,1p,1x,e13.6)') rftot(0)
+          elseif((prlab(ii)(1:5).eq.'RR  O').or.
+     &         (prlab(ii)(1:5).eq.'RR  T')) then
+            write(5,*)
+            write(5,152) noset(1:ipos-2),ttime+time
+ 152        format(' total reaction force (rfx,rfy,rfz) for set ',A,
+     &           ' and time ',e14.7)
+            write(5,*)
+            write(5,'(6x,1p,3(1x,e13.6))')
+     &            refotot(1),refotot(2),refotot(3)
           endif
-!     
+!
 !     integration point values
-!     
+!
         elseif((prlab(ii)(1:4).eq.'S   ').or.
      &         (prlab(ii)(1:4).eq.'E   ').or.
      &         (prlab(ii)(1:4).eq.'ME  ').or.
@@ -231,17 +252,17 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
      &         (prlab(ii)(1:4).eq.'COOR').or.
      &         (prlab(ii)(1:4).eq.'DUCT').or.
      &         (prlab(ii)(1:4).eq.'HFL ')) then
-!     
+!
           ipos=index(prset(ii),' ')
           elset='                    '
           elset(1:ipos-1)=prset(ii)(1:ipos-1)
-!     
+!
           limit=1
-!     
+!
           do l=1,limit
-!     
+!
 !     printing the header
-!     
+!
             if(prlab(ii)(1:4).eq.'S   ') then
               write(5,*)
               write(5,106) elset(1:ipos-2),ttime+time
@@ -257,7 +278,7 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
             elseif(prlab(ii)(1:4).eq.'PEEQ') then
               write(5,*)
               write(5,108) elset(1:ipos-2),ttime+time
- 108          format(    ' equivalent plastic strain (elem, integ.pnt.,p 
+ 108          format(    ' equivalent plastic strain (elem, integ.pnt.,p
      &e)for set ',A,' and time ',e14.7)
               write(5,*)
             elseif(prlab(ii)(1:4).eq.'ENER') then
@@ -276,7 +297,7 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
             elseif(prlab(ii)(1:4).eq.'HFL ') then
               write(5,*)
               write(5,112) elset(1:ipos-2),ttime+time
- 112          format(    ' heat flux (elem, integ.pnt.,qx,qy,qz) for set 
+ 112          format(    ' heat flux (elem, integ.pnt.,qx,qy,qz) for set
      & ',A,' and time ',e14.7)
               write(5,*)
             elseif(prlab(ii)(1:4).eq.'ME  ') then
@@ -298,9 +319,9 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
      &,y,z) for set ',A,' and time ',e14.7)
               write(5,*)
             endif
-!     
+!
 !     printing the data
-!     
+!
             call cident81(set,prset(ii),nset,id)
             iset=nset+1
             if(id.gt.0) then
@@ -333,11 +354,11 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
                 enddo
               endif
             enddo
-!     
+!
           enddo
-!     
+!
 !     whole element values
-!     
+!
         elseif((prlab(ii)(1:4).eq.'ELSE').or.
      &         (prlab(ii)(1:4).eq.'ELKE').or.
      &         (prlab(ii)(1:4).eq.'EVOL').or.
@@ -348,13 +369,13 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
      &         (prlab(ii)(1:4).eq.'CDIS').or.
      &         (prlab(ii)(1:4).eq.'CNUM').or.
      &         (prlab(ii)(1:4).eq.'CELS')) then
-!     
+!
           ipos=index(prset(ii),' ')
           elset='                    '
           elset(1:ipos-1)=prset(ii)(1:ipos-1)
-!     
+!
 !     printing the header
-!     
+!
           if((prlab(ii)(1:5).eq.'ELSE ').or.
      &         (prlab(ii)(1:5).eq.'ELSET')) then
             write(5,*)
@@ -380,7 +401,7 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
      &           (prlab(ii)(1:5).eq.'EMAST')) then
             write(5,*)
             write(5,136) elset(1:ipos-2),ttime+time
- 136        format(    ' mass (element, mass) and mass moment of itertia 
+ 136        format(    ' mass (element, mass) and mass moment of itertia
      &(xx,yy,zz,xy,xz,yz) for set ',A,
      &           ' and time ',e14.7)
             write(5,*)
@@ -428,25 +449,25 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
             write(5,*)
             if(mortar.eq.0) then
               write(5,124) ttime+time
- 124          format(' contact spring energy (slave node,energy) for '  
+ 124          format(' contact spring energy (slave node,energy) for '
      &             'all contact elements and time',e14.7)
             elseif(mortar.eq.1) then
               write(5,128) ttime+time
  128          format(
-     &             ' contact spring energy (slave element+face,energy) '  
+     &             ' contact spring energy (slave element+face,energy) '
      &             'for all contact elements and time',e14.7)
             endif
             write(5,*)
           elseif(prlab(ii)(1:4).eq.'CENT') then
             write(5,*)
             write(5,140)  elset(1:ipos-2),ttime+time
- 140        format(' centrifugal force(element,omega square) for '  
+ 140        format(' centrifugal force(element,omega square) for '
      &           'set ',A,' and time ',e14.7)
             write(5,*)
           endif
-!     
+!
 !     printing the data
-!     
+!
           volumetot=0.d0
           bhetot=0.d0
           energytot=0.d0
@@ -458,14 +479,14 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
           do jj=1,3
             cg(jj)=0.d0
           enddo
-!     
+!
           if ((prlab(ii)(1:4).eq.'CSTR').or.
      &         (prlab(ii)(1:4).eq.'CDIS').or.
      &         (prlab(ii)(1:4).eq.'CNUM').or.
      &         (prlab(ii)(1:4).eq.'CELS')) then
-!     
+!
 !     ne0 is the number of the first contact element
-!     
+!
             do jj=ne,1,-1
               if((lakon(jj)(2:2).ne.'S').or.
      &             (lakon(jj)(7:7).ne.'C')) then
@@ -473,7 +494,7 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
                 exit
               endif
             enddo
-!     
+!
             if(prlab(ii)(1:4).ne.'CNUM') then
               if(mortar.eq.0) then
                 do nelem=ne0,ne
@@ -546,9 +567,9 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
               endif
             enddo
           endif
-!     
+!
 !     writing total values to file
-!     
+!
           if((prlab(ii)(1:5).eq.'ELSEO').or.
      &         (prlab(ii)(1:5).eq.'ELSET')) then
             write(5,*)
@@ -628,10 +649,10 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
      &           (' total number of contact elements for time ',e14.7)
             write(5,*)
             write(5,'(6x,1p,1x,i10)') ne-ne0+1
-!     
+!
           endif
         endif
       enddo
-!     
+!
       return
       end

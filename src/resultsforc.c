@@ -70,7 +70,7 @@ void resultsforc(ITG *nk,double *f,double *fn,ITG *nactdof,ITG *ipompc,
 	    }
 	    }*/
     }
-    
+
     /* adding the mpc force again to fn */
 
     if(*calcul_fn==1){
@@ -140,7 +140,7 @@ void resultsforc(ITG *nk,double *f,double *fn,ITG *nactdof,ITG *ipompc,
 	    }while(1);
 	}
     }
-    
+
     return;
 
 }

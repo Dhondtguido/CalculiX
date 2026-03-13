@@ -7,7 +7,7 @@
 /*                    */
 
 /*     This program is distributed in the hope that it will be useful,   */
-/*     but WITHOUT ANY WARRANTY; without even the implied warranty of    */ 
+/*     but WITHOUT ANY WARRANTY; without even the implied warranty of    */
 /*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the      */
 /*     GNU General Public License for more details.                      */
 
@@ -52,7 +52,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	       ITG **ielorienp,ITG *norien,double *orab,ITG *ntmat_,
 	       double *t0,double *t1,double *t1old,
 	       ITG *ithermal,double *prestr,ITG *iprestr,
-	       double *vold,ITG *iperturb,double *sti,ITG *nzs, 
+	       double *vold,ITG *iperturb,double *sti,ITG *nzs,
 	       ITG *kode,char *filab,double *eme,
 	       ITG *iexpl,double *plicon,ITG *nplicon,double *plkcon,
 	       ITG *nplkcon,
@@ -73,7 +73,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	       ITG *mortar,ITG *mpcinfo,double *tietol,ITG *ics,
 	       char *orname,ITG *itempuser,double *t0g,double *t1g,
 	       ITG *jmax,ITG *imastload,double *pmastload){
-  
+
   char description[13]="            ",*lakon=NULL,stiffmatrix[132]="",
     jobnamef[396]="";
 
@@ -110,7 +110,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *auw=NULL,*aut=NULL,*dam=NULL,*damn=NULL,*errn=NULL;
 
   FILE *f1;
-  
+
 #ifdef SGI
   ITG token;
 #endif
@@ -124,10 +124,10 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
   /* determining whether a node belongs to at least one element
      (needed in resultsforc.c) */
-  
+
   NNEW(iponoel,ITG,*nk);
   FORTRAN(nodebelongstoel,(iponoel,inoel,&inoelsize,lakon,ipkon,kon,ne,&nramp));
- 
+
   for(k=0;k<3;k++){
     strcpy1(&jobnamef[k*132],&jobnamec[k*132],132);
   }
@@ -138,7 +138,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   dtime=*tper;
 
   ne0=*ne;
-  
+
   /* determining the global values to be used as boundary conditions
      for a submodel */
 
@@ -152,10 +152,10 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
                    ithermal,nk,t1,iamt1,&sigma,&irefine);
 
   /* reading temperatures from frd-file */
-  
+
   if((itempuser[0]==2)&&(itempuser[1]!=itempuser[2])) {
     utempread(t1,&itempuser[2],jobnamec);
-  }      
+  }
 
   /* allocating fields for the actual external loading */
 
@@ -172,7 +172,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   }
 
   /* contact conditions */
-  
+
   if(*mortar>-2){
 
     memmpc_=mpcinfo[0];mpcfree=mpcinfo[1];icascade=mpcinfo[2];
@@ -188,11 +188,11 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
       NNEW(cg,double,3*ncont);
       NNEW(straight,double,16*ncont);
-	  
+
       /* 11 instead of 10: last position is reserved for the
 	 local contact spring element number; needed as
 	 pointer into springarea */
-	  
+
       if(*mortar==0){
 	RENEW(kon,ITG,*nkon+11*nslavs);
 	NNEW(springarea,double,2*nslavs);
@@ -202,22 +202,22 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	}
 	RENEW(ipkon,ITG,*ne+nslavs);
 	RENEW(lakon,char,8*(*ne+nslavs));
-	      
+
 	if(*norien>0){
 	  RENEW(ielorien,ITG,mi[2]*(*ne+nslavs));
 	  for(k=mi[2]**ne;k<mi[2]*(*ne+nslavs);k++) ielorien[k]=0;
 	}
-	      
+
 	RENEW(ielmat,ITG,mi[2]*(*ne+nslavs));
 	for(k=mi[2]**ne;k<mi[2]*(*ne+nslavs);k++) ielmat[k]=1;
-	      
+
 	if(nslavs!=0){
 	  RENEW(xstate,double,*nstate_*mi[0]*(*ne+nslavs));
 	  for(k=*nstate_*mi[0]**ne;k<*nstate_*mi[0]*(*ne+nslavs);k++){
 	    xstate[k]=0.;
 	  }
 	}
-	      
+
 	NNEW(areaslav,double,ifacecount);
 	NNEW(xmastnor,double,3*nmastnode[*ntie]);
       }else if(*mortar==1){
@@ -228,7 +228,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
 
 	nintpoint=0;
-	      
+
 	precontact(&ncont,ntie,tieset,nset,set,istartset,
 		   iendset,ialset,itietri,lakon,ipkon,kon,koncont,ne,
 		   cg,straight,co,vold,istep,&iinc,&iit,itiefac,
@@ -236,20 +236,20 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		   imastop,mi,ipe,ime,tietol,
 		   &nintpoint,&pslavsurf,xmastnor,cs,mcs,ics,clearini,
 		   &nslavs);
-	      
+
 	/* changing the dimension of element-related fields */
-	      
+
 	RENEW(kon,ITG,*nkon+22*nintpoint);
 	RENEW(springarea,double,2*nintpoint);
 	RENEW(pmastsurf,double,6*nintpoint);
-	      
+
 	if(*nener==1){
 	  RENEW(ener,double,2*mi[0]*(*ne+nintpoint));
 	  DMEMSET(ener,2*mi[0]**ne,2*mi[0]*(*ne+nintpoint),0.);
 	}
 	RENEW(ipkon,ITG,*ne+nintpoint);
 	RENEW(lakon,char,8*(*ne+nintpoint));
-	      
+
 	if(*norien>0){
 	  RENEW(ielorien,ITG,mi[2]*(*ne+nintpoint));
 	  for(k=mi[2]**ne;k<mi[2]*(*ne+nintpoint);k++) ielorien[k]=0;
@@ -260,19 +260,19 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	/* interpolating the state variables */
 
 	if(*nstate_!=0){
-		  
+
 	  RENEW(xstate,double,*nstate_*mi[0]*(ne0+nintpoint));
 	  for(k=*nstate_*mi[0]*ne0;k<*nstate_*mi[0]*(ne0+nintpoint);k++){
 	    xstate[k]=0.;
 	  }
-		  
+
 	  RENEW(xstateini,double,*nstate_*mi[0]*(ne0+nintpoint));
 	  for(k=0;k<*nstate_*mi[0]*(ne0+nintpoint);++k){
 	    xstateini[k]=xstate[k];
 	  }
 	}
       }
-	  
+
       /* generating contact spring elements */
 
       contact(&ncont,ntie,tieset,nset,set,istartset,iendset,
@@ -285,11 +285,11 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	      xnoels,mortar,pslavsurf,pmastsurf,clearini,&theta,
 	      xstateini,xstate,nstate_,&icutb,&ialeatoric,jobnamef,
 	      &alea,auw,jqw,iroww,&nzsw);
-	  
+
       printf("number of contact spring elements=%" ITGFORMAT "\n\n",*ne-ne0);
-	  
+
       /* determining the structure of the stiffness/mass matrix */
-	  
+
       remastructar(ipompc,&coefmpc,&nodempc,nmpc,
 		   &mpcfree,nodeboun,ndirboun,nboun,ikmpc,ilmpc,ikboun,ilboun,
 		   labmpc,nk,&memmpc_,&icascade,&maxlenmpc,
@@ -375,22 +375,22 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   if((*nmethod==1)&&(iglob<0)&&(iperturb[0]>0)){
     iperturb[0]=iperturbsav;
   }
-  
+
   /* determining the system matrix and the external forces */
 
   NNEW(ad,double,*neq);
   NNEW(fext,double,*neq);
 
   if(*nmethod==11){
-      
+
     /* determining the nodes and the degrees of freedom in those nodes
        belonging to the substructure */
-      
+
     NNEW(iretain,ITG,*nk);
     NNEW(noderetain,ITG,*nk);
     NNEW(ndirretain,ITG,*nk);
     nretain=0;
-      
+
     for(i=0;i<*nboun;i++){
       if(strcmp1(&typeboun[i],"C")==0){
 	iretain[nretain]=i+1;
@@ -399,13 +399,13 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	nretain++;
       }
     }
- 
+
     /* nretain!=0: substructure application */
-      
+
     RENEW(iretain,ITG,nretain);
     RENEW(noderetain,ITG,nretain);
     RENEW(ndirretain,ITG,nretain);
-      
+
     /* creating the right size au */
 
     NNEW(au,double,nzs[2]);
@@ -426,7 +426,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       NNEW(adb,double,*neq);
       NNEW(aub,double,nzs[1]);
     }
-	  
+
   }
 
   mafillsmmain(co,nk,kon,ipkon,lakon,ne,nodeboun,ndirboun,xbounact,nboun,
@@ -455,7 +455,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     RENEW(au,double,2*nzs[1]);
     symmetryflag=2;
     inputformat=1;
-      
+
     mafillsmasmain(co,nk,kon,ipkon,lakon,ne,nodeboun,
 		   ndirboun,xbounact,nboun,
 		   ipompc,nodempc,coefmpc,nmpc,nodeforc,ndirforc,xforcact,
@@ -526,7 +526,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     /* substructure calculations */
 
     NNEW(submatrix,double,nretain*nretain);
-	  
+
     for(i=0;i<nretain;i++){
       DMEMSET(b,0,*neq,0.);
       ic=*neq+iretain[i]-1;
@@ -534,9 +534,9 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	ir=irow[j]-1;
 	b[ir]-=au[j];
       }
-	      
+
       /* solving the system */
-	      
+
       if(*neq>0){
 	if(*isolver==0){
 #ifdef SPOOLES
@@ -547,38 +547,38 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 #ifdef PARDISO
 	  pardiso_solve(b,neq,&symmetryflag,&inputformat,&nrhs);
 #endif
-		      
+
 	}
 	else if(*isolver==8){
 #ifdef PASTIX
 	  pastix_solve(b,neq,&symmetryflag,&nrhs);
 #endif
-		      
+
 	}
       }
-	      
+
       /* calculating the internal forces */
-	      
+
       NNEW(v,double,mt**nk);
       NNEW(fn,double,mt**nk);
       NNEW(stn,double,6**nk);
       NNEW(inum,ITG,*nk);
       NNEW(stx,double,6*mi[0]**ne);
-	      
+
       if(strcmp1(&filab[261],"E   ")==0) NNEW(een,double,6**nk);
       if(strcmp1(&filab[2697],"ME  ")==0) NNEW(emn,double,6**nk);
       if(strcmp1(&filab[522],"ENER")==0) NNEW(enern,double,*nk);
-	      
+
       NNEW(eei,double,6*mi[0]**ne);
       if(*nener==1){
 	NNEW(stiini,double,6*mi[0]**ne);
 	NNEW(emeini,double,6*mi[0]**ne);
 	NNEW(enerini,double,2*mi[0]**ne);}
-	      
+
       /* replacing the appropriate boundary value by unity */
-	      
+
       xbounact[iretain[i]-1]=1.;
-	      
+
       results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,
 	      elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 	      ielorien,norien,orab,ntmat_,t0,t1act,ithermal,
@@ -601,30 +601,30 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	      itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
 	      islavquadel,aut,irowt,jqt,&mortartrafoflag,
 	      &intscheme,physcon,dam,damn,iponoel);
-	      
+
       xbounact[iretain[i]-1]=0.;
-	      
+
       SFREE(v);SFREE(stn);SFREE(inum);SFREE(stx);
-	      
+
       if(strcmp1(&filab[261],"E   ")==0) SFREE(een);
       if(strcmp1(&filab[2697],"ME  ")==0) SFREE(emn);
       if(strcmp1(&filab[522],"ENER")==0) SFREE(enern);
-	      
+
       SFREE(eei);if(*nener==1){SFREE(stiini);SFREE(emeini);SFREE(enerini);}
-	      
+
       /* storing the internal forces in the substructure
 	 stiffness matrix */
-	      
+
       for(j=0;j<nretain;j++){
 	submatrix[i*nretain+j]=fn[mt*(noderetain[j]-1)+ndirretain[j]];
       }
-	      
+
       SFREE(fn);
-	      
+
     }
 
     /* cleanup */
-      
+
     if(*neq>0){
       if(*isolver==0){
 #ifdef SPOOLES
@@ -641,25 +641,25 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 #endif
       }
     }
-      
+
     SFREE(iretain);
-	  
+
     FORTRAN(writesubmatrix,(submatrix,noderetain,ndirretain,&nretain,jobnamec,
 			    jmax));
-	  
+
     SFREE(submatrix);SFREE(noderetain);SFREE(ndirretain);
-	  
+
     SFREE(au);SFREE(ad);SFREE(b);
-      
+
     SFREE(xbounact);SFREE(xforcact);SFREE(xloadact);SFREE(t1act);SFREE(ampli);
     SFREE(xbodyact);
 
     //    if(*nbody>0) SFREE(ipobody);
 
     SFREE(xstiff);
-      
+
     if(iglob!=0){SFREE(integerglob);SFREE(doubleglob);}
-      
+
     SFREE(iponoel);return;
 
 
@@ -731,15 +731,15 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
     for(i=0;i<*ntie;i++){
       if(strcmp1(&tieset[i*243+80],"D")==0){
-	    
+
 	strcpy2(stiffmatrix,jobnamec,132);
 	strcat(stiffmatrix,".stm");
-	    
+
 	if((f1=fopen(stiffmatrix,"wb"))==NULL){
 	  printf(" *ERROR in linstatic: cannot open stiffness matrix file for writing...");
 	  exit(0);
 	}
-	    
+
 	/* storing the stiffness matrix */
 
 	/* nzs,irow,jq and icol have to be stored too, since the static analysis
@@ -747,7 +747,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	   taken into account while determining the structure of the stiffness
 	   matrix (in mastruct.c)
 	*/
-	    
+
 	if(fwrite(&nasym,sizeof(ITG),1,f1)!=1){
 	  printf(" *ERROR saving the symmetry flag to the stiffness matrix file...");
 	  exit(0);
@@ -781,7 +781,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	break;
       }
     }
-    
+
     SFREE(ad);SFREE(au);
     if(iglob<0){SFREE(adb);SFREE(aub);}
 
@@ -793,7 +793,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     NNEW(stn,double,6**nk);
     NNEW(inum,ITG,*nk);
     NNEW(stx,double,6*mi[0]**ne);
-  
+
     if(strcmp1(&filab[261],"E   ")==0) NNEW(een,double,6**nk);
     if(strcmp1(&filab[2697],"ME  ")==0) NNEW(emn,double,6**nk);
     if(strcmp1(&filab[522],"ENER")==0) NNEW(enern,double,*nk);
@@ -860,12 +860,12 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	  thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,ielprop,
-	  prop,sti,damn,&errn);
+	  prop,sti,damn,&errn,nactdof);
       if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
     }
 
     /* mesh refinement */
-  
+
     if(strcmp1(&filab[4089],"RM")==0){
       refinemesh(nk,ne,co,ipkon,kon,v,veold,stn,een,emn,epn,enern,
 		 qfn,errn,filab,mi,lakon,jobnamec,istartset,iendset,
@@ -874,7 +874,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		 nforc,nodeboun,nboun,nodempc,ipompc,nmpc);
 
       /* free errn */
-	
+
       if(((*nmethod!=5)||(mode==-1))&&
 	 ((strcmp1(&filab[1044],"ERR")==0)&&(*ithermal!=2))) SFREE(errn);
     }
@@ -896,7 +896,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
     /* error occurred in mafill: storing the geometry in frd format
        option 1: smoothing is requested */
-    
+
       if(strcmp1(&filab[4089],"RPONLY")==0){
 	strcpy1(&filab[4089],"RMSMOO",6);
 	refinemesh(nk,ne,co,ipkon,kon,v,veold,stn,een,emn,epn,enern,
@@ -906,11 +906,11 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		   nforc,nodeboun,nboun,nodempc,ipompc,nmpc);
 	SFREE(au);SFREE(ad);SFREE(b);
 	if(iglob<0){SFREE(adb);SFREE(aub);}
-	
+
       }else{
 
 	/* option 2: no smoothing; the program stops */
-	
+
 	++*kode;
 	NNEW(inum,ITG,*nk);for(k=0;k<*nk;k++) inum[k]=1;
 	if(strcmp1(&filab[1044],"ZZS")==0){
@@ -925,7 +925,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	    mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	    cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	    thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,ielprop,
-	    prop,sti,damn,&errn);
+	    prop,sti,damn,&errn,nactdof);
 	if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
 	SFREE(inum);
 	if(nmethodold==0){FORTRAN(stopwithout201,());}else{FORTRAN(stop,());}
@@ -960,7 +960,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     mpcinfo[3]=maxlenmpc;
   }
 
-  /* updating the loading at the end of the step; 
+  /* updating the loading at the end of the step;
      important in case the amplitude at the end of the step
      is not equal to one */
 
@@ -986,8 +986,8 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   *konp=kon;*ielmatp=ielmat;*ielorienp=ielorien;*icolp=icol;
 
   (*ttime)+=(*tper);
-  
+
   SFREE(iponoel);
- 
+
   return;
 }

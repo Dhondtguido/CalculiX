@@ -7,7 +7,7 @@
 /*                                                                       */
 
 /*     This program is distributed in the hope that it will be useful,   */
-/*     but WITHOUT ANY WARRANTY; without even the implied warranty of    */ 
+/*     but WITHOUT ANY WARRANTY; without even the implied warranty of    */
 /*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the      */
 /*     GNU General Public License for more details.                      */
 
@@ -29,7 +29,7 @@ void writenewmesh(ITG *nktet,ITG *netet_,double *cotet,ITG *iquad,
   /* writing the new mesh in a mesh refinement calculation */
 
   FILE *f1;
-  
+
   char *lakonnew=NULL,filabnew[5]="    ",*description=NULL,*set=NULL,
     fnewmesh[132]="",fneig[132]="",outputnew[5]="bin ";
 
@@ -54,7 +54,7 @@ void writenewmesh(ITG *nktet,ITG *netet_,double *cotet,ITG *iquad,
 
   NNEW(conew,double,3*nknew);
   memcpy(&conew[0],&cotet[0],sizeof(double)*3*nknew);
-   
+
   NNEW(ipkonnew,ITG,nenew);
   NNEW(konnew,ITG,10*nenew);
   NNEW(lakonnew,char,8*nenew);
@@ -63,7 +63,7 @@ void writenewmesh(ITG *nktet,ITG *netet_,double *cotet,ITG *iquad,
   for(i=0;i<nenew;i++){
     ipkonnew[i]=-1;
   }
-  
+
   if(*iquad==0) {
     netet=0;
     for(i=0;i<nenew;i++){
@@ -87,8 +87,8 @@ void writenewmesh(ITG *nktet,ITG *netet_,double *cotet,ITG *iquad,
       }
       for(j=4;j<10;j++){
 	konnew[10*netet+j]=iedgmid[iedtet[6*i+j-4]-1];
-      } 
-      
+      }
+
       strcpy1(&lakonnew[8*i],"C3D10   ",8);
       netet++;
     }
@@ -102,11 +102,11 @@ void writenewmesh(ITG *nktet,ITG *netet_,double *cotet,ITG *iquad,
     printf(" *ERROR in frd: cannot open frd file for writing...");
     exit(0);
   }
-  
-  fclose(f1);
-  
-  /* creating the tetrahedral mesh in frd format */
 
+  fclose(f1);
+
+  /* creating the tetrahedral mesh in frd format */
+  //NOTE(gmb): TODO nactdof
   frd(conew,&nknew,konnew,ipkonnew,lakonnew,&nenew,v,stn,inum,&nmethod,
       &kode,filabnew,een,t1,fn,&time,epn,ielmatnew,matname,enern,xstaten,
       &nstate_,&istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
@@ -114,8 +114,8 @@ void writenewmesh(ITG *nktet,ITG *netet_,double *cotet,ITG *iquad,
       mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&nenew,
       cs,set,&nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
       thicke,fnewmesh,outputnew,qfx,cdn,&mortar,cdnr,cdni,nmat,ielprop,
-      prop,sti,damn,&errn);
-  
+      prop,sti,damn,&errn,NULL);
+
   strcat(fnewmesh,".frd");
   if((f1=fopen(fnewmesh,"ab"))==NULL){
     printf(" *ERROR in frd: cannot open frd file for writing...");
@@ -125,7 +125,7 @@ void writenewmesh(ITG *nktet,ITG *netet_,double *cotet,ITG *iquad,
   fclose(f1);
 
   SFREE(conew);SFREE(ipkonnew);SFREE(konnew);SFREE(lakonnew);SFREE(ielmatnew);
-  
+
   return;
-  
+
 }

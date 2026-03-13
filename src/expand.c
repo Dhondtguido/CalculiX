@@ -240,24 +240,24 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
    are needed:
    1. all dofs in which the solution is needed (=imddof)
    2. all dofs in which loading was applied
- */	
+ */
 
     NNEW(izdof,ITG,neqh**nsectors);
     for(j=0;j<*nmddof;j++){izdof[j]=imddof[j];}
     *nzdof=*nmddof;
-    
+
     /* generating the coordinates for the other sectors */
-    
+
     icntrl=1;
-    
+
     FORTRAN(rectcyl,(co,v,fn,stn,qfn,een,cs,nk,&icntrl,t,filabt,&imag,mi,emn));
-    
+
     for(jj=0;jj<*mcs;jj++){
 	is=(ITG)(cs[18*jj]+0.5);
 	for(i=1;i<is;i++){
-	    
+
 	    theta=i*2.*pi/cs[18*jj];
-	    
+
 	    for(l=0;l<*nk;l++){
 		if(inocs[l]==jj){
 		    co[3*l+i*3**nk]=co[3*l];
@@ -280,14 +280,14 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 			}
 		    }else{
 			ipkon[l+i**ne]=ipkon[l];
-		    }	
+		    }
 		}
 	    }
 	}
     }
-    
+
     icntrl=-1;
-    
+
     FORTRAN(rectcyl,(co,vt,fn,stn,qfn,een,cs,&nkt,&icntrl,t,filabt,&imag,mi,emn));
 
 /* expand nactdof */
@@ -474,19 +474,19 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	      itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
 	      islavquadel,aut,irowt,jqt,&mortartrafoflag,
 	      &intscheme,physcon,dam,damn,iponoel);
-	    
+
 	}
 	//	SFREE(eei);
 
 	/* mapping the results to the other sectors */
 
 	if(*nherm!=1)NNEW(vti,double,mt**nk**nsectors);
-	
+
 	icntrl=2;imag=1;
-	
+
 	FORTRAN(rectcylexp,(co,v,fn,stn,qfn,een,cs,nk,&icntrl,t,filabt,&imag,mi,
 			    iznode,&nznode,nsectors,nk,emn));
-	
+
 	/* basis sector */
 
 	for(ll=0;ll<nznode;ll++){
@@ -536,12 +536,12 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 		}
 	    }
 	}
-	
+
 	icntrl=-2;imag=0;
-	
+
 	FORTRAN(rectcylexp,(co,vt,fn,stn,qfn,een,cs,&nkt,&icntrl,t,filabt,
 			    &imag,mi,iznode,&nznode,nsectors,nk,emn));
-	
+
 /* storing the displacements into the expanded eigenvectors */
 
 	for(ll=0;ll<nznode;ll++){

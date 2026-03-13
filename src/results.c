@@ -172,8 +172,8 @@ void results(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 	     xboun,nboun,ipompc,nodempc,coefmpc,labmpc,nmpc,nmethod,cam,neq,
 	     veold,accold,bet,gam,dtime,mi,vini,nprint,prlab,
 	     &intpointvarm,&calcul_fn,&calcul_f,&calcul_qa,&calcul_cauchy,
-	     &ikin,&intpointvart,typeboun,&num_cpus,mortar,nener,iponoeln,
-	     network);
+	     &ikin,&intpointvart,typeboun,&num_cpus,mortar,nener,
+	     iponoeln,network);
 
   /* next statement allows for storing the displacements in each
      iteration: for debugging purposes */

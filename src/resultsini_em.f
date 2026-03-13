@@ -20,8 +20,8 @@
      &  nactdof,iout,qa,b,nodeboun,ndirboun,
      &  xboun,nboun,ipompc,nodempc,coefmpc,labmpc,nmpc,nmethod,cam,neq,
      &  veold,dtime,mi,vini,nprint,prlab,
-     &  intpointvarm,calcul_fn,calcul_f,calcul_qa,calcul_cauchy,nener,
-     &  ikin,intpointvart,xforc,nforc)
+     &  intpointvarm,calcul_fn,calcul_f,calcul_qa,calcul_cauchy,
+     &  nener,ikin,intpointvart,xforc,nforc)
 !
 !     initialization 
 !
@@ -154,21 +154,24 @@ c                     v(j,i)=v(j,i)+bnac
 !     
       if(iout.gt.0) then
          if((filab(5)(1:4).eq.'RF  ').or.
-     &        (filab(10)(1:4).eq.'RFL ')) then
+     &        (filab(10)(1:4).eq.'RFL ').or.
+     &        (filab(58)(1:4).eq.'RR  ')) then
             calcul_fn=1
          else
             do i=1,nprint
                if((prlab(i)(1:4).eq.'RF  ').or.
-     &              (prlab(i)(1:4).eq.'RFL ')) then
+     &              (prlab(i)(1:4).eq.'RFL ').or.
+     &              (prlab(i)(1:4).eq.'RR  ')) then
                   calcul_fn=1
                   exit
                endif
             enddo
          endif
       endif
-!     
+
+!
 !     check whether user-defined concentrated forces were defined
-!     
+!
       do i=1,nforc
          if((xforc(i).lt.1.2357111318d0).and.
      &        (xforc(i).gt.1.2357111316d0)) then
@@ -176,9 +179,9 @@ c                     v(j,i)=v(j,i)+bnac
             exit
          endif
       enddo
-!     
+!
 !     initializing fn
-!     
+!
       if(calcul_fn.eq.1) then
          do i=1,nk
             do j=0,mi(2)
@@ -294,6 +297,7 @@ c            endif
          if((filab(3)(1:4).eq.'S   ').or.
      &      (filab(4)(1:4).eq.'E   ').or.
      &      (filab(5)(1:4).eq.'RF  ').or.
+     &      (filab(58)(1:4).eq.'RR  ').or.
      &      (filab(6)(1:4).eq.'PEEQ').or.
      &      (filab(7)(1:4).eq.'ENER').or.
      &      (filab(8)(1:4).eq.'SDV ').or.
@@ -313,7 +317,8 @@ c            endif
      &           (prlab(i)(1:4).eq.'CSTR').or.
      &           (prlab(i)(1:4).eq.'CELS').or.
      &           (prlab(i)(1:4).eq.'SDV ').or.
-     &           (prlab(i)(1:4).eq.'RF  ')) then
+     &           (prlab(i)(1:4).eq.'RF  ').or.
+     &           (prlab(i)(1:4).eq.'RR  ')) then
                intpointvarm=1
                exit
             endif
