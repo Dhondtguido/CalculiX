@@ -20,8 +20,8 @@
      &  nactdof,iout,qa,b,nodeboun,ndirboun,
      &  xboun,nboun,ipompc,nodempc,coefmpc,labmpc,nmpc,nmethod,cam,neq,
      &  veold,dtime,mi,vini,nprint,prlab,
-     &  intpointvarm,calcul_fn,calcul_f,calcul_qa,calcul_cauchy,
-     &  nener,ikin,intpointvart,xforc,nforc)
+     &  intpointvarm,calcul_fn,calcul_f,calcul_qa,calcul_cauchy,nener,
+     &  ikin,intpointvart,xforc,nforc)
 !
 !     initialization 
 !
@@ -168,7 +168,6 @@ c                     v(j,i)=v(j,i)+bnac
             enddo
          endif
       endif
-      
 !     
 !     check whether user-defined concentrated forces were defined
 !     

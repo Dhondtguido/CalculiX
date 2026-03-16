@@ -39,7 +39,7 @@ void radcyc(ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
      *vold=NULL,*emnt=NULL,*emn=NULL;
 
   pi=4.*atan(1.);
-
+  
   kontri=*kontrip;co=*cop;vold=*voldp;
 
   /* determining the maximum number of sectors */
@@ -138,9 +138,9 @@ void radcyc(ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
   /* generating the coordinates for the other sectors */
   
   icntrl=1;
-
+  
   FORTRAN(rectcyl,(co,v,fn,stn,qfn,een,cs,nk,&icntrl,t,filab,&imag,mi,emn));
-
+  
   for(jj=0;jj<*mcs;jj++){
     is=(ITG)(cs[18*jj]);
     for(i=1;i<is;i++){
@@ -158,7 +158,7 @@ void radcyc(ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
   }
 
   icntrl=-1;
-
+    
   FORTRAN(rectcyl,(co,vt,fnt,stnt,qfnt,eent,cs,&nkt,&icntrl,t,filab,
 		   &imag,mi,emnt));
 

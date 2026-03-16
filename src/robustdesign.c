@@ -7,7 +7,7 @@
 /*                    */
 
 /*     This program is distributed in the hope that it will be useful,   */
-/*     but WITHOUT ANY WARRANTY; without even the implied warranty of    */
+/*     but WITHOUT ANY WARRANTY; without even the implied warranty of    */ 
 /*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the      */
 /*     GNU General Public License for more details.                      */
 
@@ -49,7 +49,7 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		  ITG **ielorienp,ITG *norien,double *orab,ITG *ntmat_,
 		  double *t0,double *t1,double *t1old,
 		  ITG *ithermal,double *prestr,ITG *iprestr,
-		  double *vold,ITG *iperturb,double *sti,ITG *nzs,
+		  double *vold,ITG *iperturb,double *sti,ITG *nzs, 
 		  ITG *kode,char *filab,double *eme,
 		  ITG *iexpl,double *plicon,ITG *nplicon,double *plkcon,
 		  ITG *nplkcon,
@@ -75,10 +75,10 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		  ITG *inoel2d,
 		  ITG *mpcend,ITG *irobustdesign,ITG *irandomtype,
 		  double *randomval,ITG *rig){
-
+	     
   char description[13]="            ",*lakon=NULL,cflag[1]=" ",
     *lakonfa=NULL,*objectset=NULL,filabnew[5]="    ";
-
+       
   ITG *inum=NULL,k,*irow=NULL,iinc=1,mode=-1,noddiam=-1,ngraph=1,ne0,
     *integerglob=NULL,*kon=NULL,*ipkon=NULL,*ielmat=NULL,i,
     ndesi,iobject,*iponoel=NULL,node,*nodedesi=NULL,*ipoface=NULL,*nodface=NULL,
@@ -90,7 +90,7 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     nfield,iforce,*nod2nd3rd=NULL,*nod1st=NULL,ishape=0,ndesibou,
     *nodedesibou=NULL,*nodedesiinvbou=NULL,nmethodnew=0,*neigh=NULL,
     *ipneigh=NULL,ifeasd=0,*nx=NULL,*ny=NULL,*nz=NULL,*nodes=NULL;
-
+      
   double *stn=NULL,*tper,*xdesi=NULL,ptime=0.,*doubleglob=NULL,*xstate=NULL,
     *ener=NULL,sigma=0,*extnor=NULL,dtime,time,*xnor=NULL,*cdni=NULL,
     *cdnr=NULL,*cdn=NULL,*qfx=NULL,*emn=NULL,*fni=NULL,*fnr=NULL,
@@ -98,7 +98,7 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     *stnr=NULL,*vi=NULL,*vr=NULL,*qfn=NULL,*xstaten=NULL,*enern=NULL,
     *epn=NULL,*fn=NULL,*een=NULL,*v=NULL,*x=NULL,*y=NULL,*z=NULL,*xo=NULL,
     *yo=NULL,*zo=NULL,*dist=NULL,*damn=NULL,*errn=NULL;
-
+  
 #ifdef SGI
   ITG token;
 #endif
@@ -120,9 +120,9 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   getglobalresults(&jobnamec[396],&integerglob,&doubleglob,nboun,iamboun,xboun,
 		   nload,sideload,iamload,&iglob,nforc,iamforc,xforc,
                    ithermal,nk,t1,iamt1,&sigma,&irefine);
-
+  
   /* check which design variables are active */
-
+  
   for(i=0;i<*ntie;i++){
       if(strcmp1(&tieset[i*243+80],"D")==0){
 	  if(strcmp1(&tieset[i*243],"COORDINATE")==0){
@@ -135,17 +135,17 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	  }
       }
   }
-
+  
   /* in robust design analysis "edge preservation" option is always active */
   iregion=1;
-
+  
   /* determining the elements belonging to a given node */
-
+  
   NNEW(iponoel,ITG,*nk);
   NNEW(inoel,ITG,2**nkon);
   FORTRAN(elementpernode,(iponoel,inoel,lakon,ipkon,kon,ne));
 
-  /* find the
+  /* find the 
      - external faces belonging to a given node
      - nodes belonging to a given external surface */
 
@@ -169,55 +169,55 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   FORTRAN(extfacepernode,(iponoelfa,inoelfa,lakonfa,ipkonfa,konfa,
   			  &nsurfs,&inoelsize));
   RENEW(inoelfa,ITG,3*inoelsize);
-
+  
   /* determining the design variables */
-
+  
   NNEW(nodedesi,ITG,*nk);
   NNEW(itmp,ITG,*nk);
   NNEW(nodedesiinv,ITG,*nk);
-
+  
   if(*ne2d!=0){
 
     NNEW(nod2nd3rd,ITG,3**nk);
     NNEW(nod1st,ITG,*nk);
-
+     
     FORTRAN(getdesiinfo2d,(set,istartset,iendset,ialset,nset,
 			   mi,nactdof,&ndesi,nodedesi,ntie,tieset,
 			   nodedesiinv,lakon,ipkon,kon,iponoelfa,
 			   nod2nd3rd,iponor2d,knor2d,iponoel2d,
 			   inoel2d,nobject,objectset,nod1st,ne,
 			   jobnamef,rig));
-
-
+    						 
+  
   }else{
-
+  
     FORTRAN(getdesiinfo3d_robust,(set,istartset,iendset,ialset,nset,
 				  mi,nactdof,&ndesi,nodedesi,ntie,tieset,
 				  itmp,nmpc,nodempc,ipompc,nodedesiinv,
 				  iponoel,inoel,lakon,ipkon,
 				  kon,&iregion,ipoface,nodface,nk,
-				  irandomtype,jobnamef));
+				  irandomtype,jobnamef));  
   }
-
+  
   SFREE(itmp);
   RENEW(nodedesi,ITG,ndesi);
 
   /* determining the designvariables at the boundary of the variable field */
-  /* in case of a conditional random field */
-
+  /* in case of a conditional random field */ 
+  
   if(irobustdesign[2]==1){
-
+  
     NNEW(nodedesibou,ITG,*nk);
     NNEW(nodedesiinvbou,ITG,*nk);
-
+  
     FORTRAN(getdesiinfobou,(&ndesibou,nodedesibou,nodedesiinv,
 			    lakon,ipkon,kon,ipoface,nodface,
 			    nodedesiinvbou,&ndesi,nodedesi,nk));
 
     RENEW(nodedesibou,ITG,ndesibou);
-
+  
   }
-
+  
   /* storing the elements to which each design variable belongs
      in field ialdesi */
 
@@ -227,16 +227,16 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		       istartdesi,ialdesi,lakon,ipkon,kon,
 		       nodedesiinv,&icoordinate,&iregion));
   RENEW(ialdesi,ITG,istartdesi[ndesi]-1);
-
+  	
   /* calculating the normal direction for every designvariable */
-
+  
   NNEW(extnor,double,3**nk);
-
+  
   FORTRAN(normalsonsurface_robust,(ipkon,kon,lakon,extnor,co,nk,ipoface,
     			           nodface,nactdof,mi,nodedesiinv,&iregion,
     			           iponoelfa,&ndesi,nodedesi,nod2nd3rd,
-    			           ikboun,nboun,ne2d));
-
+    			           ikboun,nboun,ne2d)); 
+  
   /* if the sensitivity calculation is used in a optimization script
      this script usually contains a loop consisting of:
      1. a call to CalculiX to define the sensitivities
@@ -246,7 +246,7 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
      mesh quality
      The latter point can be done by performing a linear elastic
      calculation in which the small modification in 2. is applied
-     a *boundary condition and all other nodes (on the external
+     a *boundary condition and all other nodes (on the external 
      surface but no design variables) are fixed by *equation's
      in a direction normal to the surface. At corners and edges
      there my be more than one normal. The necessary equations are
@@ -268,37 +268,37 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   NNEW(nz,ITG,*nk);
   NNEW(nodes,ITG,*nk);
   NNEW(dist,double,*nk);
-
+  
   FORTRAN(writeinputdeck,(nk,co,iponoelfa,inoelfa,konfa,ipkonfa,lakonfa,
 			  &nsurfs,iponor,xnor,nodedesiinv,jobnamef,
 			  iponexp,nmpc,labmpc,ipompc,nodempc,ipretinfo,
 			  kon,ipkon,lakon,iponoel,inoel,iponor2d,knor2d,
 			  ipoface,nodface,ne,x,y,z,xo,yo,zo,nx,ny,nz,nodes,
 			  dist,ne2d,nod1st,nod2nd3rd,extnor,nodedesi,&ndesi));
-
+    	  
   SFREE(konfa);SFREE(ipkonfa);SFREE(lakonfa);SFREE(iponor);SFREE(xnor);
   SFREE(iponoelfa);SFREE(inoelfa);SFREE(iponexp);SFREE(ipretinfo);
   SFREE(x);SFREE(y);SFREE(z);SFREE(xo);SFREE(yo);SFREE(zo);SFREE(nx);
   SFREE(ny);SFREE(nz);SFREE(nodes);SFREE(dist);
-
+       
   /* createinum is called in order to determine the nodes belonging
      to elements; this information is needed in frd_se */
-
+  
   NNEW(inum,ITG,*nk);
   FORTRAN(createinum,(ipkon,inum,kon,lakon,nk,ne,&cflag[0],nelemload,
 		      nload,nodeboun,nboun,ndirboun,ithermal,co,vold,mi,ielmat,
 		      ielprop,prop));
-
+    				       
   /* storing the normal information in the frd-file for the optimizer */
-
+      
   ++*kode;
 
   inorm=1;
   nfield=3;
   iforce=0;
-
+  
   if(strcmp1(&filab[4],"I")==0){
-
+  
     FORTRAN(map3dto1d2d,(extnor,ipkon,inum,kon,lakon,&nfield,nk,
 			 ne,cflag,co,vold,&iforce,mi,ielprop,prop));
   }
@@ -313,13 +313,13 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
       thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
       ielprop,prop,sti,damn,&errn,nactdof);
-
+  
   frd_sen(co,nk,stn,inum,nmethod,kode,filab,&ptime,nstate_,
     	  istep,
     	  &iinc,&mode,&noddiam,description,mi,&ngraph,ne,cs,set,nset,
     	  istartset,iendset,ialset,jobnamec,output,
     	  extnor,&iobject,objectset,ntrans,inotr,trab,&idesvar,orname,
-    	  &icoordinate,&inorm,&irand,&ishape,&ifeasd);
+    	  &icoordinate,&inorm,&irand,&ishape,&ifeasd); 
   inorm=0;
 
   /* storing the normal direction for every design variable */
@@ -329,22 +329,22 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     node=nodedesi[k]-1;
     memcpy(&xdesi[3*k],&extnor[3*node],sizeof(double)*3);
   }
-
+  
   /* calculation of gaussian random fields for robust optimization */
-
+  
   randomfieldmain(kon,ipkon,lakon,ne,nmpc,nactdof,mi,nodedesi,&ndesi,
 		  istartdesi,ialdesi,co,physcon,isolver,ntrans,nk,inotr,trab,jobnamec,
 		  nboun,cs,mcs,inum,nmethod,kode,filab,nstate_,istep,description,set,
 		  nset,iendset,output,istartset,ialset,extnor,irandomtype,randomval,
-		  irobustdesign,&ndesibou,nodedesibou,nodedesiinvbou);
-
+		  irobustdesign,&ndesibou,nodedesibou,nodedesiinvbou); 
+    		       
   SFREE(inum);SFREE(extnor);
-  if(irobustdesign[2]==1){SFREE(nodedesibou);SFREE(nodedesiinvbou);}
-
+  if(irobustdesign[2]==1){SFREE(nodedesibou);SFREE(nodedesiinvbou);}	  
+            
   SFREE(iponoel);SFREE(inoel);SFREE(nodedesiinv);
-
+  
   if(*ne2d!=0){SFREE(nod2nd3rd);SFREE(nod1st);}
-
+     
   // if(*nbody>0) SFREE(ipobody);
 
   SFREE(istartdesi);SFREE(ialdesi);SFREE(istartelem);SFREE(ialelem);
@@ -357,6 +357,6 @@ void robustdesign(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   *konp=kon;*ielmatp=ielmat;*ielorienp=ielorien;*objectsetp=objectset;
 
   (*ttime)+=(*tper);
-
+ 
   return;
 }

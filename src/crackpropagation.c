@@ -7,7 +7,7 @@
 /*                    */
 
 /*     This program is distributed in the hope that it will be useful,   */
-/*     but WITHOUT ANY WARRANTY; without even the implied warranty of    */
+/*     but WITHOUT ANY WARRANTY; without even the implied warranty of    */ 
 /*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the      */
 /*     GNU General Public License for more details.                      */
 
@@ -44,7 +44,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 
   char *lakon=NULL,description[13]="            ",
     *param=NULL;
-
+  
   ITG *kontri=NULL,ntri,*iedg=NULL,*ipoed=NULL,*ieled=NULL,nedg,
     *ibounedg=NULL,nbounedg,*ibounnod=NULL,nbounnod,*iedno=NULL,
     *integerglob=NULL,iglob,*ifront=NULL,nfront,*ifrontrel=NULL,
@@ -93,14 +93,14 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
   nkonold=*nkon;
 
   /* adding a fictitious center node */
-
+  
   RENEW(co,double,3*(*nk+1));
   co[3**nk]=0.;
   co[3**nk+1]=0.;
   co[3**nk+2]=0.;
   *nk=*nk+1;
   ncenter=*nk;
-
+    
   damax=timepar[0];
   phimax=timepar[1]*atan(1.)/45.;
   imat=(ITG)(floor(timepar[2]));
@@ -108,10 +108,10 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
   scaling=timepar[4];
 
   /* storing the crack propagation data in crcon */
-
+  
   crackpropdata(jobnamec,nelcon,elcon,&crcon,&ncrconst,&ncrtem,&imat,
 		matname,ntmat_,ncmat_,&param,&nparam,&law);
-
+      
   /* reading the LCF master file
      iglob>0: static results */
 
@@ -119,7 +119,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
   iglob=1;
   getuncrackedresults(&jobnamec[396],&integerglob,&doubleglob,
 		      &iglob,&nstep);
-
+      
   /* reading the HCF master file
      iglob<0: frequency results */
 
@@ -129,7 +129,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
     getuncrackedresults(&jobnamec[528],&integerglobf,&doubleglobf,
 			&iglob,&nstepf);
   }
-
+    
   NNEW(wk1glob,double,*nk);
   NNEW(wk2glob,double,*nk);
   NNEW(wk3glob,double,*nk);
@@ -147,17 +147,17 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
   /* next allocation is needed in cased ier=1 in first increment
      of the loop (iinc=0) and the loop is exited: avoids a crash
      at deallocation */
-
+  
   NNEW(charlen,double,one);
 
   /* loop over crack propagation increments */
-
+  
   for(iinc=0;iinc<jmax[0];iinc++){
 
     printf("Increment %" ITGFORMAT "\n\n",iinc+1);
 
     nkinc=*nk;
-
+  
     /* catalogue all triangles belonging to the crack(s)
        they are supposed to be of type S3 */
 
@@ -222,17 +222,17 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
     /* interpolating the hcf stress in all boundary nodes */
 
     if(mei[0]>0){
-
+      
       NNEW(hcftemp,double,nbounnod);
       NNEW(hcfstress,double,6*nbounnod);
-
+      
       FORTRAN(interpolextnodesf,(ibounnod,&nbounnod,co,doubleglobf,integerglobf,
 				 hcfstress,hcftemp,&nstepf,&mei[0]));
 
       /* scaling the hcf stress */
-
+      
       for(i=0;i<6*nbounnod;i++){hcfstress[i]*=scaling;}
-
+      
       SFREE(hcftemp);
     }
 
@@ -259,7 +259,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
     NNEW(costruc2,double,3*nbounnod);
 
     /* determine the order of the nodes along the crack front(s) */
-
+  
     FORTRAN(adjacentbounodes,(ifront,ifrontrel,&nfront,iedno,iedg,&nnfront,
 			      ifront2,ifrontrel2,ibounnod,&nbounnod,istartfront,
 			      iendfront,ibounedg,istartcrackfro,iendcrackfro,
@@ -300,7 +300,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
     FORTRAN(checkcrosssections,(co,doubleglob,integerglob,stress,
 				&nnfront,ifront,ifrontrel,costruc,
 				temp,&nstep,istartfront,iendfront));
-
+    
     NNEW(xt,double,3*nfront);
     NNEW(xn,double,3*nfront);
     NNEW(xa,double,3*nfront);
@@ -309,7 +309,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 
     /* determine a local coordinate system in each front node based on
        the local stress tensor */
-
+  
     FORTRAN(createlocalsys,(&nnfront,istartfront,iendfront,ifront,co,xt,xn,xa,
 			    &nfront,ifrontrel,stress,iedno,ibounedg,ieled,
 			    kontri,isubsurffront,istartcrackfro,iendcrackfro,
@@ -369,7 +369,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
     /* modifying the shape factors for:
        - the vicinity of free surfaces
        - the decreasing remaining cross section */
-
+    
     NNEW(xplanecrack,double,4*ncrack);
     NNEW(cg,double,3*ncrack);
     NNEW(crackarea,double,ncrack);
@@ -384,7 +384,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 			    surfnor,surfco,resarea,alambdapj,shape));
     SFREE(xplanecrack);SFREE(cg);SFREE(crackarea);
     SFREE(surfnor);SFREE(surfco);SFREE(resarea);SFREE(alambdapj);
-
+    
     /* calculating the stress intensity factors (LCF) */
 
     NNEW(xk1,double,nstep*nfront);
@@ -398,11 +398,11 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 			     xk3,xkeq,phi,psi,acrack,shape,&nstep));
 
     SFREE(psi);
-
+    
     /* calculating the stress intensity factors (HCF) */
 
     if(mei[0]>0){
-
+      
       if(mei[1]>nstep){
 	printf(" *ERROR in crackpropagation.c: HCF mission step %" ITGFORMAT "\n",mei[1]);
 	printf("        exceeds the number of LCF steps %" ITGFORMAT "\n\n",nstep);
@@ -410,15 +410,15 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
       }
 
       /* creating LCF+HCF and LCF-HCF */
-
+      
       NNEW(tempf,double,2*nbounnod);
       NNEW(stressf,double,6*2*nbounnod);
 
       FORTRAN(combilcfhcf,(tempf,stressf,stress,hcfstress,temp,&nbounnod,
 			   mei,&nstep));
-
+      
       SFREE(hcfstress);
-
+      
       NNEW(xk1f,double,2*nfront);
       NNEW(xk2f,double,2*nfront);
       NNEW(xk3f,double,2*nfront);
@@ -434,9 +434,9 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
     }
 
     SFREE(shape);
-
+    
     /* smoothing the equivalent k-factors and deflection angles */
-
+    
     NNEW(dist,double,nfront);
     NNEW(idist,ITG,nfront);
     NNEW(dk,double,nstep*nfront);
@@ -449,11 +449,11 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 				       &nstep));
 
     SFREE(dist);SFREE(idist);SFREE(dk);SFREE(p);
-
+    
     /* smoothing the HCF equivalent k-factors and deflection angles */
 
     if(mei[0]>0){
-
+    
       NNEW(dist,double,nfront);
       NNEW(idist,ITG,nfront);
       NNEW(dk,double,2*nfront);
@@ -466,23 +466,23 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 					 &nstepf2));
 
       SFREE(dist);SFREE(idist);SFREE(dk);SFREE(p);
-
+      
     }
 
     /* determine the target crack propagation increment */
-
+    
     FORTRAN(calcdatarget,(ifront,co,&nnfront,istartfront,iendfront,
 			  isubsurffront,&damax,&datarget,acrack,&nstep));
-
-    /* propagate the nodes at the crack front(s)
+    
+    /* propagate the nodes at the crack front(s) 
        (generate new nodes) */
 
     lcf=1;
-
+    
     if(mei[0]>0){
 
       /* check whether propagation due to hcf */
-
+    
       NNEW(dadn,double,nfront);
       NNEW(wk1,double,nfront);
       NNEW(wk2,double,nfront);
@@ -494,13 +494,13 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
       NNEW(domstep,double,nfront);
       NNEW(domphi,double,nfront);
       NNEW(crconloc,double,ncrconst);
-
+    
       FORTRAN(crackrate,(&nfront,ifrontrel,xkeqf,phif,ifront,dadn,&ncyc,
 			 &icritic,&datarget,crcon,tempf,
 			 &ncrtem,crconloc,&ncrconst,xk1f,xk2f,xk3f,&nstepf2,
 			 acrack,wk1,wk2,wk3,xkeqmin,xkeqmax,
 			 dkeq,domstep,domphi,param,&nparam,&law,&ier,r));
-
+      
       if((icritic>0)||(ier==1)){
 	if(icritic>0){
 	  printf(" *WARNING: Exit because a critical value for Keq is reached along the crack front due to the modal loading \n");
@@ -508,7 +508,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 	  printf(" *WARNING: Exit because an error occurred in crackrate.f \n");
 	}
 	printf("           Number of iteration= %" ITGFORMAT "\n\n" ,(iinc+1));
-
+	
 	SFREE(xkeq);SFREE(phi);SFREE(xk1);SFREE(xk2);SFREE(xk3);
 	SFREE(xkeqf);SFREE(phif);SFREE(xk1f);SFREE(xk2f);SFREE(xk3f);
 	SFREE(crconloc);
@@ -532,28 +532,28 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 	for(i=0;i<nfront;i++){
 	  xkeq[nstep*i+mei[1]-1]=xkeqf[2*i];
 	}
-
+	
 	SFREE(xkeqf);SFREE(phif);SFREE(xk1f);SFREE(xk2f);SFREE(xk3f);
 	SFREE(dadn);SFREE(wk1);SFREE(wk2);SFREE(wk3);SFREE(xkeqmin);
 	SFREE(xkeqmax);SFREE(dkeq);SFREE(domstep);SFREE(domphi);SFREE(r);
 	SFREE(crconloc);
-
+      
       }else{
 
-	/* crack propagation due to hcf:
+	/* crack propagation due to hcf: 
            if not allowed: stop
            else: accumulate hcf cycles */
 
 	/* a negative dominant step points to HCF crack propagation */
-
+	
 	for(i=0;i<nfront;i++){
 	  domstep[i]*=-1;
 	}
-
+	
 	SFREE(xkeq);SFREE(phi);SFREE(xk1);SFREE(xk2);SFREE(xk3);
 	SFREE(xkeqf);SFREE(phif);SFREE(xk1f);SFREE(xk2f);SFREE(xk3f);
 	SFREE(crconloc);
-
+	
 	if(mei[2]==0){
 	  printf("HCF crack propagation takes place; the program stops!\n\n");
 	  icritic=1;
@@ -562,16 +562,16 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 	  ncyctot+=ncyc;
 	}
 	lcf=0;
-
+	  
       }
     }
-
+    
     if(lcf==1){
 
       /* reset icritic to the default */
-
+      
       icritic=0;
-
+      
       NNEW(dadn,double,nfront);
       NNEW(wk1,double,nfront);
       NNEW(wk2,double,nfront);
@@ -583,13 +583,13 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
       NNEW(domstep,double,nfront);
       NNEW(domphi,double,nfront);
       NNEW(crconloc,double,ncrconst);
-
+    
       FORTRAN(crackrate,(&nfront,ifrontrel,xkeq,phi,ifront,dadn,&ncyc,
 			 &icritic,&datarget,crcon,temp,
 			 &ncrtem,crconloc,&ncrconst,xk1,xk2,xk3,&nstep,
 			 acrack,wk1,wk2,wk3,xkeqmin,xkeqmax,
 			 dkeq,domstep,domphi,param,&nparam,&law,&ier,r));
-
+      
       if((icritic>0)||(ier==1)){
 	if(icritic>0){
 	  printf(" *WARNING: Exit because a critical value for Keq is reached along the crack front due to the static loading \n");
@@ -597,7 +597,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 	  printf(" *WARNING: Exit because an error occurred in crackrate.f \n");
 	}
 	printf("           Number of iteration= %" ITGFORMAT "\n\n" ,(iinc+1));
-
+	
 	SFREE(xkeq);SFREE(phi);SFREE(xk1);SFREE(xk2);SFREE(xk3);
 	SFREE(crconloc);SFREE(xn);SFREE(xa);
 	SFREE(kontri);SFREE(ipoed);SFREE(iedg);SFREE(ieled);SFREE(ibounedg);
@@ -617,14 +617,14 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
       SFREE(xkeq);SFREE(phi);SFREE(xk1);SFREE(xk2);SFREE(xk3);
       SFREE(crconloc);
     }
-
+    
     NNEW(da,double,nfront);
     RENEW(co,double,3*(*nk+nfront));
     RENEW(acrackglob,double,*nk+nfront);
     RENEW(iincglob,ITG,*nk+nfront);
     RENEW(dnglob,double,*nk+nfront);
     NNEW(ifrontprop,ITG,nfront);
-
+    
     FORTRAN(crackprop,(ifrontrel,ibounnod,domphi,da,co,costruc,nk,xa,
 		       xn,&nnfront,istartfront,iendfront,doubleglob,
 		       integerglob,isubsurffront,dadn,&ncyc,
@@ -632,7 +632,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 		       iincglob,&iinc,dnglob,&ncyctot,&ier));
 
     SFREE(xn);SFREE(xa);SFREE(da);
-
+      
     if(ier==1){
       SFREE(kontri);SFREE(ipoed);SFREE(iedg);SFREE(ieled);SFREE(ibounedg);
       SFREE(ibounnod);SFREE(iedno);SFREE(stress);SFREE(ifront);
@@ -648,7 +648,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 
     /* calculate the mesh characteristic length for each front
        and the new equally spread nodes on the propagated front(s) */
-
+    
     if(iinc==0){
       FORTRAN(characteristiclength,(co,istartcrackfro,iendcrackfro,&ncrack,
 				    ifront,charlen,&datarget));
@@ -661,7 +661,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
     /* next lines of no equal spacing is desired */
 
     if(ieqspace==0){
-
+    
       RENEW(ifronteq,ITG,nfront);
       memcpy(&ifronteq[0],&ifrontprop[0],sizeof(ITG)*nfront);
       memcpy(&istartfronteq[0],&istartfront[0],sizeof(ITG)*nnfront);
@@ -669,17 +669,17 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
       nfronteq=nfront;
 
     }else{
-
+      
     /* next lines of equal spacing is desired */
 
     /* the assumption is made, that no more than 2*nfront equally
        spaced nodes are necessary for the propagated front */
-
+    
       RENEW(co,double,3*(*nk+2*nfront));
       RENEW(acrackglob,double,*nk+2*nfront);
       RENEW(dnglob,double,*nk+2*nfront);
       RENEW(iincglob,ITG,*nk+2*nfront);
-
+    
       FORTRAN(eqspacednodes,(co,istartfront,iendfront,&nnfront,
 			     ifrontprop,nk,&nfront,ifronteq,charlen,
 			     istartfronteq,iendfronteq,&nfronteq,
@@ -704,9 +704,9 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
       RENEW(iincglob,ITG,*nk);
       RENEW(ifronteq,ITG,nfronteq);
     }
-
+    
     /* update the crack mesh topology (generate new crack elements) */
-
+    
     RENEW(lakon,char,8*(*ne+(nfronteq+nfront)));
     RENEW(ipkon,ITG,*ne+(nfronteq+nfront));
     RENEW(ielmat,ITG,mi[2]*(*ne+(nfronteq+nfront)));
@@ -723,7 +723,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
     RENEW(kon,ITG,*nkon);
 
     /* simplifying the crack triangulation */
-
+    
     /*    RENEW(lakon,char,8*(*ne+2*nbounedg));
     RENEW(ipkon,ITG,*ne+2*nbounedg);
     RENEW(ielmat,ITG,mi[2]*(*ne+2*nbounedg));
@@ -737,9 +737,9 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
     RENEW(ipkon,ITG,*ne);
     RENEW(ielmat,ITG,mi[2]**ne);
     RENEW(kon,ITG,*nkon);*/
-
+    
     /* storing the local crack results into global nodal fields */
-
+    
     RENEW(wk1glob,double,*nk);for(i=nkinc;i<*nk;i++){wk1glob[i]=0.;}
     RENEW(wk2glob,double,*nk);for(i=nkinc;i<*nk;i++){wk2glob[i]=0.;}
     RENEW(wk3glob,double,*nk);for(i=nkinc;i<*nk;i++){wk3glob[i]=0.;}
@@ -750,13 +750,13 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
     RENEW(phiglob,double,*nk);for(i=nkinc;i<*nk;i++){phiglob[i]=0.;}
     RENEW(dadnglob,double,*nk);for(i=nkinc;i<*nk;i++){dadnglob[i]=0.;}
     RENEW(domstepglob,double,*nk);for(i=nkinc;i<*nk;i++){domstepglob[i]=0.;}
-
+    
     FORTRAN(globalcrackresults,(&nfront,ifront,wk1,wk2,wk3,dkeq,domphi,dadn,
 				&ncyctot,wk1glob,wk2glob,wk3glob,dkeqglob,
 				phiglob,dadnglob,dnglob,acrack,acrackglob,
 				&nstep,xkeqmin,xkeqmax,xkeqminglob,xkeqmaxglob,
 				&iinc,iincglob,domstep,domstepglob,r,rglob));
-
+  
     SFREE(kontri);SFREE(ipoed);SFREE(iedg);SFREE(ieled);SFREE(ibounedg);
     SFREE(ibounnod);SFREE(iedno);SFREE(stress);SFREE(ifront);SFREE(ifrontrel);
     SFREE(istartfront);SFREE(iendfront);SFREE(xt);SFREE(stressf);SFREE(tempf);
@@ -793,7 +793,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
     RENEW(t1,double,*nk);
     RENEW(t1old,double,*nk);
     for(i=nkold;i<*nk;i++){t0[i]=0.;t1[i]=0.;t1old[i]=0.;}
-
+    
     if((*ne1d>0)||(*ne2d>0)){
       RENEW(t0g,double,2**nk);
       RENEW(t1g,double,2**nk);
@@ -804,7 +804,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
       for(i=nkold;i<*nk;i++) iamt1[i]=0;
     }
   }
-  RENEW(vold,double,mt**nk);
+  RENEW(vold,double,mt**nk);    
   if(*iprestr>0){
     RENEW(prestr,double,6*mi[0]**ne);
     for(i=6*mi[0]*neold;i<6*mi[0]**ne;i++) prestr[i]=0.;
@@ -842,7 +842,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
       for(i=*nstate_*mi[0]*(neold+*nintpoint);i<*nstate_*mi[0]*(*ne+*nintpoint);i++) xstate[i]=0.;
     }
   }
-
+  
   SFREE(crcon);SFREE(integerglob);SFREE(doubleglob);
   if(mei[0]>0){SFREE(integerglobf);SFREE(doubleglobf);}
 
@@ -854,12 +854,12 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
   for(j=0;j<*nk;j++){
     inum[j]=1;
   }
-
+  
   /* storing the global mesh and the triangulation of the crack(s):
      shells must be stored as 2D-triangles */
 
   filab[4]='I';
-  //NOTE(gmb): TODO nactdof
+  //TODO(gmb): nactdof
   frd(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,
       &kode,filab,een,t1,fn,&time,epn,ielmat,matname,enern,xstaten,
       nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
@@ -878,17 +878,17 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
 	     acrackglob,xkeqminglob,xkeqmaxglob,iincglob,domstepglob,
 	     rglob);
   }
-
+  
   SFREE(wk1glob);SFREE(wk2glob);SFREE(wk3glob);SFREE(dkeqglob);
   SFREE(phiglob);SFREE(dadnglob);SFREE(dnglob);SFREE(xkeqminglob);
   SFREE(inum);SFREE(charlen);SFREE(acrackglob);SFREE(xkeqmaxglob);
   SFREE(iincglob);SFREE(domstepglob);SFREE(rglob);
-
+  
   *cop=co;*lakonp=lakon;*ipkonp=ipkon;*konp=kon;*ielmatp=ielmat;
   *inotrp=inotr;*t0p=t0;*t1p=t1;*t0gp=t0g;*t1gp=t1g;*iamt1p=iamt1;
   *t1oldp=t1old;*voldp=vold;*prestrp=prestr;*ielorienp=ielorien;
   *ielpropp=ielprop;*offsetp=offset;*stip=sti;*emep=eme;*enerp=ener;
   *xstatep=xstate;*iponorp=iponor;*thickep=thicke;
-
+  
   return;
 }
