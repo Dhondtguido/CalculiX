@@ -25,7 +25,31 @@
 #define max(a,b) ((a) >= (b) ? (a) : (b))
 
 #if 0
-use this??
+expanded elements (beams, shells) are problematic:
+
+FORTRAN(writeboun,(nodeboun,ndirboun,xboun,typeboun,nboun));
+for beamlin:
+SPC
+    1          1     1  0.0000E+00 B
+    2          1     2  0.0000E+00 B
+    3          1     3  0.0000E+00 B
+    4          1     4  0.0000E+00 B
+    5          1     5  0.0000E+00 B
+    6          1     6  0.0000E+00 B
+    7         40     1  0.0000E+00 R
+    8         40     2  0.0000E+00 R
+    9         40     3  0.0000E+00 R
+    ...
+
+but based on frd:
+nodes 6-13 comes from node 1, why 40 ?
+use iponor ?
+TODO:
+ + check if node is an expanded node
+ + if not, use nactdof
+ + if yes, use parent's nactdof?
+
+writeboun structure in C
 for (ITG i = 0; i < *nboun; i++) {
     ITG node = nodeboun[i];
     ITG dir = ndirboun[i];
