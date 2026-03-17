@@ -24,6 +24,12 @@
 #define min(a,b) ((a) <= (b) ? (a) : (b))
 #define max(a,b) ((a) >= (b) ? (a) : (b))
 
+// TODO(gmb): Just a hack to see if works
+//            Add these as args of frd()
+extern ITG* iponor_global;
+extern ITG nkon_global;
+extern ITG *knor_global;
+
 #if 0
 expanded elements (beams, shells) are problematic:
 
@@ -61,21 +67,41 @@ for (ITG i = 0; i < *nboun; i++) {
     printf("node %d, dir %d, %f\n", node, dir, val);
 }
 #endif
-static double *calcurefo(double *fn, ITG *nk, ITG mt,ITG *nactdof, ITG *noddiam)
+static double *calcurefo(double *fn, ITG *nk, ITG mt,ITG *nactdof)
 {
     ITG i,j;
     double *refo = NULL;
 
     NNEW(refo,double,mt**nk);
-
+    
     for(i=0;i<*nk;i++){
-        //printf("node %d: noddiam: %d\n", i+1, noddiam[i]);
         for(j=0;j<mt;j++){
-            //printf("node %d: dir: %d, nactdof: %d\n", i+1, j, nactdof[mt*i+j]);
             if(nactdof[mt*i+j]<0){
                 refo[mt*i+j]=fn[mt*i+j];
             }
         }
+    }
+    
+    if(nkon_global>0){
+        printf(" *WARNING frd output is experimental for\n");
+        printf("          expanded elements (beams, shells)\n");
+    }
+    
+    printf("nk=%"ITGFORMAT"\n", *nk);
+    printf("nkon=%"ITGFORMAT"\n", nkon_global);
+    for(ITG i = 0; i < nkon_global; ++i){
+        ITG indexx = iponor_global[2 * i];
+        ITG indexk = iponor_global[2 * i + 1];
+        printf("nkon %lld, xx=%lld, xk=%lld  ", i, indexx, indexk);
+        if (indexk > -1){
+            // 8 for beams
+            // get this from lakon?
+            for (int k = 0; k < 8; k++) {
+                ITG expanded = knor_global[indexk + k];
+                printf("%lld,", expanded);
+            }
+        }
+        printf("\n");
     }
 
     return refo;
@@ -1598,7 +1624,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
         frdheader(&icounter,&oner,time,&pi,noddiam,cs,&null,mode,
                   &noutloc,description,kode,nmethod,f1,output,istep,iinc);
 
-        refo = calcurefo(fn,nk,mt,nactdof,noddiam);
+        refo = calcurefo(fn,nk,mt,nactdof);
 
         if(mi[1]==3){
           fprintf(f1," -4  REFO        4    1\n");
@@ -1685,7 +1711,8 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
         printf(" *WARNING in frd:\n");
         printf("          RR output is not supported\n");
       } else {
-        printf("TODO: %s:%d\n", __FILE__, __LINE__);
+        printf(" *WARNING complex reaction forces are not yet supported\n");
+        printf("          TODO: %s:%d\n", __FILE__, __LINE__);
       }
     }
   }

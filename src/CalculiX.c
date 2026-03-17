@@ -33,6 +33,10 @@ _set_output_format(_TWO_DIGIT_EXPONENT);
 ITG myid = 0,nproc = 0;
 #endif
 
+ITG* iponor_global = NULL;
+ITG nkon_global = 0;
+ITG* knor_global = NULL;
+
 struct timespec totalCalculixTimeStart,totalCalculixTimeEnd; 
 
 int main(int argc,char *argv[])
@@ -251,9 +255,12 @@ int main(int argc,char *argv[])
 
       if((ne1d!=0)||(ne2d!=0)){
 	NNEW(iponor,ITG,2*nkon_);
+    iponor_global=iponor;
+    nkon_global=nkon_;
 	for(i=0;i<2*nkon_;i++) iponor[i]=-1;
 	NNEW(xnor,double,36*ne1d+24*ne2d);
 	NNEW(knor,ITG,24*(ne1d+ne2d)*(mi[2]+1));
+    knor_global=knor;
 	NNEW(thickn,double,2*nk_);
 	NNEW(thicke,double,mi[2]*nkon_);
 	NNEW(offset,double,2*ne_);
@@ -811,8 +818,11 @@ int main(int argc,char *argv[])
 
       if((ne1d!=0)||(ne2d!=0)){
 	RENEW(iponor,ITG,2*nkon);
+    iponor_global = iponor;
+    nkon_global=nkon;
 	RENEW(xnor,double,infree[0]);
 	RENEW(knor,ITG,infree[1]);
+    knor_global=knor;
 	SFREE(thickn);
 	RENEW(thicke,double,mi[2]*nkon);
 	RENEW(offset,double,2*ne);
