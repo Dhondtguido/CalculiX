@@ -28,46 +28,19 @@
 //            Add these as args of frd()
 extern ITG* iponor_global;
 extern ITG nkon_global;
+extern ITG *kon_global;
 extern ITG *knor_global;
+extern ITG *ipkon_global;
+extern ITG* ipoinp_global;
 
 #if 0
 expanded elements (beams, shells) are problematic:
-
-FORTRAN(writeboun,(nodeboun,ndirboun,xboun,typeboun,nboun));
-for beamlin:
-SPC
-    1          1     1  0.0000E+00 B
-    2          1     2  0.0000E+00 B
-    3          1     3  0.0000E+00 B
-    4          1     4  0.0000E+00 B
-    5          1     5  0.0000E+00 B
-    6          1     6  0.0000E+00 B
-    7         40     1  0.0000E+00 R
-    8         40     2  0.0000E+00 R
-    9         40     3  0.0000E+00 R
-    ...
-
-but based on frd:
-nodes 6-13 comes from node 1, why 40 ?
-use iponor ?
 TODO:
  + check if node is an expanded node
  + if not, use nactdof
  + if yes, use parent's nactdof?
-
-writeboun structure in C
-for (ITG i = 0; i < *nboun; i++) {
-    ITG node = nodeboun[i];
-    ITG dir = ndirboun[i];
-    double val = xboun[i];
-    
-    ITG index = (node - 1) * mt + (dir - 1);
-    double force = fn[index];
-
-    printf("node %d, dir %d, %f\n", node, dir, val);
-}
 #endif
-static double *calcurefo(double *fn, ITG *nk, ITG mt,ITG *nactdof)
+static double *calcurefo(double *fn, ITG *nk, ITG mt,ITG *nactdof,ITG *kon,ITG *ipkon,char *lakon,ITG *ne)
 {
     ITG i,j;
     double *refo = NULL;
@@ -87,19 +60,24 @@ static double *calcurefo(double *fn, ITG *nk, ITG mt,ITG *nactdof)
         printf("          expanded elements (beams, shells)\n");
     }
     
+    /* how to map the original nodes to the expanded ones..... */
+    printf("ne=%"ITGFORMAT"\n", *ne);
+    for(ITG i = 0; i < *ne; ++i){
+        printf("ipkon %lld = %lld (%.*s)\n", i, ipkon[i], 8, &lakon[8*i]);
+    }
+    
     printf("nk=%"ITGFORMAT"\n", *nk);
     printf("nkon=%"ITGFORMAT"\n", nkon_global);
     for(ITG i = 0; i < nkon_global; ++i){
-        ITG indexx = iponor_global[2 * i];
         ITG indexk = iponor_global[2 * i + 1];
-        printf("nkon %lld, xx=%lld, xk=%lld  ", i, indexx, indexk);
-        if (indexk > -1){
-            // 8 for beams
-            // get this from lakon?
-            for (int k = 0; k < 8; k++) {
-                ITG expanded = knor_global[indexk + k];
-                printf("%lld,", expanded);
-            }
+        if (indexk == -1)
+            continue;
+        printf("iponor %lld, xk=%lld knor=", i, indexk);
+        // 8 for beams
+        // get this from lakon?
+        for (int k = 0; k < 8; k++) {
+            ITG expanded = knor_global[indexk + k];
+            printf("%lld,", expanded);
         }
         printf("\n");
     }
@@ -1624,7 +1602,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
         frdheader(&icounter,&oner,time,&pi,noddiam,cs,&null,mode,
                   &noutloc,description,kode,nmethod,f1,output,istep,iinc);
 
-        refo = calcurefo(fn,nk,mt,nactdof);
+        refo = calcurefo(fn,nk,mt,nactdof,kon,ipkon,lakon,ne);
 
         if(mi[1]==3){
           fprintf(f1," -4  REFO        4    1\n");

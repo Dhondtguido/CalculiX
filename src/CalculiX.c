@@ -33,9 +33,12 @@ _set_output_format(_TWO_DIGIT_EXPONENT);
 ITG myid = 0,nproc = 0;
 #endif
 
+// TODO(gmb): Just a hack to see if works
+//            Add these as args of frd()
 ITG* iponor_global = NULL;
 ITG nkon_global = 0;
 ITG* knor_global = NULL;
+ITG* ipoinp_global = NULL;
 
 struct timespec totalCalculixTimeStart,totalCalculixTimeEnd; 
 
@@ -167,6 +170,7 @@ int main(int argc,char *argv[])
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
+  ipoinp_global=ipoinp;
 
   /* conservative estimate of the fields to be allocated */
 
