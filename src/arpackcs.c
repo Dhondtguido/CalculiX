@@ -679,7 +679,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	  mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	  thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
-	  ielprop,prop,sti,damn,&errn);
+	  ielprop,prop,sti,damn,&errn,nactdof);
 	  
       if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
       SFREE(inum);FORTRAN(stop,());
@@ -1223,7 +1223,8 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	  
       NNEW(stnt,double,2*6**nk*ngraph);
     if(strcmp1(&filab[261],"E   ")==0) NNEW(eent,double,2*6**nk*ngraph);
-    if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0))
+    if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)||
+       (strcmp1(&filab[4959],"RR  ")==0))
 	  
       // real and imaginary part of the forces
 	  
@@ -2006,7 +2007,8 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
       if(strcmp1(&filab[261],"E   ")==0){
 	for(l=0;l<6**nk;l++){eent[l]=een[l];};
 	for(l=0;l<6**nk;l++){eent[l+6**nk*ngraph]=een[l+6**nk];}}
-      if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)){
+      if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)||
+         (strcmp1(&filab[4959],"RR  ")==0)){
 	for(l=0;l<mt**nk;l++){fnt[l]=fn[l];}
 	for(l=0;l<mt**nk;l++){fnt[l+mt**nk*ngraph]=fn[l+mt**nk];}}
       if(strcmp1(&filab[522],"ENER")==0){
@@ -2318,7 +2320,8 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	    }
 	  }
         
-	  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)){
+	  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)||
+         (strcmp1(&filab[4959],"RR  ")==0)){
 	    for(l1=0;l1<*nk;l1++){
 	      if(inocs[l1]==jj){
 
@@ -2346,7 +2349,8 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	  /* imaginary part of the forces in cylindrical
 	     coordinates */
 
-	  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)){
+	  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)||
+         (strcmp1(&filab[4959],"RR  ")==0)){
 	    for(l1=0;l1<*nk;l1++){
 	      if(inocs[l1]==jj){
 	      
@@ -2540,7 +2544,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	  mi,stxt,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&net,
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emnt,
 	  thicke,jobnamec,output,qfx,cdnt,mortar,cdnr,cdni,nmat,
-	  ielprop,prop,sti,damn,&errn);
+	  ielprop,prop,sti,damn,&errn,nactdof);
       if(nm>cs[0]/2){
 	for(k=5;k<11;k++){cs[k]=-cs[k];}
       }
@@ -2635,7 +2639,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     if((strcmp1(&filab[174],"S   ")==0)||(strcmp1(&filab[1479],"PHS ")==0)||
        (strcmp1(&filab[1044],"ZZS ")==0)||(strcmp1(&filab[1044],"ERR ")==0)) SFREE(stnt);
     if(strcmp1(&filab[261],"E   ")==0) SFREE(eent);
-    if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)) SFREE(fnt);
+    if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[2610],"PRF ")==0)||(strcmp1(&filab[4959],"RR  ")==0)) SFREE(fnt);
     if(strcmp1(&filab[522],"ENER")==0) SFREE(enernt);
     if((strcmp1(&filab[1044],"ZZS ")==0)||(strcmp1(&filab[1044],"ERR ")==0)||
        ((strcmp1(&filab[2175],"CONT")==0)&&(*mortar==0))) SFREE(stxt);

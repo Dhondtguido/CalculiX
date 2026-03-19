@@ -831,6 +831,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     if((strcmp1(&filab[174],"S")==0)||
        (strcmp1(&filab[261],"E")==0)||
        (strcmp1(&filab[348],"RF")==0)||
+       (strcmp1(&filab[4959],"RR")==0)||
        (strcmp1(&filab[435],"PEEQ")==0)||
        (strcmp1(&filab[522],"ENER")==0)||
        (strcmp1(&filab[609],"SDV")==0)||
@@ -846,7 +847,8 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	 (strcmp1(&prlab[6*i],"PEEQ")==0)||
 	 (strcmp1(&prlab[6*i],"ENER")==0)||
 	 (strcmp1(&prlab[6*i],"SDV")==0)||
-	 (strcmp1(&prlab[6*i],"RF")==0)) {intpointvar=1;break;}
+	 (strcmp1(&prlab[6*i],"RF")==0)||
+	 (strcmp1(&prlab[6*i],"RR")==0)) {intpointvar=1;break;}
     }
   }else{
 
@@ -2068,7 +2070,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&neg,
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	  thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
-	  ielprop,prop,sti,damn,&errn);
+	  ielprop,prop,sti,damn,&errn,nactdof);
 
       if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
 
@@ -2287,7 +2289,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	  mi,stx,va,vp,stna,stnp,vmax,stnmax,&ngraph,veold,ener,&neg,
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	  thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
-	  ielprop,prop,sti,damn,&errn);
+	  ielprop,prop,sti,damn,&errn,nactdof);
 
       if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
 
@@ -3331,7 +3333,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	    mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&neg,
 	    cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	    thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
-	    ielprop,prop,sti,damn,&errn);
+	    ielprop,prop,sti,damn,&errn,nactdof);
 
 	if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
 

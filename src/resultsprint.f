@@ -197,11 +197,13 @@ c     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
 !     none are requested in the .dat file, and output=2d, 
 !     map3dto1d2d has to be called
 !     
-      if(filab(5)(1:2).eq.'RF') then
+      if((filab(5)(1:2).eq.'RF').or.
+     &   (filab(58)(1:2).eq.'RR')) then
         if(filab(5)(5:5).eq.'I') then
           rfprint=.false.
           do i=1,nprint
-            if(prlab(i)(1:2).eq.'RF') then
+            if((prlab(i)(1:2).eq.'RF').or.
+     &         (prlab(i)(1:2).eq.'RR')) then
               rfprint=.true.
               exit
             endif
