@@ -15,10 +15,6 @@
 /*     along with this program; if not, write to the Free Software       */
 /*     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.         */
 
-#ifdef __WIN32
-_set_output_format(_TWO_DIGIT_EXPONENT);
-#endif
-
 #ifdef CALCULIX_MPI
 #include <spoolesMPI.h>
 #endif
@@ -37,7 +33,10 @@ struct timespec totalCalculixTimeStart,totalCalculixTimeEnd;
 
 int main(int argc,char *argv[])
 {
-  
+#ifdef __WIN32
+    _set_output_format(_TWO_DIGIT_EXPONENT);
+#endif
+
   FILE *f1;
     
   char *sideload=NULL,*set=NULL,*matname=NULL,*orname=NULL,*amname=NULL,
