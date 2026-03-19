@@ -33,7 +33,7 @@ _set_output_format(_TWO_DIGIT_EXPONENT);
 ITG myid = 0,nproc = 0;
 #endif
 
-// TODO(gmb): Just a hack to see if works
+// TODO(gmb): Just a hack to see if it works
 //            Add these as args of frd()
 ITG* iponor_global = NULL;
 ITG nkon_global = 0;

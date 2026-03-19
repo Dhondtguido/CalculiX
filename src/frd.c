@@ -24,7 +24,7 @@
 #define min(a,b) ((a) <= (b) ? (a) : (b))
 #define max(a,b) ((a) >= (b) ? (a) : (b))
 
-// TODO(gmb): Just a hack to see if works
+// TODO(gmb): Just a hack to see if it works
 //            Add these as args of frd()
 extern ITG* iponor_global;
 extern ITG nkon_global;
@@ -56,31 +56,32 @@ static double *calcurefo(double *fn, ITG *nk, ITG mt,ITG *nactdof,ITG *kon,ITG *
     }
     
     if(nkon_global>0){
-        printf(" *WARNING frd output is experimental for\n");
+        printf(" *WARNING in frd:\n");
+        printf("          output of RR is experimental for\n");
         printf("          expanded elements (beams, shells)\n");
     }
     
     /* how to map the original nodes to the expanded ones..... */
-    printf("ne=%"ITGFORMAT"\n", *ne);
-    for(ITG i = 0; i < *ne; ++i){
-        printf("ipkon %lld = %lld (%.*s)\n", i, ipkon[i], 8, &lakon[8*i]);
-    }
+    // printf("ne=%"ITGFORMAT"\n", *ne);
+    // for(ITG i = 0; i < *ne; ++i){
+    //      printf("ipkon %lld = %lld (%.*s)\n", i, ipkon[i], 8, &lakon[8*i]);
+    // }
     
-    printf("nk=%"ITGFORMAT"\n", *nk);
-    printf("nkon=%"ITGFORMAT"\n", nkon_global);
-    for(ITG i = 0; i < nkon_global; ++i){
-        ITG indexk = iponor_global[2 * i + 1];
-        if (indexk == -1)
-            continue;
-        printf("iponor %lld, xk=%lld knor=", i, indexk);
-        // 8 for beams
-        // get this from lakon?
-        for (int k = 0; k < 8; k++) {
-            ITG expanded = knor_global[indexk + k];
-            printf("%lld,", expanded);
-        }
-        printf("\n");
-    }
+    // printf("nk=%"ITGFORMAT"\n", *nk);
+    // printf("nkon=%"ITGFORMAT"\n", nkon_global);
+    // for(ITG i = 0; i < nkon_global; ++i){
+    //      ITG indexk = iponor_global[2 * i + 1];
+    //      if (indexk == -1)
+    //          continue;
+    //      printf("iponor %lld, xk=%lld knor=", i, indexk);
+    //      // 8 for beams
+    //      // get this from lakon?
+    //      for (int k = 0; k < 8; k++) {
+    //          ITG expanded = knor_global[indexk + k];
+    //          printf("%lld,", expanded);
+    //      }
+    //      printf("\n");
+    // }
 
     return refo;
 }
@@ -1689,8 +1690,8 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
         printf(" *WARNING in frd:\n");
         printf("          RR output is not supported\n");
       } else {
-        printf(" *WARNING complex reaction forces are not yet supported\n");
-        printf("          TODO: %s:%d\n", __FILE__, __LINE__);
+        printf(" *WARNING in frd:\n");
+        printf("          complex reaction forces are not yet supported\n");
       }
     }
   }
