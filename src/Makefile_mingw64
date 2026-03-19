@@ -24,8 +24,8 @@ OCCXC = $(SCCXC:.c=.o)
 OCCXMAIN = $(SCCXMAIN:.c=.o)
 
 CalculiX: $(OCCXMAIN) CalculiX.a
-	./date.pl; $(CC) $(CFLAGS) -c CalculiX.c;\
-    $(FC) $(FFLAGS) -o $@ $(OCCXMAIN) CalculiX.a $(LDFLAGS)
+	$(CC) $(CFLAGS) -c CalculiX.c;\
+	$(FC) $(FFLAGS) -o $@ $(OCCXMAIN) CalculiX.a $(LDFLAGS)
 
 CalculiX.a: $(OCCXF) $(OCCXC)
 	ar vr $@ $?

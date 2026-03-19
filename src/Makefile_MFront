@@ -27,7 +27,7 @@ LIBS = $(DIR)/spooles.a \
      -lpthread -lm -lc -ldl
 
 CalculiX_helfer: $(OCCXMAIN) libCalculiX_helfer.so
-	./date.pl; $(CC) $(CFLAGS) -c CalculiX.c;
+	$(CC) $(CFLAGS) -c CalculiX.c;
 	$(FC) -fopenmp -Wall -O3 -o $@ $(OCCXMAIN) -L. -lCalculiX_helfer $(LIBS)
 
 libCalculiX_helfer.so: $(OCCXF) $(OCCXC)
