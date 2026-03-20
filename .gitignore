@@ -12,6 +12,7 @@ src/CalculiX
 src/CalculiX.a
 
 test/error.*
+test/temp.*
 test/abc
 test/*.12d
 test/*.cvg
@@ -32,3 +33,5 @@ test/*.sti
 test/*.mas
 test/*.dof
 test/*.str
+test/*.net
+test/*.rfn.inp
