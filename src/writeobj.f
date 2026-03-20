@@ -55,7 +55,7 @@
       dd=0.d0
       do j=1,ndesi
          inode=nodedesi(j)
-         dd=dd+dgdxglob(1,inode,i)**2
+         dd=dd+dgdxglob(1,INT(inode),i)**2
       enddo
       dd=dsqrt(dd)
       write(5,'(3x,a16,e14.7,3x,e16.7,3x,a80)') objectset(1,i),g0(i),

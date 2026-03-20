@@ -36,7 +36,7 @@ LIBS = \
      -lpthread -lm -lc
 
 CalculiX_i8: $(OCCXMAIN) CalculiX.a $(LIBS)
-	./date.pl; $(CC) $(CFLAGS) -c CalculiX.c; $(FC) -Wall -O2 -o $@ \
+	$(CC) $(CFLAGS) -c CalculiX.c; $(FC) -Wall -O2 -o $@ \
 	$(OCCXMAIN) CalculiX.a $(LIBS)
 
 CalculiX.a: $(OCCXF) $(OCCXC)

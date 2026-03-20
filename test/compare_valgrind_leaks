@@ -33,7 +33,7 @@ for i in *.inp; do
 #
 
 	echo "${i%.inp}" >> valgrind.out
-        valgrind --leak-check=full --show-reachable=yes ~/CalculiX/src/CalculiX  ${i%.inp} >> valgrind.out 2>&1
+        valgrind --leak-check=full --show-reachable=yes ../src/CalculiX  ${i%.inp} >> valgrind.out 2>&1
 
 #
 #       moving the .mtx file to the .dat file in order to compare

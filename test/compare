@@ -68,7 +68,7 @@ for i in *.inp; do
 #       the .frd file
 #
 
-        ~/CalculiX/src/CalculiX  ${i%.inp} >> $tempfile 2>&1
+        ../src/CalculiX  ${i%.inp} >> $tempfile 2>&1
 
 #
 #       moving the .mtx file to the .dat file in order to compare
