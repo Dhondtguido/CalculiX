@@ -48,6 +48,7 @@
         ielem=inoel(1,iponoel(i))
         if((lakon(ielem)(7:7).eq.'A').or.
      &       (lakon(ielem)(7:7).eq.'S').or.
+     &       (lakon(ielem)(7:7).eq.'L').or.
      &       (lakon(ielem)(7:7).eq.'E')) then
 !     
           if(lakon(ielem)(4:5).eq.'20') then
@@ -86,12 +87,6 @@
           elseif(lakon(ielem)(4:5).eq.'6') then
             node=kon(indexe+nope+j)
           endif
-!     
-        elseif(lakon(ielem)(7:7).eq.'L') then
-!     
-!     no output for shell elements necessary
-!     
-          cycle
         else
 !     
 !     in case of a 3D model no change of node number     
@@ -129,7 +124,8 @@
  101  format('*EQUATION',/,i1)
  102  format(3(i10,",",i1,",",e20.13,","),i10,',1,-1.')
  103  format('*BOUNDARY',/,i10,',1,1,',e20.13)
- 105  format('*STEP',/,'*STATIC',/,'*NODE FILE',/,'U',/,'*END STEP')
+ 105  format('*STEP',/,'*STATIC',/,'*NODE FILE,OUTPUT=2D',/,
+     &     'U',/,'*END STEP')
       close(20)
 !     
       return        

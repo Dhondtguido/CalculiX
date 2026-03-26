@@ -92,6 +92,9 @@
             ctrl(55)=1.d-1
             ctrl(56)=100.5d0
             ctrl(57)=60.5d0
+            ctrl(58)=1.1d0
+            ctrl(59)=-0.5d0
+            ctrl(60)=1.d0
             write(*,*)
             write(*,*) 
      &         '*INFO: control parameters reset to default'
@@ -301,6 +304,39 @@
             write(*,*) '       kscalemax = ',int(ctrl(56))
             write(*,*) '       itf2f = ',int(ctrl(57))
             exit
+          elseif(textpart(i)(1:29).eq.'PARAMETERS=MATERIALRAMPING') 
+     &           then
+            call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
+     &           ipoinp,inp,ipoinpc)
+            if((istat.lt.0).or.(key.eq.1)) return
+            do j=1,3
+              if(textpart(j)(1:1).eq.' ') cycle
+              read(textpart(j)(1:20),'(f20.0)',iostat=istat) ctrl(j+57)
+              if(istat.gt.0) then
+                call inputerror(inpc,ipoinpc,iline,
+     &               "*CONTROLS%",ier)
+                return
+              endif
+            enddo
+            ctrl(59)=ctrl(59)+0.5d0
+            write(*,*) '*INFO: time control parameters set to:'
+            write(*,*) '       xramp = ',ctrl(58)
+            write(*,*) '       nramp = ',int(ctrl(59))
+            write(*,*) '       xdel =  ',ctrl(60)
+            if(ctrl(58).lt.1.d0) then
+               write(*,*) '*ERROR reading *CONTROLS'
+               write(*,*) '       xramp should be bigger than 1.'
+               call inputerror(inpc,ipoinpc,iline,
+     &              "*CONTROLS%",ier)
+            endif
+             if(ctrl(60).lt.0.d0) then
+               write(*,*) '*ERROR reading *CONTROLS'
+               write(*,*) '       xdel should be nonnegative'
+               call inputerror(inpc,ipoinpc,iline,
+     &              "*CONTROLS%",ier)
+            endif
+           exit
+!
          else
             write(*,*) 
      &        '*WARNING in controlss: parameter not recognized:'

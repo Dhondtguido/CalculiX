@@ -34,7 +34,7 @@
 !      
       if(abs(eplane(pab,xcp,tnull)).lt.1.d-13)then
          write(*,*) 'SH: IP no intersection point can be found'
-         write(*,*) 'SH: IP pab paralell to plane! '
+         write(*,*) 'SH: IP pab parallel to plane! '
          call exit(201)
       else 
          diff=-eplane(pa,xcp,t)/eplane(pab,xcp,tnull)

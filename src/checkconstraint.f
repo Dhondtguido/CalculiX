@@ -28,11 +28,11 @@
       character*81 objectset(5,*)
       character*20 empty
 !     
-      integer iobject,nobject,istat,nactive,nnlconst,inameacti(*),
+      integer iobj,nobject,istat,nactive,nnlconst,inameacti(*),
      &   ipoacti(*),ifree,i,ndesi,nk,node,nodedesi(*),
      &   iconstacti(*),nconst
 !     
-      real*8 g0(*),bounds(nobject),scale,bound,objnorm(*),
+      real*8 g0(*),bounds(nobject),scale,bound,objnorm(*),obj,
      &   dgdxglob(2,nk,*)
 !
       empty='                    '
@@ -42,7 +42,7 @@
 !     
       write(5,*)
       write(5,*)
-      write(5,'(a113)') '  ################################################
+      write(5,'(a113)') '  #############################################
      &#################################################################'
       write(5,*) '  A S S E M B L Y   O F   A C T I V E   S E T'
       write(5,*)
@@ -52,30 +52,30 @@
       write(5,101)
      &'CONSTRAINT   ','FUNCTION        ','GE      ','VALUE            ',
      &'BOUND            ','VIOLATION     ','  INACTIVE','   CONSTRAINT' 
-      write(5,'(a113)') '  ################################################
+      write(5,'(a113)') '  #############################################
      &#################################################################'
       write(5,*)
 !     
 !     determine bounds of constraints
 !     
-      do iobject=2,nobject
-         if(objectset(5,iobject)(81:81).eq.'G') then
-            read(objectset(1,iobject)(61:80),'(f20.0)',
+      do iobj=2,nobject
+         if(objectset(5,iobj)(81:81).eq.'G') then
+            read(objectset(1,iobj)(61:80),'(f20.0)',
      &      iostat=istat) bound
-            bounds(iobject)=bound
-         elseif(objectset(5,iobject)(81:81).eq.'C') then
-            if(objectset(1,iobject)(61:80).ne.empty) then
-               read(objectset(1,iobject)(61:80),'(f20.0)',
+            bounds(iobj)=bound
+         elseif(objectset(5,iobj)(81:81).eq.'C') then
+            if(objectset(1,iobj)(61:80).ne.empty) then
+               read(objectset(1,iobj)(61:80),'(f20.0)',
      &         iostat=istat) bound
             else
                write(*,*) '*WARNING in checkconstraint'
                write(*,*) '         no absolute constraint boundary'
                write(*,*) '         defined, system value taken' 
                write(*,*)
-               bound=g0(iobject)
+               bound=g0(iobj)
             endif
-            if(objectset(1,iobject)(41:60).ne.empty) then
-               read(objectset(1,iobject)(41:60),'(f20.0)',
+            if(objectset(1,iobj)(41:60).ne.empty) then
+               read(objectset(1,iobj)(41:60),'(f20.0)',
      &         iostat=istat) scale
             else
                write(*,*) '*WARNING in checkconstraint'
@@ -84,7 +84,7 @@
                write(*,*)
                scale=1.0d0
             endif
-            bounds(iobject)=bound*scale
+            bounds(iobj)=bound*scale
          endif
       enddo
 !     
@@ -95,121 +95,164 @@
       nnlconst=0
       ifree=1
 !
-      do iobject=2,nobject
+      do iobj=2,nobject
 !     
 !        determine all active nonlinear constraints
 !     
-         if(objectset(5,iobject)(81:81).eq.'C') then
+         if(objectset(5,iobj)(81:81).eq.'C') then
             nconst=nconst+1
-            if(objectset(1,iobject)(19:20).eq.'LE') then
-               objnorm(ifree)=g0(iobject)/bounds(iobject)-1
+            if(objectset(1,iobj)(19:20).eq.'LE') then
+               objnorm(ifree)=g0(iobj)/bounds(iobj)-1
                if(objnorm(ifree).ge.0.d0) then
                   nactive=nactive+1
                   nnlconst=nnlconst+1
-                  ipoacti(ifree)=iobject
-                  inameacti(ifree)=iobject
+                  ipoacti(ifree)=iobj
+                  inameacti(ifree)=iobj
                   iconstacti(ifree)=-1
-                  write(5,102) nconst,objectset(1,iobject),'LE  ',
-     &               g0(iobject),bounds(iobject),objnorm(ifree),
-     &               'ACTIVE  ',objectset(5,iobject)
+                  write(5,102) nconst,objectset(1,iobj),'LE  ',
+     &               g0(iobj),bounds(iobj),objnorm(ifree),
+     &               'ACTIVE  ',objectset(5,iobj)
                   ifree=ifree+1
                else
-                  write(5,102) nconst,objectset(1,iobject),'LE  ',
-     &               g0(iobject),bounds(iobject),objnorm(ifree),
-     &               'INACTIVE',objectset(5,iobject)            
+                  write(5,102) nconst,objectset(1,iobj),'LE  ',
+     &               g0(iobj),bounds(iobj),objnorm(ifree),
+     &               'INACTIVE',objectset(5,iobj)            
                endif
-            elseif(objectset(1,iobject)(19:20).eq.'GE') then
-               objnorm(ifree)=-1*(g0(iobject)/bounds(iobject))+1
+            elseif(objectset(1,iobj)(19:20).eq.'GE') then
+               objnorm(ifree)=-1*(g0(iobj)/bounds(iobj))+1
                if(objnorm(ifree).ge.0.d0) then
                   nactive=nactive+1
                   nnlconst=nnlconst+1
-                  ipoacti(ifree)=iobject
-                  inameacti(ifree)=iobject
+                  ipoacti(ifree)=iobj
+                  inameacti(ifree)=iobj
                   iconstacti(ifree)=1
-                  write(5,102) nconst,objectset(1,iobject),'GE  ',
-     &               g0(iobject),bounds(iobject),objnorm(ifree),
-     &               'ACTIVE  ',objectset(5,iobject)
+                  write(5,102) nconst,objectset(1,iobj),'GE  ',
+     &               g0(iobj),bounds(iobj),objnorm(ifree),
+     &               'ACTIVE  ',objectset(5,iobj)
                   ifree=ifree+1
                else
-                  write(5,102) nconst,objectset(1,iobject),'GE  ',
-     &               g0(iobject),bounds(iobject),objnorm(ifree),
-     &               'INACTIVE',objectset(5,iobject)            
+                  write(5,102) nconst,objectset(1,iobj),'GE  ',
+     &               g0(iobj),bounds(iobj),objnorm(ifree),
+     &               'INACTIVE',objectset(5,iobj)            
                endif
             endif
 !     
 !        determine all active linear constraints
 !     
-         elseif(objectset(5,iobject)(81:81).eq.'G') then
+         elseif(objectset(5,iobj)(81:81).eq.'G') then
             nconst=nconst+1
-            if(objectset(1,iobject)(19:20).eq.'LE') then
-               if(g0(iobject).gt.0d0) then
-                  do i=1,ndesi
-                     node=nodedesi(i)
-                     if(i.eq.1) then
-                        objnorm(iobject)=dgdxglob(2,node,iobject)
-                     else
-                        objnorm(iobject)=
-     &                  max(objnorm(iobject),dgdxglob(2,node,iobject))
-                     endif
-                     if(dgdxglob(2,node,iobject).ge.0.d0) then
-                        ipoacti(ifree)=i
-                        inameacti(ifree)=iobject
-                        iconstacti(ifree)=-1
-                        ifree=ifree+1
-                        nactive=nactive+1
-                     endif
-                  enddo
-                  write(5,102) nconst,objectset(1,iobject),'LE  ',
-     &               g0(iobject),bounds(iobject),objnorm(iobject),
-     &               'ACTIVE  ',objectset(5,iobject)    
+            if(objectset(1,iobj)(19:20).eq.'LE') then
+               if(g0(iobj).gt.0d0) then
+                  if(objectset(1,iobj)(1:12).eq.'MAXSHRINKAGE') then
+                     do i=1,ndesi
+                        node=nodedesi(i)
+                        if(i.eq.1) then
+                           objnorm(iobj)=dgdxglob(2,node,iobj)
+                           obj=dgdxglob(1,node,iobj)
+                        else
+                           objnorm(iobj)=
+     &                     max(objnorm(iobj),dgdxglob(2,node,iobj))
+                           obj=min(obj,dgdxglob(1,node,iobj))
+                        endif
+                        if(dgdxglob(2,node,iobj).ge.0.d0) then
+                           ipoacti(ifree)=i
+                           inameacti(ifree)=iobj
+                           iconstacti(ifree)=-1
+                           ifree=ifree+1
+                           nactive=nactive+1
+                        endif
+                     enddo
+                  else
+                     do i=1,ndesi
+                        node=nodedesi(i)
+                        if(i.eq.1) then
+                           objnorm(iobj)=dgdxglob(2,node,iobj)
+                           obj=dgdxglob(1,node,iobj)
+                        else
+                           objnorm(iobj)=
+     &                     max(objnorm(iobj),dgdxglob(2,node,iobj))
+                           obj=max(obj,dgdxglob(1,node,iobj))
+                        endif
+                        if(dgdxglob(2,node,iobj).ge.0.d0) then
+                           ipoacti(ifree)=i
+                           inameacti(ifree)=iobj
+                           iconstacti(ifree)=-1
+                           ifree=ifree+1
+                           nactive=nactive+1
+                        endif
+                     enddo
+                  endif
+                  write(5,102) nconst,objectset(1,iobj),'LE  ',
+     &               abs(obj),bounds(iobj),objnorm(iobj),
+     &               'ACTIVE  ',objectset(5,iobj)    
                else
-                  do i=1,ndesi
-                     node=nodedesi(i)
-                     if(i.eq.1) then
-                        objnorm(iobject)=dgdxglob(2,node,iobject)
-                     else
-                        objnorm(iobject)=
-     &                  max(objnorm(iobject),dgdxglob(2,node,iobject))
-                     endif
-                  enddo
-                  write(5,102) nconst,objectset(1,iobject),'LE  ',
-     &               g0(iobject),bounds(iobject),objnorm(iobject),
-     &               'INACTIVE',objectset(5,iobject)    
+                  if(objectset(1,iobj)(1:12).eq.'MAXSHRINKAGE') then
+                     do i=1,ndesi
+                        node=nodedesi(i)
+                        if(i.eq.1) then
+                           objnorm(iobj)=dgdxglob(2,node,iobj)
+                           obj=dgdxglob(1,node,iobj)
+                        else
+                           objnorm(iobj)=
+     &                     max(objnorm(iobj),dgdxglob(2,node,iobj))
+                           obj=min(obj,dgdxglob(1,node,iobj))
+                        endif
+                     enddo
+                  else
+                     do i=1,ndesi
+                        node=nodedesi(i)
+                        if(i.eq.1) then
+                           objnorm(iobj)=dgdxglob(2,node,iobj)
+                           obj=dgdxglob(1,node,iobj)
+                        else
+                           objnorm(iobj)=
+     &                     max(objnorm(iobj),dgdxglob(2,node,iobj))
+                           obj=max(obj,dgdxglob(1,node,iobj))
+                        endif
+                     enddo      
+                  endif
+                  write(5,102) nconst,objectset(1,iobj),'LE  ',
+     &               abs(obj),bounds(iobj),objnorm(iobj),
+     &               'INACTIVE',objectset(5,iobj)    
                endif
-            elseif(objectset(1,iobject)(19:20).eq.'GE') then
-               if(g0(iobject).gt.0.d0) then
+            elseif(objectset(1,iobj)(19:20).eq.'GE') then
+               if(g0(iobj).gt.0.d0) then
                   do i=1,ndesi
                      node=nodedesi(i)
                      if(i.eq.1) then
-                        objnorm(iobject)=dgdxglob(2,node,iobject)
+                        objnorm(iobj)=dgdxglob(2,node,iobj)
+                        obj=abs(dgdxglob(1,node,iobj))
                      else
-                        objnorm(iobject)=
-     &                  max(objnorm(iobject),dgdxglob(2,node,iobject))
+                        objnorm(iobj)=
+     &                  max(objnorm(iobj),dgdxglob(2,node,iobj))
+                        obj=min(obj,abs(dgdxglob(1,node,iobj)))
                      endif
-                     if(dgdxglob(2,node,iobject).ge.0.d0) then
+                     if(dgdxglob(2,node,iobj).ge.0.d0) then
                         ipoacti(ifree)=i
-                        inameacti(ifree)=iobject
+                        inameacti(ifree)=iobj
                         iconstacti(ifree)=1
                         ifree=ifree+1
                         nactive=nactive+1
                      endif
                   enddo
-                  write(5,102) nconst,objectset(1,iobject),'GE  ',
-     &               g0(iobject),bounds(iobject),objnorm(iobject),
-     &               'ACTIVE  ',objectset(5,iobject)    
+                  write(5,102) nconst,objectset(1,iobj),'GE  ',
+     &               abs(obj),bounds(iobj),objnorm(iobj),
+     &               'ACTIVE  ',objectset(5,iobj)    
                else
                   do i=1,ndesi
                      node=nodedesi(i)
                      if(i.eq.1) then
-                        objnorm(iobject)=dgdxglob(2,node,iobject)
+                        objnorm(iobj)=dgdxglob(2,node,iobj)
+                        obj=abs(dgdxglob(1,node,iobj))
                      else
-                        objnorm(iobject)=
-     &                  max(objnorm(iobject),dgdxglob(2,node,iobject))
+                        objnorm(iobj)=
+     &                  max(objnorm(iobj),dgdxglob(2,node,iobj))
+                        obj=min(obj,abs(dgdxglob(1,node,iobj)))
                      endif
                   enddo
-                  write(5,102) nconst,objectset(1,iobject),'GE  ',
-     &               g0(iobject),bounds(iobject),objnorm(iobject),
-     &               'INACTIVE',objectset(5,iobject)    
+                  write(5,102) nconst,objectset(1,iobj),'GE  ',
+     &               abs(obj),bounds(iobj),objnorm(iobj),
+     &               'INACTIVE',objectset(5,iobj)    
                endif
             endif
          endif

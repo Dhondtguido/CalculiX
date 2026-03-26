@@ -30,14 +30,14 @@
 !
 !     change following line if nlabel is increased
 !     
-      character*87 label(55)
+      character*87 label(56)
 !     
       integer i,j,l,mi(*),kontri(4,*),i1,mcs,inocs(*),i2,i3,
      &     ntrit,jj,is,m,nkt,icntrl,imag,nk,nlabel
 !     
       real*8 vold(0:mi(2),*),co(3,*),
      &     pmid(3,*),e3(4,*),e1(3,*),e2(3,*),p1(3),p2(3),p3(3),
-     &     cs(17,*),area(*),dd,p21(3),p32(3),
+     &     cs(18,*),area(*),dd,p21(3),p32(3),
      &     fn,stn,qfn,een,t(3),sidemean,emn
 !
       write(*,*) 'Calculating the viewfactors'
@@ -46,7 +46,7 @@
 !     change following line if nlabel is increased and the dimension
 !     of field label above!
 !     
-      nlabel=55
+      nlabel=56
 !     
 !     updating the displacements for cyclic symmetric structures
 !     

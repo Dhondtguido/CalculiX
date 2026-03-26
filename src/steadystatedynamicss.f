@@ -38,13 +38,15 @@
      &  ipoinpc(0:*),nforc,nload,nbody,iprestr,ithermal(*),j,nk,ipos,
      &  cyclicsymmetry,ier,ibody(3,*)
 !
-      real*8 fmin,fmax,bias,tmin,tmax,xmodal(*),cs(17,*),t0(*),t1(*)
+      real*8 fmin,fmax,bias,tmin,tmax,xmodal(*),cs(18,*),t0(*),t1(*)
 !
       iexpl=0
       iperturb(2)=0
       harmonic='YES'
-      if((mcs.ne.0).and.(cs(2,1).ge.0.d0)) then
-         cyclicsymmetry=1
+      if(mcs.ne.0) then
+        if(cs(2,1).ge.0.d0) then
+          cyclicsymmetry=1
+        endif
       endif
       nodalset=.false.
 !
@@ -234,8 +236,11 @@ c      nbody=0
 !       mastructcs is called instead of mastruct a fictitious
 !       minimum nodal diameter is stored
 !
-      if((cyclicsymmetry.eq.1).and.(mcs.ne.0).and.(cs(2,1)<0.d0)) 
-     &         cs(2,1)=0.d0
+      if((cyclicsymmetry.eq.1).and.(mcs.ne.0)) then
+        if(cs(2,1).lt.0.d0) then
+          cs(2,1)=0.d0
+        endif
+      endif
 !
       call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &     ipoinp,inp,ipoinpc)

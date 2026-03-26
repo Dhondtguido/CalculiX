@@ -33,7 +33,7 @@ void res4parll(double *cv,double *alpham,double *adb,double *aux2,
 		    double *b,double *scal1,double *alpha,double *cvini,
 		    ITG *neq0,ITG *num_cpus){
 
-    ITG i,idelta,isum;
+    ITG i,idelta,isum,num_cpus_loc;
 
     /* variables for multithreading procedure */
 
@@ -41,19 +41,27 @@ void res4parll(double *cv,double *alpham,double *adb,double *aux2,
 
     pthread_t tid[*num_cpus];
 
+    /* check that num_cpus does not exceed neq0*/
+
+    if(*num_cpus>*neq0){
+      num_cpus_loc=*neq0;
+    }else{
+      num_cpus_loc=*num_cpus;
+    }
+
     /* determining the element bounds in each thread */
 
-    NNEW(neapar,ITG,*num_cpus);
-    NNEW(nebpar,ITG,*num_cpus);
+    NNEW(neapar,ITG,num_cpus_loc);
+    NNEW(nebpar,ITG,num_cpus_loc);
 
     /* dividing the element number range into num_cpus equal numbers of 
        active entries.  */
 
-    idelta=(ITG)floor(*neq0/(double)(*num_cpus));
+    idelta=(ITG)floor(*neq0/(double)(num_cpus_loc));
     isum=0;
-    for(i=0;i<*num_cpus;i++){
+    for(i=0;i<num_cpus_loc;i++){
 	neapar[i]=isum;
-	if(i!=*num_cpus-1){
+	if(i!=num_cpus_loc-1){
 	    isum+=idelta;
 	}else{
 	    isum=*neq0;
@@ -66,13 +74,13 @@ void res4parll(double *cv,double *alpham,double *adb,double *aux2,
     cv1=cv;alpham1=alpham;adb1=adb;aux21=aux2;b1=b;scal11=scal1;
     alpha1=alpha;cvini1=cvini;
     
-    NNEW(ithread,ITG,*num_cpus);
+    NNEW(ithread,ITG,num_cpus_loc);
 
-    for(i=0; i<*num_cpus; i++)  {
+    for(i=0; i<num_cpus_loc; i++)  {
       ithread[i]=i;
       pthread_create(&tid[i], NULL, (void *)res4parllmt, (void *)&ithread[i]);
     }
-    for(i=0; i<*num_cpus; i++)  pthread_join(tid[i], NULL);
+    for(i=0; i<num_cpus_loc; i++)  pthread_join(tid[i], NULL);
 
     SFREE(ithread);SFREE(neapar);SFREE(nebpar);
 

@@ -37,7 +37,7 @@
      &  istep,istat,n,key,i,j,k,l,imaterial,iorientation,ipos,
      &  iline,ipol,inl,ipoinp(2,*),inp(3,*),mcs,iaxial,ipoinpc(0:*)
 !
-      real*8 thicke(mi(3),*),thickness,pi,cs(17,*)
+      real*8 thicke(mi(3),*),thickness,pi,cs(18,*)
 !
       if(istep.eq.0) then
          write(*,*) '*ERROR reading *CHANGE SOLID SECTION:'

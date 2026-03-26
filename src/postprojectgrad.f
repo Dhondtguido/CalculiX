@@ -58,7 +58,7 @@
          write(*,*)
          write(*,*) '*INFO: no constraint active'    
          write(*,*) '       no projected gradient calculated'
-         write(*,*) '       senstivity of the objective function' 
+         write(*,*) '       sensitivity of the objective function' 
          write(*,*) '       taken as feasible direction'
          write(*,*)
       endif    

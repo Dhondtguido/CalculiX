@@ -39,8 +39,8 @@
 !     dtime              time increment
 !     cmname             material name
 !     leximp             not used
-!     lend               if = 2: isotropic creep
-!                        if = 3: anisotropic creep
+!     lend               if = 2: isotropic elastic + isotropic creep
+!                        if = 3: anisotropic elastic + isotropic creep
 !     coords(1..3)       coordinates of the current integration point
 !     nstatv             number of internal variables
 !     noel               element number
@@ -78,8 +78,19 @@
       real*8 decra(5),deswa(5),statev(*),serd,ec(2),esw(2),p,qtild,
      &  temp,dtemp,predef(*),dpred(*),time(2),dtime,coords(*)
 !
-      qtild=(1.d10*decra(1)/dtime)**0.2d0
-      decra(5)=5.d-10*dtime*qtild**4
+      if(lend.eq.2) then
+!
+!       elastic isotropic material
+!
+        decra(1)=dtime*qtild**5.d0/1.d10
+        decra(5)=5.d-10*dtime*qtild**4
+      elseif(lend.eq.3) then
+!
+!       elastic anisotropic material
+!
+        qtild=(1.d10*decra(1)/dtime)**0.2d0
+        decra(5)=5.d-10*dtime*qtild**4
+      endif
 !
       return
       end

@@ -28,7 +28,7 @@
 !
       integer i,j,nx(*),ny(*),nz(*),n,neigh(1),kneigh
 !
-      real*8 ratio(3),pneigh(3,*),a,xig,p(3),xo(*),yo(*),zo(*),
+      real*8 ratio(*),pneigh(3,*),a,xig,p(3),xo(*),yo(*),zo(*),
      &     x(*),y(*),z(*)
 !
       ratio(1)=(1.d0-xig)/2.d0

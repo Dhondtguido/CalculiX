@@ -146,6 +146,7 @@
 !        
         loop2: do i=1,nktet
           if(iponn(i).eq.0) cycle
+          if(jfix(i).eq.1) cycle
           if(iexternnode(i).eq.0) cycle
           indexe=ipoeln(i)
 !     

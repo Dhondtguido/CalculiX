@@ -58,8 +58,8 @@ void sensi_orien(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		 ITG *mortar,ITG *mpcinfo,double *tietol,ITG *ics,
 		 ITG *nobject,char **objectsetp,ITG *istat,char *orname,
 		 ITG *nzsprevstep,ITG *nlabel,double *physcon,char *jobnamef,
-		 ITG *iponor2d,ITG *knor2d,ITG *ne2d,ITG *iponoel2d,ITG *inoel2d,
-		 ITG *mpcend){
+		 ITG *iponor2d,ITG *knor2d,ITG *ne2d,ITG *iponoel2d,
+		 ITG *inoel2d,ITG *mpcend){
 	     
   char description[13]="            ",*lakon=NULL,cflag[1]=" ",fneig[132]="",
     stiffmatrix[132]="",*lakonfa=NULL,*objectset=NULL;
@@ -412,7 +412,7 @@ void sensi_orien(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       NNEW(ad,double,neq[1]);
       NNEW(adb,double,neq[1]);
       NNEW(au,double,nzsprevstep[2]);
-      NNEW(aub,double,nzs[1]);
+      NNEW(aub,double,nzsprevstep[2]);
 	  
       if(fread(ad,sizeof(double),neq[1],f1)!=neq[1]){
 	printf(" *ERROR in sensi_orien reading the diagonal of the stiffness matrix in the eigenvalue file");
@@ -441,7 +441,7 @@ void sensi_orien(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	exit(0);
       }
 	  
-      if(fread(aub,sizeof(double),nzs[1],f1)!=nzs[1]){
+      if(fread(aub,sizeof(double),nzsprevstep[2],f1)!=nzsprevstep[2]){
 	printf(" *ERROR in sensi_orien reading the off-diagonals of the mass matrix in the  eigenvalue file");
 	printf(" *INFO  in sensi_orien: if there are problems reading the .eig file this may be due to:\n");
 	printf("        1) the nonexistence of the .eig file\n");

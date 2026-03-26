@@ -119,9 +119,6 @@
 !     
 !     determining the slave surface 
 !     
-c          do j=1,nset
-c            if(set(j).eq.slavset) exit
-c          enddo
           call cident81(set,slavset,nset,id)
           j=nset+1
           if(id.gt.0) then
@@ -470,7 +467,6 @@ c          enddo
 !     filling fields iponoels and inoels
 !     
                   if(mortar.le.0) then
-c                  if(mortar.eq.0) then
                     ifreenoels=ifreenoels+1
                     inoels(1,ifreenoels)=ifacecount
                     inoels(2,ifreenoels)=iponoels(node)

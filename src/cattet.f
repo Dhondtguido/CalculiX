@@ -19,13 +19,15 @@
       subroutine cattet(kontet,netet_,ifac,ne,ipkon,kon,ifatet,ifreetet,
      &     bc,itetfa,ifreefa,planfa,ipofa,cotet,cg,ipoeln,ieln,ifreeln,
      &     lakon,kontetor,iquad,istartset,iendset,ialset,set,nset,filab,
-     &     jfix,iparentel,jobnamec)
+     &     jfix,iparentel,jobnamec,nelemload,nload,sideload,nodeforc,
+     &     nforc,nodeboun,nboun,nodempc,ipompc,nmpc)
 !     
 !     catalogueing the tetrahedral elements of the mesh
 !     
       implicit none
 !     
       character*8 lakon(*)
+      character*20 sideload(*)
       character*81 set(*),elset
       character*87 filab(*)
       character*132 fnrfn,jobnamec(*)
@@ -35,9 +37,18 @@
      &     j,nodes(4),ifatet(4,*),ifreetet,itetfa(2,*),ifreefa,ipofa(*),
      &     ipoeln(*),ieln(2,*),node,ifreeln,kontetor(6,*),iquad,nset,
      &     istartset(*),iendset(*),ialset(*),indexe,k,nope,jfix(*),
-     &     iparentel(*),id,ilen
+     &     iparentel(*),id,ilen,ifreetetini,ifacet(6,4),nelemload(2,*),
+     &     nload,nelem,nodeforc(2,*),nforc,nodeboun(*),nboun,
+     &     nodempc(3,*),ipompc(*),nmpc
 !     
       real*8 bc(4,*),planfa(4,*),cotet(3,*),cg(3,*)
+!
+!     nodes per face for tet elements
+!
+      data ifacet /1,3,2,7,6,5,
+     &             1,2,4,5,9,8,
+     &             2,3,4,6,10,9,
+     &             1,4,3,8,10,7/
 !
 !     open a file for nodes which are not properly projected on the
 !     free surface      
@@ -135,6 +146,45 @@
           enddo
         enddo
       endif
+!
+!     setting field jfix all VERTEX nodes belonging to
+!     loaded faces (*DLOAD) to 1
+!     
+      do i=1,nload
+        if(sideload(i)(1:1).ne.'P') cycle
+        nelem=nelemload(1,i)
+!     
+!       check for tets to be refined    
+!     
+        if((lakon(nelem)(1:5).ne.'C3D10').and.
+     &         (lakon(nelem)(1:4).ne.'C3D4')) cycle
+!     
+!       fixing the element number and its node numbers
+!
+        indexe=ipkon(nelem)
+        do k=1,4
+          jfix(kon(indexe+k))=1
+        enddo
+        lakon(nelem)(1:1)='A'
+      enddo
+!
+!     fixing all nodes in which SPC's, MPC's
+!     or point loads were defined
+!
+      do i=1,nforc
+        jfix(nodeforc(1,i))=1
+      enddo
+      do i=1,nboun
+        jfix(nodeboun(i))=1
+      enddo
+      do i=1,nmpc
+        index1=ipompc(i)
+        do
+          if(index1.eq.0) exit
+          jfix(nodempc(1,index1))=1
+          index1=nodempc(3,index1)
+        enddo
+      enddo
 !     
 !     determine the first unused element
 !     
@@ -202,6 +252,7 @@
 !
       open(2,file=fnrfn(1:i+7),status='unknown')
 !
+      ifreetetini=ifreetet
       do i=1,ne
         if(ipkon(i).lt.0) cycle
         if((lakon(i)(1:4).ne.'C3D4').and.
@@ -230,6 +281,10 @@
         call generatetet_refine(kontet,ifatet,ifreetet,bc,ifac,itetfa,
      &       ifreefa,planfa,ipofa,nodes,cotet,cg)
       enddo
+      if(ifreetet.eq.ifreetetini) then
+        write(*,*) '*ERROR in cattet: no tetrahedral mesh to refine'
+        call exit(201)
+      endif
 !
  101  format('*MODEL CHANGE,TYPE=ELEMENT,REMOVE')
  102  format(i10)

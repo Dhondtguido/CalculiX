@@ -18,10 +18,14 @@
 !
       subroutine allocont(ncont,ntie,tieset,nset,set,istartset,
      &  iendset,ialset,lakon,ncone,tietol,ismallsliding,kind1,kind2,
-     &  mortar,istep)
+     &  mortar,istep,ipkon)
 !
 !     counting the number of triangles needed for the 
-!     triangulation of the contact master surfaces
+!     triangulation of the contact master surfaces,
+!     all contact pairs are taken into account (no matter
+!     whether deactivated or not), however, only faces of 
+!     existing elements (in particular non-deactivated) are
+!     considered.
 !
 !     ismallsliding = 0: large sliding
 !                   = 1: small sliding
@@ -36,7 +40,7 @@
 !
       integer ncont,ntie,i,j,k,nset,istartset(*),iendset(*),ialset(*),
      &  imast,nelem,jface,ncone,islav,ismallsliding,ipos,mortar,istep,
-     &  kflag,idummy,jact,id
+     &  kflag,idummy,jact,id,ipkon(*)
 !
       real*8 tietol(4,*)
 !
@@ -64,9 +68,6 @@
 !
 !           determining the master surface
 !
-c            do j=1,nset
-c               if(set(j).eq.mastset) exit
-c            enddo
             call cident81(set,mastset,nset,id)
             j=nset+1
             if(id.gt.0) then
@@ -103,7 +104,8 @@ c            enddo
 !
             do j=istartset(imast),iendset(imast)
 !     
-               nelem=int(ialset(j)/10.d0)
+              nelem=int(ialset(j)/10.d0)
+              if(ipkon(nelem).lt.0) cycle
                jface=ialset(j)-10*nelem
 !     
                if(lakon(nelem)(4:5).eq.'20') then
@@ -139,31 +141,26 @@ c            enddo
 !
 !              face-to-face penalty contact (facial slave surface)
 !
-c               mortar=1
                nodeslavsurf=.false.
             elseif(slavset(ipos:ipos).eq.'M') then
 !
 !              quad-quad Mortar contact (facial slave surface)
 !
-c               mortar=2
                nodeslavsurf=.false.
             elseif(slavset(ipos:ipos).eq.'P') then
 !
 !              quad-lin Petrov Galerkin Mortar contact (facial slave surface)
 !
-c               mortar=4
                nodeslavsurf=.false.
             elseif(slavset(ipos:ipos).eq.'G') then
 !
 !              quad-quad Petrov Galerkin Mortar contact (facial slave surface)
 !
-c               mortar=5
                nodeslavsurf=.false.
             elseif(slavset(ipos:ipos).eq.'O') then
 !
 !              quad-lin Mortar contact (facial slave surface)
 !
-c               mortar=3
                nodeslavsurf=.false.
             else
 !
@@ -175,9 +172,6 @@ c               mortar=3
 !
 !           determining the slave surface
 !
-c            do j=1,nset
-c               if(set(j).eq.slavset) exit
-c            enddo
             call cident81(set,slavset,nset,id)
             j=nset+1
             if(id.gt.0) then

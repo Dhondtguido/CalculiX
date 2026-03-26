@@ -79,7 +79,7 @@
      &             2,3,6,5,8,15,11,14,
      &             3,1,4,6,9,13,12,15/
 !
-      data nlabel /55/
+      data nlabel /56/
 !
 !     if 1d/2d elements are part of the mesh, no node selection
 !     is performed (because of the renumbering due to the
@@ -141,10 +141,10 @@ c            enddo
                   write(*,*) '       Justification: in a steady state'
                   write(*,*) '       dynamics calculation with cyclic'
                   write(*,*) '       symmetry the segment is expanded'
-                  write(*,*) '       into 360 °. Storing results for'
-                  write(*,*) '       this expansion may lead to huge'
-                  write(*,*) '       frd-files. Specifying a set can'
-                  write(*,*) '       reduce this output.'
+                  write(*,*) '       into 360 degrees. Storing results'
+                  write(*,*) '       for this expansion may lead to'
+                  write(*,*) '       huge frd-files. Specifying a set'
+                  write(*,*) '       can reduce this output.'
                   call exit(201)
                endif
                nmdnode=0

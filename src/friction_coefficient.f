@@ -86,11 +86,11 @@
 !     using Couette-Poiseuille formula
 !     the form factor for non round section can be found in works such as
 !     Bohl,W
-!     "Technische Strömungslehre Stoffeigenschaften von Flüssigkeiten und
-!     Gasen, hydrostatik,aerostatik,incompressible Strömungen,
-!     Strömungsmesstechnik
-!     Vogel Würzburg Verlag 1980
-!     
+!     "Technische Stroemungslehre Stoffeigenschaften von Fluessigkeiten und
+!     Gasen, Hydrostatik, Aerostatik, kompressible/inkompressible
+!     Stroemungen, Stroemungsmesstechnik"
+!     Vogel Wuerzburg Verlag 1980
+!
       elseif(reynolds.lt.rey_lam_max) then
          lambda=64.d0/reynolds
          lambda=form_fact*lambda

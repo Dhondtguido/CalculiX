@@ -170,7 +170,7 @@
 !                              to be calculated from the PK2 stresses
 !     nener              if 0: internal energy calculation is not required
 !                        else: internal energy is required on output
-!     ikin               if 0: kinetic energy calculation is not requred
+!     ikin               if 0: kinetic energy calculation is not required
 !                        else: kinetic energy is required on output
 !     ne0                largest element number without contact elements (are
 !                        stored after all other elements)
@@ -386,7 +386,7 @@ c      write(*,*) 'u1 element ',i
      &     ihyper,istiff,elconloc,eth,kode,plicon,
      &     nplicon,plkcon,nplkcon,npmat_,
      &     plconloc,mi(1),dtime,kk,
-     &     xstiff,ncmat_)
+     &     xstiff,ncmat_,iperturb)
 !     
 !     correcting the thermal strains
 !     
@@ -435,7 +435,7 @@ c      write(*,*) 'u1 element ',i
 !     rotation values (from Eqn. (19) and (20) in Luo)
 !     
 !     Equation (19) does not seem to be correct in Luo:
-!     - in the third equation v_1 shoud be w_1 and the sign in front
+!     - in the third equation v_1 should be w_1 and the sign in front
 !     of the psi-terms should be negative
 !     - in the last equation the sign before the w-terms should be
 !     negative

@@ -25,135 +25,13 @@
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
-/**
- *  function to include contact conditions with the dual mortar method in the 
- transformed system
- *
- *        see phd-thesis Sitzmann, Algorithm 2, p.71
- *
- * Author: Saskia Sitzmann
- * 
- *  [in] itiefac 		pointer into field islavsurf: (1,i) beginning slave_i (2,i) end of slave_i
- *  [in] islavsurf	islavsurf(1,i) slaveface i islavsurf(2,i) # integration points generated before looking at face i 
- *  [in] islavnode	field storing the nodes of the slave surface
- *  [in] imastnode	field storing the nodes of the master surfaces
- *  [in] nslavnode	(i)pointer into field isalvnode for contact tie i 
- *  [in] nmastnode	(i)pointer into field imastnode for contact tie i 
- *  [out] nzsc		number of nonzero,nondiagonal entries of intermediate system matrix
- *  [out] aucp		intermediate system matrix
- *  [out] adc             intermediate system matrix, diagonal terms
- *  [out] irowcp           rows for intermediate system matrix
- *  [out] jqc		pointer to irowc
- *  [in,out] islavact	(i) indicates, if slave node i is active (=-3 no-slave-node, =-2 no-LM-node, =-1 no-gap-node, =0 inactive node, =1 sticky node, =2 slipping/active node) 
- *  [in,out] gap		(i) gap for node i on slave surface
- *  [in,out] slavnor		slave normal
- *  [in,out] slavtan		slave tangent 
- *  [out] bhat            intermediate right hand side 
- *  [out] irowbdp		field containing row numbers of aubd
- *  [out] jqbd		pointer into field irowbd
- *  [out] aubdp		coupling matrix \f$ B_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [out] irowbdtilp	field containing row numbers of aubd
- *  [out] jqbdtil		pointer into field irowbdtil
- *  [out] aubdtilp		matrix \f$ \tilde{D}^{-1}\tilde{B}_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [out] irowbdtil2p	field containing row numbers of aubdtil2
- *  [out] jqbdtil2	pointer into field irowbdtil2
- *  [out] aubdtil2p	coupling matrix \f$ \tilde{D}$ and $\tilde{B}^2_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [out] irowddp		field containing row numbers of audd
- *  [out] jqdd		pointer into field irowdd
- *  [out] auddp		coupling matrix \f$ D_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [out] irowddtilp	field containing row numbers of audd
- *  [out] jqddtil		pointer into field irowdd
- *  [out] auddtilp		coupling matrix \f$ \tilde{D}_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [out] irowddtil2p	field containing row numbers of audd
- *  [out] jqddtil2	pointer into field irowdd
- *  [out] auddtil2p	matrix \f$ Id_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [out] irowddinvp	field containing row numbers of auddinv
- *  [out] jqddinv		pointer into field irowddinv
- *  [out] auddinvp		coupling matrix \f$ \tilde{D}^{-1}_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [in] irowtloc		field containing row numbers of autloc
- *  [in] jqtloc	        pointer into field irowtloc
- *  [in] autloc		transformation matrix \f$ T[p,q]\f$ for slave nodes \f$ p,q \f$ 
- *  [in] irowtlocinv	field containing row numbers of autlocinv
- *  [in] jqtlocinv	pointer into field irowtlocinv
- *  [in] autlocinv	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$  
- *  [in] mi		(1) max # of integration points per element (2) max degree of freedom per element
- *  [in] ipe		(i) pointer to ime for node i 
- *  [in] ime              ... cataloging the edges with node i
- *  [in] tietol		(1,i) tie tolerance (2,i) contant interaction material definition
- *  [in] iflagact         here: flag indicating if coupling matrices should be updated every iteration or only once per increment (==0)
- *  [in] cstress		current Lagrange multiplier 
- *  [in] cstressini	Lagrange multiplier at start of the increment
- *  [in] bp_old		old friction bounds
- *  [in] iflag_fric	flag indicating if iwan friction model is used
- *  [in] nboun2            number of transformed SPCs
- *  [in] ndirboun2		(i) direction of transformed SPC i 
- *  [in] nodeboun2         (i) node of transformed SPC i
- *  [in] xboun2            (i) value of transformed SPC i
- *  [in] nmpc2		number of transformed mpcs
- *  [in] ipompc2           (i) pointer to nodempc and coeffmpc for transformed MPC i
- *  [in] nodempc2          nodes and directions of transformed MPCs
- *  [in] coefmpc2          coefficients of transformed MPCs
- *  [in] ikboun2           sorted dofs idof=8*(node-1)+dir for transformed SPCs
- *  [in] ilboun2           transformed SPC numbers for sorted dofs
- *  [in] ikmpc2 		sorted dofs idof=8*(node-1)+dir for transformed MPCs
- *  [in] ilmpc2		transformed SPC numbers for sorted dofs
- *  [in] nslavspc		(2*i) pointer to islavspc...
- *  [in] islavspc         ... which stores SPCs for slave node i
- *  [in] nsspc            number of SPC for slave nodes
- *  [in] nslavmpc		(2*i) pointer to islavmpc...
- *  [in] islavmpc		... which stores MPCs for slave node i
- *  [in] nsmpc		number of MPC for slave nodes
- *  [in] nslavspc2	(2*i) pointer to islavspc2...
- *  [in] islavspc2         ... which stores transformed SPCs for slave node i
- *  [in] nsspc2            number of transformed SPC for slave nodes
- *  [in] nslavmpc2	(2*i) pointer to islavmpc2...
- *  [in] islavmpc2	... which stores transformed MPCs for slave node i
- *  [in] nsmpc2		number of transformed MPC for slave nodes 
- *  [in] nmastspc		(2*i) pointer to imastspc...
- *  [in] imastspc         ... which stores SPCs for master node i
- *  [in] nmspc            number of SPC for master nodes
- *  [in] nmastmpc		(2*i) pointer to imastmpc...
- *  [in] imastmpc		... which stores MPCs for master node i
- *  [in] nmmpc		number of MPC for master nodes
- *  [in] pslavdual	(:,i)coefficients \f$ \alpha_{ij}\f$, \f$ 1,j=1,..8\f$ for dual shape functions for face i
- *  [in] pslavdualpg	(:,i)coefficients \f$ \alpha_{ij}\f$, \f$ 1,j=1,..8\f$ for Petrov-Galerkin shape functions for face i 
- *  [in] islavactdof      (i)=10*slavenodenumber+direction for active dof i
- *  [in] islavactdoftie   (i)=tie number for active dof i
- *  [in] islavnodeinv     (i) slave node index for node i
- *  [out] Bdp		coupling matrix \f$ B_d[p,q]=\int \psi_p \phi_q dS \f$, \f$ p \in S, q \in M \f$ 
- *  [out] irowbp		field containing row numbers of Bd
- *  [out] jqb		pointer into field irowb
- *  [out] Bdhelpp		coupling matrix \f$ Bhelp_d[p,q]=\tilde{D}^{-1}\tilde{B}\f$, \f$ p \in S, q \in M \f$ 
- *  [out] irowbhelpp	field containing row numbers of Bdhelp
- *  [out] jqbhelp		pointer into field irowbhelp
- *  [out] Ddp		coupling matrix \f$ D_d[p,q]=\int \psi_p \phi_q dS \f$, \f$ p,q \in S \f$ 
- *  [out] irowdp		field containing row numbers of Dd
- *  [out] jqd		pointer into field irowd
- *  [out] Ddtilp		coupling matrix \f$ \tilde{D}_d[p,q]=\int \psi_p \tilde{\phi}_q dS \f$, \f$ p,q \in S \f$ 
- *  [out] irowdtilp	field containing row numbers of Ddtil
- *  [out] jqdtil		pointer into field irowdtil 
- *  [out] Bdtilp		coupling matrix \f$ \tilde{B}_d[p,q]=\int \psi_p \tilde{\phi}_q dS \f$, \f$ p \in S, q \in M \f$ 
- *  [out] irowbtilp	field containing row numbers of Bdtil
- *  [out] jqbtil		pointer into field irowbtil
- *  [out] Bpgdp		Petrov-Galerkin coupling matrix \f$ B_d^{PG}[p,q]=\int \tilde{\phi}_p \phi_q dS \f$, \f$ p \in S, q \in M \f$ 
- *  [out] irowbpgp		field containing row numbers of Bpgd
- *  [out] jqbpg		pointer into field irowbpg
- *  [out] Dpgdp		Petrov-Galerkin coupling matrix \f$ D_d[p,q]=\int \tilde{\phi}_p \phi_q dS \f$, \f$ p,q \in S \f$ 
- *  [out] irowdpgp		field containing row numbers of Dpgd
- *  [out] jqdpg		pointer into field irowdpg
- *  [out] Dpgdtilp		transformed Petrov-Galerkin coupling matrix \f$ D_d[p,q]=\int \tilde{\phi}_p \tilde{\phi}_q dS \f$, \f$ p,q \in S \f$ 
- *  [out] irowdpgtilp	field containing row numbers of Dpgdtil
- *  [out] jqdpgtil	pointer into field irowdpgtil
- *  [out] Bpgdtilp		transformed Petrov-Galerkin coupling matrix \f$ B_d^{PG}[p,q]=\int \tilde{\phi}_p \tilde{\phi}_q dS \f$, \f$ p \in S, q \in M \f$ 
- *  [out] irowbpgtilp	field containing row numbers of Bpgdtil
- *  [out] jqbpgtil	pointer into field irowbpgtil
- *  [in] lambdaiwan       Lagrange multiplier splitted to Iwan elements
- *  [in] lambdaiwanini    Lagrange multiplier splitted to Iwan elements at start of increment
- *  [in] bet		parameter used in alpha-method
- *  [in]  iflagdualquad   flag indicating what mortar contact is used (=1 quad-lin, =2 quad-quad, =3 PG quad-lin, =4 PG quad-quad)
- *  [in]  labmpc2
- *  [in,out]  cfsinitil \f$ \tilde{\Phi}_{c,j}\f$ contact forces from last increment, needed for dynamic calculations  
- */
+/*
+  function to include contact conditions with the dual mortar method in the 
+  transformed system
+ 
+  see phd-thesis Sitzmann, Algorithm 2, p.71
+ 
+  Author: Saskia Sitzmann   */
 
 void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 		   ITG *istartset,ITG *iendset,ITG *ialset,ITG *itietri,
@@ -173,59 +51,45 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 		   ITG **irowddp,ITG *jqdd,double **auddp,ITG **irowddtilp,
 		   ITG *jqddtil,double **auddtilp,ITG **irowddtil2p,
 		   ITG *jqddtil2,double **auddtil2p,ITG **irowddinvp,
-		   ITG *jqddinv,double **auddinvp,ITG *irowtloc,ITG *jqtloc,
-		   double *autloc,ITG *irowtlocinv,ITG *jqtlocinv,
-		   double *autlocinv,ITG *mi,ITG *ipe,ITG *ime,double *tietol,
-		   ITG *iflagact,double *cstress,double *cstressini,
-		   double *bp_old,ITG *iflag_fric,ITG *nk,ITG *nboun,
+		   ITG *jqddinv,double **auddinvp,ITG *irowt,ITG *jqt,
+		   double *aut,ITG *irowtinv,ITG *jqtinv,
+		   double *autinv,ITG *mi,ITG *ipe,ITG *ime,double *tietol,
+		   double *cstress,double *cstressini,
+		   double *bp_old,ITG *nk,ITG *nboun,
 		   ITG *ndirboun,ITG *nodeboun,double *xboun,ITG *nmpc,
 		   ITG *ipompc,ITG *nodempc,double *coefmpc,ITG *ikboun,
-		   ITG *ilboun,ITG *ikmpc,ITG *ilmpc,ITG *nboun2,
-		   ITG *ndirboun2,ITG *nodeboun2,double *xboun2,ITG *nmpc2,
-		   ITG *ipompc2,ITG *nodempc2,double *coefmpc2,ITG *ikboun2,
-		   ITG *ilboun2,ITG *ikmpc2,ITG *ilmpc2,ITG *nslavspc,
-		   ITG *islavspc,ITG *nsspc,ITG *nslavmpc,ITG *islavmpc,
-		   ITG *nsmpc,ITG *nslavspc2,ITG *islavspc2,ITG *nsspc2,
-		   ITG *nslavmpc2,ITG *islavmpc2,ITG *nsmpc2,ITG *nmastspc,
-		   ITG *imastspc,ITG *nmspc,ITG *nmastmpc,ITG *imastmpc,
-		   ITG *nmmpc,ITG *nmastmpc2,ITG *imastmpc2,ITG *nmmpc2,
-		   double *pslavdual,double *pslavdualpg,ITG *islavactdof,
-		   ITG *islavactdoftie,double *plicon,ITG *nplicon,ITG *npmat_,
+		   ITG *ilboun,ITG *ikmpc,ITG *ilmpc,
+		   ITG *nslavspc,ITG *islavspc,ITG *nslavmpc,
+		   ITG *islavmpc,ITG *nmastmpc,ITG *imastmpc,
+		   double *pslavdual,ITG *islavactdof,
+		   ITG *islavtie,double *plicon,ITG *nplicon,ITG *npmat_,
 		   ITG *nelcon,double *dtime,ITG *islavnodeinv,double **Bdp,
 		   ITG **irowbp,ITG *jqb,double **Bdhelpp,ITG **irowbhelpp,
 		   ITG *jqbhelp,double **Ddp,ITG **irowdp,ITG *jqd,
 		   double **Ddtilp,ITG **irowdtilp,ITG *jqdtil,double **Bdtilp,
-		   ITG **irowbtilp,ITG *jqbtil,double **Bpgdp,ITG **irowbpgp,
-		   ITG *jqbpg,double **Dpgdp,ITG **irowdpgp,ITG *jqdpg,
-		   double **Dpgdtilp,ITG **irowdpgtilp,ITG *jqdpgtil,
-		   double **Bpgdtilp,ITG **irowbpgtilp,ITG *jqbpgtil,
-		   double *lambdaiwan,double *lambdaiwanini,double *bet,
-		   ITG *iflagdualquad,char *labmpc2,double *cfsinitil,
+		   ITG **irowbtilp,ITG *jqbtil,
+		   double *bet,double *cfsinitil,
 		   double *reltime,ITG *ithermal,double *plkcon,ITG *nplkcon){
   
-  ITG i,j,k,ntrimax,*nx=NULL,*ny=NULL,*nz=NULL,nintpoint=0,calcul_fn,calcul_f,
+  ITG i,j,k,ntrimax,*nx=NULL,*ny=NULL,*nz=NULL,nintpoint=0,
     nzsbd,*irowbd=NULL,*irowdd=NULL,*irowddinv=NULL,*irowddtil=NULL,
-    *irowbdtil=NULL,nzs2,iwan,*irowddtil2=NULL,*irowbdtil2=NULL,l,nstart,kflag,
-    ntri,ii,regmode,derivmode,regmodet=1,*irowc=NULL,*imastsurf=NULL,
-    num_cpus=1,*irow=NULL,*irowb=NULL,*irowbhelp=NULL,*irowd=NULL,
-    *irowdtil=NULL,*irowbtil=NULL,*irowbpg=NULL,*irowdpg=NULL,*irowdpgtil=NULL,
-    *irowbpgtil=NULL,nacti,ninacti,nnogap,nstick,nnolm,nnoslav,nzsbdtil,
-    nzsbdtil2,debug;
+    *irowbdtil=NULL,nzs2,*irowddtil2=NULL,*irowbdtil2=NULL,l,nstart,kflag,
+    ntri,ii,regmode,derivmode,*irowc=NULL,*imastsurf=NULL,
+    *irow=NULL,*irowb=NULL,*irowbhelp=NULL,*irowd=NULL,
+    *irowdtil=NULL,*irowbtil=NULL,nacti,ninacti,nnogap,nstick,nnolm,nnoslav,nzsbdtil,
+    nzsbdtil2;
     
   double *xo=NULL,*yo=NULL,*zo=NULL,*x=NULL,*y=NULL,*z=NULL,*aubd=NULL,
     *cstresstil=NULL,scal,*audd=NULL,*auddtil=NULL,*auddtil2=NULL,
     *auddinv=NULL,*auc=NULL,*pmastsurf=NULL,*gapmints=NULL,*au=NULL,
     *pslavsurf=NULL,*aubdtil=NULL,*aubdtil2=NULL,*Bd=NULL,*Bdhelp=NULL,
-    *Dd=NULL,*Ddtil=NULL,*Bdtil=NULL,*Bpgd=NULL,*Dpgd=NULL,*Dpgdtil=NULL,
-    *Bpgdtil=NULL,*areaslav=NULL,mu,fkninv,fktauinv,p0,beta,*rs=NULL,*rsb=NULL,
-    alpha,*fmpc=NULL;
+    *Dd=NULL,*Ddtil=NULL,*Bdtil=NULL,
+    mu,fkninv,fktauinv,p0,beta,*rs=NULL,*rsb=NULL;
   
   double aninvloc,gnc,xlnold,lt[2],ltold;
   
   double *u_old=NULL,*u_oldt=NULL;
   ITG mt=mi[1]+1,nodes,jj;
-
-  debug=0;
   
   irow=*irowp;au=*aup;auc=*aucp;irowc=*irowcp;
   aubd=*aubdp;irowbd=*irowbdp;
@@ -239,14 +103,9 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
   irowd=*irowdp;Dd =*Ddp;
   irowdtil=*irowdtilp;Ddtil =*Ddtilp;
   irowbtil=*irowbtilp;Bdtil =*Bdtilp;
-  irowbpg=*irowbpgp;Bpgd =*Bpgdp;
-  irowdpg=*irowdpgp;Dpgd =*Dpgdp;
-  irowdpgtil=*irowdpgtilp;Dpgdtil =*Dpgdtilp;
-  irowbpgtil=*irowbpgtilp;Bpgdtil =*Bpgdtilp;
   
   NNEW(rs,double,(mt)**nk);
   NNEW(rsb,double,neq[1]);
-  if(debug==1)printf(" contactmortar: start\n");
   
   /* create field islavactdof;
      coupling the equation degrees of freedom with the corresponding
@@ -256,16 +115,14 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 			  nmastnode,imastnode,islavactdof,
 			  islavnode,mi,ithermal));
   
-  /* right now iflagact is 1 in the first iteration of every increment 
-     and 0 for all subsequent iterations.
-     Thus the update of the normals and tangentials as well as 
+  /* The update of the normals and tangentials as well as 
      the segmentation of the contact surface needed
      for the calculation of the coupling matrices is done only once 
      per increment, since a combined fix-point
      Newton approach in implemented, see phd-thesis Saskia Sitzmann, 
      Chapter 3 introduction  */
   
-  if(*iflagact==0){
+  if(*iit==1){
       
     /* update the location of the center of gravity of 
        the master triangles and the coefficients of their
@@ -281,14 +138,12 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
       
     ntrimax=0;	
     for(i=0;i<*ntie;i++){
-      //      printf("contactmortar line 284 itietri %d\n",2*i+1);
       if(itietri[2*i+1]-itietri[2*i]+1>ntrimax){		
 	ntrimax=itietri[2*i+1]-itietri[2*i]+1;} 	
     }
       
-    /* For the first step, first increment, first iteration 
-       an initial guess for 
-       the active set is generated analogous to node-to-surface penalty */
+    /* For the first step, first increment, first iteration an initial guess
+       for the active set is generated analogous to node-to-surface penalty */
       
     if ((*iinc==1)&&(*iit==1)&&(*istep==1)){	    
       NNEW(xo,double,ntrimax);	    
@@ -300,18 +155,15 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
       NNEW(nx,ITG,ntrimax);	   
       NNEW(ny,ITG,ntrimax);	    
       NNEW(nz,ITG,ntrimax);	    
-      NNEW(areaslav,double,itiefac[2*(*ntie-1)+1]);	    
-      ITG ifree=0;	    
-      FORTRAN(genfirstactif,(tieset,ntie,itietri,ipkon,kon,lakon,cg,
+      FORTRAN(genfirstactif,(tieset,ntie,itietri,cg,
 			     straight,co,vold,xo,yo,zo,x,y,z,nx,ny,nz,
 			     istep,iinc,iit,mi,imastop,
-			     nslavnode,islavnode,islavsurf,itiefac,
-			     areaslav,set,nset,istartset,iendset,ialset,
-			     islavact,&ifree,tietol));
+			     nslavnode,islavnode,
+			     set,nset,istartset,iendset,ialset,
+			     islavact,tietol));
 	  
-      if(debug==1)printf("\tFrist Active Set : %" ITGFORMAT " nodes\n",ifree);	    
       SFREE(xo);SFREE(yo);SFREE(zo);SFREE(x);SFREE(y);SFREE(z);
-      SFREE(nx);SFREE(ny);SFREE(nz);SFREE(areaslav);	
+      SFREE(nx);SFREE(ny);SFREE(nz);
     }
     fflush(stdout);
 
@@ -329,10 +181,6 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 	}	    
       }	
     }
-      
-    if(debug==1)printf("\tcm: N_Activ: %" ITGFORMAT "\t N_stick: %" ITGFORMAT
-	   "\tN_Inactiv: %" ITGFORMAT "\t N_nogap: %" ITGFORMAT
-	   "\t N_nolm %" ITGFORMAT "\n",nacti,nstick,ninacti,nnogap,nnolm);
       
     /* calculating the normals,tangents in the nodes of the slave
        surface */
@@ -394,8 +242,6 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 	}	    
       }	
     }
-    if(debug==1)printf("\tnumber of slave integration points=%" ITGFORMAT "\n",
-	   nintpoint);	
     if (nintpoint!=0){	    
       RENEW(imastsurf,ITG,nintpoint);	
     }else{	    
@@ -419,14 +265,11 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
     SFREE(xo);SFREE(yo);SFREE(zo);SFREE(x);SFREE(y);SFREE(z);SFREE(nx);    
     SFREE(ny);SFREE(nz);
       
-    /* check SPC's and MPC's on slave nodes for compability and set all 
-       slave nodes involed in SPCs/MPCs to no-LM nodes */
+    /* check SPC's and MPC's on slave nodes for compatibility and set all 
+       slave nodes involved in SPCs/MPCs to no-LM nodes */
       
-    FORTRAN(checkspcmpc,(ntie,tieset,islavnode,imastnode,nslavnode,nmastnode,
-			 slavnor,islavact,nboun,ndirboun,xboun,
-			 nodempc,coefmpc,ikboun,ilboun,nmpc2,ipompc2,nodempc2,
-			 nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,
-			 nmspc,nmastmpc,imastmpc,nmmpc));
+    FORTRAN(remlagrangemult,(ntie,tieset,islavnode,imastnode,nslavnode,
+			     nmastnode,islavact,nodempc,nmpc,ipompc));
       
     nacti=0;ninacti=0;nnogap=0;nstick=0;nnolm=0;nnoslav=0;	
     for (i=0;i<*ntie;i++){	
@@ -441,10 +284,6 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 	}	 
       }	 	
     }
-    if(debug==1)printf("\tcm: N_Activ: %" ITGFORMAT "\t N_stick: %" ITGFORMAT
-	   "\tN_Inactiv: %" ITGFORMAT "\t N_nogap: %" ITGFORMAT
-	   "\t N_nolm: %" ITGFORMAT "\n",nacti,nstick,ninacti,nnogap,
-	   nnolm);	      
       
     /* calculating the coeffs of dual basis functions (Sitzmann, Chapter 3.3.) 
        and redistribute contributions of nogap
@@ -452,7 +291,7 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
       
     FORTRAN(gendualcoeffs,(tieset,ntie,ipkon,kon,lakon,co,vold,islavact,
 			   islavsurf,itiefac,islavnode,nslavnode,
-			   mi,pslavsurf,pslavdual,pslavdualpg,iflagdualquad));
+			   mi,pslavsurf,pslavdual));
     
     /* calculate all mortar coupling matrices as well as the dual gap 
        via the segmentation of the slave surface */
@@ -463,21 +302,15 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
     bdfill(&irowbd,jqbd,&aubd,&nzsbd,&irowbdtil,jqbdtil,&aubdtil,&nzsbdtil,
 	   &irowbdtil2,jqbdtil2,&aubdtil2,&nzsbdtil2,&irowdd,jqdd,&audd,
 	   &irowddtil,jqddtil,&auddtil,&irowddtil2,jqddtil2,&auddtil2,
-	   &irowddinv,jqddinv,&auddinv,irowtloc,jqtloc,autloc,irowtlocinv,
-	   jqtlocinv,autlocinv,ntie,ipkon,kon,lakon,nslavnode,nmastnode,
+	   &irowddinv,jqddinv,&auddinv,irowt,jqt,aut,irowtinv,
+	   jqtinv,autinv,ntie,ipkon,kon,lakon,nslavnode,nmastnode,
 	   imastnode,islavnode,islavsurf,imastsurf,pmastsurf,itiefac,tieset,
 	   neq,nactdof,co,vold,iponoels,inoels,mi,gapmints,gap,pslavsurf,
-	   pslavdual,pslavdualpg,&nintpoint,slavnor,nk,
-	   nmpc,ipompc,nodempc,coefmpc,ikmpc,ilmpc,
-	   nmpc2,ipompc2,nodempc2,coefmpc2,
-	   ikmpc2,ilmpc2,nslavspc,islavspc,nsspc,nslavmpc,islavmpc,
-	   nsmpc,nslavmpc2,islavmpc2,nsmpc2,
-	   nmastspc,imastspc,nmspc,nmastmpc,imastmpc,nmmpc,nmastmpc2,imastmpc2,
-	   nmmpc2,iit,iinc,islavactdof,islavact,islavnodeinv,&Bd,&irowb,jqb,
+	   pslavdual,&nintpoint,slavnor,nk,nmpc,ipompc,nodempc,coefmpc,ikmpc,
+	   ilmpc,nslavmpc,islavmpc,nmastmpc,imastmpc,
+	   iit,iinc,islavactdof,islavact,islavnodeinv,&Bd,&irowb,jqb,
 	   &Bdhelp,&irowbhelp,jqbhelp,&Dd,&irowd,jqd,&Ddtil,&irowdtil,jqdtil,
-	   &Bdtil,&irowbtil,jqbtil,&Bpgd,&irowbpg,jqbpg,&Dpgd,&irowdpg,jqdpg,
-	   &Dpgdtil,&irowdpgtil,jqdpgtil,&Bpgdtil,&irowbpgtil,jqbpgtil,
-	   iflagdualquad,ithermal);
+	   &Bdtil,&irowbtil,jqbtil,ithermal);
     
     SFREE(imastsurf);SFREE(pmastsurf);SFREE(gapmints);SFREE(pslavsurf);      
     fflush(stdout);  
@@ -571,9 +404,8 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 	  xlnold=cstresstil[(j)*(mt)+0]*slavnor[(j*3)+0]+
 	    cstresstil[(j)*(mt)+1]*slavnor[(j*3)+1]+
 	    cstresstil[(j)*(mt)+2]*slavnor[(j*3)+2];
-	  FORTRAN(getcontactparams,(&mu,&regmode,&regmodet,&fkninv,&fktauinv,
-				    &p0,&beta,tietol,elcon,&i,ncmat_,ntmat_,
-				    &iwan));
+	  FORTRAN(getcontactparams,(&mu,&regmode,&fkninv,&fktauinv,
+				    &p0,&beta,tietol,elcon,&i,ncmat_,ntmat_));
 	  derivmode=0;
 	  if(islavact[j]>-1){
 	    scal=Ddtil[jqdtil[islavnode[j]-1]-1];
@@ -600,13 +432,8 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
 		islavact[j]=1;}	    
 	      if(islavact[j]>0 && bp_old[j]<1.e-14){
 		bp_old[j]=1;}
-	      if(regmodet==1){
-		if(islavact[j]>0 && ltold <1.e-5){
-		  islavact[j]=1;}// first step
-	      }else{
-		if(islavact[j]==1){
-		  islavact[j]=2;}
-	      }
+	      if(islavact[j]>0 && ltold <1.e-5){
+		islavact[j]=1;}// first step
 	    }
 	  }else{
 	    if(*iinc==1){
@@ -645,10 +472,6 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
   }
   if(*iit==1){
     SFREE(u_old);SFREE(u_oldt);SFREE(cstresstil);}
-  if(debug==1)printf("\tcm: N_Activ: %" ITGFORMAT "\t N_stick: %" ITGFORMAT
-	 "\tN_Inactiv: %" ITGFORMAT "\t N_nogap: %" ITGFORMAT
-	 "\t N_nolm: %" ITGFORMAT " N_noslav: %" ITGFORMAT "\n",
-	 nacti,nstick,ninacti,nnogap,nnolm,nnoslav);      
   
   /* modifying the stiffnes matrix K with the coupling matrices;the
      expanded (symmetric) matrix is described in asymmetric form by
@@ -657,8 +480,6 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
   nzsbd=jqbd[neq[1]]-1;		
   *nzsc=nzs[1];	
   nzs2=nzs[1];
-  
-  alpha=1-2*sqrt(*bet);
 
   /* modifying the stiffnes matrix K with the coupling matrices;
      embedding of the contact conditions
@@ -666,48 +487,28 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
      the fields auc, adc, irowc, jqc and nzsc, bhat */
   
   /* k needed in semi-smooth Newton in tangential direction:
-     k=1 stick is assumed in all nodes, k=2 stick or slip is assummed 
+     k=1 stick is assumed in all nodes, k=2 stick or slip is assumed 
      according to active set entry*/
   
   if(*iit==1 && *iinc==1){k=1;}else{k=2;}
-  if(*iflagdualquad>2){
-    
-    /* Petrov-Galerkin formulation (Sitzmann, Chapter 4.2.) */
-    
-    multimortar(&au,ad,&irow,jq,&nzs2,&auc,adc,&irowc,jqc,nzsc,aubd,irowbd,
-		 jqbd,aubdtil,irowbdtil,jqbdtil,aubdtil2,irowbdtil2,jqbdtil2,
-		 irowdd,jqdd,audd,irowddtil2,jqddtil2,auddtil2,irowddinv,
-		 jqddinv,auddinv,Bpgd,irowbpg,jqbpg,Dpgd,irowdpg,jqdpg,Ddtil,
-		 irowdtil,jqdtil,neq,b,bhat,islavnode,imastnode,nslavnode,
-		 nmastnode,islavact,islavactdof,gap,slavnor,slavtan,vold,vini,
-		 cstress,cstressini,bp_old,nactdof,ntie,mi,nk,nboun,ndirboun,
-		 nodeboun,xboun,nmpc,ipompc,nodempc,coefmpc,ikboun,ilboun,
-		 ikmpc,ilmpc,nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,
-		 nmastspc,imastspc,nmspc,nmastmpc,imastmpc,nmmpc,tieset,
-		 islavactdoftie,nelcon,elcon,tietol,ncmat_,ntmat_,plicon,
-		 nplicon,npmat_,dtime,irowtloc,jqtloc,autloc,irowtlocinv,
-		 jqtlocinv,autlocinv,islavnodeinv,lambdaiwan,lambdaiwanini,&k,
-		 nmethod,bet,ithermal,plkcon,nplkcon);  
-    
-  }else{
     
     /* normal formulation (Sitzmann, Chapter 4.1.)*/
     
-    multimortar(&au,ad,&irow,jq,&nzs2,&auc,adc,&irowc,jqc,nzsc,aubd,irowbd,
-		 jqbd,aubdtil,irowbdtil,jqbdtil,aubdtil2,irowbdtil2,jqbdtil2,
-		 irowdd,jqdd,audd,irowddtil2,jqddtil2,auddtil2,irowddinv,
-		 jqddinv,auddinv,Bd,irowb,jqb,Dd,irowd,jqd,Ddtil,irowdtil,
-		 jqdtil,neq,b,bhat,islavnode,imastnode,nslavnode,nmastnode,
-		 islavact,islavactdof,gap,slavnor,slavtan,vold,vini,cstress,
-		 cstressini,bp_old,nactdof,ntie,mi,nk,nboun,ndirboun,nodeboun,
-		 xboun,nmpc,ipompc,nodempc,coefmpc,ikboun,ilboun,ikmpc,ilmpc,
-		 nslavspc,islavspc,nsspc,nslavmpc,islavmpc,nsmpc,nmastspc,
-		 imastspc,nmspc,nmastmpc,imastmpc,nmmpc,tieset,islavactdoftie,
-		 nelcon,elcon,tietol,ncmat_,ntmat_,plicon,nplicon,npmat_,dtime,
-		 irowtloc,jqtloc,autloc,irowtlocinv,jqtlocinv,autlocinv,
-		 islavnodeinv,lambdaiwan,lambdaiwanini,&k,nmethod,bet,ithermal,
-		 plkcon,nplkcon);
-  }
+  multimortar(&au,ad,&irow,jq,&nzs2,&auc,adc,&irowc,jqc,nzsc,aubd,irowbd,
+	      jqbd,aubdtil,irowbdtil,jqbdtil,aubdtil2,irowbdtil2,jqbdtil2,
+	      irowdd,jqdd,audd,irowddtil2,jqddtil2,auddtil2,irowddinv,
+	      jqddinv,auddinv,Bd,irowb,jqb,Dd,irowd,jqd,Ddtil,irowdtil,
+	      jqdtil,neq,b,bhat,islavnode,imastnode,nslavnode,nmastnode,
+	      islavact,islavactdof,gap,slavnor,slavtan,vold,vini,cstress,
+	      cstressini,bp_old,nactdof,ntie,mi,nk,nboun,ndirboun,nodeboun,
+	      xboun,nmpc,ipompc,nodempc,coefmpc,ikboun,ilboun,ikmpc,ilmpc,
+	      nslavspc,islavspc,nslavmpc,islavmpc,
+	      tieset,islavtie,
+	      nelcon,elcon,tietol,ncmat_,ntmat_,plicon,nplicon,npmat_,dtime,
+	      irowt,jqt,aut,irowtinv,jqtinv,autinv,
+	      islavnodeinv,&k,nmethod,bet,ithermal,
+	      plkcon,nplkcon);
+
   nzs[0]=jq[neq[1]]-1; 
   nzs[1]=jq[neq[1]]-1;
   
@@ -736,13 +537,8 @@ void contactmortar(ITG *ncont,ITG *ntie,char *tieset,ITG *nset,char *set,
   *Ddp=Dd;*irowdp= irowd;
   *Ddtilp=Ddtil;*irowdtilp= irowdtil;
   *Bdtilp=Bdtil;*irowbtilp= irowbtil;
-  *Bpgdp=Bpgd;*irowbpgp= irowbpg;
-  *Dpgdp=Dpgd;*irowdpgp= irowdpg;
-  *Dpgdtilp=Dpgdtil;*irowdpgtilp= irowdpgtil;
-  *Bpgdtilp=Bpgdtil;*irowbpgtilp= irowbpgtil;
   
   SFREE(rs);SFREE(rsb);
   fflush(stdout);
-  if(debug==1)printf(" contactmortar: end\n\n");
   return;
 }

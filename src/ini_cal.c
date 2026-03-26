@@ -41,7 +41,7 @@ void ini_cal(char *jobnamec,char *output,char *fneig,char *kind1,char *kind2,
 	     ITG *istep,ITG *istat,ITG *iprestr,ITG *kode,ITG *nload,
 	     ITG *nbody,ITG *nforc,ITG *nboun,ITG *nk,ITG *nmpc,ITG *nam,
 	     ITG *nzs_,ITG *nlabel,double *ttime,ITG *iheading,ITG *nfc,
-	     ITG *nfc_,ITG *ndc,ITG *ndc_){
+	     ITG *nfc_,ITG *ndc,ITG *ndc_,ITG *ndmat_,ITG *interfaceload){
 
   /* used for initialization and re-initialization */
   
@@ -64,6 +64,7 @@ void ini_cal(char *jobnamec,char *output,char *fneig,char *kind1,char *kind2,
   *nloadold=0;
   *nload_=0;
   *nload=0;
+  *interfaceload=0;
 
   /* body loading */
   
@@ -133,6 +134,7 @@ void ini_cal(char *jobnamec,char *output,char *fneig,char *kind1,char *kind2,
   *ntmat_=0;
   *npmat_=0;
   *nmat_=0;
+  *ndmat_=0;
   *norien_=0;
   *ntrans_=0;
   *nstate_=0;
@@ -191,7 +193,7 @@ void ini_cal(char *jobnamec,char *output,char *fneig,char *kind1,char *kind2,
      - change the dimension of label in geomview.f
      - change the documentation (tex-file)  */
 
-  *nlabel=55;
+  *nlabel=56;
   *nprint_=0;
   *nprint=0;
   *kode=0;
@@ -321,6 +323,12 @@ void ini_cal(char *jobnamec,char *output,char *fneig,char *kind1,char *kind2,
   ctrl[54]=0.1;   // alea
   ctrl[55]=100.5; // kscalemax
   ctrl[56]=60.5;  // itf2f
+
+  /* convergence parameters */
+
+  ctrl[57]=1.1;   // elastic material stiffness decrease
+  ctrl[58]=-0.5;  // number of material ramping trials
+  ctrl[59]=1.;    // deactivation force limit
 
   /* time integration dynamics */
   

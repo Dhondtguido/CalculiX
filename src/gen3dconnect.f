@@ -16,8 +16,8 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-      subroutine gen3dconnect(kon,ipkon,lakon,ne,iponoel,inoel,
-     &  iponoelmax,rig,iponor,xnor,knor,ipompc,nodempc,coefmpc,nmpc,
+      subroutine gen3dconnect(kon,ipkon,lakon,ne,iponoel2d,inoel2d,
+     &  iponoel2dmax,rig,iponor,xnor,knor,ipompc,nodempc,coefmpc,nmpc,
      &  nmpc_,mpcfree,ikmpc,ilmpc,labmpc,vold,ikboun,ilboun,nboun,
      &  nboun_,nodeboun,ndirboun,xboun,iamboun,typeboun,ithermal,
      &  mi,trab,ntrans,nmethod,nk,nk_,nam,inotr,iperturb,co)
@@ -33,7 +33,7 @@
       character*8 lakon(*)
       character*20 labmpc(*),label
 !
-      integer kon(*),ipkon(*),ne,iponoel(*),inoel(3,*),iponoelmax,
+      integer kon(*),ipkon(*),ne,iponoel2d(*),inoel2d(3,*),iponoel2dmax,
      &  rig(*),iponor(2,*),knor(*),ipompc(*),nodempc(3,*),nmpc,nmpc_,
      &  mpcfree,ikmpc(*),ilmpc(*),i,indexes,nope,l,node,index2,ielem,
      &  indexe,j,indexk,newnode,idir,idof,id,mpcfreenew,k,inotr(2,*),
@@ -84,21 +84,21 @@
 !
          loop: do l=1,nope
             node=kon(indexes+l)
-            if(node.le.iponoelmax) then
+            if(node.le.iponoel2dmax) then
                if(rig(node).eq.0) then
-                 index2=iponoel(node)
+                 index2=iponoel2d(node)
 !
 !     next loop is needed, since an element may have
 !     been deactivated
 !
                   do
                     if(index2.eq.0) cycle loop
-                    ielem=inoel(1,index2)
+                    ielem=inoel2d(1,index2)
                     indexe=ipkon(ielem)
                     if(indexe.ge.0) exit
-                    index2=inoel(3,index2)
+                    index2=inoel2d(3,index2)
                   enddo
-                  j=inoel(2,index2)
+                  j=inoel2d(2,index2)
                   indexk=iponor(2,indexe+j)
 !
 !                 2d shell element: the exterior expanded nodes

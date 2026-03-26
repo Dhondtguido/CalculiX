@@ -503,7 +503,7 @@
        494  1.016933E+02
        495  1.016726E+02
 
- heat flux (elem, integ.pnt.,qx,qy,qz) for setEALL and time  0.1000000E-01
+ heat flux (elem, integ.pnt.,qx,qy,qz) for set EALL and time  0.1000000E-01
 
          1   1 -5.993499E-08 -3.148222E+04  5.967320E+00
          1   2 -1.158469E-08 -3.148222E+04  5.967320E+00

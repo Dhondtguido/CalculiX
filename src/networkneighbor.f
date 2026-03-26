@@ -17,7 +17,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine networkneighbor(nelem,node,nelemnei,nodenei,ibranch,
-     &  iponoel,inoel,ipkon,kon)
+     &  iponoeln,inoeln,ipkon,kon)
 !
 !     looks for the neighboring element and neighboring end node of
 !     node "node" of element "nelem". If the neighboring end node
@@ -26,12 +26,12 @@
       implicit none
 !
       integer nelem,node,nelemnei,nodenei,ibranch,index,indexe,
-     &  iponoel(*),inoel(2,*),ipkon(*),kon(*),iel
+     &  iponoeln(*),inoeln(2,*),ipkon(*),kon(*),iel
 !
       nelemnei=0
       ibranch=0
 !
-      index=iponoel(node)
+      index=iponoeln(node)
       if(index.eq.0) then
          write(*,*) '*ERROR in networkneighbor:node',node
          write(*,*) '       does not belong to network element',nelem
@@ -39,10 +39,10 @@
       endif
 !
       do
-         iel=inoel(1,index)
+         iel=inoeln(1,index)
 !
          if(iel.eq.nelem) then
-            index=inoel(2,index)
+            index=inoeln(2,index)
             if(index.eq.0) exit
             cycle
          endif
@@ -62,7 +62,7 @@
          else
             nodenei=kon(indexe+1)
          endif
-         index=inoel(2,index)
+         index=inoeln(2,index)
          if(index.eq.0) exit
       enddo
 !

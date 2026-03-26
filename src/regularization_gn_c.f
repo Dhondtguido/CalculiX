@@ -17,22 +17,8 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
 !
-!  regularization function for normal contact mortar
-! see phd-thesis Sitzmann Chapter 3.2.1., semi-smooth Newton for normal contact 
-!
-!  [in]lambdap  contact pressure in normal direction
-!  [in]divmode indicates whether function or derivate 
-!                             should be called
-!                    =0 function called
-!                    =1 derivative called    
-!  [in]regmode        selects regularization funtion
-!                    =1 perturbed Lagrange
-!                    =2 piece wise linear with given data points
-!                    =3 expontential contact law
-!  [out]gnc        result regularization function
-!  [in] aninvloc        stiffness constant for perturbed Lagrange
-!  [in] p0 parameter for exponential regularization
-!  [in] beta parameter for exponential regularization
+!     regularization function for normal contact mortar
+!     see phd-thesis Sitzmann Chapter 3.2.1., semi-smooth Newton for normal contact 
 !
       subroutine regularization_gn_c(lambdap,divmode,regmode,
      &     gnc,aninvloc,p0,beta,elcon,nelcon,itie,ntmat_,
@@ -115,7 +101,7 @@ c         ndata=int(plconloc(81))
             call exit(201)
          endif
 !     
-!     exponetial perturbed Lagrange
+!     exponential perturbed Lagrange
 !
       else if (regmode.eq.3)then
          if(divmode.eq.0)then
@@ -135,6 +121,6 @@ c         ndata=int(plconloc(81))
             call exit(201)
          endif
       endif
-c     call exit(201)
+!
       return
       end

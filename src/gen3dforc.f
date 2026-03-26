@@ -18,8 +18,9 @@
 !     
       subroutine gen3dforc(ikforc,ilforc,nforc,nforc_,nodeforc,
      &     ndirforc,xforc,iamforc,ntrans,inotr,trab,rig,ipompc,nodempc,
-     &     coefmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,labmpc,iponoel,inoel,
-     &     iponoelmax,kon,ipkon,lakon,ne,iponor,xnor,knor,nam,nk,nk_,
+     &     coefmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,labmpc,iponoel2d,
+     &     inoel2d,
+     &     iponoel2dmax,kon,ipkon,lakon,ne,iponor,xnor,knor,nam,nk,nk_,
      &     co,thicke,nodeboun,ndirboun,ikboun,ilboun,nboun,nboun_,
      &     iamboun,typeboun,xboun,nmethod,iperturb,istep,vold,mi,
      &     idefforc)
@@ -39,15 +40,16 @@
       integer ikforc(*),ilforc(*),nodeforc(2,*),ndirforc(*),itr,idirref,
      &     iamforc(*),idim,ier,matz,nodeact,linc,lend,lstart,nnodes,
      &     nforc,nforc_,ntrans,inotr(2,*),rig(*),ipompc(*),nodempc(3,*),
-     &     nmpc,nmpc_,mpcfree,ikmpc(*),ilmpc(*),iponoel(*),inoel(3,*),
-     &     iponoelmax,kon(*),ipkon(*),ne,iponor(2,*),knor(*),nforcold,
+     &     nmpc,nmpc_,mpcfree,ikmpc(*),ilmpc(*),iponoel2d(*),
+     &     inoel2d(3,*),
+     &     iponoel2dmax,kon(*),ipkon(*),ne,iponor(2,*),knor(*),nforcold,
      &     i,node,index,ielem,j,indexe,indexk,nam,iamplitude,idir,
      &     irotnode,nk,nk_,newnode,idof,id,mpcfreenew,k,isector,
      &     idepnodes(80),l,iexpnode,indexx,irefnode,imax,isol,
      &     nod,impc,istep,nodeboun(*),ndirboun(*),ikboun(*),ilboun(*),
      &     nboun,nboun_,iamboun(*),nmethod,iperturb(*),nrhs,ipiv(3),
      &     mi(*),idefforc(*),nedge,idirstart,idirend,idirl,ndepnodes,
-     &     mpcfreeold,info,m,ialeatoric
+     &     mpcfreeold,info,m,ialeatoric,ncgnodes
 !     
       real*8 xforc(*),trab(7,*),coefmpc(*),xnor(*),val,co(3,*),dot,
      &     thicke(mi(3),*),pi,xboun(*),xnoref(3),dmax,d(3,3),e(3,3,3),
@@ -71,7 +73,7 @@
       nforcold=nforc
       loop: do i=1,nforcold
         node=nodeforc(1,i)
-        if(node.gt.iponoelmax) then
+        if(node.gt.iponoel2dmax) then
           if(ndirforc(i).gt.3) then
             write(*,*) '*WARNING: in gen3dforc: node ',i,
      &           ' does not'
@@ -81,7 +83,7 @@
           endif
           cycle
         endif
-        index=iponoel(node)
+        index=iponoel2d(node)
 !     
 !     next loop is needed, since an element may have
 !     been deactivated
@@ -97,10 +99,10 @@
             endif
             cycle loop
           endif
-          ielem=inoel(1,index)
+          ielem=inoel2d(1,index)
           indexe=ipkon(ielem)
           if(indexe.ge.0) exit
-          index=inoel(3,index)
+          index=inoel2d(3,index)
         enddo
 !     
 !     checking whether element is linear or quadratic
@@ -121,8 +123,7 @@
           nedge=4
         endif
 !     
-        j=inoel(2,index)
-c     indexe=ipkon(ielem)
+        j=inoel2d(2,index)
         indexk=iponor(2,indexe+j)
         if(nam.gt.0) iamplitude=iamforc(i)
         idir=ndirforc(i)
@@ -198,21 +199,22 @@ c     val=xforc(i)
               enddo
             enddo
 !     
-!     generate a rigid body knot
+!     generate a knot (expandable rigid body)
 !     
             irefnode=node
             nk=nk+1
             if(nk.gt.nk_) then
-              write(*,*) '*ERROR in rigidbodies: increase nk_'
+              write(*,*) '*ERROR in gen3dforc: increase nk_'
               call exit(201)
             endif
             irotnode=nk
             rig(node)=irotnode
+            inotr(1,irotnode)=inotr(1,node)
             write(27,*) 'a KNOT was generated in node ',node
             write(27,*)
             nk=nk+1
             if(nk.gt.nk_) then
-              write(*,*) '*ERROR in rigidbodies: increase nk_'
+              write(*,*) '*ERROR in gen3dforc: increase nk_'
               call exit(201)
             endif
             iexpnode=nk
@@ -256,207 +258,232 @@ c     val=xforc(i)
                 q(l)=q(l)/ndepnodes
                 w(l)=w(l)/ndepnodes
               enddo
-            endif
+!     
+!     check whether the displacements are zero
+!     
+              dd=dsqrt(w(1)*w(1)+w(2)*w(2)+w(3)*w(3))
+              if(dd.lt.1.d-20) then
+                do l=1,3
+                  vold(l,irefnode)=0.d0
+                  vold(l,irotnode)=0.d0
+                  vold(l,iexpnode)=0.d0
+                enddo
+              else
+              endif
 !     
 !     determine the uniform expansion
 !     
-            alpha=0.d0
-            do k=1,ndepnodes
-              nod=idepnodes(k)
-              dd=(co(1,nod)-q(1))**2
-     &             +(co(2,nod)-q(2))**2
-     &             +(co(3,nod)-q(3))**2
-              if(dd.lt.1.d-20) cycle
-              alpha=alpha+dsqrt(
-     &             ((co(1,nod)+vold(1,nod)-q(1)-w(1))**2
-     &             +(co(2,nod)+vold(2,nod)-q(2)-w(2))**2
-     &             +(co(3,nod)+vold(3,nod)-q(3)-w(3))**2)/dd)
-            enddo
-            alpha=alpha/ndepnodes
+              alpha=0.d0
+              ncgnodes=0
+              do k=1,ndepnodes
+                nod=idepnodes(k)
+                dd=(co(1,nod)-q(1))**2
+     &               +(co(2,nod)-q(2))**2
+     &               +(co(3,nod)-q(3))**2
+                if(dd.lt.1.d-20) then
+                  ncgnodes=ncgnodes+1
+                  cycle
+                endif
+                alpha=alpha+dsqrt(
+     &               ((co(1,nod)+vold(1,nod)-q(1)-w(1))**2
+     &               +(co(2,nod)+vold(2,nod)-q(2)-w(2))**2
+     &               +(co(3,nod)+vold(3,nod)-q(3)-w(3))**2)/dd)
+              enddo
+              if(ndepnodes-ncgnodes.gt.0) then
+                alpha=alpha/(ndepnodes-ncgnodes)
+              endif
 !     
 !     determine the displacements of irotnodes
 !     
-            do l=1,3
-              do m=1,3
-                a(l,m)=0.d0
-              enddo
-              xn(l)=0.d0
-            enddo
-            do k=1,ndepnodes
-              nod=idepnodes(k)
-              dd=0.d0
-              do l=1,3
-                a1(l)=co(l,nod)-q(l)
-                a2(l)=vold(l,nod)-w(l)
-                dd=dd+a1(l)*a1(l)
-              enddo
-              dd=dsqrt(dd)
-              if(dd.lt.1.d-10) cycle
-              do l=1,3
-                a1(l)=a1(l)/dd
-                a2(l)=a2(l)/dd
-              enddo
-              xn(1)=xn(1)+(a1(2)*a2(3)-a1(3)*a2(2))
-              xn(2)=xn(2)+(a1(3)*a2(1)-a1(1)*a2(3))
-              xn(3)=xn(3)+(a1(1)*a2(2)-a1(2)*a2(1))
               do l=1,3
                 do m=1,3
-                  a(l,m)=a(l,m)+a1(l)*a1(m)
+                  a(l,m)=0.d0
                 enddo
+                xn(l)=0.d0
               enddo
-            enddo
-!     
-            do l=1,3
-              do m=1,3
-                a(l,m)=a(l,m)/ndepnodes
-              enddo
-              xn(l)=xn(l)/ndepnodes
-              a(l,l)=1.d0-a(l,l)
-            enddo
-!     
-            m=3
-            nrhs=1
-            call dgesv(m,nrhs,a,m,ipiv,xn,m,info)
-            if(info.ne.0) then
-              write(*,*) '*ERROR in gen3dforc:'
-              write(*,*) '       singular system of equations'
-              call exit(201)
-            endif
-!     
-            dd=0.d0
-            do l=1,3
-              dd=dd+xn(l)*xn(l)
-            enddo
-            dd=dsqrt(dd)
-            do l=1,3
-              xn(l)=dasin(dd/alpha)*xn(l)/dd
-            enddo
-!     
-!     determine the displacements of irefnode
-!     
-            ww=dsqrt(xn(1)*xn(1)+xn(2)*xn(2)+xn(3)*xn(3))
-!     
-            c1=dcos(ww)
-            if(ww.gt.1.d-10) then
-              c2=dsin(ww)/ww
-            else
-              c2=1.d0
-            endif
-            if(ww.gt.1.d-5) then
-              c3=(1.d0-c1)/ww**2
-            else
-              c3=0.5d0
-            endif
-!     
-!     rotation matrix r
-!     
-            do k=1,3
-              do l=1,3
-                r(k,l)=c1*d(k,l)+
-     &               c2*(e(k,1,l)*xn(1)+e(k,2,l)*xn(2)+
-     &               e(k,3,l)*xn(3))+c3*xn(k)*xn(l)
-              enddo
-            enddo
-!     
-!     copying the displacements
-!     
-            do l=1,3
-              vold(l,irefnode)=w(l)
-              vold(l,irotnode)=xn(l)
-            enddo
-c     vold(1,iexpnode)=alpha
-            vold(1,iexpnode)=alpha-1.d0
-!     
-!     correction of the expansion values for beam sections
-!     
-            if(idim.eq.2) then
-!     
-!     initializing matrices b and c
-!     
-              do l=1,3
-                do m=1,3
-                  b(l,m)=0.d0
-                  c(l,m)=0.d0
-                enddo
-              enddo
-!     
-!     solving a least squares problem to determine 
-!     the transpose of the deformation gradient:
-!     c.F^T=b
-!     
+!              
+              ncgnodes=0
               do k=1,ndepnodes
                 nod=idepnodes(k)
+                dd=0.d0
                 do l=1,3
-                  x(l)=co(l,nod)-q(l)
-                  y(l)=x(l)+vold(l,nod)-w(l)
+                  a1(l)=co(l,nod)-q(l)
+                  a2(l)=vold(l,nod)-w(l)
+                  dd=dd+a1(l)*a1(l)
                 enddo
+                dd=dsqrt(dd)
+                if(dd.lt.1.d-10) then
+                  ncgnodes=ncgnodes+1
+                  cycle
+                endif
+                do l=1,3
+                  a1(l)=a1(l)/dd
+                  a2(l)=a2(l)/dd
+                enddo
+                xn(1)=xn(1)+(a1(2)*a2(3)-a1(3)*a2(2))
+                xn(2)=xn(2)+(a1(3)*a2(1)-a1(1)*a2(3))
+                xn(3)=xn(3)+(a1(1)*a2(2)-a1(2)*a2(1))
                 do l=1,3
                   do m=1,3
-                    c(l,m)=c(l,m)+x(l)*x(m)
-                    b(l,m)=b(l,m)+x(l)*y(m)
+                    a(l,m)=a(l,m)+a1(l)*a1(m)
                   enddo
                 enddo
               enddo
 !     
-!     solving the linear equation system
+              if(ndepnodes-ncgnodes.gt.0) then
+                do l=1,3
+                  do m=1,3
+                    a(l,m)=a(l,m)/(ndepnodes-ncgnodes)
+                  enddo
+                  xn(l)=xn(l)/(ndepnodes-ncgnodes)
+                  a(l,l)=1.d0-a(l,l)
+                enddo
+              endif
 !     
               m=3
-              nrhs=3
-              call dgesv(m,nrhs,c,m,ipiv,b,m,info)
+              nrhs=1
+              call dgesv(m,nrhs,a,m,ipiv,xn,m,info)
               if(info.ne.0) then
                 write(*,*) '*ERROR in gen3dforc:'
                 write(*,*) '       singular system of equations'
                 call exit(201)
               endif
 !     
+              dd=0.d0
+              do l=1,3
+                dd=dd+xn(l)*xn(l)
+              enddo
+              dd=dsqrt(dd)
+              do l=1,3
+                xn(l)=dasin(dd/alpha)*xn(l)/dd
+              enddo
+!     
+!     determine the displacements of irefnode
+!     
+              ww=dsqrt(xn(1)*xn(1)+xn(2)*xn(2)+xn(3)*xn(3))
+!     
+              c1=dcos(ww)
+              if(ww.gt.1.d-10) then
+                c2=dsin(ww)/ww
+              else
+                c2=1.d0
+              endif
+              if(ww.gt.1.d-5) then
+                c3=(1.d0-c1)/ww**2
+              else
+                c3=0.5d0
+              endif
+!     
+!     rotation matrix r
+!     
+              do k=1,3
+                do l=1,3
+                  r(k,l)=c1*d(k,l)+
+     &                 c2*(e(k,1,l)*xn(1)+e(k,2,l)*xn(2)+
+     &                 e(k,3,l)*xn(3))+c3*xn(k)*xn(l)
+                enddo
+              enddo
+!     
+!     copying the displacements
+!     
+              do l=1,3
+                vold(l,irefnode)=w(l)
+                vold(l,irotnode)=xn(l)
+              enddo
+c     vold(1,iexpnode)=alpha
+              vold(1,iexpnode)=alpha-1.d0
+!     
+!     correction of the expansion values for beam sections
+!     
+              if(idim.eq.2) then
+!     
+!     initializing matrices b and c
+!     
+                do l=1,3
+                  do m=1,3
+                    b(l,m)=0.d0
+                    c(l,m)=0.d0
+                  enddo
+                enddo
+!     
+!     solving a least squares problem to determine 
+!     the transpose of the deformation gradient:
+!     c.F^T=b
+!     
+                do k=1,ndepnodes
+                  nod=idepnodes(k)
+                  do l=1,3
+                    x(l)=co(l,nod)-q(l)
+                    y(l)=x(l)+vold(l,nod)-w(l)
+                  enddo
+                  do l=1,3
+                    do m=1,3
+                      c(l,m)=c(l,m)+x(l)*x(m)
+                      b(l,m)=b(l,m)+x(l)*y(m)
+                    enddo
+                  enddo
+                enddo
+!     
+!     solving the linear equation system
+!     
+                m=3
+                nrhs=3
+                call dgesv(m,nrhs,c,m,ipiv,b,m,info)
+                if(info.ne.0) then
+                  write(*,*) '*ERROR in gen3dforc:'
+                  write(*,*) '       singular system of equations'
+                  call exit(201)
+                endif
+!     
 !     now b=F^T
 !     
 !     constructing the right stretch tensor
 !     U=F^T.R
 !     
-              do l=1,3
-                do m=l,3
-                  u(l,m)=b(l,1)*r(1,m)+b(l,2)*r(2,m)+
-     &                 b(l,3)*r(3,m)
+                do l=1,3
+                  do m=l,3
+                    u(l,m)=b(l,1)*r(1,m)+b(l,2)*r(2,m)+
+     &                   b(l,3)*r(3,m)
+                  enddo
                 enddo
-              enddo
-              u(2,1)=u(1,2)
-              u(3,1)=u(1,3)
-              u(3,2)=u(2,3)
+                u(2,1)=u(1,2)
+                u(3,1)=u(1,3)
+                u(3,2)=u(2,3)
 !     
 !     determining the eigenvalues and eigenvectors of U
 !     
-              m=3
-              matz=1
-              ier=0
-              call rs(m,m,u,w,matz,z,fv1,fv2,ier)
-              if(ier.ne.0) then
-                write(*,*) 
-     &               '*ERROR in knotmpc while calculating the'
-                write(*,*) '       eigenvalues/eigenvectors'
-                call exit(201)
-              endif
-!     
-              if((dabs(w(1)-1.d0).lt.dabs(w(2)-1.d0)).and.
-     &             (dabs(w(1)-1.d0).lt.dabs(w(3)-1.d0))) then
-                l=2
                 m=3
-              elseif((dabs(w(2)-1.d0).lt.dabs(w(1)-1.d0)).and.
-     &               (dabs(w(2)-1.d0).lt.dabs(w(3)-1.d0))) then
-                l=1
-                m=3
-              else
-                l=1
-                m=2
-              endif
-              xi1=datan2((z(1,l)*e2(1)+z(2,l)*e2(2)+z(3,l)*e2(2)),
-     &             (z(1,l)*e1(1)+z(2,l)*e1(2)+z(3,l)*e1(2)))
-              xi2=w(l)-1.d0
-              xi3=w(m)-1.d0
+                matz=1
+                ier=0
+                call rs(m,m,u,w,matz,z,fv1,fv2,ier)
+                if(ier.ne.0) then
+                  write(*,*) 
+     &                 '*ERROR in knotmpc while calculating the'
+                  write(*,*) '       eigenvalues/eigenvectors'
+                  call exit(201)
+                endif
 !     
-              vold(1,iexpnode)=xi1
-              vold(2,iexpnode)=xi2
-              vold(3,iexpnode)=xi3
+                if((dabs(w(1)-1.d0).lt.dabs(w(2)-1.d0)).and.
+     &               (dabs(w(1)-1.d0).lt.dabs(w(3)-1.d0))) then
+                  l=2
+                  m=3
+                elseif((dabs(w(2)-1.d0).lt.dabs(w(1)-1.d0)).and.
+     &                 (dabs(w(2)-1.d0).lt.dabs(w(3)-1.d0))) then
+                  l=1
+                  m=3
+                else
+                  l=1
+                  m=2
+                endif
+                xi1=datan2((z(1,l)*e2(1)+z(2,l)*e2(2)+z(3,l)*e2(2)),
+     &               (z(1,l)*e1(1)+z(2,l)*e1(2)+z(3,l)*e1(2)))
+                xi2=w(l)-1.d0
+                xi3=w(m)-1.d0
+!     
+                vold(1,iexpnode)=xi1
+                vold(2,iexpnode)=xi2
+                vold(3,iexpnode)=xi3
+              endif
             endif
 !     
 !     apply the moment

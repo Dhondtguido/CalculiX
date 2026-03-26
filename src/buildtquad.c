@@ -22,183 +22,144 @@
 #include <time.h>
 #include "CalculiX.h"
 #include "mortar.h"
-/**
- * Calculates the transformation matrices \f$ T \f$ and \f$ T^{-1} \f$ for quad-quad or quad-lin method
- * see phd-thesis Sitzmann Chapter 4.1
- * Author: Saskia Sitzmann
- * 
- *  [in] ntie		number of contraints
- *  [in] ipkon		pointer into field kon...
- *  [in] kon 		.. for element i storing the connectivity list of elem. in succ. order 
- *  [in] nk 		number of nodes
- *  [in] lakon		(i) label for element i 
- *  [in] nslavnode	(i)pointer into field isalvnode for contact tie i 
- *  [in] itiefac		pointer into field islavsurf: (1,i) beginning slave_i (2,i) end of slave_i 
- *  [in] tieset           (i) name of tie i 
- *  [in] islavnode	field storing the nodes of the slave surface
- *  [in] islavsurf	islavsurf(1,i) slaveface i islavsurf(2,i) # integration points generated before looking at face i  
- *  [out] irowtlocp		field containing row numbers of autloc
- *  [out] jqtloc	        pointer into field irowtloc
- *  [out] autlocp		transformation matrix \f$ T[p,q]\f$ for slave nodes \f$ p,q \f$ 
- *  [out] irowtlocinvp	field containing row numbers of autlocinv
- *  [out] jqtlocinv	pointer into field irowtlocinv
- *  [out] autlocinvp	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$ 
- *  [in]  iflagdualquad   flag indicating what mortar contact is used (=1 quad-lin, =2 quad-quad, =3 PG quad-lin, =4 PG quad-quad)
-*/
+
+/*  Calculates the transformation matrices for quadratic elements
+    see phd-thesis Sitzmann Chapter 4.1
+    Author: Saskia Sitzmann */
+
 void buildtquad(ITG *ntie,ITG *ipkon,ITG *kon,ITG *nk,char *lakon,
 		ITG *nslavnode,ITG *itiefac,char *tieset,
 		ITG *islavnode,ITG *islavsurf,
-		ITG **irowtlocp,ITG *jqtloc,double **autlocp,
-		ITG **irowtlocinvp,ITG *jqtlocinv,double **autlocinvp,
-		ITG *iflagdualquad){  
+		ITG **irowtp,ITG *jqt,double **autp,
+		ITG **irowtinvp,ITG *jqtinv,double **autinvp){  
   
   ITG i,j,l,nodesf,nodem,istart,icounter,ndim,ifree,ifree2,
-    nzstloc,nzstlocinv,*idcontr1=NULL,*idcontr2=NULL,debug,
-    *mast1=NULL,*mast2=NULL,*irowtloc=NULL,*irowtlocinv=NULL;
+    nzstloc,nzstlocinv,*krow=NULL,*kcol=NULL,
+    *mast1=NULL,*mast2=NULL,*irowt=NULL,*irowtinv=NULL;
   
-  double contribution,*dcontr=NULL,*autloc=NULL,*autlocinv=NULL;
+  double contribution,*contr=NULL,*aut=NULL,*autinv=NULL;
   
-  irowtloc=*irowtlocp; autloc=*autlocp;
-  irowtlocinv=*irowtlocinvp; autlocinv=*autlocinvp;
-  
-  debug=0;
+  irowt=*irowtp; aut=*autp;
+  irowtinv=*irowtinvp; autinv=*autinvp;
   
   /** built T and T^-1 **/
   
   nzstloc=3*nslavnode[*ntie];
   NNEW(mast1,ITG,nzstloc);
-  RENEW(autloc,double,nzstloc);
-  RENEW(irowtloc,ITG,nzstloc);
+  RENEW(aut,double,nzstloc);
+  RENEW(irowt,ITG,nzstloc);
   
   nzstlocinv=3*nslavnode[*ntie];
   NNEW(mast2,ITG,nzstlocinv);
-  RENEW(autlocinv,double,nzstloc);
-  RENEW(irowtlocinv,ITG,nzstloc);
+  RENEW(autinv,double,nzstloc);
+  RENEW(irowtinv,ITG,nzstloc);
   
   ifree=1;ifree2=1;
   
-  NNEW(dcontr,double,16);
-  NNEW(idcontr1,ITG,16);
-  NNEW(idcontr2,ITG,16);
+  NNEW(contr,double,16);
+  NNEW(krow,ITG,16);
+  NNEW(kcol,ITG,16);
   
   for(i=0;i<*ntie;i++){	    
     if(tieset[i*(81*3)+80]=='C'){				
       for(l=itiefac[2*i];l<=itiefac[2*i+1];l++){
-	if(debug==1)printf("bdfill face %" ITGFORMAT "  \n",l);
 
 	/* contribution for T */
 	
-	if(*iflagdualquad==2 || *iflagdualquad==4){
-	  FORTRAN(createtele,(ipkon,kon,lakon,islavsurf,
-			      dcontr,idcontr1,idcontr2,&icounter,&l));
-	}else{
-	  FORTRAN(createtele_lin,(ipkon,kon,lakon,islavsurf,
-				  dcontr,idcontr1,idcontr2,&icounter,&l));
-	}
+	FORTRAN(create_t,(ipkon,kon,lakon,islavsurf,
+			  contr,krow,kcol,&icounter,&l));
 	
 	for(j=0;j<icounter;j++){
-	  contribution=dcontr[j];
-	  nodesf=idcontr1[j];				
-	  nodem=idcontr2[j];				
-	  if(debug==1)printf("\tbdfill: T nodesf %" ITGFORMAT " nodem %"
-			     ITGFORMAT " c %e \n",nodesf,nodem,contribution);
-	  insertas(&irowtloc,&mast1,&nodesf,&nodem,&ifree,&nzstloc,
-		   &contribution,&autloc);				
+	  contribution=contr[j];
+	  nodesf=krow[j];				
+	  nodem=kcol[j];				
+	  insertas(&irowt,&mast1,&nodesf,&nodem,&ifree,&nzstloc,
+		   &contribution,&aut);				
 	}
 
 	/* contribution for T^-1 */
 	
-	if(*iflagdualquad==2 || *iflagdualquad==4){
-	  FORTRAN(createteleinv,(ipkon,kon,lakon,islavsurf,
-				 dcontr,idcontr1,idcontr2,&icounter,&l));
-	}else{
-	  FORTRAN(createteleinv_lin,(ipkon,kon,lakon,islavsurf,
-				     dcontr,idcontr1,idcontr2,&icounter,&l));
-	}
+	FORTRAN(create_tinv,(ipkon,kon,lakon,islavsurf,
+			     contr,krow,kcol,&icounter,&l));
 	
 	for(j=0;j<icounter;j++){
-	  contribution=dcontr[j];
-	  nodesf=idcontr1[j];				
-	  nodem=idcontr2[j];				
-	  if(debug==1)printf("\tbdfill: Tinv nodesf %" ITGFORMAT " nodem %"
-			     ITGFORMAT " c %e \n",nodesf,nodem,contribution);  
-	  insertas(&irowtlocinv,&mast2,&nodesf,&nodem,&ifree2,&nzstlocinv,
-		   &contribution,&autlocinv);
+	  contribution=contr[j];
+	  nodesf=krow[j];				
+	  nodem=kcol[j];				
+	  insertas(&irowtinv,&mast2,&nodesf,&nodem,&ifree2,&nzstlocinv,
+		   &contribution,&autinv);
 	}
 	
       }
     }
   }
-  SFREE(dcontr);SFREE(idcontr1);SFREE(idcontr2);
+  SFREE(contr);SFREE(krow);SFREE(kcol);
     
   nzstloc=ifree-1;
-  if(debug==1)printf(" buildquad: \tsize autloc %" ITGFORMAT " \n",ifree);
   ndim=*nk;
-  matrixsort(autloc,mast1,irowtloc,jqtloc,&nzstloc,&ndim);
+  matrixsort(aut,mast1,irowt,jqt,&nzstloc,&ndim);
   
   /* Getting rid of identical contributions in T
      (a node can belong to several slave faces) */
   
   icounter=0;
   for (i=0;i<*nk;i++){
-    if(jqtloc[i]!=jqtloc[i+1]){
-      irowtloc[icounter]=irowtloc[jqtloc[i]-1];
-      autloc[icounter]=autloc[jqtloc[i]-1];
+    if(jqt[i]!=jqt[i+1]){
+      irowt[icounter]=irowt[jqt[i]-1];
+      aut[icounter]=aut[jqt[i]-1];
       icounter++;
       istart=icounter;
-      for (j=jqtloc[i];j<jqtloc[i+1]-1;j++){
-	if (irowtloc[j]==irowtloc[icounter-1]){
-	  autloc[icounter-1]=autloc[j];   
+      for (j=jqt[i];j<jqt[i+1]-1;j++){
+	if (irowt[j]==irowt[icounter-1]){
+	  aut[icounter-1]=aut[j];   
 	}else{
-	  irowtloc[icounter]=irowtloc[j];
-	  autloc[icounter]=autloc[j];
+	  irowt[icounter]=irowt[j];
+	  aut[icounter]=aut[j];
 	  icounter++;
 	  }
       }
     }else{ istart=icounter+1;}   
-    jqtloc[i]=istart;
+    jqt[i]=istart;
   }
-  jqtloc[*nk]=icounter+1; 
-  if(debug==1)printf(" buildquad: \tsize autloc %" ITGFORMAT " \n",icounter);
-  RENEW(irowtloc,ITG,icounter+1);
-  RENEW(autloc,double,icounter+1); 
+  jqt[*nk]=icounter+1; 
+  RENEW(irowt,ITG,icounter+1);
+  RENEW(aut,double,icounter+1); 
   SFREE(mast1);	
   
   nzstlocinv=ifree2-1; 
   ndim=*nk;
-  matrixsort(autlocinv,mast2,irowtlocinv,jqtlocinv,&nzstlocinv,&ndim);  
+  matrixsort(autinv,mast2,irowtinv,jqtinv,&nzstlocinv,&ndim);  
  
   /* Getting rid of identical contributions in T^-1
      (a node can belong to several slave faces) */
   
   icounter=0;
   for (i=0;i<*nk;i++){
-    if(jqtlocinv[i]!=jqtlocinv[i+1]){
-      irowtlocinv[icounter]=irowtlocinv[jqtlocinv[i]-1];
-      autlocinv[icounter]=autlocinv[jqtlocinv[i]-1];
+    if(jqtinv[i]!=jqtinv[i+1]){
+      irowtinv[icounter]=irowtinv[jqtinv[i]-1];
+      autinv[icounter]=autinv[jqtinv[i]-1];
       icounter++;
       istart=icounter;
-      for (j=jqtlocinv[i];j<jqtlocinv[i+1]-1;j++){
-	if (irowtlocinv[j]==irowtlocinv[icounter-1]){
-	  autlocinv[icounter-1]=autlocinv[j];   
+      for (j=jqtinv[i];j<jqtinv[i+1]-1;j++){
+	if (irowtinv[j]==irowtinv[icounter-1]){
+	  autinv[icounter-1]=autinv[j];   
 	}else{
-	  irowtlocinv[icounter]=irowtlocinv[j];
-	  autlocinv[icounter]=autlocinv[j];
+	  irowtinv[icounter]=irowtinv[j];
+	  autinv[icounter]=autinv[j];
 	  icounter++;
 	}
       }
     }else{ istart=icounter+1;}   
-    jqtlocinv[i]=istart;
+    jqtinv[i]=istart;
   }
-  jqtlocinv[*nk]=icounter+1;
+  jqtinv[*nk]=icounter+1;
   
-  if(debug==1)printf(" buildquad: \tsize autlocinv %" ITGFORMAT " \n\n",icounter);
-  RENEW(irowtlocinv,ITG,icounter+1);
-  RENEW(autlocinv,double,icounter+1); 
+  RENEW(irowtinv,ITG,icounter+1);
+  RENEW(autinv,double,icounter+1); 
   SFREE(mast2);
   
-  *irowtlocp=irowtloc;*autlocp=autloc;
-  *irowtlocinvp=irowtlocinv;*autlocinvp=autlocinv;
+  *irowtp=irowt;*autp=aut;
+  *irowtinvp=irowtinv;*autinvp=autinv;
   
   return;
 }	    

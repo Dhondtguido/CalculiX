@@ -165,15 +165,8 @@ c                  i=7
 !        coordinates
 !
             call transformatrix(trab(1,itr),co(1,node),a)
-c            if(ii.le.3) then
             if(ii.le.6) then
                i=ii
-c            elseif(ii.eq.4) then
-c               i=5
-c            elseif(ii.eq.5) then
-c               i=6
-c            elseif(ii.eq.6) then
-c               i=7
             elseif(ii.eq.8) then
                i=4
             elseif(ii.eq.11) then
@@ -197,11 +190,8 @@ c               i=7
                if(idnew.gt.0) then
                   if(ikboun(idnew).eq.idofnew) then
                      j=ilboun(idnew)
-c
                      if(typeboun(j).ne.type) cycle
-c
                      xboun(j)=val
-c                     typeboun(j)=type
                      if(nam.gt.0) iamboun(j)=iamplitude
                      cycle
                   endif

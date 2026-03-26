@@ -28,14 +28,14 @@
 !                vold
 !
 !     nk: number of nodes in one segment
-!     nkt: number of nodes in 360°
+!     nkt: number of nodes in 360 degrees
 !
       implicit none
 !
       integer i,j,icntrl,mi(*),iznode(*),nznode,nsectors,nk,
      &  ii,jj,node
 !
-      real*8 co(3,*),vold(0:mi(2),*),a(3,3),xr,xt,xz,cs(17,*),csab(7)
+      real*8 co(3,*),vold(0:mi(2),*),a(3,3),xr,xt,xz,cs(18,*),csab(7)
 !
       do i=1,7
          csab(i)=cs(5+i,1)

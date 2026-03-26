@@ -29,7 +29,8 @@ void mastructmatrixcs(ITG *ipompc,ITG *nodempc,ITG *nmpc,ITG *nactdof,
 		      ITG *jq,ITG **mast1p,ITG *neq,ITG *ipointer, ITG *nzs_, 
 		      ITG *nmethod,ITG *mi,ITG **nextp,
 		      ITG *node1,ITG *k,ITG *node2,ITG *m,ITG *ifree,
-		      char *labmpc,ITG *mcs,double *cs,ITG *ics){
+		      char *labmpc,ITG *mcs,double *cs,ITG *ics,
+		      ITG *icalcnactdof){
 
   /* determines the structure of the thermo-mechanical matrices;
      (i.e. the location of the nonzeros */
@@ -43,6 +44,12 @@ void mastructmatrixcs(ITG *ipompc,ITG *nodempc,ITG *nmpc,ITG *nactdof,
 
   /* caveat: k and m take values 1..3 for dof in x,y,z
      (FORTRAN convention) */
+  
+  if(*icalcnactdof==1){
+    nactdof[mt*(*node1-1)+(*k)]=1;
+    nactdof[mt*(*node2-1)+(*m)]=1;
+    return;
+  }
   
   jdof1=nactdof[mt*(*node1-1)+(*k)];
   jdof2=nactdof[mt*(*node2-1)+(*m)];
@@ -86,8 +93,8 @@ void mastructmatrixcs(ITG *ipompc,ITG *nodempc,ITG *nmpc,ITG *nactdof,
 	  }
 	  else if(strcmp1(&labmpc[(id1-1)*20],"SUBCYCLIC")==0){
 	    for(ij=0;ij<*mcs;ij++){
-	      ilength=cs[17*ij+3];
-	      lprev=cs[17*ij+13];
+	      ilength=cs[18*ij+3];
+	      lprev=cs[18*ij+13];
 	      FORTRAN(nident,(&ics[lprev],&inode,&ilength,&id));
 	      if(id>0){
 		if(ics[lprev+id-1]==inode){
@@ -142,8 +149,8 @@ void mastructmatrixcs(ITG *ipompc,ITG *nodempc,ITG *nmpc,ITG *nactdof,
 	  }
 	  else if(strcmp1(&labmpc[(id1-1)*20],"SUBCYCLIC")==0){
 	    for(ij=0;ij<*mcs;ij++){
-	      ilength=cs[17*ij+3];
-	      lprev=cs[17*ij+13];
+	      ilength=cs[18*ij+3];
+	      lprev=cs[18*ij+13];
 	      FORTRAN(nident,(&ics[lprev],&inode1,&ilength,&id));
 	      if(id>0){
 		if(ics[lprev+id-1]==inode1){
@@ -163,8 +170,8 @@ void mastructmatrixcs(ITG *ipompc,ITG *nodempc,ITG *nmpc,ITG *nactdof,
 	    }
 	    else if(strcmp1(&labmpc[(id1-1)*20],"SUBCYCLIC")==0){
 	      for(ij=0;ij<*mcs;ij++){
-		ilength=cs[17*ij+3];
-		lprev=cs[17*ij+13];
+		ilength=cs[18*ij+3];
+		lprev=cs[18*ij+13];
 		FORTRAN(nident,(&ics[lprev],&inode2,&ilength,&id));
 		if(id>0){
 		  if(ics[lprev+id-1]==inode2){
@@ -208,8 +215,8 @@ void mastructmatrixcs(ITG *ipompc,ITG *nodempc,ITG *nmpc,ITG *nactdof,
 	  }
 	  else if(strcmp1(&labmpc[(id1-1)*20],"SUBCYCLIC")==0){
 	    for(ij=0;ij<*mcs;ij++){
-	      ilength=cs[17*ij+3];
-	      lprev=cs[17*ij+13];
+	      ilength=cs[18*ij+3];
+	      lprev=cs[18*ij+13];
 	      FORTRAN(nident,(&ics[lprev],&inode1,&ilength,&id));
 	      if(id>0){
 		if(ics[lprev+id-1]==inode1){
@@ -235,8 +242,8 @@ void mastructmatrixcs(ITG *ipompc,ITG *nodempc,ITG *nmpc,ITG *nactdof,
 	    }
 	    else if(strcmp1(&labmpc[(id2-1)*20],"SUBCYCLIC")==0){
 	      for(ij=0;ij<*mcs;ij++){
-		ilength=cs[17*ij+3];
-		lprev=cs[17*ij+13];
+		ilength=cs[18*ij+3];
+		lprev=cs[18*ij+13];
 		FORTRAN(nident,(&ics[lprev],&inode2,&ilength,&id));
 		if(id>0){
 		  if(ics[lprev+id-1]==inode2){

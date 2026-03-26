@@ -234,6 +234,10 @@ c     iperturb(2)=0
         else
           mei(1)=0
         endif
+!
+!       zero value for selective mass scaling
+!
+        fei(4)=tmin
 !     
         if(.not.cycmpcactive) then
 !     

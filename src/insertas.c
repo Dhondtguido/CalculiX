@@ -22,17 +22,7 @@
 #include "CalculiX.h"
 #include "mortar.h"
 
-/**  inserts a new nonzero matrix position into the sparse matrix data structure
- *
- *  [in,out] irowp	field saving the row numbers
- *  [in,out] mast1p	field saving the column numbers
- *  [in] i1   		row number (FORTRAN convention)
- *  [in] i2   		column number (FORTRAN convention)
- *  [in,out] ifree	position of next free space in row,imast1,bd
- *  [in,out] nzs_		size of row,imast1,bd
- *  [in] contribution	value to be saved in bd
- *  [in,out] bdp		values of sparse matrix  
-**/
+/*  inserts a new nonzero matrix position into the sparse matrix data structure */
 
 void insertas(ITG **irowp, ITG **mast1p, ITG *i1,ITG *i2, ITG *ifree,
 	      ITG *nzs_, double *contribution, double **bdp){

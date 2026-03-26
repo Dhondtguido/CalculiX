@@ -44,7 +44,7 @@ void writeoldmesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,
     *orab=NULL,*stx=NULL,*vr=NULL,*vi=NULL,*stnr=NULL,*stni=NULL,
     *vmax=NULL,*stnmax=NULL,*veold=NULL,*ener=NULL,*cs=NULL,*eenmax=NULL,
     *fnr=NULL,*fni=NULL,*emn=NULL,*thicke=NULL,*qfx=NULL,*cdn=NULL,
-    *cdnr=NULL,*cdni=NULL,*prop=NULL,*sti=NULL;
+    *cdnr=NULL,*cdni=NULL,*prop=NULL,*sti=NULL,*damn=NULL,*errn=NULL;
 
   strcpy2(foldmesh,jobnamec,132);
   strcat(foldmesh,".urf");
@@ -70,7 +70,7 @@ void writeoldmesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,
       mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
       cs,set,&nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
       thicke,foldmesh,output,qfx,cdn,&mortar,cdnr,cdni,nmat,ielprop,
-      prop,sti);
+      prop,sti,damn,&errn);
   
   strcat(foldmesh,".frd");
   if((f1=fopen(foldmesh,"ab"))==NULL){

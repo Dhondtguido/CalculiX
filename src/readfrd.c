@@ -86,7 +86,7 @@ void freeDatasets(Datasets *lcase, int nr)
   lcase[nr].fileptr=NULL;
   lcase[nr].loaded=0;
 
-  /* edat not propper implemented or deleted */
+  /* edat not properly implemented or deleted */
   // for(i=0; i<3; i++) for(e=0; e<anz->e; e++) SFREE(lcase[nr].edat[i][e]);
 }
 
@@ -776,7 +776,7 @@ int readfrd( char *datin, Summen *anz, Nodes **nptr, Elements **eptr, Datasets *
 
           if( lcase[anz->l].irtype > 2 )
           {
-            printf(" Found ELEMENT DATA, this is not suported!\n");
+            printf(" Found ELEMENT DATA, this is not supported!\n");
             anz->l--;
             goto next;
           }
@@ -1384,12 +1384,12 @@ int readfrd( char *datin, Summen *anz, Nodes **nptr, Elements **eptr, Datasets *
 
   if ( e_nmax > (anz->nmax) )
   {
-    printf ("\nWARNING: element requestes a nodename higher than allocated\n\n");
+    printf ("\nWARNING: element requests a nodename higher than allocated\n\n");
     printf (" e_nmax=%d e_nmin=%d\n", e_nmax, e_nmin );
   }
   if ( e_nmin < 1 )
   {
-    printf ("\nWARNING: element requestes a nodename lower than allocated\n\n");
+    printf ("\nWARNING: element requests a nodename lower than allocated\n\n");
     printf (" e_nmax=%d e_nmin=%d\n", e_nmax, e_nmin );
   }
 
@@ -1436,7 +1436,7 @@ int readfrdblock(int lc, Summen *anz,   Nodes     *node, Datasets *lcase )
 
   if( lcase[lc].irtype > 2 )
   {
-    printf(" ERROR: Found ELEMENT DATA, this is not suported!\n");
+    printf(" ERROR: Found ELEMENT DATA, this is not supported!\n");
     return(-1);
   }
 
@@ -1610,7 +1610,7 @@ char *getRecord(FILE *handle, int n, int x0 )
 
 
 /* return -1 if failure */
-/* return 0 if successfull */
+/* return 0 if successful */
 int readOneNode( int lc, Summen *anz, Datasets *lcase, int nodenr, double **vptr, long *byte_offset )
 {
   register int i=0,j, n;
@@ -1719,7 +1719,7 @@ int readOneNode( int lc, Summen *anz, Datasets *lcase, int nodenr, double **vptr
 
   if( lcase[lc].irtype > 2 )
   {
-    printf(" ERROR: Found ELEMENT DATA, this is not suported!\n");
+    printf(" ERROR: Found ELEMENT DATA, this is not supported!\n");
     return(-1);
   }
 

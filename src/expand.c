@@ -63,11 +63,11 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	     ITG *imdnode,ITG *nmdnode,ITG *imdboun,ITG *nmdboun,
   	     ITG *imdmpc,ITG *nmdmpc, ITG **izdofp, ITG *nzdof,ITG *nherm,
 	     double *xmr,double *xmi,char *typeboun,ITG *ielprop,double *prop,
-	    char *orname,ITG *itiefac,double *t0g,double *t1g){
+	    char *orname,ITG *itiefac,double *t0g,double *t1g,ITG *iponoel){
 
   /* calls the Arnoldi Package (ARPACK) for cyclic symmetry calculations */
   
-    char *filabt,lakonl[2]=" \0",*labmpc2=NULL;
+    char *filabt,lakonl[2]=" \0";
 
     ITG *inum=NULL,k,idir,j,iout=0,index,inode,id,i,idof,im,
       ielas,icmd,kk,l,nkt,icntrl,imag=1,icomplex,kkv,kk6,iterm,
@@ -78,10 +78,8 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
       network=0,noderight_,*izdof=*izdofp,iload,iforc,*iznode=NULL,
       nznode,ll,icfd=0,*inomat=NULL,mortar=0,*islavact=NULL,*ipobody=NULL,
       *islavnode=NULL,*nslavnode=NULL,*islavsurf=NULL,idirnew,
-      *iponoel=NULL,*inoel=NULL,mscalmethod=0,intscheme=0,
-      *islavelinv=NULL,*irowtloc=NULL,*jqtloc=NULL,nboun2,
-      *ndirboun2=NULL,*nodeboun2=NULL,nmpc2,*ipompc2=NULL,*nodempc2=NULL,
-      *ikboun2=NULL,*ilboun2=NULL,*ikmpc2=NULL,*ilmpc2=NULL,mortartrafoflag=0;
+      *iponoeln=NULL,*inoeln=NULL,mscalmethod=0,intscheme=0,
+      *islavquadel=NULL,*irowt=NULL,*jqt=NULL,mortartrafoflag=0;
 
     long long lint;
 
@@ -93,10 +91,9 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
       *qfx=NULL,*qfn=NULL,xreal,ximag,*vt=NULL,sum,*voldt=NULL,
       *coefright=NULL,coef,a[9],ratio,reltime,*physcon=NULL,
       *shcon=NULL,*springarea=NULL,*z=*zp, *zdof=NULL, *thicke=NULL,
-      *sumi=NULL,
-      *vti=NULL,*pslavsurf=NULL,*pmastsurf=NULL,*cdn=NULL,
-      *energyini=NULL,*energy=NULL,*smscale=NULL,
-      *autloc=NULL,*xboun2=NULL,*coefmpc2=NULL;
+      *sumi=NULL,*vti=NULL,*pslavsurf=NULL,*pmastsurf=NULL,*cdn=NULL,
+      *energyini=NULL,*energy=NULL,*smscale=NULL,*aut=NULL,
+      *dam=NULL,*damn=NULL;
     
     /* dummy arguments for the results call */
     
@@ -119,7 +116,7 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
     NNEW(inum,ITG,*nk);
     NNEW(stx,double,6*mi[0]**ne);
     
-    nlabel=55;
+    nlabel=56;
     NNEW(filabt,char,87*nlabel);
     for(i=1;i<87*nlabel;i++) filabt[i]=' ';
     filabt[0]='U';
@@ -147,9 +144,9 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
     if(*mcs==1) csmass[0]=1.;
     
     for(i=0;i<*mcs;i++){
-	is=cs[17*i];
+	is=cs[18*i];
 	//	if(is==1) continue;
-	ielset=cs[17*i+12];
+	ielset=cs[18*i+12];
 	if(ielset==0) continue;
 	for(i1=istartset[ielset-1]-1;i1<iendset[ielset-1];i1++){
 	    if(ialset[i1]>0){
@@ -256,16 +253,17 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
     FORTRAN(rectcyl,(co,v,fn,stn,qfn,een,cs,nk,&icntrl,t,filabt,&imag,mi,emn));
     
     for(jj=0;jj<*mcs;jj++){
-	is=(ITG)(cs[17*jj]+0.5);
+	is=(ITG)(cs[18*jj]+0.5);
 	for(i=1;i<is;i++){
 	    
-	    theta=i*2.*pi/cs[17*jj];
+	    theta=i*2.*pi/cs[18*jj];
 	    
 	    for(l=0;l<*nk;l++){
 		if(inocs[l]==jj){
 		    co[3*l+i*3**nk]=co[3*l];
 		    co[1+3*l+i*3**nk]=co[1+3*l]+theta;
 		    co[2+3*l+i*3**nk]=co[2+3*l];
+		    iponoel[l+i**nk]=iponoel[l];
 		    if(*ntrans>0) inotr[2*l+i*2**nk]=inotr[2*l];
 		}
 	    }
@@ -391,9 +389,9 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	/* calculating the cosine and sine of the phase angle */
 
 	for(jj=0;jj<*mcs;jj++){
-	    theta=nm[j]*2.*pi/cs[17*jj];
-	    cs[17*jj+14]=cos(theta);
-	    cs[17*jj+15]=sin(theta);
+	    theta=nm[j]*2.*pi/cs[18*jj];
+	    cs[18*jj+14]=cos(theta);
+	    cs[18*jj+15]=sin(theta);
 	}
 	
 	/* generating the cyclic MPC's (needed for nodal diameters
@@ -425,8 +423,8 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 			icomplex=atoi(&labmpc[20*i+6]);}
 		    else if(strcmp1(&labmpc[20*i],"SUBCYCLIC")==0){
 			for(ij=0;ij<*mcs;ij++){
-			    lprev=cs[ij*17+13];
-			    ilength=cs[ij*17+3];
+			    lprev=cs[18*ij+13];
+			    ilength=cs[18*ij+3];
 			    FORTRAN(nident,(&ics[lprev],&inode,&ilength,&id));
 			    if(id!=0){
 				if(ics[lprev+id-1]==inode){icomplex=ij+1;break;}
@@ -442,13 +440,13 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 			if(k==0) {
 			    if(fabs(xreal)<1.e-30)xreal=1.e-30;
 			    coefmpcnew[index]=coefmpc[index]*
-				(cs[17*(icomplex-1)+14]+
-                                 ximag/xreal*cs[17*(icomplex-1)+15]);}
+				(cs[18*(icomplex-1)+14]+
+                                 ximag/xreal*cs[18*(icomplex-1)+15]);}
 			else {
 			    if(fabs(ximag)<1.e-30)ximag=1.e-30;
 			    coefmpcnew[index]=coefmpc[index]*
-				(cs[17*(icomplex-1)+14]-
-                                 xreal/ximag*cs[17*(icomplex-1)+15]);}
+				(cs[18*(icomplex-1)+14]-
+                                 xreal/ximag*cs[18*(icomplex-1)+15]);}
 		    }
 		    else{coefmpcnew[index]=coefmpc[index];}
 		}
@@ -471,13 +469,11 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
               &ne0,thicke,shcon,nshcon,
               sideload,xload,xloadold,&icfd,inomat,pslavsurf,pmastsurf,
 	      &mortar,islavact,cdn,islavnode,nslavnode,ntie,clearini,
-	      islavsurf,ielprop,prop,energyini,energy,&iit,iponoel,
-	      inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
+	      islavsurf,ielprop,prop,energyini,energy,&iit,iponoeln,
+	      inoeln,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 	      itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-	      islavelinv,autloc,irowtloc,jqtloc,&nboun2,
-	      ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,coefmpc2,
-	      labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
-	      &intscheme,physcon);
+	      islavquadel,aut,irowt,jqt,&mortartrafoflag,
+	      &intscheme,physcon,dam,damn,iponoel);
 	    
 	}
 	//	SFREE(eei);
@@ -505,11 +501,11 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	/* other sectors */
 
 	for(jj=0;jj<*mcs;jj++){
-	    ilength=cs[17*jj+3];
-	    lprev=cs[17*jj+13];
+	    ilength=cs[18*jj+3];
+	    lprev=cs[18*jj+13];
 	    for(i=1;i<*nsectors;i++){
 		
-		theta=i*nm[j]*2.*pi/cs[17*jj];
+		theta=i*nm[j]*2.*pi/cs[18*jj];
 		ctl=cos(theta);
 		stl=sin(theta);
 		
@@ -579,10 +575,10 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	sum=0.;
 	summass=0.;
 	for(i=0;i<*mcs;i++){
-	  if (nm[j]==0||(nm[j]==(ITG)((cs[17*i]/2))&&(fmod(cs[17*i],2.)==0.))){
-	    sum+=cs[17*i]*csmass[i];
+	  if (nm[j]==0||(nm[j]==(ITG)((cs[18*i]/2))&&(fmod(cs[18*i],2.)==0.))){
+	    sum+=cs[18*i]*csmass[i];
 	  }else{
-	    sum+=cs[17*i]*csmass[i]/2.;
+	    sum+=cs[18*i]*csmass[i]/2.;
 	  }
 	  summass+=csmass[i];
 	}
@@ -628,8 +624,8 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	/* other sectors */
 	
 	for(jj=0;jj<*mcs;jj++){
-	    ilength=cs[17*jj+3];
-	    lprev=cs[17*jj+13];
+	    ilength=cs[18*jj+3];
+	    lprev=cs[18*jj+13];
 	    for(i=1;i<*nsectors;i++){
 		
 		for(ll=0;ll<nznode;ll++){
@@ -808,14 +804,14 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 
 		    /* check whether SUBCYCLIC MPC: if the current node
                        is an independent node of a CYCLIC MPC, the
-                       node in the new MPC should be the cylic previous
+                       node in the new MPC should be the cyclic previous
                        one */
 
 		    nodenew=node+i**nk;
 		    if(strcmp1(&labmpcold[20*j],"SUBCYCLIC")==0){
 			for(ij=0;ij<*mcs;ij++){
-			    lprev=cs[ij*17+13];
-			    ilength=cs[ij*17+3];
+			    lprev=cs[18*ij+13];
+			    ilength=cs[18*ij+3];
 			    FORTRAN(nident,(&ics[lprev],&node,&ilength,&id));
 			    if(id!=0){
 				if(ics[lprev+id-1]==node){
@@ -907,79 +903,6 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	    }
 	}
     }
-
-    /* copying the contact definition */
-
-//    if(*nmethod==4){
-      
-      /* first find the startposition to append the expanded contact fields*/
-      
-/*      for(j=0; j<*nset; j++){
-	if(iendset[j]>tint){
-	  tint=iendset[j];
-	}
-      }
-      tint++;*/
-      /* now append and expand the contact definitons*/
-/*      NNEW(tchar1,char,81);
-      NNEW(tchar2,char,81);
-      NNEW(tchar3,char,81);
-      for(i=0; i<*ntie; i++){
-	if(tieset[i*(81*3)+80]=='C'){
-	  memcpy(tchar2,&tieset[i*(81*3)+81],81);
-	  tchar2[80]='\0';
-	  memcpy(tchar3,&tieset[i*(81*3)+81+81],81);
-	  tchar3[80]='\0';*/
-	  //a contact constraint was found, so append and expand the information
-/*	  for(j=0; j<*nset; j++){
-	    memcpy(tchar1,&set[j*81],81);
-	    tchar1[80]='\0';
-	    if(strcmp(tchar1,tchar2)==0){*/
-	      /* dependent nodal surface was found,copy the original information first */
-/*	      tnstart=tint;
-	      for(k=0; k<iendset[j]-istartset[j]+1; k++){
-		ialset[tint-1]=ialset[istartset[j]-1+k];
-		tint++;
-	      }*/
-	      /* now append the expanded information */
-/*	      for(l=1; l<*nsectors; l++){
-		for(k=0; k<iendset[j]-istartset[j]+1; k++){
-		  ialset[tint-1]=(ialset[istartset[j]-1+k]!=-1)?ialset[istartset[j]-1+k]+*nk*l:-1;
-		  tint++;
-		}
-	      }
-	      tnend=tint-1;*/
-	      /* now replace the information in istartset and iendset*/
-/*	      istartset[j]=tnstart;
-	      iendset[j]=tnend;
-	    }
-	    else if(strcmp(tchar1,tchar3)==0){*/
-	      /* independent element face surface was found */
-/*	      tnstart=tint;
-	      for(k=0; k<iendset[j]-istartset[j]+1; k++){
-		ialset[tint-1]=ialset[istartset[j]-1+k];
-		tint++;
-	      }*/
-	      /* now append the expanded information*/
-/*	      for(l=1; l<*nsectors; l++){
-		for(k=0; k<iendset[j]-istartset[j]+1; k++){
-		  tint2=((ITG)(ialset[istartset[j]-1+k]))/10;
-		  ialset[tint-1]=(ialset[istartset[j]-1+k]!=-1)?(tint2+*ne*l)*10+(ialset[istartset[j]-1+k]-(tint2*10)):-1;
-		  tint++;
-		}
-	      }
-	      tnend=tint-1;*/
-	      /* now replace the information in istartset and iendset*/
-/*	      istartset[j]=tnstart;
-	      iendset[j]=tnend;
-	    }
-	  }
-	}
-      }
-      SFREE(tchar1);
-      SFREE(tchar2);
-      SFREE(tchar3);
-    }    */
     
     *nk=nkt;
     (*ne)*=(*nsectors);

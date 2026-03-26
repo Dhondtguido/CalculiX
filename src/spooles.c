@@ -335,7 +335,7 @@ void factor_MT(struct factorinfo *pfi, InpMtx *mtxA, int size, FILE *msgFile, in
 			DV_writeForHumanEye(cumopsDV, msgFile);
 			fflush(msgFile);
 		} else {
-			fprintf(msgFile, "\n\n Using %d threads\n",
+			fprintf(msgFile, "\n\n Using %" ITGFORMAT " threads\n",
 				pfi->nthread);
 		}
 		DV_free(cumopsDV);

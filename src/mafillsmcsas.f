@@ -31,7 +31,7 @@
      &     veold,springarea,thicke,integerglob,doubleglob,
      &     tieset,istartset,iendset,ialset,ntie,nasym,nstate_,xstateini,
      &     xstate,pslavsurf,pmastsurf,mortar,clearini,ielprop,prop,ne0,
-     &     kscale,set,nset)
+     &     kscale,set,nset,imastload,pmastload)
 !     
 !     filling the stiffness matrix in spare matrix format (sm)
 !     for cyclic symmetry calculations
@@ -59,22 +59,22 @@
      &     ntmat_,indexe,nope,norien,iexpl,i0,nm,inode,icomplex,
      &     inode1,icomplex1,inode2,icomplex2,ner,ncmat_,intscheme,istep,
      &     iinc,mcs,ielcs(*),nplicon(0:ntmat_,*),nplkcon(0:ntmat_,*),
-     &     npmat_,nset,islavelinv(1),irowtloc(1),jqtloc(1),
+     &     npmat_,nset,islavquadel(1),irowt(1),jqt(1),imastload(2,*),
      &     mortartrafoflag,mscalmethod
 !     
       real*8 co(3,*),xboun(*),coefmpc(*),xforc(*),xload(2,*),p1(3),
      &     p2(3),ad(*),au(*),bodyf(3),fext(*),xbody(7,*),cgr(4,*),
      &     t0(*),t1(*),prestr(6,mi(1),*),vold(0:mi(2),*),s(60,60),
-     &     ff(60),smscale(1),
+     &     ff(60),smscale(1),pmastload(3,*),
      &     sti(6,mi(1),*),sm(60,60),stx(6,mi(1),*),adb(*),aub(*),
      &     elcon(0:ncmat_,ntmat_,*),rhcon(0:1,ntmat_,*),xloadold(2,*),
-     &     alcon(0:6,ntmat_,*),cs(17,*),alzero(*),orab(7,*),reltime,
+     &     alcon(0:6,ntmat_,*),cs(18,*),alzero(*),orab(7,*),reltime,
      &     springarea(2,*),plicon(0:2*npmat_,ntmat_,*),prop(*),
      &     plkcon(0:2*npmat_,ntmat_,*),thicke(mi(3),*),doubleglob(*),
      &     xstiff(27,mi(1),*),pi,theta,ti,tr,veold(0:mi(2),*),om,
      &     xstate(nstate_,mi(1),*),xstateini(nstate_,mi(1),*),
      &     value,dtime,walue,time,ttime,clearini(3,9,*),
-     &     pslavsurf(3,*),pmastsurf(6,*),autloc(1)
+     &     pslavsurf(3,*),pmastsurf(6,*),aut(1)
 !
       mortartrafoflag=0
 !     
@@ -129,8 +129,8 @@
      &       integerglob,doubleglob,tieset,istartset,
      &       iendset,ialset,ntie,nasym,pslavsurf,pmastsurf,mortar,
      &       clearini,ielprop,prop,kscale,smscale(1),mscalmethod,
-     &       set,nset,islavelinv,autloc,
-     &       irowtloc,jqtloc,mortartrafoflag)
+     &       set,nset,islavquadel,aut,
+     &       irowt,jqt,mortartrafoflag,imastload,pmastload)
 !     
         do jj=1,3*nope
 !     
@@ -216,7 +216,7 @@
                             walue=value*cs(16,icomplex)
                             call add_sm_st_as(au,ad,jq,irow,
      &                           idof1,idof2+ner,walue,i0,i0,nzs)
-                            walue=-walue
+cc 13.02.2026                            walue=-walue
                             call add_sm_st_as(au,ad,jq,irow,
      &                           idof1+ner,idof2,walue,i0,i0,nzs)
                           endif
@@ -279,7 +279,7 @@
                             walue=value*cs(16,icomplex)
                             call add_sm_st_as(au,ad,jq,irow,
      &                           idof1,idof2+ner,walue,i0,i0,nzs)
-                            walue=-walue
+cc 13.02.2026                            walue=-walue
                             call add_sm_st_as(au,ad,jq,irow,
      &                           idof1+ner,idof2,walue,i0,i0,nzs)
                           endif
@@ -398,7 +398,7 @@
                             walue=value*ti
                             call add_sm_st_as(au,ad,jq,irow
      &                           ,idof1,idof2+ner,walue,i0,i0,nzs)
-                            walue=-walue
+cc 13.02.2026                            walue=-walue
                             call add_sm_st_as(au,ad,jq,irow
      &                           ,idof1+ner,idof2,walue,i0,i0,nzs)
                           endif
@@ -420,7 +420,7 @@
                           endif
                           call add_sm_st_as(au,ad,jq,irow,
      &                         idof1,idof2+ner,walue,i0,i0,nzs)
-                          walue=-walue
+cc 13.02.2026                          walue=-walue
                           call add_sm_st_as(au,ad,jq,irow,
      &                         idof1+ner,idof2,walue,i0,i0,nzs)
                         endif
@@ -520,7 +520,7 @@
                             walue=value*ti
                             call add_sm_st_as(au,ad,jq,irow
      &                           ,idof1,idof2+ner,walue,i0,i0,nzs)
-                            walue=-walue
+cc 13.02.2026                            walue=-walue
                             call add_sm_st_as(au,ad,jq,irow
      &                           ,idof1+ner,idof2,walue,i0,i0,nzs)
                           endif
@@ -544,7 +544,7 @@
                             call add_sm_st_as(au,ad,jq,
      &                           irow,idof1,idof2+ner,walue,
      &                           i0,i0,nzs)
-                            walue=-walue
+cc 13.02.2026                            walue=-walue
                             call add_sm_st_as(au,ad,jq,
      &                           irow,idof1+ner,idof2,walue,
      &                           i0,i0,nzs)

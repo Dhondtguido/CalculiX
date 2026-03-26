@@ -46,7 +46,7 @@ void radcyc(ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 
   nsegments=1;
   for(j=0;j<*mcs;j++){
-      if(cs[17*j]>nsegments) nsegments=(ITG)(cs[17*j]);
+      if(cs[18*j]>nsegments) nsegments=(ITG)(cs[18*j]);
   }
 
   /* assigning nodes and elements to sectors */
@@ -62,9 +62,9 @@ void radcyc(ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
   }
 
   for(i=0;i<*mcs;i++){
-    is=cs[17*i+4];
+    is=cs[18*i+4];
     if(is==1) continue;
-    ielset=cs[17*i+12];
+    ielset=cs[18*i+12];
     if(ielset==0) continue;
     for(i1=istartset[ielset-1]-1;i1<iendset[ielset-1];i1++){
       if(ialset[i1]>0){
@@ -121,7 +121,7 @@ void radcyc(ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
     if((inocs[node2-1]<0)||(inocs[node2-1]!=idtie)) continue;
     node3=kontri[4*i+2];
     if((inocs[node3-1]<0)||(inocs[node3-1]!=idtie)) continue;
-    idtie=cs[17*idtie];
+    idtie=cs[18*idtie];
     for(k=1;k<idtie;k++){
       j=i+k**ntri;
       kontri[4*j]=node1+k**nk;
@@ -142,10 +142,10 @@ void radcyc(ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
   FORTRAN(rectcyl,(co,v,fn,stn,qfn,een,cs,nk,&icntrl,t,filab,&imag,mi,emn));
   
   for(jj=0;jj<*mcs;jj++){
-    is=(ITG)(cs[17*jj]);
+    is=(ITG)(cs[18*jj]);
     for(i=1;i<is;i++){
       
-      theta=i*2.*pi/cs[17*jj];
+      theta=i*2.*pi/cs[18*jj];
       
       for(l=0;l<*nk;l++){
         if(inocs[l]==jj){

@@ -169,7 +169,6 @@ void calcshapef(ITG *nvar_,ITG *ipvar,double **varp,ITG *ne,
 
 	ipvar[i]=nvar;
 	ipvarf[i]=nvarf;
-	//	printf("calcshapef.c nelem %d index %d\n",i+1,nvarf);
 	
 	/* determining the number of nodes belonging to the element
 	   (nope) and the number of integration points (mint3d) */
@@ -261,7 +260,7 @@ void calcshapef(ITG *nvar_,ITG *ipvar,double **varp,ITG *ne,
 
 	    if(xsj<1.e-20){
 		printf(" *ERROR in calcshapef: nonpositive Jacobian\n");
-		printf("        determinant in element %d\n\n",i);
+		printf("        determinant in element %" ITGFORMAT "\n\n",i);
 		xsj=fabs(xsj);
 		nmethod=0;
 	    }
@@ -335,7 +334,6 @@ void calcshapef(ITG *nvar_,ITG *ipvar,double **varp,ITG *ne,
 		    }
 		}
 		
-		//		printf("calcshapef.c %d  %d\n",nvarf,4*nope+nopes+4);
 		for(kk=0;kk<mint2d;kk++){
 		    
 		    /* check size of varf */

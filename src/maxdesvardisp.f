@@ -75,21 +75,24 @@
                   dispvector(2)=0.d0
                   dispvector(3)=0.d0
                endif
-               dgdxglob(1,node,iobject)=actmove
                scalprod=dispvector(1)*xdesi(1,nodedesipos(node))+
      &                  dispvector(2)*xdesi(2,nodedesipos(node))+
      &                  dispvector(3)*xdesi(3,nodedesipos(node))
                if((objectset(1,iobject)(1:9).eq.'MAXGROWTH').and.
      &            (scalprod.ge.0d0)) then
+                  dgdxglob(1,node,iobject)=actmove
                   dgdxglob(2,node,iobject)=actmove-bound
                elseif((objectset(1,iobject)(1:9).eq.'MAXGROWTH').and.
      &            (scalprod.lt.0d0)) then
+                  dgdxglob(1,node,iobject)=-actmove
                   dgdxglob(2,node,iobject)=-actmove-bound
                elseif((objectset(1,iobject)(1:12).eq.'MAXSHRINKAGE')
      &            .and.(scalprod.le.0d0)) then
+                  dgdxglob(1,node,iobject)=-actmove
                   dgdxglob(2,node,iobject)=actmove-bound
                elseif((objectset(1,iobject)(1:12).eq.'MAXSHRINKAGE')
      &            .and.(scalprod.gt.0d0)) then
+                  dgdxglob(1,node,iobject)=actmove
                   dgdxglob(2,node,iobject)=-actmove-bound
                endif
 ! 
@@ -120,21 +123,24 @@
                    dispvector(2)=0.d0
                    dispvector(3)=0.d0
                 endif
-                dgdxglob(1,node,iobject)=actmove
                 scalprod=dispvector(1)*xdesi(1,nodedesipos(node))+
      &                   dispvector(2)*xdesi(2,nodedesipos(node))+
      &                   dispvector(3)*xdesi(3,nodedesipos(node))
                 if((objectset(1,iobject)(1:9).eq.'MAXGROWTH').and.
      &             (scalprod.ge.0d0)) then
+                   dgdxglob(1,node,iobject)=actmove
                    dgdxglob(2,node,iobject)=actmove-bound
                 elseif((objectset(1,iobject)(1:9).eq.'MAXGROWTH').and.
      &             (scalprod.lt.0d0)) then
+                   dgdxglob(1,node,iobject)=-actmove
                    dgdxglob(2,node,iobject)=-actmove-bound
                 elseif((objectset(1,iobject)(1:12).eq.'MAXSHRINKAGE')
      &             .and.(scalprod.le.0d0)) then
+                   dgdxglob(1,node,iobject)=-actmove
                    dgdxglob(2,node,iobject)=actmove-bound
                 elseif((objectset(1,iobject)(1:12).eq.'MAXSHRINKAGE')
      &             .and.(scalprod.gt.0d0)) then
+                   dgdxglob(1,node,iobject)=actmove
                    dgdxglob(2,node,iobject)=-actmove-bound
                 endif
 ! 

@@ -26,7 +26,7 @@
      &     ntrans,trab,inotr,veold,integerglob,doubleglob,tieset,
      &     istartset,
      &     iendset,ialset,ntie,nmpc,ipompc,ikmpc,ilmpc,nodempc,coefmpc,
-     &     h0scale,inomat,ipobody,iponoel,inoel,ipkon,kon,lakon,
+     &     h0scale,inomat,ipobody,iponoeln,inoeln,ipkon,kon,lakon,
      &     ielprop,prop,ielmat,shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,
      &     ncocon,set,nset)
 !     
@@ -51,7 +51,7 @@
      &     ipresboun,mi(*),ntrans,inotr(2,*),idummy,integerglob(*),
      &     istartset(*),iendset(*),ialset(*),ntie,iselect(1),
      &     nmpc,ikmpc(*),ilmpc(*),nodempc(3,*),k,ist,index,ipompc(*),
-     &     inomat(*),ipobody(2,*),iponoel(*),inoel(2,*),ipkon(*),
+     &     inomat(*),ipobody(2,*),iponoeln(*),inoeln(2,*),ipkon(*),
      &     kon(*),ielprop(*),ielmat(mi(3),*),nshcon(*),nrhcon(*),
      &     ncocon(2,*),ntmat_
 !     
@@ -147,13 +147,13 @@
 !     
           if(ndirboun(i).eq.0) then
             call utemp(xbounact(i),msecpt,istep,iinc,abqtime,node,
-     &           coords,vold,mi,iponoel,inoel,
+     &           coords,vold,mi,iponoeln,inoeln,
      &           ipobody,xbodyact,ibody,ipkon,kon,
      &           lakon,ielprop,prop,ielmat,
      &           shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon)
           else
             call uboun(xbounact(i),istep,iinc,abqtime,node,
-     &           ndirboun(i),coords,vold,mi,iponoel,inoel,
+     &           ndirboun(i),coords,vold,mi,iponoeln,inoeln,
      &           ipobody,xbodyact,ibody,ipkon,kon,
      &           lakon,ielprop,prop,ielmat,
      &           shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon)
@@ -259,7 +259,7 @@ c     write(*,*) 'tempload ',node,ndirboun(i),xbounact(i)
             endif
 !     
             call cflux(xforcact(i),msecpt,istep,iinc,abqtime,node,
-     &           coords,vold,mi,ipkon,kon,lakon,iponoel,inoel,
+     &           coords,vold,mi,ipkon,kon,lakon,iponoeln,inoeln,
      &           ielprop,prop,ielmat,shcon,nshcon,rhcon,nrhcon,
      &           ntmat_,cocon,ncocon)
             cycle
@@ -419,7 +419,7 @@ c     xloadact(2,i)=xload(2,i)
               coords(j)=co(j,i)+vold(j,i)
             enddo
             call utemp(t1act(i),msecpt,istep,iinc,abqtime,i,
-     &           coords,vold,mi,iponoel,inoel,
+     &           coords,vold,mi,iponoeln,inoeln,
      &           ipobody,xbodyact,ibody,ipkon,kon,
      &           lakon,ielprop,prop,ielmat,
      &           shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon)

@@ -1,6 +1,6 @@
 !     
 !     CalculiX - A 3-dimensional finite element program
-!     Copyright (C) 1998-2015 Guido Dhondt
+!     Copyright (C) 1998-2024 Guido Dhondt
 !     
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -16,10 +16,10 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
-      subroutine multistages(nkon,set,istartset,iendset,
+      subroutine multistages(set,istartset,iendset,
      &     ialset,nset,tieset,tietol,co,nk,ipompc,nodempc,
-     &     coefmpc,nmpc,nmpc_,ikmpc,ilmpc,mpcfree,xind,yind,ics,nx,ny,
-     &     xind0,yind0,ncs_,cs,labmpc,ntie,mcs,rcscg,rcs0cg,zcscg,
+     &     coefmpc,nmpc,ikmpc,ilmpc,mpcfree,xind,yind,ics,nx,ny,
+     &     xind0,yind0,cs,labmpc,ntie,mcs,rcscg,rcs0cg,zcscg,
      &     zcs0cg,nrcg,nzcg,jcs,kontri,straight,ne,ipkon,kon,
      &     lakon,lcs,ifacetet,inodface,jobnamec,nmethod)
 !     
@@ -40,20 +40,22 @@
       character*256 fn
 !     
       integer istartset(*),iendset(*),ialset(*),ipompc(*),nodempc(3,*),
-     &     nset,i,j,k,nk,nmpc,nmpc_,mpcfree,ics(*),l,ikmpc(*),ilmpc(*),
-     &     lcs(*),kflag,ncsnodes,ncs_,mcs,ntie,nrcg(*),nzcg(*),jcs(*),
+     &     nset,i,j,k,nk,nmpc,mpcfree,ics(*),l,ikmpc(*),ilmpc(*),n,
+     &     lcs(*),kflag,ncsnodes,mcs,ntie,nrcg(*),nzcg(*),jcs(*),
      &     kontri(3,*),ne,ipkon(*),kon(*),ifacetet(*),inodface(*),
-     &     nodel(5),noder(5),nkon,indexe,nope,ipos,nelem,ilen,
-     &     indcs,node_cycle,itemp(5),nx(*),ny(*),netri,noder0,
+     &     nodele(4),noderi(4),indexe,nope,ipos,nelem,ilen,nprint,
+     &     indcs,node_cycle,itemp(4),nx(*),ny(*),netri,noderi0,
      &     nodef(8),nterms,kseg,k2,ndir,idof,number,id,mpcfreeold,
-     &     lathyp(3,6),inum,ier,icount,imcs,nmethod
+     &     lathyp(3,6),inum,ier,icount,imcs,nmethod,ksegmin,ksegmax
 !     
       real*8 tolloc,co(3,* ),coefmpc(*),xind(*),yind(*),xind0(*),
-     &     yind0(*),dd,xap,yap,zap,tietol(4,*),cs(17,*),xp,yp,
+     &     yind0(*),dd,xap,yap,zap,tietol(4,*),cs(18,*),xdep,ydep,
      &     phi,rcscg(*),rcs0cg(*),zcscg(*),zcs0cg(*),zp,rp,scale,
      &     straight(9,*),T(3,3),csab(7),ratio(8),Tinv(3,3),
      &     coord(3),pnod(3),T2D(3,3),phi0,al(3,3),ar(3,3),
-     &     rind,dxmax,dxmin,drmax,drmin,pi,phi_min
+     &     rind,dxmax,dxmin,drmax,drmin,pi,phi_min,xsegle(2),
+     &     xsegri(2),xtemp(2),coglob(3),coloc(3),corotloc(3),
+     &     corotglob(3),radius,angle,phi_max
 !
       integer,dimension(:),allocatable::ksegmcs
 !     
@@ -76,15 +78,20 @@
         if (tieset(1,i)(81:81).eq.'M') then
           tieset(1,i)(81:81)=' '
 !     
-!     Creating of the fields nodel and noder with specific 
-!     information for each node
+!     Creating of the fields nodele and noderi with specific 
+!     information for each field
 !     
-!     node(l,r)(1)=nodenumber
-!     node(l,r)(2)=setnumber
-!     node(l,r)(3)=elementnumber
-!     node(l,r)(4)=segments of cyclic symmetry part
-!     node(l,r)(5)=cyclic symmetry parts number
+!     l = left     
+!     r = right
 !     
+!     node(le,ri)(1)=number of a node belonging to the left/right side
+!     node(le,ri)(2)=setnumber
+!     node(le,ri)(3)=number of an element belonging to the left/right side
+!     node(le,ri)(4)=cyclic symmetry parts number of the left/right side
+!
+!     xseg(le,ri)(1)=value of N on the left/right side
+!     xseg(le,ri)(2)=value of NPHYS on the left/right side
+!          
 !     Defining the left and right node sets      
 !     
           leftset=tieset(2,i)
@@ -105,15 +112,15 @@
           call cident81(set,leftset,nset,j)
           if(j.gt.0) then
             if(leftset.eq.set(j)) then
-              nodel(1)=ialset(istartset(j))
-              nodel(2)=j         
+              nodele(1)=ialset(istartset(j))
+              nodele(2)=j         
             endif
           endif
           call cident81(set,rightset,nset,j)
           if(j.gt.0) then
             if(rightset.eq.set(j)) then
-              noder(1)=ialset(istartset(j))
-              noder(2)=j         
+              noderi(1)=ialset(istartset(j))
+              noderi(2)=j         
             endif
           endif
 !     
@@ -149,14 +156,14 @@
 !     
             do l=indexe+1,indexe+nope
               if(.not.left) then
-                if(nodel(1).eq.kon(l))then
-                  nodel(3)=k
+                if(nodele(1).eq.kon(l))then
+                  nodele(3)=k
                   left=.true.
                 endif
               endif
               if(.not.right) then
-                if(noder(1).eq.kon(l))then
-                  noder(3)=k
+                if(noderi(1).eq.kon(l))then
+                  noderi(3)=k
                   right=.true.
                 endif
               endif
@@ -164,14 +171,21 @@
             enddo
           enddo loop
 !     
+!         determining the number of sectors and the cyclic symmetry     
+!         number for the left/right side
+!     
+!         assumption: number of parts is a natural number     
+!     
           do j=1,mcs
             do l=istartset(int(cs(13,j))),iendset(int(cs(13,j)))
-              if (ialset(l).eq.nodel(3)) then
-                nodel(4)=cs(1,j)
-                nodel(5)=j
-              elseif (ialset(l).eq.noder(3)) then
-                noder(4)=cs(1,j)
-                noder(5)=j
+              if (ialset(l).eq.nodele(3)) then
+                xsegle(1)=cs(1,j)
+                xsegle(2)=cs(18,j)
+                nodele(4)=j
+              elseif (ialset(l).eq.noderi(3)) then
+                xsegri(1)=cs(1,j)
+                xsegri(2)=cs(18,j)
+                noderi(4)=j
               endif   
             enddo
             csab(1)=cs(6,j)
@@ -183,28 +197,36 @@
             csab(7)=-1.d0
           enddo
 !     
-!     Sorting such that rightset is independent with lesser angle
-!     and noder is in the independent set
+!     Sorting such that rightset has the smaller angle;
+!     it is taken is independent side for the multistage MPC's     
 !     
-          if (nodel(4).ge.noder(4)) then
-            indcs=nodel(5)
-            phi0=(2.d0*pi)/nodel(4)
+          if (xsegle(2).ge.xsegri(2)) then
+            indcs=nodele(4)
+            phi0=(2.d0*pi)/xsegle(2)
             temp=rightset;
             rightset=leftset
             leftset=temp
-            do j=1,5
-              itemp(j)=noder(j)
-              noder(j)=nodel(j)
-              nodel(j)=itemp(j)
+            do j=1,4
+              itemp(j)=noderi(j)
+              noderi(j)=nodele(j)
+              nodele(j)=itemp(j)
+            enddo
+            do j=1,2
+              xtemp(j)=xsegri(j)
+              xsegri(j)=xsegle(j)
+              xsegle(j)=xtemp(j)
             enddo
           else
-            indcs=noder(5)
-            phi0=(2.d0*pi)/noder(4)
+            indcs=noderi(4)
+            phi0=(2.d0*pi)/xsegri(2)
           endif
 !     
-          scale=(1.d0*nodel(4))/noder(4)
+!         scaling factor for the connecting MPC's in static calculations    
 !     
-!     Looking for a node on the independent cyclic symmetry side
+          scale=xsegle(2)/xsegri(2)
+!     
+!     Looking for a node on the independent cyclic symmetry side of
+!     the right side of the multistage tie    
 !     
           indepties=tieset(3,int(cs(17,indcs)))
           indeptiet=indepties
@@ -228,7 +250,8 @@
             endif
           enddo
 !     
-!     Defining the rotary matrix for the tie level
+!     Defining a transformation matrix from the global system into a local
+!     system with the x-direction along the rotation axis 
 !     
           T(1,1)=csab(4)-csab(1)
           T(1,2)=csab(5)-csab(2)
@@ -238,8 +261,7 @@
           T(1,2)=T(1,2)/dd
           T(1,3)=T(1,3)/dd
 !     
-!     Defining the Position of the Leftnode, which contains the angle boundary
-!     for the second parameter for the tie level
+!     second local direction is orthogonal to the rotation axis
 !     
           xap=co(1,node_cycle)-csab(1)
           yap=co(2,node_cycle)-csab(2)
@@ -250,7 +272,7 @@
      &         (zap-zp*T(1,3))**2)
           rp=dsqrt(rp)
 !     
-!     Performing the vector product for the third axis of the rotary matrix
+!     Performing the vector product for the third local direction
 !     
           if(rp.gt.1.d-10) then
             T(2,1)=(xap-zp*T(1,1))/rp
@@ -261,15 +283,25 @@
             T(3,3)=T(1,1)*T(2,2)-T(2,1)*T(1,2)
           endif
 !     
-!     Inverting the rotary matrix to rotate the node back afterwards
+!     (global coordinates)=T^T.(local coordinates)    
+!     (local coordinates)=T.(global coordinates)
+!     
+!     Inverting the rotary matrix transform from local to global
 !     
           call invert3D(T,Tinv,3)
 !     
-!     Writing a secondary rotary matrix which rotates the nodes on
-!     the tie level with the angle phi
-!     
+!         mapping the independent nodes into the local system;
+!         based on the number of sectors a circumferential base angle     
+!         is determined. Since the master surface can be slanted
+!         (changing phi-value for increasing radius for an axial
+!          multistage tie or changing phi-value for increasing 
+!          axial coordinate values for a radial multistage tie)
+!         it may cover a multiple (n) of the base angle. For n=0
+!         the surface does not exceed tha base angle, otherwise it
+!         exceeds the base angle n times
+!
           l=0
-          do j=istartset(noder(2)),iendset(noder(2))
+          do j=istartset(noderi(2)),iendset(noderi(2))
             l=l+1
             pnod(1)=co(1,ialset(j))-csab(1)
             pnod(2)=co(2,ialset(j))-csab(2)
@@ -284,33 +316,44 @@
             yind0(l)=yind(l)
             rind=dsqrt(coord(2)**2+coord(3)**2)
             phi=datan2(-coord(3),coord(2))
-            if (l.gt.1.d0) then
+            if (l.gt.1) then
               dxmax=max(dxmax,dabs(coord(1)))
               drmax=max(drmax,dabs(rind))
               
               dxmin=min(dxmin,dabs(coord(1)))
               drmin=min(drmin,dabs(rind))
               phi_min=min(phi_min,phi)
+              phi_max=max(phi_max,phi)
             else
               dxmax=dabs(coord(1))
               phi_min=phi
+              phi_max=phi
               drmax=rind
               dxmin=dabs(coord(1))
               drmin=rind
             endif
           enddo
+!
+!         allowing for 0.1 % sector angle error
+!
+          n=floor(xsegri(2)*(phi_max-phi_min)/(2.d0*pi)-0.001d0)
 !     
           cylindrical=.false.
           if ((dxmax-dxmin).ge.(drmax-drmin)) then
-            l=0.d0
-            do j=istartset(noder(2)),iendset(noder(2))
+            l=0
+            n=0
+            do j=istartset(noderi(2)),iendset(noderi(2))
               l=l+1
               pnod(1)=co(1,ialset(j))-csab(1)
               pnod(2)=co(2,ialset(j))-csab(2)
               pnod(3)=co(3,ialset(j))-csab(3)
               call Mprod(T,pnod,coord,3)
-              xind(l)=coord(2)
-              yind(l)=datan2(-coord(3),coord(2))
+              xind(l)=coord(1)
+              if(l.eq.1) radius=dsqrt(coord(2)**2+coord(3)**2)
+              angle=datan2(-coord(3),coord(2))
+              yind(l)=radius*angle
+              n=max(n,floor(xsegri(2)*(angle-phi_min)/
+     &             (2.d0*pi)-0.001d0))
               nx(l)=l
               ny(l)=l
               ics(l)=ialset(j)
@@ -335,71 +378,99 @@
 !     field containing the cyclic symmetry part number corresponding
 !     to each value of kseg
 !     
-          allocate(ksegmcs(noder(4)))
-          do j=1,noder(4)
+          allocate(ksegmcs(nint(xsegri(2))+1))
+          do j=1,nint(xsegri(2))+1
             ksegmcs(j)=0
           enddo
 !     
 !         loop over all dependent nodes   
 !     
-          do j=istartset(nodel(2)),iendset(nodel(2))
-            pnod(1)=co(1,ialset(j))-csab(1)
-            pnod(2)=co(2,ialset(j))-csab(2)
-            pnod(3)=co(3,ialset(j))-csab(3)
+          do j=istartset(nodele(2)),iendset(nodele(2))
+            coglob(1)=co(1,ialset(j))-csab(1)
+            coglob(2)=co(2,ialset(j))-csab(2)
+            coglob(3)=co(3,ialset(j))-csab(3)
 !     
-!     Rotating into local coordinates "coord"
+!     change to local coordinates "coord"
 !     
-            call Mprod(T,pnod,coord,3)
+            call Mprod(T,coglob,coloc,3)
 !     
-!     Determining the number of segments for the rotation
+!     Determining the phase shift for the tie constraints
 !     
-            phi=datan2(-coord(3),coord(2))
-            if (phi.gt.(-1.d-5+phi_min)) then
-              kseg=int(noder(4)*0.5d0*(phi-phi_min)/pi)
-            else 
-              kseg=int(noder(4)*0.5d0*(2.d0*pi+(phi-phi_min))/pi)
-            endif
+            phi=datan2(-coloc(3),coloc(2))
 !     
-            T2D(1,1)=1.d0
-            T2D(1,2)=0.d0
-            T2D(1,3)=0.d0
-            T2D(2,1)=0.d0
-            T2D(2,2)=dcos(-kseg*phi0)
-            T2D(2,3)=dsin(-kseg*phi0)
-            T2D(3,1)=0.d0
-            T2D(3,2)=-dsin(-kseg*phi0)
-            T2D(3,3)=dcos(-kseg*phi0)
+!     kseg is the number of times the base sector has to be shifted
+!     in order to contain the node at stake    
+!     
+            ksegmax=floor(xsegri(2)*(phi-phi_min)/(2.d0*pi))
+            ksegmin=ksegmax-n
+!
+            do kseg=ksegmin,ksegmax
+              T2D(1,1)=1.d0
+              T2D(1,2)=0.d0
+              T2D(1,3)=0.d0
+              T2D(2,1)=0.d0
+              T2D(2,2)=dcos(-kseg*phi0)
+              T2D(2,3)=dsin(-kseg*phi0)
+              T2D(3,1)=0.d0
+              T2D(3,2)=-dsin(-kseg*phi0)
+              T2D(3,3)=dcos(-kseg*phi0)
 !     
 !     Rotating the dependent nodes by the number of 
-!     segments to "node" in local coordinates
+!     segments to "pnod" in local coordinates
 !     
-            call Mprod(T2D,coord,pnod,3)
+              call Mprod(T2D,coloc,corotloc,3)
 !     
-!     Copying the local coordinates to the local variables
+!     copying the local coordinates to the local variables
 !     
-            if (cylindrical) then
-              yp=pnod(1)
-              zp=phi
-            else
-              xp=pnod(1)
-              yp=pnod(2)
-              zp=pnod(3)
+              if (cylindrical) then
+!     
+!               radial connection    
+!     
+                xdep=corotloc(1)
+                ydep=radius*datan2(-corotloc(3),corotloc(2))
+              else
+!     
+!               axial connection     
+!     
+                xdep=corotloc(2)
+                ydep=corotloc(3)
+              endif
+              noderi0=nk+1
+!     
+!     transforming back to global coordinates
+!     
+              call Mprod(Tinv,corotloc,corotglob,3)
+              co(1,noderi0)=corotglob(1)
+              co(2,noderi0)=corotglob(2)
+              co(3,noderi0)=corotglob(3)
+!     
+!     determining the coefficients of the multistage MPC's
+!     
+              ier=0
+              nprint=-1
+              call linkdissimilar(co,csab,
+     &             rcscg,rcs0cg,zcscg,zcs0cg,nrcg,nzcg,
+     &             straight,nodef,ratio,nterms,xdep,ydep,netri,
+     &             noderi0,ifacetet,inodface,ialset(j),
+     &             T(1,1),T(1,2),T(1,3),ier,multistage,nprint)
+!     
+!     if a corresponding face was found: go to next slave node
+!     
+              if(ier.eq.0) exit
+            enddo
+!
+            if(ier.lt.0) then
+              write(*,*)
+     &             '*WARNING in multistages: no suitable partner'
+              write(*,*) '         face found for node',ialset(j),'.'
+              write(*,*) 
+     &             '         Nodes belonging to the best partner face:'
+              write(*,*) (nodef(k2),k2=1,nterms)
+              write(*,*) 
+              write(40,*) ialset(j)
+              icount=icount+1
             endif
-            noder0=nk+1
-!     
-!     Rotating back to global coordinates to "coord"
-!     
-            call Mprod(Tinv,pnod,coord,3)
-            co(1,noder0)=coord(1)
-            co(2,noder0)=coord(2)
-            co(3,noder0)=coord(3)
-!     
-            ier=0
-            call linkdissimilar(co,csab,
-     &           rcscg,rcs0cg,zcscg,zcs0cg,nrcg,nzcg,
-     &           straight,nodef,ratio,nterms,yp,zp,netri,
-     &           noder0,ifacetet,inodface,ialset(j),
-     &           T(1,1),T(1,2),T(1,3),ier,multistage,icount)
+            if(kseg.lt.0) kseg=kseg+nint(xsegri(2))
 !     
 !     scaling the independent degrees of freedom of the
 !     multistage equations for non-frequency calculations
@@ -410,8 +481,10 @@
               enddo
             endif
 !     
+!     all sector shifts for multistage MPC's are stored
+!     
             if(kseg.eq.1) then
-              imcs=noder(5)
+              imcs=noderi(4)
             elseif(kseg.gt.1) then
               if(ksegmcs(kseg).gt.0) then
                 imcs=ksegmcs(kseg)
@@ -419,16 +492,19 @@
                 mcs=mcs+1
                 ksegmcs(kseg)=mcs
                 imcs=mcs
-                cs(1,mcs)=(1.d0*noder(4))/kseg
+                cs(1,mcs)=xsegri(1)/kseg
                 do k=2,17
-                  cs(k,mcs)=cs(k,noder(5))
+                  cs(k,mcs)=cs(k,noderi(4))
                 enddo
                 cs(13,mcs)=0.5d0
+                cs(18,mcs)=xsegri(2)/kseg
               endif
             endif
 !     
+!     the tie MPC relationships apply in cylindrical coordinates
+!     
             call transformatrix(csab,co(1,ialset(j)),al)
-            call transformatrix(csab,co(1,noder0),ar)   
+            call transformatrix(csab,co(1,noderi0),ar)   
 !     
 !     checking for latin hypercube positions in matrix al none of
 !     which are zero
@@ -476,6 +552,7 @@
                     write(*,*) '         cannot be created: the'
                     write(*,*) 
      &                   '         DOF in this node is already used'
+                    nmpc=nmpc-1
                     cycle
                   endif
                 endif
@@ -547,6 +624,7 @@
                     write(*,*) '         cannot be created: the'
                     write(*,*) 
      &                   '         DOF in this node is already used'
+                    nmpc=nmpc-1
                     cycle
                   endif
                 endif

@@ -18,26 +18,9 @@
 !     
 !     
 !     Calculating the slave-master triangulation
-!     and generating the integration points needed for the calculation of the coupling matrices
+!     and generating the integration points needed for the calculation
+!     of the coupling matrices
 !     for details see phd-thesis Sitzmann Appendix A 
-!     
-!     [out]    nintpoint   number of generated integration points 
-!     [in]     koncont     (1:3,i) nodes of triagle_i (4,i) element face
-!     [in,out] islavsurf   islavsurf(1,i) slaveface i islavsurf(2,i) # integration points generated before looking at face i
-!     [out]    imastsurf   pointer into pmastsurf  
-!     [out]    pmastsurf   field storing position and weights for integration points on master side 
-!     [in]     islavnode   fields containing nodes of slace surfaces
-!     [in]     nslavnode   (i) for contraint i pointer into field islavnode
-!     [in]     imastop     (l,i) for edge l in triagle i neightbouring triangle
-!     [out]    gapmints    stores gaps between master and slave side
-!     [in,out] islavact	 (i) indicates, if slave node i is active (=-3 no-slave-node, =-2 no-LM-node, =-1 no-gap-node, =0 inactive node, =1 sticky node, =2 slipping/active node) 
-!     [in]     ncont	 number of triangles in triagulation of master side
-!     [in]     ipe	 (i) pointer to ime for node i 
-!     [in]     ime         ... cataloging the edges with node i
-!     [out]    pslavsurf   field storing position xil, etal and weight for integration point on slave side
-!     [in]     i           current tie
-!     [in]     l           current face
-!     [in]     ntri        # triangles
 !     
       subroutine slavintmortar(ntie,itietri,ipkon,kon,lakon,straight,
      &     nintpoint,koncont,co,vold,xo,yo,zo,x,y,z,nx,ny,nz,
@@ -52,7 +35,7 @@
 !     
       implicit none
 !     
-      logical debug,shrink
+      logical shrink
 !     
       character*8 lakon(*)
 !     
@@ -64,16 +47,16 @@
      &     imastsurf(*),ifaces,nelems,jfaces,mi(*),
      &     m,nopes,konl(26),id,islavact(*),
      &     imface(8),ntria,imfacecorner(8,8),line,
-     &     iactiveline(3,3*ncont),icoveredmelem(3*ncont),
+     &     iactiveline(2,3*ncont),icoveredmelem(3*ncont),
      &     nactiveline,ipe(*),ime(4,*),k1,j1,ncoveredmelem,
      &     ntri,nintpfirst,nodem(8),nodem2(8),ithree,
      &     il,ifac,getlocno,ifacem,idummy,nopemm,nmp,k2,j2
 !     
-      real*8 straight(16,*),co(3,*),vold(0:mi(2),*),
-     &     xo(*),yo(*),zo(*),x(*),y(*),z(*),
+      real*8 straight(16,*),co(3,*),vold(0:mi(2),*),p12(3),p23(3),
+     &     xo(*),yo(*),zo(*),x(*),y(*),z(*),p31(3),
      &     pmastsurf(2,*),xl2m(3,8),xl2s(3,8),xl2m2(3,8),
-     &     pmiddle(3),xl2sr(3,8),xl2sp(3,8),xl2s2(3,8),
-     &     dd,xns(3,8),areaslav,al,xn(3),gapmints(*),slavstraight(36),
+     &     pmiddle(3),xl2sr(3,8),xl3sp(3,8),xl3s(3,8),
+     &     dd,xns(3,8),areaslav,al,xn(4),gapmints(*),
      &     dist,distmin,tietol(4,*),clearance,reltime,
      &     pslavsurf(3,*),err,xquad(2,8),cl2s(3,8),cl2m(3,8),
      &     xtri(2,6),xi,et,xsj2(3),xs2(3,7),shp2(7,8),anglesm
@@ -99,16 +82,11 @@
      &     0.5,0.5,
      &     0,0.5/
 !     
-      debug=.false.
-!     
       kneigh=1
       err=0.1
       areaslav=0.0
       nintpfirst=nintpoint
       islavsurf(2,l)=nintpoint
-!     
-      if(debug)WRITE(30,*) '#SLAVINTMORTAR iinc',iinc,'face',l
-      if(debug)WRITE(20,*) '#SLAVINTMORTAR iinc',iinc,'face',l      
 !     
 !     get clearance and shrink
 !     
@@ -166,19 +144,19 @@
 !     e.g. instead of 1-5-2-6-3-7-4-8 in ccw-direction
 !     1-2-3-4-5-6-7-8
 !
-!     re-sorted deformed coordinates: xl2s2      
+!     re-sorted deformed coordinates: xl3s      
 !     
-      if(nopes.eq.3 .or. nopes.eq.4)then
+      if((nopes.eq.3).or.(nopes.eq.4)) then
         do j=1,nopes
           do k=1,3
-            xl2s2(k,j)=xl2s(k,j)
+            xl3s(k,j)=xl2s(k,j)
           enddo
         enddo
       else
         do j=1,int(nopes/2.0)
           do k=1,3
-            xl2s2(k,2*j-1)=xl2s(k,j)
-            xl2s2(k,2*j)=xl2s(k,(int(nopes/2.0))+j)           
+            xl3s(k,2*j-1)=xl2s(k,j)
+            xl3s(k,2*j)=xl2s(k,(int(nopes/2.0))+j)           
           enddo
         enddo
       endif
@@ -190,10 +168,23 @@
 !     triangle/quadrilateral
 !     
       if(nopes.eq.3) then
-        call straighteq3d(xl2s2,slavstraight)
-        do k=1,3
-          xn(k)=slavstraight(4*nopes+k)
-        enddo               
+        do i=1,3
+          p12(i)=xl3s(i,2)-xl3s(i,1)
+          p23(i)=xl3s(i,3)-xl3s(i,2)
+          p31(i)=xl3s(i,1)-xl3s(i,3)
+        enddo
+!     
+!     normalized vector normal to the triangle: xn = p12 x p23
+!     
+        xn(1)=p12(2)*p23(3)-p12(3)*p23(2)
+        xn(2)=p12(3)*p23(1)-p12(1)*p23(3)
+        xn(3)=p12(1)*p23(2)-p12(2)*p23(1)
+        dd=dsqrt(xn(1)*xn(1)+xn(2)*xn(2)+xn(3)*xn(3))
+        do i=1,3
+          xn(i)=xn(i)/dd
+        enddo
+        xn(4)=-xn(1)*xl3s(1,1)-xn(2)*xl3s(2,1)-
+     &       xn(3)*xl3s(3,1)
       else
         do k=1,3
           xn(k)=0.d0
@@ -223,8 +214,7 @@
           xsj2(3)=xsj2(3)/dd
 !     
           do k=1,3
-            xn(k)=xn(k)
-     &           +xsj2(k)
+            xn(k)=xn(k)+xsj2(k)
           enddo
         enddo 
 !     
@@ -234,24 +224,23 @@
         do k=1,3
           xn(k)=xn(k)/dd
         enddo           
-        call approxplane(xl2s2,slavstraight,xn,nopes)
+         xn(4)=-xn(1)*pmiddle(1)-xn(2)*pmiddle(2)-xn(3)*pmiddle(3)
       endif
 !     
 !     Project slave nodes to meanplane, needed for Sutherland-Hodgman
 !
-!     projected re-sorted deformed coordinates in xl2sp
+!     projected re-sorted deformed coordinates in xl3sp
 !
       do j=1,nopes
-        al=-xn(1)*xl2s2(1,j)-xn(2)*
-     &       xl2s2(2,j)-xn(3)*xl2s2(3,j)-
-     &       slavstraight(nopes*4+4)
+        al=-xn(1)*xl3s(1,j)-xn(2)*
+     &       xl3s(2,j)-xn(3)*xl3s(3,j)-xn(4)
         if(nopes.eq.3)then
           do k=1,3
-            xl2sp(k,j)=xl2s2(k,j)
+            xl3sp(k,j)=xl3s(k,j)
           enddo
         else
           do k=1,3
-            xl2sp(k,j)=xl2s2(k,j)+al*xn(k)
+            xl3sp(k,j)=xl3s(k,j)+al*xn(k)
           enddo
         endif
       enddo
@@ -278,10 +267,6 @@
      &       ntri,neigh,kneigh,itietri,ntie,straight,imastop,itri,i)
         ifac=getlocno(j,jfaces,nope)
         node=konl(ifac)
-        if(debug) then
-          write(20,*) neigh(1),neigh(1)+itietri(1,i)-1
-          write(20,*) 'itri',itri,'node',node
-        endif
         call nident(islavnode(nslavnode(i)+1),node,
      &       nslavnode(i+1)-nslavnode(i),id) 
         if(itri.eq.0) then  
@@ -294,15 +279,9 @@
 !     
 !     triangle found; slave node is by default set to inactive (value 0)
 !     
-          if(debug)write(20,*) ' node',node,
-     &         islavnode(nslavnode(i)+id),
-     &         id,islavact(nslavnode(i)+id) 
           if(islavact(nslavnode(i)+id).lt.0) then  
             islavact(nslavnode(i)+id)=0
           endif
-          if(debug)write(20,*) ' node',node,
-     &         islavnode(nslavnode(i)+id),
-     &         id,islavact(nslavnode(i)+id) 
         endif
       enddo
 !
@@ -341,10 +320,7 @@
      &       straight(14,itri)*xn(2)+
      &       straight(15,itri)*xn(3))
         if(dist.lt.distmin)distmin=dist
-        if(debug)write(20,*) 'j',j,'dist',dist,distmin
         ifacem=koncont(4,itri)
-        if(debug)write(20,*)'noder ',node,'itri',itri,
-     &       'ifacem',ifacem
 !     
         call nident(imface,ifacem,ntria,id)
         if(id.gt.0) then
@@ -362,7 +338,6 @@
         anglesm=xn(1)*straight(13,itri)
      &       +xn(2)*straight(14,itri)
      &       +xn(3)*straight(15,itri)
-        if(debug)write(20,*)'cos alpa',anglesm
 !     
 !     check angle to avoid problem with the dual gap         
 !     
@@ -386,12 +361,6 @@
           enddo 
         endif              
       enddo
-      if(debug)then 
-        write(20,*)'ifacem n1:n8 face',l,ntria
-        do k=1,ntria
-          write(20,*) imface (k),imfacecorner(1:nopes,k)
-        enddo
-      endif
 !     
       nactiveline=0
 !     
@@ -399,7 +368,6 @@
 !     
       ncoveredmelem=0
       do j=1,ntria
-        if(debug)write(20,*) 'corner triangle j',j
         ifacem=imface(j)
         nelemm=int(ifacem/10.d0)
         jfacem=ifacem-10*nelemm
@@ -410,7 +378,7 @@
 c     if(id.ne.0 .and. icoveredmelem(id).eq.nelemm)then
         if(id.gt.0) then
 !     
-!     master elment was already threated
+!     master element was already treated
 !     
           if(icoveredmelem(id).eq.nelemm) cycle
         endif
@@ -423,7 +391,6 @@ c     if(id.ne.0 .and. icoveredmelem(id).eq.nelemm)then
         enddo
         icoveredmelem(id+1)=nelemm
 !        
-        if(debug)write(20,*)itri,imface(j),ifacem,nelemm,jfacem
         call getnumberofnodes(nelemm,jfacem,lakon,nopemm,
      &       nnodelem,idummy)     
 !     
@@ -448,26 +415,10 @@ c     if(id.ne.0 .and. icoveredmelem(id).eq.nelemm)then
 !     guido: xn already normalized?
 !        
         dd=dsqrt(xn(1)**2+xn(2)**2+xn(3)**2)
-        if(debug)then
-          write(20,*) 'dd',dd    
-          write(20,100)(xn(k),k=1,3)
-          write(20,100)(slavstraight(nopes*4+k),k=1,3)
-          write(20,*) 'SIM: xl2s'
-          do j1=1,nopes
-            write(20,*)(xl2s(k,j1),k=1,3)
-          enddo    
-          write(20,*) 'SIM: xl2m'
-          do j1=1,nnodelem
-            write(20,*)(xl2m(k,j1),k=1,3)
-          enddo
-        endif                                        
- 100    format('SIM: xns',3(3x,e15.8))
-!     
-        if(debug) write(20,*) 'TT: itri',nelemm
 !     
 !     divide master element into konvex subelements
 !     
-        if(nnodelem.eq.3 .or.nnodelem.eq.4)then
+        if((nnodelem.eq.3).or.(nnodelem.eq.4)) then
 !     
 !     no loop needed
 !     
@@ -479,12 +430,12 @@ c     if(id.ne.0 .and. icoveredmelem(id).eq.nelemm)then
             enddo
           enddo
           call treatmasterface_mortar(
-     &         nopes,slavstraight,xn,xns,xl2s,xl2sp,
+     &         nopes,xn,xns,xl2s,xl3sp,
      &         ipe,ime,iactiveline,nactiveline,
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
         elseif(nnodelem.eq.6)then
@@ -492,7 +443,6 @@ c     if(id.ne.0 .and. icoveredmelem(id).eq.nelemm)then
 !     tri6 surface is divided into 4 tri3 surfaces
 !     
 !     1. triangle
-c     write(20,*)'*********tria 1**************'
           nmp=3
           nodem2(1)=nodem(1)
           nodem2(2)=nodem(4)
@@ -507,17 +457,16 @@ c     write(20,*)'*********tria 1**************'
             xl2m2(j2,3)=xl2m(j2,6)
           enddo
           call treatmasterface_mortar(
-     &         nopes,slavstraight,xn,xns,xl2s,xl2sp,
+     &         nopes,xn,xns,xl2s,xl3sp,
      &         ipe,ime,iactiveline,nactiveline,
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
 !     2. triangle
 !     
-c     write(20,*)'*********tria 2**************'
           nmp=3
           nodem2(1)=nodem(4)
           nodem2(2)=nodem(2)
@@ -532,17 +481,16 @@ c     write(20,*)'*********tria 2**************'
             xl2m2(j2,3)=xl2m(j2,5)
           enddo
           call treatmasterface_mortar(
-     &         nopes,slavstraight,xn,xns,xl2s,xl2sp,
+     &         nopes,xn,xns,xl2s,xl3sp,
      &         ipe,ime,iactiveline,nactiveline,
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
 !     3. triangle
 !     
-c     write(20,*)'*********tria 3**************'
           nmp=3
           nodem2(1)=nodem(5)
           nodem2(2)=nodem(3)
@@ -557,17 +505,16 @@ c     write(20,*)'*********tria 3**************'
             xl2m2(j2,3)=xl2m(j2,6)
           enddo
           call treatmasterface_mortar(
-     &         nopes,slavstraight,xn,xns,xl2s,xl2sp,
+     &         nopes,xn,xns,xl2s,xl3sp,
      &         ipe,ime,iactiveline,nactiveline,
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
 !     4. triangle
 !     
-c     write(20,*)'*********tria 4**************'
           nmp=3
           nodem2(1)=nodem(4)
           nodem2(2)=nodem(5)
@@ -582,12 +529,12 @@ c     write(20,*)'*********tria 4**************'
             xl2m2(j2,3)=xl2m(j2,6)
           enddo
           call treatmasterface_mortar(
-     &         nopes,slavstraight,xn,xns,xl2s,xl2sp,
+     &         nopes,xn,xns,xl2s,xl3sp,
      &         ipe,ime,iactiveline,nactiveline,
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
         elseif(nnodelem.eq.8)then
@@ -609,12 +556,12 @@ c     write(20,*)'*********tria 4**************'
             xl2m2(j2,3)=xl2m(j2,8)
           enddo
           call treatmasterface_mortar(
-     &         nopes,slavstraight,xn,xns,xl2s,xl2sp,
+     &         nopes,xn,xns,xl2s,xl3sp,
      &         ipe,ime,iactiveline,nactiveline,
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
 !     2. triangle
@@ -633,12 +580,12 @@ c     write(20,*)'*********tria 4**************'
             xl2m2(j2,3)=xl2m(j2,6)
           enddo
           call treatmasterface_mortar(
-     &         nopes,slavstraight,xn,xns,xl2s,xl2sp,
+     &         nopes,xn,xns,xl2s,xl3sp,
      &         ipe,ime,iactiveline,nactiveline,
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
 !     3. triangle
@@ -657,12 +604,12 @@ c     write(20,*)'*********tria 4**************'
             xl2m2(j2,3)=xl2m(j2,7)
           enddo
           call treatmasterface_mortar(
-     &         nopes,slavstraight,xn,xns,xl2s,xl2sp,
+     &         nopes,xn,xns,xl2s,xl3sp,
      &         ipe,ime,iactiveline,nactiveline,
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
 !     4. triangle
@@ -681,12 +628,12 @@ c     write(20,*)'*********tria 4**************'
             xl2m2(j2,3)=xl2m(j2,8)
           enddo
           call treatmasterface_mortar(
-     &         nopes,slavstraight,xn,xns,xl2s,xl2sp,
+     &         nopes,xn,xns,xl2s,xl3sp,
      &         ipe,ime,iactiveline,nactiveline,
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
 !     quad
@@ -709,12 +656,12 @@ c     write(20,*)'*********tria 4**************'
             xl2m2(j2,4)=xl2m(j2,8)
           enddo
           call treatmasterface_mortar(
-     &         nopes,slavstraight,xn,xns,xl2s,xl2sp,
+     &         nopes,xn,xns,xl2s,xl3sp,
      &         ipe,ime,iactiveline,nactiveline,
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
         endif
       enddo
@@ -745,7 +692,7 @@ c     write(20,*)'*********tria 4**************'
         if(itri.eq.0) then
           nactiveline=nactiveline-1
           do il=1,nactiveline
-            do k=1,3
+            do k=1,2
               iactiveline(k,il)=iactiveline(k,il+1)
             enddo
           enddo
@@ -763,11 +710,11 @@ c     if(id .gt. 0 .and. icoveredmelem(id).eq.nelemm)then
         if(id.gt.0) then
           if(icoveredmelem(id).eq.nelemm) then
 !     
-!     master elment was already threated
+!     master element was already treated
 !     
             nactiveline=nactiveline-1
             do il=1,nactiveline
-              do k=1,3
+              do k=1,2
                 iactiveline(k,il)=iactiveline(k,il+1)
               enddo
             enddo
@@ -803,18 +750,6 @@ c     if(id .gt. 0 .and. icoveredmelem(id).eq.nelemm)then
             cl2m(j1,k1)=co(j1,konl(ifac))
           enddo
         enddo
-        if(debug)then
-          write(20,*) 'dd',dd ,'ifacem',ifacem   
-          write(20,100)(xn(k),k=1,3)
-          write(20,*) 'SIM: xl2s'
-          do j1=1,nopes
-            write(20,*)(xl2s(k,j1),k=1,3)
-          enddo    
-          write(20,*) 'SIM: xl2m'
-          do j1=1,nnodelem
-            write(20,*)(xl2m(k,j1),k=1,3)
-          enddo
-        endif  
 !     
 !     divide master element into konvex subelements
 !     
@@ -830,12 +765,12 @@ c     if(id .gt. 0 .and. icoveredmelem(id).eq.nelemm)then
             enddo
           enddo
           call treatmasterface_mortar(
-     &         nopes,slavstraight,xn,xns,xl2s,xl2sp,
+     &         nopes,xn,xns,xl2s,xl3sp,
      &         ipe,ime,iactiveline,nactiveline,
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
         elseif(nnodelem.eq.6)then
@@ -843,7 +778,6 @@ c     if(id .gt. 0 .and. icoveredmelem(id).eq.nelemm)then
 !     tri6 surface is divided into 4 tri3 surfaces
 !     
 !     1. triangle
-c     write(20,*)'*********tria 1**************'
           nmp=3
           nodem2(1)=nodem(1)
           nodem2(2)=nodem(4)
@@ -858,17 +792,16 @@ c     write(20,*)'*********tria 1**************'
             xl2m2(j2,3)=xl2m(j2,6)
           enddo
           call treatmasterface_mortar(
-     &         nopes,slavstraight,xn,xns,xl2s,xl2sp,
+     &         nopes,xn,xns,xl2s,xl3sp,
      &         ipe,ime,iactiveline,nactiveline,
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
 !     2. triangle
 !     
-c     write(20,*)'*********tria 2**************'
           nmp=3
           nodem2(1)=nodem(4)
           nodem2(2)=nodem(2)
@@ -883,17 +816,16 @@ c     write(20,*)'*********tria 2**************'
             xl2m2(j2,3)=xl2m(j2,5)
           enddo
           call treatmasterface_mortar(
-     &         nopes,slavstraight,xn,xns,xl2s,xl2sp,
+     &         nopes,xn,xns,xl2s,xl3sp,
      &         ipe,ime,iactiveline,nactiveline,
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
 !     3. triangle
 !     
-c     write(20,*)'*********tria 3**************'
           nmp=3
           nodem2(1)=nodem(5)
           nodem2(2)=nodem(3)
@@ -908,17 +840,16 @@ c     write(20,*)'*********tria 3**************'
             xl2m2(j2,3)=xl2m(j2,6)
           enddo
           call treatmasterface_mortar(
-     &         nopes,slavstraight,xn,xns,xl2s,xl2sp,
+     &         nopes,xn,xns,xl2s,xl3sp,
      &         ipe,ime,iactiveline,nactiveline,
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
 !     4. triangle
 !     
-c     write(20,*)'*********tria 4**************'
           nmp=3
           nodem2(1)=nodem(4)
           nodem2(2)=nodem(5)
@@ -933,12 +864,12 @@ c     write(20,*)'*********tria 4**************'
             xl2m2(j2,3)=xl2m(j2,6)
           enddo
           call treatmasterface_mortar(
-     &         nopes,slavstraight,xn,xns,xl2s,xl2sp,
+     &         nopes,xn,xns,xl2s,xl3sp,
      &         ipe,ime,iactiveline,nactiveline,
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
         elseif(nnodelem.eq.8)then
@@ -960,12 +891,12 @@ c     write(20,*)'*********tria 4**************'
             xl2m2(j2,3)=xl2m(j2,8)
           enddo
           call treatmasterface_mortar(
-     &         nopes,slavstraight,xn,xns,xl2s,xl2sp,
+     &         nopes,xn,xns,xl2s,xl3sp,
      &         ipe,ime,iactiveline,nactiveline,
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
 !     2. triangle
@@ -984,12 +915,12 @@ c     write(20,*)'*********tria 4**************'
             xl2m2(j2,3)=xl2m(j2,6)
           enddo
           call treatmasterface_mortar(
-     &         nopes,slavstraight,xn,xns,xl2s,xl2sp,
+     &         nopes,xn,xns,xl2s,xl3sp,
      &         ipe,ime,iactiveline,nactiveline,
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
 !     3. triangle
@@ -1008,12 +939,12 @@ c     write(20,*)'*********tria 4**************'
             xl2m2(j2,3)=xl2m(j2,7)
           enddo
           call treatmasterface_mortar(
-     &         nopes,slavstraight,xn,xns,xl2s,xl2sp,
+     &         nopes,xn,xns,xl2s,xl3sp,
      &         ipe,ime,iactiveline,nactiveline,
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
 !     4. triangle
@@ -1032,12 +963,12 @@ c     write(20,*)'*********tria 4**************'
             xl2m2(j2,3)=xl2m(j2,8)
           enddo
           call treatmasterface_mortar(
-     &         nopes,slavstraight,xn,xns,xl2s,xl2sp,
+     &         nopes,xn,xns,xl2s,xl3sp,
      &         ipe,ime,iactiveline,nactiveline,
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
 !     
 !     quad
@@ -1060,32 +991,16 @@ c     write(20,*)'*********tria 4**************'
             xl2m2(j2,4)=xl2m(j2,8)
           enddo
           call treatmasterface_mortar(
-     &         nopes,slavstraight,xn,xns,xl2s,xl2sp,
+     &         nopes,xn,xns,xl2s,xl3sp,
      &         ipe,ime,iactiveline,nactiveline,
      &         ifacem,
      &         nintpoint,pslavsurf,imastsurf,pmastsurf,
      &         xl2m,nnodelem,xl2m2,nmp,nodem2,
-     &         gapmints,l,areaslav,debug,clearance,
+     &         gapmints,l,areaslav,clearance,
      &         cl2s,cl2m,shrink,reltime)
         endif
       enddo
       islavsurf(2,l+1)=nintpoint
-      if(debug) then
-        if(areaslav.lt.1.e-12)write(*,*)'areaslav(',l,')=',
-     &       areaslav
-      endif
 !     
-      if(debug)then
-        write(20,*) 'mint2d',(nintpoint-islavsurf(2,l))
-        write(20,*)'areaslav(',l,')=',areaslav
-        write(20,*)'*********************************'
-      endif
-!     
-c            do j=1,nintpoint
-c              write(*,*) 'slavintmortar', j,imastsurf(j)
-c              write(*,*) 'slavintmortar', (pmastsurf(j1,j),j1=1,2)
-c              write(*,*) 'slavintmortar', (pslavsurf(j1,j),j1=1,3)
-c              write(*,*) 'slavintmortar', gapmints(j)
-c            enddo
       return
       end

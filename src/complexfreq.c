@@ -63,33 +63,33 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     *lakont=NULL,*turdir=NULL,*labmpc2=NULL;
 
   ITG nev,i,j,k,idof,*inum=NULL,id,
-    iinc=0,l,iout=1,ielas,icmd=3,ifreebody,mode,m,nherm,
+    iinc=0,l,iout=1,ielas,icmd=3,ifreebody,mode,m,nherm,*inoel=NULL,
     *kon=NULL,*ipkon=NULL,*ielmat=NULL,*ielorien=NULL,*islavact=NULL,
     *inotr=NULL,*nodeboun=NULL,*ndirboun=NULL,*iamboun=NULL,*ikboun=NULL,
     *ilboun=NULL,*nactdof=NULL,*ipompc=NULL,*nodempc=NULL,*ikmpc=NULL,
     *ilmpc=NULL,nsectors,nmd,nevd,*nm=NULL,*iamt1=NULL,*islavnode=NULL,
     ngraph=1,nkg,neg,ne0,ij,lprev,nope,indexe,ilength,*nslavnode=NULL,
-    *ipneigh=NULL,*neigh=NULL,index,im,cyclicsymmetry,inode,
-    *ialset=*ialsetp,mt=mi[1]+1,kmin,kmax,i1,iit=-1,network=0,
+    *ipneigh=NULL,*neigh=NULL,index,im,cyclicsymmetry,inode,inoelsize,
+    *ialset=*ialsetp,mt=mi[1]+1,kmin,kmax,i1,iit=-1,network=0,nramp=-1,
     *iter=NULL,lint,lfin,kk,kkv,kk6,kkx,icomplex,igeneralizedforce,
     idir,*inumt=NULL,icntrl,imag,jj,is,l1,*inocs=NULL,ml1,l2,nkt,net,
     *ipkont=NULL,*ielmatt=NULL,*inotrt=NULL,*kont=NULL,node,iel,*ielcs=NULL,
     ielset,*istartnmd=NULL,*iendnmd=NULL,inmd,neqact,*nshcon=NULL,
     *ipev=NULL,icfd=0,*inomat=NULL,mortar=0,*islavsurf=NULL,
-    *iponoel=NULL,*inoel=NULL,iperturbsav,nevcomplex,*itiefac=NULL,
-    mscalmethod=0,*islavelinv=NULL,*irowtloc=NULL,*jqtloc=NULL,nboun2,
+    *iponoeln=NULL,*inoeln=NULL,iperturbsav,nevcomplex,*itiefac=NULL,
+    mscalmethod=0,*islavquadel=NULL,*irowt=NULL,*jqt=NULL,nboun2,
     *ndirboun2=NULL,*nodeboun2=NULL,nmpc2,*ipompc2=NULL,*nodempc2=NULL,
     *ikboun2=NULL,*ilboun2=NULL,*ikmpc2=NULL,*ilmpc2=NULL,mortartrafoflag=0,
-    intscheme=0;
+    intscheme=0,*iponoel=NULL;
 
   long long i2;
 
   double *d=NULL,*z=NULL,*stiini=NULL,*cc=NULL,*v=NULL,*zz=NULL,*emn=NULL,
     *stn=NULL,*stx=NULL,*een=NULL,*adb=NULL,*xstiff=NULL,*cdn=NULL,
-    *aub=NULL,*f=NULL,*fn=NULL,*epn=NULL,*xstateini=NULL,
+    *aub=NULL,*f=NULL,*fn=NULL,*epn=NULL,*xstateini=NULL,*damn=NULL,
     *enern=NULL,*xstaten=NULL,*eei=NULL,*enerini=NULL,*qfn=NULL,
     *qfx=NULL,*cgr=NULL,*au=NULL,dtime,reltime,*t0=NULL,*t1=NULL,*t1old=NULL,
-    sum,qa[4],cam[5],accold[1],bet,gam,*ad=NULL,alpham,betam,
+    sum,qa[4],cam[5],accold[1],bet,gam,*ad=NULL,alpham,betam,*dam=NULL,
     *co=NULL,*xboun=NULL,*xbounold=NULL,*vold=NULL,*emeini=NULL,
     *eme=NULL,*ener=NULL,*coefmpc=NULL,*fmpc=NULL,*veold=NULL,
     *adc=NULL,*auc=NULL,*zc=NULL,*fnr=NULL,*fni=NULL,setnull,deltmx,dd,
@@ -104,16 +104,13 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     fmin=0.,fmax=1.e30,*xmr=NULL,*xmi=NULL,*zi=NULL,*eigx=NULL,
     *pslavsurf=NULL,*pmastsurf=NULL,*cdnr=NULL,*cdni=NULL,*tinc,*tper,
     *tmin,*tmax,*energyini=NULL,*energy=NULL,e1[3],e2[3],xn[3],*smscale=NULL,
-    *autloc=NULL,*xboun2=NULL,*coefmpc2=NULL,*physcon=NULL;
+    *aut=NULL,*xboun2=NULL,*coefmpc2=NULL,*physcon=NULL,*errn=NULL;
 
   FILE *f1;
 
 #ifdef SGI
   ITG token;
 #endif
-
-  pi=4.*atan(1.);
-  constant=180./pi;
 
   co=*cop;kon=*konp;ipkon=*ipkonp;lakon=*lakonp;ielmat=*ielmatp;
   ielorien=*ielorienp;inotr=*inotrp;nodeboun=*nodebounp;
@@ -122,6 +119,15 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
   vold=*voldp;eme=*emep;ener=*enerp;ipompc=*ipompcp;nodempc=*nodempcp;
   coefmpc=*coefmpcp;labmpc=*labmpcp;ikmpc=*ikmpcp;ilmpc=*ilmpcp;
   fmpc=*fmpcp;veold=*veoldp;iamt1=*iamt1p;t0=*t0p;t1=*t1p;t1old=*t1oldp;
+
+  /* determining whether a node belongs to at least one element
+     (needed in resultsforc.c) */
+  
+  NNEW(iponoel,ITG,*nk);
+  FORTRAN(nodebelongstoel,(iponoel,inoel,&inoelsize,lakon,ipkon,kon,ne,&nramp));
+
+  pi=4.*atan(1.);
+  constant=180./pi;
 
   tinc=&timepar[0];
   tper=&timepar[1];
@@ -231,7 +237,6 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	printf(" *ERROR in complexfreq reading the eigenvalues in the eigenvalue file...");
 	exit(0);
       }
-      //	  for(i=0;i<nev;i++){printf("eigenvalue %d %e\n",i,d[i]);}
     }else{
       NNEW(d,double,2*nev);
       if(fread(d,sizeof(double),2*nev,f1)!=2*nev){
@@ -243,7 +248,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     NNEW(ad,double,neq[1]);
     NNEW(adb,double,neq[1]);
     NNEW(au,double,nzs[2]);
-    NNEW(aub,double,nzs[1]);
+    NNEW(aub,double,nzs[2]);
       
     /* reading the stiffness matrix */
 
@@ -264,7 +269,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
       exit(0);
     }
       
-    if(fread(aub,sizeof(double),nzs[1],f1)!=nzs[1]){
+    if(fread(aub,sizeof(double),nzs[2],f1)!=nzs[2]){
       printf(" *ERROR in complexfreq reading the off-diagonals of the mass matrix in the eigenvalue file...");
       exit(0);
     }
@@ -405,13 +410,13 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     /* determining the maximum amount of segments */
 
     for(i=0;i<*mcs;i++){
-      if(cs[17*i]>nsectors) nsectors=(ITG)(cs[17*i]+0.5);
+      if(cs[18*i]>nsectors) nsectors=(ITG)(cs[18*i]+0.5);
     }
 
     /* determining the maximum number of sectors to be plotted */
 
     for(j=0;j<*mcs;j++){
-      if(cs[17*j+4]>ngraph) ngraph=(ITG)cs[17*j+4];
+      if(cs[18*j+4]>ngraph) ngraph=(ITG)cs[18*j+4];
     }
     nkg=*nk*ngraph;
     neg=*ne*ngraph;
@@ -437,9 +442,9 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     }
     
     for(i=0;i<*mcs;i++){
-      is=cs[17*i+4];
+      is=cs[18*i+4];
       if((is==1)&&(*mcs==1)) continue;
-      ielset=cs[17*i+12];
+      ielset=cs[18*i+12];
       if(ielset==0) continue;
       for(i1=istartset[ielset-1]-1;i1<iendset[ielset-1];i1++){
 	if(ialset[i1]>0){
@@ -829,7 +834,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 
   }else{
       
-    /* no cyclic symmmetry */
+    /* no cyclic symmetry */
       
     /* assembling the new eigenmodes */
       
@@ -1050,7 +1055,7 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	printf(" *ERROR in complexfreq saving the diagonal of the mass matrix to the eigenvalue file...");
 	exit(0);
       }
-      if(fwrite(aub,sizeof(double),nzs[1],f1)!=nzs[1]){
+      if(fwrite(aub,sizeof(double),nzs[1],f1)!=nzs[2]){
 	printf(" *ERROR in complexfreq saving the off-diagonal entries of the mass matrix to the eigenvalue file...");
 	exit(0);
       }
@@ -1266,10 +1271,10 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     FORTRAN(rectcyl,(cot,v,fn,stn,qfn,een,cs,nk,&icntrl,t,filab,&imag,mi,emn));
     
     for(jj=0;jj<*mcs;jj++){
-      is=cs[17*jj+4];
+      is=cs[18*jj+4];
       for(i=1;i<is;i++){
 	
-	theta=i*2.*pi/cs[17*jj];
+	theta=i*2.*pi/cs[18*jj];
 	
 	for(l=0;l<*nk;l++){
 	  if(inocs[l]==jj){
@@ -1384,9 +1389,9 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     /* calculating the cosine and sine */
 
     for(k=0;k<*mcs;k++){
-      theta=nm[j]*2.*pi/cs[17*k];
-      cs[17*k+14]=cos(theta);
-      cs[17*k+15]=sin(theta);
+      theta=nm[j]*2.*pi/cs[18*k];
+      cs[18*k+14]=cos(theta);
+      cs[18*k+15]=sin(theta);
     }
 
     if(*nprint>0)FORTRAN(writehe,(&j));
@@ -1426,8 +1431,8 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
             icomplex=atoi(&labmpc[20*i+6]);}
 	  else if(strcmp1(&labmpc[20*i],"SUBCYCLIC")==0){
             for(ij=0;ij<*mcs;ij++){
-              lprev=cs[ij*17+13];
-              ilength=cs[ij*17+3];
+              lprev=cs[18*ij+13];
+              ilength=cs[18*ij+3];
               FORTRAN(nident,(&ics[lprev],&inode,&ilength,&id));
               if(id!=0){
                 if(ics[lprev+id-1]==inode){icomplex=ij+1;break;}
@@ -1443,11 +1448,11 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
             if(k==0) {
               if(fabs(xreal)<1.e-30)xreal=1.e-30;
 	      coefmpcnew[index]=coefmpc[index]*
- 		(cs[17*(icomplex-1)+14]+ximag/xreal*cs[17*(icomplex-1)+15]);}
+ 		(cs[18*(icomplex-1)+14]+ximag/xreal*cs[18*(icomplex-1)+15]);}
 	    else {
               if(fabs(ximag)<1.e-30)ximag=1.e-30;
               coefmpcnew[index]=coefmpc[index]*
-		(cs[17*(icomplex-1)+14]-xreal/ximag*cs[17*(icomplex-1)+15]);}
+		(cs[18*(icomplex-1)+14]-xreal/ximag*cs[18*(icomplex-1)+15]);}
           }
 	  else{coefmpcnew[index]=coefmpc[index];}
 	}
@@ -1471,13 +1476,11 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		&ne0,thicke,shcon,nshcon,
 		sideload,xload,xloadold,&icfd,inomat,pslavsurf,pmastsurf,
 		&mortar,islavact,cdn,islavnode,nslavnode,ntie,clearini,
-		islavsurf,ielprop,prop,energyini,energy,&iit,iponoel,
-		inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
+		islavsurf,ielprop,prop,energyini,energy,&iit,iponoeln,
+		inoeln,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 		itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-		islavelinv,autloc,irowtloc,jqtloc,&nboun2,
-		ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,coefmpc2,
-		labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
-		&intscheme,physcon);}
+		islavquadel,aut,irowt,jqt,&mortartrafoflag,
+		&intscheme,physcon,dam,damn,iponoel);}
       else{
 	results(co,nk,kon,ipkon,lakon,ne,&v[kkv],&stn[kk6],inum,
 		&stx[kkx],elcon,
@@ -1496,13 +1499,11 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 		&ne0,thicke,shcon,nshcon,
 		sideload,xload,xloadold,&icfd,inomat,pslavsurf,pmastsurf,
 		&mortar,islavact,cdn,islavnode,nslavnode,ntie,clearini,
-		islavsurf,ielprop,prop,energyini,energy,&iit,iponoel,
-		inoel,nener,orname,&network,ipobody,xbody,ibody,typeboun,
+		islavsurf,ielprop,prop,energyini,energy,&iit,iponoeln,
+		inoeln,nener,orname,&network,ipobody,xbody,ibody,typeboun,
 		itiefac,tieset,smscale,&mscalmethod,nbody,t0g,t1g,
-		islavelinv,autloc,irowtloc,jqtloc,&nboun2,
-		ndirboun2,nodeboun2,xboun2,&nmpc2,ipompc2,nodempc2,coefmpc2,
-		labmpc2,ikboun2,ilboun2,ikmpc2,ilmpc2,&mortartrafoflag,
-		&intscheme,physcon);
+		islavquadel,aut,irowt,jqt,&mortartrafoflag,
+		&intscheme,physcon,dam,damn,iponoel);
       }
 
     }
@@ -1558,14 +1559,14 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
     if(cyclicsymmetry){
 
       for(jj=0;jj<*mcs;jj++){
-	ilength=cs[17*jj+3];
-	is=cs[17*jj+4];
-	lprev=cs[17*jj+13];
+	ilength=cs[18*jj+3];
+	is=cs[18*jj+4];
+	lprev=cs[18*jj+13];
 	for(i=1;i<is;i++){
 	  
 	  for(l=0;l<*nk;l++){inumt[l+i**nk]=inum[l];}
 	  
-	  theta=i*nm[j]*2.*pi/cs[17*jj];
+	  theta=i*nm[j]*2.*pi/cs[18*jj];
 	  ctl=cos(theta);
 	  stl=sin(theta);
 	  
@@ -1921,7 +1922,8 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	ntrans,orab,ielorien,norien,description,ipneigh,neigh,
 	mi,stxt,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&net,
 	cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emnt,
-	thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,ielprop,prop,sti);
+	thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,ielprop,prop,
+	sti,damn,&errn);
     if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
     
   }   // end loop over the eigenfrequencies
@@ -1987,6 +1989,8 @@ void complexfreq(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
   *coefmpcp=coefmpc;*labmpcp=labmpc;*ikmpcp=ikmpc;*ilmpcp=ilmpc;
   *fmpcp=fmpc;*veoldp=veold;*iamt1p=iamt1;*t0p=t0;*t1oldp=t1old;*t1p=t1;
   *stip=sti;
+
+  SFREE(iponoel);
 
   return;
 }

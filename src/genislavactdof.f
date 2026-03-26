@@ -21,12 +21,6 @@
 !     corresponding slave node position in field islavnode and the
 !     global (x-y-z) degree of freedom
 !
-!  [in] nslavnode  	(i) for contraint i pointer into field islavnode
-!  [in] nmastnode	(i)pointer into field imastnode for contact tie i 
-!  [in] imastnode	field storing the nodes of the master surfaces
-!  [out] islavactdof     (i)=10*slavenodenumber+direction for active dof i
-!  [in] islavnode	field storing the nodes of the slave surface
-!
       subroutine genislavactdof(ntie,tieset,nactdof,nslavnode,
      &     nmastnode,imastnode,islavactdof,islavnode,mi,
      &     ithermal)

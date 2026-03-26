@@ -148,12 +148,17 @@
 !     
 !     storing the coordinates of the nodes
 !     
-        write(13,'(a5,a1,67x,i1)') p2,c,one
-!     
         nout=0
         do i=1,nk
           if(inomat(i).le.0) cycle
           nout=nout+1
+        enddo
+!     
+c        write(13,'(a5,a1,67x,i1)') p2,c,one
+        write(13,'(a5,a1,18x,i12,37x,i1)') p2,c,nout,one
+!     
+        do i=1,nk
+          if(inomat(i).le.0) cycle
           write(13,100) m1,nkold(i),(co(j,i),j=1,3)
         enddo
 !     

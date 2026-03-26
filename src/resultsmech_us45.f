@@ -153,7 +153,7 @@
 !                        to be calculated from the PK2 stresses
 !     nener              if 0: internal energy calculation is not required
 !                        else: internal energy is required on output
-!     ikin               if 0: kinetic energy calculation is not requred
+!     ikin               if 0: kinetic energy calculation is not required
 !                        else: kinetic energy is required on output
 !     ne0                largest element number without contact elements (are
 !                        stored after all other elements)
@@ -228,7 +228,7 @@
      &     Ethm(3),Ethf(3),tau(2),Smf(3),ti,ftherm(24),Kshell(24,24),
      &     kdmax,Kb(24,24),Ks(24,24),fintg(24)
 !     
-!     gauß points 2x2
+!     gauss points 2x2
 !     
       g_p(1,1)=-0.577350269189626
       g_p(2,1)=+0.577350269189626       
@@ -375,7 +375,7 @@
 !
         kode=2
         call linel(kode,mattyp,beta,eme,stre,stiff,elconloc,
-     &       iorien,orab,pgauss,ncmat_)
+     &       iorien,orab,pgauss,ncmat_,nalcon,imat,ithermal)
 !
         do m1=1,21
           xstiff(m1,ii,i)=stiff(m1) ! elas for each gp saved in xstiff    
@@ -498,12 +498,11 @@
         enddo
       endif        
 !
-! Internal forces based on displacments
+! Internal forces based on displacements
 !
       if(calcul_fn.eq.1)then     
 !
-!   stiffness matirx
-!
+!   stiffness matrix
 !
 ! stiffness and mass matrix
 !
@@ -512,7 +511,7 @@
         call us4_Km(x,Dm,Kmem) 
 !
         Kshell=Kmem+Kb+Ks
-! artifical drilling stiffness (Krotz) in orede to avoid singularities 
+! artificial drilling stiffness (Krotz) in order to avoid singularities 
         kdmax=0.d0      
         do k=1,24
           if(kdmax.LT.abs(Kshell(k,k))) then

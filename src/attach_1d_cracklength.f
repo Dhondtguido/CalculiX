@@ -30,7 +30,7 @@
 !
       integer i,k,imin,im,nx(*),ny(*),nz(*),n
 !
-      real*8 ratio(3),pneigh(3,3),a,xi(-1:1),p(3),distmin,d1,dist,xil,
+      real*8 ratio(*),pneigh(3,*),a,xi(-1:1),p(3),distmin,d1,dist,xil,
      &     xo(*),yo(*),zo(*),x(*),y(*),z(*),pnode(*)
 !
       d1=1.d0

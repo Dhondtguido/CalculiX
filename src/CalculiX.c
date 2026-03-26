@@ -47,7 +47,7 @@ int main(int argc,char *argv[])
     kind1[2],kind2[2],*heading=NULL,*objectset=NULL;
   
   ITG *kon=NULL,*nodeboun=NULL,*ndirboun=NULL,*ipompc=NULL,
-    *nodempc=NULL,*nodeforc=NULL,*ndirforc=NULL,
+    *nodempc=NULL,*nodeforc=NULL,*ndirforc=NULL,interfaceload,
     *nelemload=NULL,im,*inodesd=NULL,nload1,*idefforc=NULL,
     *nactdof=NULL,*icol=NULL,*ics=NULL,itempuser[3],
     *jq=NULL,*mast1=NULL,*irow=NULL,*rig=NULL,*idefbody=NULL,
@@ -56,22 +56,22 @@ int main(int argc,char *argv[])
     *istartset=NULL,*iendset=NULL,*ialset=NULL,*ielmat=NULL,
     *ielorien=NULL,*nrhcon=NULL,*nodebounold=NULL,*ndirbounold=NULL,
     *nelcon=NULL,*nalcon=NULL,*iamforc=NULL,*iamload=NULL,
-    *iamt1=NULL,*namta=NULL,*ipkon=NULL,*iamboun=NULL,
+    *iamt1=NULL,*namta=NULL,*ipkon=NULL,*iamboun=NULL,*ndmcon=NULL,
     *nplicon=NULL,*nplkcon=NULL,*inotr=NULL,*iponor=NULL,*knor=NULL,
-    *ikforc=NULL,*ilforc=NULL,*iponoel=NULL,*inoel=NULL,*nshcon=NULL,
+    *ikforc=NULL,*ilforc=NULL,*iponoel2d=NULL,*inoel2d=NULL,*nshcon=NULL,
     *ncocon=NULL,*ibody=NULL,*ielprop=NULL,*islavsurf=NULL,
     *ipoinpc=NULL,mt,nxstate,nload0,iload,*iuel=NULL,*ne2boun=NULL,
     *irandomtype=NULL,irobustdesign[3],*iparentel=NULL,ifreebody,
-    *ipobody=NULL,inewton=0,*iprfn=NULL,*konrfn=NULL;
+    *ipobody=NULL,inewton=0,*iprfn=NULL,*konrfn=NULL,*imastload=NULL;
      
   ITG nk,ne,nboun,nmpc,nforc,nload,nprint,nset,nalset,nentries=19,
     nmethod,neq[3],i,mpcfree,mei[4]={0,0,0,0},j,nzl,nam,nbounold,
     nforcold,nloadold,nbody,nbody_,nbodyold,network,nheading_,
     k,nzs[3],nmpc_,nload_,nforc_,istep,istat,nboun_,nintpoint,
     iperturb[2],nmat,ntmat_,norien,ithermal[2]={0,0},nmpcold,
-    iprestr,kode,isolver,nslavs,nkon_,ne1,nkon0,mortar,
+    iprestr,kode,isolver,nslavs,nkon_,ne1,nkon0,mortar,ndmat_,
     jout[2],nlabel,nkon,idrct,jmax[2],iexpl,nevtot,ifacecount,
-    iplas,npmat_,mi[3],ntrans,mpcend,namtot_,iheading,
+    iplas,npmat_,mi[3],ntrans,mpcend,namtot_,iheading,ishift,
     icascade,maxlenmpc,mpcinfo[4],ne1d,ne2d,infree[4],
     callfrommain,nflow,jin=0,irstrt[2],nener,jrstrt,nenerold,
     nline,*ipoinp=NULL,*inp=NULL,ntie,ntie_,mcs,nprop_,
@@ -89,7 +89,7 @@ int main(int argc,char *argv[])
     
   double *co=NULL,*xboun=NULL,*coefmpc=NULL,*xforc=NULL,*clearini=NULL,
     *xload=NULL,*xbounold=NULL,*xforcold=NULL,*randomval=NULL,
-    *vold=NULL,*sti=NULL,*xloadold=NULL,*xnor=NULL,
+    *vold=NULL,*sti=NULL,*xloadold=NULL,*xnor=NULL,*dmcon=NULL,
     *reorder=NULL,*dcs=NULL,*thickn=NULL,*thicke=NULL,*offset=NULL,
     *elcon=NULL,*rhcon=NULL,*alcon=NULL,*alzero=NULL,*t0=NULL,*t1=NULL,
     *prestr=NULL,*orab=NULL,*amta=NULL,*veold=NULL,*accold=NULL,
@@ -98,9 +98,10 @@ int main(int argc,char *argv[])
     *cs=NULL,*tietol=NULL,*fmpc=NULL,*prop=NULL,*t0g=NULL,*t1g=NULL,
     *xbody=NULL,*xbodyold=NULL,*coefmpcref=NULL,*dacon=NULL,*vel=NULL,
     *velo=NULL,*veloo=NULL,energy[5],*ratiorfn=NULL,*dgdxglob=NULL,
-    *g0=NULL,*xdesi=NULL,*coeffc=NULL,*edc=NULL,*coini=NULL;
+    *g0=NULL,*xdesi=NULL,*coeffc=NULL,*edc=NULL,*coini=NULL,*dam=NULL,
+    *pmastload=NULL;
     
-  double ctrl[57];
+  double ctrl[60];
 
   double fei[4],*xmodal=NULL,timepar[5],alpha[2],ttime,qaold[2],physcon[14];
 
@@ -158,7 +159,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Wed Dec 20 18:18:13 CET 2023\n");
+  printf("You are using an executable made on Mon Mar  2 17:58:21 CET 2026\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -189,7 +190,7 @@ int main(int argc,char *argv[])
 	  &ntrans_,&ncs_,&nstate_,&ncmat_,&memmpc_,&nprint_,energy,ctrl,alpha,
 	  qaold,physcon,&istep,&istat,&iprestr,&kode,&nload,&nbody,&nforc,
 	  &nboun,&nk,&nmpc,&nam,&nzs_,&nlabel,&ttime,&iheading,&nfc,&nfc_,&ndc,
-	  &ndc_);
+	  &ndc_,&ndmat_,&interfaceload);
   
   NNEW(set,char,81*nset_);
   NNEW(meminset,ITG,nset_);
@@ -205,7 +206,7 @@ int main(int argc,char *argv[])
 		      &mortar,&ifacecount,&nintpoint,infree,&nheading_,
 		      &nobject_,iuel,&iprestr,&nstam,&ndamp,&nef,&nbounold,
 		      &nforcold,&nloadold,&nbodyold,&mpcend,irobustdesign,
-		      &nfc_,&ndc_,&maxsectors_));
+		      &nfc_,&ndc_,&maxsectors_,&ndmat_));
 
   SFREE(meminset);SFREE(rmeminset);mt=mi[1]+1;
   NNEW(heading,char,66*nheading_);
@@ -256,8 +257,8 @@ int main(int argc,char *argv[])
 	NNEW(thickn,double,2*nk_);
 	NNEW(thicke,double,mi[2]*nkon_);
 	NNEW(offset,double,2*ne_);
-	NNEW(iponoel,ITG,nk_);
-	NNEW(inoel,ITG,9*ne1d+24*ne2d);
+	NNEW(iponoel2d,ITG,nk_);
+	NNEW(inoel2d,ITG,9*ne1d+24*ne2d);
 	NNEW(rig,ITG,nk_);
 	NNEW(ne2boun,ITG,2*nk_);
 	if(infree[2]==0)infree[2]=1;
@@ -335,6 +336,14 @@ int main(int argc,char *argv[])
 
       NNEW(elcon,double,(ncmat_+1)*ntmat_*nmat);
       NNEW(nelcon,ITG,2*nmat);
+
+      /* damage constants */
+
+      if(ndmat_>0){
+	NNEW(dmcon,double,(ndmat_+1)*ntmat_*nmat);
+	NNEW(ndmcon,ITG,2*nmat);
+	NNEW(dam,double,mi[0]*ne_);
+      }
 
       /* density */
 
@@ -451,7 +460,7 @@ int main(int argc,char *argv[])
       if(ntie_>0){
 	NNEW(tieset,char,243*ntie_);
 	NNEW(tietol,double,4*ntie_);
-	NNEW(cs,double,17*ntie_*maxsectors_);
+	NNEW(cs,double,18*ntie_*maxsectors_);
       }
 
       /* objectives for sensitivity analysis */
@@ -579,8 +588,14 @@ int main(int argc,char *argv[])
       if(ithermal[0]!=0) NNEW(t1old,double,nk_); 
       NNEW(sti,double,6*mi[0]*ne);
       NNEW(eme,double,6*mi[0]*ne);
-      if(nener==1)NNEW(ener,double,2*mi[0]*ne);
-      if(mcs>ntie_) RENEW(cs,double,17*mcs);
+      if(nener==1){
+	if(mortar!=1){
+	  NNEW(ener,double,2*mi[0]*(ne+nslavs));
+	}else{
+	  NNEW(ener,double,2*mi[0]*ne);
+	}
+      }
+      if(mcs>ntie_) RENEW(cs,double,18*mcs);
       if(mortar==1){
 	NNEW(pslavsurf,double,3*nintpoint);
 	NNEW(clearini,double,3*9*ifacecount);
@@ -622,7 +637,7 @@ int main(int argc,char *argv[])
 		      &npmat_,mi,&nk_,trab,inotr,&ntrans,ikboun,ilboun,ikmpc,
 		      ilmpc,ics,dcs,&ncs_,&namtot_,cs,&nstate_,&ncmat_,
 		      &mcs,labmpc,iponor,xnor,knor,thickn,thicke,ikforc,ilforc,
-		      offset,iponoel,inoel,rig,infree,nshcon,shcon,cocon,
+		      offset,iponoel2d,inoel2d,rig,infree,nshcon,shcon,cocon,
 		      ncocon,physcon,&nflow,ctrl,&maxlenmpc,&ne1d,&ne2d,&nener,
 		      vold,nodebounold,ndirbounold,xbounold,xforcold,xloadold,
 		      t1old,eme,sti,ener,xstate,jobnamec,irstrt,&ttime,qaold,
@@ -636,7 +651,8 @@ int main(int argc,char *argv[])
 		      &mpcfreeref,&maxlenmpcref,&memmpc_,&isens,&namtot,&nstam,
 		      dacon,vel,&nef,velo,veloo,ne2boun,itempuser,
 		      irobustdesign,irandomtype,randomval,&nfc,&nfc_,coeffc,
-		      ikdc,&ndc,&ndc_,edc,coini));
+		      ikdc,&ndc,&ndc_,edc,coini,&ndmat_,ndmcon,dmcon,dam,
+		      &irefineloop,&interfaceload));
     
     SFREE(idefforc);SFREE(idefload);SFREE(idefbody);
 
@@ -655,7 +671,7 @@ int main(int argc,char *argv[])
       RENEW(ipobody,ITG,2*(ifreebody-1));
     }
     
-    if(irefineloop==1){
+    if(irefineloop>0){
 
       /* in the last step refinement was requested and the mesh
          was appropriately refined; this mesh has to be read */
@@ -666,13 +682,14 @@ int main(int argc,char *argv[])
 		  filab,&co,&ipompc,&nodempc,&coefmpc,&nmpc,&nmpc_,&labmpc,
 		  &mpcfree,&memmpc_,&ikmpc,&ilmpc,&nk_,&ne_,&nkon_,&istep,
 		  &nprop_,&ielprop,&ne1d,&ne2d,&iponor,&thickn,&thicke,mi,
-		  &offset,&iponoel,&rig,&ne2boun,&ielorien,&inotr,&t0,&t0g,&t1g,
-		  &prestr,&vold,&veold,&ielmat,irobustdesign,&irandomtype,
+		  &offset,&iponoel2d,&rig,&ne2boun,&ielorien,&inotr,&t0,&t0g,
+		  &t1g,&prestr,&vold,&veold,&ielmat,irobustdesign,&irandomtype,
 		  &randomval,&nalset,&nalset_,&nkon,xnor,&iaxial,
 		  &network,&nlabel,iuel,iperturb,&iprestr,&ntie,tieset,
 		  &iparentel,ikboun,&ifreebody,&ipobody,&nbody,&iprfn,
 		  &konrfn,&ratiorfn,nodempcref,coefmpcref,&memmpcref_,
-		  &mpcfreeref,&maxlenmpcref,&maxlenmpc,&norien,tietol);
+		  &mpcfreeref,&maxlenmpcref,&maxlenmpc,&norien,tietol,
+		  &ntrans,&nam);
     }
 
 #ifdef CALCULIX_EXTERNAL_BEHAVIOURS_SUPPORT
@@ -799,8 +816,8 @@ int main(int argc,char *argv[])
 	SFREE(thickn);
 	RENEW(thicke,double,mi[2]*nkon);
 	RENEW(offset,double,2*ne);
-	RENEW(inoel,ITG,3*(infree[2]-1));
-	RENEW(iponoel,ITG,infree[3]);
+	RENEW(inoel2d,ITG,3*(infree[2]-1));
+	RENEW(iponoel2d,ITG,infree[3]);
 	RENEW(rig,ITG,infree[3]);
 	RENEW(ne2boun,ITG,2*infree[3]);
       }
@@ -816,6 +833,12 @@ int main(int argc,char *argv[])
 
       RENEW(elcon,double,(ncmat_+1)*ntmat_*nmat);
       RENEW(nelcon,ITG,2*nmat);
+
+      if(ndmat_>0){
+	RENEW(dmcon,double,(ndmat_+1)*ntmat_*nmat);
+	RENEW(ndmcon,ITG,2*nmat);
+	RENEW(dam,double,mi[0]*ne);
+      }
 
       RENEW(rhcon,double,2*ntmat_*nmat);
       RENEW(nrhcon,ITG,nmat);
@@ -907,7 +930,7 @@ int main(int argc,char *argv[])
       }
 
       if(mcs>0){
-	RENEW(cs,double,17*mcs);
+	RENEW(cs,double,18*mcs);
       }else{
 	SFREE(cs);
       }
@@ -1047,7 +1070,16 @@ int main(int argc,char *argv[])
       RENEW(iamboun,ITG,nboun);
     }
 
-    /* generate force convection elements */
+    /* check for interfaceloading */
+
+    if(interfaceload>0){
+      interfaceloading(&ne,ipkon,kon,lakon,&nk,&set,&istartset,&iendset,&ialset,
+		       &nset,&nalset,co,vold,mi,cs,&mcs,ics,&nelemload,
+		       &sideload,&xload,&xloadold,&iamload,&nam,&nload,
+		       &nload_,&imastload,&pmastload,&interfaceload);
+    }
+    
+    /* generate forced convection elements */
 
     if(network>0){
       ne1=ne;nkon0=nkon;nload1=nload;
@@ -1172,7 +1204,7 @@ int main(int argc,char *argv[])
       NNEW(jq,ITG,mt*nk+1);
       NNEW(ipointer,ITG,mt*nk);
       
-      if((icascade==0)&&((nmethod<8)||(nmethod>10))){
+      if(((icascade==0)&&((nmethod<8)||(nmethod>10)))||(nmethod==12)){
 	if((nmethod==11)||(nmethod==13)){nmethodl=2;}else{nmethodl=nmethod;}
 	mastruct(&nk,kon,ipkon,lakon,&ne,nodeboun,ndirboun,&nboun,ipompc,
 		 nodempc,&nmpc,nactdof,icol,jq,&mast1,&irow,&isolver,neq,
@@ -1248,7 +1280,7 @@ int main(int argc,char *argv[])
 		    &nbody,
 		    xbodyold,timepar,thicke,jobnamec,tieset,&ntie,&istep,&nmat,
 		    ielprop,prop,typeboun,&mortar,mpcinfo,tietol,ics,
-		    orname,itempuser,t0g,t1g,jmax);
+		    orname,itempuser,t0g,t1g,jmax,imastload,pmastload);
 
 	  for(i=0;i<3;i++){nzsprevstep[i]=nzs[i];}
 
@@ -1282,7 +1314,8 @@ int main(int argc,char *argv[])
 		    &nintpoint,&mortar,&ifacecount,typeboun,&islavsurf,
 		    &pslavsurf,&clearini,&nmat,xmodal,&iaxial,&inext,&nprop,
 		    &network,orname,vel,&nef,velo,veloo,energy,itempuser,
-		    ipobody,&inewton,t0g,t1g,&ifreebody);
+		    ipobody,&inewton,t0g,t1g,&ifreebody,&nlabel,&ndmat_,ndmcon,
+		    dmcon,dam,imastload,pmastload);
 
 	  memmpc_=mpcinfo[0];mpcfree=mpcinfo[1];icascade=mpcinfo[2];
 	  maxlenmpc=mpcinfo[3];
@@ -1316,7 +1349,7 @@ int main(int argc,char *argv[])
 	       ibody,xbody,&nbody,thicke,&nslavs,tietol,&nkon,mpcinfo,
 	       &ntie,&istep,&mcs,ics,tieset,cs,&nintpoint,&mortar,&ifacecount,
 	       &islavsurf,&pslavsurf,&clearini,&nmat,typeboun,ielprop,prop,
-	       orname,&inewton,t0g,t1g,alpha);
+	       orname,&inewton,t0g,t1g,alpha,imastload,pmastload);
 
 	memmpc_=mpcinfo[0];mpcfree=mpcinfo[1];icascade=mpcinfo[2];
 	maxlenmpc=mpcinfo[3];
@@ -1352,7 +1385,7 @@ int main(int argc,char *argv[])
 		 ibody,xbody,&nbody,&nevtot,thicke,&nslavs,tietol,mpcinfo,
 		 &ntie,&istep,tieset,&nintpoint,&mortar,&ifacecount,&islavsurf,
 		 &pslavsurf,&clearini,&nmat,typeboun,ielprop,prop,orname,
-		 &inewton,t0g,t1g,alpha);
+		 &inewton,t0g,t1g,alpha,imastload,pmastload);
 
 	memmpc_=mpcinfo[0];mpcfree=mpcinfo[1];icascade=mpcinfo[2];
 	maxlenmpc=mpcinfo[3];
@@ -1382,7 +1415,7 @@ int main(int argc,char *argv[])
 	       set,&nset,istartset,iendset,ialset,&nprint,prlab,
 	       prset,&nener,&isolver,trab,inotr,&ntrans,&ttime,fmpc,ipobody,
 	       ibody,xbody,&nbody,thicke,jobnamec,&nmat,ielprop,prop,
-	       orname,typeboun,t0g,t1g,&mcs,&istep);
+	       orname,typeboun,t0g,t1g,&mcs,&istep,imastload,pmastload);
 #else
       printf(" *ERROR in CalculiX: the ARPACK library is not linked\n\n");
       FORTRAN(stop,());
@@ -1418,7 +1451,7 @@ int main(int argc,char *argv[])
 	     xbodyold,&istep,&isolver,jq,output,&mcs,&nkon,&mpcend,ics,cs,
 	     &ntie,tieset,&idrct,jmax,ctrl,&itpamp,tietol,&nalset,
 	     ikforc,ilforc,thicke,&nslavs,&nmat,typeboun,ielprop,prop,orname,
-	     t0g,t1g);
+	     t0g,t1g,imastload,pmastload);
       }
     else if(nmethod==5)
       {
@@ -1455,7 +1488,7 @@ int main(int argc,char *argv[])
 		    &mpcend,
 		    ctrl,ikforc,ilforc,thicke,&nmat,typeboun,ielprop,prop,
 		    orname,
-		    &ndamp,dacon,t0g,t1g);
+		    &ndamp,dacon,t0g,t1g,imastload,pmastload);
       }
     else if((nmethod==6)||(nmethod==7))
       {
@@ -1517,7 +1550,7 @@ int main(int argc,char *argv[])
 		       &ntie,&tieset,&itpamp,&iviewfile,jobnamec,&tietol,
 		       &nslavs,thicke,
 		       ics,&nalset,&nmpc_,&nmat,typeboun,&iaxial,&nload_,&nprop,
-		       &network,orname,t0g,t1g);
+		       &network,orname,t0g,t1g,imastload,pmastload);
 
       memmpc_=mpcinfo[0];mpcfree=mpcinfo[1];icascade=mpcinfo[2];
       maxlenmpc=mpcinfo[3];
@@ -1545,8 +1578,8 @@ int main(int argc,char *argv[])
 		   ielprop,prop,typeboun,&mortar,mpcinfo,tietol,ics,
 		   &nobject,&objectset,&istat,orname,nzsprevstep,&nlabel,
 		   physcon,
-		   jobnamef,iponor,knor,&ne2d,iponoel,inoel,&mpcend,dgdxglob,
-		   g0,&nodedesi,&ndesi,&nobjectstart,&xdesi,rig);
+		   jobnamef,iponor,knor,&ne2d,iponoel2d,inoel2d,&mpcend,
+		   dgdxglob,g0,&nodedesi,&ndesi,&nobjectstart,&xdesi,rig,fei);
     
       }else{
         sensi_orien(co,&nk,&kon,&ipkon,&lakon,&ne,nodeboun,ndirboun,
@@ -1568,7 +1601,7 @@ int main(int argc,char *argv[])
 		    ielprop,prop,typeboun,&mortar,mpcinfo,tietol,ics,
 		    &nobject,&objectset,&istat,orname,nzsprevstep,&nlabel,
 		    physcon,
-		    jobnamef,iponor,knor,&ne2d,iponoel,inoel,&mpcend);
+		    jobnamef,iponor,knor,&ne2d,iponoel2d,inoel2d,&mpcend);
       }
     
     }
@@ -1591,7 +1624,7 @@ int main(int argc,char *argv[])
 		   thicke,jobnamec,tieset,&ntie,&istep,&nmat,ielprop,prop,
 		   typeboun,&mortar,mpcinfo,tietol,ics,&nobject,
 		   &objectset,&istat,orname,nzsprevstep,&nlabel,physcon,
-		   jobnamef,iponor,knor,&ne2d,iponoel,inoel,&mpcend,
+		   jobnamef,iponor,knor,&ne2d,iponoel2d,inoel2d,&mpcend,
 		   irobustdesign,irandomtype,randomval,rig);
     }
 
@@ -1616,7 +1649,8 @@ int main(int argc,char *argv[])
 			ielprop,prop,&kode,&nmethod,filab,&nstate_,&istep,cs,
 			set,&nset,istartset,iendset,ialset,jobnamec,output,
 			&ntrans,inotr,trab,orname,xdesi,timepar,coini,ikboun,
-			nactdof,&ne2d,&nkon);         
+			nactdof,&ne2d,&nkon,tieset,&ntie,knor,iponoel2d,iponor,
+			inoel2d);         
       
     }
 
@@ -1624,11 +1658,12 @@ int main(int argc,char *argv[])
 
     /* check whether refinement was active */
 
-    //          if(irefineloop==20){
+    if(irefineloop>0){irefineloop++;}
     if(strcmp1(&filab[4089],"RM")==0){
-      irefineloop++;
+      //      irefineloop++;
+      irefineloop=1;
 
-      if(irefineloop==1){
+      //      if(irefineloop==1){
 
 	/* refinement was requested in the step which was just
 	   finished and a refined mesh was created and stored.
@@ -1658,12 +1693,12 @@ int main(int argc,char *argv[])
 		    &randomval,&prlab,&prset,&filab,&xmodal,&ielmat,
 		    &matname,&sti,&eme,&ener,&xstate,&vold,
 		    &veold,&vel,&velo,&veloo,&iponor,&xnor,
-		    &knor,&thicke,&offset,&iponoel,&inoel,&rig,
+		    &knor,&thicke,&offset,&iponoel2d,&inoel2d,&rig,
 		    &ne2boun,&islavsurf,&mortar,&pslavsurf,&clearini,
 		    &nobject_,&objectset,&nmethod,iperturb,&irefineloop,
 		    &iparentel,&iprfn,&konrfn,&ratiorfn,&heading,
 		    &nodedesi,&dgdxglob,&g0,&nuel_,&xdesi,&nfc,&coeffc,
-		    &ikdc,&edc,&coini);
+		    &ikdc,&edc,&coini,&ndmat_,&ndmcon,&dmcon,&dam);
 
 	/* closing and reopening the output files */
 	
@@ -1684,7 +1719,7 @@ int main(int argc,char *argv[])
 		&ncs_,&nstate_,&ncmat_,&memmpc_,&nprint_,energy,ctrl,alpha,
 		qaold,physcon,&istep,&istat,&iprestr,&kode,&nload,&nbody,&nforc,
 		&nboun,&nk,&nmpc,&nam,&nzs_,&nlabel,&ttime,&iheading,&nfc,
-		&nfc_,&ndc,&ndc_);
+		&nfc_,&ndc,&ndc_,&ndmat_,&interfaceload);
   
 	NNEW(set,char,81*nset_);
 	NNEW(meminset,ITG,nset_);
@@ -1701,13 +1736,13 @@ int main(int argc,char *argv[])
 			    &mortar,&ifacecount,&nintpoint,infree,&nheading_,
 			    &nobject_,iuel,&iprestr,&nstam,&ndamp,&nef,
 			    &nbounold,&nforcold,&nloadold,&nbodyold,&mpcend,
-			    irobustdesign,&nfc_,&ndc_,&maxsectors_));
+			    irobustdesign,&nfc_,&ndc_,&maxsectors_,&ndmat_));
 
 	SFREE(meminset);SFREE(rmeminset);mt=mi[1]+1;
 	NNEW(heading,char,66*nheading_);
 
 	continue;
-      }
+	//      }
     }
 
     /* reset tempuserflag */
@@ -1776,7 +1811,7 @@ int main(int argc,char *argv[])
       }
     }
 
-    /* removing the advective elements, if any */
+    /* removing the force convection elements, if any */
 
     if(network>0){
       RENEW(ipkon,ITG,ne1);
@@ -1809,16 +1844,44 @@ int main(int argc,char *argv[])
 
       /* reactivating the original load labels */
 
-      for(i=nload-1;i>=nload0;i--){
+      //      for(i=nload-1;i>=nload0;i--){
+      for(i=nload-1;i>=nload1;i--){
 	if(strcmp2(&sideload[20*i],"                    ",20)==0){
 	  iload=nelemload[2*i+1];
 	  strcpy1(&sideload[20*(iload-1)],"F",1);
 	}
       }
-      ne=ne1;nkon=nkon0;
+      ne=ne1;nkon=nkon0;nload=nload1;
 
     }
 
+    /* deactivating the interface loading */
+
+    if(interfaceload>0){
+      ishift=0;
+      //      for(i=0;i<nload1;i++){
+      for(i=0;i<nload;i++){
+	if(strcmp1(&sideload[20*i],"I")==0){
+	  if(ipkon[nelemload[2*i]-1]>=0){
+	    ishift++;
+	    continue;
+	  }
+	}
+	nelemload[2*(i-ishift)]=nelemload[2*i];
+	nelemload[2*(i-ishift)+1]=nelemload[2*i+1];
+	strcpy1(&sideload[20*(i-ishift)],&sideload[20*i],20);
+	xload[2*(i-ishift)]=xload[2*i];
+	xload[2*(i-ishift)+1]=xload[2*i+1];
+	xloadold[2*(i-ishift)]=xloadold[2*i];
+	xloadold[2*(i-ishift)+1]=xloadold[2*i+1];
+	if(nam>0){
+	  iamload[2*(i-ishift)]=iamload[2*i];
+	  iamload[2*(i-ishift)+1]=iamload[2*i+1];
+	}
+      }
+      SFREE(imastload);SFREE(pmastload);
+    }
+    
     nload=nload0;
 
     if((nmethod==4)&&(iperturb[0]>1)) SFREE(accold);
@@ -1842,8 +1905,8 @@ int main(int argc,char *argv[])
 			      amname,amta,namta,t0,t1,iamt1,veold,ielmat,
 			      matname,prlab,prset,filab,vold,nodebounold,
 			      ndirbounold,xbounold,xforcold,xloadold,t1old,eme,
-			      iponor,xnor,knor,thicke,offset,iponoel,inoel,rig,
-			      shcon,nshcon,cocon,ncocon,ics,sti,ener,xstate,
+			      iponor,xnor,knor,thicke,offset,iponoel2d,inoel2d,
+			      rig,shcon,nshcon,cocon,ncocon,ics,sti,ener,xstate,
 			      jobnamec,infree,prestr,&iprestr,cbody,ibody,
 			      xbody,&nbody,xbodyold,&ttime,qaold,cs,&mcs,
 			      output,physcon,ctrl,typeboun,fmpc,tieset,&ntie,
@@ -1851,7 +1914,8 @@ int main(int argc,char *argv[])
 			      &mortar,&nintpoint,&ifacecount,islavsurf,
 			      pslavsurf,clearini,irstrt,vel,&nef,velo,veloo,
 			      ne2boun,&memmpc_,heading,&nheading_,&network,
-			      &nfc,&ndc,coeffc,ikdc,edc,xmodal));
+			      &nfc,&ndc,coeffc,ikdc,edc,xmodal,&ndmat_,ndmcon,
+			      dmcon,dam));
       }
     } 
 	  
@@ -1892,12 +1956,12 @@ int main(int argc,char *argv[])
 	      &randomval,&prlab,&prset,&filab,&xmodal,&ielmat,
 	      &matname,&sti,&eme,&ener,&xstate,&vold,
 	      &veold,&vel,&velo,&veloo,&iponor,&xnor,
-	      &knor,&thicke,&offset,&iponoel,&inoel,&rig,
+	      &knor,&thicke,&offset,&iponoel2d,&inoel2d,&rig,
 	      &ne2boun,&islavsurf,&mortar,&pslavsurf,&clearini,
 	      &nobject_,&objectset,&nmethod,iperturb,&irefineloop,
 	      &iparentel,&iprfn,&konrfn,&ratiorfn,&heading,
 	      &nodedesi,&dgdxglob,&g0,&nuel_,&xdesi,&nfc,&coeffc,
-	      &ikdc,&edc,&coini);
+	      &ikdc,&edc,&coini,&ndmat_,&ndmcon,&dmcon,&dam);
   
 #ifdef CALCULIX_MPI
   MPI_Finalize();

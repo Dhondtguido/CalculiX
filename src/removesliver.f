@@ -86,7 +86,8 @@
         enddo loop1
       enddo
 !
-      write(*,*) 'Total number of sliver elements: ',isliver
+      write(*,*)
+     &'*INFO in removesliver: Total number of sliver elements: ',isliver
       write(*,*)
 !
       return

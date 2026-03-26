@@ -5321,3 +5321,259 @@ Dec 2002        - started to work on single crystal plasticity
                   
  19 Dec 2023    - expanded the use of multistages.f (difference of
                   adjacent sector sizes can be arbitrary now)
+
+ 23 Jan 2024    - removed an error in allocation.f
+                - removed the initialization of inum to zero from
+		  createinum.f
+
+ 24 Jan 2024    - took createinum out of the major loop for
+                  explicit dynamic massless calculations
+
+ 31 Jan 2024    - reinserted inclusion.c instead of inclusion.f
+
+ 2 Feb 2024     - corrected an error in inclusion.c
+                - reverted to inclusion.f (BLAS faster and
+		  parallellized?)
+                - changed shape3tr,shape4q,shape6tri and shape8q.f
+
+ 15 Feb 2024    - changed xforc into xforcact in the mafillsmmain
+                  call in premortar.c
+
+ 17 Feb 2024    - cleaned up checkspcmpc.f
+
+ 23 Feb 2024    - cleaned up bdfill.c
+                - corrected multistages.f for radial connections
+                - cleaned up stressmortar.c
+
+ 24 Feb 2024    - cleaned up trafontmortar2.c
+
+ 25 Feb 2024    - cleaned up results.c
+
+ 27 Feb 2024    - cleaned up inimortar.c and premortar.c
+
+ 28 Feb 2024    - cleaned up Iwan-elements
+
+ 1 Mar 2024     - switched mortar=2 with mortar=3
+                - cleaned up inimortar.c
+                - changed autloc into aut etc...
+
+ 5 Mar 2024     - removed LINMORTAR and Petrov-Galerkin Mortar
+
+ 12 Mar 2024    - replaced islavspc(2,*) by islavspc(*) and similar
+                  fields
+
+ 15 Mar 2024    - made some small changes in dynamics.f
+                - worked on inimortar.c and premortar.c
+
+ 18 Mar 2024    - set ismallsliding by default to 1 for mortar
+
+ 22 Mar 2024    - simplified premortar.c
+
+ 27 Mar 2024    - worked on premortar.c
+                - covered the calculation of the stiffness matrix and
+		  forces for mortar with quadratic contact elements by
+		  the usual calls of results and mafillsm in nonlingeo
+		  (use of nslavquadel) instead of in premortar.c.
+
+ 2 April 2024   - worked on speeding up mortar contact
+
+ 3 April 2024   - optimized e_c3d.f
+
+ 5 April 2024   - cleaned up genfirstactif.f
+                - optimized e_c3d.f further
+
+ 27 April 2024  - no equations are generated for slave nodes with no
+                  master partner face in multistages.f
+
+ 3 May 2024     - replaced iprestr=0 by *iprestr=0 in arpack(cs).c
+                - included string.h in each file with memcpy
+
+ 17 May 2024    - inserted implicit filtering for sensitivities
+
+ 21 May 2024    - corrected errors in feasibledirection.c
+
+ 15 July 2024   - corrected examples channel2 and channel2a (included
+                  the conductivity)
+
+ 19 July 2024   - corrected an error in frdvector.c and frdgeneralvector.c
+                  (for OUTPUT ALL).
+
+ 31 July 2024   - corrected some spelling errors
+                - removed an error in frd.c (composites)
+
+ 5 Aug 2024     - posted version 2.22
+
+ 8 Aug 2024     - allowed for oversampling in multistage MPC's
+
+ 17 Sep 2024    - made some corrections in gen3dforc.f for knots
+
+ 27 Sep 2024    - introduced a linear temperature distribution for the
+                  +BOUNDARY and *TEMPERATURE keywords
+
+ 4 Oct 2024     - got rid of the "call system" calls in restartwrite.f (the
+                  system calls do not work in Windows).
+
+ 11 Oct 2024    - corrected errors in the dimension of cs in arpackcs.c,
+                  complexfreq.c, expand.c and objectivemain_se.c
+
+ 13 Nov 2024    - corrected effectivemodalmass
+
+ 15 Nov 2024    - got rid of the "rename" statement in restartwrite.f (is
+                  not standard FORTRAN)
+                - corrected an error in precontact.c
+
+ 25 Nov 2024    - removed an error in gen3dboun.f and frequencys.f
+
+ 2 Dec 2024     - checked the use of a submodel in a *HEAT TRANSFER analysi
+                  added a test example
+
+ 8 Feb 2025     - confirmed new move procedure for *RESTART,WRITE,OVERLAY
+                - included masterIIa.frd and masterhcf.frd in the
+		  repository
+                - replaced the stop call by a stopwithout201 for *no analysis
+
+ 28 Feb 2025    - correction of the c3d8I-element (provided by Otto-Ernst
+                  Bernhardi)
+
+ 7 March 2025   - started the implementation of damage calculations for
+                  (visco)plastic materials
+
+ 12 March 2025  - made a correction for sensitivity analyses in combination
+                  with NLGEOM just before the call of matruct in CalculiX.c
+                - replaced %d by %" ITGFORMAT " where appropriate.
+                - made corrections in mastruct.c and mastructcs.c for
+		  substructures
+                - continued to work on damage
+
+ 14 March 2025  - continued damage programming
+
+ 21 March 2025  - validated *DAMAGE INITIATION
+
+ 28 March 2025  - worked on the U1-element
+                - removed some errors concerning mesh refinement
+
+ 4 April 2025   - extended ortho_plas.f für user creep
+
+ 8 April 2025   - worked on ortho_plas
+                - removed parameter ianisoplas in calinput.f
+
+ 15 April 2025  - worked on mesh refinement
+ 
+ 22 April 2025  - excluded point forces, SPC's and dependent nodes of
+                  MPC's from mesh modifications.
+
+ 23 April 2025  - kept midnode numbers while smoothing
+
+ 25 April 2025  - removed a line in initialconditionss.f
+                - corrected the arguments of utemp in temploadfem.f
+                - removed an error in frd.c concerning field errn
+                - included all MPC-vertexnodes as fixed in mesh refinement
+                - extended refinement to nonlingeo-calculations
+
+ 2 May 2025     - made some essential changes in matruct.c and mafillsm.f for
+                  substructures involving several mean rotation MPC's and/or
+		  distributing couplings.
+
+ 16 May 2025    - corrected some small errors in remlagrangemult.f and
+                  printoutcontact.f.
+
+ 19 May 2025    - introduced the parameter SMOOTHING ONLY on the
+                  *REFINE MESH card
+
+ 26 May 2025    - worked on cyclic symmetry with contact
+
+ 27 May 2025    - continued work on cyclicsymmetrymodels.f
+
+ 29 May 2025    - made changes in cyclicsymmetrymodels.f and frdcyc.c
+
+ 30 May 2025    - included temperatures in cyclic symmetric contact
+
+ 31 May 2025    - introduced the keyword *USE REFINED MESH
+
+ 6 June 2025    - worked on the parallellization of genratio.f
+
+ 13 June 2025   - corrected an error in printoutface.f (2D elements)
+                  and  in calcexternalwork.f
+
+ 27 June 2025   - incorporated 3d submodels based on 2d axisymmetric
+                  global models
+                - removed error in readnewmesh.c and updated basis.f
+                - minor changes in cyclicsymmetrymodels.f
+
+ 13 July 2025   - corrected readnewmesh.c
+
+ 21 Aug 2025    - checked for nonlinear MPC's in nodes belonging to
+                  1D/2D elements
+		  
+ 2 Sep 2025     - corrected some errors in the parallellization in
+                  compfluid.f (definition of nkb)
+
+ 4 Sep 2025     - included the name of the cyclic symmetry tie, if any,
+                  in the name of the file containing the nodes without face
+		  counterpart
+                - improved multistages.f for slanted surfaces
+
+ 10 Sep 2025    - corrected an error in the parallellization of smoothshock.f
+
+ 14 Sep 2025    - removed equationf from the source code
+
+ 17 Sep 2025    - replaced map3dto1d2d(v* by map3dto1d2d_v(v* in
+                  resultsprint,printout and storeresidual (use of
+		  independent values instead of interpolating)
+                - allowed for node sets in the first term of an equation.
+
+ 19 Sep 2025    - corrected equations.f for sets.
+                - removed the mode number from TOTAL EFFECTIVE MASS and
+		  FRACTION OF TOTALS in the .dat-file
+                - inserted the number of nodes in CFD frd-files
+
+ 8 Oct 2025     - worked on massless contact explicit dynamics without
+                  contact
+
+ 10 Oct 2025    - replaced shape8hr.f by a new version provided by
+                  Otto Bernhardi (improved hourglass stabilization for
+		  C3D8R)
+                - updated resultstherm.f for composite shells
+                - modified calcdamage.f
+
+ 17 Oct 2025    - included an example for thermal calculations in a
+                  composite shell
+
+ 2 Nov 2025     - posted ccx_2.23
+
+ 14 Nov 2025    - reset the nodal diameters to default if all equations
+                  are removed by *EQUATION,REMOVE ALL
+                - made a correction in mafillsm.f concerning thermal
+		  frequency calculations
+
+ 19 Nov 2025    - finished the correction of the base motion initial
+                  conditions.
+		- changed 1.5 into 1.5d0 etc. in couplings.f
+
+ 2 Dec 2025     - worked on material ramping at divergence
+
+ 9 Dec 2025     - worked on interface loads
+
+ 15 Jan 2026    - finished interface loading
+
+ 25 Jan 2026    - made some small changes to the sensitivity routines
+
+ 27 Jan 2026    - allowed for sets on the *PRE-TENSION SECTION and
+                  *COUPLING card
+		  
+ 28 Jan 2026    - allowed for *REFINE MESH,SMOOTHING ONLY for linear
+                  static calculations with bad Jacobians.
+
+ 6 Feb 2026     - introduced the parameter REPAIR ONLY on the
+                  *REFINE MESH card.
+
+ 13 Feb 2026    - made a modification to arpackcs.c: nonsymmetric
+                  matrices (e.g. with sliding contact) cannot be
+		  treated in combination with cyclic symmetry.
+
+ 17 Feb 2026    - removed frequency interval option for sensitivity
+ 
+ 20 Feb 2026    - removed an error in initialcontitionss.f (internal
+                  variables)
+
+ 2 March 2026   - corrected an error in CalculiX.c

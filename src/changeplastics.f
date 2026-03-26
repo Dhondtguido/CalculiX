@@ -49,11 +49,12 @@
       endif
 !
       if((nelcon(1,imat).ne.-51).and.
-     &   (nelcon(1,imat).ne.-52)) then
+     &   (nelcon(1,imat).ne.-52).and.
+     &   (nelcon(1,imat).ne.-54)) then
          write(*,*) '*ERROR reading *CHANGE PLASTIC: *CHANGE PLASTIC'
          write(*,*) '       can only be used to change the plastic'
          write(*,*) '       definition of an elastically isotropic'
-         write(*,*) '       material with *PLASTIC data'
+         write(*,*) '       or orthotropic material with *PLASTIC data'
          ier=1
          return
       endif

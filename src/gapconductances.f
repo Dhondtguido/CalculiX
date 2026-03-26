@@ -56,7 +56,7 @@
       if(nelcon(1,nmat).eq.0) then
          write(*,*) '*ERROR reading *GAP CONDUCTANCE:'
          write(*,*) '       *GAP CONDUCTANCE should'
-         write(*,*) '       be preceeded by a *SURFACE BEHAVIOR card'
+         write(*,*) '       be preceded by a *SURFACE BEHAVIOR card'
          ier=1
          return
       endif

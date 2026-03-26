@@ -26,7 +26,7 @@
      &  ipompc,nodempc,coefmpc,nmpc,ikmpc,ilmpc,springarea,
      &  plkcon,nplkcon,npmat_,ncmat_,elcon,nelcon,lakon,
      &  pslavsurf,pmastsurf,mortar,clearini,plicon,nplicon,ipkon,
-     &  ielprop,prop,iponoel,inoel,sti,xstateini,xstate,nstate_,
+     &  ielprop,prop,iponoeln,inoeln,sti,xstateini,xstate,nstate_,
      &  network,ipobody,xbody,ibody)
 !
 !     computation of the element matrix and rhs for the element with
@@ -58,7 +58,7 @@
      &  nshcon(*),iinc,istep,jltyp,nfield,node,iflag,iscale,ielprop(*),
      &  nplkcon(0:ntmat_,*),nelcon(2,*),npmat_,ncmat_,i2,ipkon(*),
      &  iemchange,kon(*),mortar,nplicon(0:ntmat_,*),indexe,igauss,
-     &  iponoel(*),inoel(2,*),nstate_,network,ipobody(2,*),ibody(3,*)
+     &  iponoeln(*),inoeln(2,*),nstate_,network,ipobody(2,*),ibody(3,*)
 !
       real*8 co(3,*),xl(3,20),shp(4,20),xstiff(27,mi(1),*),
      &  s(60,60),w(3,3),ff(60),shpj(4,20),sinktemp,xs2(3,7),
@@ -271,7 +271,7 @@ c      if(intscheme.eq.0) then
                call advecstiff(nope,voldl,ithermal,xl,nelemload,
      &              nelem,nload,lakon,xload,istep,time,ttime,dtime,
      &              sideload,vold,mi,xloadold,reltime,nmethod,s,
-     &              iinc,iponoel,inoel,ielprop,prop,ielmat,shcon,
+     &              iinc,iponoeln,inoeln,ielprop,prop,ielmat,shcon,
      &              nshcon,rhcon,nrhcon,ntmat_,ipkon,kon,cocon,ncocon,
      &              ipobody,xbody,ibody)
             endif
@@ -490,7 +490,8 @@ c         if(intscheme.eq.0) then
                call nident2(nelemload,nelem,nload,id)
                areaj=xsj*weight
                do
-                  if((id.eq.0).or.(nelemload(1,id).ne.nelem)) exit
+                  if(id.eq.0) exit
+                  if(nelemload(1,id).ne.nelem) exit
                   if(sideload(id)(1:2).ne.'BF') then
                      id=id-1
                      cycle
@@ -541,7 +542,8 @@ c         if(intscheme.eq.0) then
 !
          call nident2(nelemload,nelem,nload,id)
          do
-            if((id.eq.0).or.(nelemload(1,id).ne.nelem)) exit
+            if(id.eq.0) exit
+            if(nelemload(1,id).ne.nelem) exit
             if((sideload(id)(1:1).ne.'F').and.
      &         (sideload(id)(1:1).ne.'R').and.
      &         (sideload(id)(1:1).ne.'S')) then
@@ -705,9 +707,9 @@ c            read(sideload(id)(2:2),'(i1)') ig
                    call film(xload(1,id),sinktemp,temp,istep,
      &               iinc,timeend,nelem,i,coords,jltyp,field,nfield,
      &               sideload(id),node,areaj,vold,mi,
-     &               ipkon,kon,lakon,iponoel,inoel,ielprop,prop,ielmat,
-     &               shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon,
-     &               ipobody,xbody,ibody,heatnod,heatfac)
+     &               ipkon,kon,lakon,iponoeln,inoeln,ielprop,prop,
+     &               ielmat,shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,
+     &               ncocon,ipobody,xbody,ibody,heatnod,heatfac)
                 elseif(sideload(id)(1:1).eq.'R') then
                    call radiate(xload(1,id),xload(2,id),temp,istep,
      &               iinc,timeend,nelem,i,coords,jltyp,field,nfield,

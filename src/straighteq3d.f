@@ -45,8 +45,6 @@
 !
       real*8 col(3,3),straight(16),p12(3),p23(3),p31(3),dd
 !
-!
-!
 !     sides of the triangle
 !
       do i=1,3

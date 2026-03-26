@@ -16,7 +16,8 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
-      subroutine gen3dnor(nk,nk_,co,iponoel,inoel,iponoelmax,kon,ipkon,
+      subroutine gen3dnor(nk,nk_,co,iponoel2d,inoel2d,iponoel2dmax,kon,
+     &  ipkon,
      &  lakon,ne,thicke,offset,iponor,xnor,knor,rig,iperturb,tinc,
      &  tper,tmin,tmax,ctrl,ipompc,nodempc,coefmpc,nmpc,nmpc_,mpcfree,
      &  ikmpc,ilmpc,labmpc,ikboun,ilboun,nboun,nboun_,nodeboun,ndirboun,
@@ -42,7 +43,8 @@
       character*8 lakon(*)
       character*20 labmpc(*),label
 !     
-      integer nk,nk_,iponoel(*),inoel(3,*),iponoelmax,kon(*),ipkon(*),
+      integer nk,nk_,iponoel2d(*),inoel2d(3,*),iponoel2dmax,kon(*),
+     &     ipkon(*),
      &     ne,iponor(2,*),knor(*),rig(*),iperturb(*),ipompc(*),
      &     nmpc,nmpc_,mpcfree,ikmpc(*),ilmpc(*),ikboun(*),ilboun(*),
      &     nboun_,nodeboun(*),ndirboun(*),iamboun(*),nam,ntrans,
@@ -77,7 +79,7 @@
       do i=1,nkold
         ndepnodes=0
         idim=0
-        index=iponoel(i)
+        index=iponoel2d(i)
         if(index.eq.0) cycle
 !     
 !     nexp indicates how many times the node was expanded
@@ -95,7 +97,7 @@
         nel=0
         do
           if(index.eq.0) exit
-          ielem=inoel(1,index)
+          ielem=inoel2d(1,index)
           if((lakon(ielem)(1:1).ne.'B').and.
      &         (lakon(ielem)(1:1).ne.'T')) then
             if((lakon(ielem)(1:1).eq.'S').or.
@@ -108,7 +110,7 @@
               write(*,*) '       same node'
               call exit(201)
             endif
-            j=inoel(2,index)
+            j=inoel2d(2,index)
             jl(nel)=j
             iel(nel)=ielem
             thl1(nel)=thicke(1,indexe+j)
@@ -121,7 +123,7 @@
 !     
             off1(nel)=offset(1,ielem)
           endif
-          index=inoel(3,index)
+          index=inoel2d(3,index)
         enddo
 !     
         if(nel.gt.0) then
@@ -455,10 +457,10 @@ c
 !     changed by Victor Kemp 2023-04-12
 !     fixes bug of beam-truss connection being disconnected in Z
         beam=.false.
-        index=iponoel(i)
+        index=iponoel2d(i)
         do
           if(index.eq.0) exit
-          ielem=inoel(1,index)
+          ielem=inoel2d(1,index)
           if((lakon(ielem)(1:1).eq.'B').or.
      &         (lakon(ielem)(1:1).eq.'T')) then
             if(lakon(ielem)(1:1).eq.'B') then
@@ -473,7 +475,7 @@ c
               write(*,*) '        the same node'
               call exit(201)
             endif
-            j=inoel(2,index)
+            j=inoel2d(2,index)
             jl(nel)=j
             iel(nel)=ielem
             thl1(nel)=thicke(1,indexe+j)
@@ -481,7 +483,7 @@ c
             off1(nel)=offset(1,ielem)
             off2(nel)=offset(2,ielem)
           endif
-          index=inoel(3,index)
+          index=inoel2d(3,index)
         enddo
 !     
         if(nel.ge.nelshell) then
@@ -825,17 +827,6 @@ c
             ikfree=ikfree+8
           enddo
         endif
-!     
-!     check whether the user has specified rotational degrees
-!     of freedom (in that case rig(i)=-1 was assigned in 
-!     subroutine gen3delem); if so, a rigid MPC must be defined
-!     
-c     if(rig(i).ne.0) then
-c     rig(i)=0
-c     if(nexp.le.1) then
-c     nexp=2
-c     endif
-c     endif
 !     
 !     storing the expanded nodes
 !     

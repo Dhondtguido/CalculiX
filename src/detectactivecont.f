@@ -17,7 +17,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
       subroutine detectactivecont(gapnorm,gapdisp,auw,iroww,jqw,
-     &     nslavs,springarea,iacti,nacti)
+     &     nslavs,springarea,iacti,nacti,aloc)
 !     
 !     computing g_Npre=g0+Wb^T*gapdisp
 !     
@@ -25,7 +25,7 @@
 !     
       integer i,inorm,j,icol,iroww(*),jqw(*),nslavs,iacti(*),nacti
 !     
-      real*8 gapnorm(*),gapdisp(*),auw(*),springarea(2,*),value
+      real*8 gapnorm(*),gapdisp(*),auw(*),springarea(2,*),value,aloc(*)
 !
 !     premultiply gapdisp with Wb^T (taking only normal directions
 !     into account, i.e. nslav entries)
@@ -35,33 +35,38 @@
         do j=jqw(inorm),jqw(inorm+1)-1
           value=auw(j)
           icol=iroww(j)
-          gapnorm(i)=gapnorm(i)+value*gapdisp(icol) ! TODOCMT friction check!
+          gapnorm(i)=gapnorm(i)+value*gapdisp(icol)
         enddo
       enddo
 !     
       nacti=0
       do i=1,nslavs
-!
-      j = 3*(i-1)
+!     
+        j=3*(i-1)
 !     
 !     contact evaluation: active degrees of freedom are those for
 !     which there is overlap (with added initial clearance at time 0)
 !     and for the NON-zero columns (these are nodes which have no master face).
 !     
-      if((gapnorm(i)+springarea(2,i).le.0.d0).and.
-     &     (jqw(j+1).ne.jqw(j+2)) )then
-!
-        if(jqw(j+1).eq.jqw(j+2))then
-          write(*,*) 'Zero column detected!!! Singular contact matrix'
-          stop
-        endif
-!
+c        write(*,*) 'detectactivecont ',
+c     &       gapnorm(i),springarea(2,i),aloc(j+1)
+c        if((gapnorm(i)+springarea(2,i).le.0.d0).and.
+c     &       (jqw(j+1).ne.jqw(j+2)).and.(aloc(j+1).gt.0.d0))then
+        if((gapnorm(i)+springarea(2,i).le.0.d0).and.
+     &       (jqw(j+1).ne.jqw(j+2)))then
+c          write(*,*) 'contact!'
+!     
+c     if(jqw(j+1).eq.jqw(j+2))then
+c     write(*,*) 'Zero column detected!!! Singular contact matrix'
+c     stop
+c     endif
+!     
 !     identifying the indices only of the active normals.
-!
-            iacti(j+1)=nacti+1
-            iacti(j+2)=nacti+2
-            iacti(j+3)=nacti+3
-            nacti=nacti+3
+!     
+          iacti(j+1)=nacti+1
+          iacti(j+2)=nacti+2
+          iacti(j+3)=nacti+3
+          nacti=nacti+3
         endif
       enddo
 !     

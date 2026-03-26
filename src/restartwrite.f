@@ -29,7 +29,7 @@
      &     orab,ielorien,trab,inotr,amname,amta,namta,t0,t1,iamt1,veold,
      &     ielmat,matname,prlab,prset,filab,vold,nodebounold,
      &     ndirbounold,xbounold,xforcold,xloadold,t1old,eme,
-     &     iponor,xnor,knor,thicke,offset,iponoel,inoel,rig,
+     &     iponor,xnor,knor,thicke,offset,iponoel2d,inoel2d,rig,
      &     shcon,nshcon,cocon,ncocon,ics,sti,
      &     ener,xstate,jobnamec,infree,prestr,iprestr,cbody, 
      &     ibody,xbody,nbody,xbodyold,ttime,qaold,cs,mcs,output,
@@ -37,7 +37,7 @@
      &     nprop,ielprop,prop,mortar,nintpoint,ifacecount,islavsurf,
      &     pslavsurf,clearini,irstrt,vel,nef,velo,veloo,ne2boun,
      &     memmpc_,heading,nheading_,network,nfc,ndc,coeffc,ikdc,edc,
-     &     xmodal)
+     &     xmodal,ndmat_,ndmcon,dmcon,dam)
 !     
 !     writes all information needed for a restart to file
 !     
@@ -57,11 +57,11 @@
       character*80 orname(*),amname(*),matname(*),version
       character*81 set(*),prset(*),tieset(*),cbody(*)
       character*87 filab(*)
-      character*132 fnrstrt,jobnamec(*)
+      character*132 fnrstrt,jobnamec(*),fntemp
 !     
-      integer nset,nload,nforc,nboun,nk,ne,nmpc,nalset,nmat,
+      integer nset,nload,nforc,nboun,nk,ne,nmpc,nalset,nmat,istat,
      &     ntmat_,npmat_,norien,nam,nprint,mi(*),ntrans,ncs_,
-     &     namtot_,ncmat_,mpcend,ne1d,ne2d,nflow,nlabel,iplas,nkon,
+     &     ncmat_,mpcend,ne1d,ne2d,nflow,nlabel,iplas,nkon,
      &     ithermal(*),nmethod,iperturb(*),nstate_,istartset(*),
      &     ialset(*),kon(*),ipkon(*),nodeboun(*),ndirboun(*),iamboun(*),
      &     ikboun(*),ilboun(*),ipompc(*),nodempc(*),ikmpc(*),ilmpc(*),
@@ -70,11 +70,11 @@
      &     nrhcon(*),nalcon(*),nplicon(*),nplkcon(*),ielorien(*),
      &     inotr(*),nintpoint,ifacecount,islavsurf(*),ielprop(*),
      &     namta(*),iamt1(*),ielmat(*),nodebounold(*),ndirbounold(*),
-     &     iponor(*),knor(*),iponoel(*),inoel(*),rig(*),iendset(*),
+     &     iponor(*),knor(*),iponoel2d(*),inoel2d(*),rig(*),iendset(*),
      &     nshcon(*),ncocon(*),ics(*),infree(*),i,ipos,nfc,ndc,
      &     nener,iprestr,istepnew,maxlenmpc,mcs,ntie,ikdc(*),
      &     ibody(*),nbody,mt,nslavs,namtot,nef,ne2boun(*),
-     &     memmpc_,nheading_,network,nevdamp_
+     &     memmpc_,nheading_,network,nevdamp_,ndmat_,ndmcon(*)
 !     
       real*8 co(*),xboun(*),coefmpc(*),xforc(*),xload(*),elcon(*),
      &     rhcon(*),alcon(*),alzero(*),plicon(*),plkcon(*),orab(*),
@@ -84,7 +84,7 @@
      &     shcon(*),cocon(*),sti(*),ener(*),xstate(*),pslavsurf(*),
      &     qaold(2),cs(*),physcon(*),ctrl(*),prop(*),coeffc(*),
      &     ttime,fmpc(*),xbody(*),xbodyold(*),vel(*),velo(*),veloo(*),
-     &     edc(*),xmodal(*)
+     &     edc(*),xmodal(*),dmcon(*),dam(*)
 !     
       mt=mi(2)+1
 !     
@@ -92,32 +92,37 @@
       fnrstrt(1:ipos-1)=jobnamec(1)(1:ipos-1)
       fnrstrt(ipos:ipos+4)=".rout"
       do i=ipos+5,132
-         fnrstrt(i:i)=' '
+        fnrstrt(i:i)=' '
       enddo
 !     
       if(irstrt(2).eq.0) then
 !     
 !     check whether the restart file exists and is opened
 !     
-         inquire(FILE=fnrstrt,OPENED=op,err=152)
+        inquire(FILE=fnrstrt,OPENED=op,err=152)
 !     
-         if(.not.op) then
-            open(15,file=fnrstrt,ACCESS='SEQUENTIAL',FORM='UNFORMATTED',
-     &           err=151)
-         endif
+        if(.not.op) then
+          open(15,file=fnrstrt,ACCESS='SEQUENTIAL',FORM='UNFORMATTED',
+     &         err=151)
+        endif
       else
 !     
 !     overlay mode: store data in a temporary file, close
-!     temparary file after writing and rename temparary file
+!     temporary file after writing and rename temporary file
 !     into .rout file
-!     
 !     
 !     check whether the restart file exists and is opened
 !     
-         call system("rm -f temporaryrestartfile")
+c     call system("rm -f temporaryrestartfile")
+        open(15,file="temporaryrestartfile",iostat=istat,status='old')
 !     
-         open(15,file="temporaryrestartfile",ACCESS='SEQUENTIAL',
-     &        FORM='UNFORMATTED',err=151)
+!     if istat.eq.0 the opening was successful and the file exists, so     
+!     now it has to be deleted  
+!     
+        if(istat.eq.0) close(15,status='delete')
+!     
+        open(15,file="temporaryrestartfile",ACCESS='SEQUENTIAL',
+     &       FORM='UNFORMATTED',err=151)
       endif
 !     
       version='Version DEVELOPMENT'
@@ -164,6 +169,7 @@
       write(15)ntmat_
       write(15)npmat_
       write(15)ncmat_
+      write(15)ndmat_
 !     
 !     property info
 !     
@@ -237,7 +243,7 @@
 !     is used for ialset.
 !     
       do i=1,nalset
-         write(15) ialset(i)
+        write(15) ialset(i)
       enddo
 !     
 !     header lines
@@ -275,7 +281,7 @@
       write(15)(coefmpc(i),i=1,mpcend)
 !     
 !     force constraints
-!
+!     
       if(nfc.gt.0) then
         write(15)(coeffc(i),i=1,7*nfc)
         write(15)(ikdc(i),i=1,ndc)
@@ -319,6 +325,14 @@
       write(15)(elcon(i),i=1,(ncmat_+1)*ntmat_*nmat)
       write(15)(nelcon(i),i=1,2*nmat)
 !     
+!     damage constants
+!
+      if(ndmat_.gt.0) then
+        write(15)(dmcon(i),i=1,(ndmat_+1)*ntmat_*nmat)
+        write(15)(ndmcon(i),i=1,2*nmat)
+        write(15)(dam(i),i=1,mi(1)*ne)
+      endif
+!     
 !     density
 !     
       write(15)(rhcon(i),i=1,2*ntmat_*nmat)
@@ -353,54 +367,54 @@
 !     plastic data
 !     
       if(npmat_.ne.0)then
-         write(15)(plicon(i),i=1,(2*npmat_+1)*ntmat_*nmat)
-         write(15)(nplicon(i),i=1,(ntmat_+1)*nmat)
-         write(15)(plkcon(i),i=1,(2*npmat_+1)*ntmat_*nmat)
-         write(15)(nplkcon(i),i=1,(ntmat_+1)*nmat)
+        write(15)(plicon(i),i=1,(2*npmat_+1)*ntmat_*nmat)
+        write(15)(nplicon(i),i=1,(ntmat_+1)*nmat)
+        write(15)(plkcon(i),i=1,(2*npmat_+1)*ntmat_*nmat)
+        write(15)(nplkcon(i),i=1,(ntmat_+1)*nmat)
       endif
 !     
 !     material orientation
 !     
       if(norien.ne.0)then
-         write(15)(orname(i),i=1,norien)
-         write(15)(orab(i),i=1,7*norien)
-         write(15)(ielorien(i),i=1,mi(3)*ne)
+        write(15)(orname(i),i=1,norien)
+        write(15)(orab(i),i=1,7*norien)
+        write(15)(ielorien(i),i=1,mi(3)*ne)
       endif
 !     
 !     fluid section properties
 !     
       if(nprop.ne.0) then
-         write(15)(ielprop(i),i=1,ne)
-         write(15)(prop(i),i=1,nprop)
+        write(15)(ielprop(i),i=1,ne)
+        write(15)(prop(i),i=1,nprop)
       endif
 !     
 !     transformations
 !     
       if(ntrans.ne.0)then
-         write(15)(trab(i),i=1,7*ntrans)
-         write(15)(inotr(i),i=1,2*nk)
+        write(15)(trab(i),i=1,7*ntrans)
+        write(15)(inotr(i),i=1,2*nk)
       endif
 !     
 !     amplitudes
 !     
       if(nam.gt.0)then
-         write(15)(amname(i),i=1,nam)
-         write(15)(namta(i),i=1,3*nam-1)
-         write(15) namta(3*nam)
-         write(15)(amta(i),i=1,2*namta(3*nam-1))
+        write(15)(amname(i),i=1,nam)
+        write(15)(namta(i),i=1,3*nam-1)
+        write(15) namta(3*nam)
+        write(15)(amta(i),i=1,2*namta(3*nam-1))
       endif
 !     
 !     temperatures
 !     
       if(ithermal(1).gt.0)then
-         write(15)(t0(i),i=1,nk)
-         write(15)(t1(i),i=1,nk)
-         if((ne1d.gt.0).or.(ne2d.gt.0))then
-            write(15)(t0g(i),i=1,2*nk)
-            write(15)(t1g(i),i=1,2*nk)
-         endif
-         if(nam.gt.0) write(15)(iamt1(i),i=1,nk)
-         write(15)(t1old(i),i=1,nk)
+        write(15)(t0(i),i=1,nk)
+        write(15)(t1(i),i=1,nk)
+        if((ne1d.gt.0).or.(ne2d.gt.0))then
+          write(15)(t0g(i),i=1,2*nk)
+          write(15)(t1g(i),i=1,2*nk)
+        endif
+        if(nam.gt.0) write(15)(iamt1(i),i=1,nk)
+        write(15)(t1old(i),i=1,nk)
       endif
 !     
 !     materials
@@ -412,45 +426,45 @@
 !     
       write(15)(vold(i),i=1,mt*nk)
       if((nmethod.eq.4).or.((nmethod.eq.1).and.(iperturb(1).ge.2))) then
-         write(15)(veold(i),i=1,mt*nk)
+        write(15)(veold(i),i=1,mt*nk)
       endif
 !     
 !     CFD results at the element centers
 !     
       if(nef.gt.0) then
-         write(15)(vel(i),i=1,8*nef)
-         write(15)(velo(i),i=1,8*nef)
-         write(15)(veloo(i),i=1,8*nef)
+        write(15)(vel(i),i=1,8*nef)
+        write(15)(velo(i),i=1,8*nef)
+        write(15)(veloo(i),i=1,8*nef)
       endif
 !     
 !     1d and 2d elements
 !     
       if((ne1d.gt.0).or.(ne2d.gt.0))then
-         write(15)(iponor(i),i=1,2*nkon)
-         write(15)(xnor(i),i=1,infree(1))
-         write(15)(knor(i),i=1,infree(2))
-         write(15)(thicke(i),i=1,mi(3)*nkon)
-         write(15)(offset(i),i=1,2*ne)
-         write(15)(iponoel(i),i=1,infree(4))
-         write(15)(inoel(i),i=1,3*(infree(3)-1))
-         write(15)(rig(i),i=1,infree(4))
-         write(15)(ne2boun(i),i=1,2*infree(4))
+        write(15)(iponor(i),i=1,2*nkon)
+        write(15)(xnor(i),i=1,infree(1))
+        write(15)(knor(i),i=1,infree(2))
+        write(15)(thicke(i),i=1,mi(3)*nkon)
+        write(15)(offset(i),i=1,2*ne)
+        write(15)(iponoel2d(i),i=1,infree(4))
+        write(15)(inoel2d(i),i=1,3*(infree(3)-1))
+        write(15)(rig(i),i=1,infree(4))
+        write(15)(ne2boun(i),i=1,2*infree(4))
       endif
 !     
 !     tie constraints
 !     
       if(ntie.gt.0) then
-         write(15)(tieset(i),i=1,3*ntie)
-         write(15)(tietol(i),i=1,4*ntie)
+        write(15)(tieset(i),i=1,3*ntie)
+        write(15)(tietol(i),i=1,4*ntie)
       endif
 !     
 !     cyclic symmetry
 !     
       if(ncs_.gt.0)then
-         write(15)(ics(i),i=1,ncs_)
+        write(15)(ics(i),i=1,ncs_)
       endif
       if(mcs.gt.0) then
-         write(15)(cs(i),i=1,17*mcs)
+        write(15)(cs(i),i=1,17*mcs)
       endif
 !     
 !     integration point variables
@@ -465,24 +479,24 @@
         endif
       endif
       if(nstate_.gt.0)then
-         if(mortar.ne.1) then
-            write(15)(xstate(i),i=1,nstate_*mi(1)*(ne+nslavs))
-         else
-            write(15)(xstate(i),i=1,nstate_*mi(1)*(ne+nintpoint))
-         endif
+        if(mortar.ne.1) then
+          write(15)(xstate(i),i=1,nstate_*mi(1)*(ne+nslavs))
+        else
+          write(15)(xstate(i),i=1,nstate_*mi(1)*(ne+nintpoint))
+        endif
       endif
 !     
 !     face-to-face penalty contact variables
 !     
       if(mortar.eq.1) then
-         write(15) (islavsurf(i),i=1,2*ifacecount+2)
-         write(15) (pslavsurf(i),i=1,3*nintpoint)
-         write(15) (clearini(i),i=1,3*9*ifacecount)
+        write(15) (islavsurf(i),i=1,2*ifacecount+2)
+        write(15) (pslavsurf(i),i=1,3*nintpoint)
+        write(15) (clearini(i),i=1,3*9*ifacecount)
       endif
 !     
 !     control parameters
 !     
-      write(15) (ctrl(i),i=1,52)
+      write(15) (ctrl(i),i=1,60)
       write(15) (qaold(i),i=1,2)
       write(15) output
       write(15) ttime
@@ -497,9 +511,22 @@
 !     .rout file
 !     
       if(irstrt(2).eq.1) then
-         close(15)
-         call system("rm -f "//fnrstrt(1:ipos+4))
-         call system("mv temporaryrestartfile "//fnrstrt(1:ipos+4))
+        close(15)
+c     call system("rm -f "//fnrstrt(1:ipos+4))
+        open(15,file=fnrstrt(1:ipos+4),status='old',iostat=istat)
+        if(istat.eq.0) close(15,status='delete')
+c     call system("mv temporaryrestartfile "//fnrstrt(1:ipos+4))
+        fntemp(1:20)='temporaryrestartfile'
+        do i=21,132
+          fntemp(i:i)=' '
+        enddo
+        call move(fntemp,fnrstrt(1:ipos+4),istat)
+c        call move('temporaryrestartfile',fnrstrt(1:ipos+4),istat)
+        if(istat.ne.0) then
+          write(*,*) '*ERROR in restartwrite:'
+          write(*,*) '       Temporary restart file with name'
+          write(*,*) '       temporaryrestartfile cannot be renamed'
+        endif
       endif
 !     
       return
@@ -511,22 +538,3 @@
      &     fnrstrt
       call exit(201)
       end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

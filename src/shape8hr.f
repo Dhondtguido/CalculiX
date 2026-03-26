@@ -1,6 +1,6 @@
 !
 !     CalculiX - A 3-dimensional finite element program
-!              Copyright (C) 1998-2015 Guido Dhondt
+!              Copyright (C) 1998-2024 Guido Dhondt
 !
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
@@ -34,7 +34,8 @@
       real*8 x1,x2,x3,x4,x5,x6,x7,x8
       real*8 y1,y2,y3,y4,y5,y6,y7,y8
       real*8 z1,z2,z3,z4,z5,z6,z7,z8
-      real*8 gb(8,4),gs(8,4),s0,a
+      real*8 gb(8,4),gs(8,4),a
+      real*8 sum(8,8)
 !
       gb = reshape((
      &      / 1.0d0, 1.0d0,-1.0d0,-1.0d0,-1.0d0,-1.0d0, 1.0d0, 1.0d0,
@@ -171,40 +172,54 @@
      1   )*y4+(x8-x6+x4-x2)*y3+(x3-x6)*y2)/1.2d+1
       shp(3,8) = ((x6+x5-x4-x3)*y7+(x5-x7)*y6+(-x7-x6+x4+x1)*y5+(x7-x5+
      1   x3-x1)*y4+(x7-x4)*y3+(x4-x5)*y1)/1.2d+1
-!
-!     computation of element volume (eqn 15)
-!
+c
+c     computation of element volume (eqn 15)
       vol=0.0d0
       do k=1,8
         vol=vol+xl(1,k)*shp(1,k)
       enddo
-!
-!     computation of the average jacobian determinant
-!
+c     write(6,*) "shape8hr: vol=",vol
+c
+c     finalize gradient operator; divide by volume
+      do l=1,3
+       do i=1,8
+        shp(l,i)=shp(l,i)/vol
+       enddo
+      enddo
+c
+c     computation of the average jacobian determinant
       xsj=vol/8.0d0
 !
-!     hourglass control vectors(see appendix 2 from the reference above). 
-!     divide shp array by element volume
-      a=0.0d0
+!     hourglass control vectors(see eqn. 49 from the reference above). 
       do i=1,8
-         do j=1,3
-            a=a+shp(j,i)*shp(j,i)
-            s0=shp(j,i)/vol
-            shp(j,i)=s0
-            do k=1,4
-               gs(i,k)=gb(i,k)
-               do l=1,8
-                  gs(i,k)=gs(i,k)-s0*xl(j,l)*gb(l,k)
-               enddo
-            enddo
-         enddo
+       do j=1,8
+        sum(i,j)=0.0d0
+        do l=1,3
+         sum(i,j)=sum(i,j)+shp(l,i)*xl(l,j)
+        enddo
+       enddo
+      enddo
+c
+      do i=1,8
+       do k=1,4
+        gs(i,k)=gb(i,k)
+        do j=1,8
+         gs(i,k)=gs(i,k)-sum(i,j)*gb(j,k)
+        enddo
+       enddo
       enddo
 c
 c     calculate hourglass control stiffness factor a 
 c     (to be used in hgstiffness() and hgforce())
+      a=0.0d0
+      do i=1,8
+       do j=1,3 
+        a=a+shp(j,i)*shp(j,i)*vol
+       enddo
+      enddo
 c
 c     in ABAQUS, a 0.005 is used as default value.
-      a=0.0005d0*a/vol
+      a=0.005*a
 c
       return
       end

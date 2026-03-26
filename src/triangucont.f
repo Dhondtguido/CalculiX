@@ -104,9 +104,6 @@ c     integer one,ilen,m
 !
 !           determining the master surface
 !
-c            do j=1,nset
-c               if(set(j).eq.mastset) exit
-c            enddo
             call cident81(set,mastset,nset,id)
             j=nset+1
             if(id.gt.0) then
@@ -135,8 +132,6 @@ c            enddo
 !     for dynamic massless contact: store contact face number
 !     in element label
 !
-c               if(mortar.eq.-1) write(lakon(nelem)(7:7),'(i1)') jface
-!     
                if(lakon(nelem)(4:5).eq.'20') then
                   nnodelem=8
                   nface=6

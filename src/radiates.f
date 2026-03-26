@@ -126,11 +126,6 @@
           endif
           namta(3,nam)=sign(iamptemp,namta(3,iamptemp))
           iamptemp=nam
-c     if(nam.eq.1) then
-c     namtot=0
-c     else
-c     namtot=namta(2,nam-1)
-c     endif
           namtot=namtot+1
           if(namtot.gt.namtot_) then
             write(*,*) '*ERROR radiates: increase namtot_'
@@ -139,7 +134,6 @@ c     endif
           endif
           namta(1,nam)=namtot
           namta(2,nam)=namtot
-c     call reorderampl(amname,namta,nam)
           read(textpart(i)(11:30),'(f20.0)',iostat=istat) 
      &         amta(1,namtot)
           if(istat.gt.0) then
@@ -194,11 +188,6 @@ c     call reorderampl(amname,namta,nam)
           endif
           namta(3,nam)=sign(iampradi,namta(3,iampradi))
           iampradi=nam
-c     if(nam.eq.1) then
-c     namtot=0
-c     else
-c     namtot=namta(2,nam-1)
-c     endif
           namtot=namtot+1
           if(namtot.gt.namtot_) then
             write(*,*) '*ERROR radiates: increase namtot_'
@@ -207,7 +196,6 @@ c     endif
           endif
           namta(1,nam)=namtot
           namta(2,nam)=namtot
-c     call reorderampl(amname,namta,nam)
           read(textpart(i)(20:39),'(f20.0)',iostat=istat) 
      &         amta(1,namtot)
           if(istat.gt.0) then
@@ -330,9 +318,6 @@ c     call reorderampl(amname,namta,nam)
           elset(81:81)=' '
           ipos=index(elset,' ')
           elset(ipos:ipos)='E'
-c          do i=1,nset
-c            if(set(i).eq.elset) exit
-c          enddo
           call cident81(set,elset,nset,id)
           i=nset+1
           if(id.gt.0) then
@@ -346,9 +331,6 @@ c          enddo
 !     
             surface=.true.
             elset(ipos:ipos)='T'
-c            do i=1,nset
-c              if(set(i).eq.elset) exit
-c            enddo
             call cident81(set,elset,nset,id)
             i=nset+1
             if(id.gt.0) then

@@ -86,7 +86,7 @@
          elseif(curve.gt.2) then
             write(*,*)
             write(*,*) 'no characteristic available under this index'
-            write(*,*) 'cd is implicitely assumed equal to 1'
+            write(*,*) 'cd is implicitly assumed equal to 1'
             cd=1.d0
             return
          endif
@@ -105,7 +105,7 @@
             write(*,*) 'the calculation will proceed with DAB=100.'
          endif
 !     
-!     determination of cd with the caracteristics
+!     determination of cd with the characteristics
 !     
          call ident(cdx,dab,index,id)
          if(id.eq.0) then

@@ -79,7 +79,7 @@
 c** start change 20191219
          indexe=ipkon(nelem)
          if(indexe.lt.0) cycle
-c** end chenge 20191219
+c** end change 20191219
          ig=jface-10*nelem
 !     
 !        determining the distributed load on the face
@@ -87,7 +87,8 @@ c** end chenge 20191219
          ipres=0
          call nident2(nelemload,nelem,nload,id)
          do
-            if((id.eq.0).or.(nelemload(1,id).ne.nelem)) exit
+           if(id.eq.0) exit
+           if(nelemload(1,id).ne.nelem) exit
             if(sideload(id)(1:1).ne.'P') then
                id=id-1
                cycle
@@ -137,12 +138,12 @@ c         indexe=ipkon(nelem)
             mint2d=1
          elseif((lakonl(4:4).eq.'8').or.(lakonl(4:6).eq.'20R')) 
      &           then
-            if((lakonl(7:7).eq.'A').or.(lakonl(7:7).eq.'S').or.
-     &           (lakonl(7:7).eq.'E')) then
-               mint2d=2
-            else
+c            if((lakonl(7:7).eq.'A').or.(lakonl(7:7).eq.'S').or.
+c     &           (lakonl(7:7).eq.'E')) then
+c               mint2d=2
+c            else
                mint2d=4
-            endif
+c            endif
          elseif(lakonl(4:4).eq.'2') then
             mint2d=9
          elseif(lakonl(4:5).eq.'10') then

@@ -27,15 +27,13 @@
      &     ikin,nal,ne0,thicke,emeini,pslavsurf,
      &     pmastsurf,mortar,clearini,nea,neb,ielprop,prop,kscale,
      &     list,ilist,smscale,mscalmethod,enerscal,t0g,t1g,
-     &     islavelinv,autloc,irowtloc,jqtloc,mortartrafoflag,
+     &     islavquadel,aut,irowt,jqt,mortartrafoflag,
      &     intscheme,physcon)
 !     
 !     calculates stresses and the material tangent at the integration
 !     points and the internal forces at the nodes
 !     
       implicit none
-!     
-      integer cauchy
 !     
       character*8 lakon(*),lakonl
       character*80 amat,matname(*)
@@ -50,8 +48,8 @@
      &     nplicon(0:ntmat_,*),nplkcon(0:ntmat_,*),npmat_,calcul_fn,
      &     calcul_cauchy,calcul_qa,nopered,mortar,jfaces,igauss,
      &     istrainfree,nlgeom_undo,list,ilist(*),m,j1,mscalmethod,
-     &     irowtloc(*),jqtloc(*),jqtloc1(21),irowtloc1(96),icmdcpy,
-     &     islavelinv(*),node1,node2,j2,ii,mortartrafoflag
+     &     irowt(*),jqt(*),jqte(21),irowte(96),icmdcpy,length,id,
+     &     islavquadel(*),node1,node2,j2,ii,mortartrafoflag
 !     
       real*8 co(3,*),v(0:mi(2),*),shp(4,20),stiini(6,mi(1),*),
      &     stx(6,mi(1),*),xl(3,20),vl(0:mi(2),20),stre(6),prop(*),
@@ -73,8 +71,8 @@
      &     gs(8,4),a,reltime,tlayer(4),dlayer(4),xlayer(mi(3),4),
      &     thicke(mi(3),*),emeini(6,mi(1),*),clearini(3,9,*),
      &     pslavsurf(3,*),pmastsurf(6,*),smscale(*),sum1,sum2,
-     &     scal,enerscal,elineng(6),t0g(2,*),t1g(2,*),autloc(*),
-     &     autloc1(96),shptil(4,20)
+     &     scal,enerscal,elineng(6),t0g(2,*),t1g(2,*),aut(*),
+     &     aute(96),shptil(4,20),xthi(3,3),vthj
 !     
       include "gauss.f"
 !
@@ -184,7 +182,6 @@
           do k=1,4
             dlayer(k)=0.d0
           enddo
-!     
 !     
 !     S6 - composite element
 !     
@@ -328,28 +325,33 @@ c     Bernhardi end
         enddo
 !     
 !     mortar start
-!     autloc for element
 !     
-        if(mortartrafoflag.eq.1) then
-          if(islavelinv(i).gt.0) then
-            if((nope.eq.20).or.(nope.eq.10).or.(nope.eq.15)) then
-              jqtloc1(1)=1
+!     calculating the transformation matrix for a quadratic element containing
+!     at least one slave node; this matrix transforms the regular 
+!     quadratic shape functions into purely positive ones for slave
+!     faces.    
+!     
+        if(mortartrafoflag.gt.0) then
+          if(islavquadel(i).gt.0) then
+              jqte(1)=1
               ii=1
               do i1=1,nope
                 node1=konl(i1)
-                do j1=jqtloc(node1),jqtloc(node1+1)-1
-                  node2=irowtloc(j1)
-                  do j2=1,nope
-                    if(konl(j2).eq.node2) then
-                      autloc1(ii)=autloc(j1)
-                      irowtloc1(ii)=j2
+                length=jqt(node1+1)-jqt(node1)
+                do j2=1,nope
+                  node2=konl(j2)
+                  call nident(irowt(jqt(node1)),node2,length,id)
+                  if(id.gt.0) then
+                    j1=jqt(node1)+id-1
+                    if(irowt(j1).eq.node2) then
+                      aute(ii)=aut(j1)
+                      irowte(ii)=j2
                       ii=ii+1
                     endif
-                  enddo
+                  endif
                 enddo
-                jqtloc1(i1+1)=ii
+                jqte(i1+1)=ii
               enddo
-            endif
           endif
         endif
 !     
@@ -648,37 +650,43 @@ c     Bernhardi end
           endif
 !     
 !     mortar start
+!     transforming the shape functions for quadratic elements containing at    
+!     lease one slave node into purely positive functions on the slave    
+!     faces     
 !     
-          if(mortartrafoflag.eq.1) then
-            do i1=1,nope
-              shptil(1,i1)=shp(1,i1)
-              shptil(2,i1)=shp(2,i1)
-              shptil(3,i1)=shp(3,i1)
-              shptil(4,i1)=shp(4,i1)
-            enddo
-            if(islavelinv(i).gt.0) then
-              if((nope.eq.20).or.(nope.eq.10).or.(nope.eq.15)) then
+          if(mortartrafoflag.gt.0) then
+            if(islavquadel(i).gt.0) then
                 do i1=1,nope
-                  if(jqtloc1(i1+1)-jqtloc1(i1).gt.0) then
+                  if(jqte(i1+1)-jqte(i1).gt.0) then
                     shptil(1,i1)=0.0
                     shptil(2,i1)=0.0
                     shptil(3,i1)=0.0
                     shptil(4,i1)=0.0
+                  else
+                    shptil(1,i1)=shp(1,i1)
+                    shptil(2,i1)=shp(2,i1)
+                    shptil(3,i1)=shp(3,i1)
+                    shptil(4,i1)=shp(4,i1)
                   endif
-                  do j1=jqtloc1(i1),jqtloc1(i1+1)-1
-                    j2=irowtloc1(j1)
-                    shptil(1,i1)=shptil(1,i1)+autloc1(j1)
+                  do j1=jqte(i1),jqte(i1+1)-1
+                    j2=irowte(j1)
+                    shptil(1,i1)=shptil(1,i1)+aute(j1)
      &                   *shp(1,j2)
-                    shptil(2,i1)=shptil(2,i1)+autloc1(j1)
+                    shptil(2,i1)=shptil(2,i1)+aute(j1)
      &                   *shp(2,j2)
-                    shptil(3,i1)=shptil(3,i1)+autloc1(j1)
+                    shptil(3,i1)=shptil(3,i1)+aute(j1)
      &                   *shp(3,j2)
-                    shptil(4,i1)=shptil(4,i1)+autloc1(j1)
+                    shptil(4,i1)=shptil(4,i1)+aute(j1)
      &                   *shp(4,j2)
                   enddo
                 enddo
-!
-              endif
+            else
+              do i1=1,nope
+                shptil(1,i1)=shp(1,i1)
+                shptil(2,i1)=shp(2,i1)
+                shptil(3,i1)=shp(3,i1)
+                shptil(4,i1)=shp(4,i1)
+              enddo
             endif
           endif
 !
@@ -759,28 +767,6 @@ c     Bernhardi end
             vj=xkl(1,1)*(xkl(2,2)*xkl(3,3)-xkl(2,3)*xkl(3,2))
      &           -xkl(1,2)*(xkl(2,1)*xkl(3,3)-xkl(2,3)*xkl(3,1))
      &           +xkl(1,3)*(xkl(2,1)*xkl(3,2)-xkl(2,2)*xkl(3,1))
-c!     
-c!     inversion of the deformation gradient (only for
-c!     deformation plasticity)
-c!     
-c            if(kode.eq.-50) then
-c!     
-c              ckl(1,1)=(xkl(2,2)*xkl(3,3)-xkl(2,3)*xkl(3,2))/vj
-c              ckl(2,2)=(xkl(1,1)*xkl(3,3)-xkl(1,3)*xkl(3,1))/vj
-c              ckl(3,3)=(xkl(1,1)*xkl(2,2)-xkl(1,2)*xkl(2,1))/vj
-c              ckl(1,2)=(xkl(1,3)*xkl(3,2)-xkl(1,2)*xkl(3,3))/vj
-c              ckl(1,3)=(xkl(1,2)*xkl(2,3)-xkl(2,2)*xkl(1,3))/vj
-c              ckl(2,3)=(xkl(2,1)*xkl(1,3)-xkl(1,1)*xkl(2,3))/vj
-c              ckl(2,1)=(xkl(3,1)*xkl(2,3)-xkl(2,1)*xkl(3,3))/vj
-c              ckl(3,1)=(xkl(2,1)*xkl(3,2)-xkl(2,2)*xkl(3,1))/vj
-c              ckl(3,2)=(xkl(3,1)*xkl(1,2)-xkl(1,1)*xkl(3,2))/vj
-c!     
-c!     converting the Lagrangian strain into Eulerian
-c!     strain (only for deformation plasticity)
-c!     
-c              cauchy=0
-c              call str2mat(eloc,ckl,vj,cauchy)
-c            endif
 !     
           endif
 !     
@@ -926,17 +912,19 @@ c            endif
      &         stiff,rho,i,ithermal,alzero,mattyp,t0l,t1l,ihyper,
      &         istiff,elconloc,eth,kode,plicon,nplicon,
      &         plkcon,nplkcon,npmat_,plconloc,mi(1),dtime,jj,
-     &         xstiff,ncmat_)
+     &         xstiff,ncmat_,iperturb)
 !     
 !     determining the mechanical strain
 !     
           if(ithermal(1).ne.0) then
-            call calcmechstrain(vkl,vokl,emec,eth,iperturb)
+            call calcmechstrain(vkl,vokl,emec,eth,iperturb,nalcon,imat,
+     &           xthi,vthj)
           else
             do m1=1,6
               emec(m1)=eloc(m1)
             enddo
           endif
+c          write(*,*) 'resultsmech1 ',i,jj,(emec(m1),m1=1,6)
           if(kode.le.-100) then
             do m1=1,6
               emec0(m1)=emeini(m1,jj,i)
@@ -969,7 +957,19 @@ c            endif
      &         amat,t1l,dtime,time,ttime,i,jj,nstate_,mi(1),
      &         iorien,pgauss,orab,eloc,mattyp,qa(3),istep,iinc,
      &         ipkon,nmethod,iperturb,qa(4),nlgeom_undo,physcon,
-     &         ncmat_)
+     &         ncmat_,nalcon,imat)
+c          write(*,*) 'resultsmech2 ',i,jj,(stre(m1),m1=1,6)
+c          write(*,*) 'resultsmech3 ',i,jj,(stiff(m1),m1=1,21)
+!
+!     modifying the stress and stiffness for a multiplicative
+!     decomposition of the deformation gradient in a mechanical and
+!     a thermal part
+!
+          if((ithermal(1).ne.0).and.(iperturb(2).eq.1)) then
+            call modifystressstiff(stre,stiff,mattyp,eth,nalcon,imat,
+     &     xthi,vthj)
+          endif
+c          write(*,*) 'resultsmech4 ',i,jj,(stre(m1),m1=1,6)
 !     
           if(((nmethod.ne.4).or.(iperturb(1).ne.0)).and.
      &         (nmethod.ne.5).and.(icmd.ne.3)) then
@@ -1133,7 +1133,10 @@ c          if((iout.ge.0).or.(iout.eq.-2).or.(kode.le.-100).or.
 !     
 !     mortar start
 !     
-            if(mortartrafoflag.eq.1) then
+            if(mortartrafoflag.gt.0) then
+!
+!             using the tilde shape functions
+!
               do m1=1,nope
                 do m2=1,3
 !

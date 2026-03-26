@@ -30,8 +30,6 @@
 !
       dimension x(n)
 !
-!
-!
       id=0
       if(n.eq.0) return
       n2=n+1

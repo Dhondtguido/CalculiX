@@ -5,7 +5,7 @@
                                 INCREMENT     1
 
 
- heat flux (elem, integ.pnt.,qx,qy,qz) for setEALL and time  0.1000000E+01
+ heat flux (elem, integ.pnt.,qx,qy,qz) for set EALL and time  0.1000000E+01
 
          1   1 -1.723702E-01 -4.318115E+04 -4.294584E+04
          1   2 -1.723702E-01 -4.318236E+04 -4.292643E+04

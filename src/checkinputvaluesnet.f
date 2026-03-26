@@ -16,7 +16,7 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
-!     check wether the property array contains values or IDs
+!     check whether the property array contains values or IDs
 !     if first gas iteration (iin =0) then
 !     for each property of each fluid element
 !     if IDs: the IDs contained in prop array are stored in prop_store array;
@@ -119,7 +119,7 @@
             write(*,*)
      &           '*ERROR in checkinputvaluesnet: '
             write(*,*) '       the chamfer angle of an ',
-     &           'orifice must not exceed 90°'
+     &           'orifice must not exceed 90 degrees'
             write(*,*) '       element number: ',nelem
             call exit(201)
           endif
@@ -179,7 +179,7 @@
           if(prop(index+2).gt.90.d0) then
             write(*,*) '*ERROR in checkinputvaluesnet:'
             write(*,*) '       theta (preswirl nozzle) ',
-     &           'must not exceed 90°'
+     &           'must not exceed 90 degrees'
             write(*,*) '       element number: ',nelem
             call exit(201)
           endif

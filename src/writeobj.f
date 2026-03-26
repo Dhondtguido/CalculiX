@@ -19,7 +19,7 @@
       subroutine writeobj(objectset,iobject,g0,dgdxglob,nobject,
      &   ndesi,nodedesi,nk,nobjectstart)
 !
-!     writes the results design repsonse information in the .dat file
+!     writes the results design response information in the .dat file
 !
       implicit none
 !
@@ -37,8 +37,8 @@
          write(5,'(a113)') '   #########################################
      &##################################################################
      &######'
-         write(5,*) '  D E S I G N   R E S P O N S E   
-     &I N F O R M A T I O N'
+         write(5,*) '  D E S I G N   R E S P O N S E   ',
+     &'I N F O R M A T I O N'
          write(5,*)
          write(5,'(3x,16a,3x,18a,3x,18a,3x,80a)') 'FUNCTION        ',
      &   'FUNCTION VALUE    ','LENGTH GRADIENT   ','NAME                                    
@@ -49,7 +49,7 @@
          write(5,*)
       endif
 !
-!     write design repsonse in .dat file
+!     write design response in .dat file
 !
       i=iobject+1
       dd=0.d0

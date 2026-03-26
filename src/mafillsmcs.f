@@ -31,7 +31,7 @@
      &     veold,springarea,thicke,integerglob,doubleglob,tieset,
      &     istartset,iendset,ialset,ntie,nasym,pslavsurf,pmastsurf,
      &     mortar,clearini,ielprop,prop,ne0,kscale,xstateini,xstate,
-     &     nstate_,set,nset,smscale,mscalmethod)
+     &     nstate_,set,nset,smscale,mscalmethod,imastload,pmastload)
 !     
 !     filling the stiffness matrix in spare matrix format (sm)
 !     for cyclic symmetry calculations
@@ -59,8 +59,8 @@
      &     ntmat_,indexe,nope,norien,iexpl,i0,nm,inode,icomplex,
      &     inode1,icomplex1,inode2,icomplex2,ner,ncmat_,intscheme,istep,
      &     iinc,mcs,ielcs(*),nplicon(0:ntmat_,*),nplkcon(0:ntmat_,*),
-     &     npmat_,islavelinv(1),irowtloc(1),jqtloc(1),mortartrafoflag,
-     &     mscalmethod,kk,imat
+     &     npmat_,islavquadel(1),irowt(1),jqt(1),mortartrafoflag,
+     &     mscalmethod,kk,imat,imastload(2,*)
 !     
       real*8 co(3,*),xboun(*),coefmpc(*),xforc(*),xload(2,*),p1(3),
      &     p2(3),ad(*),au(*),bodyf(3),bb(*),xbody(7,*),cgr(4,*),prop(*),
@@ -68,12 +68,12 @@
      &     xstate(nstate_,mi(1),*),xstateini(nstate_,mi(1),*),ff(60),
      &     sti(6,mi(1),*),sm(60,60),stx(6,mi(1),*),adb(*),aub(*),
      &     elcon(0:ncmat_,ntmat_,*),rhcon(0:1,ntmat_,*),xloadold(2,*),
-     &     alcon(0:6,ntmat_,*),cs(17,*),alzero(*),orab(7,*),reltime,
+     &     alcon(0:6,ntmat_,*),cs(18,*),alzero(*),orab(7,*),reltime,
      &     springarea(2,*),plicon(0:2*npmat_,ntmat_,*),smscale(*),
      &     plkcon(0:2*npmat_,ntmat_,*),thicke(mi(3),*),doubleglob(*),
      &     xstiff(27,mi(1),*),pi,theta,ti,tr,veold(0:mi(2),*),om,valu2,
      &     value,dtime,walue,walu2,time,ttime,clearini(3,9,*),val,
-     &     pslavsurf(3,*),pmastsurf(6,*),autloc(1),dd
+     &     pslavsurf(3,*),pmastsurf(6,*),aut(1),dd,pmastload(3,*)
 !
       mortartrafoflag=0
 !     
@@ -149,22 +149,14 @@ c     Bernhardi end
         elseif(lakon(i)(4:4).eq.'6') then
           nope=6
         elseif(lakon(i)(1:2).eq.'ES') then
-c     begin 16.07.2020             
           nope=ichar(lakon(i)(8:8))-47
-c     read(lakon(i)(8:8),'(i1)') nope
-c     nope=nope+1
-c     end 16.07.2020             
 !     
 !     local contact spring number
 !     
-c     write(*,*) 'nope before= ',nope
           if(lakon(i)(7:7).eq.'C') then
             if(nasym.eq.1) cycle
-c     begin 16.07.2020             
             if(mortar.eq.1) nope=kon(indexe)
-c     end 16.07.2020             
           endif
-c     write(*,*) 'nope after= ',nope
         elseif(lakon(i)(1:4).eq.'MASS') then
           nope=1
         elseif((lakon(i)(1:5).eq.'U1   ').or.
@@ -223,8 +215,8 @@ c     write(*,*) 'nope after= ',nope
      &         integerglob,doubleglob,tieset,istartset,
      &         iendset,ialset,ntie,nasym,pslavsurf,pmastsurf,mortar,
      &         clearini,ielprop,prop,kscale,smscale(i),mscalmethod,
-     &         set,nset,islavelinv,autloc,
-     &         irowtloc,jqtloc,mortartrafoflag)
+     &         set,nset,islavquadel,aut,
+     &         irowt,jqt,mortartrafoflag,imastload,pmastload)
         else
           nope=-1
         endif
@@ -242,7 +234,6 @@ c     write(*,*) 'nope after= ',nope
             jj=(id1-1)*3+k
             call nident(kon(indexe+1),node2,nope,id2)
             ll=(id2-1)*3+m
-c     write(*,*) 'mafillsm ',node1,k,node2,m,jj,ll
             call mafillsmcsmatrix(ipompc,nodempc,coefmpc,nmpc,
      &           labmpc,ad,au,nactdof,jq,irow,mi,ner,
      &           k,m,node1,node2,jj,ll,val,i,mcs,ielcs,ics,cs)
@@ -289,11 +280,6 @@ c     write(*,*) 'mafillsm ',node1,k,node2,m,jj,ll
 !     
             node2=kon(indexe+l)
             jdof2=nactdof(m,node2)
-              if(i.eq.50) then
-                write(20,100) node1,k,node2,m,s(jj,ll)
-                write(21,100) node1,k,node2,m,sm(jj,ll)
-              endif
- 100          format(i10,",",i5,",",i10,",",i5,",",e20.13)
 !     
 !     check whether one of the DOF belongs to a SPC or MPC
 !     
@@ -602,7 +588,6 @@ c     write(*,*) 'mafillsm ',node1,k,node2,m,jj,ll
                           else
                             tr=cs(15,icomplex1)*cs(15,icomplex2)
      &                           +cs(16,icomplex1)*cs(16,icomplex2)
-c     write(*,*) 'tr= ',tr
                             walue=value*tr
                             walu2=valu2*tr
                             call add_sm_ei(au,ad,aub,adb,jq,

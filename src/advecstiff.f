@@ -45,8 +45,6 @@
      &  shcon(0:3,ntmat_,*),rhcon(0:1,ntmat_,*),cocon(0:6,ntmat_,*),
      &  xbody(7,*),heatnod,heatfac
 !
-!
-!
       include "gauss.f"
 !
       iflag=2

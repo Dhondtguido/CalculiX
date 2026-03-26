@@ -52,90 +52,97 @@ TOTAL     0.5213043E-07   0.5220938E-07   0.5093267E-07   0.1125610E-05   0.1126
 
      T O T A L   E F F E C T I V E   M A S S
 
-MODE NO.   X-COMPONENT     Y-COMPONENT     Z-COMPONENT     X-ROTATION      Y-ROTATION      Z-ROTATION
+           X-COMPONENT     Y-COMPONENT     Z-COMPONENT     X-ROTATION      Y-ROTATION      Z-ROTATION
 
           0.5330000E-07   0.5330000E-07   0.5330000E-07   0.1128292E-05   0.1129267E-05   0.3455833E-07
+
+
+     F R A C T I O N   O F   T O T A L S
+
+           X-COMPONENT     Y-COMPONENT     Z-COMPONENT     X-ROTATION      Y-ROTATION      Z-ROTATION
+
+          0.9780569E+00   0.9795382E+00   0.9555849E+00   0.9976232E+00   0.9973935E+00   0.9524127E+00
 
 
                         S T E P       3
 
 
    ##############################################################################################################
-   D E S I G N   R E S P O N S E                    I N F O R M A T I O N
+   D E S I G N   R E S P O N S E   I N F O R M A T I O N
 
    FUNCTION        FUNCTION VALUE    LENGTH GRADIENT   NAME                                                        
    ##############################################################################################################
 
-   EIGENFREQUENCY   0.6238980E+12      0.1006813E+13   FREQ_OBJ                                                                        
+   EIGENFREQUENCY   0.6238980E+12      0.3479223E+12   FREQ_OBJ                                                                        
 
    ##############################################################################################################
-   D E S I G N   R E S P O N S E                    I N F O R M A T I O N
+   D E S I G N   R E S P O N S E   I N F O R M A T I O N
 
    FUNCTION        FUNCTION VALUE    LENGTH GRADIENT   NAME                                                        
    ##############################################################################################################
 
-   EIGENFREQUENCY   0.6257240E+12      0.1011425E+13   FREQ_OBJ                                                                        
+   EIGENFREQUENCY   0.6257240E+12      0.3501250E+12   FREQ_OBJ                                                                        
 
    ##############################################################################################################
-   D E S I G N   R E S P O N S E                    I N F O R M A T I O N
+   D E S I G N   R E S P O N S E   I N F O R M A T I O N
 
    FUNCTION        FUNCTION VALUE    LENGTH GRADIENT   NAME                                                        
    ##############################################################################################################
 
-   EIGENFREQUENCY   0.3182538E+13      0.5225764E+13   FREQ_OBJ                                                                        
+   EIGENFREQUENCY   0.3182538E+13      0.1776496E+13   FREQ_OBJ                                                                        
 
    ##############################################################################################################
-   D E S I G N   R E S P O N S E                    I N F O R M A T I O N
+   D E S I G N   R E S P O N S E   I N F O R M A T I O N
 
    FUNCTION        FUNCTION VALUE    LENGTH GRADIENT   NAME                                                        
    ##############################################################################################################
 
-   EIGENFREQUENCY   0.3481246E+13      0.1093534E+14   FREQ_OBJ                                                                        
+   EIGENFREQUENCY   0.3481246E+13      0.3561593E+13   FREQ_OBJ                                                                        
 
    ##############################################################################################################
-   D E S I G N   R E S P O N S E                    I N F O R M A T I O N
+   D E S I G N   R E S P O N S E   I N F O R M A T I O N
 
    FUNCTION        FUNCTION VALUE    LENGTH GRADIENT   NAME                                                        
    ##############################################################################################################
 
-   EIGENFREQUENCY   0.5938934E+13      0.9157144E+13   FREQ_OBJ                                                                        
+   EIGENFREQUENCY   0.5938934E+13      0.2759368E+13   FREQ_OBJ                                                                        
 
    ##############################################################################################################
-   D E S I G N   R E S P O N S E                    I N F O R M A T I O N
+   D E S I G N   R E S P O N S E   I N F O R M A T I O N
 
    FUNCTION        FUNCTION VALUE    LENGTH GRADIENT   NAME                                                        
    ##############################################################################################################
 
-   EIGENFREQUENCY   0.6078175E+13      0.9313266E+13   FREQ_OBJ                                                                        
+   EIGENFREQUENCY   0.6078175E+13      0.2724738E+13   FREQ_OBJ                                                                        
 
    ##############################################################################################################
-   D E S I G N   R E S P O N S E                    I N F O R M A T I O N
+   D E S I G N   R E S P O N S E   I N F O R M A T I O N
 
    FUNCTION        FUNCTION VALUE    LENGTH GRADIENT   NAME                                                        
    ##############################################################################################################
 
-   EIGENFREQUENCY   0.1405398E+14      0.2868218E+14   FREQ_OBJ                                                                        
+   EIGENFREQUENCY   0.1405398E+14      0.1367361E+14   FREQ_OBJ                                                                        
 
    ##############################################################################################################
-   D E S I G N   R E S P O N S E                    I N F O R M A T I O N
+   D E S I G N   R E S P O N S E   I N F O R M A T I O N
 
    FUNCTION        FUNCTION VALUE    LENGTH GRADIENT   NAME                                                        
    ##############################################################################################################
 
-   EIGENFREQUENCY   0.1825237E+14      0.1906748E+14   FREQ_OBJ                                                                        
+   EIGENFREQUENCY   0.1825237E+14      0.6720123E+13   FREQ_OBJ                                                                        
 
    ##############################################################################################################
-   D E S I G N   R E S P O N S E                    I N F O R M A T I O N
+   D E S I G N   R E S P O N S E   I N F O R M A T I O N
 
    FUNCTION        FUNCTION VALUE    LENGTH GRADIENT   NAME                                                        
    ##############################################################################################################
 
-   EIGENFREQUENCY   0.1913306E+14      0.1812348E+14   FREQ_OBJ                                                                        
+   EIGENFREQUENCY   0.1913306E+14      0.5970051E+13   FREQ_OBJ                                                                        
 
    ##############################################################################################################
-   D E S I G N   R E S P O N S E                    I N F O R M A T I O N
+   D E S I G N   R E S P O N S E   I N F O R M A T I O N
 
    FUNCTION        FUNCTION VALUE    LENGTH GRADIENT   NAME                                                        
    ##############################################################################################################
 
-   EIGENFREQUENCY   0.2880928E+14      0.4461603E+14   FREQ_OBJ                                                                        
+   EIGENFREQUENCY   0.2880928E+14      0.1349967E+14   FREQ_OBJ                                                                        

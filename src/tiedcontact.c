@@ -58,7 +58,7 @@ void tiedcontact(ITG *ntie, char *tieset, ITG *nset, char *set,
 
   FORTRAN(allocont,(&ncont,ntie,tieset,nset,set,istartset,iendset,
 	  ialset,lakon,&ncone,tietol,&ismallsliding,kind1,
-	  kind2,&mortar,istep));
+	  kind2,&mortar,istep,ipkon));
 
   if(ncont==0){
       SFREE(ifaceslave);return;

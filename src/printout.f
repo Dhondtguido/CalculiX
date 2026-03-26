@@ -22,7 +22,7 @@
      &     orab,ielorien,norien,nk,ne,inum,filab,vold,ikin,ielmat,
      &     thicke,eme,islavsurf,mortar,time,ielprop,prop,veold,orname,
      &     nelemload,nload,sideload,xload,rhcon,nrhcon,ntmat_,ipobody,
-     &     ibody,xbody,nbody,nmethod)
+     &     ibody,xbody,nbody,nmethod,dam,nactdof)
 !     
 !     stores results in the .dat file
 !     
@@ -42,7 +42,7 @@
      &     inum(*),nfield,ikin,nodes,ne0,nope,mt,ielmat(mi(3),*),iface,
      &     jfaces,mortar,islavsurf(2,*),ielprop(*),nload,i,ntmat_,id,
      &     nelemload(2,*),nrhcon(*),ipobody(2,*),ibody(3,*),nbody,
-     &     nmethod,ne,iforce
+     &     nmethod,ne,iforce,nactdof(0:mi(2),*)
 !     
       real*8 v(0:mi(2),*),t1(*),fn(0:mi(2),*),stx(6,mi(1),*),bhetot,
      &     eei(6,mi(1),*),xstate(nstate_,mi(1),*),ener(2,mi(1),*),
@@ -50,7 +50,7 @@
      &     trab(7,*),orab(7,*),vold(0:mi(2),*),enerkintot,
      &     eme(6,mi(1),*),prop(*),veold(0:mi(2),*),xload(2,*),xmasstot,
      &     xinertot(6),cg(3),rhcon(0:1,ntmat_,*),xbody(7,*),energytot,
-     &     thicke(mi(3),*)
+     &     thicke(mi(3),*),dam(mi(1),*)
 !     
       mt=mi(2)+1
 !     
@@ -63,8 +63,10 @@
             nfield=mt
             cflag=' '
             iforce=0
-            call map3dto1d2d(v,ipkon,inum,kon,lakon,nfield,nk,
-     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
+c            call map3dto1d2d(v,ipkon,inum,kon,lakon,nfield,nk,
+c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
+            call map3dto1d2d_v(v,ipkon,inum,kon,lakon,nfield,nk,
+     &           ne,nactdof)
           endif
           exit
         endif
@@ -227,6 +229,7 @@
      &         (prlab(ii)(1:4).eq.'ENER').or.
      &         (prlab(ii)(1:4).eq.'SDV ').or.
      &         (prlab(ii)(1:4).eq.'COOR').or.
+     &         (prlab(ii)(1:4).eq.'DUCT').or.
      &         (prlab(ii)(1:4).eq.'HFL ')) then
 !     
           ipos=index(prset(ii),' ')
@@ -274,7 +277,7 @@
               write(5,*)
               write(5,112) elset(1:ipos-2),ttime+time
  112          format(    ' heat flux (elem, integ.pnt.,qx,qy,qz) for set 
-     &',A,' and time ',e14.7)
+     & ',A,' and time ',e14.7)
               write(5,*)
             elseif(prlab(ii)(1:4).eq.'ME  ') then
               write(5,*)
@@ -287,6 +290,12 @@
               write(5,139) elset(1:ipos-2),ttime+time
  139          format(    ' global coordinates (elem, integ.pnt.,x,y,z) f
      &or set ',A,' and time ',e14.7)
+              write(5,*)
+            elseif(prlab(ii)(1:4).eq.'DUCT') then
+              write(5,*)
+              write(5,141) elset(1:ipos-2),ttime+time
+ 141          format(    ' ductile damage initiation (elem, integ.pnt.,x
+     &,y,z) for set ',A,' and time ',e14.7)
               write(5,*)
             endif
 !     
@@ -306,13 +315,13 @@
                 call printoutint(prlab,ipkon,lakon,stx,eei,xstate,
      &               ener,mi(1),nstate_,ii,nelem,qfx,
      &               orab,ielorien,norien,co,kon,ielmat,thicke,eme,
-     &               ielprop,prop,nelem,ithermal,orname)
+     &               ielprop,prop,nelem,ithermal,orname,dam)
               elseif(ialset(jj+1).gt.0) then
                 nelem=ialset(jj)
                 call printoutint(prlab,ipkon,lakon,stx,eei,xstate,
      &               ener,mi(1),nstate_,ii,nelem,qfx,orab,
      &               ielorien,norien,co,kon,ielmat,thicke,eme,
-     &               ielprop,prop,nelem,ithermal,orname)
+     &               ielprop,prop,nelem,ithermal,orname,dam)
               else
                 do nelem=ialset(jj-1)-ialset(jj+1),ialset(jj),
      &               -ialset(jj+1)
@@ -320,7 +329,7 @@
      &                 xstate,ener,mi(1),nstate_,ii,nelem,
      &                 qfx,orab,ielorien,norien,co,kon,ielmat,
      &                 thicke,eme,ielprop,prop,nelem,ithermal,
-     &                 orname)
+     &                 orname,dam)
                 enddo
               endif
             enddo

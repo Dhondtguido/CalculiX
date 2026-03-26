@@ -361,7 +361,8 @@ void frd_sen(double *co,ITG *nk,double *dstn,ITG *inum,ITG *nmethod,
       fprintf(f1," -5  ALL         1    2    0    0    1ALL\n");
 	  
       frdvector(v,&iset,ntrans,&filab[4002],&nkcoords,inum,m1,inotr,
-		trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3);
+		trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3,
+		&ioutall);
 
       if(*noddiam>=0){
 	  
@@ -396,7 +397,8 @@ void frd_sen(double *co,ITG *nk,double *dstn,ITG *inum,ITG *nmethod,
 	fprintf(f1," -5  ALL         1    2    0    0    1ALL\n");
 	    
 	frdvector(&v[*nk*mt],&iset,ntrans,&filab[4002],&nkcoords,inum,m1,inotr,
-		  trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3);
+		  trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3,
+		  &ioutall);
       }
 	  
     }else if(strcmp1(&objectset[(*iobject-1)*405],"MISESSTRESS")==0){

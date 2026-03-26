@@ -32,33 +32,33 @@
 !
       write(5,*)
       write(5,*)
-      write(5,*) '  #######################################
-     &#####################################'
+      write(5,*) '  #######################################',
+     &'#####################################'
       if(iter.eq.1) then      
-         write(5,*) '  L A G R A N G E   M U L T I P L I E R S
-     &   1ST   I T E R A T I O N' 
+         write(5,*) '  L A G R A N G E   M U L T I P L I E R S',
+     &'   1ST   I T E R A T I O N' 
       elseif(iter.eq.2) then
-         write(5,*) '  L A G R A N G E   M U L T I P L I E R S
-     &   2ND   I T E R A T I O N' 
+         write(5,*) '  L A G R A N G E   M U L T I P L I E R S',
+     &'   2ND   I T E R A T I O N' 
       elseif(iter.eq.3) then
-         write(5,*) '  L A G R A N G E   M U L T I P L I E R S
-     &   3RD   I T E R A T I O N' 
+         write(5,*) '  L A G R A N G E   M U L T I P L I E R S',
+     &'   3RD   I T E R A T I O N' 
       elseif((iter.gt.3).and.(iter.lt.10)) then
-         write(5,'(a42,i1,a22)') '  L A G R A N G E
-     &   M U L T I P L I E R S   ',iter,'TH   I T E R A T I O N' 
+         write(5,'(a42,i1,a22)') '  L A G R A N G E',
+     &'   M U L T I P L I E R S   ',iter,'TH   I T E R A T I O N'
       else
-         write(5,'(a42,i3,a22)') '  L A G R A N G E
-     &   M U L T I P L I E R S   ',iter,'TH   I T E R A T I O N' 
+         write(5,'(a42,i3,a22)') '  L A G R A N G E',
+     &'   M U L T I P L I E R S   ',iter,'TH   I T E R A T I O N'
       endif
       write(5,*)
-      write(5,103) 'NUMBER OF
-     &    ','CONSTRAINT      ','LE/     ','LAGRANGE      ','  ACTIVE/
-     & ','   NAME OF' 
-      write(5,103) 'CONSTRAINT
-     &   ','FUNCTION        ','GE      ','MULTIPLIER    ','  INACTIVE'
+      write(5,103) 'NUMBER OF',
+     &'    ','CONSTRAINT      ','LE/     ','LAGRANGE      ','  ACTIVE/',
+     &' ','   NAME OF' 
+      write(5,103) 'CONSTRAINT',
+     &'   ','FUNCTION        ','GE      ','MULTIPLIER    ','  INACTIVE'
      &,'   CONSTRAINT' 
-      write(5,*) '  #######################################
-     &#####################################'
+      write(5,*) '  #######################################',
+     &'#####################################'
       write(5,*)
 !
       do i=1,nactive
@@ -68,7 +68,7 @@
 !
          if(i.le.nnlconst) then
             if(iconstacti(i).eq.-1) then
-               if(xlambd(i).gt.0.d0) then            
+               if(xlambd(i).lt.0.d0) then            
                   write(5,101)
      &            ipos-1,objectset(1,ipos),'LE  ',xlambd(i),'ACTIVE  ',
      &            objectset(5,ipos)
@@ -78,7 +78,7 @@
      &            objectset(5,ipos)
                endif
             else
-               if(xlambd(i).gt.0.d0) then
+               if(xlambd(i).lt.0.d0) then
                   write(5,101)
      &            ipos-1,objectset(1,ipos),'GE  ',xlambd(i),'INACTIVE', 
      &            objectset(5,ipos)

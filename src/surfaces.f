@@ -92,10 +92,6 @@
 !     check whether new set or old set (a *SURFACE can be used to
 !     extend an already existing surface)
 !     
-ccc   to remove start      
-c     do iset=1,nset
-c     if(set(iset).eq.noelset) then
-ccc   to remove end
       iset=0
       call cident81(set,noelset,nset,id)
       if(id.gt.0) then
@@ -105,8 +101,6 @@ ccc   to remove end
 !     existent set
 !     
           if(iendset(iset).ne.nalset) then
-c            exit
-c          else
 !     
 !     rearranging set information towards the end
 !     
@@ -135,10 +129,6 @@ c          else
           endif
         endif
       endif
-ccc   to remove start
-c     enddo
-c     if(iset.gt.nset) then
-ccc   to remove end
       if(iset.eq.0) then
         nset=nset+1
         if(nset.gt.nset_) then
@@ -146,12 +136,6 @@ ccc   to remove end
           ier=1
           return
         endif
-ccc   to remove start          
-c     set(nset)=noelset
-c     istartset(nset)=nalset+1
-c     iendset(nset)=0
-c     iset=nset
-ccc   to remove end
         do j=nset,id+2,-1
           istartset(j)=istartset(j-1)
           iendset(j)=iendset(j-1)
@@ -171,9 +155,6 @@ ccc   to remove end
           call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &         ipoinp,inp,ipoinpc)
           if((istat.lt.0).or.(key.eq.1)) then
-ccc   to remove start           
-c     if(iendset(nset).eq.0) then
-ccc   to remove end
             if(iendset(iset).eq.0) then
               do j=iset+1,nset
                 istartset(j-1)=istartset(j)
@@ -204,10 +185,6 @@ ccc   to remove end
             noset(81:81)=' '
             ipos=index(noset,' ')
             noset(ipos:ipos)='N'
-ccc   to remove start
-c     do i=1,nset
-c     if(set(i).eq.noset) then
-ccc   to remove end
             i=0
             call cident81(set,noset,nset,id)
             if(id.gt.0) then
@@ -244,12 +221,6 @@ ccc   to remove end
                 endif
               enddo
               iendset(iset)=nalset
-c              exit
-ccc   to remove start
-c     endif
-c     enddo
-c     if(i.gt.nset) then
-ccc   to remove end
             else
               noset(ipos:ipos)=' '
               write(*,*) '*ERROR reading *SURFACE: node set ',noset
@@ -319,10 +290,6 @@ ccc   to remove end
             elset(81:81)=' '
             ipos=index(elset,' ')
             elset(ipos:ipos)='E'
-ccc   to remove start
-c     do i=1,nset
-c     if(set(i).eq.elset) then
-ccc   to remove end
             i=0
             call cident81(set,elset,nset,id)
             if(id.gt.0) then
@@ -398,12 +365,6 @@ ccc   to remove end
                 endif
               enddo
               iendset(iset)=nalset
-c              exit
-ccc   to remove start
-c     endif
-c     enddo
-c     if(i.gt.nset) then
-ccc   to remove end
             else
               elset(ipos:ipos)=' '
               write(*,*) '*ERROR reading *SURFACE: element set ',

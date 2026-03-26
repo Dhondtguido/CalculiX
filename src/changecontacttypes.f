@@ -79,12 +79,6 @@
         write(*,*) '      SURFACE TO SURFACE'
       elseif(mortar.eq.2) then
         write(*,*) '      MORTAR'
-      elseif(mortar.eq.3) then
-        write(*,*) '      LINMORTAR'
-      elseif(mortar.eq.4) then
-        write(*,*) '      PGLINMORTAR'
-      elseif(mortar.eq.5) then
-        write(*,*) '      PGMORTAR'
       endif
       write(*,*)
 !     

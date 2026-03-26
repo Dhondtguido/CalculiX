@@ -52,90 +52,97 @@ TOTAL     0.8400277E-07   0.8182838E-07   0.7418156E-07   0.2053456E-05   0.2022
 
      T O T A L   E F F E C T I V E   M A S S
 
-MODE NO.   X-COMPONENT     Y-COMPONENT     Z-COMPONENT     X-ROTATION      Y-ROTATION      Z-ROTATION
+           X-COMPONENT     Y-COMPONENT     Z-COMPONENT     X-ROTATION      Y-ROTATION      Z-ROTATION
 
           0.8580000E-07   0.8580000E-07   0.8580000E-07   0.2061150E-05   0.2025400E-05   0.9295000E-07
+
+
+     F R A C T I O N   O F   T O T A L S
+
+           X-COMPONENT     Y-COMPONENT     Z-COMPONENT     X-ROTATION      Y-ROTATION      Z-ROTATION
+
+          0.9790533E+00   0.9537107E+00   0.8645869E+00   0.9962670E+00   0.9983891E+00   0.9674124E+00
 
 
                         S T E P       2
 
 
    ##############################################################################################################
-   D E S I G N   R E S P O N S E                    I N F O R M A T I O N
+   D E S I G N   R E S P O N S E   I N F O R M A T I O N
 
    FUNCTION        FUNCTION VALUE    LENGTH GRADIENT   NAME                                                        
    ##############################################################################################################
 
-   MODALSTRESS      0.9269602E+00      0.5975876E+00   STRESS_OBJ                                                                      
+   MODALSTRESS      0.9269602E+00      0.3531658E+00   STRESS_OBJ                                                                      
 
    ##############################################################################################################
-   D E S I G N   R E S P O N S E                    I N F O R M A T I O N
+   D E S I G N   R E S P O N S E   I N F O R M A T I O N
 
    FUNCTION        FUNCTION VALUE    LENGTH GRADIENT   NAME                                                        
    ##############################################################################################################
 
-   MODALSTRESS      0.1159531E+01      0.4743982E+00   STRESS_OBJ                                                                      
+   MODALSTRESS      0.1159531E+01      0.2391744E+00   STRESS_OBJ                                                                      
 
    ##############################################################################################################
-   D E S I G N   R E S P O N S E                    I N F O R M A T I O N
+   D E S I G N   R E S P O N S E   I N F O R M A T I O N
 
    FUNCTION        FUNCTION VALUE    LENGTH GRADIENT   NAME                                                        
    ##############################################################################################################
 
-   MODALSTRESS      0.4323223E+01      0.1387953E+01   STRESS_OBJ                                                                      
+   MODALSTRESS      0.4323223E+01      0.8336402E+00   STRESS_OBJ                                                                      
 
    ##############################################################################################################
-   D E S I G N   R E S P O N S E                    I N F O R M A T I O N
+   D E S I G N   R E S P O N S E   I N F O R M A T I O N
 
    FUNCTION        FUNCTION VALUE    LENGTH GRADIENT   NAME                                                        
    ##############################################################################################################
 
-   MODALSTRESS      0.3848541E+01      0.2157424E+01   STRESS_OBJ                                                                      
+   MODALSTRESS      0.3848541E+01      0.1032334E+01   STRESS_OBJ                                                                      
 
    ##############################################################################################################
-   D E S I G N   R E S P O N S E                    I N F O R M A T I O N
+   D E S I G N   R E S P O N S E   I N F O R M A T I O N
 
    FUNCTION        FUNCTION VALUE    LENGTH GRADIENT   NAME                                                        
    ##############################################################################################################
 
-   MODALSTRESS      0.4494795E+01      0.1980763E+01   STRESS_OBJ                                                                      
+   MODALSTRESS      0.4494795E+01      0.1040126E+01   STRESS_OBJ                                                                      
 
    ##############################################################################################################
-   D E S I G N   R E S P O N S E                    I N F O R M A T I O N
+   D E S I G N   R E S P O N S E   I N F O R M A T I O N
 
    FUNCTION        FUNCTION VALUE    LENGTH GRADIENT   NAME                                                        
    ##############################################################################################################
 
-   MODALSTRESS      0.4021040E+01      0.1881546E+01   STRESS_OBJ                                                                      
+   MODALSTRESS      0.4021040E+01      0.9265512E+00   STRESS_OBJ                                                                      
 
    ##############################################################################################################
-   D E S I G N   R E S P O N S E                    I N F O R M A T I O N
+   D E S I G N   R E S P O N S E   I N F O R M A T I O N
 
    FUNCTION        FUNCTION VALUE    LENGTH GRADIENT   NAME                                                        
    ##############################################################################################################
 
-   MODALSTRESS      0.8506196E+01      0.5459894E+01   STRESS_OBJ                                                                      
+   MODALSTRESS      0.8506196E+01      0.2409966E+01   STRESS_OBJ                                                                      
 
    ##############################################################################################################
-   D E S I G N   R E S P O N S E                    I N F O R M A T I O N
+   D E S I G N   R E S P O N S E   I N F O R M A T I O N
 
    FUNCTION        FUNCTION VALUE    LENGTH GRADIENT   NAME                                                        
    ##############################################################################################################
 
-   MODALSTRESS      0.1237858E+02      0.5381942E+01   STRESS_OBJ                                                                      
+   MODALSTRESS      0.1237858E+02      0.2802171E+01   STRESS_OBJ                                                                      
 
    ##############################################################################################################
-   D E S I G N   R E S P O N S E                    I N F O R M A T I O N
+   D E S I G N   R E S P O N S E   I N F O R M A T I O N
 
    FUNCTION        FUNCTION VALUE    LENGTH GRADIENT   NAME                                                        
    ##############################################################################################################
 
-   MODALSTRESS      0.9266322E+01      0.4231214E+01   STRESS_OBJ                                                                      
+   MODALSTRESS      0.9266322E+01      0.2155124E+01   STRESS_OBJ                                                                      
 
    ##############################################################################################################
-   D E S I G N   R E S P O N S E                    I N F O R M A T I O N
+   D E S I G N   R E S P O N S E   I N F O R M A T I O N
 
    FUNCTION        FUNCTION VALUE    LENGTH GRADIENT   NAME                                                        
    ##############################################################################################################
 
-   MODALSTRESS      0.1310625E+02      0.6839171E+01   STRESS_OBJ                                                                      
+   MODALSTRESS      0.1310625E+02      0.3950089E+01   STRESS_OBJ                                                                      

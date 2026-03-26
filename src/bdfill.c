@@ -23,114 +23,10 @@
 #include "CalculiX.h"
 #include "mortar.h"
 
-/**
- * Calculates the coupling matrices \f$ B_d \f$ and \f$ D_d \f$, and insert them into the data structure
+/*
+  Calculates the coupling matrices \f$ B_d \f$ and \f$ D_d \f$, and insert them into the data structure
 
- * Authors: Samoela Rakotonanahary, Saskia Sitzmann
- * 
- *  [out] irowbdp		field containing row numbers of aubd
- *  [out] jqbd		pointer into field irowbd
- *  [out] aubdp		coupling matrix \f$ B_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [out] nzsbd		nonzero entries of aubd 
- *  [out] irowbdtilp	field containing row numbers of aubd
- *  [out] jqbdtil		pointer into field irowbdtil
- *  [out] aubdtilp		matrix \f$ \tilde{D}^{-1}\tilde{B}_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [out] nzsbdtil	nonzero entries of aubdtil 
- *  [out] irowbdtil2p	field containing row numbers of aubdtil2
- *  [out] jqbdtil2	pointer into field irowbdtil2
- *  [out] aubdtil2p	coupling matrix \f$ \tilde{D}$ and $\tilde{B}^2_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [out] nzsbdtil2	nonzero entries of aubdtil2 
- *  [out] irowddp		field containing row numbers of audd
- *  [out] jqdd		pointer into field irowdd
- *  [out] auddp		coupling matrix \f$ D_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [out] irowddtilp	field containing row numbers of audd
- *  [out] jqddtil		pointer into field irowdd
- *  [out] auddtilp		coupling matrix \f$ \tilde{D}_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [out] irowddtil2p	field containing row numbers of audd
- *  [out] jqddtil2	pointer into field irowdd
- *  [out] auddtil2p	matrix \f$ Id_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [out] irowddinvp	field containing row numbers of auddinv
- *  [out] jqddinv		pointer into field irowddinv
- *  [out] auddinvp		coupling matrix \f$ \tilde{D}^{-1}_d[nactdof(i,p),nactdof(j,q)]\f$ for all active degrees od freedoms
- *  [in] irowtloc		field containing row numbers of autloc
- *  [in] jqtloc	        pointer into field irowtloc
- *  [in] autloc		transformation matrix \f$ T[p,q]\f$ for slave nodes \f$ p,q \f$ 
- *  [in] irowtlocinv	field containing row numbers of autlocinv
- *  [in] jqtlocinv	pointer into field irowtlocinv
- *  [in] autlocinv	transformation matrix \f$ T^{-1}[p,q]\f$ for slave nodes \f$ p,q \f$  
- *  [in] nslavnode	(i)pointer into field isalvnode for contact tie i 
- *  [in] nmastnode	(i)pointer into field imastnode for contact tie i
- *  [in] imastnode	field storing the nodes of the master surfaces
- *  [in] islavnode	field storing the nodes of the slave surface
- *  [in] islavsurf	islavsurf(1,i) slaveface i islavsurf(2,i) # integration points generated before looking at face i 
- *  [in] imastsurf	index of masterface corresponding to integration point i
- *  [in] pmastsurf 	field storing position and etal for integration points on master side
- *  [in] itiefac		pointer into field islavsurf: (1,i) beginning slave_i (2,i) end of slave_i
- *  [in] iponoels		(i) pointer into field inoels...
- *  [in] inoels		...which stores 1D&2D elements belonging to node: (1,i)el. number (2,i) # nodes (3,i) pointer to next entry 
- *  [in] gapmints		(i) gap between slave surface and master surface in integration point i
- *  [out] gap		(i) \f$ g_i= <g, \Psi_i> \f$ for node i on slave surface
- *  [in] pslavsurf	field storing  position xil, etal and weight for integration point on slave side
- *  [in] pslavdual	(:,i)coefficients \f$ \alpha_{ij}\f$, \f$ 1,j=1,..8\f$ for dual shape functions for face i
- *  [in] pslavdualpg	(:,i)coefficients \f$ \alpha_{ij}\f$, \f$ 1,j=1,..8\f$ for Petrov-Galerkin shape functions for face i
- *  [in] nintpoint	number of integration points
- *  [in] slavnor		slave normals
- *  [in] nmpc2		number of transformed mpcs
- *  [in] ipompc2          (i) pointer to nodempc and coeffmpc for transformed MPC i
- *  [in] nodempc2         nodes and directions of transformed MPCs
- *  [in] coefmpc2         coefficients of transformed MPCs
- *  [in] ikmpc2 		sorted dofs idof=8*(node-1)+dir for transformed MPCs
- *  [in] ilmpc2		transformed SPC numbers for sorted dofs
- *  [in] nslavspc		(2*i) pointer to islavspc...
- *  [in] islavspc         ... which stores SPCs for slave node i
- *  [in] nsspc            number of SPC for slave nodes
- *  [in] nslavmpc		(2*i) pointer to islavmpc...
- *  [in] islavmpc		... which stores MPCs for slave node i
- *  [in] nsmpc		number of MPC for slave nodes
- *  [in] nslavmpc2	(2*i) pointer to islavmpc2...
- *  [in] islavmpc2	... which stores transformed MPCs for slave node i
- *  [in] nsmpc2		number of transformed MPC for slave nodes 
- *  [in] nmastspc		(2*i) pointer to imastspc...
- *  [in] imastspc         ... which stores SPCs for master node i
- *  [in] nmspc            number of SPC for master nodes
- *  [in] nmastmpc		(2*i) pointer to imastmpc...
- *  [in] imastmpc		... which stores MPCs for master node i
- *  [in] nmmpc		number of MPC for master nodes
- *  [in] nmastmpc2	(2*i) pointer to imastmpc2...
- *  [in] imastmpc2	... which stores transformed MPCs for master node i
- *  [in] nmmpc2		number of MPC for master nodes 
- *  [in] islavactdof      (i)=10*slavenodenumber+direction for active dof i
- *  [in] islavact		(i) indicates, if slave node i is active (=-3 no-slave-node, =-2 no-LM-node, =-1 no-gap-node, =0 inactive node, =1 sticky node, =2 slipping/active node) 
- *  [in] islavnodeinv     (i) slave node index for node i
- *  [out] Bdp		coupling matrix \f$ B_d[p,q]=\int \psi_p \phi_q dS \f$, \f$ p \in S, q \in M \f$ 
- *  [out] irowbp		field containing row numbers of Bd
- *  [out] jqb		pointer into field irowb
- *  [out] Bdhelpp		coupling matrix \f$ Bhelp_d[p,q]=\tilde{D}^{-1}\tilde{B}\f$, \f$ p \in S, q \in M \f$ 
- *  [out] irowbhelpp	field containing row numbers of Bdhelp
- *  [out] jqbhelp		pointer into field irowbhelp
- *  [out] Ddp		coupling matrix \f$ D_d[p,q]=\int \psi_p \phi_q dS \f$, \f$ p,q \in S \f$ 
- *  [out] irowdp		field containing row numbers of Dd
- *  [out] jqd		pointer into field irowd
- *  [out] Ddtilp		coupling matrix \f$ \tilde{D}_d[p,q]=\int \psi_p \tilde{\phi}_q dS \f$, \f$ p,q \in S \f$ 
- *  [out] irowdtilp	field containing row numbers of Ddtil
- *  [out] jqdtil		pointer into field irowdtil 
- *  [out] Bdtilp		coupling matrix \f$ \tilde{B}_d[p,q]=\int \psi_p \tilde{\phi}_q dS \f$, \f$ p \in S, q \in M \f$ 
- *  [out] irowbtilp	field containing row numbers of Bdtil
- *  [out] jqbtil		pointer into field irowbtil
- *  [out] Bpgdp		Petrov-Galerkin coupling matrix \f$ B_d^{PG}[p,q]=\int \tilde{\phi}_p \phi_q dS \f$, \f$ p \in S, q \in M \f$ 
- *  [out] irowbpgp	field containing row numbers of Bpgd
- *  [out] jqbpg		pointer into field irowbpg
- *  [out] Dpgdp		Petrov-Galerkin coupling matrix \f$ D_d[p,q]=\int \tilde{\phi}_p \phi_q dS \f$, \f$ p,q \in S \f$ 
- *  [out] irowdpgp	field containing row numbers of Dpgd
- *  [out] jqdpg		pointer into field irowdpg
- *  [out] Dpgdtilp	transformed Petrov-Galerkin coupling matrix \f$ D_d[p,q]=\int \tilde{\phi}_p \tilde{\phi}_q dS \f$, \f$ p,q \in S \f$ 
- *  [out] irowdpgtilp	field containing row numbers of Dpgdtil
- *  [out] jqdpgtil	pointer into field irowdpgtil
- *  [out] Bpgdtilp	transformed Petrov-Galerkin coupling matrix \f$ B_d^{PG}[p,q]=\int \tilde{\phi}_p \tilde{\phi}_q dS \f$, \f$ p \in S, q \in M \f$ 
- *  [out] irowbpgtilp	field containing row numbers of Bpgdtil
- *  [out] jqbpgtil	pointer into field irowbpgtil
- *  [in]  iflagdualquad   flag indicating what mortar contact is used (=1 quad-lin, =2 quad-quad, =3 PG quad-lin, =4 PG quad-quad)
- */
+  Authors: Samoela Rakotonanahary, Saskia Sitzmann */
 
 void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	    ITG **irowbdtilp,ITG *jqbdtil,double **aubdtilp,ITG *nzsbdtil,
@@ -139,44 +35,32 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	    ITG **irowddtilp,ITG *jqddtil,double **auddtilp,
 	    ITG **irowddtil2p,ITG *jqddtil2,double **auddtil2p,
 	    ITG **irowddinvp,ITG *jqddinv,double **auddinvp,
-	    ITG *irowtloc,ITG *jqtloc,double *autloc,
-	    ITG *irowtlocinv,ITG *jqtlocinv,double *autlocinv,
+	    ITG *irowt,ITG *jqt,double *aut,
+	    ITG *irowtinv,ITG *jqtinv,double *autinv,
 	    ITG *ntie,ITG *ipkon,ITG *kon,
 	    char *lakon,ITG *nslavnode,ITG *nmastnode,ITG *imastnode,
 	    ITG *islavnode,ITG *islavsurf,ITG *imastsurf,double *pmastsurf,
 	    ITG *itiefac,char *tieset,ITG *neq,ITG *nactdof,double *co,
 	    double *vold,
 	    ITG *iponoels,ITG *inoels,ITG *mi,double *gapmints,double *gap,
-	    double* pslavsurf,double* pslavdual,double* pslavdualpg,
+	    double* pslavsurf,double* pslavdual,
 	    ITG *nintpoint,double *slavnor,ITG *nk,
 	    ITG *nmpc,ITG *ipompc,ITG *nodempc,double *coefmpc,
-	    ITG *ikmpc,ITG *ilmpc,
-	    ITG *nmpc2,ITG *ipompc2,ITG *nodempc2,double *coefmpc2,
-	    ITG *ikmpc2,ITG *ilmpc2,
-	    ITG *nslavspc,ITG *islavspc,ITG *nsspc,ITG *nslavmpc,ITG *islavmpc,
-	    ITG *nsmpc,
-	    ITG *nslavmpc2,
-	    ITG *islavmpc2,ITG *nsmpc2,
-	    ITG *nmastspc,ITG *imastspc,ITG *nmspc,ITG *nmastmpc,ITG *imastmpc,
-	    ITG *nmmpc,
-	    ITG *nmastmpc2,ITG *imastmpc2,ITG *nmmpc2,
+	    ITG *ikmpc,ITG *ilmpc,ITG *nslavmpc,ITG *islavmpc,
+	    ITG *nmastmpc,ITG *imastmpc,
 	    ITG *iit,ITG *iinc,ITG *islavactdof,ITG *islavact,ITG *islavnodeinv,
 	    double **Bdp,ITG **irowbp,ITG *jqb,
 	    double **Bdhelpp,ITG **irowbhelpp,ITG *jqbhelp,
 	    double **Ddp,ITG **irowdp,ITG *jqd,
 	    double **Ddtilp,ITG **irowdtilp,ITG *jqdtil,
 	    double **Bdtilp,ITG **irowbtilp,ITG *jqbtil,
-	    double **Bpgdp,ITG **irowbpgp,ITG *jqbpg,
-	    double **Dpgdp,ITG **irowdpgp,ITG *jqdpg,
-	    double **Dpgdtilp,ITG **irowdpgtilp,ITG *jqdpgtil,
-	    double **Bpgdtilp,ITG **irowbpgtilp,ITG *jqbpgtil,
-	    ITG *iflagdualquad,ITG *ithermal){
+	    ITG *ithermal){
   
   ITG i,ii,j,jj,k,kk,l,ll,icounter,icounter2,idof1,idofs,idofm,nodesf,nodem,
     isn,imn,*mast1=NULL,nzsbhelp,idof0,*irowbd=NULL,*irowdd=NULL,
     *irowddinv=NULL,*irowddtil=NULL,*irowbdtil=NULL,*irowbdtil2=NULL,
     *irowddtil2=NULL,ifree,ifree1,ifree3,mt=mi[1]+1,istart,*iscontr=NULL,
-    *imcontr=NULL,*igap=NULL,*idcontr1=NULL,*idcontr2=NULL,*igcontr=NULL,debug,
+    *imcontr=NULL,*igap=NULL,*idcontr1=NULL,*idcontr2=NULL,*igcontr=NULL,
     intpointl,*mast2=NULL,ifree2,ist,ist2,node1,dim,index,dirdep,dirind,index2,
     dirdep2,dirind2,node2,idof2,idof3,nzsddinv,nzsdd,*irowb=NULL,nzsb1,
     nzsbtil2,nzsdtil,nzsd,nzsb,nzsdinv,nzsbtil,nzsd1,nzsb2a,*mast3=NULL,
@@ -184,22 +68,14 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
     *irowbtil2=NULL,*jqbtil2=NULL,*irowd=NULL,*irowbtil=NULL,*irowdinv=NULL,
     *jqdinv=NULL,*jqb2a=NULL,*irowb2a=NULL,*jqd1=NULL,*irowd1=NULL,
     *irowbhelp=NULL,*irowbtil2t=NULL,*jqbtil2t=NULL,*irowdtil2=NULL,
-    *jqdtil2=NULL,nzsddtil2,nzsdtil2,islavnodeentry,jrow,iadd,*irowdpg=NULL,
-    *irowbpg=NULL,*irowdpgtil=NULL,*irowbpgtil=NULL,ifreepg1,ifreepg2,ifreepg3,
-    nzsbpg1,nzsbpgtil2, *mastpg1=NULL,*mastpg2=NULL,*mastpg3=NULL,nzsbpg2a,
-    nzsdpg,nzsbpg,nzsdpgtil,nzsbpgtil,nzsdpg1,*irowbpg1=NULL,*jqbpg1=NULL,
-    *irowbpg2=NULL,*jqbpg2=NULL,*irowbpgtil2=NULL,*jqbpgtil2=NULL,
-    *irowdpg1=NULL,*jqdpg1=NULL,*irowdpgtilt=NULL,*jqdpgtilt=NULL,
-    *irowbpg2a=NULL,*jqbpg2a=NULL,*irowbpgtil2t=NULL,*jqbpgtil2t=NULL;
+    *jqdtil2=NULL,nzsddtil2,nzsdtil2,islavnodeentry,jrow,iadd;
   
   double contribution=0.0,*aubd=NULL,*audd=NULL,*auddtil=NULL,*auddtil2=NULL,
     *auddinv=NULL,*Bdhelp=NULL,*contr=NULL,*dcontr=NULL,*gcontr=NULL,*Bd=NULL,
     *aubdtil=NULL,*aubdtil2=NULL,c2,coefdep,coefdep2,c3,*Dd=NULL,*Ddinv=NULL,
     *Ddtil2=NULL,*dinvloc=NULL,*dloc=NULL,*Bd1=NULL,*Bd2=NULL,*Bdtil2=NULL,
     *Bdtil=NULL,*Ddtil=NULL,*Dd1=NULL,*Bd2a=NULL,*Bdtil2t=NULL,detdloc,e1,e2,
-    e3,*Bpgd=NULL,*Dpgd=NULL,*Bpgdtil=NULL,*Dpgdtil=NULL,*Bpgd1=NULL,
-    *Bpgd2=NULL,*Bpgdtil2=NULL,*Dpgd1=NULL,*Dpgdtilt=NULL,*Bpgd2a=NULL,
-    *Bpgdtil2t=NULL;
+    e3;
   
   /*
    * calculate Dtilde_d,B_d,Btilde_d2 nodewise
@@ -219,14 +95,9 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
   irowd =*irowdp; Dd=*Ddp;
   irowdtil =*irowdtilp; Ddtil=*Ddtilp;
   irowbtil =*irowbtilp; Bdtil=*Bdtilp;
-  irowbpg =*irowbpgp; Bpgd=*Bpgdp;
-  irowdpg =*irowdpgp; Dpgd=*Dpgdp;
-  irowdpgtil =*irowdpgtilp; Dpgdtil=*Dpgdtilp;
-  irowbpgtil =*irowbpgtilp; Bpgdtil=*Bpgdtilp;
   ifree=1;
-  // position in the fieds FORTRAN condition
+  // position in the fields FORTRAN condition
   ifree1=1;ifree2=1;ifree3=1;
-  ifreepg1=1;ifreepg2=1;ifreepg3=1;
   
   NNEW(igap,ITG,nslavnode[*ntie]);
   NNEW(dinvloc,double,9*nslavnode[*ntie]);
@@ -249,24 +120,6 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
   NNEW(jqb1,ITG,*nk+1);
   NNEW(irowbtil2,ITG,nzsbtil2);
   NNEW(jqbtil2,ITG,*nk+1);
-  if(*iflagdualquad>2){
-    nzsbpg1=*nzsbd;
-    nzsbpgtil2=*nzsbd;
-    NNEW(Bpgd1,double,nzsbpg1);
-    NNEW(Bpgdtil2,double,nzsbpg1);
-    NNEW(mastpg2,ITG,nzsbpg1);
-    NNEW(mastpg3,ITG,nzsbpgtil2);
-    nzsdpgtil=*nk;
-    RENEW(Dpgdtil,double,*nk);
-    RENEW(irowdpgtil,ITG,nzsdpgtil);
-    NNEW(mastpg1,ITG,nzsdpgtil);
-    NNEW(irowbpg1,ITG,nzsbpg1);
-    NNEW(jqbpg1,ITG,*nk+1);
-    NNEW(irowbpgtil2,ITG,nzsbpgtil2);
-    NNEW(jqbpgtil2,ITG,*nk+1);    
-  }
-  
-  debug=0;
   
   /* calculating the off-diagonal terms and storing them in aubd */
   
@@ -286,9 +139,6 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	gap[j]=0.0;
       }
       for(l= itiefac[2*i]; l<=itiefac[2*i+1];l++){
-	if(debug==1)printf("bdfill face %" ITGFORMAT " intpoints %"
-			   ITGFORMAT " %" ITGFORMAT " \n",l,
-			   islavsurf[2*(l-1)+1],islavsurf[2*l+1]);
 	intpointl=islavsurf[2*l+1]-islavsurf[2*(l-1)+1];
 	if(intpointl>0){
 	  NNEW(contr,double,9*9*intpointl/7+1);
@@ -307,8 +157,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 			    imastsurf,pmastsurf,contr,iscontr,imcontr,
 			    dcontr,idcontr1,idcontr2,gcontr,igcontr,mi,
 			    pslavsurf,pslavdual,nslavnode,islavnode,nmastnode,
-			    imastnode,&icounter,&icounter2,islavact,
-			    iflagdualquad));
+			    imastnode,&icounter,&icounter2,islavact));
 	  
 	  /* build B_d **/
 	  
@@ -345,11 +194,6 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	      // nogap or noLM slave nodes...
 		
 	      if(contribution>1e-14 ||contribution<-1e-14){	
-		if(debug==1){
-		  printf("\tbdfill: face %" ITGFORMAT " node %" ITGFORMAT
-			 " %" ITGFORMAT " Bdtil2 %e\n",l,nodesf,nodem,
-			 contribution);
-		}
 		
 		// Bbtil2^T
 		// ... are stored in Bdtil
@@ -360,69 +204,6 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	    }		        
 	  }
 	  
-	  /* calculate additional PG matrices (see phd-thesis
-	     Sitzmann equation (4.20) and (4.21))*/
-	  
-	  if(*iflagdualquad>2){
-	    for(k=0;k<9*9*intpointl/7+1;k++){
-	      contr[k]=0.0;iscontr[k]=0;imcontr[k]=0;
-	      dcontr[k]=0.0;idcontr1[k]=0;idcontr2[k]=0;
-	    }
-	    for(k=0;k<9*intpointl/7+1;k++){
-	      gcontr[k]=0.0;igcontr[k]=0;
-	    }
-	    FORTRAN(createbd,(&i,&l,ipkon,kon,lakon,co,vold,gapmints,islavsurf,
-			      imastsurf,pmastsurf,contr,iscontr,imcontr,
-			      dcontr,idcontr1,idcontr2,gcontr,igcontr,mi,
-			      pslavsurf,pslavdualpg,nslavnode,islavnode,
-			      nmastnode,imastnode,&icounter,&icounter2,islavact,
-			      iflagdualquad));
-	  
-	    /* build Bpg_d **/
-	  
-	    for(j=0; j<icounter;j++){				
-	      contribution=-contr[j];				
-	      nodesf=islavnode[iscontr[j]-1];				
-	      nodem=imastnode[imcontr[j]-1];				
-	    
-	      if((contribution>1e-14 ||contribution<-1e-14)){ 
-		insertas(&irowbpg1,&mastpg2,&nodesf,&nodem, &ifreepg2,&nzsbpg1,
-			 &contribution,&Bpgd1);				
-	      }				               		  
-	    }
-	  
-	    /* build Dpg_tilde **/
-	  
-	    for(j=0; j<icounter2;j++){			
-	      contribution=dcontr[j];			
-	      nodesf=islavnode[idcontr1[j]-1];		        
-	      nodem=islavnode[idcontr2[j]-1];
-	    
-	      if(islavact[idcontr1[j]-1]>-1){ 
-		if(contribution>1e-14 ||contribution<-1e-14){
-		  if(debug==1)printf("\tbdfill: face %" ITGFORMAT " node %"
-				     ITGFORMAT " %" ITGFORMAT " Ddtil %e\n",l,
-				     nodesf,nodem,contribution);
-		  insertas(&irowdpgtil,&mastpg1,&nodesf,&nodem, &ifreepg1,
-			   &nzsdpgtil,&contribution,&Dpgdtil);	
-		}
-	      }else{  	      
-		if(contribution>1e-14 ||contribution<-1e-14){	
-		  if(debug==1){
-		    printf("\tbdfill: face %" ITGFORMAT " node %" ITGFORMAT
-			   " %" ITGFORMAT " Bdtil2 %e\n",l,nodesf,nodem,
-			   contribution);
-		  }
-		
-		  // Bpgdtil2^T
-		
-		  insertas(&irowbpgtil2,&mastpg3,&nodem,&nodesf, &ifreepg3,
-			   &nzsbpgtil2,&contribution,&Bpgdtil2);
-		}						
-	      }		        
-	    }
-	  }
-	  
 	  /* build dual gap **/
 	  
 	  for(j=0; j<sqrt(icounter2);j++){					
@@ -430,8 +211,6 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	    ll=igcontr[j]-1;			
 	    gap[ll]+=contribution;
 	    igap[ll]=1;
-	    if(debug==1)printf("nodes %" ITGFORMAT " c %e gap %e  \n",
-			       islavnode[ll],contribution,gap[ll]);
 	  }
 	  SFREE(contr);
 	  SFREE(iscontr);
@@ -488,7 +267,6 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
     jqdtil[i]=istart;
   }
   jqdtil[*nk]=icounter+1; 
-  if(debug==1)printf("\tbdfill: \tsize Ddtil %" ITGFORMAT " \n",icounter);
   nzsdtil=icounter;
   RENEW(irowdtil,ITG,nzsdtil);
   RENEW(Ddtil,double,nzsdtil); 
@@ -523,7 +301,6 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
     jqb1[i]=istart;
   }
   jqb1[*nk]=icounter+1; 
-  if(debug==1)printf("\tbdfill: \tsize Bd1 %" ITGFORMAT " \n",icounter);
 
   // guido: next line was replaced by nzsb1=icounter;
   //nzsb=icounter;
@@ -562,198 +339,27 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
     jqbtil2[i]=istart;
   }
   jqbtil2[*nk]=icounter+1; 
-  if(debug==1)printf("\tbdfill: \tsize Bdtil2 %" ITGFORMAT " \n",icounter);
   nzsbtil2=icounter;
   RENEW(irowbtil2,ITG,nzsbtil2);
   RENEW(Bdtil2,double,nzsbtil2); 
   SFREE(mast3);
   
-  if(*iflagdualquad>2){
-      
-    /* sort Dpgdtil **/
-      
-    nzsdpgtil=ifreepg1-1;
-    RENEW(irowdpgtil,ITG,nzsdpgtil);
-    RENEW(Dpgdtil,double,nzsdpgtil);
-    dim=*nk;
-    matrixsort(Dpgdtil,mastpg1,irowdpgtil,jqdpgtil,&nzsdpgtil,&dim);  
-    
-    icounter=0;
-    for(i=0;i<*nk;i++){
-      if(jqdpgtil[i]!=jqdpgtil[i+1]){
-	irowdpgtil[icounter]=irowdpgtil[jqdpgtil[i]-1];
-	Dpgdtil[icounter]=Dpgdtil[jqdpgtil[i]-1];
-	icounter++;
-	istart=icounter;
-	for(j=jqdpgtil[i];j<jqdpgtil[i+1]-1;j++){
-	  if(irowdpgtil[j]==irowdpgtil[icounter-1]){
-	    Dpgdtil[icounter-1]+=Dpgdtil[j];   
-	  }else{
-	    irowdpgtil[icounter]=irowdpgtil[j];
-	    Dpgdtil[icounter]=Dpgdtil[j];
-	    icounter++;
-	  }
-	}
-      }else{ istart=icounter+1;}
-      
-      jqdpgtil[i]=istart;
-    }
-    jqdpgtil[*nk]=icounter+1; 
-    if(debug==1)printf("\tbdfill: \tsize Dpgdtil %" ITGFORMAT " \n",icounter);
-    nzsdtil=icounter;
-    RENEW(irowdpgtil,ITG,nzsdpgtil);
-    RENEW(Dpgdtil,double,nzsdpgtil); 
-    SFREE(mastpg1);
-    
-    /* sort Bpgd **/
-    
-    nzsbpg1=ifreepg2-1;
-    dim=*nk;
-    matrixsort(Bpgd1,mastpg2,irowbpg1,jqbpg1,&nzsbpg1,&dim); 
-    icounter=0;
-    for(i=0;i<*nk;i++){
-      if(jqbpg1[i]!=jqbpg1[i+1]){
-	irowbpg1[icounter]=irowbpg1[jqbpg1[i]-1];
-	Bpgd1[icounter]=Bpgd1[jqbpg1[i]-1];
-	icounter++;
-	istart=icounter;
-	for(j=jqbpg1[i];j<jqbpg1[i+1]-1;j++){
-	  if(irowbpg1[j]==irowbpg1[icounter-1]){
-	    Bpgd1[icounter-1]+=Bpgd1[j];   
-	  }else{
-	    irowbpg1[icounter]=irowbpg1[j];
-	    Bpgd1[icounter]=Bpgd1[j];
-	    icounter++;
-	  }
-	}
-      }else{ istart=icounter+1;}
-      
-      jqbpg1[i]=istart;
-    }
-    jqbpg1[*nk]=icounter+1; 
-    if(debug==1)printf("\tbdfill: \tsize Bpgd1 %" ITGFORMAT " \n",icounter);
-    
-    //   guido: next line was replaced by " nzsbpg1=icounter;"
-    //    nzsb=icounter;
-    //
-    
-    nzsbpg1=icounter;
-    RENEW(irowbpg1,ITG,nzsbpg1);
-    RENEW(Bpgd1,double,nzsbpg1); 
-    SFREE(mastpg2);
-
-    /* sort Bpgdtil2 **/
-    
-    nzsbpgtil2=ifreepg3-1;
-    dim=*nk;
-    matrixsort(Bpgdtil2,mastpg3,irowbpgtil2,jqbpgtil2,&nzsbpgtil2,&dim); 
-    icounter=0;
-    for(i=0;i<*nk;i++){
-      if(jqbpgtil2[i]!=jqbpgtil2[i+1]){
-	irowbpgtil2[icounter]=irowbpgtil2[jqbpgtil2[i]-1];
-	Bpgdtil2[icounter]=Bpgdtil2[jqbpgtil2[i]-1];
-	icounter++;
-	istart=icounter;
-	for(j=jqbpgtil2[i];j<jqbpgtil2[i+1]-1;j++){
-	  if(irowbpgtil2[j]==irowbpgtil2[icounter-1]){
-	    Bpgdtil2[icounter-1]+=Bpgdtil2[j];   
-	  }else{
-	    irowbpgtil2[icounter]=irowbpgtil2[j];
-	    Bpgdtil2[icounter]=Bpgdtil2[j];
-	    icounter++;
-	  }
-	}
-      }else{ istart=icounter+1;}
-      
-      jqbpgtil2[i]=istart;
-    }
-    jqbpgtil2[*nk]=icounter+1; 
-    if(debug==1)printf("\tbdfill: \tsize Bpgdtil2 %" ITGFORMAT " \n",icounter);
-    nzsbpgtil2=icounter;
-    RENEW(irowbpgtil2,ITG,nzsbpgtil2);
-    RENEW(Bpgdtil2,double,nzsbpgtil2); 
-    SFREE(mastpg3);
-
- 
-    /* build Dpg_d=(Dpg_d^til*T^-1)=(T^-T*D_d^til)^T **/
-    /* need Dpg columnwise stored **/
-    
-    dim=*nk;
-    nzsdpg1=jqtlocinv[*nk];
-    NNEW(Dpgd1,double,nzsdpg1);
-    NNEW(irowdpg1,ITG,nzsdpg1);
-    NNEW(jqdpg1,ITG,*nk+1);
-    
-    NNEW(Dpgdtilt,double,nzsdpgtil);	
-    NNEW(irowdpgtilt,ITG,nzsdpgtil);	
-    NNEW(jqdpgtilt,ITG,*nk+1);
-    dim=*nk;
-    
-    transpose(Dpgdtil,jqdpgtil,irowdpgtil,&dim,
-	      Dpgdtilt,jqdpgtilt,irowdpgtilt);
-	      
-    multi_rect(Dpgdtilt,irowdpgtilt,jqdpgtilt,dim,dim,
-	       autlocinv,irowtlocinv,jqtlocinv,dim,dim,           
-	       &Dpgd1,&irowdpg1,jqdpg1,&nzsdpg1);
-    
-    SFREE(Dpgdtilt);SFREE(irowdpgtilt);SFREE(jqdpgtilt);
-    
-    nzsbpg2a=nslavnode[*ntie];
-    NNEW(Bpgd2a,double,nzsbpg2a);
-    NNEW(irowbpg2a,ITG,nzsbpg2a);
-    NNEW(jqbpg2a,ITG,*nk+1);
-    multi_rect(Bpgdtil2,irowbpgtil2,jqbpgtil2,dim,dim,
-	       autlocinv,irowtlocinv,jqtlocinv,dim,dim,           
-	       &Bpgd2a,&irowbpg2a,jqbpg2a,&nzsbpg2a);
-  
-    NNEW(Bpgdtil2t,double,nzsbpgtil2);	
-    NNEW(irowbpgtil2t,ITG,nzsbpgtil2);	
-    NNEW(jqbpgtil2t,ITG,*nk+1);
-    dim=*nk;
-    
-    transpose(Bpgdtil2,jqbpgtil2,irowbpgtil2,&dim,
-	      Bpgdtil2t,jqbpgtil2t,irowbpgtil2t);
-    
-    nzsdpg=nzsdpg1;
-    RENEW(Dpgd,double,nzsdpg);
-    RENEW(irowdpg,ITG,nzsdpg);
-    add_rect(Dpgd1,irowdpg1,jqdpg1,dim,dim,
-	     Bpgd2a,irowbpg2a,jqbpg2a,dim,dim,
-	     &Dpgd,&irowdpg,jqdpg,&nzsdpg);     
-    
-    nzsbpg=nslavnode[*ntie];
-    RENEW(Bpgd,double,nzsbpg);
-    RENEW(irowbpg,ITG,nzsbpg);
-    
-    NNEW(Bpgd2,double,1);
-    NNEW(irowbpg2,ITG,1);
-    NNEW(jqbpg2,ITG,*nk+1);
-    add_rect(Bpgd1,irowbpg1,jqbpg1,dim,dim,
-	     Bpgd2,irowbpg2,jqbpg2,dim,dim,
-	     &Bpgd,&irowbpg,jqbpg,&nzsbpg);
-    
-    if(debug==1){
-      printf("\tbdfill: \tsize Bpgd %" ITGFORMAT " \n",jqbpg[*nk]-1);
-      printf("\tbdfill: \tsize Dpgd %" ITGFORMAT " \n",jqdpg[*nk]-1);
-    }
-  }
-  
   /* build D_d=(D_d^til*T^-1)=(T^-T*D_d^til)^T **/
   /* need D columnwise stored **/
   
   dim=*nk;
-  nzsd1=jqtlocinv[*nk];
+  nzsd1=jqtinv[*nk];
   NNEW(Dd1,double,nzsd1);
   NNEW(irowd1,ITG,nzsd1);
   NNEW(jqd1,ITG,*nk+1);
   kk=1;	
   jqd1[0]=1;
   for(ii=0;ii<*nk;ii++){
-    for(jj=jqtlocinv[ii]-1;jj<jqtlocinv[ii+1]-1;jj++){
-      k=irowtlocinv[jj]-1;
+    for(jj=jqtinv[ii]-1;jj<jqtinv[ii+1]-1;jj++){
+      k=irowtinv[jj]-1;
       if(jqdtil[k+1]-jqdtil[k]==1){
-	Dd1[kk-1]=Ddtil[jqdtil[k]-1]*autlocinv[jj];
-	irowd1[kk-1]=irowtlocinv[jj];
+	Dd1[kk-1]=Ddtil[jqdtil[k]-1]*autinv[jj];
+	irowd1[kk-1]=irowtinv[jj];
 	kk++;
       }else{
 	// something went wrong
@@ -770,7 +376,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
   NNEW(irowb2a,ITG,nzsb2a);
   NNEW(jqb2a,ITG,*nk+1);	     
   multi_rect(Bdtil2,irowbtil2,jqbtil2,dim,dim,
-	     autlocinv,irowtlocinv,jqtlocinv,dim,dim,           
+	     autinv,irowtinv,jqtinv,dim,dim,           
 	     &Bd2a,&irowb2a,jqb2a,&nzsb2a);
   
   NNEW(Bdtil2t,double,nzsbtil2);	
@@ -801,10 +407,6 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
   add_rect(Bd1,irowb1,jqb1,dim,dim,
 	   Bd2,irowb2,jqb2,dim,dim,
 	   &Bd,&irowb,jqb,&nzsb);
-  if(debug==1){
-    printf("\tbdfill: \tsize Bd %" ITGFORMAT " \n",jqb[*nk]-1);
-    printf("\tbdfill: \tsize Dd %" ITGFORMAT " \n",jqd[*nk]-1);
-  }
     
   /* build D_d^inv=((T^T)^T*D_dtil^-1) **/
   /* need D_d^inv column and row-wise stored? **/
@@ -828,7 +430,6 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
     }
     jqdinv[i+1]=ifree2;
   }
-  if(debug==1)printf("\tbdfill: \tinverse of Dtil calculated %" ITGFORMAT "\n",ifree2-1);
   nzsbtil=nzsb1;
   RENEW(Bdtil,double,nzsbtil);
   RENEW(irowbtil,ITG,nzsbtil);
@@ -839,137 +440,6 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
   add_rect(Bd1,irowb1,jqb1,dim,dim,
 	   Bdtil2t,irowbtil2t,jqbtil2t,dim,dim,
 	   &Bdtil,&irowbtil,jqbtil,&nzsbtil);
-  
-  if(debug==1)printf("\tbdfill: \tsize Bdtil %" ITGFORMAT " \n",jqbtil[*nk]-1);
-  
-  if(*iflagdualquad>2){
-    nzsbpgtil=nzsbpg1;
-    RENEW(Bpgdtil,double,nzsbpgtil);
-    RENEW(irowbpgtil,ITG,nzsbpgtil);
-    
-    add_rect(Bpgd1,irowbpg1,jqbpg1,dim,dim,
-	     Bpgdtil2t,irowbpgtil2t,jqbpgtil2t,dim,dim,
-	     &Bpgdtil,&irowbpgtil,jqbpgtil,&nzsbpgtil);
-    
-    if(debug==1)printf("\tbdfill: \tsize Bpgdtil %" ITGFORMAT " \n",jqbpgtil[*nk]-1); 
-  }
-  
-  // check consistent force transmission
-  
-  if(debug==1){
-    for( i=0; i<*ntie; i++){    
-      if(tieset[i*(81*3)+80]=='C'){ 
-	for(j=nslavnode[i]; j<nslavnode[i+1]; j++){
-	  nodesf=islavnode[j];
-	  if(islavact[j]>-1){
-	    contribution=0.0;
-	    for(ii=0;ii<*nk;ii++){
-	      for(jj=jqd[ii]-1;jj<jqd[ii+1]-1;jj++){
-		if(irowd[jj]==nodesf){
-		  contribution=contribution+Dd[jj];
-		}
-	      }
-	    }
-	    for(ii=0;ii<*nk;ii++){
-	      for(jj=jqb[ii]-1;jj<jqb[ii+1]-1;jj++){
-		if(irowb[jj]==nodesf){
-		  contribution=contribution+Bd[jj];
-		}
-	      }
-	    }
-	    if(contribution<-1.e-10 ||contribution>1.e-10){
-	      if(debug==1)printf("\tbdfill: node %" ITGFORMAT " sum Dd+Bd %e \n",nodesf,
-		     contribution);
-	    }
-	  }
-	}
-      }
-    }
-    for( i=0; i<*ntie; i++){    
-      if(tieset[i*(81*3)+80]=='C'){ 
-	for(j=nslavnode[i]; j<nslavnode[i+1]; j++){
-	  nodesf=islavnode[j];
-	  if(islavact[j]>-1){
-	    contribution=0.0;
-	    for(ii=0;ii<*nk;ii++){
-	      for(jj=jqdtil[ii]-1;jj<jqdtil[ii+1]-1;jj++){
-		if(irowdtil[jj]==nodesf){
-		  contribution=contribution+Ddtil[jj];
-		}
-	      }
-	    }
-	    for(ii=0;ii<*nk;ii++){
-	      for(jj=jqbtil[ii]-1;jj<jqbtil[ii+1]-1;jj++){
-		if(irowbtil[jj]==nodesf){
-		  contribution=contribution+Bdtil[jj];
-		}
-	      }
-	    }
-	    if(contribution<-1.e-10 ||contribution>1.e-10){
-	      if(debug==1)printf("\tbdfill: node %" ITGFORMAT " sum Ddtil+Bdtil %e \n",
-		     nodesf,contribution);
-	    }
-	  }
-	}
-      }
-    }  
-    for( i=0; i<*ntie; i++){    
-      if(tieset[i*(81*3)+80]=='C'){ 
-	for(j=nslavnode[i]; j<nslavnode[i+1]; j++){
-	  nodesf=islavnode[j];
-	  if(islavact[j]>-1){
-	    contribution=0.0;
-	    for(ii=0;ii<*nk;ii++){
-	      for(jj=jqdpg[ii]-1;jj<jqdpg[ii+1]-1;jj++){
-		if(irowdpg[jj]==nodesf){
-		  contribution=contribution+Dpgd[jj];
-		}
-	      }
-	    }
-	    for(ii=0;ii<*nk;ii++){
-	      for(jj=jqbpg[ii]-1;jj<jqbpg[ii+1]-1;jj++){
-		if(irowbpg[jj]==nodesf){
-		  contribution=contribution+Bpgd[jj];
-		}
-	      }
-	    }
-	    if(contribution<-1.e-10 ||contribution>1.e-10){
-	      if(debug==1)printf("\tbdfill: node %" ITGFORMAT " sum Dpgd+Bpgd %e \n",
-		     nodesf,contribution);
-	    }
-	  }
-	}
-      }
-    }
-    for( i=0; i<*ntie; i++){    
-      if(tieset[i*(81*3)+80]=='C'){ 
-	for(j=nslavnode[i]; j<nslavnode[i+1]; j++){
-	  nodesf=islavnode[j];
-	  if(islavact[j]>-1){
-	    contribution=0.0;
-	    for(ii=0;ii<*nk;ii++){
-	      for(jj=jqdpgtil[ii]-1;jj<jqdpgtil[ii+1]-1;jj++){
-		if(irowdpgtil[jj]==nodesf){
-		  contribution=contribution+Dpgdtil[jj];
-		}
-	      }
-	    }
-	    for(ii=0;ii<*nk;ii++){
-	      for(jj=jqbpgtil[ii]-1;jj<jqbpgtil[ii+1]-1;jj++){
-		if(irowbpgtil[jj]==nodesf){
-		  contribution=contribution+Bpgdtil[jj];
-		}
-	      }
-	    }
-	    if(contribution<-1.e-10 ||contribution>1.e-10){
-	      if(debug==1)printf("\tbdfill: node %" ITGFORMAT " sum Dpgdtil+Bpgdtil %e \n",
-		     nodesf,contribution);
-	    }
-	  }
-	}
-      }
-    }  
-  }
   
   /* Bdhelp=Ddtil^-1*Bdtil **/
   
@@ -991,7 +461,6 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
     }
     jqbhelp[ii+1]=jqbtil[ii+1];
   }
-  if(debug==1)printf("\tbdfill: \tsize Bdhelp %" ITGFORMAT " \n",jqbhelp[*nk]-1);
   
   /* Ddtil2=Dd^-1*D^T= ID **/
   /* this is only help matrix needed for changed procedure dealing 
@@ -1012,39 +481,11 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
     jqdtil2[ii+1]=jqdtil[ii+1];
   }  
   
-  if(debug==1)printf("\tbdfill: \tsize Ddtil2 %" ITGFORMAT " \n",jqdtil2[*nk]-1);
-  if(debug==1){
-    for( i=0; i<*ntie; i++){    
-      if(tieset[i*(81*3)+80]=='C'){ 
-	for(j=nslavnode[i]; j<nslavnode[i+1]; j++){
-	  nodesf=islavnode[j];
-	  if(islavact[j]>-1){
-	    contribution=1.0;
-	  }else{
-	    contribution=0.0;
-	  }
-	  for(ii=0;ii<*nk;ii++){
-	    for(jj=jqbhelp[ii]-1;jj<jqbhelp[ii+1]-1;jj++){
-	      if(irowbhelp[jj]==nodesf){
-		contribution=contribution+Bdhelp[jj];
-	      }
-	    }
-	  }
-	  if(contribution<-1.e-14 ||contribution>1.e-14){
-	    if(debug==1)printf("\tbdfill: node %" ITGFORMAT " sum Dinv*Dd+Dinv*Bd %e \n",
-		   nodesf,contribution);
-	  }
-	}
-      }
-    }
-  }
-  
   /* create matrices in active dofs */
   /* create ddinv aubd aubdtil **/
   
   /* audd <- Dd **/
   
-  debug=0;
   ifree=1;
   nzsdd=3*nzsd;
   RENEW(audd,double,nzsdd);
@@ -1057,15 +498,11 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
       contribution=Dd[j];
       isn=islavnodeinv[irowd[j]-1];
       imn=islavnodeinv[i];
-      if(debug==1)printf("audd node %" ITGFORMAT " %" ITGFORMAT " c %e \n",
-			 nodesf,nodem,contribution);
       k=0;
       if(ithermal[0]==3){k=-1;}
       for(ll=k; ll<3; ll++){	  				
 	idofs=nactdof[mt*(nodesf-1)+ll+1];	    				
 	idofm=nactdof[mt*(nodem-1)+ll+1];					
-	if(debug==1)printf("\t idofs %" ITGFORMAT " idofm %" ITGFORMAT " \n",
-			   idofs,idofm);	    				
 	if((idofs>0)&&(idofm>0)&&(contribution>1e-18 ||contribution<-1e-18)){
 	  //insertion for active dofs  	      				
 	  insertas(&irowdd,&mast1,&idofs,&idofm,&ifree,&nzsdd,
@@ -1074,7 +511,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 					 contribution<-1e-18)){
 	  // mpc on master node			                  
 	  for(jj=nslavmpc[2*(imn-1)];jj<nslavmpc[2*(imn-1)+1];jj++){
-	    ist=islavmpc[2*jj];                                           
+	    ist=islavmpc[jj];                                           
 	    dirdep=nodempc[3*(ist-1)+1];
 	    coefdep=coefmpc[ist-1];                                           
 	    index=nodempc[3*(ist-1)+2];					   
@@ -1085,8 +522,6 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 		c2=-coefmpc[index-1]*contribution/coefdep;
 		idofm=nactdof[mt*(node1-1)+(dirind-1)+1];
 		if(idofm>0&&(c2>1e-14 ||c2<-1e-14)){
-		  if(debug==1)printf("\t\t idofs %" ITGFORMAT " idofm %"
-				     ITGFORMAT " c2 %e \n",idofs,idofm,c2);
 		  insertas(&irowdd,&mast1,&idofs,&idofm,&ifree,&nzsdd,
 			   &c2,&audd);					    
 		}                                            
@@ -1100,7 +535,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	  //mpc on slave node
 	  
 	  for(jj=nslavmpc[2*(isn-1)];jj<nslavmpc[2*(isn-1)+1];jj++){
-	    ist=islavmpc[2*(jj)];                                           
+	    ist=islavmpc[jj];                                           
 	    dirdep=nodempc[3*(ist-1)+1];
 	    coefdep=coefmpc[ist-1];                                           
 	    index=nodempc[3*(ist-1)+2];					   
@@ -1111,8 +546,6 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 		c2=-coefmpc[index-1]*contribution/coefdep;
 		idofs=nactdof[mt*(node1-1)+(dirind-1)+1];
 		if(idofs>0&&(c2>1e-14 ||c2<-1e-14)){
-		  if(debug==1)printf("\t\t idofs %" ITGFORMAT " idofm %"
-				     ITGFORMAT " c2 %e \n",idofs,idofm,c2);
 		  insertas(&irowdd,&mast1,&idofs,&idofm,&ifree,&nzsdd,
 			   &c2,&audd);
 		  
@@ -1127,7 +560,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	  //mpc on master and slave node
 	  
 	  for(jj=nslavmpc[2*(imn-1)];jj<nslavmpc[2*(imn-1)+1];jj++){
-	    ist=islavmpc[2*jj];                                           
+	    ist=islavmpc[jj];                                           
 	    dirdep=nodempc[3*(ist-1)+1];
 	    coefdep=coefmpc[ist-1];                                           
 	    index=nodempc[3*(ist-1)+2];					   
@@ -1138,7 +571,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 		c2=-coefmpc[index-1]*contribution/coefdep;
 		idofm=nactdof[mt*(node1-1)+(dirind-1)+1];		        
 		for(kk=nslavmpc[2*(isn-1)];kk<nslavmpc[2*(isn-1)+1];kk++){
-		  ist2=islavmpc[2*kk];
+		  ist2=islavmpc[kk];
 		  dirdep2=nodempc[3*(ist2-1)+1];
 		  coefdep2=coefmpc[ist2-1];
 		  index2=nodempc[3*(ist2-1)+2];
@@ -1149,9 +582,6 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 		      c3=-coefmpc[index2-1]*c2/coefdep2;   
 		      idofs=nactdof[mt*(node2-1)+(dirind2-1)+1];
 		      if(idofs>0&&idofm>0&&(c3>1e-14 ||c3<-1e-14)){
-			if(debug==1)printf("\t\t idofs %" ITGFORMAT " idofm %"
-					   ITGFORMAT " c2 %e \n",idofs,idofm,
-					   c3);
 			insertas(&irowdd,&mast1,&idofs,&idofm,&ifree,&nzsdd,
 				 &c3,&audd);
 		      }                                              
@@ -1194,14 +624,12 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
     jqdd[i]=istart;
   }
   jqdd[neq[1]]=icounter+1; 
-  if(debug==1)printf("\tbdfill: \tsize audd %" ITGFORMAT " \n",icounter);
   nzsdd=icounter;
   RENEW(irowdd,ITG,nzsdd);
   RENEW(audd,double,nzsdd); 
   
   /* aubd <-Bd **/
   
-  debug=0;
   ifree=1;
   *nzsbd=3*nzsb;
   RENEW(aubd,double,*nzsbd);
@@ -1214,15 +642,11 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
       isn=islavnodeinv[irowb[j]-1];
       imn=islavnodeinv[i];
       contribution=Bd[j];
-      if(debug==1)printf("aubd node %" ITGFORMAT " %" ITGFORMAT " c %e \n",
-			 nodesf,nodem,contribution);
       k=0;
       if(ithermal[0]==3){k=-1;}
       for(ll=k; ll<3; ll++){	  				
 	idofs=nactdof[mt*(nodesf-1)+ll+1];	    				
 	idofm=nactdof[mt*(nodem-1)+ll+1];					
-	if(debug==1)printf("\t idofs %" ITGFORMAT " idofm %" ITGFORMAT " \n",
-			   idofs,idofm);	    				
 	if((idofs>0)&&(idofm>0)&&(contribution>1e-18 ||contribution<-1e-18)){
 	  
 	  //insertion for active dofs
@@ -1235,7 +659,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	  
 	  if(imn<0){
 	    for(jj=nmastmpc[2*(-imn-1)];jj<nmastmpc[2*(-imn-1)+1];jj++){
-	      ist=imastmpc[2*jj];                                           
+	      ist=imastmpc[jj];                                           
 	      dirdep=nodempc[3*(ist-1)+1];
 	      coefdep=coefmpc[ist-1];                                           
 	      index=nodempc[3*(ist-1)+2];
@@ -1246,8 +670,6 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 		  c2=-coefmpc[index-1]*contribution/coefdep;
 		  idofm=nactdof[mt*(node1-1)+(dirind-1)+1];
 		  if(idofm>0&&(c2>1e-14 ||c2<-1e-14)){
-		    if(debug==1)printf("\t\t idofs %" ITGFORMAT " idofm %"
-				       ITGFORMAT " c2 %e \n",idofs,idofm,c2);
 		    insertas(&irowbd,&mast1,&idofs,&idofm,&ifree,nzsbd,
 			     &c2,&aubd);
 		  }                                            
@@ -1257,7 +679,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	    }
 	  }else{
 	    for(jj=nslavmpc[2*(imn-1)];jj<nslavmpc[2*(imn-1)+1];jj++){
-	      ist=islavmpc[2*jj];                                           
+	      ist=islavmpc[jj];                                           
 	      dirdep=nodempc[3*(ist-1)+1];
 	      coefdep=coefmpc[ist-1];                                           
 	      index=nodempc[3*(ist-1)+2];
@@ -1268,8 +690,6 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 		  c2=-coefmpc[index-1]*contribution/coefdep;
 		  idofm=nactdof[mt*(node1-1)+(dirind-1)+1];
 		  if(idofm>0&&(c2>1e-14 ||c2<-1e-14)){
-		    if(debug==1)printf("\t\t idofs %" ITGFORMAT " idofm %"
-				       ITGFORMAT " c2 %e \n",idofs,idofm,c2);
 		    insertas(&irowbd,&mast1,&idofs,&idofm,&ifree,nzsbd,
 			     &c2,&aubd);
 		  }                                            
@@ -1283,7 +703,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	  //mpc on slave node
 	  
 	  for(jj=nslavmpc[2*(isn-1)];jj<nslavmpc[2*(isn-1)+1];jj++){
-	    ist=islavmpc[2*(jj)];                                           
+	    ist=islavmpc[jj];                                           
 	    dirdep=nodempc[3*(ist-1)+1];
 	    coefdep=coefmpc[ist-1];                                           
 	    index=nodempc[3*(ist-1)+2];					   
@@ -1294,8 +714,6 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 		c2=-coefmpc[index-1]*contribution/coefdep;
 		idofs=nactdof[mt*(node1-1)+(dirind-1)+1];
 		if(idofs>0&&(c2>1e-14 ||c2<-1e-14)){
-		  if(debug==1)printf("\t\t idofs %" ITGFORMAT " idofm %"
-				     ITGFORMAT " c2 %e \n",idofs,idofm,c2);
 		  insertas(&irowbd,&mast1,&idofs,&idofm,&ifree,nzsbd,
 			   &c2,&aubd);
 		  
@@ -1311,7 +729,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	  
 	  if(imn<0){
 	    for(jj=nmastmpc[2*(-imn-1)];jj<nmastmpc[2*(-imn-1)+1];jj++){
-	      ist=imastmpc[2*jj];                                           
+	      ist=imastmpc[jj];                                           
 	      dirdep=nodempc[3*(ist-1)+1];
 	      coefdep=coefmpc[ist-1];                                           
 	      index=nodempc[3*(ist-1)+2];
@@ -1322,7 +740,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 		  c2=-coefmpc[index-1]*contribution/coefdep;
 		  idofm=nactdof[mt*(node1-1)+(dirind-1)+1];		        
 		  for(kk=nslavmpc[2*(isn-1)];kk<nslavmpc[2*(isn-1)+1];kk++){
-		    ist2=islavmpc[2*kk];
+		    ist2=islavmpc[kk];
 		    dirdep2=nodempc[3*(ist2-1)+1];
 		    coefdep2=coefmpc[ist2-1];
 		    index2=nodempc[3*(ist2-1)+2];  
@@ -1333,9 +751,6 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 			c3=-coefmpc[index2-1]*c2/coefdep2;   
 			idofs=nactdof[mt*(node2-1)+(dirind2-1)+1];
 			if(idofs>0&&idofm>0&&(c3>1e-14 ||c3<-1e-14)){
-			  if(debug==1)printf("\t\t idofs %" ITGFORMAT
-					     " idofm %" ITGFORMAT " c2 %e \n",
-					     idofs,idofm,c3);
 			  insertas(&irowbd,&mast1,&idofs,&idofm,&ifree,nzsbd,
 				   &c3,&aubd);    
 			}                                             
@@ -1349,7 +764,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	    }
 	  }else{
 	    for(jj=nslavmpc[2*(imn-1)];jj<nslavmpc[2*(imn-1)+1];jj++){
-	      ist=islavmpc[2*jj];                                           
+	      ist=islavmpc[jj];                                           
 	      dirdep=nodempc[3*(ist-1)+1];
 	      coefdep=coefmpc[ist-1];                                           
 	      index=nodempc[3*(ist-1)+2];
@@ -1360,7 +775,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 		  c2=-coefmpc[index-1]*contribution/coefdep;
 		  idofm=nactdof[mt*(node1-1)+(dirind-1)+1];		        
 		  for(kk=nslavmpc[2*(isn-1)];kk<nslavmpc[2*(isn-1)+1];kk++){
-		    ist2=islavmpc[2*kk];
+		    ist2=islavmpc[kk];
 		    dirdep2=nodempc[3*(ist2-1)+1];
 		    coefdep2=coefmpc[ist2-1];
 		    index2=nodempc[3*(ist2-1)+2];  
@@ -1371,9 +786,6 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 			c3=-coefmpc[index2-1]*c2/coefdep2;   
 			idofs=nactdof[mt*(node2-1)+(dirind2-1)+1];
 			if(idofs>0&&idofm>0&&(c3>1e-14 ||c3<-1e-14)){
-			  if(debug==1)printf("\t\t idofs %" ITGFORMAT
-					     " idofm %" ITGFORMAT " c2 %e \n",
-					     idofs,idofm,c3);
 			  insertas(&irowbd,&mast1,&idofs,&idofm,&ifree,nzsbd,
 				   &c3,&aubd);    
 			}                                              
@@ -1417,14 +829,12 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
     jqbd[i]=istart;
   }
   jqbd[neq[1]]=icounter+1; 
-  if(debug==1)printf("\tbdfill: \tsize aubd %" ITGFORMAT " \n",icounter);
   *nzsbd=icounter;
   RENEW(irowbd,ITG,*nzsbd);
   RENEW(aubd,double,*nzsbd);   
   
   /* auddtil2 <- Id **/
   
-  debug=0;
   ifree=1;
   nzsddtil2=3*nzsd;
   RENEW(auddtil2,double,nzsddtil2);
@@ -1437,15 +847,11 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
       contribution=Ddtil2[j];
       isn=islavnodeinv[irowdtil2[j]-1];
       imn=islavnodeinv[i];
-      if(debug==1)printf("auddtil2 node %" ITGFORMAT " %" ITGFORMAT " c %e \n",
-			 nodesf,nodem,contribution);
       k=0;
       if(ithermal[0]==3){k=-1;}
       for(ll=k; ll<3; ll++){	  				
 	idofs=nactdof[mt*(nodesf-1)+ll+1];	    				
 	idofm=nactdof[mt*(nodem-1)+ll+1];					
-	if(debug==1)printf("\t idofs %" ITGFORMAT " idofm %" ITGFORMAT " \n",
-			   idofs,idofm);	    				
 	if((idofs>0)&&(idofm>0)&&(contribution>1e-18 ||contribution<-1e-18)){
 	  
 	  //insertion for active dofs
@@ -1483,14 +889,12 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
     jqddtil2[i]=istart;
   }
   jqddtil2[neq[1]]=icounter+1; 
-  if(debug==1)printf("\tbdfill: \tsize auddtil2 %" ITGFORMAT " \n",icounter);
   nzsddtil2=icounter;
   RENEW(irowddtil2,ITG,nzsddtil2);
   RENEW(auddtil2,double,nzsddtil2); 
 
   /* aubdtil2 <- Ddtil,Bdtil in one matrix due to MPCs **/
   
-  debug=0;
   ifree=1;
   *nzsbdtil2=3*nzsbhelp;
   RENEW(aubdtil2,double,*nzsbdtil2);
@@ -1504,15 +908,11 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
       contribution=Ddtil[j];
       isn=islavnodeinv[irowdtil[j]-1];
       imn=islavnodeinv[i];
-      if(debug==1)printf("auddtil node %" ITGFORMAT " %" ITGFORMAT " c %e \n",
-			 nodesf,nodem,contribution);
       k=0;
       if(ithermal[0]==3){k=-1;}
       for(ll=k; ll<3; ll++){	  				
 	idofs=nactdof[mt*(nodesf-1)+ll+1];	    				
 	idofm=nactdof[mt*(nodem-1)+ll+1];					
-	if(debug==1)printf("\t idofs %" ITGFORMAT " idofm %" ITGFORMAT " \n",
-			   idofs,idofm);	    				
 	if((idofs>0)&&(idofm>0)&&(contribution>1e-18 ||contribution<-1e-18)){
 	  
 	  //insertion for active dofs
@@ -1523,104 +923,96 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	  
 	  // mpc on master node
 	  
-	  for(jj=nslavmpc2[2*(imn-1)];jj<nslavmpc2[2*(imn-1)+1];jj++){
-	    ist=islavmpc2[2*jj];
-	    dirdep=nodempc2[3*(ist-1)+1];
-	    coefdep=coefmpc2[ist-1];
-	    index=nodempc2[3*(ist-1)+2];
+	  for(jj=nslavmpc[2*(imn-1)];jj<nslavmpc[2*(imn-1)+1];jj++){
+	    ist=islavmpc[jj];
+	    dirdep=nodempc[3*(ist-1)+1];
+	    coefdep=coefmpc[ist-1];
+	    index=nodempc[3*(ist-1)+2];
 	    if(ll==(dirdep-1)){
 	      while(index!=0){
-		node1=nodempc2[3*(index-1)];  
-		dirind=nodempc2[3*(index-1)+1];
-		c2=-coefmpc2[index-1]*contribution/coefdep;
+		node1=nodempc[3*(index-1)];  
+		dirind=nodempc[3*(index-1)+1];
+		c2=-coefmpc[index-1]*contribution/coefdep;
 		if(node1>*nk){
 		  idofm=0;
 		}else{
 		  idofm=nactdof[mt*(node1-1)+(dirind-1)+1];
 		}
-		if(debug==1)printf("\t\t idofs %" ITGFORMAT " idofm %"
-				   ITGFORMAT " \n",idofs,idofm);
 		if(idofm>0&&(c2>1e-14 ||c2<-1e-14)){	
-		  if(debug==1)printf("\t\t idofs %" ITGFORMAT " idofm %"
-				     ITGFORMAT " c2 %e \n",idofs,idofm,c2);
 		  insertas(&irowbdtil2,&mast1,&idofs,&idofm,&ifree,nzsbdtil2,
 			   &c2,&aubdtil2); 
 		} 
-		index=nodempc2[3*(index-1)+2];
+		index=nodempc[3*(index-1)+2];
 	      }	                                   
 	    }					  
 	  }					
 	}else if((idofm>0)&&(contribution>1e-18 ||contribution<-1e-18)){
 	  //mpc on slave node			                  
-	  for(jj=nslavmpc2[2*(isn-1)];jj<nslavmpc2[2*(isn-1)+1];jj++){
-	    ist=islavmpc2[2*(jj)];
-	    dirdep=nodempc2[3*(ist-1)+1];
-	    coefdep=coefmpc2[ist-1];
-	    index=nodempc2[3*(ist-1)+2];
+	  for(jj=nslavmpc[2*(isn-1)];jj<nslavmpc[2*(isn-1)+1];jj++){
+	    ist=islavmpc[jj];
+	    dirdep=nodempc[3*(ist-1)+1];
+	    coefdep=coefmpc[ist-1];
+	    index=nodempc[3*(ist-1)+2];
 	    if(ll==(dirdep-1)){
 	      while(index!=0){
-		node1=nodempc2[3*(index-1)];  
-		dirind=nodempc2[3*(index-1)+1];
-		c2=-coefmpc2[index-1]*contribution/coefdep;
+		node1=nodempc[3*(index-1)];  
+		dirind=nodempc[3*(index-1)+1];
+		c2=-coefmpc[index-1]*contribution/coefdep;
 		if(node1>*nk){
 		  idofs=0;
 		}else{
 		  idofs=nactdof[mt*(node1-1)+(dirind-1)+1];
 		}
 		if(idofs>0&&(c2>1e-14 ||c2<-1e-14)){
-		  if(debug==1)printf("\t\t idofs %" ITGFORMAT " idofm %" ITGFORMAT " c2 %e \n",idofs,idofm,c2);
 		  insertas(&irowbdtil2,&mast1,&idofs,&idofm,&ifree,nzsbdtil2,
 			   &c2,&aubdtil2);
 		  
 		}
-		index=nodempc2[3*(index-1)+2];
+		index=nodempc[3*(index-1)+2];
 	      }	                                   
 	    }					  
 	  }										
 	}else if((idofs<=0)&&(idofm<=0)&&(contribution>1e-18 ||contribution<-1e-18)){
 	  //mpc on master and slave node			                  
-	  for(jj=nslavmpc2[2*(imn-1)];jj<nslavmpc2[2*(imn-1)+1];jj++){
-	    ist=islavmpc2[2*jj];
-	    dirdep=nodempc2[3*(ist-1)+1];
-	    coefdep=coefmpc2[ist-1];
-	    index=nodempc2[3*(ist-1)+2];
+	  for(jj=nslavmpc[2*(imn-1)];jj<nslavmpc[2*(imn-1)+1];jj++){
+	    ist=islavmpc[jj];
+	    dirdep=nodempc[3*(ist-1)+1];
+	    coefdep=coefmpc[ist-1];
+	    index=nodempc[3*(ist-1)+2];
 	    if(ll==(dirdep-1)){                                          
 	      while(index!=0){
-		node1=nodempc2[3*(index-1)]; 
-		dirind=nodempc2[3*(index-1)+1];
-		c2=-coefmpc2[index-1]*contribution/coefdep;
+		node1=nodempc[3*(index-1)]; 
+		dirind=nodempc[3*(index-1)+1];
+		c2=-coefmpc[index-1]*contribution/coefdep;
 		if(node1>*nk){
 		  idofm=0;
 		}else{
 		  idofm=nactdof[mt*(node1-1)+(dirind-1)+1];
 		}
-		for(kk=nslavmpc2[2*(isn-1)];kk<nslavmpc2[2*(isn-1)+1];kk++){  
-		  ist2=islavmpc2[2*kk];  
-		  dirdep2=nodempc2[3*(ist2-1)+1];  
-		  coefdep2=coefmpc2[ist2-1];  
-		  index2=nodempc2[3*(ist2-1)+2];  
+		for(kk=nslavmpc[2*(isn-1)];kk<nslavmpc[2*(isn-1)+1];kk++){  
+		  ist2=islavmpc[kk];  
+		  dirdep2=nodempc[3*(ist2-1)+1];  
+		  coefdep2=coefmpc[ist2-1];  
+		  index2=nodempc[3*(ist2-1)+2];  
 		  if(ll==(dirdep2-1)){   
 		    while(index2!=0){   
-		      node2=nodempc2[3*(index2-1)];    
-		      dirind2=nodempc2[3*(index2-1)+1];   
-		      c3=-coefmpc2[index2-1]*c2/coefdep2;
+		      node2=nodempc[3*(index2-1)];    
+		      dirind2=nodempc[3*(index2-1)+1];   
+		      c3=-coefmpc[index2-1]*c2/coefdep2;
 		      if(node2>*nk){
 			idofs=0;
 		      }else{
 		        idofs=nactdof[mt*(node2-1)+(dirind2-1)+1]; 
 		      }
 		      if(idofs>0&&idofm>0&&(c3>1e-14 ||c3<-1e-14)){
-			if(debug==1)printf("\t\t idofs %" ITGFORMAT " idofm %"
-					   ITGFORMAT " c2 %e \n",idofs,idofm,
-					   c3);
 			insertas(&irowbdtil2,&mast1,&idofs,&idofm,&ifree,
 				 nzsbdtil2,&c3,&aubdtil2);    
 		      }   
-		      index2=nodempc2[3*(index2-1)+2];  
+		      index2=nodempc[3*(index2-1)+2];  
 		    } 
 		  } 
 		} 				   
-		index=nodempc2[3*(index-1)+2];
+		index=nodempc[3*(index-1)+2];
 	      }	                                   
 	    }					  
 	  }
@@ -1636,15 +1028,11 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
       isn=islavnodeinv[irowbtil[j]-1];
       imn=islavnodeinv[i];
       contribution=Bdtil[j];
-      if(debug==1)printf("aubdtil2 node %" ITGFORMAT " %" ITGFORMAT " c %e \n",
-			 nodesf,nodem,contribution);
       k=0;
       if(ithermal[0]==3){k=-1;}
       for(ll=k; ll<3; ll++){	  				
 	idofs=nactdof[mt*(nodesf-1)+ll+1];	    				
 	idofm=nactdof[mt*(nodem-1)+ll+1];					
-	if(debug==1)printf("\t idofs %" ITGFORMAT " idofm %" ITGFORMAT " \n",
-			   idofs,idofm);
 	if((idofs>0)&&(idofm>0)){
 	  
 	  //insertion for active dofs
@@ -1656,64 +1044,54 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	  // mpc on master node
 	  
 	  if(imn<0){
-	    
-	    /* hier muss mpc2 rein,da Slavemittelknoten auf ind seite
-	    vorkommen können */
+
+	    /* mpc2 to be used, since slave middle nodes may occur on
+               the ind side */
 	      
-	    for(jj=nmastmpc2[2*(-imn-1)];jj<nmastmpc2[2*(-imn-1)+1];jj++){
-	      ist=imastmpc2[2*jj];
-	      dirdep=nodempc2[3*(ist-1)+1];
-	      coefdep=coefmpc2[ist-1];
-	      index=nodempc2[3*(ist-1)+2];
+	    for(jj=nmastmpc[2*(-imn-1)];jj<nmastmpc[2*(-imn-1)+1];jj++){
+	      ist=imastmpc[jj];
+	      dirdep=nodempc[3*(ist-1)+1];
+	      coefdep=coefmpc[ist-1];
+	      index=nodempc[3*(ist-1)+2];
 	      if(ll==(dirdep-1)){
 		while(index!=0){
-		  node1=nodempc2[3*(index-1)];  
-		  dirind=nodempc2[3*(index-1)+1];
-		  c2=-coefmpc2[index-1]*contribution/coefdep;
+		  node1=nodempc[3*(index-1)];  
+		  dirind=nodempc[3*(index-1)+1];
+		  c2=-coefmpc[index-1]*contribution/coefdep;
 		  if(node1>*nk){
 		    idofm=0;
 		  }else{
 		    idofm=nactdof[mt*(node1-1)+(dirind-1)+1];
 		  }
 		  if(idofm>0){
-		    if(debug==1)printf("\t\t node %" ITGFORMAT " dir %"
-				       ITGFORMAT " c %e \n",node1,dirind,
-				       coefmpc[index-1]);
-		    if(debug==1)printf("\t\t idofs %" ITGFORMAT " idofm %"
-				       ITGFORMAT " c2 %e \n",idofs,idofm,c2);
 		    insertas(&irowbdtil2,&mast1,&idofs,&idofm,&ifree,nzsbdtil2,
 			     &c2,&aubdtil2); 
 		  } 
-		  index=nodempc2[3*(index-1)+2];
+		  index=nodempc[3*(index-1)+2];
 		}	                                   
 	      }					  
 	    }
 	  }else{
-	    for(jj=nslavmpc2[2*(imn-1)];jj<nslavmpc2[2*(imn-1)+1];jj++){
-	      ist=islavmpc2[2*jj];
-	      dirdep=nodempc2[3*(ist-1)+1];
-	      coefdep=coefmpc2[ist-1];
-	      index=nodempc2[3*(ist-1)+2];
+	    for(jj=nslavmpc[2*(imn-1)];jj<nslavmpc[2*(imn-1)+1];jj++){
+	      ist=islavmpc[jj];
+	      dirdep=nodempc[3*(ist-1)+1];
+	      coefdep=coefmpc[ist-1];
+	      index=nodempc[3*(ist-1)+2];
 	      if(ll==(dirdep-1)){
 		while(index!=0){
-		  node1=nodempc2[3*(index-1)];  
-		  dirind=nodempc2[3*(index-1)+1];
-		  c2=-coefmpc2[index-1]*contribution/coefdep;
+		  node1=nodempc[3*(index-1)];  
+		  dirind=nodempc[3*(index-1)+1];
+		  c2=-coefmpc[index-1]*contribution/coefdep;
 		  if(node1>*nk){
 		    idofm=0;
 		  }else{
 		    idofm=nactdof[mt*(node1-1)+(dirind-1)+1];
 		  }
 		  if(idofm>0){
-		    if(debug==1)printf("\t\t node %" ITGFORMAT " dir %"
-				       ITGFORMAT " c %e \n",node1,dirind,
-				       coefmpc2[index-1]);
-		    if(debug==1)printf("\t\t idofs %" ITGFORMAT " idofm %"
-				       ITGFORMAT " c2 %e \n",idofs,idofm,c2);
 		    insertas(&irowbdtil2,&mast1,&idofs,&idofm,&ifree,nzsbdtil2,
 			     &c2,&aubdtil2); 
 		  } 
-		  index=nodempc2[3*(index-1)+2];
+		  index=nodempc[3*(index-1)+2];
 		}	                                   
 	      }					  
 	    }	    
@@ -1722,29 +1100,27 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	  
 	  //mpc on slave node
 	  
-	  for(jj=nslavmpc2[2*(isn-1)];jj<nslavmpc2[2*(isn-1)+1];jj++){
-	    ist=islavmpc2[2*(jj)];
-	    dirdep=nodempc2[3*(ist-1)+1];
-	    coefdep=coefmpc2[ist-1];
-	    index=nodempc2[3*(ist-1)+2];
+	  for(jj=nslavmpc[2*(isn-1)];jj<nslavmpc[2*(isn-1)+1];jj++){
+	    ist=islavmpc[jj];
+	    dirdep=nodempc[3*(ist-1)+1];
+	    coefdep=coefmpc[ist-1];
+	    index=nodempc[3*(ist-1)+2];
 	    if(ll==(dirdep-1)){
 	      while(index!=0){
-		node1=nodempc2[3*(index-1)];  
-		dirind=nodempc2[3*(index-1)+1];
-		c2=-coefmpc2[index-1]*contribution/coefdep;
+		node1=nodempc[3*(index-1)];  
+		dirind=nodempc[3*(index-1)+1];
+		c2=-coefmpc[index-1]*contribution/coefdep;
 		if(node1>*nk){
 		  idofs=0;
 		}else{		
 		  idofs=nactdof[mt*(node1-1)+(dirind-1)+1];
 		}
 		if(idofs>0){
-		  if(debug==1)printf("\t\t idofs %" ITGFORMAT " idofm %"
-				     ITGFORMAT " c2 %e \n",idofs,idofm,c2);
 		  insertas(&irowbdtil2,&mast1,&idofs,&idofm,&ifree,nzsbdtil2,
 			   &c2,&aubdtil2);
 		  
 		}
-		index=nodempc2[3*(index-1)+2];
+		index=nodempc[3*(index-1)+2];
 	      }	                                   
 	    }					  
 	  }
@@ -1754,94 +1130,88 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	  //mpc on master and slave node
 	  
 	  if(imn<0){
-	    for(jj=nmastmpc2[2*((-imn)-1)];jj<nmastmpc2[2*((-imn)-1)+1];jj++){
-	      ist=imastmpc2[2*jj];
-	      dirdep=nodempc2[3*(ist-1)+1];
-	      coefdep=coefmpc2[ist-1];
-	      index=nodempc2[3*(ist-1)+2];
+	    for(jj=nmastmpc[2*((-imn)-1)];jj<nmastmpc[2*((-imn)-1)+1];jj++){
+	      ist=imastmpc[jj];
+	      dirdep=nodempc[3*(ist-1)+1];
+	      coefdep=coefmpc[ist-1];
+	      index=nodempc[3*(ist-1)+2];
 	      if(ll==(dirdep-1)){                                          
 		while(index!=0){
-		  node1=nodempc2[3*(index-1)]; 
-		  dirind=nodempc2[3*(index-1)+1];
-		  c2=-coefmpc2[index-1]*contribution/coefdep;
+		  node1=nodempc[3*(index-1)]; 
+		  dirind=nodempc[3*(index-1)+1];
+		  c2=-coefmpc[index-1]*contribution/coefdep;
 		  if(node1>*nk){
 		    idofm=0;
 		  }else{
 		    idofm=nactdof[mt*(node1-1)+(dirind-1)+1];
 		  }		  
-		  for(kk=nslavmpc2[2*(isn-1)];kk<nslavmpc2[2*(isn-1)+1];kk++){  
-		    ist2=islavmpc2[2*kk];  
-		    dirdep2=nodempc2[3*(ist2-1)+1];  
-		    coefdep2=coefmpc2[ist2-1];  
-		    index2=nodempc2[3*(ist2-1)+2];  
+		  for(kk=nslavmpc[2*(isn-1)];kk<nslavmpc[2*(isn-1)+1];kk++){  
+		    ist2=islavmpc[kk];  
+		    dirdep2=nodempc[3*(ist2-1)+1];  
+		    coefdep2=coefmpc[ist2-1];  
+		    index2=nodempc[3*(ist2-1)+2];  
 		    if(ll==(dirdep2-1)){   
 		      while(index2!=0){   
-			node2=nodempc2[3*(index2-1)];    
-			dirind2=nodempc2[3*(index2-1)+1];   
-			c3=-coefmpc2[index2-1]*c2/coefdep2;
+			node2=nodempc[3*(index2-1)];    
+			dirind2=nodempc[3*(index2-1)+1];   
+			c3=-coefmpc[index2-1]*c2/coefdep2;
 			if(node2>*nk){
 			  idofs=0;
 			}else{
 			  idofs=nactdof[mt*(node2-1)+(dirind2-1)+1];
 			}
 			if(idofs>0&&idofm>0){
-			  if(debug==1)printf("\t\t idofs %" ITGFORMAT
-					     " idofm %" ITGFORMAT " c2 %e \n",
-					     idofs,idofm,c3);
 			  insertas(&irowbdtil2,&mast1,&idofs,&idofm,&ifree,
 				   nzsbdtil2,&c3,&aubdtil2);    
 			}   
-			index2=nodempc2[3*(index2-1)+2];  
+			index2=nodempc[3*(index2-1)+2];  
 		      } 
 		    } 
 		  } 				   
-		  index=nodempc2[3*(index-1)+2];
+		  index=nodempc[3*(index-1)+2];
 		}	                                   
 	      }					  
 	    }
 	  }else{
-	    for(jj=nslavmpc2[2*(imn-1)];jj<nslavmpc2[2*(imn-1)+1];jj++){
-	      ist=islavmpc2[2*jj];
-	      dirdep=nodempc2[3*(ist-1)+1];
-	      coefdep=coefmpc2[ist-1];
-	      index=nodempc2[3*(ist-1)+2];
+	    for(jj=nslavmpc[2*(imn-1)];jj<nslavmpc[2*(imn-1)+1];jj++){
+	      ist=islavmpc[jj];
+	      dirdep=nodempc[3*(ist-1)+1];
+	      coefdep=coefmpc[ist-1];
+	      index=nodempc[3*(ist-1)+2];
 	      if(ll==(dirdep-1)){                                          
 		while(index!=0){
-		  node1=nodempc2[3*(index-1)]; 
-		  dirind=nodempc2[3*(index-1)+1];
-		  c2=-coefmpc2[index-1]*contribution/coefdep;
+		  node1=nodempc[3*(index-1)]; 
+		  dirind=nodempc[3*(index-1)+1];
+		  c2=-coefmpc[index-1]*contribution/coefdep;
 		  if(node1>*nk){
 		    idofm=0;
 		  }else{
 		    idofm=nactdof[mt*(node1-1)+(dirind-1)+1];
 		  }
-		  for(kk=nslavmpc2[2*(isn-1)];kk<nslavmpc2[2*(isn-1)+1];kk++){  
-		    ist2=islavmpc2[2*kk];  
-		    dirdep2=nodempc2[3*(ist2-1)+1];  
-		    coefdep2=coefmpc2[ist2-1];  
-		    index2=nodempc2[3*(ist2-1)+2];  
+		  for(kk=nslavmpc[2*(isn-1)];kk<nslavmpc[2*(isn-1)+1];kk++){  
+		    ist2=islavmpc[kk];  
+		    dirdep2=nodempc[3*(ist2-1)+1];  
+		    coefdep2=coefmpc[ist2-1];  
+		    index2=nodempc[3*(ist2-1)+2];  
 		    if(ll==(dirdep2-1)){   
 		      while(index2!=0){   
-			node2=nodempc2[3*(index2-1)];    
-			dirind2=nodempc2[3*(index2-1)+1];   
-			c3=-coefmpc2[index2-1]*c2/coefdep2;
+			node2=nodempc[3*(index2-1)];    
+			dirind2=nodempc[3*(index2-1)+1];   
+			c3=-coefmpc[index2-1]*c2/coefdep2;
 			if(node2>*nk){
 			  idofs=0;
 			}else{
 			  idofs=nactdof[mt*(node2-1)+(dirind2-1)+1];
 			}
 			if(idofs>0&&idofm>0){
-			  if(debug==1)printf("\t\t idofs %" ITGFORMAT
-					     " idofm %" ITGFORMAT " c2 %e \n",
-					     idofs,idofm,c3);
 			  insertas(&irowbdtil2,&mast1,&idofs,&idofm,&ifree,
 				   nzsbdtil2,&c3,&aubdtil2);    
 			}   
-			index2=nodempc2[3*(index2-1)+2];  
+			index2=nodempc[3*(index2-1)+2];  
 		      } 
 		    } 
 		  } 				   
-		  index=nodempc2[3*(index-1)+2];
+		  index=nodempc[3*(index-1)+2];
 		}	                                   
 	      }					  
 	    }	    
@@ -1851,7 +1221,6 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
     }
   }  
   *nzsbdtil2=ifree-1;
-  if(debug==1)printf("\tbdfill: \tsize aubdtil2 %" ITGFORMAT " \n",*nzsbdtil2);
   RENEW(irowbdtil2,ITG,*nzsbdtil2);
   RENEW(aubdtil2,double,*nzsbdtil2);
   dim=neq[1];
@@ -1878,21 +1247,20 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
     jqbdtil2[i]=istart;
   }
   jqbdtil2[neq[1]]=icounter+1; 
-  if(debug==1)printf("\tbdfill: \tsize aubdtil2 %" ITGFORMAT " \n",icounter);
   *nzsbdtil2=icounter;
   RENEW(irowbdtil2,ITG,*nzsbdtil2);
   RENEW(aubdtil2,double,*nzsbdtil2);
   
   /* generate auddinv out of aubdtil2  inverting the 3x3 matricen **/
   
-  debug=0;
   ifree=1;
   nzsddinv=3*nzsd;
   RENEW(auddinv,double,nzsddinv);
   RENEW(irowddinv,ITG,nzsddinv);
   NNEW(mast1,ITG,nzsddinv);
-  
-  // gehe über alle Ties (ok, da kein aktiver slaveknoten in 2 Ties)
+
+  /* loop over all ties (ok, since there is no active slave nodes
+     in 2 ties at the same time */
   
   for( i=0; i<*ntie; i++){    
     if(tieset[i*(81*3)+80]=='C'){ 
@@ -1932,8 +1300,6 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	    -dloc[9*j+0]*dloc[9*j+7]*dloc[9*j+5]
 	    -dloc[9*j+3]*dloc[9*j+1]*dloc[9*j+8];
 	  if(detdloc<1.e-19&&detdloc>-1.e-19){
-	    if(debug==1)printf(" bdfill:node %"ITGFORMAT", det(Ddloc)==0!\n Stop!\n",
-		   nodesf);
 	    fflush(stdout); 
 	    FORTRAN(stop,());
 	  }
@@ -2015,7 +1381,6 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
     jqddinv[i]=istart;
   }
   jqddinv[neq[1]]=icounter+1; 
-  if(debug==1)printf("\tbdfill: \tsize auddinv %" ITGFORMAT " \n",icounter);
   nzsddinv=icounter;
   RENEW(irowddinv,ITG,nzsddinv);
   RENEW(auddinv,double,nzsddinv); 
@@ -2023,7 +1388,6 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
   /* aubdtil= Dtil^-1*Bdtil for active dofs **/
   /* gehe ueber aubdtil2 **/
   
-  debug=0;
   ifree=1;
   *nzsbdtil=*nzsbdtil2;
   RENEW(aubdtil,double,*nzsbdtil);
@@ -2188,467 +1552,10 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
     } 
   }
   
-  if(debug==1)printf("\tbdfill: \tsize aubdtil %" ITGFORMAT " \n",ifree-1);
   *nzsbdtil=ifree-1;
   RENEW(irowbdtil,ITG,*nzsbdtil);
   RENEW(aubdtil,double,*nzsbdtil); 
   
-  // Petrov-Galerkin formulation
-  
-  if(*iflagdualquad>2){
-      
-    // overwrite aubdtil2 with Ddpgtil,Bdpgtil
-    /* audpgdtil und aubpgdtil2 in eine Matrix **/
-      
-    debug=0;
-    ifree=1;
-    *nzsbdtil2=3*nzsbpgtil+3*nzsdpgtil;
-    RENEW(aubdtil2,double,*nzsbdtil2);
-    RENEW(irowbdtil2,ITG,*nzsbdtil2);
-    NNEW(mast1,ITG,*nzsbdtil2);
-  
-    for(i=0;i<*nk;i++){
-      for(j=jqdpgtil[i]-1;j<jqdpgtil[i+1]-1;j++){
-	nodesf=irowdpgtil[j];
-	nodem=i+1;
-	contribution=Dpgdtil[j];
-	isn=islavnodeinv[irowdpgtil[j]-1];
-	imn=islavnodeinv[i];
-	if(debug==1)printf("auddpgtil node %" ITGFORMAT " %" ITGFORMAT
-			   " c %e \n",nodesf,nodem,contribution);
-	for(ll=0; ll<3; ll++){	  				
-	  idofs=nactdof[mt*(nodesf-1)+ll+1];	    				
-	  idofm=nactdof[mt*(nodem-1)+ll+1];					
-	  if(debug==1)printf("\t idofs %" ITGFORMAT " idofm %" ITGFORMAT
-			     " \n",
-			     idofs,idofm);	    				
-	  if((idofs>0)&&(idofm>0)&&(contribution>1e-18 ||
-				    contribution<-1e-18)){
-	    
-	    //insertion for active dofs
-	    
-	    insertas(&irowbdtil2,&mast1,&idofs,&idofm,&ifree,nzsbdtil2,
-		     &contribution,&aubdtil2);				        
-	  }else if((idofs>0)&&(contribution>1e-18 ||contribution<-1e-18)){
-	    
-	    // mpc on master node
-	    
-	    for(jj=nslavmpc2[2*(imn-1)];jj<nslavmpc2[2*(imn-1)+1];jj++){
-	      ist=islavmpc2[2*jj]; 
-	      dirdep=nodempc2[3*(ist-1)+1]; 
-	      coefdep=coefmpc2[ist-1]; 
-	      index=nodempc2[3*(ist-1)+2];
-	      if(ll==(dirdep-1)){ 
-		while(index!=0){
-		  node1=nodempc2[3*(index-1)];   
-		  dirind=nodempc2[3*(index-1)+1];
-		  c2=-coefmpc2[index-1]*contribution/coefdep;
-		  if(node1>*nk){
-		    idofm=0;
-		  }else{
-		    idofm=nactdof[mt*(node1-1)+(dirind-1)+1];
-		  }
-		  if(debug==1)printf("\t\t idofs %" ITGFORMAT " idofm %"
-				     ITGFORMAT " \n",idofs,idofm);
-		  if(idofm>0&&(c2>1e-14 ||c2<-1e-14)){	
-		    if(debug==1)printf("\t\t idofs %" ITGFORMAT " idofm %"
-				       ITGFORMAT " c2 %e \n",idofs,idofm,c2);
-		    insertas(&irowbdtil2,&mast1,&idofs,&idofm,&ifree,nzsbdtil2,
-			     &c2,&aubdtil2);
-		  }  
-		  index=nodempc2[3*(index-1)+2];
-		}	                                   
-	      }					  
-	    }					
-	  }else if((idofm>0)&&(contribution>1e-18 ||contribution<-1e-18)){
-	    
-	    //mpc on slave node
-	    
-	    for(jj=nslavmpc2[2*(isn-1)];jj<nslavmpc2[2*(isn-1)+1];jj++){ 
-	      ist=islavmpc2[2*(jj)]; 
-	      dirdep=nodempc2[3*(ist-1)+1]; 
-	      coefdep=coefmpc2[ist-1]; 
-	      index=nodempc2[3*(ist-1)+2];
-	      if(ll==(dirdep-1)){ 
-		while(index!=0){
-		  node1=nodempc2[3*(index-1)];   
-		  dirind=nodempc2[3*(index-1)+1];
-		  c2=-coefmpc2[index-1]*contribution/coefdep;
-		  if(node1>*nk){
-		    idofs=0;
-		  }else{
-		    idofs=nactdof[mt*(node1-1)+(dirind-1)+1];
-		  }
-		  if(idofs>0&&(c2>1e-14 ||c2<-1e-14)){
-		    if(debug==1)printf("\t\t idofs %" ITGFORMAT " idofm %"
-				       ITGFORMAT " c2 %e \n",idofs,idofm,c2);
-		    insertas(&irowbdtil2,&mast1,&idofs,&idofm,&ifree,nzsbdtil2,
-			     &c2,&aubdtil2);
-		  
-		  }
-		  index=nodempc2[3*(index-1)+2];
-		}	                                   
-	      }					  
-	    }
-	  }else if((idofs<=0)&&(idofm<=0)&&(contribution>1e-18 ||
-					    contribution<-1e-18)){
-	    
-	    //mpc on master and slave node
-	    
-	    for(jj=nslavmpc2[2*(imn-1)];jj<nslavmpc2[2*(imn-1)+1];jj++){ 
-	      ist=islavmpc2[2*jj]; 
-	      dirdep=nodempc2[3*(ist-1)+1]; 
-	      coefdep=coefmpc2[ist-1]; 
-	      index=nodempc2[3*(ist-1)+2];
-	      if(ll==(dirdep-1)){
-		while(index!=0){
-		  node1=nodempc2[3*(index-1)];  
-		  dirind=nodempc2[3*(index-1)+1];
-		  c2=-coefmpc2[index-1]*contribution/coefdep;
-		  if(node1>*nk){
-		    idofm=0;
-		  }else{
-		    idofm=nactdof[mt*(node1-1)+(dirind-1)+1];
-		  }
-		  for(kk=nslavmpc2[2*(isn-1)];kk<nslavmpc2[2*(isn-1)+1];kk++){
-		    ist2=islavmpc2[2*kk];   
-		    dirdep2=nodempc2[3*(ist2-1)+1];   
-		    coefdep2=coefmpc2[ist2-1];   
-		    index2=nodempc2[3*(ist2-1)+2];  
-		    if(ll==(dirdep2-1)){    
-		      while(index2!=0){   
-			node2=nodempc2[3*(index2-1)];     
-			dirind2=nodempc2[3*(index2-1)+1];   
-			c3=-coefmpc2[index2-1]*c2/coefdep2;
-			if(node2>*nk){
-			  idofs=0;
-			}else{
-			  idofs=nactdof[mt*(node2-1)+(dirind2-1)+1]; 
-			}
-			if(idofs>0&&idofm>0&&(c3>1e-14 ||c3<-1e-14)){
-			  if(debug==1)printf("\t\t idofs %" ITGFORMAT
-					     " idofm %" ITGFORMAT " c2 %e \n",
-					     idofs,idofm,c3);
-			  insertas(&irowbdtil2,&mast1,&idofs,&idofm,&ifree,
-				   nzsbdtil2,&c3,&aubdtil2);    
-			}    
-			index2=nodempc2[3*(index2-1)+2];  
-		      } 
-		    } 
-		  } 				    
-		  index=nodempc2[3*(index-1)+2];
-		}	                                   
-	      }					  
-	    }
-	  }  				
-	}        		       
-      }
-    }  
-  
-    for(i=0;i<*nk;i++){
-      for(j=jqbpgtil[i]-1;j<jqbpgtil[i+1]-1;j++){
-	nodesf=irowbpgtil[j];
-	nodem=i+1;
-	isn=islavnodeinv[irowbpgtil[j]-1];
-	imn=islavnodeinv[i];
-	contribution=Bpgdtil[j];
-	if(debug==1)printf("aubdtil2 node %" ITGFORMAT " %" ITGFORMAT
-			   " c %e \n",nodesf,nodem,contribution);
-	for(ll=0; ll<3; ll++){	  				
-	  idofs=nactdof[mt*(nodesf-1)+ll+1];	    				
-	  idofm=nactdof[mt*(nodem-1)+ll+1];					
-	  if(debug==1)printf("\t idofs %" ITGFORMAT " idofm %" ITGFORMAT
-			     " \n",idofs,idofm);
-	  if((idofs>0)&&(idofm>0)){
-	    
-	    //insertion for active dofs
-	    
-	    insertas(&irowbdtil2,&mast1,&idofs,&idofm,&ifree,nzsbdtil2,
-		     &contribution,&aubdtil2);				        
-	  }else if((idofs>0)&&(contribution>1e-18 ||contribution<-1e-18)){
-	    
-	    // mpc on master node
-	    
-	    if(imn<0){
-	      for(jj=nmastmpc2[2*(-imn-1)];jj<nmastmpc2[2*(-imn-1)+1];jj++){ 
-		ist=imastmpc2[2*jj]; 
-		dirdep=nodempc2[3*(ist-1)+1]; 
-		coefdep=coefmpc2[ist-1]; 
-		index=nodempc2[3*(ist-1)+2];
-		if(ll==(dirdep-1)){ 
-		  while(index!=0){
-		    node1=nodempc2[3*(index-1)];   
-		    dirind=nodempc2[3*(index-1)+1];
-		    c2=-coefmpc2[index-1]*contribution/coefdep;
-		    idofm=nactdof[mt*(node1-1)+(dirind-1)+1];
-		    if(idofm>0){
-		      if(debug==1)printf("\t\t node %" ITGFORMAT " dir %"
-					 ITGFORMAT " c %e \n",node1,dirind,
-					 coefmpc2[index-1]);
-		      if(debug==1)printf("\t\t idofs %" ITGFORMAT " idofm %"
-					 ITGFORMAT " c2 %e \n",idofs,idofm,c2);
-		      insertas(&irowbdtil2,&mast1,&idofs,&idofm,&ifree,
-			       nzsbdtil2,&c2,&aubdtil2); 
-		    }  
-		    index=nodempc2[3*(index-1)+2];
-		  }	                                   
-		}					  
-	      }
-	    }else{
-	      for(jj=nslavmpc2[2*(imn-1)];jj<nslavmpc2[2*(imn-1)+1];jj++){ 
-		ist=islavmpc2[2*jj]; 
-		dirdep=nodempc2[3*(ist-1)+1]; 
-		coefdep=coefmpc2[ist-1]; 
-		index=nodempc2[3*(ist-1)+2];
-		if(ll==(dirdep-1)){ 
-		  while(index!=0){
-		    node1=nodempc2[3*(index-1)];   
-		    dirind=nodempc2[3*(index-1)+1];
-		    c2=-coefmpc2[index-1]*contribution/coefdep;
-		    if(node1>*nk){
-		      idofm=0;
-		    }else{
-		      idofm=nactdof[mt*(node1-1)+(dirind-1)+1];
-		    }
-		    if(idofm>0){
-		      if(debug==1)printf("\t\t node %" ITGFORMAT " dir %"
-					 ITGFORMAT " c %e \n",node1,dirind,
-					 coefmpc2[index-1]);
-		      if(debug==1)printf("\t\t idofs %" ITGFORMAT " idofm %"
-					 ITGFORMAT " c2 %e \n",idofs,idofm,c2);
-		      insertas(&irowbdtil2,&mast1,&idofs,&idofm,&ifree,
-			       nzsbdtil2,&c2,&aubdtil2); 
-		    }  
-		    index=nodempc2[3*(index-1)+2];
-		  }	                                   
-		}					  
-	      }	    
-	    }
-	  }else if((idofm>0)&&(contribution>1e-18 ||contribution<-1e-18)){
-	    
-	    //mpc on slave node
-	    
-	    for(jj=nslavmpc2[2*(isn-1)];jj<nslavmpc2[2*(isn-1)+1];jj++){ 
-	      ist=islavmpc2[2*(jj)]; 
-	      dirdep=nodempc2[3*(ist-1)+1]; 
-	      coefdep=coefmpc2[ist-1]; 
-	      index=nodempc2[3*(ist-1)+2];
-	      if(ll==(dirdep-1)){ 
-		while(index!=0){
-		  node1=nodempc2[3*(index-1)];   
-		  dirind=nodempc2[3*(index-1)+1];
-		  c2=-coefmpc2[index-1]*contribution/coefdep;
-		  if(node1>*nk){
-		    idofs=0;
-		  }else{		
-		    idofs=nactdof[mt*(node1-1)+(dirind-1)+1];
-		  }
-		  if(idofs>0){
-		    if(debug==1)printf("\t\t idofs %" ITGFORMAT " idofm %"
-				       ITGFORMAT " c2 %e \n",idofs,idofm,c2);
-		    insertas(&irowbdtil2,&mast1,&idofs,&idofm,&ifree,nzsbdtil2,
-			     &c2,&aubdtil2);
-		  
-		  }
-		  index=nodempc2[3*(index-1)+2];
-		}	                                   
-	      }					  
-	    }
-	  }else if((idofs<=0)&&(idofm<=0)&&(contribution>1e-18 ||
-					    contribution<-1e-18)){
-	    
-	    //mpc on master and slave node
-	    
-	    if(imn<0){
-	      for(jj=nmastmpc2[2*((-imn)-1)];jj<nmastmpc2[2*((-imn)-1)+1];jj++){ 
-		ist=imastmpc2[2*jj]; 
-		dirdep=nodempc2[3*(ist-1)+1]; 
-		coefdep=coefmpc2[ist-1]; 
-		index=nodempc2[3*(ist-1)+2];
-		if(ll==(dirdep-1)){
-		  while(index!=0){
-		    node1=nodempc2[3*(index-1)];  
-		    dirind=nodempc2[3*(index-1)+1];
-		    c2=-coefmpc2[index-1]*contribution/coefdep;
-		    idofm=nactdof[mt*(node1-1)+(dirind-1)+1];		        
-		    for(kk=nslavmpc2[2*(isn-1)];kk<nslavmpc2[2*(isn-1)+1];kk++){   
-		      ist2=islavmpc2[2*kk];   
-		      dirdep2=nodempc2[3*(ist2-1)+1];   
-		      coefdep2=coefmpc2[ist2-1];   
-		      index2=nodempc2[3*(ist2-1)+2];  
-		      if(ll==(dirdep2-1)){    
-			while(index2!=0){   
-			  node2=nodempc2[3*(index2-1)];     
-			  dirind2=nodempc2[3*(index2-1)+1];   
-			  c3=-coefmpc2[index2-1]*c2/coefdep2;
-			  if(node2>*nk){
-			    idofs=0;
-			  }else{
-			    idofs=nactdof[mt*(node2-1)+(dirind2-1)+1];
-			  }
-			  if(idofs>0&&idofm>0){
-			    if(debug==1)printf("\t\t idofs %" ITGFORMAT
-					       " idofm %" ITGFORMAT
-					       " c2 %e \n",idofs,idofm,c3);
-			    insertas(&irowbdtil2,&mast1,&idofs,&idofm,&ifree,
-				     nzsbdtil2,&c3,&aubdtil2);    
-			  }    
-			  index2=nodempc2[3*(index2-1)+2];  
-			} 
-		      } 
-		    } 				    
-		    index=nodempc2[3*(index-1)+2];
-		  }	                                   
-		}					  
-	      }
-	    }else{
-	      for(jj=nslavmpc2[2*(imn-1)];jj<nslavmpc2[2*(imn-1)+1];jj++){ 
-		ist=islavmpc2[2*jj]; 
-		dirdep=nodempc2[3*(ist-1)+1]; 
-		coefdep=coefmpc2[ist-1]; 
-		index=nodempc2[3*(ist-1)+2];
-		if(ll==(dirdep-1)){
-		  while(index!=0){
-		    node1=nodempc2[3*(index-1)];  
-		    dirind=nodempc2[3*(index-1)+1];
-		    c2=-coefmpc2[index-1]*contribution/coefdep;
-		    if(node1>*nk){
-		      idofm=0;
-		    }else{
-		      idofm=nactdof[mt*(node1-1)+(dirind-1)+1];
-		    }
-		    for(kk=nslavmpc2[2*(isn-1)];kk<nslavmpc2[2*(isn-1)+1];kk++){   
-		      ist2=islavmpc2[2*kk];   
-		      dirdep2=nodempc2[3*(ist2-1)+1];   
-		      coefdep2=coefmpc2[ist2-1];   
-		      index2=nodempc2[3*(ist2-1)+2];  
-		      if(ll==(dirdep2-1)){    
-			while(index2!=0){   
-			  node2=nodempc2[3*(index2-1)];     
-			  dirind2=nodempc2[3*(index2-1)+1];   
-			  c3=-coefmpc2[index2-1]*c2/coefdep2;
-			  if(node2>*nk){
-			    idofs=0;
-			  }else{
-			    idofs=nactdof[mt*(node2-1)+(dirind2-1)+1];
-			  }
-			  if(idofs>0&&idofm>0){
-			    if(debug==1)printf("\t\t idofs %" ITGFORMAT
-					       " idofm %" ITGFORMAT
-					       " c2 %e \n",idofs,idofm,c3);
-			    insertas(&irowbdtil2,&mast1,&idofs,&idofm,&ifree,
-				     nzsbdtil2,&c3,&aubdtil2);    
-			  }    
-			  index2=nodempc2[3*(index2-1)+2];  
-			} 
-		      } 
-		    } 				    
-		    index=nodempc2[3*(index-1)+2];
-		  }	                                   
-		}					  
-	      }	    
-	    }
-	  }  				
-	}        		       
-      }
-    }  
-    *nzsbdtil2=ifree-1;
-    if(debug==1)printf("\tbdfill: \tsize aubdtil2 %" ITGFORMAT " \n",*nzsbdtil2);
-    RENEW(irowbdtil2,ITG,*nzsbdtil2);
-    RENEW(aubdtil2,double,*nzsbdtil2);
-    dim=neq[1];
-    matrixsort(aubdtil2,mast1,irowbdtil2,jqbdtil2,nzsbdtil2,&dim);
-    SFREE(mast1);
-    icounter=0;
-    for(i=0;i<neq[1];i++){
-      if(jqbdtil2[i]!=jqbdtil2[i+1]){
-	irowbdtil2[icounter]=irowbdtil2[jqbdtil2[i]-1];
-	aubdtil2[icounter]=aubdtil2[jqbdtil2[i]-1];
-	icounter++;
-	istart=icounter;
-	for(j=jqbdtil2[i];j<jqbdtil2[i+1]-1;j++){
-	  if(irowbdtil2[j]==irowbdtil2[icounter-1]){
-	    aubdtil2[icounter-1]+=aubdtil2[j];   
-	  }else{
-	    irowbdtil2[icounter]=irowbdtil2[j];
-	    aubdtil2[icounter]=aubdtil2[j];
-	    icounter++;
-	  }
-	}
-      }else{ istart=icounter+1;}
-    
-      jqbdtil2[i]=istart;
-    }
-    jqbdtil2[neq[1]]=icounter+1; 
-    if(debug==1)printf("\tbdfill: \tsize aubdtil2 %" ITGFORMAT " \n",icounter);
-    *nzsbdtil2=icounter;
-    RENEW(irowbdtil2,ITG,*nzsbdtil2);
-    RENEW(aubdtil2,double,*nzsbdtil2);    
-  }
-  
-  // check consistent force transmission
-  
-  if(debug==1){
-    for( i=0; i<*ntie; i++){    
-      if(tieset[i*(81*3)+80]=='C'){ 
-	for(j=nslavnode[i]; j<nslavnode[i+1]; j++){
-	  nodesf=islavnode[j];
-	  for(ll=0;ll<3;ll++){
-	    idofs=nactdof[mt*(nodesf-1)+ll+1];
-	    if(idofs>0){
-	      for(ii=0;ii<neq[1];ii++){
-		for(jj=jqdd[ii]-1;jj<jqdd[ii+1]-1;jj++){
-		  if(irowdd[jj]==idofs){
-		    contribution=contribution+audd[jj];
-		  }
-		}
-	      }
-	      for(ii=0;ii<neq[1];ii++){
-		for(jj=jqbd[ii]-1;jj<jqbd[ii+1]-1;jj++){
-		  if(irowbd[jj]==idofs){
-		    contribution=contribution+aubd[jj];
-		  }
-		}
-	      }
-	    
-	      if(contribution<-1.e-10 ||contribution>1.e-10){
-		if(debug==1)printf("\tbdfill: node %" ITGFORMAT " dof %" ITGFORMAT
-		       " sum Dd+Bd %e \n",nodesf,idofs,contribution);
-	      }
-	    }
-	  }
-	}
-      }
-    }
-    for( i=0; i<*ntie; i++){    
-      if(tieset[i*(81*3)+80]=='C'){ 
-	for(j=nslavnode[i]; j<nslavnode[i+1]; j++){
-	  nodesf=islavnode[j];
-	  for(ll=0;ll<3;ll++){
-	    idofs=nactdof[mt*(nodesf-1)+ll+1];
-	    if(idofs>0){
-              if(islavact[j]>-1){
-		contribution=1;
-	      }else{
-		contribution=0.0;}
-	      for(ii=0;ii<neq[1];ii++){
-		for(jj=jqbdtil[ii]-1;jj<jqbdtil[ii+1]-1;jj++){
-		  if(irowbdtil[jj]==idofs){
-		    contribution=contribution+aubdtil[jj];
-		  }
-		}
-	      }
-	    
-	      if(contribution<-1.e-10 ||contribution>1.e-10){
-		if(debug==1)printf("\tbdfill: node %" ITGFORMAT " dof %" ITGFORMAT
-		       " sum Dinv*Dd+Dinv*Bd %e \n",nodesf,idofs,contribution);
-	      }
-	    }
-	  }
-	}
-      }
-    }
-  }
   *irowbdp=irowbd; *aubdp=aubd; 
   *irowddp=irowdd; *auddp=audd; 
   *irowddtilp=irowddtil; *auddtilp=auddtil;
@@ -2662,10 +1569,6 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
   *irowdp=irowd; *Ddp=Dd;
   *irowdtilp=irowdtil; *Ddtilp=Ddtil;
   *irowbtilp=irowbtil; *Bdtilp=Bdtil;
-  *irowbpgp=irowbpg; *Bpgdp=Bpgd;
-  *irowdpgp=irowdpg; *Dpgdp=Dpgd;
-  *irowdpgtilp=irowdpgtil; *Dpgdtilp=Dpgdtil;
-  *irowbpgtilp=irowbpgtil; *Bpgdtilp=Bpgdtil;
   SFREE(Dd1);SFREE(irowd1);SFREE(jqd1);
   SFREE(Ddtil2);SFREE(irowdtil2);SFREE(jqdtil2);
   SFREE(Ddinv);SFREE(irowdinv);SFREE(jqdinv);
@@ -2676,14 +1579,6 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
   SFREE(Bdtil2t);SFREE(irowbtil2t);SFREE(jqbtil2t);
   SFREE(igap);
   SFREE(dinvloc);SFREE(dloc);
-  if(*iflagdualquad>2){
-    SFREE(Dpgd1);SFREE(irowdpg1);SFREE(jqdpg1);
-    SFREE(Bpgd1);SFREE(irowbpg1);SFREE(jqbpg1);
-    SFREE(Bpgd2);SFREE(irowbpg2);SFREE(jqbpg2);
-    SFREE(Bpgd2a);SFREE(irowbpg2a);SFREE(jqbpg2a);
-    SFREE(Bpgdtil2);SFREE(irowbpgtil2);SFREE(jqbpgtil2);
-    SFREE(Bpgdtil2t);SFREE(irowbpgtil2t);SFREE(jqbpgtil2t);    
-  }
 
   return;
 }

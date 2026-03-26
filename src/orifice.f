@@ -196,7 +196,7 @@
                else
                   write(*,*) '*ERROR in orifice:'
                   write(*,*) ' element',nelemswirl
-                  write(*,*) ' refered by element',nelem
+                  write(*,*) ' referred by element',nelem
                   write(*,*) ' is not a swirl generating element'
                endif
             endif
@@ -531,7 +531,7 @@ c            endif
                else
                   write(*,*) '*ERROR in orifice:'
                   write(*,*) ' element',nelemswirl
-                  write(*,*) 'refered by element',nelem
+                  write(*,*) 'referred by element',nelem
                   write(*,*) 'is not a swirl generating element'
                endif
             endif
@@ -750,7 +750,7 @@ c     &              dsqrt(T1*(1.d0-2/(kappa+1)))
              if(lakon(nelem)(2:5).eq.'ORBT') then
                 write(1,63) '             P2/P1 = ',p2/p1,
      &' , ps1pt1 = ', ps1pt1, ' , DAB = ',(1-p2/p1)/(1-ps1pt1),
-     &' , curve N° = ', curve,' , cd = ',cd
+     &' , curve No = ', curve,' , cd = ',cd
 !     special for preswirlnozzles
              elseif(lakon(nelem)(2:5).eq.'ORPN') then
                 write(1,62) '             cd = ', cd,
@@ -781,7 +781,7 @@ c     &              dsqrt(T1*(1.d0-2/(kappa+1)))
              if(lakon(nelem)(2:5).eq.'ORBT') then
                 write(1,63) '             P2/P1 = ',p2/p1,
      &' , ps1pt1 = ', ps1pt1, ' , DAB = ',(1-p2/p1)/(1-ps1pt1),
-     &' , curve N° = ', curve,' , cd = ',cd
+     &' , curve No = ', curve,' , cd = ',cd
 !     special for preswirlnozzles
              elseif(lakon(nelem)(2:5).eq.'ORPN') then
                 write(1,*) ' cd = ', cd,' , C2u = '

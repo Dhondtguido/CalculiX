@@ -334,22 +334,13 @@ c               if(c1.lt.1.d-20) then
             else
               nendnode=nnodes-1
             endif
-c            if(ialeatoric.eq.1) then
-c              call random_seed()
-c              do i=1,nendnode
-c                call random_number(harvest)
-c                coefmpc(index)=coefmpc(index)*(1.d0+harvest*1.d-5)
-c                index=nodempc(3,index)
-c              enddo
-c              index=ipompc(nmpc)
-c            endif
             do i=1,nendnode
                if(dabs(coefmpc(index)).gt.amax) then
                   idir=nodempc(2,index)
 !
 !                 dependent node of MPC should not have the same
 !                 sign as the corresponding dof of the translational
-!                 degrees of freedom: avoids the occurence of a
+!                 degrees of freedom: avoids the occurrence of a
 !                 zero coefficient of the dependent term if both
 !                 rotational and translational dofs are suppressed
 !

@@ -1,11 +1,11 @@
     1C
     1UUSER                                                              
-    1UDATE              28.june.2019                                    
-    1UTIME              15:55:21                                        
+    1UDATE              15.march.2021                                   
+    1UTIME              20:52:29                                        
     1UHOST                                                              
     1UPGM               CalculiX                                        
     1UVERSION           Version DEVELOPMENT                             
-    1UCOMPILETIME       Fr 28. Jun 15:24:53 CEST 2019                    
+    1UCOMPILETIME       Mon Mar 15 20:39:20 CET 2021                    
     1UDIR                                                               
     1UDBN                                                               
     1UMAT    1EL                                                        
@@ -152,7 +152,7 @@
  -1        25 0.00000E+00 0.00000E+00
  -1        27 0.00000E+00 0.00000E+00
  -1        28 2.53980E-01 1.00000E+00
- -1        30 2.53980E-01 1.00000E+00
+ -1        30 2.53980E-01 2.53980E-01
  -1        31 0.00000E+00 0.00000E+00
  -1        33 0.00000E+00 0.00000E+00
  -1        34 0.00000E+00 0.00000E+00

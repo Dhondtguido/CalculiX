@@ -3,10 +3,10 @@
 
 
    ##############################################################################################################
-   D E S I G N   R E S P O N S E                    I N F O R M A T I O N
+   D E S I G N   R E S P O N S E   I N F O R M A T I O N
 
    FUNCTION        FUNCTION VALUE    LENGTH GRADIENT   NAME                                                        
    ##############################################################################################################
 
-   STRAINENERGY     0.4537522E+07      0.7191088E+01   ENER_OBJ                                                                        
-   MASS             0.1560000E-01      0.6368638E-08   MASS_OBJ                                                                        
+   STRAINENERGY     0.4537522E+07      0.5393330E+05   ENER_OBJ                                                                        
+   MASS             0.1560000E-01      0.4776505E-04   MASS_OBJ                                                                        

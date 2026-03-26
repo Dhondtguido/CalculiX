@@ -32,8 +32,8 @@
      &     xstateini,xstate,thicke,
      &     integerglob,doubleglob,tieset,istartset,iendset,ialset,
      &     ntie,nasym,pslavsurf,pmastsurf,mortar,clearini,ielprop,
-     &     prop,ne0,kscale,iponoel,inoel,network,neam,nebm,neat,nebt,
-     &     set,nset)
+     &     prop,ne0,kscale,iponoeln,inoeln,network,neam,nebm,neat,nebt,
+     &     set,nset,imastload,pmastload)
 !     
 !     filling the stiffness matrix in spare matrix format (sm)
 !     asymmetric contributions
@@ -59,14 +59,14 @@
      &     ll,jdof1,jdof2,node1,node2,id,i0,id1,id2,idof1,idof2,nasym,
      &     ntmat_,indexe,nope,norien,iexpl,ncmat_,istep,iinc,mpc2,
      &     nplicon(0:ntmat_,*),nplkcon(0:ntmat_,*),npmat_,ist1,ist2,
-     &     mortar,ielprop(*),kscale,iponoel(*),inoel(2,*),network,
-     &     neam,nebm,neat,nebt,ikmpc(*),nset,islavelinv(1),irowtloc1(1),
-     &     jqtloc1(1),mortartrafoflag,mscalmethod
+     &     mortar,ielprop(*),kscale,iponoeln(*),inoeln(2,*),network,
+     &     neam,nebm,neat,nebt,ikmpc(*),nset,islavquadel(1),irowt1(1),
+     &     jqt1(1),mortartrafoflag,mscalmethod,imastload(2,*)
 !     
       real*8 co(3,*),xboun(*),coefmpc(*),xforc(*),xload(2,*),p1(3),
      &     p2(3),ad(*),au(*),bodyf(3),bb(*),xloadold(2,*),value,
      &     t0(*),t1(*),prestr(6,mi(1),*),vold(0:mi(2),*),s(60,60),
-     &     ff(60),smscale(1),
+     &     ff(60),smscale(1),pmastload(3,*),
      &     sti(6,mi(1),*),sm(60,60),stx(6,mi(1),*),adb(*),aub(*),
      &     elcon(0:ncmat_,ntmat_,*),rhcon(0:1,ntmat_,*),reltime,
      &     alcon(0:6,ntmat_,*),physcon(*),cocon(0:6,ntmat_,*),
@@ -76,7 +76,7 @@
      &     plicon(0:2*npmat_,ntmat_,*),plkcon(0:2*npmat_,ntmat_,*),
      &     xstiff(27,mi(1),*),veold(0:mi(2),*),doubleglob(*),
      &     om,dtime,ttime,time,pslavsurf(3,*),pmastsurf(6,*),
-     &     autloc1(1)
+     &     aut1(1)
 !     
       i0=0
       mortartrafoflag=0
@@ -130,8 +130,8 @@
      &         doubleglob,tieset,istartset,iendset,ialset,ntie,nasym,
      &         pslavsurf,pmastsurf,mortar,clearini,ielprop,prop,kscale,
      &         smscale(1),mscalmethod,
-     &         set,nset,islavelinv,autloc1,irowtloc1,jqtloc1,
-     &         mortartrafoflag)
+     &         set,nset,islavquadel,aut1,irowt1,jqt1,
+     &         mortartrafoflag,imastload,pmastload)
 !     
           do jj=1,3*nope
 !     
@@ -330,7 +330,7 @@
      &         xstiff,xloadold,reltime,ipompc,nodempc,coefmpc,nmpc,
      &         ikmpc,ilmpc,springarea,plkcon,nplkcon,npmat_,ncmat_,
      &         elcon,nelcon,lakon,pslavsurf,pmastsurf,mortar,clearini,
-     &         plicon,nplicon,ipkon,ielprop,prop,iponoel,inoel,sti,
+     &         plicon,nplicon,ipkon,ielprop,prop,iponoeln,inoeln,sti,
      &         xstateini,xstate,nstate_,network,ipobody,xbody,ibody)
 !     
           do jj=1,nope

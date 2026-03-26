@@ -207,7 +207,7 @@
 !     usually specify the mass flow for the complete cross section
 !
 !     in CalculiX, axisymmetric elements are expanded into 3D
-!     using a sector of 360°/iaxial. Therefore, the mass flow and
+!     using a sector of 360 degrees/iaxial. Therefore, the mass flow and
 !     the derivative of f w.r.t. the mass flow have to be adjusted
 !     appropriately.     
 !

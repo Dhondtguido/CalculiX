@@ -19,7 +19,7 @@
       subroutine mohrcoulombhardenings(inpc,textpart,nelcon,nmat,
      &        plicon,nplicon,plkcon,nplkcon,iplas,iperturb,nstate_,
      &        ncmat_,elcon,matname,irstrt,istep,istat,n,iline,ipol,
-     &        inl,ipoinp,inp,ipoinpc,ianisoplas,ier,ntmat_,npmat_)
+     &        inl,ipoinp,inp,ipoinpc,ier,ntmat_,npmat_)
 !
 !     reading the input deck: *MOHR COULOMB HARDENING
 !
@@ -33,7 +33,7 @@
      &     n,key,i,nplicon(0:ntmat_,*),nplkcon(0:ntmat_,*),ncmat_,
      &     iplas,iperturb(*),istat,nstate_,kin,itemp,ndata,ndatamax,id,
      &     irstrt(*),iline,ipol,inl,ipoinp(2,*),inp(3,*),ipoinpc(0:*),
-     &     ianisoplas,ier
+     &     ier
 !     
       real*8 plicon(0:2*npmat_,ntmat_,*),plkcon(0:2*npmat_,ntmat_,*),
      &     temperature,plconloc(802),t1l,elcon(0:ncmat_,ntmat_,*)

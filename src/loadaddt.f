@@ -54,13 +54,10 @@
                   endif
                   iload=id
                   return
-cc               elseif(sideload(id).lt.label) then
-cc                  exit
                endif
                id=id-1
-               if((id.eq.0).or.(nelemload(1,id).ne.nelement)) then
-                  exit
-               endif
+               if(id.eq.0) exit
+               if(nelemload(1,id).ne.nelement) exit
             enddo
          endif
       endif

@@ -16,8 +16,8 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
-      subroutine modifympc(inodestet,nnodestet,co,doubleglob,
-     &     integerglob,ipompc,nodempc,coefmpc,nmpc,nmpc_,labmpc,mpcfree,
+      subroutine modifympc(inodestet,nnodestet,co,
+     &     ipompc,nodempc,coefmpc,nmpc,nmpc_,labmpc,mpcfree,
      &     ikmpc,ilmpc,jq,irow,icol,loc,irowt,jqt,itemp,au,ixcol,
      &     ikboun,nboun,nodeboun,mpcrfna,mpcrfnb,nodempcref,
      &     coefmpcref,memmpcref_,mpcfreeref,maxlenmpcref,memmpc_,
@@ -33,7 +33,7 @@
 !     
       character*20 labmpc(*)
 !     
-      integer inodestet(*),nnodestet,integerglob(*),nktet,netet,ne,nkon,
+      integer inodestet(*),nnodestet,nktet,netet,ne,nkon,
      &     nfaces,nfield,nselect,imastset,iselect(1),nterms,idir1,
      &     nelem,ialset(1),mpcfreeold,jq(*),irow(*),icol(*),
      &     iendset(1),istartset(1),konl(20),loopa,loc(*),irowt(*),
@@ -45,7 +45,7 @@
      &     nodempcref(3,*),memmpcref_,mpcfreeref,maxlenmpcref,memmpc_,
      &     maxlenmpc,istep
 !     
-      real*8 co(3,*),doubleglob(*),coords(3),ratio(20),value,au(*),
+      real*8 co(3,*),coords(3),ratio(20),value,au(*),
      &     coefmpc(*),depcoef,dist,xopt,coef1,coefmpcref(*)
 !
       if(istep.gt.1) then
@@ -72,7 +72,7 @@
 !     restore the original form of the MPC's
 !     an MPC with number in between mpcrfna and mpcrfnb (i.e. MPC's
 !     corresponding to the connection of the old mesh with the new
-!     mesh) is in its orignal form if the coefficient of the first
+!     mesh) is in its original form if the coefficient of the first
 !     term is exactly 1.d0
 !
       do i=mpcrfna,mpcrfnb
@@ -327,7 +327,7 @@
             enddo
           enddo
 !
-!     remove the indpendent node from the data base:          
+!     remove the independent node from the data base:          
 !     tagging the row dof in all other columns
 !     
           do m=jqt(newnode),jqt(newnode+1)-1
