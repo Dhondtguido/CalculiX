@@ -5577,3 +5577,5 @@ Dec 2002        - started to work on single crystal plasticity
                   variables)
 
  2 March 2026   - corrected an error in CalculiX.c
+
+ 10 March 2026  - corrected an error in frictions.f

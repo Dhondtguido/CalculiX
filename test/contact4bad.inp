@@ -1,6 +1,6 @@
 **
 **   Structure: cube.
-**   Test objective: *MESH REFINE,SMOOTHING ONLY for a bad mesh.
+**   Test objective: *MESH REFINE,REPAIR ONLY for a bad mesh.
 **                   linear static calculation
 **
 *NODE, NSET=Nall

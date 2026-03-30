@@ -1,6 +1,6 @@
 **
 **   Structure: two cubes on top of each other.
-**   Test objective: *FRICTION in MORTAR contact.
+**   Test objective: *FRICTION in MORTAR contact. Zero stick slope.
 **
 *NODE, NSET=Nall
        1,1.000000000000e+00,1.000000000000e+00,0.000000000000e+00
@@ -80,7 +80,7 @@ Sslav,Smast
 *SURFACE BEHAVIOR,PRESSURE-OVERCLOSURE=LINEAR
 1.E7
 *FRICTION
-0.2,1.E5
+0.2
 *MATERIAL,NAME=EL
 *ELASTIC
 210000.,.0
@@ -89,7 +89,7 @@ Sslav,Smast
 *STATIC
 *DLOAD
 2, P5, 100.000000
-**2, P1, 10.000000
+2, P1, 10.000000
 *NODE FILE
 U
 *EL FILE
