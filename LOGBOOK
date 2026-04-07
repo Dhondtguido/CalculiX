@@ -5579,3 +5579,6 @@ Dec 2002        - started to work on single crystal plasticity
  2 March 2026   - corrected an error in CalculiX.c
 
  10 March 2026  - corrected an error in frictions.f
+
+ 7 April 2026   - corrected an error in addizdofcload.f and rhsnodef.f
+                  (steady state dynamics with cyclic symmetry)

@@ -368,7 +368,7 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 	    i++;iforc=i;
 	    FORTRAN(addizdofcload,(nodeforc,ndirforc,nactdof,mi,izdof,
 		    nzdof,&iforc,iznode,&nznode,nk,imdnode,nmdnode,xforc,
-		    ntrans,inotr));
+		    ntrans,inotr,ikmpc,ilmpc,nmpc,ipompc,nodempc,&neqh));
     }
     
     /* loop over all eigenvalues; the loop starts from the highest eigenvalue

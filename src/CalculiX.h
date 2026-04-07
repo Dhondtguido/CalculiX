@@ -104,7 +104,8 @@ void FORTRAN(addimdnodedload,(ITG *nelemload,char *sideload,ITG *ipkon,
 void FORTRAN(addizdofcload,(ITG *nodeforc,ITG *ndirforc,ITG *nactdof,
              ITG *mi,ITG *izdof,ITG *nzdof,ITG *i,ITG *iznode,ITG *nznode,
              ITG *nk,ITG *imdnode,ITG *nmdnode,double *xforc,
-             ITG *ntrans,ITG *inotr));
+	     ITG *ntrans,ITG *inotr,ITG *ikmpc,ITG *ilmpc,ITG *nmpc,
+	     ITG *ipompc,ITG *nodempc,ITG *neqh));
 
 void FORTRAN(addizdofdload,(ITG *nelemload,char *sideload,ITG *ipkon,
              ITG *kon,char *lakon,ITG *nactdof,ITG *izdof,ITG *nzdof,
@@ -4537,7 +4538,7 @@ void FORTRAN(rhsnodef,(double *co,ITG *kon,ITG *ne,ITG *ipompc,ITG *nodempc,
 		       double *xforc,ITG *nforc,double *fext,ITG *nactdof,
 		       ITG *nmethod,ITG *ikmpc,ITG *ntmat_,ITG *iperturb,
 		       ITG *mi,ITG *ikactmech,ITG *nactmech,ITG *ntrans,
-		       ITG *inotr,double *trab,double *fnext));
+		       ITG *inotr,double *trab,double *fnext,ITG *ilmpc));
 
 void rhsmain(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
              ITG *ipompc,ITG *nodempc,double *coefmpc,ITG *nmpc,
