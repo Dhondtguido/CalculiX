@@ -1,12 +1,12 @@
     1C
     1UModel: beam     Date: 10-Mar-1998                                 
     1UUSER                                                              
-    1UDATE              19.july.2022                                    
-    1UTIME              21:27:02                                        
+    1UDATE              13.april.2026                                   
+    1UTIME              16:09:54                                        
     1UHOST                                                              
     1UPGM               CalculiX                                        
     1UVERSION           Version DEVELOPMENT                             
-    1UCOMPILETIME       Tue Jul 19 21:11:38 CEST 2022                    
+    1UCOMPILETIME       Tue Apr  7 18:49:30 CEST 2026                    
     1UDIR                                                               
     1UDBN                                                               
     1UMAT    1EL                                                        
@@ -375,6 +375,6 @@
   100CL  101 1.00000E-04           1                     1    1           1
  -4  ENER        1    1
  -5  ENER        1    1    0    0
- -1       100 3.36339E-05
+ -1       100 2.09668E-04
  -3
  9999

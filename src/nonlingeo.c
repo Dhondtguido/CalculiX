@@ -983,8 +983,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       
     MNEW(fn,double,mt**nk);
     NNEW(stx,double,6*mi[0]**ne);
-      
-    if((*iexpl<=1)||(*mortar==-1)){intscheme=1;}
+    //      
+    //    if((*iexpl<=1)||(*mortar==-1)){intscheme=1;}
       
     if(ne1d2d==1)NNEW(inum,ITG,*nk);
     results(co,nk,kon,ipkon,lakon,ne,vold,stn,inum,stx,
@@ -1019,6 +1019,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       time=0.;
       dtime=0.;
     }
+    
+    if((*iexpl<=1)||(*mortar==-1)){intscheme=1;}
       
     if(*iexpl>1){
 
