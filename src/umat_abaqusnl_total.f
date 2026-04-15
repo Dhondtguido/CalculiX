@@ -116,7 +116,7 @@ c      write(*,*) 'umat_abaqusnl_total ',(emec(i),i=1,6)
       n=3
       matz=1
 !     
-      call rs(n,n,e,w,matz,z,fv1,fv2,ier)
+      call eigsymd(n,e,w,matz,z,ier)
 !     
       if(ier.ne.0) then
         write(*,*) '

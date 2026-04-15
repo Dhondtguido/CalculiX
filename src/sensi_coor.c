@@ -161,6 +161,8 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     }else if(strcmp1(&objectset[i*405],"MODALSTRESS")==0){
       ieigenfrequency=1;
       modalstress=1;
+      fmin=2*pi*fei[1];
+      fmax=2*pi*fei[2];
     }else if(strcmp1(&objectset[i*405],"GREEN")==0){
       ieigenfrequency=1;
       igreen=1;
@@ -767,23 +769,23 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
     /* Check for user defined lower frequency limit for the output */
     
-    /*    if(ieigenfrequency==1){
+    if(ieigenfrequency==1){
       if(fmin>-0.5){
         if(fmin*fmin>d[iev]){
 	  continue;
 	}
       }
-      }*/
+    }
 
     /* Check for user defined upper frequency limit for the output */
     
-    /*    if(ieigenfrequency==1){
+    if(ieigenfrequency==1){
       if(fmax>-0.5){
         if(fmax*fmax<d[iev]){
 	  continue;
 	}
       }
-      }*/
+    }
     
     /* Reading the "raw" sensititities */
 

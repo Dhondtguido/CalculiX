@@ -112,7 +112,7 @@ c         write(*,*) 'sxx...',sxx,sxy,sxz,syy,syz,szz
          n=3
          matz=1
          ier=0
-         call rs(n,n,s,w,matz,z,fv1,fv2,ier)
+         call eigsymd(n,s,w,matz,z,ier)
          if(ier.ne.0) then
             write(*,*) '*ERROR in knotmpc while calculating the'
             write(*,*) '       eigenvalues/eigenvectors'

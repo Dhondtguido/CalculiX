@@ -232,7 +232,6 @@ detectactivecont.f \
 determineextern.f \
 dflux.f \
 dfluxs.f \
-dgesv.f \
 dgmres1.f \
 dgmres.f \
 discontinuousslope.f \
@@ -255,8 +254,6 @@ dmatrix.f \
 dqag.f \
 drfftf.f \
 dsort.f \
-dsptrf.f \
-dsptri.f \
 dualshape3tri.f \
 dualshape4q.f \
 dualshape6tritilde.f \
@@ -287,6 +284,7 @@ e_damp.f \
 edgedivide.f \
 edg.f \
 effectivemodalmass.f \
+eigsymd.f \
 elastics.f \
 electricalconductivitys.f \
 electromagneticss.f \
@@ -422,7 +420,6 @@ hgforce.f \
 hgstiffness.f \
 hnorm.f \
 hns.f \
-hybsvd.f \
 hyperelastics.f \
 hyperfoams.f \
 ident2.f \
@@ -489,6 +486,7 @@ loadaddp.f \
 loadaddt.f \
 localaxescs.f \
 localaxes.f \
+lssolved.f \
 lump.f \
 machpi.f \
 mafillcorio.f \
@@ -775,7 +773,6 @@ rimseal.f \
 robustdesigns.f \
 rotationvector.f \
 rotationvectorinv.f \
-rs.f \
 rubber.f \
 scalesen.f \
 scavenge_pump.f \

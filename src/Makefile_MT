@@ -23,6 +23,7 @@ DIR=../SPOOLES.2.2
 LIBS = \
        $(DIR)/MT/src/spoolesMT.a \
        $(DIR)/spooles.a \
+       ../LAPACK/liblapack.a \
        ../ARPACK/libarpack_INTEL.a \
        -lpthread -lm
 

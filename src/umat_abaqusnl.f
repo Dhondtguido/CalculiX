@@ -210,7 +210,7 @@
       n=3
       matz=1
 !     
-      call rs(n,n,e,w,matz,z,fv1,fv2,ier)
+      call eigsymd(n,e,w,matz,z,ier)
 !     
       if(ier.ne.0) then
         write(*,*) '
@@ -319,7 +319,7 @@
 !     
 !     calculating the eigenvalues and eigenvectors
 !     
-      call rs(n,n,e,w,matz,z,fv1,fv2,ier)
+      call eigsymd(n,e,w,matz,z,ier)
 !     
       if(ier.ne.0) then
         write(*,*) '

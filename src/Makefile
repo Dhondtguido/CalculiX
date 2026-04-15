@@ -22,10 +22,11 @@ DIR=../../SPOOLES.2.2
 
 LIBS = \
        $(DIR)/spooles.a \
+    ../../LAPACK/liblapack.a \
 	../../ARPACK/libarpack_INTEL.a \
        -lpthread -lm -lc
 
-CalculiX: $(OCCXMAIN) CalculiX.a  $(LIBS)
+CalculiX: $(OCCXMAIN) $(LIBS) CalculiX.a
 	./date.pl; $(CC) $(CFLAGS) -c CalculiX.c; $(FC)  -Wall -g -o $@ $(OCCXMAIN) CalculiX.a $(LIBS) -fopenmp
 
 CalculiX.a: $(OCCXF) $(OCCXC)
