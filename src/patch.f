@@ -32,14 +32,11 @@
       real*8 xl(3,20),co(3,*),shp(4,20),
      & pgauss(3),pol(20),pntdist,w,scpav(6,*),xsj,
      & sti(6,mi(1),*),xi,et,ze,rv1(ipoints),pp(ipoints,iterms),
-     & pdat(ipoints,6),pfit(6),pwrk(iterms),pre(ipoints,iterms),
-     & z(ipoints,ipoints)
+     & pdat(ipoints,6),pfit(6)
 !
       real*8 tmpstr(6),gauss3d5e(3,4)
 !
       character*8 lakon(*)
-!      
-      logical matu,matv
 !
       include 'gauss.f'
 !
@@ -190,43 +187,18 @@
 !
 !        using singular value decomposition for the least squares fit
 !
-         matu=.false.
-         matv=.true.
-         nrhs=6
-!
-         call hybsvd(ipoints,ipoints,ipoints,ipoints,ipoints,
-     &        ipoints,iterms,pp,pwrk,matu,pp,matv,
-     &        pre,z,pdat,nrhs,info,rv1)
+         call lssolved(ipoints,iterms,6,pp,pdat,-1.0,info)
          if(info.ne.0) then
-            write(*,*) '*ERROR in patch: Bad conditioned matrix,',
-     &           ' using average of sampling point values.'
+            write(*,*) '*WARNING in patch.f: Error calling lssolved,',
+     &           ' using average of sampling point values instead.'
             iavflag=1
          endif
-      endif
 !
-!     matrix multiplication. only the first value of the
-!     solution vector is needed. the singular values are manipulated
-!     to increase the numerical stability
-!     
-      if(iavflag.eq.0) then
-         do j=1,iterms
-            if(pwrk(j).lt.1.d-22) then
-               pwrk(j)=0.d0
-            else 
-               pwrk(j)=1.d0/pwrk(j)
-            endif
-         enddo
-         do j=1,iterms
-            pre(1,j)=pre(1,j)*pwrk(j)
-         enddo
-         do j=1,nrhs
-            do k=1,iterms
-               pfit(j)=pfit(j)+pre(1,k)*pdat(k,j)
-            enddo
-         enddo
+!     only the first value of the solution vector is needed
 !
-!        pfit is an array containing the coefficients for the polynom
-!        for the six stress components
+         do j=1,6
+            pfit(j)=pdat(1,j)
+         end do
 !
 !        solution in the node
 !

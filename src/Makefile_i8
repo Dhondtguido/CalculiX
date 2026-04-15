@@ -31,6 +31,7 @@ PASTIX_LIBS = ../../PaStiX/hwloc_i8/lib64/libhwloc.so ../../OpenBLAS_i8/lib/libo
 
 LIBS = \
      $(DIR)/spooles.a \
+     ../../LAPACK/liblapack.a \
      ../../ARPACK_i8/libarpack_INTEL_i8.a \
      $(PASTIX_LIBS) \
      -lpthread -lm -lc
