@@ -1019,8 +1019,6 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       time=0.;
       dtime=0.;
     }
-    
-    if((*iexpl<=1)||(*mortar==-1)){intscheme=1;}
       
     if(*iexpl>1){
 
@@ -1080,6 +1078,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       
     NNEW(ad,double,neq[1]);
     NNEW(au,double,nzs[1]);
+    
+    if((*iexpl<=1)||(*mortar==-1)){intscheme=1;}
 
     mafillsmmain(co,nk,kon,ipkon,lakon,ne,nodeboun,ndirboun,xbounact,nboun,
 		 ipompc,nodempc,coefmpc,nmpc,nodeforc,ndirforc,xforcact,
@@ -1100,6 +1100,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		 iponoeln,inoeln,network,ntrans,inotr,trab,smscale,&mscalmethod,
 		 set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag,
 	         imastload,pmastload);
+    
+    intscheme=0;
     
     if(*nmethod==0){
 	  
@@ -1530,7 +1532,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
        no new mass calculation is necessary for the remaining iterations
        in the present step */
       
-    mass[0]=0;intscheme=0;
+    mass[0]=0;
     energyref=energy[0]+energy[1]+energy[2]+energy[3];
 
     if(*iexpl<=1){
