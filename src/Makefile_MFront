@@ -22,7 +22,8 @@ OCCXMAIN = $(SCCXMAIN:.c=.o)
 DIR=../SPOOLES.2.2
 
 LIBS = $(DIR)/spooles.a \
-     ../LAPACK/liblapack.a \
+     ../../LAPACK/lapack-3.12.1/liblapack.a \
+     ../../LAPACK/lapack-3.12.1/librefblas.a \
      ../ARPACK/libarpack_INTEL.a \
      -lblas    \
      -lpthread -lm -lc -ldl
