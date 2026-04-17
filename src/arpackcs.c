@@ -228,6 +228,11 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
       
     if(ncont!=0){
 
+      if((*mortar<0)||(*mortar>1)){
+	printf(" *ERROR in arpackcs: only penalty contact is allowed in\n        combination with a perturbation *FREQUENCY step\n\n");
+	FORTRAN(stop,());
+      }	
+
       NNEW(cg,double,3*ncont);
       NNEW(straight,double,16*ncont);
 	  
