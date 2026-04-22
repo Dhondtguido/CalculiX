@@ -1,0 +1,39 @@
+SPOOLESDIR=../../spooles-2.2
+PASTIXDIR=../../pastix-6.4.0
+
+#CFLAGS = -Wall -g $(NIX_CFLAGS_COMPILE) -I $(SPOOLESDIR)/include/spooles  -I $(PASTIXDIR)/include -DARCH="Linux" -DSPOOLES -DARPACK -DMATRIXSTORAGE -DNETWORKOUT -DPASTIX
+CFLAGS = -Wall -O0 -g $(NIX_CFLAGS_COMPILE) -I $(SPOOLESDIR)/include/spooles -DARCH="Linux" -DSPOOLES -DARPACK -DMATRIXSTORAGE -DNETWORKOUT -DPASTIX
+FFLAGS = -Wall -O0 -g
+
+CC=gcc
+FC=gfortran
+
+.c.o :
+	$(CC) $(CFLAGS) -c $<
+.f.o :
+	$(FC) $(FFLAGS) -c $<
+
+include Makefile.inc
+
+SCCXMAIN = CalculiX.c
+
+OCCXF = $(SCCXF:.f=.o)
+OCCXC = $(SCCXC:.c=.o)
+OCCXMAIN = $(SCCXMAIN:.c=.o)
+
+
+LIBS = $(NIX_LDFLAGS_FOR_TARGET) \
+	   -lpastix -lpastix_kernels -lspm -lhwloc -lscotch -lscotcherrexit \
+	   -larpack -lopenblas \
+       $(SPOOLESDIR)/lib/libspooles.a \
+       -lpthread -lm -lc
+	   #-L$(PASTIXDIR)/lib -lpastix -lpastix_kernels -lspm -lhwloc -lscotch -lscotcherrexit \
+
+CalculiX: $(OCCXMAIN) CalculiX.a 
+	$(CC) $(CFLAGS) -c CalculiX.c; $(FC)  -Wall -g -o $@ $(OCCXMAIN) CalculiX.a $(LIBS) -fopenmp
+
+CalculiX.a: $(OCCXF) $(OCCXC)
+	ar vr $@ $?
+
+clean:
+	rm -f *.o *.a

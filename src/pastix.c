@@ -183,8 +183,9 @@ void pastix_init(double *ad, double *au, double *adb, double *aub,
 			ITG *jq, ITG *nzs3){
     // if reusing, only update the value pointer of the sparse matrix
     if(!redo){
-        if(spm->values != aupastix && spm->values != NULL ) free(spm->values);
-        spm->values = aupastix;
+	pastix_subtask_spm2bcsc_values(pastix_data, spm);
+        //if(spm->values != aupastix && spm->values != NULL ) free(spm->values);
+        //spm->values = aupastix;
         
         printf("\n");
         spmPrintInfo( spm, stdout );
@@ -277,6 +278,7 @@ void pastix_init(double *ad, double *au, double *adb, double *aub,
     piparm[IPARM_TASKS2D_WIDTH] 		= globDoublePrecision ? 256 : 128;
     piparm[IPARM_REFINEMENT]             	= PastixRefineGMRES;
     piparm[IPARM_MIXED]             	        = globDoublePrecision ? 0 : 1;
+    //piparm[IPARM_GLOBAL_ALLOCATION]             = 1;
     printf("IPARM_MIXED=%d\n",piparm[IPARM_MIXED]);
     printf("globDouble=%d\n",globDoublePrecision);
     //pdparm[IPARM_COMPRESS_WHEN]                     = PastixCompressWhenBegin;
@@ -324,10 +326,12 @@ void pastix_init(double *ad, double *au, double *adb, double *aub,
     printf("\n");
     spmPrintInfo( spm, stdout );
     printf("\n");
-//    FILE *f=fopen("spm.out","w");
-//    fprintf(f,"\n\nMatrix\n");
-//    spmPrint( spm, f);
-//    fclose(f);
+   // FILE *f=fopen("spm.out","w");
+   // //fprintf(f,"\n\nMatrix\n");
+   // //spmPrint( spm, f);
+   // int rc = spmSave( spm, "spm.txt");
+   // printf("rc Save = %i", rc);
+   // fclose(f);
 //    spmatrix_t spm2;
 //    int rc = spmCheckAndCorrect( spm, &spm2 );
 //    if( rc != 0 ) {
