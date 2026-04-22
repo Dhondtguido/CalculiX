@@ -235,7 +235,7 @@ void pastix_init(double *ad, double *au, double *adb, double *aub,
 	
     // Set best PaStiX parameters for CalculiX usage	
     const char* pastix_ordering = getenv("PASTIX_ORDERING");
-    if(atoi(pastix_ordering) == 1) {
+    if( pastix_ordering && atoi(pastix_ordering) == 1) {
 	
 	piparm[IPARM_ORDERING]  				= PastixOrderMetis;
     }		
@@ -248,19 +248,19 @@ void pastix_init(double *ad, double *au, double *adb, double *aub,
     }
     else{
 	const char* pastix_scheduler = getenv("PASTIX_SCHEDULER");
-	if(atoi(pastix_scheduler) == 1) {
+	if( pastix_scheduler && atoi(pastix_scheduler) == 1) {
 		
 	    piparm[IPARM_SCHEDULER] 			= PastixSchedStarPU;
 	}
-	else if(atoi(pastix_scheduler) == 2) {
+	else if( pastix_scheduler && atoi(pastix_scheduler) == 2) {
 		
 	    piparm[IPARM_SCHEDULER] 			= PastixSchedParsec;
 	}
-	else if(atoi(pastix_scheduler) == 3) {
+	else if( pastix_scheduler && atoi(pastix_scheduler) == 3) {
 		
 	    piparm[IPARM_SCHEDULER] 			= PastixSchedDynamic;
 	}
-	else if(atoi(pastix_scheduler) == 4) {
+	else if( pastix_scheduler && atoi(pastix_scheduler) == 4) {
 		
 	    piparm[IPARM_SCHEDULER] 			= PastixSchedSequential;
 	}
