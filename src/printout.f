@@ -50,7 +50,7 @@
      &     trab(7,*),orab(7,*),vold(0:mi(2),*),enerkintot,
      &     eme(6,mi(1),*),prop(*),veold(0:mi(2),*),xload(2,*),xmasstot,
      &     xinertot(6),cg(3),rhcon(0:1,ntmat_,*),xbody(7,*),energytot,
-     &     thicke(mi(3),*),dam(mi(1),*)
+     &     thicke(mi(3),*),dam(mi(1),*),refotot(3)
 !     
       mt=mi(2)+1
 !     
@@ -84,7 +84,8 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
         endif
       enddo
       do ii=1,nprint
-        if(prlab(ii)(1:2).eq.'RF') then
+        if((prlab(ii)(1:2).eq.'RF').or.
+     &     (prlab(ii)(1:2).eq.'RR')) then
           if(filab(1)(5:5).ne.' ') then
             nfield=mt
             cflag=' '
@@ -104,7 +105,7 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
      &      (prlab(ii)(1:4).eq.'RF  ').or.(prlab(ii)(1:4).eq.'RFL ').or. 
      &      (prlab(ii)(1:4).eq.'PS  ').or.(prlab(ii)(1:4).eq.'PN  ').or.
      &      (prlab(ii)(1:4).eq.'MF  ').or.(prlab(ii)(1:4).eq.'V   ').or.
-     &       (prlab(ii)(1:4).eq.'TS  ')) 
+     &       (prlab(ii)(1:4).eq.'TS  ').or.(prlab(ii)(1:4).eq.'RR  ')) 
      &       then
 !     
           ipos=index(prset(ii),' ')
@@ -167,6 +168,13 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
  119        format(' velocities (vx,vy,vz) for set ',A,
      &           ' and time ',e14.7)
             write(5,*)
+           elseif((prlab(ii)(1:5).eq.'RR   ').or.
+     &            (prlab(ii)(1:5).eq.'RR  T')) then
+            write(5,*)
+            write(5,151) noset(1:ipos-2),ttime+time
+ 151        format(' reaction forces (rfx,rfy,rfz) for set ',A,
+     &           ' and time ',e14.7)
+             write(5,*)
           endif
 !     
 !     printing the data
@@ -181,21 +189,24 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
           do jj=0,3
             rftot(jj)=0.d0
           enddo
+          do jj=1,3
+            refotot(jj)=0.d0
+          enddo
           do jj=istartset(iset),iendset(iset)
             if(ialset(jj).lt.0) cycle
             if(jj.eq.iendset(iset)) then
               node=ialset(jj)
               call printoutnode(prlab,v,t1,fn,ithermal,ii,node,
-     &             rftot,trab,inotr,ntrans,co,mi,veold)
+     &             rftot,refotot,trab,inotr,ntrans,co,mi,veold,nactdof)
             elseif(ialset(jj+1).gt.0) then
               node=ialset(jj)
               call printoutnode(prlab,v,t1,fn,ithermal,ii,node,
-     &             rftot,trab,inotr,ntrans,co,mi,veold)
+     &             rftot,refotot,trab,inotr,ntrans,co,mi,veold,nactdof)
             else
               do node=ialset(jj-1)-ialset(jj+1),ialset(jj),
      &             -ialset(jj+1)
                 call printoutnode(prlab,v,t1,fn,ithermal,ii,node,
-     &               rftot,trab,inotr,ntrans,co,mi,veold)
+     &             rftot,refotot,trab,inotr,ntrans,co,mi,veold,nactdof)
               enddo
             endif
           enddo
@@ -218,6 +229,15 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
      &           ' and time ',e14.7)
             write(5,*)
             write(5,'(6x,1p,1x,e13.6)') rftot(0)
+          elseif((prlab(ii)(1:5).eq.'RR  O').or.
+     &         (prlab(ii)(1:5).eq.'RR  T')) then
+            write(5,*)
+            write(5,152) noset(1:ipos-2),ttime+time
+ 152        format(' total reaction force (rfx,rfy,rfz) for set ',A,
+     &           ' and time ',e14.7)
+            write(5,*)
+            write(5,'(6x,1p,3(1x,e13.6))')
+     &            refotot(1),refotot(2),refotot(3)
           endif
 !     
 !     integration point values

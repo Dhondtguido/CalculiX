@@ -107,6 +107,7 @@ void writenewmesh(ITG *nktet,ITG *netet_,double *cotet,ITG *iquad,
   
   /* creating the tetrahedral mesh in frd format */
 
+  //TODO(gmb): nactdof
   frd(conew,&nknew,konnew,ipkonnew,lakonnew,&nenew,v,stn,inum,&nmethod,
       &kode,filabnew,een,t1,fn,&time,epn,ielmatnew,matname,enern,xstaten,
       &nstate_,&istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
@@ -114,7 +115,7 @@ void writenewmesh(ITG *nktet,ITG *netet_,double *cotet,ITG *iquad,
       mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&nenew,
       cs,set,&nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
       thicke,fnewmesh,outputnew,qfx,cdn,&mortar,cdnr,cdni,nmat,ielprop,
-      prop,sti,damn,&errn);
+      prop,sti,damn,&errn,NULL);
   
   strcat(fnewmesh,".frd");
   if((f1=fopen(fnewmesh,"ab"))==NULL){

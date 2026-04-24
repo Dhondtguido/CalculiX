@@ -1768,7 +1768,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
          double *thicke,char *jobnamec,char *output,double *qfx,
          double *cdn,ITG *mortar,double *cdnr,double *cdni,ITG *nmat,
          ITG *ielprop,double *prop,double *sti,double *damn,
-	 double **errnp);
+	 double **errnp,ITG *nactdof);
 
 void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v,
             double *stn,ITG *inum,ITG *nmethod,ITG *kode,char *filab,
@@ -1781,7 +1781,7 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
             ITG *ielorien,ITG *norien,double *sti,double *veold,ITG *noddiam,
             char *set,ITG *nset,double *emn,double *thicke,char *jobnamec,
             ITG *ne0,double *cdn,ITG *mortar,ITG *nmat,double *qfx,
-            ITG *ielprop,double *prop,double *damn,double **errn);
+            ITG *ielprop,double *prop,double *damn,double **errn,ITG *nactdof);
 
 void frd_norm_se(double *co,ITG *nk,double *stn,ITG *inum,ITG *nmethod,
          ITG *kode,char *filab,double *fn,double *time,ITG *nstate_,

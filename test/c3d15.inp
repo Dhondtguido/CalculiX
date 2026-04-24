@@ -196,7 +196,7 @@ try pressure on tri faces of wedge
 *STEP, INC=100
 *STATIC
 *NODE PRINT,NSET=GLOBAL
-   U,RF
+   U,RF,RR
 *EL PRINT, ELSET=OUT_CONT,GLOBAL=YES
     S
 *BOUNDARY, OP=NEW

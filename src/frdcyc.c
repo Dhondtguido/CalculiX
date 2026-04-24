@@ -33,7 +33,7 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
             double *veold, ITG *noddiam,char *set,ITG *nset, double *emn,
             double *thicke,char* jobnamec,ITG *ne0,double *cdn,ITG *mortar,
             ITG *nmat,double *qfx,ITG *ielprop,double *prop,double *damn,
-	    double **errnp){
+	    double **errnp,ITG *nactdof){
 
   /* duplicates fields for static cyclic symmetric calculations */
 
@@ -137,7 +137,8 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
     NNEW(stnt,double,6**nk*ngraph);
   if(strcmp1(&filab[261],"E   ")==0)
     NNEW(eent,double,6**nk*ngraph);
-  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[783],"RFL ")==0))
+  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[783],"RFL ")==0)||
+     (strcmp1(&filab[4959],"RR  ")==0))
     NNEW(fnt,double,mt**nk*ngraph);
   if(strcmp1(&filab[435],"PEEQ")==0)
     NNEW(epnt,double,*nk*ngraph);
@@ -256,7 +257,8 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
     for(l=0;l<6**nk;l++){stnt[l]=stn[l];};
   if(strcmp1(&filab[261],"E   ")==0)
     for(l=0;l<6**nk;l++){eent[l]=een[l];};
-  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[783],"RFL ")==0))
+  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[783],"RFL ")==0)||
+     (strcmp1(&filab[4959],"RR  ")==0))
     for(l=0;l<mt**nk;l++){fnt[l]=fn[l];};
   if(strcmp1(&filab[435],"PEEQ")==0)
     for(l=0;l<*nk;l++){epnt[l]=epn[l];};
@@ -327,7 +329,8 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
         }
       }
     
-      if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[783],"RFL ")==0)){
+      if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[783],"RFL ")==0)||
+         (strcmp1(&filab[4959],"RR  ")==0)){
         for(l1=0;l1<*nk;l1++){
           if(inocs[l1]==jj){
             for(l2=0;l2<4;l2++){
@@ -417,7 +420,7 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
       mi,stit,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,&net,
       cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emnt,
       thicke,jobnamec,output,qfx,cdnt,mortar,cdnr,cdni,nmat,ielprop,
-      prop,sti,damn,&errn);
+      prop,sti,damn,&errn,nactdof);
 
   if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
   
@@ -431,7 +434,8 @@ void frdcyc(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,double *v
      (strcmp1(&filab[1044],"ERR ")==0)) 
      SFREE(stnt);
   if(strcmp1(&filab[261],"E   ")==0) SFREE(eent);
-  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[783],"RFL ")==0))
+  if((strcmp1(&filab[348],"RF  ")==0)||(strcmp1(&filab[783],"RFL ")==0)||
+     (strcmp1(&filab[4959],"RR  ")==0))
         SFREE(fnt);
   if(strcmp1(&filab[435],"PEEQ")==0) SFREE(epnt);
   if(strcmp1(&filab[522],"ENER")==0) SFREE(enernt);

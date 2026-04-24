@@ -24,6 +24,68 @@
 #define min(a,b) ((a) <= (b) ? (a) : (b))
 #define max(a,b) ((a) >= (b) ? (a) : (b))
 
+// TODO(gmb): Just a hack to see if it works
+//            Add these as args of frd()
+extern ITG* iponor_global;
+extern ITG nkon_global;
+extern ITG *kon_global;
+extern ITG *knor_global;
+extern ITG *ipkon_global;
+extern ITG* ipoinp_global;
+
+#if 0
+expanded elements (beams, shells) are problematic:
+TODO:
+ + check if node is an expanded node
+ + if not, use nactdof
+ + if yes, use parent's nactdof?
+#endif
+static double *calcurefo(double *fn, ITG *nk, ITG mt,ITG *nactdof,ITG *kon,ITG *ipkon,char *lakon,ITG *ne)
+{
+    ITG i,j;
+    double *refo = NULL;
+
+    NNEW(refo,double,mt**nk);
+    
+    for(i=0;i<*nk;i++){
+        for(j=0;j<mt;j++){
+            if(nactdof[mt*i+j]<0){
+                refo[mt*i+j]=fn[mt*i+j];
+            }
+        }
+    }
+    
+    if(nkon_global>0){
+        printf(" *WARNING in frd:\n");
+        printf("          output of RR is experimental for\n");
+        printf("          expanded elements (beams, shells)\n");
+    }
+    
+    /* how to map the original nodes to the expanded ones..... */
+    // printf("ne=%"ITGFORMAT"\n", *ne);
+    // for(ITG i = 0; i < *ne; ++i){
+    //      printf("ipkon %lld = %lld (%.*s)\n", i, ipkon[i], 8, &lakon[8*i]);
+    // }
+    
+    // printf("nk=%"ITGFORMAT"\n", *nk);
+    // printf("nkon=%"ITGFORMAT"\n", nkon_global);
+    // for(ITG i = 0; i < nkon_global; ++i){
+    //      ITG indexk = iponor_global[2 * i + 1];
+    //      if (indexk == -1)
+    //          continue;
+    //      printf("iponor %lld, xk=%lld knor=", i, indexk);
+    //      // 8 for beams
+    //      // get this from lakon?
+    //      for (int k = 0; k < 8; k++) {
+    //          ITG expanded = knor_global[indexk + k];
+    //          printf("%lld,", expanded);
+    //      }
+    //      printf("\n");
+    // }
+
+    return refo;
+}
+
 void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	 double *v,double *stn,ITG *inum,ITG *nmethod,ITG *kode,
 	 char *filab,double *een,double *t1,double *fn,double *time,
@@ -39,7 +101,8 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	 double *eenmax,double *fnr,double *fni,double *emn,
 	 double *thicke,char *jobnamec,char *output,double *qfx,
          double *cdn,ITG *mortar,double *cdnr,double *cdni,ITG *nmat,
-         ITG *ielprop,double *prop,double *sti,double *damn,double **errnp){
+         ITG *ielprop,double *prop,double *sti,double *damn,double **errnp,
+         ITG *nactdof){
 
   /* stores the results in frd format
 
@@ -86,7 +149,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 
   float fl;
 
-  double pi,oner,*errn=NULL,*ethn=NULL;
+  double pi,oner,*errn=NULL,*ethn=NULL,*refo=NULL;
 
   errn=*errnp;
 
@@ -1526,7 +1589,65 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	printf("          output request ist not performed;\n");
       }
     }
-  }
+   
+    if((strcmp1(&filab[4959],"RR  ")==0)&&(*ithermal!=2)){
+       if(nactdof==NULL) {
+        printf(" *WARNING in frd:\n");
+        printf("          RR output is not supported\n");
+      } else {
+        iselect=1;
+        frdset(&filab[4959],set,&iset,istartset,iendset,ialset,
+               inum,&noutloc,&nout,nset,&noutmin,&noutplus,&iselect,
+               ngraph);
+
+        frdheader(&icounter,&oner,time,&pi,noddiam,cs,&null,mode,
+                  &noutloc,description,kode,nmethod,f1,output,istep,iinc);
+
+        refo = calcurefo(fn,nk,mt,nactdof,kon,ipkon,lakon,ne);
+
+        if(mi[1]==3){
+          fprintf(f1," -4  REFO        4    1\n");
+          fprintf(f1," -5  R1          1    2    1    0\n");
+          fprintf(f1," -5  R2          1    2    2    0\n");
+          fprintf(f1," -5  R3          1    2    3    0\n");
+          fprintf(f1," -5  ALL         1    2    0    0    1ALL\n");
+
+          if((iaxial==1)&&(strcmp1(&filab[4963],"I")==0)){
+            for(i=0;i<*nk;i++){
+              refo[1+i*mt]*=180.;
+              refo[2+i*mt]*=180.;
+              refo[3+i*mt]*=180.;
+            }
+          }
+
+          frdvector(refo,&iset,ntrans,&filab[4959],&nkcoords,inum,m1,inotr,
+                    trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3,
+                    &ioutall);
+        }else if((mi[1]>3)&&(mi[1]<7)){
+          fprintf(f1," -4  REFO        %1" ITGFORMAT "    1\n",mi[1]+1);
+          fprintf(f1," -5  R1          1    2    1    0\n");
+          fprintf(f1," -5  R2          1    2    2    0\n");
+          fprintf(f1," -5  R3          1    2    3    0\n");
+          for(j=4;j<=mi[1];j++){
+            fprintf(f1," -5  R%1" ITGFORMAT "          1    1    0    0\n",j);
+          }
+          fprintf(f1," -5  ALL         1    2    0    0    1ALL\n");
+
+          frdgeneralvector(refo,&iset,ntrans,&filab[4959],&nkcoords,inum,m1,
+                           inotr,trab,co,istartset,iendset,ialset,mi,ngraph,f1,
+                           output,m3,&ioutall);
+        }else{
+          printf(" *WARNING in frd:\n");
+          printf("          for output purposes only 4, 5 or 6\n");
+          printf("          degrees of freedom are allowed\n");
+          printf("          for generalized vectors;\n");
+          printf("          actual degrees of freedom = %"ITGFORMAT"\n",mi[1]);
+          printf("          output request is not performed;\n");
+        }
+        SFREE(refo);
+      }
+    }
+   }
 
   /*     storing the imaginary part of the forces in the nodes
          for the odd modes of cyclic symmetry calculations or for
@@ -1561,6 +1682,16 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	frdvector(fn,&iset,ntrans,filab,&nkcoords,inum,m1,inotr,
 		  trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3,
 		  &ioutall);
+      }
+    }
+    
+    if((strcmp1(&filab[4959],"RR  ")==0)&&(*ithermal!=2)){
+      if(nactdof==NULL) {
+        printf(" *WARNING in frd:\n");
+        printf("          RR output is not supported\n");
+      } else {
+        printf(" *WARNING in frd:\n");
+        printf("          complex reaction forces are not yet supported\n");
       }
     }
   }

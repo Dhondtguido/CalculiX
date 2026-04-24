@@ -382,6 +382,10 @@
                filab(5)(1:4)='RF  '
                filab(5)(6:6)=nodesys
                filab(5)(7:87)=noset
+            elseif(textpart(ii)(1:4).eq.'RR  ') then
+               filab(58)(1:4)='RR  '
+               filab(58)(6:6)=nodesys
+               filab(58)(7:87)=noset
             elseif(textpart(ii)(1:4).eq.'PEEQ') then
                if((nmethod.eq.2).or.(nmethod.eq.3)) then
                   write(*,*) 
