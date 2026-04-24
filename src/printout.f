@@ -22,7 +22,7 @@
      &     orab,ielorien,norien,nk,ne,inum,filab,vold,ikin,ielmat,
      &     thicke,eme,islavsurf,mortar,time,ielprop,prop,veold,orname,
      &     nelemload,nload,sideload,xload,rhcon,nrhcon,ntmat_,ipobody,
-     &     ibody,xbody,nbody,nmethod,dam,nactdof)
+     &     ibody,xbody,nbody,nmethod,dam,nactdof,accold)
 !     
 !     stores results in the .dat file
 !     
@@ -50,7 +50,7 @@
      &     trab(7,*),orab(7,*),vold(0:mi(2),*),enerkintot,
      &     eme(6,mi(1),*),prop(*),veold(0:mi(2),*),xload(2,*),xmasstot,
      &     xinertot(6),cg(3),rhcon(0:1,ntmat_,*),xbody(7,*),energytot,
-     &     thicke(mi(3),*),dam(mi(1),*)
+     &     thicke(mi(3),*),dam(mi(1),*),accold(0:mi(2),*)
 !     
       mt=mi(2)+1
 !     
@@ -186,16 +186,16 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
             if(jj.eq.iendset(iset)) then
               node=ialset(jj)
               call printoutnode(prlab,v,t1,fn,ithermal,ii,node,
-     &             rftot,trab,inotr,ntrans,co,mi,veold)
+     &             rftot,trab,inotr,ntrans,co,mi,veold,accold)
             elseif(ialset(jj+1).gt.0) then
               node=ialset(jj)
               call printoutnode(prlab,v,t1,fn,ithermal,ii,node,
-     &             rftot,trab,inotr,ntrans,co,mi,veold)
+     &             rftot,trab,inotr,ntrans,co,mi,veold,accold)
             else
               do node=ialset(jj-1)-ialset(jj+1),ialset(jj),
      &             -ialset(jj+1)
                 call printoutnode(prlab,v,t1,fn,ithermal,ii,node,
-     &               rftot,trab,inotr,ntrans,co,mi,veold)
+     &               rftot,trab,inotr,ntrans,co,mi,veold,accold)
               enddo
             endif
           enddo

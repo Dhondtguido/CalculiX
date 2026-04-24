@@ -220,7 +220,6 @@ dattime.f \
 ddeabm.f \
 ddebdf.f \
 deformationplasticitys.f \
-defplas.f \
 delaun.f \
 deltri.f \
 densitys.f \
@@ -838,12 +837,10 @@ springstiff_n2f_th.f \
 statics.f \
 steadystatedynamicss.f \
 steps.f \
-stiff2mat.f \
 stop.f \
 stopwithout201.f \
 storecontactprop.f \
 storeresidual.f \
-str2mat.f \
 straightchannel.f \
 straighteq2d.f \
 straighteq3d.f \

@@ -60,7 +60,6 @@
                 write(*,*) '         1D/2D elements must not be'
                 write(*,*) '         subject to a ',labmpc(i)(1:20),
      &               ' MPC. It may work or not.'
-                call exit(201)
               endif
 !              
               if(nodempc(2,index1).gt.3) then
@@ -128,7 +127,6 @@
                   write(*,*) '         1D/2D elements must not be'
                   write(*,*) '         subject to a ',labmpc(i)(1:20),
      &                 ' MPC. It may work or not.'
-                  call exit(201)
                 endif
 !
               ielem=inoel2d(1,index2)
@@ -147,7 +145,6 @@
                   write(*,*) '         shell elements must not be'
                   write(*,*) '         subject to a ',labmpc(i)(1:20),
      &                 ' MPC. It may work or not.'
-                  call exit(201)
                 endif
                 newnode=knor(indexk+1)
                 idir=nodempc(2,index1)
@@ -297,7 +294,6 @@ c                endif
                   write(*,*) '         beam elements must not be'
                   write(*,*) '         subject to a ',labmpc(i)(1:20),
      &                 ' MPC. It may work or not.'
-                  call exit(201)
                 endif
                 newnode=knor(indexk+1)
                 idir=nodempc(2,index1)

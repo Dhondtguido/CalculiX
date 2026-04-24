@@ -39,7 +39,8 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	 double *eenmax,double *fnr,double *fni,double *emn,
 	 double *thicke,char *jobnamec,char *output,double *qfx,
          double *cdn,ITG *mortar,double *cdnr,double *cdni,ITG *nmat,
-         ITG *ielprop,double *prop,double *sti,double *damn,double **errnp){
+         ITG *ielprop,double *prop,double *sti,double *damn,double **errnp,
+	 double *accold){
 
   /* stores the results in frd format
 
@@ -202,7 +203,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
     fprintf(f1,"%5sUHOST                                                              \n",p1);
     fprintf(f1,"%5sUPGM               CalculiX                                        \n",p1);
     fprintf(f1,"%5sUVERSION           Version DEVELOPMENT                             \n",p1);
-    fprintf(f1,"%5sUCOMPILETIME       Fri Apr 17 16:46:28 CEST 2026                    \n",p1);
+    fprintf(f1,"%5sUCOMPILETIME       Fri Apr 24 16:48:22 CEST 2026                    \n",p1);
     fprintf(f1,"%5sUDIR                                                               \n",p1);
     fprintf(f1,"%5sUDBN                                                               \n",p1);
     
@@ -951,6 +952,29 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
     fprintf(f1," -5  ALL         1    2    0    0    1ALL\n");
 
     frdvector(veold,&iset,ntrans,&filab[1740],&nkcoords,inum,m1,inotr,
+	      trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3,
+	      &ioutall);
+  }
+
+  /* storing the accelerations in the nodes */
+  
+  if((strcmp1(&filab[1740],"A   ")==0)&&(*ithermal!=2)){
+    iselect=1;
+    
+    frdset(&filab[4872],set,&iset,istartset,iendset,ialset,
+	   inum,&noutloc,&nout,nset,&noutmin,&noutplus,&iselect,
+	   ngraph);
+    
+    frdheader(&icounter,&oner,time,&pi,noddiam,cs,&null,mode,
+	      &noutloc,description,kode,nmethod,f1,output,istep,iinc);
+
+    fprintf(f1," -4  ACCE        4    1\n");
+    fprintf(f1," -5  A1          1    2    1    0\n");
+    fprintf(f1," -5  A2          1    2    2    0\n");
+    fprintf(f1," -5  A3          1    2    3    0\n");
+    fprintf(f1," -5  ALL         1    2    0    0    1ALL\n");
+
+    frdvector(accold,&iset,ntrans,&filab[1740],&nkcoords,inum,m1,inotr,
 	      trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3,
 	      &ioutall);
   }
@@ -2239,16 +2263,6 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 
   }
 
-  /* mesh refinement */
-  
-  /*  if(strcmp1(&filab[4089],"RM")==0){
-    refinemesh(nk,ne,co,ipkon,kon,v,veold,stn,een,emn,epn,enern,
-	       qfn,errn,filab,mi,lakon,jobnamec,istartset,iendset,
-	       ialset,set,nset,matname,ithermal,output,nmat,
-	       nelemload,nload,sideload,nodeforc,
-	       nforc,nodeboun,nboun,nodempc,ipompc,nmpc);
-	       }*/
-
   /* remove auxiliary field for the error estimator at the nodes
      if no mesh refinement was requested */  
 
@@ -2257,8 +2271,6 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
      ((strcmp1(&filab[1044],"ERR")==0)&&(*ithermal!=2))){
     SFREE(errn);
   }else{*errnp=errn;}
-
-  //  if(((*nmethod!=5)||(*mode==-1)&&((strcmp1(&filab[1044],"ERR")==0)&&(*ithermal!=2))) SFREE(errn);
 
   /*  the remaining lines only apply to frequency calculations
       with cyclic symmetry, complex frequency and steady state calculations */

@@ -19,7 +19,7 @@
       subroutine nodeprints(inpc,textpart,set,istartset,iendset,ialset,
      &  nset,nset_,nalset,nprint,nprint_,jout,prlab,prset,
      &  nodeprint_flag,ithermal,istep,istat,n,iline,ipol,inl,ipoinp,
-     &  inp,amname,nam,itpamp,idrct,ipoinpc,nef,ier)
+     &  inp,amname,nam,itpamp,idrct,ipoinpc,nef,ier,nmethod,mortar)
 !
 !     reading the *NODE PRINT cards in the input deck
 !
@@ -36,7 +36,7 @@
       integer istartset(*),iendset(*),ialset(*),ii,i,nam,itpamp,id,
      &  jout(2),joutl,ithermal(*),nset,nset_,nalset,nprint,nprint_,
      &  istat,n,key,ipos,iline,ipol,inl,ipoinp(2,*),inp(3,*),idrct,
-     &  ipoinpc(0:*),nef,ier,istep
+     &  ipoinpc(0:*),nef,ier,istep,nmethod,mortar
 !
       if(istep.lt.1) then
          write(*,*) 
@@ -71,7 +71,8 @@
      &         (prlab(i)(1:4).eq.'PTF ').or.
      &         (prlab(i)(1:4).eq.'CP  ').or.
      &         (prlab(i)(1:4).eq.'TURB').or.
-     &         (prlab(i)(1:4).eq.'V   ')) cycle
+     &         (prlab(i)(1:4).eq.'V   ').or.
+     &         (prlab(i)(1:4).eq.'A   ')) cycle
             ii=ii+1
             prlab(ii)=prlab(i)
             prset(ii)=prset(i)
@@ -205,6 +206,7 @@
      &         (textpart(ii)(1:4).ne.'PN  ').and.
      &         (textpart(ii)(1:4).ne.'MF  ').and.
      &         (textpart(ii)(1:4).ne.'V   ').and.
+     &         (textpart(ii)(1:4).ne.'A   ').and.
      &         (textpart(ii)(1:4).ne.'VF  ').and.
      &         (textpart(ii)(1:4).ne.'PSF ').and.
      &         (textpart(ii)(1:4).ne.'TSF ').and.
@@ -244,6 +246,16 @@
                   write(*,*) '         MACH, DEPF, TTF, PTF, CP or '
                   write(*,*) '         TURB only make sense for '
                   write(*,*) '         3D-fluid calculations'
+                  cycle
+               endif
+             elseif(textpart(ii)(1:4).eq.'A   ') then
+               if((nmethod.ne.4).or.(mortar.lt.0).or.(mortar.gt.1)
+     &              .or.(nef.gt.0)) then
+                  write(*,*) 
+     &'*WARNING reading *NODE PRINT: A is only available for'
+                  write(*,*)
+     &'         structural dynamic calculations with penalty contact'
+                  write(*,*)
                   cycle
                endif
             endif

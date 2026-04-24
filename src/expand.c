@@ -116,7 +116,7 @@ void expand(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
     NNEW(inum,ITG,*nk);
     NNEW(stx,double,6*mi[0]**ne);
     
-    nlabel=56;
+    nlabel=57;
     NNEW(filabt,char,87*nlabel);
     for(i=1;i<87*nlabel;i++) filabt[i]=' ';
     filabt[0]='U';
