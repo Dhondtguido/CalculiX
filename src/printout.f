@@ -104,7 +104,7 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
      &      (prlab(ii)(1:4).eq.'RF  ').or.(prlab(ii)(1:4).eq.'RFL ').or. 
      &      (prlab(ii)(1:4).eq.'PS  ').or.(prlab(ii)(1:4).eq.'PN  ').or.
      &      (prlab(ii)(1:4).eq.'MF  ').or.(prlab(ii)(1:4).eq.'V   ').or.
-     &       (prlab(ii)(1:4).eq.'TS  ')) 
+     &      (prlab(ii)(1:4).eq.'TS  ').or.(prlab(ii)(1:4).eq.'A   ')) 
      &       then
 !     
           ipos=index(prset(ii),' ')
@@ -165,6 +165,12 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
             write(5,*)
             write(5,119) noset(1:ipos-2),ttime+time
  119        format(' velocities (vx,vy,vz) for set ',A,
+     &           ' and time ',e14.7)
+            write(5,*)
+          elseif(prlab(ii)(1:4).eq.'A   ') then
+            write(5,*)
+            write(5,142) noset(1:ipos-2),ttime+time
+ 142        format(' accelerations (ax,ay,az) for set ',A,
      &           ' and time ',e14.7)
             write(5,*)
           endif

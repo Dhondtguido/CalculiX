@@ -203,7 +203,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
     fprintf(f1,"%5sUHOST                                                              \n",p1);
     fprintf(f1,"%5sUPGM               CalculiX                                        \n",p1);
     fprintf(f1,"%5sUVERSION           Version DEVELOPMENT                             \n",p1);
-    fprintf(f1,"%5sUCOMPILETIME       Fri Apr 24 16:48:22 CEST 2026                    \n",p1);
+    fprintf(f1,"%5sUCOMPILETIME       Mon Apr 27 17:49:32 CEST 2026                    \n",p1);
     fprintf(f1,"%5sUDIR                                                               \n",p1);
     fprintf(f1,"%5sUDBN                                                               \n",p1);
     
@@ -958,7 +958,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 
   /* storing the accelerations in the nodes */
   
-  if((strcmp1(&filab[1740],"A   ")==0)&&(*ithermal!=2)){
+  if((strcmp1(&filab[4872],"A   ")==0)&&(*ithermal!=2)){
     iselect=1;
     
     frdset(&filab[4872],set,&iset,istartset,iendset,ialset,
@@ -974,7 +974,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
     fprintf(f1," -5  A3          1    2    3    0\n");
     fprintf(f1," -5  ALL         1    2    0    0    1ALL\n");
 
-    frdvector(accold,&iset,ntrans,&filab[1740],&nkcoords,inum,m1,inotr,
+    frdvector(accold,&iset,ntrans,&filab[4872],&nkcoords,inum,m1,inotr,
 	      trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3,
 	      &ioutall);
   }

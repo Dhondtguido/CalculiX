@@ -1861,6 +1861,8 @@ ball, floor
 *surface interaction, name=contact
 *surface behavior, pressure-overclosure=exponential
 0.001, 1.0
+*nset,nset=n1
+1
 *step, nlgeom, inc=1000000
 *dynamic
 0.001, 0.001, 0.000000001 , 0.002
@@ -1868,6 +1870,8 @@ ball, floor
 elall, grav, 9810.0, 0.0, 0.0, -1.0
 *node print, nset=nall, time points=times
 u
+*node print, nset=n1, time points=times
+a
 *EL FILE,NSET=nall
 ENER
 *end step
