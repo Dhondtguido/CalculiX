@@ -5586,3 +5586,9 @@ Dec 2002        - started to work on single crystal plasticity
  13 April 2026  - reversed the change of Juli 16, 2021: intscheme=1 is
                   moved from before the first call of results.c in
 		  nonlingeo.c to a line after this call.
+
+ 27 April 2026  - provided print and file output for the acceleration
+
+ 28 April 2026  - made a change for zero density in materialdata_th.f
+
+ 
