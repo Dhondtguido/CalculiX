@@ -102,9 +102,7 @@
 !     
       if(mortar.ne.-1) then
         safefac=0.80d0/1.3d0
-c     safefac=0.80d0
       else
-c     safefac=0.80d0/1.3d0
         safefac=0.5d0
       endif
 !      
@@ -180,7 +178,15 @@ c        write(*,*) 'calcstabletimeincvol ',nelem
             nope=8
             nopes=4
             nfaces=6
-            elemfac=0.625d0
+c     elemfac=0.625d0
+!
+!     next line corresponds to elemfac*safefac=1/dsqrt(3) as
+!     suggested by Flanagan and Belytschko (J. Appl. Mech., Transactions
+!     of the ASME, (51),35-40 (1984)) for the hourglass controlled  
+!     C3D8R-element described by the same authors (Int. J. Num. Meth.
+!     Engng. (17),679-606 (1981))
+!
+             elemfac=0.938d0
           elseif(lakon(nelem)(4:4).eq.'8') then
             nope=8
             nopes=4

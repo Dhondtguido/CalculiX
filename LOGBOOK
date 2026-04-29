@@ -5591,4 +5591,5 @@ Dec 2002        - started to work on single crystal plasticity
 
  28 April 2026  - made a change for zero density in materialdata_th.f
 
- 
+ 29 April 2026  - changed safefac*elemfac to 1/dsqrt(3) for C3D8R
+                  elements in explicit dynamic calculations
