@@ -5593,3 +5593,5 @@ Dec 2002        - started to work on single crystal plasticity
 
  29 April 2026  - changed safefac*elemfac to 1/dsqrt(3) for C3D8R
                   elements in explicit dynamic calculations
+
+ 12 May 2026    - removed errors in slavintpoints.f and neartriangle.f
