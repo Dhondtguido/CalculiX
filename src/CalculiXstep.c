@@ -15,10 +15,6 @@
 /*     along with this program; if not, write to the Free Software       */
 /*     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.         */
 
-#ifdef __WIN32
-_set_output_format(_TWO_DIGIT_EXPONENT);
-#endif
-
 #ifdef CALCULIX_MPI
 #include <spoolesMPI.h>
 #endif
@@ -302,7 +298,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
     printf("software, and you are welcome to redistribute it under\n");
     printf("certain conditions, see gpl.htm\n\n");
     printf("************************************************************\n\n");
-    printf("You are using an executable made on Tue May 12 17:45:22 CEST 2026\n");
+    printf("You are using an executable made on Tue May 12 18:04:11 CEST 2026\n");
     fflush(stdout);
 
     NNEW(ipoinp,ITG,2*nentries);
