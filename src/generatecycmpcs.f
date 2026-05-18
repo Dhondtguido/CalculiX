@@ -41,7 +41,7 @@
      &     j,k,nk,nmpc,mpcfree,ics(*),nterms,ncyclicsymmetrymodel,
      &     nr(*),nz(*),noded,nodei,ikmpc(*),ilmpc(*),kontri(3,*),
      &     number,idof,ndir,node,ncsnodes,id,mpcfreeold,icount,
-     &     mcs,nrcg(*),nzcg(*),jcs(*),lcs(*),nodef(8),
+     &     mcs,nrcg(*),nzcg(*),jcs(*),lcs(*),nodef(8),ierror,
      &     netri,ifacetet(*),inodface(*),lathyp(3,6),inum,one,i,
      &     noden(10),ier,ipos,nef,mi(*),ilen,ithermal(2)
 !     
@@ -311,69 +311,76 @@ c     close(70)
         nodempc(3,mpcfreeold)=0
       enddo
 !     
-      nmpc=nmpc+1
-      labmpc(nmpc)='CYCLIC              '
-      if(mcs.lt.10) then
-        write(labmpc(nmpc)(7:7),'(i1)') mcs
-      elseif(mcs.lt.100) then
-        write(labmpc(nmpc)(7:8),'(i2)') mcs
-      else
-        write(*,*)'*ERROR in generatecycmpcs: no more than 99'
-        write(*,*)'       cyclic symmetry definitions allowed'
-        call exit(201)
-      endif
-      ipompc(nmpc)=mpcfree 
+!     temperature MPC's (are always generated)    
+!
+      ierror=0
       idof=8*(noded-1)
-      call nident(ikmpc,idof,nmpc-1,id)
+      call nident(ikmpc,idof,nmpc,id)
       if(id.gt.0) then
         if(ikmpc(id).eq.idof) then
-          write(*,*) '*ERROR in generatecycmpcs: temperature'
-          write(*,*) '       in node',noded,'is already used'
-          call exit(201)
+          write(*,*) '*WARNING in generatecycmpcs: temperature'
+          write(*,*) '         in node',noded,'is already used'
+C     call exit(201)
+          ierror=1
         endif
       endif
 !     
+      if(ierror.eq.0) then
+        nmpc=nmpc+1
+        labmpc(nmpc)='CYCLIC              '
+        if(mcs.lt.10) then
+          write(labmpc(nmpc)(7:7),'(i1)') mcs
+        elseif(mcs.lt.100) then
+          write(labmpc(nmpc)(7:8),'(i2)') mcs
+        else
+          write(*,*)'*ERROR in generatecycmpcs: no more than 99'
+          write(*,*)'       cyclic symmetry definitions allowed'
+          call exit(201)
+        endif
+        ipompc(nmpc)=mpcfree 
+!     
 !     updating ikmpc and ilmpc
 !     
-      do j=nmpc,id+2,-1
-        ikmpc(j)=ikmpc(j-1)
-        ilmpc(j)=ilmpc(j-1)
-      enddo
-      ikmpc(id+1)=idof
-      ilmpc(id+1)=nmpc
+        do j=nmpc,id+2,-1
+          ikmpc(j)=ikmpc(j-1)
+          ilmpc(j)=ilmpc(j-1)
+        enddo
+        ikmpc(id+1)=idof
+        ilmpc(id+1)=nmpc
 !     
-      nodempc(1,mpcfree)=noded
-      nodempc(2,mpcfree)=0
-      coefmpc(mpcfree)=1.d0
-      mpcfree=nodempc(3,mpcfree)
-      if(mpcfree.eq.0) then
-        write(*,*)'*ERROR in generatecycmpcs: increase memmpc_'
-        call exit(201)
-      endif
-      if(.not.interpolation) then
-        nodempc(1,mpcfree)=nodei
+        nodempc(1,mpcfree)=noded
         nodempc(2,mpcfree)=0
-        coefmpc(mpcfree)=-1.d0
-        mpcfreeold=mpcfree
+        coefmpc(mpcfree)=1.d0
         mpcfree=nodempc(3,mpcfree)
         if(mpcfree.eq.0) then
           write(*,*)'*ERROR in generatecycmpcs: increase memmpc_'
           call exit(201)
         endif
-      else
-        do k=1,nterms
-          nodempc(1,mpcfree)=nodef(k)
+        if(.not.interpolation) then
+          nodempc(1,mpcfree)=nodei
           nodempc(2,mpcfree)=0
-          coefmpc(mpcfree)=-ratio(k)
+          coefmpc(mpcfree)=-1.d0
           mpcfreeold=mpcfree
           mpcfree=nodempc(3,mpcfree)
           if(mpcfree.eq.0) then
             write(*,*)'*ERROR in generatecycmpcs: increase memmpc_'
             call exit(201)
           endif
-        enddo
+        else
+          do k=1,nterms
+            nodempc(1,mpcfree)=nodef(k)
+            nodempc(2,mpcfree)=0
+            coefmpc(mpcfree)=-ratio(k)
+            mpcfreeold=mpcfree
+            mpcfree=nodempc(3,mpcfree)
+            if(mpcfree.eq.0) then
+              write(*,*)'*ERROR in generatecycmpcs: increase memmpc_'
+              call exit(201)
+            endif
+          enddo
+        endif
+        nodempc(3,mpcfreeold)=0
       endif
-      nodempc(3,mpcfreeold)=0
 !     
 !     generating the static pressure and possibly turbulence MPC's
 !     for 3D fluid calculations; 
@@ -381,6 +388,26 @@ c     close(70)
 !     
       if(nef.gt.0) then
         do i=4,mi(2)
+          idof=8*(noded-1)+i
+          call nident(ikmpc,idof,nmpc,id)
+          if(id.gt.0) then
+            if(ikmpc(id).eq.idof) then
+              if(i.eq.4) then
+                write(*,*) '*WARNING in generatecycmpcs: pressure'
+                write(*,*) '         in node',noded,'is already used'
+C     call exit(201)
+                cycle
+              else
+                write(*,*)
+     &              '*WARNING in generatecycmpcs: turbulence parameter',
+     &               i-4
+                write(*,*) '         in node',noded,'is already used'
+C     call exit(201)
+                cycle
+              endif
+            endif
+          endif
+!          
           nmpc=nmpc+1
           labmpc(nmpc)='CYCLIC              '
           if(mcs.lt.10) then
@@ -393,23 +420,6 @@ c     close(70)
             call exit(201)
           endif
           ipompc(nmpc)=mpcfree 
-          idof=8*(noded-1)+i
-          call nident(ikmpc,idof,nmpc-1,id)
-          if(id.gt.0) then
-            if(ikmpc(id).eq.idof) then
-              if(i.eq.4) then
-                write(*,*) '*ERROR in generatecycmpcs: pressure'
-                write(*,*) '       in node',noded,'is already used'
-                call exit(201)
-              else
-                write(*,*)
-     &               '*ERROR in generatecycmpcs: turbulence parameter',
-     &               i-4
-                write(*,*) '       in node',noded,'is already used'
-                call exit(201)
-              endif
-            endif
-          endif
 !     
 !     updating ikmpc and ilmpc
 !     

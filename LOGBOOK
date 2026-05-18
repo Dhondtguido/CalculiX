@@ -5595,3 +5595,5 @@ Dec 2002        - started to work on single crystal plasticity
                   elements in explicit dynamic calculations
 
  12 May 2026    - removed errors in slavintpoints.f and neartriangle.f
+
+ 18 May 2026    - changed some ERROR messages in WARNINGS in generatecycmpcs.f
