@@ -20,9 +20,8 @@
      &     nk,vold,isolidsurf,xsolidsurf,ifreestream,iturbulent,
      &     vcon,shcon,nshcon,ntmat_,physcon,v,
      &     compressible,nodempc,ipompc,coefmpc,inomat,
-     &     mi,ilboun,ilmpc,labmpc,coefmodmpc,iexplicit,nbouna,
-     &     nbounb,nmpca,nmpcb,nfreestreama,nfreestreamb,
-     &     nsolidsurfa,nsolidsurfb)
+     &     mi,ilboun,ilmpc,labmpc,coefmodmpc,iexplicit,
+     &     nboun,nmpc,nfreestream,nsolidsurf)
 !     
 !     1) applies temperature and velocity SPC's for
 !     incompressible fluids (liquids)
@@ -40,22 +39,24 @@
      &     ndirboun(*),nshcon(*),nk,i,node,imat,
      &     iexplicit,ifreestream(*),
      &     index,nodei,nodempc(3,*),ipompc(*),
-     &     ist,ndir,ndiri,inomat(*),nref,nbouna,nbounb,
-     &     nmpca,nmpcb,nfreestreama,nfreestreamb,nsolidsurfa,
-     &     nsolidsurfb
+     &     ist,ndir,ndiri,inomat(*),nref,
+     &     nboun,nmpc,nfreestream,nsolidsurf
 !     
       real*8 rho,vold(0:mi(2),*),xbounact(*),
-     &     shcon(0:3,ntmat_,*),xnorm,coefmodmpc(*),
+     &     shcon(0:3,ntmat_,*),coefmodmpc(*),
      &     temp,xsolidsurf(*),sum,vcon(nk,0:mi(2)),physcon(*),
      &     coefmpc(*),residu,correction,xkin,xtu,sumk,sumt,
      &     dvi,v(nk,0:mi(2))
 !     
       nref=0
 !
+!$omp parallel
+!
 !     SPC's: temperature, velocity and pressure (latter only for
 !     compressible fluids)
-!     
-      do j=nbouna,nbounb
+!
+!$omp do private(i,ndir,node)
+      do j=1,nboun
 !     
 !     monotonically increasing DOF-order
 !     
@@ -84,8 +85,9 @@
 !     incompressible fluids
 !
         nref=0
-!     
-        do j=nmpca,nmpcb
+!
+!$omp do private(i,ist,node,ndir,nodei,ndiri,index,sum)
+        do j=1,nmpc
 !     
 !     monotonically increasing DOF-order
 !     
@@ -131,8 +133,9 @@
 !     any other MPC
 !
         nref=0
-!        
-        do j=nmpca,nmpcb
+!
+!$omp do private(i,index,ndir,node,ndiri,nodei,residu,correction)
+        do j=1,nmpc
           i=ilmpc(j)
           index=ipompc(i)
 !     
@@ -148,7 +151,6 @@
 !     calculating the value of the dependent DOF of the MPC
 !     
           residu=coefmpc(index)*vold(ndir,node)
-          xnorm=1.d0
           if(index.eq.0) cycle
           do
             index=nodempc(3,index)
@@ -181,7 +183,9 @@
 !     
         xtu=10.d0*physcon(5)/physcon(8)
         xkin=10.d0**(-3.5d0)*xtu
-        do j=nfreestreama,nfreestreamb
+
+!$omp do private(node,imat,temp,rho,dvi)
+        do j=1,nfreestream
           node=ifreestream(j)
           imat=inomat(node)
           if(imat.eq.0) cycle
@@ -203,8 +207,9 @@
         enddo
 !     
 !     solid boundary conditions for the turbulent variables 
-!     
-        do j=nsolidsurfa,nsolidsurfb
+!
+!$omp do private(node,imat,temp,rho,dvi)
+        do j=1,nsolidsurf
 !
 !         turbulent kinetic energy is applied at the wall
 !
@@ -227,8 +232,9 @@
 !     taking fluid pressure MPC's into account: it is assumed
 !     that cyclic fluid pressure MPC's also apply to the iturbulent
 !     conservative variables
-!     
-        do j=nmpca,nmpcb
+!
+!$omp do private(i,ist,node,ndir,nodei,imat,index,sumk,sumt)
+        do j=1,nmpc
           i=ilmpc(j)
           if(labmpc(i)(1:6).ne.'CYCLIC') cycle
           ist=ipompc(i)
@@ -258,7 +264,9 @@
           vcon(node,6)=-sumt/coefmpc(ist)
         enddo
       endif
-!     
+!
+!$omp end parallel
+!
       return
       end
       

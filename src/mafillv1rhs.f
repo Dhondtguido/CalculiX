@@ -23,15 +23,17 @@
      &     ilmpc,rhcon,nrhcon,ielmat,ntmat_,ithermal,
      &     vold,vcon,mi,physcon,shcon,nshcon,ttime,
      &     time,istep,ibody,xloadold,iturbulent,
-     &     nelemface,sideface,nface,compressible,nea,neb,dtimef,ipvar,
+     &     nelemface,sideface,nface,compressible,dtimef,ipvar,
      &     var,ipvarf,varf,ipface,ifreesurface,depth,dgravity,cocon,
-     &     ncocon,iinc,theta1,reltimef,b1)
+     &     ncocon,iinc,theta1,reltimef,b1,num_cpus)
 !     
 !     filling the rhs b1 for equations of steps 1,2,4 and 5
 !     filling the rhs b2 for equations of step 3
 !     corrections to step 2 (all fluids) and 3 (only incompressible
 !     fluids) are done in mafillprhs and mafillv2rhs
-!     
+!
+      use omp_lib
+!
       implicit none
 !     
       integer iturbulent,compressible
@@ -44,10 +46,10 @@
      &     ikmpc(*),ilmpc(*),nactdoh(*),
      &     nrhcon(*),mi(*),ielmat(mi(3),*),ipkon(*),nshcon(*),
      &     ipobody(2,*),ipface(*),ifreesurface,ncocon(2,*),
-     &     nbody,ibody(3,*),nelemface(*),nface,nea,neb,kstart,
+     &     nbody,ibody(3,*),nelemface(*),nface,kstart,
      &     nk,ne,nmpc,nload,nmethod,ithermal(*),i,j,k,id,
      &     ist,index,jdof1,node,ntmat_,indexe,nope,istep,
-     &     ipvar(*),ipvarf(*),iinc
+     &     ipvar(*),ipvarf(*),iinc,num_cpus,tid
 !     
       real*8 co(3,*),coefmpc(*),xload(2,*),p1(3),
      &     p2(3),bodyf(3),xloadold(2,*),rhcon(0:1,ntmat_,*),
@@ -57,6 +59,18 @@
      &     cocon(0:6,ntmat_,*),theta1,bb(3,8),reltimef,b1(nk,0:mi(2)),
      &     depth(*)
 !
+!     We use heap allocated b1_ and b2_ where each thread owns a slice
+!     instead of an OpenMP array reduction clause into b1 and b2 which
+!     exceeds default thread stack sizes for large models.
+!
+      real*8, allocatable :: b1_(:,:,:), b2_(:,:,:)
+!
+      allocate(b1_(nk,0:mi(2),num_cpus))
+      allocate(b2_(nk,3,num_cpus))
+!
+      b1_=0
+      b2_=0
+!
 !     check whether energy equation is needed
 !
       if(ithermal(1).gt.1) then
@@ -64,8 +78,13 @@
       else
         kstart=1
       endif
-!     
-      do i=nea,neb
+
+!$omp parallel private(tid) num_threads(num_cpus)
+      tid = omp_get_thread_num() + 1
+!$omp do
+!$omp&private(j,k,index,indexe,nope,om,bodyf,p1,p2,node,jdof1,id,ist)
+!$omp&private(ff,bb)
+      do i=1,ne
 !     
         indexe=ipkon(i)
         if(lakon(i)(4:4).eq.'8') then
@@ -132,10 +151,10 @@
           do j=1,nope
             node=kon(indexe+j)
             do k=0,mi(2)
-              b1(node,k)=b1(node,k)+ff(k,j)
+              b1_(node,k,tid)=b1_(node,k,tid)+ff(k,j)
             enddo
             do k=1,3
-              b2(node,k)=b2(node,k)+bb(k,j)
+              b2_(node,k,tid)=b2_(node,k,tid)+bb(k,j)
             enddo
           enddo
         else
@@ -147,10 +166,10 @@
           do j=1,nope
             node=kon(indexe+j)
             do k=kstart,3
-              b1(node,k)=b1(node,k)+ff(k,j)
+              b1_(node,k,tid)=b1_(node,k,tid)+ff(k,j)
             enddo
             do k=1,3
-              b2(node,k)=b2(node,k)+bb(k,j)
+              b2_(node,k,tid)=b2_(node,k,tid)+bb(k,j)
             enddo
           enddo
 !     
@@ -170,7 +189,7 @@
                   do
                     jdof1=nactdoh(nodempc(1,index))
                     if(jdof1.gt.0) then
-                      b1(jdof1,4)=b1(jdof1,4)
+                      b1_(jdof1,4,tid)=b1_(jdof1,4,tid)
      &                     -coefmpc(index)*ff(4,j)
      &                     /coefmpc(ist)
                     endif
@@ -181,7 +200,7 @@
               endif
               cycle
             endif
-            b1(jdof1,4)=b1(jdof1,4)+ff(4,j)
+            b1_(jdof1,4,tid)=b1_(jdof1,4,tid)+ff(4,j)
           enddo
 !
 !         turbulent equations
@@ -190,16 +209,40 @@
             do j=1,nope
               node=kon(indexe+j)
               do k=5,mi(2)
-                b1(node,k)=b1(node,k)+ff(k,j)
+                b1_(node,k,tid)=b1_(node,k,tid)+ff(k,j)
               enddo
             enddo
           endif
         endif
       enddo
+!$omp end do
+!
+      do k = 1, num_cpus
+         do j=0,mi(2)
+!$omp do
+            do i=1,nk
+               b1(i,j) = b1(i,j) + b1_(i,j,k)
+            end do
+!$omp end do
+         end do
+!
+         do j=1,3
+!$omp do
+            do i=1,nk
+               b2(i,j) = b2(i,j) + b2_(i,j,k)
+            end do
+!$omp end do
+         end do
+      end do
+!$omp end parallel
+!
+      deallocate(b1_)
+      deallocate(b2_)
+!
 c      write(*,*) 'mafilltrhs '
 c      do i=1,nk
 c        write(*,*) i,b1(i,0)
 c      enddo
-!     
+!
       return
       end

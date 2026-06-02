@@ -18,7 +18,7 @@
 !     
       subroutine presgradient(iponoel,inoel,sa,shockcoef,
      &     dtimef,ipkon,kon,lakon,vold,mi,
-     &     nactdoh,nka,nkb)
+     &     nactdoh,nk,num_cpus)
 !     
 !     determining measure for the pressure gradient
 !     
@@ -32,13 +32,18 @@
       character*8 lakon(*)
 !     
       integer iponoel(*),inoel(2,*),i,j,k,index,indexe,nope,
-     &     ipkon(*),kon(*),node,ielem,mi(*),nka,nkb,
-     &     nactdoh(*)
+     &     ipkon(*),kon(*),node,ielem,mi(*),nk,
+     &     nactdoh(*), num_cpus
 !     
       real*8 sa(*),shockcoef,dtimef,ca,sum,pa,
      &     vold(0:mi(2),*),sumabs,contribution
-!     
-      do i=nka,nkb
+
+!
+!$omp parallel num_threads(num_cpus)
+!$omp do
+!$omp&private(j,k,sum,sumabs,pa,index,indexe)
+!$omp&private(ielem,nope,node,contribution)
+      do i=1,nk
         if(nactdoh(i).le.0) cycle
         if(iponoel(i).le.0) cycle
         j=nactdoh(i)
@@ -80,11 +85,15 @@
         endif
         sa(j)=dabs(sum)/(sumabs*dtimef)
       enddo
+!$omp end do
 !
       ca=shockcoef*dtimef
-      do i=nka,nkb
+!$omp do
+      do i=1,nk
         sa(i)=ca*sa(i)
       enddo
+!$omp end do
+!$omp end parallel
 !     
       return
       end
