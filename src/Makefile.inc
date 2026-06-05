@@ -812,8 +812,6 @@ smoothbadmid.f \
 smoothbadvertex.f \
 smoothingmidnodes.f \
 smoothingvertexnodes.f \
-smoothshock.f \
-smoothshockappend.f \
 solidsections.f \
 sortev.f \
 spcmatch.f \
@@ -821,6 +819,7 @@ spcmpcmortar.f \
 specificgasconstants.f \
 specificheats.f \
 splitline.f \
+spmv.f \
 spooles_read.f \
 spooles_write.f \
 springdamp_f2f.f \

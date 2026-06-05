@@ -18,7 +18,7 @@
 !
       subroutine phys2con(inomat,vold,ntmat_,shcon,nshcon,physcon,
      &     compressible,vcon,rhcon,nrhcon,ithermal,mi,ifreesurface,ierr,
-     &     dgravity,depth,nk,nka,nkb)
+     &     dgravity,depth,nk,num_cpus)
 !
 !     calculates the conservative variables from the physical variables
 !     only for vcon(0...4), i.e. rho*epsilon,rho*vx,rho*vy,rho*vz,rho
@@ -28,12 +28,15 @@
       implicit none
 !
       integer inomat(*),node,ntmat_,nshcon(*),compressible,nrhcon(*),
-     &  ithermal(*),mi(*),imat,k,ifreesurface,ierr,nk,nka,nkb
+     &  ithermal(*),mi(*),imat,k,ifreesurface,ierr,nk,num_cpus
 !
       real*8 rhcon(0:1,ntmat_,*),shcon(0:3,ntmat_,*),vold(0:mi(2),*),
-     &  vcon(nk,0:mi(2)),physcon(*),temp,cp,r,rho,dgravity,depth(*)
+     &     vcon(nk,0:mi(2)),physcon(*),temp,cp,r,rho,dgravity,depth(*)
 !
-      do node=nka,nkb
+!$omp parallel do private(imat,temp,cp,r,rho) num_threads(num_cpus)
+      do node=1,nk
+        if (ierr.ne.0) cycle
+
         imat=inomat(node)
         temp=vold(0,node)
         call materialdata_cp_sec(imat,ntmat_,temp,shcon,nshcon,
@@ -57,8 +60,10 @@
             if(rho.le.0.d0) then
               write(*,*) '*ERROR in phys2con: fluid depth cannot'
               write(*,*) '       be determined'
+!$omp critical
               ierr=1
-              return
+!$omp end critical
+              cycle
             else
               rho=dsqrt(rho)
             endif
@@ -89,7 +94,7 @@
           vcon(node,k)=rho*vold(k,node)
         enddo
       enddo
-!     
+!
       return
       end
       
