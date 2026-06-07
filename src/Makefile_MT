@@ -1,6 +1,6 @@
 
-CFLAGS = -Wall -O2 -fopenmp -I ../SPOOLES.2.2 -DARCH="Linux" -DSPOOLES -DARPACK -DMATRIXSTORAGE -DUSE_MT=1 
-FFLAGS = -Wall -O2 -fopenmp -cpp
+CFLAGS = -Wall -O2 -fopenmp -I ../../SPOOLES.2.2 -DARCH="Linux" -DSPOOLES -DARPACK -DMATRIXSTORAGE -DUSE_MT=1 -fopenmp
+FFLAGS = -Wall -O2 -fopenmp -cpp -fopenmp
 
 CC=cc
 FC=gfortran
@@ -18,14 +18,14 @@ OCCXF = $(SCCXF:.f=.o)
 OCCXC = $(SCCXC:.c=.o)
 OCCXMAIN = $(SCCXMAIN:.c=.o)
 
-DIR=../SPOOLES.2.2
+DIR=../../SPOOLES.2.2
 
 LIBS = \
        $(DIR)/MT/src/spoolesMT.a \
        $(DIR)/spooles.a \
        ../../LAPACK/lapack-3.12.1/liblapack.a \
        ../../LAPACK/lapack-3.12.1/librefblas.a \
-       ../ARPACK/libarpack_INTEL.a \
+       ../../ARPACK/libarpack_INTEL.a \
        -lpthread -lm
 
 CalculiX_MT: $(OCCXMAIN) CalculiX_MT.a  $(LIBS)
