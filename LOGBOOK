@@ -5599,3 +5599,6 @@ Dec 2002        - started to work on single crystal plasticity
  18 May 2026    - changed some ERROR messages in WARNINGS in generatecycmpcs.f
 
  5 June 2026    - switched from pthread to openmp for parallel CFD calculations
+
+ 8 June 2026    - changed noelfiles.f taking care of contact output requests
+                  without any contact pair definition

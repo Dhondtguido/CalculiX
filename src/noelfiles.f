@@ -590,10 +590,17 @@
                   filab(25)(7:87)=noset
                endif
             elseif((textpart(ii)(1:4).eq.'CSTR').or.
-     &             (textpart(ii)(1:4).eq.'CDIS')) then
+     &              (textpart(ii)(1:4).eq.'CDIS')) then
+              if(mortar.lt.-1) then
+                write(*,*) '*WARNING: contact output was requested,'
+                write(*,*) '          however, no contact pair was'
+                write(*,*) '          defined. Output request is'
+                write(*,*) '          removed.'
+             else
                filab(26)(1:4)='CONT'
                filab(26)(6:6)=nodesys
                filab(26)(7:87)=noset
+             endif
             elseif(textpart(ii)(1:4).eq.'CELS') then
                filab(27)(1:4)='CELS'
                filab(27)(6:6)=nodesys
@@ -900,7 +907,24 @@
      &"*NODE FILE/OUTPUT or *EL FILE/OUTPUT or *CONTACT FILE/OUTPUT %")
             endif
          enddo
-      enddo
+       enddo
+!
+!      some fields are used for both the error estimator and contact;
+!      therefore, a check is performed whether this situation occurs.
+!
+       if(mortar.ne.1) then
+         if((filab(26)(1:4).eq.'CONT').and.
+     &        ((filab(13)(1:4).eq.'ZZS ').or.
+     &        (filab(13)(1:4).eq.'ERR '))) then
+           write(*,*) '*WARNING: contact output for node-to-surface'
+           write(*,*) '          penalty, mortar or massless Lagrange'
+           write(*,*) '          contact cannot be combined with error'
+           write(*,*) '          estimator output; the latter is'
+           write(*,*) '          removed.'
+           filab(13)(1:4)=' '
+           filab(13)(6:87)=' '
+         endif
+       endif
 !
       return
       end
