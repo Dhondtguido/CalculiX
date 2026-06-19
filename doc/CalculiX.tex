@@ -13008,7 +13008,7 @@ displacement field is taken to be zero.
 The displacement
 boundary conditions in a modal dynamic analysis should match zero boundary
   conditions in the same nodes and same directions in the step used for the
-  determination of the eigenmodes. This corresponds to what is called base
+  determination of the eigenmodes AND they should be defined in the same order. This corresponds to what is called base
   motion in ABAQUS. A typical application for nonzero boundary conditions is
   the base motion of a building due to an earthquake. Notice that in a modal
   dynamic 
@@ -15370,7 +15370,7 @@ $v^{n+1/2}$ without loss of accuracy. Therefore, the terms quadratic in $\Delta
 t$ in the first two lines can be merged into:
 
 \begin{equation}
-v^{n+1/2}  \frac{\Delta t^2}{2} \Delta t^2 \frac{\partial v^{n+1/2}}{\partial x}
+v^{n+1/2}  \frac{\Delta t^2}{2} \frac{\partial v^{n+1/2}}{\partial x}
   \frac{\partial \phi }{\partial x} + (v^{n+1/2})^2 \frac{\Delta t^2}{2}  \frac{\partial^2 \phi }{\partial x^2} = v^{n+1/2} \frac{\Delta t^2}{2}
   \frac{\partial }{\partial x } \left( v^{n+1/2} \frac{\partial \phi
   }{\partial x} \right ),
@@ -15775,14 +15775,14 @@ equations read
 
 \begin{equation}
 \frac{\partial \rho k}{\partial t} = - [ v_k (\rho k)]_{,k} + [(\mu+\sigma_k
-\rho \nu_t)k_{,k}]_{,k} + (t_{ij}^R u_{i,j} - \beta^* \rho \omega k)
+\rho \nu_t)k_{,k}]_{,k} + (t_{ij}^R v_{i,j} - \beta^* \rho \omega k)
 \end{equation}
 
 and
 
 \begin{equation}
 \frac{\partial \rho \omega}{\partial t} = - [ v_k (\rho \omega)]_{,k} + [(\mu+\sigma_{\omega}
-\rho \nu_t)\omega_{,k}]_{,k} + (\frac{\gamma}{\nu_t} t_{ij}^R u_{i,j} -
+\rho \nu_t)\omega_{,k}]_{,k} + (\frac{\gamma}{\nu_t} t_{ij}^R v_{i,j} -
 \beta \rho \omega^2 + \frac{2}{\omega}(1-F_1) \rho \sigma_{\omega 2} k_{,j} \omega_{,j}).
 \end{equation}
 
@@ -15797,10 +15797,10 @@ scheme is straightforward:
   \varphi_{\beta})_{,k} (\rho k)_{\beta}^n \right] dV \nonumber \\ 
 &-   \Delta t \int_V \varphi_{\alpha,k} (\mu+\sigma_k
 \rho \nu_t)k_{,k}^{n+1/2} dV \nonumber \\
-&+ \Delta t \int_V \varphi_{\alpha} [t_{ij}^R u_{i,j} - \beta^* \rho \omega k]^{n+1/2} dV \nonumber \\
+&+ \Delta t \int_V \varphi_{\alpha} [t_{ij}^R v_{i,j} - \beta^* \rho \omega k]^{n+1/2} dV \nonumber \\
 &- \frac{{\Delta t}^2}{2} \int_V ( \varphi_{\alpha} v_l^{n+1/2} )_{,l} \left [ \sum_{\beta} (v_k^{n+1/2}
   \varphi_{\beta})_{,k} (\rho k)_{\beta}^n \right] dV \nonumber \\
-&+ \frac{{\Delta t}^2}{2} \int_V ( \varphi_{\alpha} v_l^{n+1/2} )_{,l} [t_{ij}^R u_{i,j} - \beta^* \rho \omega k]^n dV \nonumber
+&+ \frac{{\Delta t}^2}{2} \int_V ( \varphi_{\alpha} v_l^{n+1/2} )_{,l} [t_{ij}^R v_{i,j} - \beta^* \rho \omega k]^n dV \nonumber
 \\
 &+ \Delta t \int_A \varphi_{\alpha} (\mu+\sigma_k
 \rho \nu_t)k_{,k}^{n+1/2} n_k dA.
@@ -15812,11 +15812,11 @@ scheme is straightforward:
   \varphi_{\beta})_{,k} (\rho \omega )_{\beta}^n \right] dV \nonumber \\ 
 &-   \Delta t \int_V \varphi_{\alpha,k} (\mu+\sigma_{\omega}
 \rho \nu_t)\omega_{,k}^{n+1/2} dV \nonumber \\
-&+ \Delta t \int_V \varphi_{\alpha} [\frac{\gamma}{\nu_t} t_{ij}^R u_{i,j} -
+&+ \Delta t \int_V \varphi_{\alpha} [\frac{\gamma}{\nu_t} t_{ij}^R v_{i,j} -
 \beta \rho \omega^2 \nonumber \\ &+ \frac{2}{\omega}(1-F_1) \rho \sigma_{\omega 2} k_{,j} \omega_{,j}]^{n+1/2}  dV \nonumber \\
 &- \frac{{\Delta t}^2}{2} \int_V ( \varphi_{\alpha} v_l^{n+1/2} )_{,l} \left [ \sum_{\beta} (v_k^{n+1/2}
   \varphi_{\beta})_{,k} (\rho \omega )_{\beta}^n \right] dV \nonumber \\
-&+ \frac{{\Delta t}^2}{2} \int_V ( \varphi_{\alpha} v_l^{n+1/2} )_{,l} [\frac{\gamma}{\nu_t} t_{ij}^R u_{i,j} -
+&+ \frac{{\Delta t}^2}{2} \int_V ( \varphi_{\alpha} v_l^{n+1/2} )_{,l} [\frac{\gamma}{\nu_t} t_{ij}^R v_{i,j} -
 \beta \rho \omega^2 \nonumber \\ &+ \frac{2}{\omega}(1-F_1) \rho \sigma_{\omega 2} k_{,j} \omega_{,j}]^n dV \nonumber
 \\
 &+ \Delta t \int_A \varphi_{\alpha} (\mu+\sigma_{\omega}
