@@ -41,6 +41,10 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
                   ITG *nlabel)
 {
 
+#if defined(_WIN32) && !defined(_UCRT)
+_set_output_format(_TWO_DIGIT_EXPONENT);
+#endif
+
   /* in FORTRAN convention:
 
      nelemload(1,i) (ITG): element for loading i
