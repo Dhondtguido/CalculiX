@@ -62,14 +62,18 @@
 !     We use heap allocated b1_ and b2_ where each thread owns a slice
 !     instead of an OpenMP array reduction clause into b1 and b2 which
 !     exceeds default thread stack sizes for large models.
+!     Thread index is leading so the reduction inner loop is contiguous.
 !
       real*8, allocatable :: b1_(:,:,:), b2_(:,:,:)
 !
-      allocate(b1_(nk,0:mi(2),num_cpus))
-      allocate(b2_(nk,3,num_cpus))
+      allocate(b1_(num_cpus,nk,0:mi(2)))
+      allocate(b2_(num_cpus,nk,3))
 !
-      b1_=0
-      b2_=0
+!$omp parallel do num_threads(num_cpus)
+      do i=1,nk
+         b1_(1:num_cpus,i,0:mi(2))=0.d0
+         b2_(1:num_cpus,i,1:3)=0.d0
+      end do
 !
 !     check whether energy equation is needed
 !
@@ -151,10 +155,10 @@
           do j=1,nope
             node=kon(indexe+j)
             do k=0,mi(2)
-              b1_(node,k,tid)=b1_(node,k,tid)+ff(k,j)
+              b1_(tid,node,k)=b1_(tid,node,k)+ff(k,j)
             enddo
             do k=1,3
-              b2_(node,k,tid)=b2_(node,k,tid)+bb(k,j)
+              b2_(tid,node,k)=b2_(tid,node,k)+bb(k,j)
             enddo
           enddo
         else
@@ -166,10 +170,10 @@
           do j=1,nope
             node=kon(indexe+j)
             do k=kstart,3
-              b1_(node,k,tid)=b1_(node,k,tid)+ff(k,j)
+              b1_(tid,node,k)=b1_(tid,node,k)+ff(k,j)
             enddo
             do k=1,3
-              b2_(node,k,tid)=b2_(node,k,tid)+bb(k,j)
+              b2_(tid,node,k)=b2_(tid,node,k)+bb(k,j)
             enddo
           enddo
 !     
@@ -189,7 +193,7 @@
                   do
                     jdof1=nactdoh(nodempc(1,index))
                     if(jdof1.gt.0) then
-                      b1_(jdof1,4,tid)=b1_(jdof1,4,tid)
+                    b1_(tid,jdof1,4)=b1_(tid,jdof1,4)
      &                     -coefmpc(index)*ff(4,j)
      &                     /coefmpc(ist)
                     endif
@@ -200,7 +204,7 @@
               endif
               cycle
             endif
-            b1_(jdof1,4,tid)=b1_(jdof1,4,tid)+ff(4,j)
+            b1_(tid,jdof1,4)=b1_(tid,jdof1,4)+ff(4,j)
           enddo
 !
 !         turbulent equations
@@ -209,7 +213,7 @@
             do j=1,nope
               node=kon(indexe+j)
               do k=5,mi(2)
-                b1_(node,k,tid)=b1_(node,k,tid)+ff(k,j)
+                b1_(tid,node,k)=b1_(tid,node,k)+ff(k,j)
               enddo
             enddo
           endif
@@ -217,11 +221,12 @@
       enddo
 !$omp end do
 !
-      do k = 1, num_cpus
          do j=0,mi(2)
 !$omp do
             do i=1,nk
-               b1(i,j) = b1(i,j) + b1_(i,j,k)
+               do k=1,num_cpus
+                  b1(i,j) = b1(i,j) + b1_(k,i,j)
+               end do
             end do
 !$omp end do
          end do
@@ -229,11 +234,12 @@
          do j=1,3
 !$omp do
             do i=1,nk
-               b2(i,j) = b2(i,j) + b2_(i,j,k)
+               do k=1,num_cpus
+                  b2(i,j) = b2(i,j) + b2_(k,i,j)
+               end do
             end do
 !$omp end do
          end do
-      end do
 !$omp end parallel
 !
       deallocate(b1_)
