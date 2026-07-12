@@ -512,6 +512,7 @@ mafillsmse.f \
 mafillv1rhs.f \
 mafillv2rhs.f \
 mafillvlhs.f \
+magneticenergy.f \
 magneticpermeabilitys.f \
 map3dto1d2d.f \
 map3dto1d2d_v.f \

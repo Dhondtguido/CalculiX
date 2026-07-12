@@ -59,6 +59,7 @@
      &         (prlab(i)(1:4).eq.'TS  ').or.
      &         (prlab(i)(1:4).eq.'RF  ').or.
      &         (prlab(i)(1:4).eq.'RFL ').or.
+     &         (prlab(i)(1:4).eq.'RECU').or.
      &         (prlab(i)(1:4).eq.'PS  ').or.
      &         (prlab(i)(1:4).eq.'PN  ').or.
      &         (prlab(i)(1:4).eq.'MF  ').or.
@@ -202,6 +203,7 @@
      &         (textpart(ii)(1:4).ne.'TS  ').and.
      &         (textpart(ii)(1:4).ne.'RF  ').and.
      &         (textpart(ii)(1:4).ne.'RFL ').and.
+     &         (textpart(ii)(1:4).ne.'RECU').and.
      &         (textpart(ii)(1:4).ne.'PS  ').and.
      &         (textpart(ii)(1:4).ne.'PN  ').and.
      &         (textpart(ii)(1:4).ne.'MF  ').and.
@@ -224,11 +226,20 @@
                cycle
             endif
             if(textpart(ii)(1:4).eq.'RFL ') then
-               if(ithermal(1).lt.2) then
+c              if((ithermal(1).lt.2).and.(nmethod.ne.9)) then
+c                  write(*,*) 
+c     &              '*WARNING reading *NODE PRINT: RFL only makes '
+c                  write(*,*) '         sense for heat transfer '
+c                  write(*,*) '         or dynamic electromagnetic'
+c                  write(*,*) '         calculations'
+c                  cycle
+c               endif
+            elseif(textpart(ii)(1:4).eq.'RECU') then
+              if((nmethod.lt.8).or.(nmethod.gt.10)) then
                   write(*,*) 
-     &              '*WARNING reading *NODE PRINT: RFL only makes '
-                  write(*,*) '         sense for heat transfer '
-                  write(*,*) '          calculations'
+     &              '*WARNING reading *NODE PRINT: RECUR only makes '
+                  write(*,*) '         sense for electromagnetic'
+                  write(*,*) '         calculations'
                   cycle
                endif
             elseif((textpart(ii)(1:4).eq.'VF  ').or.

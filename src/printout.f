@@ -104,7 +104,8 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
      &      (prlab(ii)(1:4).eq.'RF  ').or.(prlab(ii)(1:4).eq.'RFL ').or. 
      &      (prlab(ii)(1:4).eq.'PS  ').or.(prlab(ii)(1:4).eq.'PN  ').or.
      &      (prlab(ii)(1:4).eq.'MF  ').or.(prlab(ii)(1:4).eq.'V   ').or.
-     &      (prlab(ii)(1:4).eq.'TS  ').or.(prlab(ii)(1:4).eq.'A   ')) 
+     &      (prlab(ii)(1:4).eq.'TS  ').or.(prlab(ii)(1:4).eq.'A   ').or.
+     &      (prlab(ii)(1:4).eq.'RECU')) 
      &       then
 !     
           ipos=index(prset(ii),' ')
@@ -138,11 +139,18 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
  102        format(' forces (fx,fy,fz) for set ',A,
      &           ' and time ',e14.7)
             write(5,*)
-          elseif((prlab(ii)(1:5).eq.'RFL ').or.
+          elseif((prlab(ii)(1:5).eq.'RFL  ').or.
      &           (prlab(ii)(1:5).eq.'RFL T')) then
             write(5,*)
             write(5,103) noset(1:ipos-2),ttime+time
  103        format(' heat generation for set ',A,' and time ',e14.7)
+            write(5,*)
+          elseif((prlab(ii)(1:5).eq.'RECU ').or.
+     &           (prlab(ii)(1:5).eq.'RECUT')) then
+            write(5,*)
+            write(5,143) noset(1:ipos-2),ttime+time
+ 143        format(' reactive electric current for set ',A,' and time ',
+     &           e14.7)
             write(5,*)
           elseif(prlab(ii)(1:4).eq.'PS  ') then
             write(5,*)
@@ -221,6 +229,14 @@ c     &           ne,cflag,co,vold,iforce,mi,ielprop,prop)
             write(5,*)
             write(5,105)noset(1:ipos-2),ttime+time
  105        format(' total heat generation for set ',A,
+     &           ' and time ',e14.7)
+            write(5,*)
+            write(5,'(6x,1p,1x,e13.6)') rftot(0)
+          elseif((prlab(ii)(1:5).eq.'RECUO').or.
+     &           (prlab(ii)(1:5).eq.'RECUT')) then
+            write(5,*)
+            write(5,144)noset(1:ipos-2),ttime+time
+ 144        format(' total reactive electric current for set ',A,
      &           ' and time ',e14.7)
             write(5,*)
             write(5,'(6x,1p,1x,e13.6)') rftot(0)
