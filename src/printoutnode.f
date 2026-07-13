@@ -109,8 +109,7 @@
       elseif(prlab(ii)(1:4).eq.'MF  ') then
          write(5,'(i10,1x,1p,e13.6)') node,
      &        v(1,node)
-       elseif((prlab(ii)(1:4).eq.'RF  ').or.
-     &        (prlab(ii)(1:4).eq.'RECU')) then
+       elseif(prlab(ii)(1:4).eq.'RF  ') then
          do j=1,3
             rftot(j)=rftot(j)+fn(j,node)
          enddo
@@ -130,7 +129,8 @@
      &            local
             endif
          endif
-      elseif(prlab(ii)(1:4).eq.'RFL ') then
+      elseif((prlab(ii)(1:4).eq.'RFL ').or.
+     &        (prlab(ii)(1:4).eq.'RECU')) then
          rftot(0)=rftot(0)+fn(0,node)
          if(prlab(ii)(5:5).ne.'O') then
             write(5,'(i10,1p,3(1x,e13.6))') node,

@@ -5602,3 +5602,5 @@ Dec 2002        - started to work on single crystal plasticity
 
  8 June 2026    - changed noelfiles.f taking care of contact output requests
                   without any contact pair definition
+
+ 12 July 2026   - worked on the calculation of self-inductance.
