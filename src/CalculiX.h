@@ -2991,6 +2991,15 @@ void FORTRAN(mafillvlhs,(ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
 			 ITG *icolv,ITG *jqv,ITG *irowv,ITG *nzsv,double *adbv,
 			 double *aubv,ITG *ipvar,double *var));
 
+void FORTRAN(magneticenergy,(ITG *ipkon,char *lakon,ITG *kon,double *co,
+			     double *elcon,ITG *nelcon,ITG *mi,ITG *ne,
+			     double *sti,ITG *ielmat,ITG *ncmat_,ITG *ntmat_,
+			     double *alcon,ITG *nalcon,ITG *ithermal,
+			     double *vold,double *t1,ITG *nmethod,char *prlab,
+			     ITG *nprint,double *ttime,double *time,
+			     char *prset,ITG *istartset,ITG *iendset,
+			     ITG *ialset,char *set,ITG *nset));
+
 void FORTRAN(map3dto1d2d,(double *extnor,ITG *ipkon,ITG *inum,ITG *kon,
                           char *lakon,ITG *nfield,ITG *nk,ITG *ne,
                           char *cflag,double *co,double *vold,ITG *iforce,

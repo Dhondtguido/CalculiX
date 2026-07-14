@@ -1765,11 +1765,9 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
       /* calculating and printing the magnetic energy  */
       
       FORTRAN(magneticenergy,(ipkon,lakon,kon,co,elcon,nelcon,
-			      mi,ne,stx,ielmat,nelemload,sideload,xloadact,
-			      nload,nload_,
-			      iamload,nam,idefload,ncmat_,ntmat_,
-			      alcon,nalcon,ithermal,vold,t1,nmethod,
-			      prlab,nprint,ttime,&time));
+          mi,ne,stx,ielmat,ncmat_,ntmat_,
+          alcon,nalcon,ithermal,vold,t1,nmethod,prlab,nprint,
+          ttime,&time,prset,istartset,iendset,ialset,set,nset));
 
       SFREE(stx);SFREE(fn);
 

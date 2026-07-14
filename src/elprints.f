@@ -59,6 +59,7 @@
      &         (prlab(i)(1:4).eq.'SDV ').or.
      &         (prlab(i)(1:4).eq.'ELSE').or.
      &         (prlab(i)(1:4).eq.'ELKE').or.
+     &         (prlab(i)(1:4).eq.'ELME').or.
      &         (prlab(i)(1:4).eq.'EVOL').or.
      &         (prlab(i)(1:4).eq.'EMAS').or.
      &         (prlab(i)(1:4).eq.'EBHE').or.
@@ -267,6 +268,7 @@ c          enddo
      &             (textpart(ii)(1:4).ne.'COOR').and.
      &             (textpart(ii)(1:4).ne.'CENT').and.
      &             (textpart(ii)(1:4).ne.'DUCT').and.
+     &             (textpart(ii)(1:4).ne.'ELME').and.
      &             (textpart(ii)(1:4).ne.'EBHE')) then
                write(*,*) 
      &             '*ERROR reading *EL PRINT: label not applicable'
