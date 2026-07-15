@@ -45,15 +45,15 @@ performed in a parallel way. In CalculiX one can
   default is 1. If both are set, CCX\_NPROC\_STIFFNESS takes
   precedence. The maximum number of cores is detected automatically by CalculiX
   by using
-  the sysconf(\_SC\_NPROCESSORS\_CONF) function. It can be overriden by the
+  the sysconf(\_SC\_NPROCESSORS\_CONF) function. It can be overridden by the
   user by means of environment variable NUMBER\_OF\_CPUS.
 
   Notice that older GNU-compiler versions (e.g. gcc 4.2.1) may have problems with this
-  parallellization due to the size of the fields to be allocated within each
+  parallelization due to the size of the fields to be allocated within each
   thread (e.g. s(100,100) in routine e\_3d.f). This should not be a problem
   with the actual compiler version.
 
-\item solve the system of equations with the multithreaded version of
+\item solve the system of equations with the multi-threaded version of
   SPOOLES. To this end
 
 \begin{itemize}
@@ -69,9 +69,9 @@ performed in a parallel way. In CalculiX one can
   precedence. 
 \end{itemize} 
 
-\item solve the system of equations with the multithreaded version of
+\item solve the system of equations with the multi-threaded version of
   PARDISO. PARDISO is proprietary. Look at the PARDISO documentation how to link the
-  multithreaded version. At execution
+  multi-threaded version. At execution
   time the environment variable OMP\_NUM\_THREADS must be set to the number of cores,
   default is 1.
 
@@ -81,7 +81,7 @@ performed in a parallel way. In CalculiX one can
   default is 1. If both are set, CCX\_NPROC\_RESULTS takes
   precedence. The maximum number of cores is detected automatically by CalculiX
   by using
-  the sysconf(\_SC\_NPROCESSORS\_CONF) function. It can be overriden by the
+  the sysconf(\_SC\_NPROCESSORS\_CONF) function. It can be overridden by the
   user by means of environment variable NUMBER\_OF\_CPUS. Notice that if a
   material user subroutine (Sections \ref{user} and \ref{thuser}) is used, certain rules have to be complied with in
   order to allow parallelization. These include (this list is possibly not exhaustive):
@@ -92,7 +92,7 @@ performed in a parallel way. In CalculiX one can
 \item no write statements
 \end{itemize}
 
-\item calculate the viewfactors for thermal radiation computations in parallel. No special compilation flag is needed. At execution
+\item calculate the view factors for thermal radiation computations in parallel. No special compilation flag is needed. At execution
   time the environment variable OMP\_NUM\_THREADS or the environment variable CCX\_NPROC\_VIEWFACTOR must be set to the number of cores,
   default is 1. If both are set, CCX\_NPROC\_VIEWFACTOR takes precedence. The maximum number of cores is detected automatically by CalculiX by using
   the sysconf(\_SC\_NPROCESSORS\_CONF) function. It can be overriden by the
@@ -17084,7 +17084,7 @@ takes the form
   \boldsymbol{j}= \boldsymbol{j_0} e^{i \omega t},
 \end{equation}
 
-and qa solution for the vector $\{U\}$ is looked for with the same time
+and a solution for the vector $\{U\}$ is looked for with the same time
 dependency. Substitution in the governing equation and separating real and
 imaginary part leads to
 
@@ -17123,9 +17123,9 @@ to induce the skin effect in structures \cite{Fitzpatrick}, i.e. the electric fi
 concentrated in a thin layer underneath the surface. To order to capture this
 effect a sufficiently fine mesh is needed in that area.
 
-Experience has shown that the matrices inthe above systems of equations are
+Experience has shown that the matrices in the above systems of equations are
 not always well conditioned, especially if the temperature is included and a
-coupled thermal-electromagnetic system is solved. To improve the conditiono a
+coupled thermal-electromagnetic system is solved. To improve the condition a
 scaling of the diagonal terms can be introduced. For a diagonal term $a_{ii}$
 the scaling term is defined as $a_{ii}^s = |a_{ii}| $ if $|a_{ii}| \ge
 10^{-30}$ and $a_{ii}^s =1$ else. The original system of equations
@@ -23906,6 +23906,7 @@ The following  variables can be selected:
 \item the heating power (key=EBHE)
 \item the kinetic energy (key=ELKE)
 \item the internal energy (key=ELSE)
+\item the magnetic energy (key=ELME)
 \item the mass and the mass moments of inertia about the global axes $I_{xx}$,
   $I_{yy}$, $I_{zz}$, $I_{xy}$, $I_{xz}$ and $I_{yz}$, where
 
@@ -27395,6 +27396,7 @@ selected:
 \item Pressures in networks (key=PN). These are the total pressures for gases,
   static pressures for liquids and liquid depth for channels. The fluid
   section types dictate the kind of network.
+\item Reactive current (key=RECUR); only for electromagnetic calculations.
 \item External forces (key=RF) (only static forces;
   dynamic forces, such as those caused by dashpots, are not included)
 \item External concentrated heat sources (key=RFL)
