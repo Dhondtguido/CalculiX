@@ -5606,3 +5606,9 @@ Dec 2002        - started to work on single crystal plasticity
  12 July 2026   - worked on the calculation of self-inductance.
 
  14 July 2026   - coded the electromagnetic energy
+
+ 27 July 2026   - defined *DAMAGE INITIATION as *MATERIAL card in
+                  readinput.c
+
+ 28 July 2026   - corrected an error for the parameter fixed on the
+                  *boundary card for cylindrical coordinates
