@@ -70,8 +70,8 @@ C>
          endif
          if (ier .ne. 0) then
             write(*,*)
-     &           "ERROR in eigsymd.f when computing",
-     &           "optimal work array: ",
+     &           "*ERROR in eigsymd.f when computing",
+     &           "       optimal work array: ",
      &           ier
             return
          endif
@@ -90,7 +90,7 @@ C>
       deallocate(work)
       if (ier .ne. 0) then
          write(*,*)
-     &        "ERROR in eigsymd.f when solving eigenproblem: ",
+     &        "*ERROR in eigsymd.f when solving eigenproblem: ",
      &        ier
          return
       endif

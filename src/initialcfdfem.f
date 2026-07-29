@@ -18,7 +18,7 @@
 !     
       subroutine initialcfdfem(yy,nk,co,ne,ipkon,kon,lakon,x,y,z,xo,
      &     yo,zo,nx,ny,nz,isolidsurf,neighsolidsurf,xsolidsurf,dh,
-     &     nshcon,shcon,nrhcon,rhcon,vold,vcon,ntmat_,iponoel,inoel,
+     &     nshcon,shcon,nrhcon,rhcon,vold,vcon,ntmat_,iponoelf,inoelf,
      &     nsolidsurf,iturbulent,physcon,compressible,
      &     matname,inomat,mi,ithermal,dhel,jyy,ifreesurface,
      &     nbody,ipobody,ibody,xbody,depth,nodfreesurf,dgravity,xg)
@@ -44,8 +44,8 @@
 !     
       integer ne,ipkon(*),kon(*),indexe,ifaceq(8,6),ifacet(7,4),
      &     ifacew(8,5),kflag,isolidsurf(*),nsolidsurf,nope,node1,node2,
-     &     nk,node,i,j,k,iponoel(*),inoel(2,*),nx(*),ny(*),index,nelem,
-     &     nz(*),neighsolidsurf(*),kneigh,jyy(*),ifreesurface,
+     &     nk,node,i,j,k,iponoelf(*),inoelf(2,*),nx(*),ny(*),index,
+     &     nelem,nz(*),neighsolidsurf(*),kneigh,jyy(*),ifreesurface,
      &     nshcon(*),nrhcon(*),ntmat_,neigh,mi(*),
      &     imat,inomat(*),ithermal(*),iturbulent,
      &     iflag,konl(26),nopes,nfaces,ig,compressible,ipobody(2,*),
@@ -115,7 +115,7 @@
           call dsort(z,nz,nsolidsurf,kflag)
 !     
           do node=1,nk
-            index=iponoel(node)
+            index=iponoelf(node)
             if(index.le.0) cycle
             px=co(1,node)
             py=co(2,node)
@@ -268,7 +268,7 @@ c     write(*,*) nelem,dhel(nelem)
 !      
       hmin=1.d30
       loop:do i=1,nk
-        index=iponoel(i)
+        index=iponoelf(i)
         if(index.le.0) cycle
         dh(i)=1.d30
 !     
@@ -277,9 +277,9 @@ c     write(*,*) nelem,dhel(nelem)
 !     
         do
           if(index.le.0) exit
-          nelem=inoel(1,index)
+          nelem=inoelf(1,index)
           dh(i)=min(dh(i),dhel(nelem))
-          index=inoel(2,index)
+          index=inoelf(2,index)
         enddo
         hmin=min(hmin,dh(i))
 !     

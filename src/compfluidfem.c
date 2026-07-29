@@ -40,7 +40,7 @@
 void compfluidfem(double **cop,ITG *nk,ITG **ipkonp,ITG **konp,char **lakonp,
 		  ITG *ne,char **sidefacep,ITG *ifreestream,
 		  ITG *nfreestream,ITG *isolidsurf,ITG *neighsolidsurf,
-		  ITG *nsolidsurf,ITG *iponoel,ITG *inoel,ITG *nshcon,
+		  ITG *nsolidsurf,ITG *iponoelf,ITG *inoelf,ITG *nshcon,
 		  double *shcon,
 		  ITG *nrhcon,double *rhcon,double **voldp,ITG *ntmat_,
 		  ITG *nodeboun,
@@ -284,7 +284,7 @@ void compfluidfem(double **cop,ITG *nk,ITG **ipkonp,ITG **konp,char **lakonp,
   
   FORTRAN(initialcfdfem,(yy,nk,co,ne,ipkon,kon,lakon,x,y,z,xo,yo,zo,nx,ny,nz,
 			 isolidsurf,neighsolidsurf,xsolidsurf,dh,nshcon,shcon,
-			 nrhcon,rhcon,vold,vcon,ntmat_,iponoel,inoel,
+			 nrhcon,rhcon,vold,vcon,ntmat_,iponoelf,inoelf,
 			 nsolidsurf,iturbulent,physcon,
 			 &compressible,matname,inomat,mi,
 			 ithermal,dhel,jyy,ifreesurface,nbody,ipobody,
@@ -469,8 +469,8 @@ void compfluidfem(double **cop,ITG *nk,ITG **ipkonp,ITG **konp,char **lakonp,
       /* determining a new time increment */
 
       if((*nmethod==4)||((*nmethod==1)&&((iit/ipower)*ipower==iit))){
-	FORTRAN(compdt,(nk,dt,nshcon,shcon,vold,ntmat_,iponoel,
-			inoel,&dtimef,ielmat,dh,cocon,ncocon,
+	FORTRAN(compdt,(nk,dt,nshcon,shcon,vold,ntmat_,iponoelf,
+			inoelf,&dtimef,ielmat,dh,cocon,ncocon,
 			ithermal,mi,
 			vcon,&compressible,tincf,&ierr,ifreesurface,
 			&dgravity,&iit));
@@ -561,7 +561,7 @@ void compfluidfem(double **cop,ITG *nk,ITG **ipkonp,ITG **konp,char **lakonp,
 			       doubleglob,tieset,istartset,iendset,ialset,ntie,
 			       nmpc,ipompc,ikmpc,ilmpc,nodempc,coefmpc,set,
 			       nset,cocon,ncocon,rhcon,nrhcon,shcon,nshcon,
-			       ielmat,ielprop,prop,iponoel,inoel,ipkon,kon,
+			       ielmat,ielprop,prop,iponoelf,inoelf,ipkon,kon,
 			       lakon,ipobody,ntmat_));
 	}
 	  
@@ -581,7 +581,7 @@ void compfluidfem(double **cop,ITG *nk,ITG **ipkonp,ITG **konp,char **lakonp,
 			     doubleglob,tieset,istartset,iendset,ialset,ntie,
 			     nmpc,ipompc,ikmpc,ilmpc,nodempc,coefmpc,set,nset,
 			     cocon,ncocon,rhcon,nrhcon,shcon,nshcon,
-			     ielmat,ielprop,prop,iponoel,inoel,ipkon,kon,
+			     ielmat,ielprop,prop,iponoelf,inoelf,ipkon,kon,
 			     lakon,ipobody,ntmat_));
       }
 
@@ -822,7 +822,7 @@ void compfluidfem(double **cop,ITG *nk,ITG **ipkonp,ITG **konp,char **lakonp,
 
       if((iexplicit)&&(shockcoef>0.)){
 
-        FORTRAN(presgradient,(iponoel,inoel,sa,&shockcoef,
+        FORTRAN(presgradient,(iponoelf,inoelf,sa,&shockcoef,
                               &dtimef,ipkon,kon,lakon,vold,mi,
                               nactdoh,nk,&num_cpus));
 

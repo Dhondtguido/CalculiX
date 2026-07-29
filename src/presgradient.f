@@ -16,7 +16,7 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
-      subroutine presgradient(iponoel,inoel,sa,shockcoef,
+      subroutine presgradient(iponoelf,inoelf,sa,shockcoef,
      &     dtimef,ipkon,kon,lakon,vold,mi,
      &     nactdoh,nk,num_cpus)
 !     
@@ -31,7 +31,7 @@
 !     
       character*8 lakon(*)
 !     
-      integer iponoel(*),inoel(2,*),i,j,k,index,indexe,nope,
+      integer iponoelf(*),inoelf(2,*),i,j,k,index,indexe,nope,
      &     ipkon(*),kon(*),node,ielem,mi(*),nk,
      &     nactdoh(*), num_cpus
 !     
@@ -45,16 +45,16 @@
 !$omp&private(ielem,nope,node,contribution)
       do i=1,nk
         if(nactdoh(i).le.0) cycle
-        if(iponoel(i).le.0) cycle
+        if(iponoelf(i).le.0) cycle
         j=nactdoh(i)
 !        
         sum=0.d0
         sumabs=0.d0
         pa=vold(4,i)
-        index=iponoel(i)
+        index=iponoelf(i)
 !     
         do
-          ielem=inoel(1,index)
+          ielem=inoelf(1,index)
           if(ipkon(ielem).lt.0) cycle
           if(lakon(ielem)(1:1).ne.'F') cycle
           if(lakon(ielem)(4:4).eq.'8') then
@@ -76,7 +76,7 @@
             sumabs=sumabs+dabs(contribution)
 !            
           enddo
-          index=inoel(2,index)
+          index=inoelf(2,index)
           if(index.eq.0) exit
         enddo
         if(sumabs.lt.1.d-10) then

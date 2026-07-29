@@ -5612,3 +5612,8 @@ Dec 2002        - started to work on single crystal plasticity
 
  28 July 2026   - corrected an error for the parameter fixed on the
                   *boundary card for cylindrical coordinates
+
+ 29 July 2026   - changed *noel* into *noelf* in compfluidfem and
+                  its subroutines
+		- included all D* elements in inoeln (also the generic
+		  ones, with a blank after the D)
