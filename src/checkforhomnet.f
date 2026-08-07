@@ -17,7 +17,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
       subroutine checkforhomnet(ieg,nflow,lakon,ipkon,kon,itg,ntg,
-     &     iponoel,inoel)
+     &     iponoeln,inoeln)
 !     
 !     check whether (simply or not) connected networks are
 !     inhomogeneous
@@ -29,7 +29,7 @@
       character*8 lakon(*)
 !     
       integer i,ieg(*),nflow,nelem,indexe,ipkon(*),kon(*),itg(*),
-     &     ntg,iponoel(*),inoel(2,*),index,ier,j,newnode,node,id
+     &     ntg,iponoeln(*),inoeln(2,*),index,ier,j,newnode,node,id
 !     
       integer,dimension(:),allocatable::itgcp
 !     
@@ -117,11 +117,11 @@
 !     
 !     look for a non-treated element connected to the node
 !     
-              index=iponoel(node)
+              index=iponoeln(node)
               do
-                nelem=inoel(1,index)
+                nelem=inoeln(1,index)
                 if(ipkon(nelem).lt.-1) then
-                  index=inoel(2,index)
+                  index=inoeln(2,index)
                   if(index.eq.0) then
                     exit loop2
                   endif
@@ -189,7 +189,7 @@
                   call nident(itgcp,newnode,ntg,id)
                   itg(id)=-itg(id)
                 endif
-                index=inoel(2,index)
+                index=inoeln(2,index)
                 if(index.eq.0) exit
               enddo
             enddo loop2

@@ -51,7 +51,7 @@
 !     statev(1)   - equivalent plastic strain 
 !     statev(2-7) - plastic strain tensor 
 !     statev(8)   - plastic strain rate
-!     statev(9)   - number of interations k
+!     statev(9)   - number of interactions k
 !-----------------------------------------------------------------------
 !     
 !     elastic properties 

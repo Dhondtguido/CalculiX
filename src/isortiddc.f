@@ -5,7 +5,7 @@
       subroutine isortiddc(ix,dy1,dy2,cy,n,kflag)
 !
 !     modified to make the same interchanges in two 
-!     double (dy1 and dy2) and a char*20 aray (cy)
+!     double (dy1 and dy2) and a char*20 array (cy)
 !
 C***BEGIN PROLOGUE  ISORT
 C***PURPOSE  Sort an array and optionally make the same interchanges in

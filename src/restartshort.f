@@ -22,7 +22,7 @@
      &     set,meminset,rmeminset,jobnamec,irestartstep,icntrl,ithermal,
      &     nener,nstate_,ntie,nslavs,nkon,mcs,nprop,mortar,
      &     ifacecount,nintpoint,infree,nef,mpcend,nheading_,network,
-     &     nfc,ndc,iprestr)
+     &     nfc,ndc,iprestr,ndmat_)
 !     
 !     istartset := meminset
 !     iendset := rmeminset
@@ -40,7 +40,7 @@
      &     i,j,k,ipos,icntrl,nener,irestartstep,im0,im1,im2,mem,iact,
      &     istat,nkon,nlabel,iplas,ithermal(*),nstate_,iprestr,
      &     mcs,ntie,nbody,nslavs,ifacecount,iversion,nef,mpcend,
-     &     maxlenmpc,nheading_,network,nfc,ndc
+     &     maxlenmpc,nheading_,network,nfc,ndc,ndmat_
 !     
       if(icntrl.eq.0) then
 !     
@@ -135,6 +135,7 @@
           read(15)ntmat_
           read(15)npmat_
           read(15)ncmat_
+          read(15)ndmat_
 !     
 !     property info
 !     
@@ -196,7 +197,7 @@
      &         ntrans,nam,nprint,nlabel,ncs_,ne1d,ne2d,infree,
      &         nmethod,iperturb,nener,ithermal,nstate_,iprestr,
      &         mcs,ntie,nslavs,nprop,mortar,ifacecount,nintpoint,
-     &         nef,nheading_,nfc,ndc)
+     &         nef,nheading_,nfc,ndc,ndmat_)
 !     
         enddo
 !     
@@ -279,6 +280,7 @@
         read(15)ntmat_
         read(15)npmat_
         read(15)ncmat_
+        read(15)ndmat_
 !     
 !     property info
 !     
@@ -341,7 +343,7 @@
      &       ntrans,nam,nprint,nlabel,ncs_,ne1d,ne2d,infree,nmethod,
      &       iperturb,nener,ithermal,nstate_,iprestr,mcs,ntie,
      &       nslavs,nprop,mortar,ifacecount,nintpoint,nef,nheading_,
-     &       nfc,ndc)
+     &       nfc,ndc,ndmat_)
 !     
       enddo
 !     

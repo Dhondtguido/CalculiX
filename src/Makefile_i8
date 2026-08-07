@@ -1,6 +1,6 @@
 
 CFLAGS = -Wall -O2 -fopenmp -fpic -I ../../SPOOLES.2.2 -I$(PASTIX_INCLUDE) -DARCH="Linux" -DSPOOLES -DARPACK -DMATRIXSTORAGE -DINTSIZE64 -DPASTIX -DPASTIX_FP32 -DPASTIX_GPU
-FFLAGS = -Wall -O2 -fopenmp -fpic -fdefault-integer-8
+FFLAGS = -Wall -O2 -fopenmp -fpic -fdefault-integer-8 -cpp
 
 CC=cc
 FC=gfortran
@@ -31,6 +31,8 @@ PASTIX_LIBS = ../../PaStiX/hwloc_i8/lib64/libhwloc.so ../../OpenBLAS_i8/lib/libo
 
 LIBS = \
      $(DIR)/spooles.a \
+     ../../LAPACK/lapack-3.12.1/liblapack.a \
+     ../../LAPACK/lapack-3.12.1/librefblas.a \
      ../../ARPACK_i8/libarpack_INTEL_i8.a \
      $(PASTIX_LIBS) \
      -lpthread -lm -lc

@@ -18,7 +18,7 @@
 !
       subroutine advecforc(nope,voldl,ithermal,xl,nelemload,nelemadvec,
      &  nload,lakon,xload,istep,time,ttime,dtime,sideload,vold,mi,
-     &  xloadold,reltime,nmethod,tnl,iinc,iponoel,inoel,ielprop,prop,
+     &  xloadold,reltime,nmethod,tnl,iinc,iponoeln,inoeln,ielprop,prop,
      &  ielmat,shcon,nshcon,rhcon,nrhcon,ntmat_,ipkon,kon,cocon,ncocon,
      &  ipobody,ibody,xbody)
 !
@@ -33,7 +33,7 @@
 !
       integer nope,i,ithermal(*),j,nelemload(2,*),nelemadvec,nload,id,
      &  nelem,ig,mint2d,iflag,istep,jltyp,nfield,mi(*),nmethod,k,iinc,
-     &  node,nopes,iponoel(*),inoel(2,*),ielprop(*),ielmat(mi(3),*),
+     &  node,nopes,iponoeln(*),inoeln(2,*),ielprop(*),ielmat(mi(3),*),
      &  ipkon(*),
      &  nshcon(*),nrhcon(*),ntmat_,kon(*),ncocon(2,*),ipobody(2,*),
      &  ibody(3,*)
@@ -193,7 +193,7 @@
             call film(xload(1,id),sinktemp,temp,istep,
      &           iinc,timeend,nelem,i,coords,jltyp,field,nfield,
      &           sideloadl,node,areaj,vold,mi,
-     &           ipkon,kon,lakon,iponoel,inoel,ielprop,prop,ielmat,
+     &           ipkon,kon,lakon,iponoeln,inoeln,ielprop,prop,ielmat,
      &           shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon,
      &           ipobody,xbody,ibody,heatnod,heatfac)
          endif

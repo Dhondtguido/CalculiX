@@ -92,7 +92,7 @@
          enddo
       endif
 !
-!     Euclidian length
+!     Euclidean length
 !
       g0(iobject)=dsqrt(g0(iobject))
 !

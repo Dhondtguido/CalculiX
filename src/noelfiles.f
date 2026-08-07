@@ -20,7 +20,7 @@
      &  nodefile_flag,elfile_flag,ifile_output,nener,ithermal,
      &  istep,istat,n,iline,ipol,inl,ipoinp,inp,out3d,nlabel,
      &  amname,nam,itpamp,idrct,ipoinpc,nef,contactfile_flag,
-     &  set,nset,xmodal,ier,physcon,output)
+     &  set,nset,xmodal,ier,physcon,output,ndmat_,mortar)
 !
 !     reading the *NODE FILE, *EL FILE and *CONTACT FILE cards in the 
 !     input deck
@@ -38,7 +38,7 @@
       character*132 textpart(16)
 !
       integer istep,istat,n,key,ii,jout(2),joutl,nmethod,nener,
-     &  ithermal(*),ier,id,
+     &  ithermal(*),ier,id,ndmat_,mortar,
      &  iline,ipol,inl,ipoinp(2,*),inp(3,*),j,nlabel,nam,itpamp,i,
      &  idrct,ipoinpc(0:*),nef,ifile_output,ipos,nset
 !
@@ -97,6 +97,7 @@
             filab(49)(1:4)='    '
             filab(50)(1:4)='    '
             filab(54)(1:4)='    '
+            filab(57)(1:4)='    '
 !
             filab(1)(6:87)=' '
             filab(2)(6:87)=' '
@@ -122,6 +123,7 @@
             filab(49)(6:87)=' '
             filab(50)(6:87)=' '
             filab(54)(6:87)=' '
+            filab(57)(6:87)=' '
          endif
       elseif(ifile_output.eq.2) then
 !
@@ -153,6 +155,7 @@
                filab(j)(1:4)='    '
             enddo
             filab(55)(1:4)='    '
+            filab(56)(1:4)='    '
 !
             filab(3)(6:87)=' '
             filab(4)(6:87)=' '
@@ -173,6 +176,7 @@
                filab(j)(6:87)=' '
             enddo
             filab(55)(6:87)=' '
+            filab(56)(6:87)=' '
 !
             sectionforces=.false.
          endif
@@ -586,10 +590,17 @@
                   filab(25)(7:87)=noset
                endif
             elseif((textpart(ii)(1:4).eq.'CSTR').or.
-     &             (textpart(ii)(1:4).eq.'CDIS')) then
+     &              (textpart(ii)(1:4).eq.'CDIS')) then
+              if(mortar.lt.-1) then
+                write(*,*) '*WARNING: contact output was requested,'
+                write(*,*) '          however, no contact pair was'
+                write(*,*) '          defined. Output request is'
+                write(*,*) '          removed.'
+             else
                filab(26)(1:4)='CONT'
                filab(26)(6:6)=nodesys
                filab(26)(7:87)=noset
+             endif
             elseif(textpart(ii)(1:4).eq.'CELS') then
                filab(27)(1:4)='CELS'
                filab(27)(6:6)=nodesys
@@ -862,6 +873,32 @@
                filab(55)(1:4)='THE '
                filab(55)(6:6)=elemsys
                filab(55)(7:87)=noset
+             elseif(textpart(ii)(1:4).eq.'DUCT') then
+               if(ndmat_.eq.0) then
+                 write(*,*) 
+     &        '*WARNING reading *NODE/EL/CONTACT FILE: DUCT only makes'
+                 write(*,*) 
+     &                '         sense if there exists at least one'
+                 write(*,*) 
+     &                '         material with *DAMAGE INITIATION'
+               else
+                 filab(56)(1:4)='DUCT'
+                 filab(56)(6:6)=elemsys
+                 filab(56)(7:87)=noset
+               endif
+             elseif(textpart(ii)(1:4).eq.'A   ') then
+               if((nmethod.eq.4).and.(nef.eq.0).and.(mortar.ge.0)
+     &              .and.(mortar.le.1)) then
+                 filab(57)(1:4)='A   '
+                 filab(57)(6:6)=nodesys
+                 filab(57)(7:87)=noset
+               else
+                 write(*,*) 
+     &'*WARNING reading *NODE/EL/CONTACT FILE: A is only available'
+                 write(*,*) '         for structural dynamic '
+                 write(*,*) '         calculations with penalty'
+                 write(*,*) '         contact'
+               endif
              else
                write(*,*) 
      &'*WARNING reading *NODE/EL/CONTACT FILE: label not applicable'
@@ -870,13 +907,24 @@
      &"*NODE FILE/OUTPUT or *EL FILE/OUTPUT or *CONTACT FILE/OUTPUT %")
             endif
          enddo
-      enddo
+       enddo
+!
+!      some fields are used for both the error estimator and contact;
+!      therefore, a check is performed whether this situation occurs.
+!
+       if(mortar.ne.1) then
+         if((filab(26)(1:4).eq.'CONT').and.
+     &        ((filab(13)(1:4).eq.'ZZS ').or.
+     &        (filab(13)(1:4).eq.'ERR '))) then
+           write(*,*) '*WARNING: contact output for node-to-surface'
+           write(*,*) '          penalty, mortar or massless Lagrange'
+           write(*,*) '          contact cannot be combined with error'
+           write(*,*) '          estimator output; the latter is'
+           write(*,*) '          removed.'
+           filab(13)(1:4)=' '
+           filab(13)(6:87)=' '
+         endif
+       endif
 !
       return
       end
-
-
-
-
-
-

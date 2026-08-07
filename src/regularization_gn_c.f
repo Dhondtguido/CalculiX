@@ -101,7 +101,7 @@ c         ndata=int(plconloc(81))
             call exit(201)
          endif
 !     
-!     exponetial perturbed Lagrange
+!     exponential perturbed Lagrange
 !
       else if (regmode.eq.3)then
          if(divmode.eq.0)then

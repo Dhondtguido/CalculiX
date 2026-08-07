@@ -26,7 +26,7 @@
      &     ntrans,trab,inotr,veold,integerglob,doubleglob,tieset,
      &     istartset,
      &     iendset,ialset,ntie,nmpc,ipompc,ikmpc,ilmpc,nodempc,coefmpc,
-     &     ipobody,iponoel,inoel,ipkon,kon,ielprop,prop,ielmat,
+     &     ipobody,iponoeln,inoeln,ipkon,kon,ielprop,prop,ielmat,
      &     shcon,nshcon,rhcon,nrhcon,cocon,ncocon,ntmat_,lakon,
      &     set,nset)
 !     
@@ -34,7 +34,7 @@
 !     
       implicit none
 !     
-      logical gasnode
+      logical gasnode,master2d
 !     
       character*1 entity
       character*8 lakon(*)
@@ -51,7 +51,7 @@
      &     ipresboun,mi(*),ntrans,inotr(2,*),integerglob(*),
      &     istartset(*),iendset(*),ialset(*),ntie,iselect(1),
      &     nmpc,ikmpc(*),ilmpc(*),nodempc(3,*),k,ist,index,ipompc(*),
-     &     ipobody(2,*),iponoel(*),inoel(2,*),ipkon(*),kon(*),
+     &     ipobody(2,*),iponoeln(*),inoeln(2,*),ipkon(*),kon(*),
      &     ielprop(*),ielmat(mi(3),*),nshcon(*),nrhcon(*),ncocon(2,*),
      &     ntmat_,nset
 !     
@@ -59,15 +59,14 @@
      &     t1(*),t1act(*),amta(2,*),ampli(*),time,fixed_temp,
      &     xforcold(*),xloadold(2,*),t1old(*),reltime,coefmpc(*),
      &     xbounold(*),xboun(*),xbounact(*),ttime,dtime,reftime,
-     &     xbody(7,*),xbodyold(7,*),xbodyact(7,*),co(3,*),
-     &     vold(0:mi(2),*),abqtime(2),coords(3),trab(7,*),
+     &     xbody(7,*),xbodyold(7,*),xbodyact(7,*),co(3,*),cosphi,
+     &     vold(0:mi(2),*),abqtime(2),coords(3),trab(7,*),sinphi,
      &     veold(0:mi(2),*),doubleglob(*),prop(*),shcon(0:3,ntmat_,*),
-     &     rhcon(0:1,ntmat_,*),cocon(0:6,ntmat_,*)
-!     
-!     
+     &     rhcon(0:1,ntmat_,*),cocon(0:6,ntmat_,*),coords_aux(3)
 !     
       data msecpt /1/
       data one /1/
+      data master2d /.false./
 !     
 !     if an amplitude is active, the loading is scaled according to
 !     the actual time. If no amplitude is active, then the load is
@@ -148,21 +147,30 @@ c     coords(j)=co(j,node)+vold(j,node)
 !     
           if(ndirboun(i).eq.0) then
             call utemp(xbounact(i),msecpt,istep,iinc,abqtime,node,
-     &           coords,vold,mi,iponoel,inoel,
+     &           coords,vold,mi,iponoeln,inoeln,
      &           ipobody,xbodyact,ibody,ipkon,kon,
      &           lakon,ielprop,prop,ielmat,
      &           shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon)
           else
             call uboun(xbounact(i),istep,iinc,abqtime,node,
-     &           ndirboun(i),coords,vold,mi,iponoel,inoel,
+     &           ndirboun(i),coords,vold,mi,iponoeln,inoeln,
      &           ipobody,xbodyact,ibody,ipkon,kon,
      &           lakon,ielprop,prop,ielmat,
      &           shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon)
           endif
           cycle
         endif
-        if((xboun(i).lt.1.9232931375d0).and.
+        if((xboun(i).lt.1.9232931377d0).and.
      &       (xboun(i).gt.1.9232931373d0)) then
+!
+!         check whether master model is 2d or 3d
+!
+          if((xboun(i).lt.1.9232931377d0).and.
+     &         (xboun(i).gt.1.9232931375d0)) then
+            master2d=.true.
+          else
+            master2d=.false.
+          endif
 !     
 !     boundary conditions for submodel
 !     
@@ -183,14 +191,47 @@ c     coords(j)=co(j,node)+vold(j,node)
 !     
           do j=1,3
             coords(j)=co(j,node)
+            if(master2d) then
+              coords_aux(j)=coords(j)
+            endif
           enddo
 !     
+!         for a 2d master model the first coordinate is radial,    
+!               the second is axial and the third is circumferential
+!         in the 3d submodel the second should be axial
+!
+          if(master2d) then
+            coords(1)=dsqrt(coords_aux(1)**2+coords_aux(3)**2)
+            coords(3)=0.d0
+          endif
+!          
           entity='N'
-          one=1
+c          one=1
           iselect(1)=ndirboun(i)+1
+!
+!         for a 3d submodel in combination with a 2d master model one has:
+!         if submodel: 1  then master model: 1 (radial)
+!         if submodel: 2  then master model: 2 (axial)
+!         if submodel: 3  then master model: 1 (radial)
+!
+          if((master2d).and.(ndirboun(i).eq.3)) iselect(1)=2
+!          
           call interpolsubmodel(integerglob,doubleglob,xbounact(i),
      &         coords,iselect,one,node,tieset,istartset,iendset,
      &         ialset,ntie,entity,set,nset)
+!     
+!         for a 2d master model: converting the radial displacement    
+!         into a displacement in x or z, if needed.    
+!     
+          if((master2d).and.(ndirboun(i).eq.1)) then
+            cosphi=coords_aux(1)/
+     &           dsqrt(coords_aux(1)**2+coords_aux(3)**2)
+            xbounact(i)=xbounact(i)*cosphi
+          elseif((master2d).and.(ndirboun(i).eq.3)) then
+            sinphi=coords_aux(3)/
+     &           dsqrt(coords_aux(1)**2+coords_aux(3)**2)
+            xbounact(i)=xbounact(i)*sinphi
+          endif
 !     
           if(nmethod.eq.1) then
             xbounact(i)=xbounold(i)+
@@ -259,7 +300,7 @@ c     coords(j)=co(j,node)+vold(j,node)
             endif
 !     
             call cflux(xforcact(i),msecpt,istep,iinc,abqtime,node,
-     &           coords,vold,mi,ipkon,kon,lakon,iponoel,inoel,
+     &           coords,vold,mi,ipkon,kon,lakon,iponoeln,inoeln,
      &           ielprop,prop,ielmat,shcon,nshcon,rhcon,nrhcon,
      &           ntmat_,cocon,ncocon)
             cycle
@@ -298,7 +339,7 @@ c     coords(j)=co(j,node)+vold(j,node)
             enddo
 !     
             entity='N'
-            one=1
+c            one=1
             iselect(1)=ndirforc(i)+10
             call interpolsubmodel(integerglob,doubleglob,xforcact(i),
      &           coords,iselect,one,node,tieset,istartset,iendset,
@@ -421,25 +462,46 @@ c     coords(j)=co(j,i)+vold(j,i)
               coords(j)=co(j,i)
             enddo
             call utemp(t1act(i),msecpt,istep,iinc,abqtime,i,
-     &           coords,vold,mi,iponoel,inoel,
+     &           coords,vold,mi,iponoeln,inoeln,
      &           ipobody,xbodyact,ibody,ipkon,kon,
      &           lakon,ielprop,prop,ielmat,
      &           shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon)
             cycle
           endif
 !     
-          if((t1(i).lt.1.9232931375d0).and.
+          if((t1(i).lt.1.9232931377d0).and.
      &         (t1(i).gt.1.9232931373d0)) then
+!
+!           check whether master model is 2d or 3d
+!
+            if((t1(i).lt.1.9232931377d0).and.
+     &           (t1(i).gt.1.9232931375d0)) then
+              master2d=.true.
+            else
+              master2d=.false.
+            endif
 !     
 !     for the interpolation of submodels the undeformed
 !     geometry is taken
 !     
             do j=1,3
               coords(j)=co(j,i)
+              if(master2d) then
+                coords_aux(j)=coords(j)
+              endif
             enddo
 !     
+!     for a 2d master model the first coordinate is radial,    
+!     the second is axial and the third is circumferential
+!     in the 3d submodel the second should be axial
+!     
+            if(master2d) then
+              coords(1)=dsqrt(coords_aux(1)**2+coords_aux(3)**2)
+              coords(3)=0.d0
+            endif
+!     
             entity='N'
-            one=1
+c            one=1
             iselect(1)=1
             call interpolsubmodel(integerglob,doubleglob,t1act(i),
      &           coords,iselect,one,i,tieset,istartset,iendset,

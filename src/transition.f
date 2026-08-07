@@ -33,12 +33,13 @@
 !
       real*8 feasdir(2,*),xo(*),yo(*),zo(*),x(*),y(*),z(*),
      &   trans,co(3,*),xdesi,ydesi,zdesi,scale,actdist,dd,xrefnode,      
-     &   yrefnode,zrefnode
+     &   yrefnode,zrefnode,pi
 !
 !     Read transition distance.
 !   
       read(objectset(1,1)(21:40),'(f20.0)',iostat=istat) trans
-!      
+!
+      pi=4.d0*datan(1.d0)
       nnodes=1
 !
       do j=ndesia,ndesib
@@ -64,10 +65,13 @@
          if(actdist.ge.trans) cycle
 !
 !        Linear scaling
-         scale=actdist/trans
+c         scale=actdist/trans
 !        Exponential scaling
 !        scale=1/(1+dexp(-actdist/trans*10+5))
+!        COS scaling         
 !
+         scale=0.5d0*(1.d0-dcos(pi*actdist/trans))
+!     
          feasdir(2,iactnode)=feasdir(2,iactnode)*scale
       enddo
 !

@@ -54,9 +54,13 @@
                if(index.eq.0) exit
                nelem=inoel(1,index)
 !
-               if(lakon(nelem)(4:4).eq.'8') then
+               if((lakon(nelem)(4:5).eq.'8 ').or.
+     &            (lakon(nelem)(4:5).eq.'8R')) then
                   nopedesi=3
                   nope=8
+               elseif(lakon(nelem)(4:5).eq.'8I') then
+                  nopedesi=3
+                  nope=11
                elseif(lakon(nelem)(4:5).eq.'20') then
                   nopedesi=5
                   nope=20

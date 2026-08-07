@@ -76,7 +76,7 @@
      &             "*INITIAL CONDITIONS%",ier)
               return
             endif
-            temperature=1.d-6*int(1.d6*temperature+0.5d0)
+c            temperature=1.d-6*int(1.d6*temperature+0.5d0)
 !     
             if((inoelfree.ne.0).or.(nuel_.gt.0)) then
               tempgrad1=0.d0
@@ -991,10 +991,11 @@ c     endif
                   do j=1,jmax
                     read(textpart(j+2)(1:20),'(f20.0)',
      &                   iostat=istat) beta(j)
-                    if(istat.gt.0) 
-     &                   call inputerror(inpc,ipoinpc,iline,
-     &                   "*INITIAL CONDITIONS%",ier)
-                    return
+                    if(istat.gt.0) then
+                      call inputerror(inpc,ipoinpc,iline,
+     &                     "*INITIAL CONDITIONS%",ier)
+                      return
+                    endif
                     xstate(ntot+j,k,l)=beta(j)
                   enddo
                   ntot=ntot+jmax

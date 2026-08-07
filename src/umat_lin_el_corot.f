@@ -194,7 +194,7 @@ c      if(iint.eq.1) write(*,100) (emec(i),i=1,6)
       matz=1
       ier=0
 !
-      call rs(n,n,e,we,matz,z,fv1,fv2,ier)
+      call eigsymd(n,e,we,matz,z,ier)
 !
       if(ier.ne.0) then
          write(*,*) '

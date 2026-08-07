@@ -48,7 +48,7 @@
       call dsort(y,ny,ndesi,kflag)
       call dsort(z,nz,ndesi,kflag)
 !
-!     assinging the filterradius
+!     assigning the filterradius
 !
       read(objectset(2,1)(21:40),'(f20.0)',iostat=istat) filterrad     
 !

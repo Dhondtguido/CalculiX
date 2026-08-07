@@ -19,7 +19,7 @@
       subroutine creeps(inpc,textpart,nelcon,nmat,ntmat_,npmat_,
      &     plicon,nplicon,elcon,iplas,iperturb,nstate_,ncmat_,
      &     matname,irstrt,istep,istat,n,iline,ipol,inl,ipoinp,inp,
-     &     ipoinpc,ianisoplas,ier)
+     &     ipoinpc,ier)
 !     
 !     reading the input deck: *CREEP
 !     
@@ -34,7 +34,7 @@
       integer nelcon(2,*),nmat,ntmat_,ntmat,istep,npmat_,nstate_,
      &     n,key,i,j,iplas,iperturb(*),istat,nplicon(0:ntmat_,*),ncmat_,
      &     k,id,irstrt(*),iline,ipol,inl,ipoinp(2,*),inp(3,*),
-     &     ipoinpc(0:*),ianisoplas,ier
+     &     ipoinpc(0:*),ier
 !     
       real*8 temperature,elcon(0:ncmat_,ntmat_,*),t1l,
      &     plicon(0:2*npmat_,ntmat_,*)
@@ -58,13 +58,15 @@
 !     
 !     check for anisotropic creep: assumes a ucreep routine
 !     
-!     following if corresponds to the inverse of "elastic isotropic
-!     without or with plasticity"
+!     following if corresponds to "not isotropic"
+!     nelcon(1,nmat)=2 means "isotropic without plasticity"    
+!     nelcon(1,nmat)=-51 means "isotropic with plasticity"    
 !     
       if((nelcon(1,nmat).ne.2).and.(nelcon(1,nmat).ne.-51)) then
 !     
-!     following if corresponds to "elastic anisotropic without or
-!     with plasticity"
+!     following if corresponds to "not orthotropic"
+!     nelcon(1,nmat)=9 means "orthotropic without plasticity"    
+!     nelcon(1,nmat)=-54 means "orthotropic with plasticity"    
 !     
         if((nelcon(1,nmat).ne.9).and.(nelcon(1,nmat).ne.-54)) then
           write(*,*) '*ERROR reading *CREEP: *CREEP should be'
@@ -74,7 +76,7 @@
           return
         endif
 !     
-        ianisoplas=1
+        iplas=1
 !     
         if(nelcon(1,nmat).ne.-54) then
 !     
@@ -93,6 +95,7 @@
 !     elastic orthotropic
 !     no plasticity
 !     user creep: -109
+!     => use dedicated routine umat_aniso_creep.f (triggered by matname)    
 !     
 !     7 state variables: cf. Section 6.8.13
 !     "Elastic anisotropy with isotropic creep defined by
@@ -120,6 +123,7 @@
 !     elastic orthotropic
 !     no plasticity
 !     Norton creep: -54
+!     => use routine ortho_plas.f    
 !     
 !     20 state variables: cf. Section 6.8.12
 !     "Elastic anisotropy with isotropic viscoplasticity" 
@@ -141,7 +145,7 @@
 !     
 !     elastic orthotropic
 !     plasticity
-!     Norton creep: -54 (user creep is not allowed)
+!     Norton or user creep: -54 (use of ortho_plas.f)
 !     
 !     20 state variables: cf. Section 6.8.12
 !     "Elastic anisotropy with isotropic viscoplasticity" 
@@ -149,12 +153,23 @@
 !     
           do i=2,n
             if(textpart(i)(1:8).eq.'LAW=USER') then
-              write(*,*) '*ERROR reading *CREEP: for an elastically'
-              write(*,*) '       anisotropic material with von'
-              write(*,*) '       Mises plasticity only Norton creep'
-              write(*,*) '       is allowed (no user subroutine)'
-              ier=1
+!     
+!             marker to identify in routine ortho_plas.f whether
+!             user creep or Norton creep
+!     
+              do j=1,nelcon(2,nmat)
+                elcon(10,j,nmat)=-1.d0
+              enddo
+              call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
+     &             ipoinp,inp,ipoinpc)
               return
+c              
+c              write(*,*) '*ERROR reading *CREEP: for an elastically'
+c              write(*,*) '       anisotropic material with von'
+c              write(*,*) '       Mises plasticity only Norton creep'
+c              write(*,*) '       is allowed (no user subroutine)'
+c              ier=1
+c              return
             endif
           enddo
         endif
@@ -200,6 +215,10 @@
 !     
         do i=2,n
           if(textpart(i)(1:8).eq.'LAW=USER') then
+!     
+!             marker to identify in routine incplas.f whether
+!             user creep or Norton creep
+!     
             do j=1,nelcon(2,nmat)
               elcon(3,j,nmat)=-1.d0
             enddo

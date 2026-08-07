@@ -1,52 +1,52 @@
-!     
+!
 !     CalculiX - A 3-dimensional finite element program
 !     Copyright (C) 1998-2015 Guido Dhondt
-!     
+!
 !     This program is free software; you can redistribute it and/or
 !     modify it under the terms of the GNU General Public License as
 !     published by the Free Software Foundation(version 2);
-!     
-!     
+!
+!
 !     This program is distributed in the hope that it will be useful,
-!     but WITHOUT ANY WARRANTY; without even the implied warranty of 
-!     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+!     but WITHOUT ANY WARRANTY; without even the implied warranty of
+!     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 !     GNU General Public License for more details.
-!     
+!
 !     You should have received a copy of the GNU General Public License
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-!     
+!
       subroutine writeinputdeck(nk,co,iponoelfa,inoelfa,konfa,
      &     ipkonfa,lakonfa,nsurfs,iponor,xnor,nodedesiinv,jobnamef,
      &     iponexp,nmpc,labmpc,ipompc,nodempc,ipretinfo,kon,ipkon,lakon,
      &     iponoel,inoel,iponor2d,knor2d,ipoface,nodface,ne,x,y,z,
      &     xo,yo,zo,nx,ny,nz,nodes,dist,ne2d,nod1st,nod2nd3rd,
      &     extnor,nodedesi,ndesi)
-!     
+!
 !     calculates the normal boundary conditions on the surface for
 !     mesh modification purposes in an optimization loop
-!     
+!
 !     during optimization the coordinates of the design variables
 !     are changed leading to a changed geometry. In order to keep
 !     a good quality mesh the other nodes may have to be moved as
 !     well. The external shape in these nodes has to be kept, which
 !     can be guaranteed by MPC's. These MPC's are based on the local
-!     normal(s) in a node. At sharp corners more than one normal 
+!     normal(s) in a node. At sharp corners more than one normal
 !     may be necessary.
-!     
+!
 !     the equations are stored in file jobname.equ
-!     
+!
 !     the user can use this file for the appropriate mesh
-!     modifications. 
-!     
+!     modifications.
+!
       implicit none
 !
       logical out
-!     
+!
       character*8 lakonfa(*),lakon(*),label
       character*20 labmpc(*)
       character*132 jobnamef,fnequ
-!     
+!
       integer nk,iponoelfa(*),inoelfa(3,*),konfa(*),ipkonfa(*),nsurfs,
      &     i,index,nexp,nfa,ielem,indexe,j,ifa(100),nopeexp,ixfree1,
      &     jl(100),ial(100),k,l,nemin,jact,ixfree,ixfree3,six,iflag,
@@ -59,86 +59,86 @@
      &     nodface(5,*),nopem,ifaceqmid(6),ifacewmid(5),node3d,
      &     nnor1,nnor2,inor1(3),inor2(3),nx(*),ny(*),nz(*),id,
      &     neigh(1),ne2d,nod1st(*),nod2nd3rd(2,*),one,nodedesi(*),
-     &     ndesi,ifree,ndist
+     &     ndesi,ifree,ndist,imodeltype
 !
       integer,dimension(:),allocatable::ipo
       integer,dimension(:,:),allocatable::idiste
-!     
+!
       real*8 co(3,*),xnor(*),xno(3,100),coloc6(2,6),coloc8(2,8),
      &     xl(3,20),dd,xnoref(3),dot,xnorloc(6),sort(6),x(*),y(*),z(*),
      &     xo(*),yo(*),zo(*),xi,et,ze,shp(4,20),xsj,p(3),dist(*),
      &     distmax,e,emax,extnor(3,*),xnorloc1(3),xnorloc2(3),alpha1,
      &     alpha2
-!     
+!
       real*8,dimension(:),allocatable::xdist
-!     
+!
 !     In this routine the faces at the free surface play an
 !     important role. They are considered to be like a layer of
 !     shell elements. Therefore, the term "shell elements" in this
 !     routine is basically equivalent to "external faces"
-!     
+!
       data coloc6 /0.d0,0.d0,1.d0,0.d0,0.d0,1.d0,0.5d0,0.d0,
      &     0.5d0,0.5d0,0.d0,0.5d0/
       data coloc8 /-1.d0,-1.d0,1.d0,-1.d0,1.d0,1.d0,-1.d0,1.d0,
      &     0.d0,-1.d0,1.d0,0.d0,0.d0,1.d0,-1.d0,0.d0/
-!     
+!
       data ifaceqmid /0,
      &     0,
      &     5,
      &     6,
      &     7,
      &     8/
-!     
+!
       data ifacewmid /0,
      &     0,
      &     4,
      &     5,
      &     6/
-!     
+!
 !     nodes per face for hex elements
-!     
+!
       data ifaceq /4,3,2,1,11,10,9,12,
      &     5,6,7,8,13,14,15,16,
      &     1,2,6,5,9,18,13,17,
      &     2,3,7,6,10,19,14,18,
      &     3,4,8,7,11,20,15,19,
      &     4,1,5,8,12,17,16,20/
-!     
+!
 !     nodes per face for quadratic wedge elements
-!     
+!
       data ifacew /1,3,2,9,8,7,0,0,
      &     4,5,6,10,11,12,0,0,
      &     1,2,5,4,7,14,10,13,
      &     2,3,6,5,8,15,11,14,
      &     3,1,4,6,9,13,12,15/
-!     
+!
       one=1
       two=2
       three=3
       six=6
-!     
+!
       do len=1,132
         if(jobnamef(len:len).eq.' ') exit
       enddo
       len=len-1
-      
+
       fnequ=jobnamef(1:len)//'.equ'
       open(20,file=fnequ(1:len+4),status='unknown',err=100)
       close(20,status='delete',err=101)
       open(20,file=fnequ(1:len+4),status='unknown',err=100)
-!     
+!
       ixfree=0
-!     
+!
       do i=1,nk
         index=iponoelfa(i)
         if(index.eq.0) cycle
-!     
+!
 !     nexp indicates how many different normals there are in the node
-!     
+!
         nexp=0
-!     
+!
 !     locating all external faces to which node i belongs
-!     
+!
         nfa=0
         do
           if(index.eq.0) exit
@@ -153,19 +153,19 @@
           ifa(nfa)=inoelfa(1,index)
           index=inoelfa(3,index)
         enddo
-!     
+!
         if(nfa.gt.0) then
           do j=1,nfa
             ial(j)=0
           enddo
-!     
+!
 !     estimate the normal
-!     
+!
           do j=1,nfa
             indexf=ipkonfa(ifa(j))
-!     
+!
 !     local normal on the element (Jacobian)
-!     
+!
             if(lakonfa(ifa(j))(2:2).eq.'3') then
               xi=coloc6(1,jl(j))
               et=coloc6(2,jl(j))
@@ -207,11 +207,11 @@
               enddo
               call norshell8(xi,et,xl,xno(1,j))
             endif
-!     
+!
             dd=dsqrt(xno(1,j)**2+xno(2,j)**2+xno(3,j)**2)
             if(dd.lt.1.d-10) then
               write(*,*) '*ERROR in meshmodboun: size '
-              write(*,*) '       of estimatedshell normal in 
+              write(*,*) '       of estimatedshell normal in
      &node ',i,' element ',ifa(j)
               write(*,*) '       is smaller than 1.e-10'
               call exit(201)
@@ -220,18 +220,18 @@
               xno(k,j)=xno(k,j)/dd
             enddo
           enddo
-!     
+!
           do
-!     
+!
 !     determining a fixed normal which was not treated yet,
 !     or, if none is left, the minimum element number of all
 !     elements containing node i and for which no normal was
 !     determined yet
-!     
+!
 !     if ial(j)=0: the normal on this element has not been
 !     treated yet
 !     if ial(j)=2: normal has been treated
-!     
+!
             nemin=nsurfs+1
             do j=1,nfa
               if(ial(j).eq.0) then
@@ -242,16 +242,16 @@
               endif
             enddo
             if(nemin.eq.nsurfs+1) exit
-!     
+!
             do j=1,3
               xnoref(j)=xno(j,jact)
             enddo
-!     
+!
 !     determining all elements whose normal in node i makes an
 !     angle smaller than 20 degrees with the reference normal
-!     
+!
 !     if ial(j)=1: normal on element is being treated now
-!     
+!
             do j=1,nfa
               if(ial(j).eq.2) cycle
               if(j.eq.jact) then
@@ -262,9 +262,9 @@
                 if(dot.gt.0.939693d0) ial(j)=1
               endif
             enddo
-!     
+!
 !     determining the mean normal for the selected elements
-!     
+!
             do j=1,3
               xnoref(j)=0.d0
             enddo
@@ -285,9 +285,9 @@
             do j=1,3
               xnoref(j)=xnoref(j)/dd
             enddo
-!     
+!
 !     updating the pointers iponor
-!     
+!
             nexp=nexp+1
             do j=1,nfa
               if(ial(j).eq.1) then
@@ -295,29 +295,29 @@
                 iponor(ipkonfa(ifa(j))+jl(j))=ixfree
               endif
             enddo
-!     
+!
 !     storing the normal in xnor
-!     
+!
             do j=1,3
               xnor(ixfree+j)=xnoref(j)
             enddo
             ixfree=ixfree+3
-!     
+!
           enddo
         endif
-!     
+!
 !     save nexp (number of normals in node i) and ixfree (pointer to
 !     normals for node i+1
-!     
+!
         iponexp(1,i)=nexp
         iponexp(2,i)=ixfree-3*nexp
-!     
-      enddo     
-!     
+!
+      enddo
+!
 !     find nodes created by "*PRETENSION SECTION"
-!     
+!
 !     find pretension node if existing
-!     
+!
       pretflag=0
       do i=1,nmpc
         if(labmpc(i)(1:10).eq.'PRETENSION') then
@@ -339,25 +339,25 @@
       if(pretflag.eq.1) then
         do i=1,nmpc
           if(labmpc(i)(1:11).eq.'THERMALPRET') cycle
-!     
+!
           index=ipompc(i)
-          if(index.eq.0) cycle      
-          node1=nodempc(1,index)          
+          if(index.eq.0) cycle
+          node1=nodempc(1,index)
           index=nodempc(3,index)
-          node2=nodempc(1,index)               
+          node2=nodempc(1,index)
           index=nodempc(3,index)
           node3=nodempc(1,index)
-!     
-!         the value of ipretinfo for newly generated nodes for 
+!
+!         the value of ipretinfo for newly generated nodes for
 !         pretension purposes points to the old node (which was duplicated),
-!         for all other nodes the value is the node number itself   
-!     
+!         for all other nodes the value is the node number itself
+!
           if(node3.eq.nodepret) then
-            ipretinfo(node1)=node2 
-          endif        
+            ipretinfo(node1)=node2
+          endif
         enddo
       endif
-!     
+!
 !     write the coordinates in file "jobname.equ"
 !
       write(20,102)
@@ -370,14 +370,39 @@
         write(20,103) i,(co(j,i),j=1,3)
       enddo
  103  format(i10,3(',',e15.8))
-!     
+!
 !     write the topology in file "jobname.equ"
+!
+!     the variable imodeltype defines the type of model
+!     imodeltype=1   2D shell model
+!     imodeltype=2   plane stress/plane strain/ ax-sym model
+!     imodeltype=3   3D model
 !
       do i=1,ne
         if(ipkon(i).lt.0) cycle
         indexe=ipkon(i)
-        if((lakon(i)(7:7).eq.'A').or.(lakon(i)(7:7).eq.'S').or.
-     &     (lakon(i)(7:7).eq.'E').or.(lakon(i)(7:7).eq.'L')) then
+        if(lakon(i)(7:7).eq.'L') then
+	  imodeltype=1
+          if(lakon(i)(4:5).eq.'20') then
+            nopeexp=20
+            nope=8
+            label='S8R     '
+          elseif(lakon(i)(4:5).eq.'15') then
+            nopeexp=15
+            nope=6
+            label='S6      '
+          elseif(lakon(i)(4:4).eq.'8') then
+            nopeexp=8
+            nope=4
+            label='S4R     '
+          else
+            nopeexp=6
+            nope=3
+            label='S3      '
+          endif
+        elseif((lakon(i)(7:7).eq.'A').or.(lakon(i)(7:7).eq.'S').or.
+     &     (lakon(i)(7:7).eq.'E')) then
+          imodeltype=2
           if(lakon(i)(4:5).eq.'20') then
             nopeexp=20
             nope=8
@@ -396,6 +421,7 @@
             label='CPS3    '
           endif
         else
+	  imodeltype=3
           nopeexp=0
           if(lakon(i)(4:5).eq.'20') then
             nope=20
@@ -484,17 +510,17 @@ c      enddo
         else
           nope=4
         endif
-!     
+!
 !     computation of the coordinates of the local nodes
-!     
+!
         do j=1,nope
           do k=1,3
             xl(k,j)=co(k,kon(indexe+j))
           enddo
         enddo
-!     
-!       determine the shape functions at the center of the element     
-!     
+!
+!       determine the shape functions at the center of the element
+!
         if(lakon(i)(4:5).eq.'20') then
           nope=20
           xi=0.d0
@@ -543,9 +569,9 @@ c      enddo
             p(k)=p(k)+shp(4,j)*xl(k,j)
           enddo
         enddo
-!     
+!
 !     determining the neighboring design node
-!     
+!
         call near3d(xo,yo,zo,x,y,z,nx,ny,nz,p(1),p(2),p(3),
      &       ndesi,neigh,kneigh)
 !
@@ -558,7 +584,7 @@ c      enddo
 !
 !     determine the Young's modulus depending on the distance from
 !     the closest design node; to reduce the number of materials
-!     only ndist different E-moduli are taken. To this end the 
+!     only ndist different E-moduli are taken. To this end the
 !     normalized distance from the nearest design node is sorted
 !     into ndist intervals
 !
@@ -575,6 +601,7 @@ c      enddo
       allocate(idiste(2,ne))
       ifree=0
       do i=1,ne
+        if(ipkon(i).lt.0) cycle
 !
 !       normalizing the distance (0 to 1)
 !
@@ -604,17 +631,22 @@ c      enddo
         enddo
         write(20,110) i
         write(20,111) e
-        write(20,112) i,i
+	if(imodeltype.eq.1) then
+           write(20,114) i,i
+	elseif(imodeltype.eq.3) then
+           write(20,112) i,i
+        endif
       enddo
  110  format('*MATERIAL,NAME=',i10,'M')
- 111  format('*ELASTIC',/,e15.8,',0.3')
+ 111  format('*ELASTIC',/,e15.8,',0.0')
  112  format('*SOLID SECTION,ELSET=',i10,'E,MATERIAL=',i10,'M')
  113  format('*ELSET,ELSET=',i10,'E')
+ 114  format('*SHELL SECTION,ELSET=',i10,'E,MATERIAL=',i10,'M',/,'0.1')
 !
       deallocate(xdist)
       deallocate(ipo)
       deallocate(idiste)
-!      
+!
 c!
 c!     determine the Young's modulus depending on the distance from
 c!     the free surface
@@ -632,26 +664,22 @@ c      enddo
 c 110  format('*MATERIAL,NAME=',i10,'M')
 c 111  format('*ELASTIC',/,e15.8,',0.3')
 c 112  format('*SOLID SECTION,ELSET=',i10,'E,MATERIAL=',i10,'M')
-!     
-!     write equations in file "jobname.equ"
-!     
-      write(20,109)
- 109  format('*EQUATION')
       do i=1,nk
         if((iponoel(i).eq.0).or.(ipretinfo(i).ne.i)) cycle
-!     
-!     check if node is a designvariable     
-!     
-        if(nodedesiinv(i).ge.0) then   
-!     
+!
+!     check if node is a designvariable
+!
+        if(nodedesiinv(i).ge.0) then
+!
 !     consideration of plain stress/strain 2d-elements
-!     and axisymmetric elements        
-!     
+!     and axisymmetric elements
+!
           ielem=inoel(1,iponoel(i))
           if((lakon(ielem)(7:7).eq.'A').or.
      &         (lakon(ielem)(7:7).eq.'S').or.
+     &         (lakon(ielem)(7:7).eq.'L').or.
      &         (lakon(ielem)(7:7).eq.'E')) then
-!     
+!
             if(lakon(ielem)(4:5).eq.'20') then
               nope=20
             elseif (lakon(ielem)(4:4).eq.'8') then
@@ -663,20 +691,20 @@ c 112  format('*SOLID SECTION,ELSET=',i10,'E,MATERIAL=',i10,'M')
             else
               cycle
             endif
-!     
+!
             indexe=ipkon(ielem)
             do j=1,nope
               if(i.eq.kon(indexe+j)) then
                 exit
               endif
             enddo
-!     
-!     replace 3D node number by 2D node number     
-!     the only 3D nodes to be replaced are the expanded node with   
+!
+!     replace 3D node number by 2D node number
+!     the only 3D nodes to be replaced are the expanded node with
 !     the lowest node number (of the three expanded nodes; so nodes
-!     with local numbers 1,2,3,4,9,10,11,12 for a C3D20(R) element). 
-!     The other two are skipped by the statement nodedesiinv(.)=-1  
-!     
+!     with local numbers 1,2,3,4,9,10,11,12 for a C3D20(R) element).
+!     The other two are skipped by the statement nodedesiinv(.)=-1
+!
             if(lakon(ielem)(4:5).eq.'20') then
               if(j.gt.4) j=j-4
               node=kon(indexe+nope+j)
@@ -688,18 +716,18 @@ c 112  format('*SOLID SECTION,ELSET=',i10,'E,MATERIAL=',i10,'M')
             elseif(lakon(ielem)(4:5).eq.'6') then
               node=kon(indexe+nope+j)
             endif
-!     
+!
 !     deactivate the other expansion nodes
-!     
-            nodedesiinv(i+1)=-1  
-            nodedesiinv(i+2)=-1 
-!     
+!
+            nodedesiinv(i+1)=-1
+            nodedesiinv(i+2)=-1
+!
 !     taking the mean of the normals at expanded node 1
 !     and 3
-!     
+!
             ixfree1=iponexp(2,i)
             ixfree3=iponexp(2,i+2)
-!     
+!
             do j=1,nexp
               do k=1,3
                 xnor(ixfree1+3*(j-1)+k)=(xnor(ixfree1+3*(j-1)+k)+
@@ -713,21 +741,35 @@ c 112  format('*SOLID SECTION,ELSET=',i10,'E,MATERIAL=',i10,'M')
               enddo
             enddo
           elseif(lakon(ielem)(7:7).eq.'L') then
-!     
+!
 !     no output for shell elements necessary
-!     
+!
             cycle
           else
-!     
-!     in case of a 3D model no change of node number     
+!
+!     in case of a 3D model no change of node number
             node=i
           endif
-!     
+!
+!     in case of shell elements all nodes not being a design variable
+!     are completetly fixed
+!
+          if((lakon(ielem)(7:7).eq.'L').and.(nodedesiinv(i).eq.0)) then
+            write(20,*) '*BOUNDARY'
+	    write(20,*) node,',1,3,0.0'
+	    cycle
+	  endif
+!
+!     write equations in file "jobname.equ"
+!
+      write(20,109)
+ 109  format('*EQUATION')
+!
 !     write equations in case nexp is greater or equal 3
-!     
+!
           nexp=iponexp(1,i)
           ixfree=iponexp(2,i)
-!     
+!
           if(nexp.ge.3) then
 c     write(*,*) nodedesiinv(i),j,i,extnor(j,i)
             do j=1,3
@@ -745,9 +787,9 @@ c     do j=1,3
 c     enddo
               endif
             enddo
-!     
+!
 !     write equations in case nexp is 1
-!     
+!
           elseif(nexp.eq.1) then
             if(nodedesiinv(i).eq.0) then
               do j=1,3
@@ -761,15 +803,15 @@ c     enddo
      &             node,nsort(2),xnorloc(nsort(2)),
      &             node,nsort(1),xnorloc(nsort(1))
             endif
-!     
+!
 !     write equations in case nexp is 2
-!     
+!
           elseif(nexp.eq.2) then
             if(nodedesiinv(i).eq.0) then
-!     
-!     node is not a design variable: both normal directions     
+!
+!     node is not a design variable: both normal directions
 !     are blocked
-!     
+!
               do j=1,6
                 xnorloc(j)=xnor(ixfree+j)
                 sort(j)=dabs(xnorloc(j))
@@ -778,9 +820,9 @@ c     enddo
               call dsort(sort,nsort, six,two)
               nnor1=0
               nnor2=0
-!     
+!
 !     sorting the two normals apart
-!     
+!
               do j=6,1,-1
                 if(nsort(j).le.3) then
                   nnor1=nnor1+1
@@ -792,9 +834,9 @@ c     enddo
                   if(j.eq.6) isix=2
                 endif
               enddo
-!     
+!
 !     check that the dependent dof in both normals is not identical
-!     
+!
               if(isix.eq.1) then
                 if(inor2(1)-3.eq.inor1(1)) then
                   idummy=inor2(1)
@@ -808,21 +850,21 @@ c     enddo
                   inor1(2)=idummy
                 endif
               endif
-!     
+!
               write(20,106) three
               write(20,104) node,inor1(1),xnorloc(inor1(1)),
      &             node,inor1(2),xnorloc(inor1(2)),
      &             node,inor1(3),xnorloc(inor1(3))
-!     
+!
               write(20,106) three
               write(20,104) node,inor2(1)-3,xnorloc(inor2(1)),
      &             node,inor2(2)-3,xnorloc(inor2(2)),
      &             node,inor2(3)-3,xnorloc(inor2(3))
             else
-!     
-!             node is a design variable  
-!             storing both normals     
-!     
+!
+!             node is a design variable
+!             storing both normals
+!
               do j=1,3
                 xnorloc1(j)=xnor(ixfree+j)
                 xnorloc2(j)=xnor(ixfree+j+3)
@@ -877,7 +919,7 @@ c     enddo
 !
 !             looking for a dependent component which is different
 !             from the dependent component (= inor(1)) for the condition in
-!             sensitivity direction (which is writting in routine
+!             sensitivity direction (which is writing in routine
 !             writeinputdeck2.f from the feasible direction procedure)
 !
               do j=1,3
@@ -899,26 +941,26 @@ c     enddo
             endif
           endif
         endif
-!     
+!
       enddo
-!     
+!
       do i=1,nk
         if(nodedesiinv(i).eq.-1) then
           nodedesiinv(i)=0
         endif
       enddo
-!     
+!
 c      close(20)
       return
-!     
+!
  100  write(*,*) '*ERROR in openfile: could not open file ',
      &     fnequ(1:len+4)
       call exit(201)
  101  write(*,*) '*ERROR in openfile: could not delete file ',
-     &     fnequ(1:len+4) 
+     &     fnequ(1:len+4)
       call exit(201)
  104  format(3(i10,",",i1,",",e20.13,","))
  105  format(1(i10,",",i1,",",i1,","))
  106  format(i1)
-!     
+!
       end

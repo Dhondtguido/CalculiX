@@ -69,7 +69,7 @@
 !
 !        M1=1         
 !        computing M2 using dichotomy method (dividing the interval
-!        with the funciton root iteratively by 2)
+!        with the function root iteratively by 2)
 !     
          i=1
 !

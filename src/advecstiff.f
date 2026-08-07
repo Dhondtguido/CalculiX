@@ -18,7 +18,7 @@
 !
       subroutine advecstiff(nope,voldl,ithermal,xl,nelemload,nelemadvec,
      &  nload,lakon,xload,istep,time,ttime,dtime,sideload,vold,mi,
-     &  xloadold,reltime,nmethod,s,iinc,iponoel,inoel,ielprop,prop,
+     &  xloadold,reltime,nmethod,s,iinc,iponoeln,inoeln,ielprop,prop,
      &  ielmat,shcon,nshcon,rhcon,nrhcon,ntmat_,ipkon,kon,cocon,ncocon,
      &  ipobody,xbody,ibody)
 !
@@ -33,7 +33,7 @@
 !
       integer nope,i,ithermal(*),j,nelemload(2,*),nelemadvec,nload,id,
      &  nelem,ig,mint2d,iflag,istep,jltyp,nfield,mi(*),nmethod,k,iinc,
-     &  node,nopes,iponoel(*),inoel(2,*),ielprop(*),ielmat(mi(3),*),
+     &  node,nopes,iponoeln(*),inoeln(2,*),ielprop(*),ielmat(mi(3),*),
      &  ipkon(*),
      &  nshcon(*),nrhcon(*),ntmat_,kon(*),ncocon(2,*),ipobody(2,*),
      &  ibody(3,*)
@@ -44,8 +44,6 @@
      &  vold(0:mi(2),*),xloadold(2,*),s(60,60),sref,sref2,prop(*),
      &  shcon(0:3,ntmat_,*),rhcon(0:1,ntmat_,*),cocon(0:6,ntmat_,*),
      &  xbody(7,*),heatnod,heatfac
-!
-!
 !
       include "gauss.f"
 !
@@ -188,11 +186,9 @@
             call film(xload(1,id),sinktemp,temp,istep,
      &           iinc,timeend,nelem,i,coords,jltyp,field,nfield,
      &           sideloadl,node,areaj,vold,mi,
-     &           ipkon,kon,lakon,iponoel,inoel,ielprop,prop,ielmat,
+     &           ipkon,kon,lakon,iponoeln,inoeln,ielprop,prop,ielmat,
      &           shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon,
      &           ipobody,xbody,ibody,heatnod,heatfac)
-c            if(nmethod.eq.1) xload(1,id)=xloadold(1,id)+
-c     &           (xload(1,id)-xloadold(1,id))*reltime
          endif
 !
          sref=xload(1,id)*areaj

@@ -96,7 +96,7 @@ void getglobalresults (char *masterfile,ITG **integerglobp,double **doubleglobp,
 
     if(istep==0){
       for(i=0;i<*nboun;i++){
-	if((xboun[i]<1.9232931375)&&(xboun[i]>1.9232931373)){
+	if((xboun[i]<1.9232931377)&&(xboun[i]>1.9232931373)){
 	  istep=iamboun[i];
 	  break;
 	}
@@ -120,7 +120,7 @@ void getglobalresults (char *masterfile,ITG **integerglobp,double **doubleglobp,
     }
     if((istep==0)&&(*ithermal>0)){
 	for(i=0;i<*nk;i++){
-	    if((t1[i]<1.9232931375)&&(t1[i]>1.9232931373)){
+	    if((t1[i]<1.9232931377)&&(t1[i]>1.9232931373)){
 		istep=iamt1[i];
 		break;
 	    }
@@ -462,7 +462,7 @@ void getglobalresults (char *masterfile,ITG **integerglobp,double **doubleglobp,
 	    field[13*(nodenr-1)]=lcase[loadcase].dat[0][nodenr];
 	}
     }else{
-	printf(" *INFO in getglobalresults: no temperature data\n was found for step %d in the global model\n\n",istep);
+	printf(" *INFO in getglobalresults: no temperature data\n was found for step %" ITGFORMAT " in the global model\n\n",istep);
     }
     
     /* reading the displacements */
@@ -510,7 +510,7 @@ void getglobalresults (char *masterfile,ITG **integerglobp,double **doubleglobp,
 	    field[13*(nodenr-1)+3]=lcase[loadcase].dat[2][nodenr];
 	}
     }else{
-	printf(" *INFO in getglobalresults: no displacement data\n was found for step %d in the global model\n\n",istep);
+	printf(" *INFO in getglobalresults: no displacement data\n was found for step %" ITGFORMAT " in the global model\n\n",istep);
     }
     
     /* reading the stresses */
@@ -560,7 +560,7 @@ void getglobalresults (char *masterfile,ITG **integerglobp,double **doubleglobp,
 	    field[13*(nodenr-1)+9]=lcase[loadcase].dat[5][nodenr];
 	}
     }else{
-	printf(" *INFO in getglobalresults: no stress data\n was found for step %d in the global model\n\n",istep);
+	printf(" *INFO in getglobalresults: no stress data\n was found for step %" ITGFORMAT " in the global model\n\n",istep);
     }
     
     /* reading the forces */
@@ -606,7 +606,7 @@ void getglobalresults (char *masterfile,ITG **integerglobp,double **doubleglobp,
 	    field[13*(nodenr-1)+12]=lcase[loadcase].dat[2][nodenr];
 	}
     }else{
-	printf(" *INFO in getglobalresults: no force data\n was found for step %d in the global model\n\n",istep);
+	printf(" *INFO in getglobalresults: no force data\n was found for step %" ITGFORMAT " in the global model\n\n",istep);
     }
     
     SFREE(kontet);SFREE(inodfa);
@@ -615,6 +615,10 @@ void getglobalresults (char *masterfile,ITG **integerglobp,double **doubleglobp,
       freeDatasets(lcase,j);
     }
     SFREE(lcase);lcase=NULL;
+
+    /* added on Feb 13th, 2025 (suggested by Christopher Woelfle) */
+
+    //    for(i=0;i<anz->u;i++) SFREE(anz->uheader[i]);SFREE(anz->uheader);
     
     /* storing the global data in a common block */
     

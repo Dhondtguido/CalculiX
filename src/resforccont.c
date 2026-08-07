@@ -27,7 +27,7 @@ static double *vold1,*volddof1;
 void resforccont(double *vold,ITG *nk,ITG *mi,double *aubi,ITG *irowbi,
 		 ITG *jqbi,ITG *neqtot,ITG *ktot,double *fext,double *gapdisp,
 		 double *auib,ITG *irowib,ITG *jqib,ITG *nactdof,
-		 double *volddof,ITG *neq,double *qi_kbi){
+		 double *volddof,ITG *neq,double *qi_kbi,ITG *ncont){
 
   /* calculate the residual contact force fext-Kbi*Ui */
 
@@ -95,6 +95,8 @@ void resforccont(double *vold,ITG *nk,ITG *mi,double *aubi,ITG *irowbi,
   for(i=0; i<num_cpus; i++)  pthread_join(tid[i], NULL);
 
   SFREE(ithread);
+
+  if(*ncont==0) return;
 
   /* We compute g as volddof=(Kbi*volddof)+(Kib*volddof) in qi_kbi
      to account for the missing terms due to the low triangle structure

@@ -167,17 +167,20 @@ c     &    ((xi.le.0.d0).or.(et.le.0.d0).or.(xi+et.ge.1.d0)))) then
 !        
          if(multistage) dist=dsqrt((rp2-rp1)**2+(zp2-zp1)**2)
          if(dist.ge.typdist/10.d0) then
-            write(*,*) '*WARNING in linkdissimilar: no suitable partner'
-            write(*,*) '         face found for node', noded,'.'
-            write(*,*) 
-     &      '         Nodes belonging to the best partner face:'
-            write(*,*) (nodef(i),i=1,nterms)
-            write(*,*) '         Euclidean distance within '
-            write(*,*) '         a radial plane: ',dist
-            write(*,*) 
-            ier=-1
-            write(40,*) noded
-            icount=icount+1
+           ier=-1
+           if(icount.ge.0) then
+             write(*,*)
+     &            '*WARNING in linkdissimilar: no suitable partner'
+             write(*,*) '         face found for node',noded,'.'
+             write(*,*) 
+     &            '         Nodes belonging to the best partner face:'
+             write(*,*) (nodef(i),i=1,nterms)
+             write(*,*) '         Euclidean distance within '
+             write(*,*) '         a radial plane: ',dist
+             write(*,*) 
+             write(40,*) noded
+             icount=icount+1
+           endif
          endif
 c      endif
 !     

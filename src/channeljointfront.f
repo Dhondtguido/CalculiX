@@ -19,7 +19,7 @@
 !     Solve the Bresse equation for the turbulent stationary flow
 !     in channels with a non-erosive bottom
 !     
-      subroutine channeljointfront(nelem,nelup,nup,iponoel,inoel,
+      subroutine channeljointfront(nelem,nelup,nup,iponoeln,inoeln,
      &     ielprop,prop,ipkon,kon,mi,v,g,dg,nstackb,istackb,rho,xflow,
      &     co,lakon)
 !
@@ -29,7 +29,7 @@
 !
       character*8 lakon(*)
 !
-      integer nelem,iponoel(*),inoel(2,*),nelup,nup,index,ielprop(*),
+      integer nelem,iponoeln(*),inoeln(2,*),nelup,nup,index,ielprop(*),
      &     indexp,indexe,ipkon(*),kon(*),nup1,nup2,mi(*),nel1,nel,
      &     nstackb,istackb(2,*)
 !
@@ -42,12 +42,12 @@ c      nel=0
 !
 !     loop over all elements to which node nup belongs
 !
-      index=iponoel(nup)
+      index=iponoeln(nup)
       do
 !
 !       treating element nelup: branch number 2
 !
-        if(inoel(1,index).eq.nelup) then
+        if(inoeln(1,index).eq.nelup) then
 !
           indexe=ipkon(nelup)
           if(kon(indexe+1).eq.nup) then
@@ -102,14 +102,14 @@ c      nel=0
 !
           h2=v(2,nup)
 !
-          index=inoel(2,index)
+          index=inoeln(2,index)
           if(index.eq.0) exit
           cycle
         endif
 !
 !       element to be treated is not nelup
 !
-        nel=inoel(1,index)
+        nel=inoeln(1,index)
         if(lakon(nel)(6:7).eq.'IO') then
           write(*,*) '*ERROR in channeljointfront:'
           write(*,*) '       no IO element allowed'
@@ -124,7 +124,7 @@ c      nel=0
 !
         if(v(1,kon(indexe+2)).eq.0.d0) then
           nelem=nel
-          index=inoel(2,index)
+          index=inoeln(2,index)
           if(index.eq.0) exit
           cycle
         endif
@@ -189,7 +189,7 @@ c      nel=0
         else
           h1=v(2,kon(indexe+1))
         endif
-        index=inoel(2,index)
+        index=inoeln(2,index)
         if(index.eq.0) exit
       enddo
 !

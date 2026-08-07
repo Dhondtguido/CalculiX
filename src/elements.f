@@ -26,7 +26,7 @@
 !     
       implicit none
 !     
-      logical solid,beamshell,out3d
+      logical solid,beamshell,out3d,dload
 !     
       character*1 inpc(*)
       character*8 lakon(*),label
@@ -48,6 +48,7 @@
       beamshell=.false.
       four=4
       iparent=0
+      dload=.false.
 !     
       label='        '
 !     
@@ -291,6 +292,8 @@ c     Bernhardi end
      &         "*ELEMENT%",ier)
           return
         endif
+      elseif(textpart(i)(1:5).eq.'DLOAD') THEN
+        dload=.true.
       else
         write(*,*) 
      &       '*WARNING reading *ELEMENT: parameter not recognized:'
@@ -307,6 +310,17 @@ c     Bernhardi end
         call inputerror(inpc,ipoinpc,iline,
      &       "*ELEMENT%",ier)
         return
+      endif
+!     
+      if(dload) then
+        if((label(1:2).ne.'S3').and.(label(1:2).ne.'S4').and.
+     &       (label(1:2).ne.'S6').and.(label(1:2).ne.'S8')) then
+          write(*,*) '*ERROR reading *ELEMENT: only shell elements'
+          write(*,*) '       can be used for interface loading;'
+          call inputerror(inpc,ipoinpc,iline,
+     &         "*ELEMENT%",ier)
+          return
+        endif
       endif
 !     
 !     nope is the number of nodes per element as defined in the input
@@ -528,6 +542,11 @@ c     Bernhardi end
             iponor(1,indexe+j)=indexy
           enddo
         endif
+!
+!       shell elements solely used for dload application are
+!       deactivated.
+!
+        if(dload) ipkon(i)=-2-ipkon(i)
 !     
       enddo
 !     

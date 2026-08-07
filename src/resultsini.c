@@ -32,7 +32,7 @@ void resultsini(ITG *nk,double *v,ITG *ithermal,char *filab,ITG *iperturb,
 		ITG *nprint,char *prlab,ITG *intpointvarm,ITG *calcul_fn,
 		ITG *calcul_f,ITG *calcul_qa,ITG *calcul_cauchy,ITG *ikin,
 		ITG *intpointvart,char *typeboun,ITG *num_cpus,ITG *mortar,
-		ITG *nener,ITG *iponoel,ITG *network){
+		ITG *nener,ITG *iponoeln,ITG *network){
 
   ITG mt,i,j,node,ndir,ist,index,incrementalmpc;
 
@@ -113,7 +113,7 @@ void resultsini(ITG *nk,double *v,ITG *ithermal,char *filab,ITG *iperturb,
 	  /* maximum change is not taken into account for network nodes */
 
 	  if(*network>0){
-	    if(iponoel[i]==0){
+	    if(iponoeln[i]==0){
 	      if(cam[2]<fabs(v[mt*i]-vini[mt*i])){
 		cam[2]=fabs(v[mt*i]-vini[mt*i]);
 	      }
@@ -158,7 +158,8 @@ void resultsini(ITG *nk,double *v,ITG *ithermal,char *filab,ITG *iperturb,
     if(*calcul_fn!=1){
       for(i=0;i<*nprint;i++){
 	if((strcmp1(&prlab[6*i],"RF  ")==0)||
-	   (strcmp1(&prlab[6*i],"RFL ")==0)){
+	   (strcmp1(&prlab[6*i],"RFL ")==0)||
+	   (strcmp1(&prlab[6*i],"RECU")==0)){
 	  *calcul_fn=1;
 	  break;
 	}
@@ -379,7 +380,8 @@ void resultsini(ITG *nk,double *v,ITG *ithermal,char *filab,ITG *iperturb,
     if(*intpointvart!=1){
       for(i=0;i<*nprint;i++){
 	if((strcmp1(&prlab[6*i],"HFL")==0)||
-	   (strcmp1(&prlab[6*i],"RFL")==0)){
+	   (strcmp1(&prlab[6*i],"RFL")==0)||
+	   (strcmp1(&prlab[6*i],"RECU")==0)){
 	  *intpointvart=1;
 	  break;
 	}

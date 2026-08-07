@@ -73,7 +73,7 @@ void radflowload(ITG *itg,ITG *ieg,ITG *ntg,ITG *ntr,double *adrad,
                  double *coefmpc,char *labmpc, ITG *iemchange,ITG *nam, 
                  ITG *iamload,ITG *jqrad,ITG *irowrad,ITG *nzsrad,
                  ITG *icolrad,ITG *ne,ITG *iaxial,double *qa,
-                 double *cocon,ITG *ncocon,ITG *iponoel,ITG *inoel,
+                 double *cocon,ITG *ncocon,ITG *iponoeln,ITG *inoeln,
                  ITG *nprop,char *amname,ITG *namta,double *amta,ITG *iexpl){
   
   /* network=0: no network
@@ -160,7 +160,7 @@ void radflowload(ITG *itg,ITG *ieg,ITG *ntg,ITG *ntr,double *adrad,
 			    xbodyact,co,nbody,network,&iin_abs,vold,set,
 			    istep,iit,mi,ineighe,ilboun,&ichannel,iaxial,
 			    nmpc,labmpc,ipompc,nodempc,coefmpc,ttime,time,
-			    iponoel,inoel));
+			    iponoeln,inoeln));
       
 	/* initialization for channels with free surface */
 
@@ -183,7 +183,7 @@ void radflowload(ITG *itg,ITG *ieg,ITG *ntg,ITG *ntr,double *adrad,
 				  physcon,rhcon,nrhcon,ipobody,ibody,
 				  xbodyact,co,nbody,network,vold,set,
 				  istep,iit,mi,ineighe,ilboun,ttime,time,
-				  itreated,iponoel,inoel,istack,sfr,hfr,
+				  itreated,iponoeln,inoeln,istack,sfr,hfr,
 				  sba,hba,&ndata,jumpup,jumpdo,istackb,
 				  nelemload,ixnode,iyload,nload,sideload,
 				  xloadact,cocon,ncocon,iinc,nforc,ikforc,
@@ -206,7 +206,7 @@ void radflowload(ITG *itg,ITG *ieg,ITG *ntg,ITG *ntr,double *adrad,
 			   reltime,nmethod,set,mi,ineighe,cama,&vamt,
 			   &vamf,&vamp,&vama,nmpc,nodempc,ipompc,coefmpc,
 			   labmpc,iaxial,&qat,&qaf,&ramt,&ramf,&ramp,
-			   cocon,ncocon,iponoel,inoel,&iplausi));
+			   cocon,ncocon,iponoeln,inoeln,&iplausi));
 
 	/* iniializing qamt and qamf (mean typical energy flow
 	   and mass flow */
@@ -242,7 +242,7 @@ void radflowload(ITG *itg,ITG *ieg,ITG *ntg,ITG *ntr,double *adrad,
 			 physcon,rhcon,nrhcon,ipobody,ibody,xbodyact,
 			 nbody,vold,xloadold,reltime,nmethod,set,mi,
 			 nmpc,nodempc,ipompc,coefmpc,labmpc,iaxial,
-			 cocon,ncocon,iponoel,inoel));
+			 cocon,ncocon,iponoeln,inoeln));
 	  
       /* solving the system of equations */
 
@@ -264,7 +264,7 @@ void radflowload(ITG *itg,ITG *ieg,ITG *ntg,ITG *ntr,double *adrad,
 			   physcon,rhcon,nrhcon,ipobody,ibody,xbodyact,
 			   nbody,vold,xloadold,reltime,nmethod,set,mi,
 			   nmpc,nodempc,ipompc,coefmpc,labmpc,iaxial,
-			   cocon,ncocon,iponoel,inoel));
+			   cocon,ncocon,iponoeln,inoeln));
 	    
 	FORTRAN(equationcheck,(ac,nteq,nactdog,itg,ntg,nacteq,network));
 	    
@@ -283,8 +283,8 @@ void radflowload(ITG *itg,ITG *ieg,ITG *ntg,ITG *ntr,double *adrad,
 			   ibody,xbodyact,nbody,&dtheta,vold,xloadold,
 			   reltime,nmethod,set,mi,ineighe,cama,&vamt,
 			   &vamf,&vamp,&vama,nmpc,nodempc,ipompc,coefmpc,labmpc,
-			   iaxial,&qat,&qaf,&ramt,&ramf,&ramp,cocon,ncocon,iponoel,
-			   inoel,&iplausi));
+			   iaxial,&qat,&qaf,&ramt,&ramf,&ramp,cocon,ncocon,iponoeln,
+			   inoeln,&iplausi));
 
 	/* updating the mean typical energy flow and mass flow */
 

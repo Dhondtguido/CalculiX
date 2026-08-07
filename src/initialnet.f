@@ -30,7 +30,7 @@
      &     rhcon,nrhcon,ipobody,ibody,xbodyact,co,nbody,network,
      &     iin_abs,vold,set,istep,iit,mi,ineighe,ilboun,ichannel,
      &     iaxial,nmpc,labmpc,ipompc,nodempc,coefmpc,ttime,time,
-     &     iponoel,inoel)
+     &     iponoeln,inoeln)
 !     
       implicit none
       
@@ -47,8 +47,8 @@
      &     nodef(8),ndirboun(*),nodeboun(*),itg(*),node,kflag,ipiv(*),
      &     nrhs,info,idof1,idof2,nteq,nrhcon(*),ipobody(2,*),ibody(3,*),
      &     nbody,numf,network,iin_abs,icase,index2,index1,nelem1,nelem2,
-     &     node11,node21,node12,node22,istep,iit,ineighe(*),iponoel(*),
-     &     ilboun(*),idir,ichannel,inoel(2,*),indexe,iel,iplausi,id
+     &     node11,node21,node12,node22,istep,iit,ineighe(*),iponoeln(*),
+     &     ilboun(*),idir,ichannel,inoeln(2,*),indexe,iel,iplausi,id
 !     
       real*8 ac(nteq,nteq), bc(nteq),prop(*),shcon(0:3,ntmat_,*),
      &     f,df(8),xflow,xbounact(*),v(0:mi(2),*),cp,r,tg1,
@@ -114,7 +114,7 @@
       if(network.gt.2) then
 !     
         call preinitialnet(ieg,lakon,v,ipkon,kon,nflow,prop,ielprop,
-     &       ielmat,ntmat_,shcon,nshcon,rhcon,nrhcon,mi,iponoel,inoel,
+     &       ielmat,ntmat_,shcon,nshcon,rhcon,nrhcon,mi,iponoeln,inoeln,
      &       itg,ntg)
 !     
 !     determining whether pressure initial conditions 
@@ -271,15 +271,15 @@ c     enddo
 !     determining the exit element (= element with one
 !     zero node)
 !     
-            index=iponoel(node)
+            index=iponoeln(node)
             do
-              iel=inoel(1,index)
+              iel=inoeln(1,index)
               indexe=ipkon(iel)
               node1=kon(indexe+1)
               nodem=kon(indexe+2)
               node2=kon(indexe+3)
               if((node1.eq.0).or.(node2.eq.0)) exit
-              index=inoel(2,index)
+              index=inoeln(2,index)
             enddo
 !     
             if(((node1.eq.node).and.(v(1,nodem).ge.0.d0)).or.
@@ -817,7 +817,7 @@ c     &         (lakon(nelem)(2:4).ne.'RTA')) then
       endif
 !     
       call postinitialnet(ieg,lakon,v,ipkon,kon,nflow,prop,ielprop,
-     &     ielmat,ntmat_,shcon,nshcon,rhcon,nrhcon,mi,iponoel,inoel,
+     &     ielmat,ntmat_,shcon,nshcon,rhcon,nrhcon,mi,iponoeln,inoeln,
      &     itg,ntg,nactdog)
 !     
 !     calculating the static temperature for nodes belonging to gas pipes

@@ -96,7 +96,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
   irowdtil =*irowdtilp; Ddtil=*Ddtilp;
   irowbtil =*irowbtilp; Bdtil=*Bdtilp;
   ifree=1;
-  // position in the fieds FORTRAN condition
+  // position in the fields FORTRAN condition
   ifree1=1;ifree2=1;ifree3=1;
   
   NNEW(igap,ITG,nslavnode[*ntie]);

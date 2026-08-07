@@ -29,14 +29,15 @@
      &     orab,ielorien,trab,inotr,amname,amta,namta,t0,t1,iamt1,veold,
      &     ielmat,matname,prlab,prset,filab,vold,nodebounold,
      &     ndirbounold,xbounold,xforcold,xloadold,t1old,eme,
-     &     iponor,xnor,knor,thicke,offset,iponoel,inoel,rig,
+     &     iponor,xnor,knor,thicke,offset,iponoel2d,inoel2d,rig,
      &     shcon,nshcon,cocon,ncocon,ics,sti,
      &     ener,xstate,jobnamec,infree,irestartstep,prestr,iprestr,
      &     cbody,ibody,xbody,nbody,xbodyold,ttime,qaold,cs,mcs,
      &     output,physcon,ctrl,typeboun,fmpc,tieset,ntie,tietol,nslavs,
      &     t0g,t1g,nprop,ielprop,prop,mortar,nintpoint,ifacecount,
      &     islavsurf,pslavsurf,clearini,irstrt,vel,nef,velo,veloo,
-     &     ne2boun,heading,network,nfc,ndc,coeffc,ikdc,edc,xmodal)
+     &     ne2boun,heading,network,nfc,ndc,coeffc,ikdc,edc,xmodal,
+     &     ndmat_,ndmcon,dmcon,dam)
 !     
       implicit none
 !     
@@ -62,11 +63,11 @@
      &     nrhcon(*),nalcon(*),nplicon(*),nplkcon(*),ielorien(*),
      &     inotr(*),mortar,nintpoint,ifacecount,islavsurf(*),iendset(*),
      &     namta(*),iamt1(*),ielmat(*),nodebounold(*),ndirbounold(*),
-     &     iponor(*),knor(*),iponoel(*),inoel(*),rig(*),nfc,ndc,
+     &     iponor(*),knor(*),iponoel2d(*),inoel2d(*),rig(*),nfc,ndc,
      &     nshcon(*),ncocon(*),ics(*),infree(*),i,ipos,ikdc(*),
      &     nener,irestartstep,istat,iprestr,irstrt(*),
      &     maxlenmpc,mcs,mpcend,ntie,ibody(*),nbody,nslavs,nef,
-     &     ne2boun(*),memmpc_,network,nevdamp_
+     &     ne2boun(*),memmpc_,network,nevdamp_,ndmat_,ndmcon(*)
 !     
       real*8 co(*),xboun(*),coefmpc(*),xforc(*),xload(*),elcon(*),
      &     rhcon(*),alcon(*),alzero(*),plicon(*),plkcon(*),orab(*),
@@ -75,7 +76,8 @@
      &     xnor(*),thicke(*),offset(*),t0g(*),t1g(*),clearini(*),
      &     shcon(*),cocon(*),sti(*),ener(*),xstate(*),prestr(*),ttime,
      &     qaold(2),physcon(*),ctrl(*),cs(*),fmpc(*),xbody(*),coeffc(*),
-     &     xbodyold(*),prop(*),vel(*),velo(*),veloo(*),edc(*),xmodal(*)
+     &     xbodyold(*),prop(*),vel(*),velo(*),veloo(*),edc(*),xmodal(*),
+     &     dmcon(*),dam(*)
 !     
       ipos=index(jobnamec(1),char(0))
       fnrstrt(1:ipos-1)=jobnamec(1)(1:ipos-1)
@@ -149,6 +151,7 @@
         read(15)ntmat_
         read(15)npmat_
         read(15)ncmat_
+        read(15)ndmat_
 !     
 !     property info
 !     
@@ -211,7 +214,7 @@
      &       nam,nprint,nlabel,ncs_,ne1d,ne2d,infree,nmethod,
      &       iperturb,nener,ithermal,nstate_,iprestr,mcs,ntie,
      &       nslavs,nprop,mortar,ifacecount,nintpoint,nef,nheading_,
-     &       nfc,ndc)
+     &       nfc,ndc,ndmat_)
 !     
       enddo
 !     
@@ -303,6 +306,14 @@
 !     
       read(15)(elcon(i),i=1,(ncmat_+1)*ntmat_*nmat)
       read(15)(nelcon(i),i=1,2*nmat)
+!     
+!     damage constants
+!
+      if(ndmat_.gt.0) then
+        write(15)(dmcon(i),i=1,(ndmat_+1)*ntmat_*nmat)
+        write(15)(ndmcon(i),i=1,2*nmat)
+        write(15)(dam(i),i=1,mi(1)*ne)
+      endif
 !     
 !     density
 !     
@@ -416,8 +427,8 @@
         read(15)(knor(i),i=1,infree(2))
         read(15)(thicke(i),i=1,mi(3)*nkon)
         read(15)(offset(i),i=1,2*ne)
-        read(15)(iponoel(i),i=1,infree(4))
-        read(15)(inoel(i),i=1,3*(infree(3)-1))
+        read(15)(iponoel2d(i),i=1,infree(4))
+        read(15)(inoel2d(i),i=1,3*(infree(3)-1))
         read(15)(rig(i),i=1,infree(4))
         read(15)(ne2boun(i),i=1,2*infree(4))
       endif
@@ -467,7 +478,7 @@
 !     
 !     control parameters
 !     
-      read(15) (ctrl(i),i=1,52)
+      read(15) (ctrl(i),i=1,60)
       read(15) (qaold(i),i=1,2)
       read(15) output
       read(15) ttime

@@ -85,191 +85,190 @@
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.2643301E-03
 
-        10 -1.466731E-03  0.000000E+00  0.000000E+00
-        13 -1.466731E-03  0.000000E+00  0.000000E+00
+        10 -1.536177E-03  0.000000E+00  0.000000E+00
+        13 -1.536177E-03  0.000000E+00  0.000000E+00
 
                                 INCREMENT    15
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.3143301E-03
 
-        10 -6.128780E-03  0.000000E+00  0.000000E+00
-        13 -6.128780E-03  0.000000E+00  0.000000E+00
+        10 -6.192978E-03  0.000000E+00  0.000000E+00
+        13 -6.192978E-03  0.000000E+00  0.000000E+00
 
                                 INCREMENT    16
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.3643301E-03
 
-        10 -9.607610E-03  0.000000E+00  0.000000E+00
-        13 -9.607610E-03  0.000000E+00  0.000000E+00
+        10 -9.662967E-03  0.000000E+00  0.000000E+00
+        13 -9.662967E-03  0.000000E+00  0.000000E+00
 
                                 INCREMENT    17
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.4143301E-03
 
-         9  1.600048E-04  0.000000E+00  0.000000E+00
-        10 -1.209055E-02  0.000000E+00  0.000000E+00
-        13 -1.209055E-02  0.000000E+00  0.000000E+00
+         9  6.753354E-05  0.000000E+00  0.000000E+00
+        10 -1.214190E-02  0.000000E+00  0.000000E+00
+        13 -1.214190E-02  0.000000E+00  0.000000E+00
 
                                 INCREMENT    18
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.4643301E-03
 
-         9 -2.405446E-03  0.000000E+00  0.000000E+00
-        10 -1.403513E-02  0.000000E+00  0.000000E+00
-        13 -1.403513E-02  0.000000E+00  0.000000E+00
+         9 -2.478049E-03  0.000000E+00  0.000000E+00
+        10 -1.409867E-02  0.000000E+00  0.000000E+00
+        13 -1.409867E-02  0.000000E+00  0.000000E+00
 
                                 INCREMENT    19
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.5143301E-03
 
-         9 -7.068134E-03  0.000000E+00  0.000000E+00
-        10 -1.594471E-02  0.000000E+00  0.000000E+00
-        13 -1.594471E-02  0.000000E+00  0.000000E+00
+         9 -7.126284E-03  0.000000E+00  0.000000E+00
+        10 -1.604758E-02  0.000000E+00  0.000000E+00
+        13 -1.604758E-02  0.000000E+00  0.000000E+00
 
                                 INCREMENT    20
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.5643301E-03
 
-         9 -1.415723E-02  0.000000E+00  0.000000E+00
-        10 -1.809737E-02  0.000000E+00  0.000000E+00
-        13 -1.809737E-02  0.000000E+00  0.000000E+00
+         9 -1.422860E-02  0.000000E+00  0.000000E+00
+        10 -1.826839E-02  0.000000E+00  0.000000E+00
+        13 -1.826839E-02  0.000000E+00  0.000000E+00
 
                                 INCREMENT    21
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.6143301E-03
 
-         9 -2.343904E-02  0.000000E+00  0.000000E+00
-        10 -2.036133E-02  0.000000E+00  0.000000E+00
-        13 -2.036133E-02  0.000000E+00  0.000000E+00
-        14 -1.065028E-03  0.000000E+00  0.000000E+00
+         9 -2.356602E-02  0.000000E+00  0.000000E+00
+        10 -2.061329E-02  0.000000E+00  0.000000E+00
+        13 -2.061329E-02  0.000000E+00  0.000000E+00
+        14 -1.030230E-03  0.000000E+00  0.000000E+00
 
                                 INCREMENT    22
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.6643301E-03
 
-         9 -3.394379E-02  0.000000E+00  0.000000E+00
-        10 -2.226958E-02  0.000000E+00  0.000000E+00
-        13 -2.226958E-02  0.000000E+00  0.000000E+00
-        14 -5.668903E-03  0.000000E+00  0.000000E+00
+         9 -3.416565E-02  0.000000E+00  0.000000E+00
+        10 -2.258297E-02  0.000000E+00  0.000000E+00
+        13 -2.258297E-02  0.000000E+00  0.000000E+00
+        14 -5.552014E-03  0.000000E+00  0.000000E+00
 
                                 INCREMENT    23
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.7143301E-03
 
-         9 -4.384002E-02  0.000000E+00  0.000000E+00
-        10 -2.331075E-02  0.000000E+00  0.000000E+00
-        13 -2.331075E-02  0.000000E+00  0.000000E+00
-        14 -1.090323E-02  0.000000E+00  0.000000E+00
+         9 -4.417193E-02  0.000000E+00  0.000000E+00
+        10 -2.363172E-02  0.000000E+00  0.000000E+00
+        13 -2.363172E-02  0.000000E+00  0.000000E+00
+        14 -1.074768E-02  0.000000E+00  0.000000E+00
 
                                 INCREMENT    24
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.7643301E-03
 
-         9 -5.056378E-02  0.000000E+00  0.000000E+00
-        10 -2.321014E-02  0.000000E+00  0.000000E+00
-        13 -2.321014E-02  0.000000E+00  0.000000E+00
-        14 -1.572025E-02  0.000000E+00  0.000000E+00
+         9 -5.098199E-02  0.000000E+00  0.000000E+00
+        10 -2.346902E-02  0.000000E+00  0.000000E+00
+        13 -2.346902E-02  0.000000E+00  0.000000E+00
+        14 -1.559548E-02  0.000000E+00  0.000000E+00
 
                                 INCREMENT    25
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.8143301E-03
 
-         9 -5.155591E-02  0.000000E+00  0.000000E+00
-        10 -2.203225E-02  0.000000E+00  0.000000E+00
-        13 -2.203225E-02  0.000000E+00  0.000000E+00
-        14 -1.883697E-02  0.000000E+00  0.000000E+00
+         9 -5.199929E-02  0.000000E+00  0.000000E+00
+        10 -2.217568E-02  0.000000E+00  0.000000E+00
+        13 -2.217568E-02  0.000000E+00  0.000000E+00
+        14 -1.881710E-02  0.000000E+00  0.000000E+00
 
                                 INCREMENT    26
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.8643301E-03
 
-         9 -4.549627E-02  0.000000E+00  0.000000E+00
-        10 -2.002625E-02  0.000000E+00  0.000000E+00
-        13 -2.002625E-02  0.000000E+00  0.000000E+00
-        14 -1.927277E-02  0.000000E+00  0.000000E+00
+         9 -4.588532E-02  0.000000E+00  0.000000E+00
+        10 -2.004398E-02  0.000000E+00  0.000000E+00
+        13 -2.004398E-02  0.000000E+00  0.000000E+00
+        14 -1.940396E-02  0.000000E+00  0.000000E+00
 
                                 INCREMENT    27
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.9143301E-03
 
-         9 -3.314108E-02  0.000000E+00  0.000000E+00
-        10 -1.737659E-02  0.000000E+00  0.000000E+00
-        13 -1.737659E-02  0.000000E+00  0.000000E+00
-        14 -1.688320E-02  0.000000E+00  0.000000E+00
+         9 -3.340369E-02  0.000000E+00  0.000000E+00
+        10 -1.730527E-02  0.000000E+00  0.000000E+00
+        13 -1.730527E-02  0.000000E+00  0.000000E+00
+        14 -1.716305E-02  0.000000E+00  0.000000E+00
 
                                 INCREMENT    28
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.9643301E-03
 
-         9 -1.696178E-02  0.000000E+00  0.000000E+00
-        10 -1.417588E-02  0.000000E+00  0.000000E+00
-        13 -1.417588E-02  0.000000E+00  0.000000E+00
-        14 -1.242171E-02  0.000000E+00  0.000000E+00
+         9 -1.705303E-02  0.000000E+00  0.000000E+00
+        10 -1.408003E-02  0.000000E+00  0.000000E+00
+        13 -1.408003E-02  0.000000E+00  0.000000E+00
+        14 -1.280741E-02  0.000000E+00  0.000000E+00
 
                                 INCREMENT    29
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.1014330E-02
 
-         9  1.200958E-04  0.000000E+00  0.000000E+00
-        10 -1.061512E-02  0.000000E+00  0.000000E+00
-        13 -1.061512E-02  0.000000E+00  0.000000E+00
-        14 -7.103120E-03  0.000000E+00  0.000000E+00
+        10 -1.059123E-02  0.000000E+00  0.000000E+00
+        13 -1.059123E-02  0.000000E+00  0.000000E+00
+        14 -7.563065E-03  0.000000E+00  0.000000E+00
 
                                 INCREMENT    30
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.1064330E-02
 
-        10 -7.119229E-03  0.000000E+00  0.000000E+00
-        13 -7.119229E-03  0.000000E+00  0.000000E+00
-        14 -2.101144E-03  0.000000E+00  0.000000E+00
+        10 -7.268800E-03  0.000000E+00  0.000000E+00
+        13 -7.268800E-03  0.000000E+00  0.000000E+00
+        14 -2.632294E-03  0.000000E+00  0.000000E+00
 
                                 INCREMENT    31
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.1114330E-02
 
-        10 -4.234471E-03  0.000000E+00  0.000000E+00
-        13 -4.234471E-03  0.000000E+00  0.000000E+00
+        10 -4.590902E-03  0.000000E+00  0.000000E+00
+        13 -4.590902E-03  0.000000E+00  0.000000E+00
 
                                 INCREMENT    32
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.1164330E-02
 
-        10 -2.278411E-03  0.000000E+00  0.000000E+00
-        13 -2.278411E-03  0.000000E+00  0.000000E+00
+        10 -2.794862E-03  0.000000E+00  0.000000E+00
+        13 -2.794862E-03  0.000000E+00  0.000000E+00
 
                                 INCREMENT    33
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.1214330E-02
 
-        10 -1.032237E-03  0.000000E+00  0.000000E+00
-        13 -1.032237E-03  0.000000E+00  0.000000E+00
+        10 -1.600424E-03  0.000000E+00  0.000000E+00
+        13 -1.600424E-03  0.000000E+00  0.000000E+00
 
                                 INCREMENT    34
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.1264330E-02
 
-        10  2.630022E-04  0.000000E+00  0.000000E+00
-        13  2.630022E-04  0.000000E+00  0.000000E+00
+        10 -2.061686E-04  0.000000E+00  0.000000E+00
+        13 -2.061686E-04  0.000000E+00  0.000000E+00
 
                                 INCREMENT    35
 
@@ -288,7 +287,7 @@
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.1414330E-02
 
-        14 -5.606792E-05  0.000000E+00  0.000000E+00
+        14 -7.799300E-05  0.000000E+00  0.000000E+00
 
                                 INCREMENT    38
 
@@ -313,147 +312,148 @@
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.1614330E-02
 
-        14 -6.161512E-04  0.000000E+00  0.000000E+00
+        14  5.521764E-05  0.000000E+00  0.000000E+00
 
                                 INCREMENT    42
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.1664330E-02
 
-        14 -4.547836E-03  0.000000E+00  0.000000E+00
+        14 -3.801872E-03  0.000000E+00  0.000000E+00
 
                                 INCREMENT    43
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.1714330E-02
 
-        14 -1.061907E-02  0.000000E+00  0.000000E+00
+        14 -9.822600E-03  0.000000E+00  0.000000E+00
 
                                 INCREMENT    44
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.1764330E-02
 
-        14 -1.805796E-02  0.000000E+00  0.000000E+00
+        14 -1.721184E-02  0.000000E+00  0.000000E+00
 
                                 INCREMENT    45
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.1814330E-02
 
-         9 -5.581041E-04  0.000000E+00  0.000000E+00
-        14 -2.533350E-02  0.000000E+00  0.000000E+00
+         9 -8.028614E-04  0.000000E+00  0.000000E+00
+        14 -2.443849E-02  0.000000E+00  0.000000E+00
 
                                 INCREMENT    46
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.1864330E-02
 
-         9 -7.391927E-03  0.000000E+00  0.000000E+00
-        10 -1.090167E-03  0.000000E+00  0.000000E+00
-        13 -1.090167E-03  0.000000E+00  0.000000E+00
-        14 -3.037554E-02  0.000000E+00  0.000000E+00
+         9 -7.068502E-03  0.000000E+00  0.000000E+00
+        10 -2.403792E-03  0.000000E+00  0.000000E+00
+        13 -2.403792E-03  0.000000E+00  0.000000E+00
+        14 -2.948994E-02  0.000000E+00  0.000000E+00
 
                                 INCREMENT    47
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.1914330E-02
 
-         9 -1.244853E-02  0.000000E+00  0.000000E+00
-        10 -9.226381E-03  0.000000E+00  0.000000E+00
-        13 -9.226381E-03  0.000000E+00  0.000000E+00
-        14 -3.147092E-02  0.000000E+00  0.000000E+00
+         9 -1.172350E-02  0.000000E+00  0.000000E+00
+        10 -1.043076E-02  0.000000E+00  0.000000E+00
+        13 -1.043076E-02  0.000000E+00  0.000000E+00
+        14 -3.075072E-02  0.000000E+00  0.000000E+00
 
                                 INCREMENT    48
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.1964330E-02
 
-         9 -1.554925E-02  0.000000E+00  0.000000E+00
-        10 -1.642099E-02  0.000000E+00  0.000000E+00
-        13 -1.642099E-02  0.000000E+00  0.000000E+00
-        14 -2.828885E-02  0.000000E+00  0.000000E+00
+         9 -1.468276E-02  0.000000E+00  0.000000E+00
+        10 -1.727104E-02  0.000000E+00  0.000000E+00
+        13 -1.727104E-02  0.000000E+00  0.000000E+00
+        14 -2.794580E-02  0.000000E+00  0.000000E+00
 
                                 INCREMENT    49
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.2014330E-02
 
-         9 -1.727847E-02  0.000000E+00  0.000000E+00
-        10 -2.197109E-02  0.000000E+00  0.000000E+00
-        13 -2.197109E-02  0.000000E+00  0.000000E+00
-        14 -2.191824E-02  0.000000E+00  0.000000E+00
+         9 -1.652939E-02  0.000000E+00  0.000000E+00
+        10 -2.230087E-02  0.000000E+00  0.000000E+00
+        13 -2.230087E-02  0.000000E+00  0.000000E+00
+        14 -2.212089E-02  0.000000E+00  0.000000E+00
 
                                 INCREMENT    50
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.2064330E-02
 
-         9 -1.858515E-02  0.000000E+00  0.000000E+00
-        10 -2.568615E-02  0.000000E+00  0.000000E+00
-        13 -2.568615E-02  0.000000E+00  0.000000E+00
-        14 -1.407051E-02  0.000000E+00  0.000000E+00
+         9 -1.813840E-02  0.000000E+00  0.000000E+00
+        10 -2.545366E-02  0.000000E+00  0.000000E+00
+        13 -2.545366E-02  0.000000E+00  0.000000E+00
+        14 -1.487552E-02  0.000000E+00  0.000000E+00
 
                                 INCREMENT    51
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.2114330E-02
 
-         9 -2.034784E-02  0.000000E+00  0.000000E+00
-        10 -2.789311E-02  0.000000E+00  0.000000E+00
-        13 -2.789311E-02  0.000000E+00  0.000000E+00
-        14 -6.283761E-03  0.000000E+00  0.000000E+00
+         9 -2.029943E-02  0.000000E+00  0.000000E+00
+        10 -2.716438E-02  0.000000E+00  0.000000E+00
+        13 -2.716438E-02  0.000000E+00  0.000000E+00
+        14 -7.639291E-03  0.000000E+00  0.000000E+00
 
                                 INCREMENT    52
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.2164330E-02
 
-         9 -2.312030E-02  0.000000E+00  0.000000E+00
-        10 -2.919367E-02  0.000000E+00  0.000000E+00
-        13 -2.919367E-02  0.000000E+00  0.000000E+00
+         9 -2.347650E-02  0.000000E+00  0.000000E+00
+        10 -2.806312E-02  0.000000E+00  0.000000E+00
+        13 -2.806312E-02  0.000000E+00  0.000000E+00
+        14 -1.366045E-03  0.000000E+00  0.000000E+00
 
                                 INCREMENT    53
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.2214330E-02
 
-         9 -2.702292E-02  0.000000E+00  0.000000E+00
-        10 -3.012164E-02  0.000000E+00  0.000000E+00
-        13 -3.012164E-02  0.000000E+00  0.000000E+00
+         9 -2.772983E-02  0.000000E+00  0.000000E+00
+        10 -2.868086E-02  0.000000E+00  0.000000E+00
+        13 -2.868086E-02  0.000000E+00  0.000000E+00
 
                                 INCREMENT    54
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.2264330E-02
 
-         9 -3.167992E-02  0.000000E+00  0.000000E+00
-        10 -3.084579E-02  0.000000E+00  0.000000E+00
-        13 -3.084579E-02  0.000000E+00  0.000000E+00
+         9 -3.267475E-02  0.000000E+00  0.000000E+00
+        10 -2.922680E-02  0.000000E+00  0.000000E+00
+        13 -2.922680E-02  0.000000E+00  0.000000E+00
 
                                 INCREMENT    55
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.2314330E-02
 
-         9 -3.625633E-02  0.000000E+00  0.000000E+00
-        10 -3.107364E-02  0.000000E+00  0.000000E+00
-        13 -3.107364E-02  0.000000E+00  0.000000E+00
+         9 -3.745246E-02  0.000000E+00  0.000000E+00
+        10 -2.942822E-02  0.000000E+00  0.000000E+00
+        13 -2.942822E-02  0.000000E+00  0.000000E+00
 
                                 INCREMENT    56
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.2364330E-02
 
-         9 -3.961497E-02  0.000000E+00  0.000000E+00
-        10 -3.011076E-02  0.000000E+00  0.000000E+00
-        13 -3.011076E-02  0.000000E+00  0.000000E+00
+         9 -4.086164E-02  0.000000E+00  0.000000E+00
+        10 -2.856637E-02  0.000000E+00  0.000000E+00
+        13 -2.856637E-02  0.000000E+00  0.000000E+00
 
                                 INCREMENT    57
 
 
  relative contact displacement (slave node,normal,tang1,tang2) for all contact elements and time 0.2400000E-02
 
-         9 -4.063294E-02  0.000000E+00  0.000000E+00
-        10 -2.822460E-02  0.000000E+00  0.000000E+00
-        13 -2.822460E-02  0.000000E+00  0.000000E+00
+         9 -4.178496E-02  0.000000E+00  0.000000E+00
+        10 -2.681591E-02  0.000000E+00  0.000000E+00
+        13 -2.681591E-02  0.000000E+00  0.000000E+00

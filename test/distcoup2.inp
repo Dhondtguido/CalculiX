@@ -2,7 +2,7 @@
 **   Structure: cantilever beam.
 **   Test objective: two distributing coupling cards
 **                   the dependent nodes 5 and 8 should
-**                   not occur in both defintions on the
+**                   not occur in both definitions on the
 **                   independent side
 **
 *HEADING

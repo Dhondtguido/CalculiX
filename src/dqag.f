@@ -968,7 +968,7 @@ c                       gauss-kronrod rule (resk), obtained by optimal
 c                       addition of abscissae to the 15-point gauss
 c                       rule (resg).
 c
-c              abserr - double precison
+c              abserr - double precision
 c                       estimate of the modulus of the modulus,
 c                       which should not exceed abs(i-result)
 c
@@ -1645,7 +1645,7 @@ c                   to the 30-point gauss rule
 c
 c           wgk   - weights of the 61-point kronrod rule
 c
-c           wg    - weigths of the 30-point gauss rule
+c           wg    - weights of the 30-point gauss rule
 c
 c
 c gauss quadrature weights and kronron quadrature abscissae and weights

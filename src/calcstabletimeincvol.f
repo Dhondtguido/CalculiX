@@ -21,12 +21,12 @@
      &     plicon,nplicon,plkcon,nplkcon,npmat_,mi,dtime,
      &     xstiff,ncmat_,vold,ielmat,t0,t1,
      &     matname,lakon,wavespeed,nmat,ipkon,co,kon,dtvol,alpha,
-     &     smscale,dtset,mscalmethod,mortar,jobnamef)
+     &     smscale,dtset,mscalmethod,mortar,jobnamef,iperturb)
 !     
 !     **************
 !     ------------Wavespeed calculation------------------------CARLO MT
 !     Calculates the propagation wave speed in a material, selecting
-!     appropiate procedure between isotropic, single crystals, and
+!     appropriate procedure between isotropic, single crystals, and
 !     anisotropic materials. All other cases of orthotropy are treated
 !     as anisotropic.
 !     
@@ -62,7 +62,7 @@
      &     ielmat(mi(3),*),nope,iorien,ipkon(*),null,ilen,
      &     konl(26),nopered,npmat_,nmat,kon(*),indexe,iflag,nopes,
      &     nfaces,ig,ifaceq(8,6),ifacet(6,4),ifacew(8,5),
-     &     mscalmethod,icount,mortar
+     &     mscalmethod,icount,mortar,iperturb(*)
 !     
       real*8 stiff(21),wavespeed(*),rhcon(0:1,ntmat_,*),volfac,
      &     alcon(0:6,ntmat_,*),coords(3),orab(7,*),rho,alzero(*),
@@ -102,9 +102,7 @@
 !     
       if(mortar.ne.-1) then
         safefac=0.80d0/1.3d0
-c     safefac=0.80d0
       else
-c     safefac=0.80d0/1.3d0
         safefac=0.5d0
       endif
 !      
@@ -180,7 +178,15 @@ c        write(*,*) 'calcstabletimeincvol ',nelem
             nope=8
             nopes=4
             nfaces=6
-            elemfac=0.625d0
+c     elemfac=0.625d0
+!
+!     next line corresponds to elemfac*safefac=1/dsqrt(3) as
+!     suggested by Flanagan and Belytschko (J. Appl. Mech., Transactions
+!     of the ASME, (51),35-40 (1984)) for the hourglass controlled  
+!     C3D8R-element described by the same authors (Int. J. Num. Meth.
+!     Engng. (17),679-606 (1981))
+!
+             elemfac=0.938d0
           elseif(lakon(nelem)(4:4).eq.'8') then
             nope=8
             nopes=4
@@ -313,7 +319,7 @@ c            if(mortar.eq.-1) elemfac=0.9d0
      &         ihyper,istiff,elconloc,eth,kode,plicon,
      &         nplicon,plkcon,nplkcon,npmat_,
      &         plconloc,mi(1),dtime,kk,
-     &         xstiff,ncmat_)
+     &         xstiff,ncmat_,iperturb)
 !     
           if(mattyp.eq.1) then
             e=stiff(1)

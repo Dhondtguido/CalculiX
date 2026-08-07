@@ -31,7 +31,7 @@
       character*1 inpc(*)
       character*8 lakon(*)
       character*20 labmpc(*)
-      character*81 surface,set(*)
+      character*81 surface,set(*),noset,elset
       character*132 textpart(16)
 !     
       integer ipompc(*),nodempc(3,*),nmpc,nmpc_,mpcfree,istep,istat,
@@ -46,7 +46,7 @@
      &     ndep,nind,kflag,ne,nkref,noderef,ier
 !     
       real*8 coefmpc(*),xn(3),xt(3),xd(3),dd,co(3,*),dcs(*),area,
-     &     areanodal(8),xl2(3,8),xi,et,weight,shp2(7,8),t0(*),
+     &     xl2(3,8),xi,et,weight,shp2(7,8),t0(*),
      &     xs2(3,2),xsj2(3),xsj,yn(3),r,xnl(3)
 !     
       include "gauss.f"
@@ -130,21 +130,50 @@
           surface=textpart(i)(9:88)
           ipos=index(surface,' ')
           surface(ipos:ipos)='T'
-        elseif(textpart(i)(1:5).eq.'NODE=') then
+       elseif(textpart(i)(1:5).eq.'NODE=') then
           read(textpart(i)(6:15),'(i10)',iostat=istat) irefnode
           if(istat.gt.0) then
-            call inputerror(inpc,ipoinpc,iline,
-     &           "*PRE-TENSION SECTION%",ier)
-            return
+             read(textpart(i)(6:85),'(a80)',iostat=istat) noset
+             noset(81:81)=' '
+             ipos=index(noset,' ')
+             noset(ipos:ipos)='N'
+             call cident81(set,noset,nset,id)
+             j=nset+1
+             if(id.gt.0) then
+               if(noset.eq.set(id)) then
+                 j=id
+               endif
+             endif
+             if(j.gt.nset) then
+                write(*,*) '*ERROR reading *PRE-TENSION SECTION:'
+                write(*,*) '       node set ',
+     &               noset(1:index(noset,' ')-2),
+     &               ' is not defined.'
+                call inputerror(inpc,ipoinpc,iline,
+     &             "*PRE-TENSION SECTION%",ier)
+                return
+             endif
+             if(istartset(id).ne.iendset(id)) then
+                write(*,*) '*ERROR reading *PRE-TENSION SECTION:'
+                write(*,*) '       exactly one node is allowed in'
+                write(*,*) '       nodeset ',
+     &               noset(1:index(noset,' ')-2),'.'
+                write(*,*) '       number of nodes: ',
+     &               iendset(id)-istartset(id)+1
+                call inputerror(inpc,ipoinpc,iline,
+     &               "*PRE-TENSION SECTION%",ier)
+                return
+             endif
+             irefnode=ialset(istartset(id))
           endif
           if((irefnode.gt.nk).or.(irefnode.le.0)) then
             write(*,*) '*ERROR reading *PRE-TENSION SECTION:'
             write(*,*) '       node ',irefnode,' is not defined'
             ier=1
             return
-          endif
-        elseif(textpart(i)(1:8).eq.'ELEMENT=') then
-          if(surface(1:1).ne.' ') then
+         endif       
+      elseif(textpart(i)(1:8).eq.'ELEMENT=') then
+         if(surface(1:1).ne.' ') then
             write(*,*) '*ERROR reading PRE-TENSION SECTION:'
             write(*,*) '       ELEMENT and SURFACE are'
             write(*,*) '       mutually exclusive'
@@ -154,11 +183,38 @@
           endif
           read(textpart(i)(9:18),'(i10)',iostat=istat) ielem
           if(istat.gt.0) then
-            write(*,*) '*ERROR reading PRE-TENSION SECTION:'
-            write(*,*) '       cannot read element number'
-            call inputerror(inpc,ipoinpc,iline,
-     &           "*PRE-TENSION SECTION%",ier)
-            return
+             read(textpart(i)(9:88),'(a80)',iostat=istat) elset
+             elset(81:81)=' '
+             ipos=index(elset,' ')
+             elset(ipos:ipos)='E'
+             call cident81(set,elset,nset,id)
+             j=nset+1
+             if(id.gt.0) then
+               if(elset.eq.set(id)) then
+                 j=id
+               endif
+             endif
+             if(j.gt.nset) then
+                write(*,*) '*ERROR reading *PRE-TENSION SECTION:'
+                write(*,*) '       element set ',
+     &               elset(1:index(elset,' ')-2),
+     &               ' is not defined.'
+                call inputerror(inpc,ipoinpc,iline,
+     &             "*PRE-TENSION SECTION%",ier)
+                return
+             endif
+             if(istartset(id).ne.iendset(id)) then
+                write(*,*) '*ERROR reading *PRE-TENSION SECTION:'
+                write(*,*) '       exactly one element is allowed in'
+                write(*,*) '       element set ',
+     &               elset(1:index(elset,' ')-2),'.'
+                write(*,*) '       number of elements: ',
+     &               iendset(id)-istartset(id)+1
+                call inputerror(inpc,ipoinpc,iline,
+     &               "*PRE-TENSION SECTION%",ier)
+                return
+             endif
+             ielem=ialset(istartset(id))
           endif
           if((ielem.gt.ne).or.(ielem.le.0)) then
             write(*,*) '*ERROR reading PRE-TENSION SECTION:'
@@ -166,10 +222,10 @@
             call inputerror(inpc,ipoinpc,iline,
      &           "*PRE-TENSION SECTION%",ier)
             return
-          endif
+          endif             
         else
           write(*,*) 
-     &         '*WARNING reading *PRE-TENSION SECTION: parameter not recog
+     &       '*WARNING reading *PRE-TENSION SECTION: parameter not recog
      &nized:'
           write(*,*) '         ',
      &         textpart(i)(1:index(textpart(i),' ')-1)
@@ -530,7 +586,6 @@ c     jn=in(i)
           jface=jface-2
           if(lakon(nelem)(4:4).eq.'8') then
             twod=.true.
-c     jface=jface-2
           endif
         elseif((lakon(nelem)(2:2).eq.'6').or.
      &         (lakon(nelem)(4:4).eq.'6')) then
@@ -542,7 +597,6 @@ c     jface=jface-2
           jface=jface-2
           if(lakon(nelem)(4:4).eq.'6') then
             twod=.true.
-c     jface=jface-2
           endif
         elseif((lakon(nelem)(2:2).eq.'4').or.
      &         (lakon(nelem)(4:4).eq.'4')) then
@@ -555,7 +609,6 @@ c     jface=jface-2
           jface=jface-2
           if(lakon(nelem)(4:4).eq.'4') then
             twod=.true.
-c     jface=jface-2
           endif
         elseif((lakon(nelem)(2:2).eq.'3').or.
      &         (lakon(nelem)(4:4).eq.'3')) then
@@ -567,7 +620,6 @@ c     jface=jface-2
           jface=jface-2
           if(lakon(nelem)(4:4).eq.'3') then
             twod=.true.
-c     jface=jface-2
           endif
         else
           cycle
@@ -650,11 +702,9 @@ c     jface=jface-2
           do j=npt,id+2,-1
             ics(1,j)=ics(1,j-1)
             ics(2,j)=ics(2,j-1)
-c     dcs(j)=dcs(j-1)
           enddo
           ics(1,id+1)=node
           ics(2,id+1)=nk
-c     dcs(id+1)=0.d0
 !     
 !     first MPC perpendicular to the normal direction
 !     
@@ -685,7 +735,6 @@ c     dcs(id+1)=0.d0
             nodempc(1,mpcfree)=nk
             nodempc(2,mpcfree)=idir
             coefmpc(mpcfree)=-xt(idir)
-c     write(*,*) 'pretensionsections ',nk,idir,-xt(idir)
             mpcfreeold=mpcfree
             mpcfree=nodempc(3,mpcfree)
           endif
@@ -696,7 +745,6 @@ c     write(*,*) 'pretensionsections ',nk,idir,-xt(idir)
             nodempc(1,mpcfree)=nk
             nodempc(2,mpcfree)=idir
             coefmpc(mpcfree)=-xt(idir)
-c     write(*,*) 'pretensionsections ',nk,idir,-xt(idir)
             mpcfreeold=mpcfree
             mpcfree=nodempc(3,mpcfree)
           endif
@@ -865,8 +913,6 @@ c     write(*,*) 'pretensionsections ',node,idir,xt(idir)
             enddo
             ikmpc(id+1)=idof
             ilmpc(id+1)=nmpc
-c     else
-c     nodempc(3,indexpret)=mpcfree
           endif
 !     
 !     MPC's specifying that the pre-tension surfaces should stay
@@ -900,7 +946,6 @@ c     nodempc(3,indexpret)=mpcfree
               nodempc(1,mpcfree)=nk
               nodempc(2,mpcfree)=idir
               coefmpc(mpcfree)=-xn(idir)
-c     write(*,*) 'pretensionsections ',nk,idir,-xn(idir)
               mpcfreeold=mpcfree
               mpcfree=nodempc(3,mpcfree)
             endif
@@ -911,7 +956,6 @@ c     write(*,*) 'pretensionsections ',nk,idir,-xn(idir)
               nodempc(1,mpcfree)=nk
               nodempc(2,mpcfree)=idir
               coefmpc(mpcfree)=-xn(idir)
-c     write(*,*) 'pretensionsections ',nk,idir,-xn(idir)
               mpcfreeold=mpcfree
               mpcfree=nodempc(3,mpcfree)
             endif
@@ -922,7 +966,6 @@ c     write(*,*) 'pretensionsections ',nk,idir,-xn(idir)
               nodempc(1,mpcfree)=nk
               nodempc(2,mpcfree)=idir
               coefmpc(mpcfree)=-xn(idir)
-c     write(*,*) 'pretensionsections ',nk,idir,-xn(idir)
               mpcfreeold=mpcfree
               mpcfree=nodempc(3,mpcfree)
             endif
@@ -932,7 +975,6 @@ c     write(*,*) 'pretensionsections ',nk,idir,-xn(idir)
               nodempc(1,mpcfree)=node
               nodempc(2,mpcfree)=idir
               coefmpc(mpcfree)=xn(idir)
-c     write(*,*) 'pretensionsections ',node,idir,xn(idir)
               mpcfreeold=mpcfree
               mpcfree=nodempc(3,mpcfree)
             endif
@@ -943,7 +985,6 @@ c     write(*,*) 'pretensionsections ',node,idir,xn(idir)
               nodempc(1,mpcfree)=node
               nodempc(2,mpcfree)=idir
               coefmpc(mpcfree)=xn(idir)
-c     write(*,*) 'pretensionsections ',node,idir,xn(idir)
               mpcfreeold=mpcfree
               mpcfree=nodempc(3,mpcfree)
             endif
@@ -954,7 +995,6 @@ c     write(*,*) 'pretensionsections ',node,idir,xn(idir)
               nodempc(1,mpcfree)=node
               nodempc(2,mpcfree)=idir
               coefmpc(mpcfree)=xn(idir)
-c     write(*,*) 'pretensionsections ',node,idir,xn(idir)
               mpcfreeold=mpcfree
               mpcfree=nodempc(3,mpcfree)
             endif
@@ -1021,7 +1061,6 @@ c     write(*,*) 'pretensionsections ',node,idir,xn(idir)
             nodempc(3,mpcfreeold)=0
 !     
             nodempc(3,indexpret)=mpcfree
-c     endif
           else
 !     
 !     governing pre-tension equation
@@ -1031,14 +1070,12 @@ c     endif
               nodempc(1,mpcfree)=nk
               nodempc(2,mpcfree)=idir
               coefmpc(mpcfree)=-xn(idir)
-c     write(*,*) 'pretensionsectionsf1 ',nk,idir,-xn(idir)
               indexpret=mpcfree
               mpcfree=nodempc(3,mpcfree)
 !     
               nodempc(1,mpcfree)=node
               nodempc(2,mpcfree)=idir
               coefmpc(mpcfree)=xn(idir)
-c     write(*,*) 'pretensionsectionsf2 ',node,idir,xn(idir)
               indexpret=mpcfree
               mpcfree=nodempc(3,mpcfree)
             endif
@@ -1049,14 +1086,12 @@ c     write(*,*) 'pretensionsectionsf2 ',node,idir,xn(idir)
               nodempc(1,mpcfree)=nk
               nodempc(2,mpcfree)=idir
               coefmpc(mpcfree)=-xn(idir)
-c     write(*,*) 'pretensionsectionsf3 ',nk,idir,-xn(idir)
               indexpret=mpcfree
               mpcfree=nodempc(3,mpcfree)
 !     
               nodempc(1,mpcfree)=node
               nodempc(2,mpcfree)=idir
               coefmpc(mpcfree)=xn(idir)
-c     write(*,*) 'pretensionsectionsf4 ',node,idir,xn(idir)
               indexpret=mpcfree
               mpcfree=nodempc(3,mpcfree)
             endif
@@ -1067,14 +1102,12 @@ c     write(*,*) 'pretensionsectionsf4 ',node,idir,xn(idir)
               nodempc(1,mpcfree)=nk
               nodempc(2,mpcfree)=idir
               coefmpc(mpcfree)=-xn(idir)
-c     write(*,*) 'pretensionsectionsf5 ',nk,idir,-xn(idir)
               indexpret=mpcfree
               mpcfree=nodempc(3,mpcfree)
 !     
               nodempc(1,mpcfree)=node
               nodempc(2,mpcfree)=idir
               coefmpc(mpcfree)=xn(idir)
-c     write(*,*) 'pretensionsectionsf6 ',node,idir,xn(idir)
               indexpret=mpcfree
               mpcfree=nodempc(3,mpcfree)
             endif
@@ -1187,7 +1220,6 @@ c     write(*,*) 'pretensionsectionsf6 ',node,idir,xn(idir)
         endif
 !     
         do i=1,nopes
-c     areanodal(i)=0.d0
           do j=1,3
             xl2(j,i)=co(j,nodef(i))
           enddo
@@ -1250,12 +1282,10 @@ c     areanodal(i)=0.d0
             endif
           endif
 !     
-c     write(*,*) 'pretension12 ',nopes
           if(nopes.eq.8) then
             call shape8q(xi,et,xl2,xsj2,xs2,shp2,iflag)
           elseif(nopes.eq.4) then
             call shape4q(xi,et,xl2,xsj2,xs2,shp2,iflag)
-c     write(*,*) 'pretension11 ',xsj2(1)
           elseif(nopes.eq.6) then
             call shape6tri(xi,et,xl2,xsj2,xs2,shp2,iflag)
           elseif((nopes.eq.3).and.(.not.twod).and.
@@ -1285,19 +1315,11 @@ c     write(*,*) 'pretension11 ',xsj2(1)
             do i=1,nopes
               r=r+shp2(4,i)*xl2(1,i)
             enddo
-c     xsj=weight*xsj2(1)*r
             xsj=weight*dsqrt(xsj2(1)**2+xsj2(2)**2+xsj2(3)**2)*r
           else
-c     xsj=weight*xsj2(1)
             xsj=weight*dsqrt(xsj2(1)**2+xsj2(2)**2+xsj2(3)**2)
-c     write(*,*) 'pretension10',weight
-c     write(*,*) 'pretension10',xsj
           endif
           area=area+xsj
-c     write(*,*) 'pretension10 ',area
-c     do i=1,nopes
-c     areanodal(i)=areanodal(i)+xsj*shp2(4,i)
-c     enddo
 !     
         enddo
 !     
@@ -1306,7 +1328,6 @@ c     enddo
         do i=1,nopes
           node=nodef(i)
           call nident2(ics,node,npt,id)
-c     dcs(id)=dcs(id)+areanodal(i)
         enddo
 !     
       enddo
@@ -1315,7 +1336,6 @@ c     dcs(id)=dcs(id)+areanodal(i)
       nodempc(1,mpcfree)=irefnode
       nodempc(2,mpcfree)=1
       coefmpc(mpcfree)=area
-c     write(*,*) 'pretensionsectionsf77 ',area
       mpcfreeold=mpcfree
       mpcfree=nodempc(3,mpcfree)
       nodempc(3,mpcfreeold)=0

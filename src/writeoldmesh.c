@@ -39,12 +39,12 @@ void writeoldmesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,
     *neigh=NULL,ngraph,nset,*istartset=NULL,*iendset=NULL,*ialset=NULL,
     mortar=0,*ielprop=NULL;
 
-  double *v=NULL,*stn=NULL,*een=NULL,*t1=NULL,*fn=NULL,
+  double *v=NULL,*stn=NULL,*een=NULL,*t1=NULL,*fn=NULL,*accold=NULL,
     time=0.,*epn=NULL,*enern=NULL,*xstaten=NULL,*qfn=NULL,*trab=NULL,
     *orab=NULL,*stx=NULL,*vr=NULL,*vi=NULL,*stnr=NULL,*stni=NULL,
     *vmax=NULL,*stnmax=NULL,*veold=NULL,*ener=NULL,*cs=NULL,*eenmax=NULL,
     *fnr=NULL,*fni=NULL,*emn=NULL,*thicke=NULL,*qfx=NULL,*cdn=NULL,
-    *cdnr=NULL,*cdni=NULL,*prop=NULL,*sti=NULL;
+    *cdnr=NULL,*cdni=NULL,*prop=NULL,*sti=NULL,*damn=NULL,*errn=NULL;
 
   strcpy2(foldmesh,jobnamec,132);
   strcat(foldmesh,".urf");
@@ -70,7 +70,7 @@ void writeoldmesh(ITG *nk,ITG *ne,double *co,ITG *ipkon,
       mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
       cs,set,&nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
       thicke,foldmesh,output,qfx,cdn,&mortar,cdnr,cdni,nmat,ielprop,
-      prop,sti);
+      prop,sti,damn,&errn,accold);
   
   strcat(foldmesh,".frd");
   if((f1=fopen(foldmesh,"ab"))==NULL){

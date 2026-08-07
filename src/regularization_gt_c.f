@@ -21,7 +21,7 @@
 !     (old, only for stressmortar)
 !
 !  [in]	lambdatt	lambdatilde_tau=lambda_tau-bar{lambda}_tau
-!  [in]	divmode 	indicates whether funtion or derivate 
+!  [in]	divmode 	indicates whether function or derivate 
 !                             	should be called
 !                    		=0 function called
 !                    		=1 derivative called    

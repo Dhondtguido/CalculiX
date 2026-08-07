@@ -18,7 +18,7 @@
 !
       subroutine randomval(randval,nev)              
 !
-!     Creation of normal ditributed unit variance gaussian       
+!     Creation of normal distributed unit variance gaussian       
 !     random variables using the Box-Muller-Transformation
 !
       implicit none

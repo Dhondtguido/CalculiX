@@ -27,14 +27,11 @@
 !
       real*8 au(*),value
 !
-!
-!
       call nident(irow(jq(j)),i,jq(j+1)-jq(j),id)
 !
       ipointer=jq(j)+id-1
 !
       if(irow(ipointer).ne.i) then
-c         write(*,*) i,j,ipointer,irow(ipointer)
          write(*,*) '*ERROR in add_bo_st: coefficient should be 0'
          call exit(201)
       else

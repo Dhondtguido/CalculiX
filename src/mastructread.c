@@ -25,7 +25,8 @@
 void mastructread(ITG *ipompc,ITG *nodempc,ITG *nmpc,ITG *nactdof,
 		  ITG *jq,ITG **mast1p,ITG *neq,ITG *ipointer, ITG *nzs_, 
 		  ITG *nmethod,ITG *iperturb,ITG *mi,ITG **nextp,
-		  ITG *ifree,ITG *i,ITG *ielmat,char *matname){
+		  ITG *ifree,ITG *i,ITG *ielmat,char *matname,
+		  ITG *icalcnactdof){
 
   /* reading stiffness and/or mass matrix of substructure
      (superelement) */
@@ -34,9 +35,7 @@ void mastructread(ITG *ipompc,ITG *nodempc,ITG *nmpc,ITG *nactdof,
 
   char filestiff[81]=" ";
   
-  ITG id,index,jdof1,jdof2,idof1,idof2,mpc1,mpc2,id1,id2,ist1,ist2,
-    index1,index2,ist,*mast1=NULL,icolumn,mt=mi[1]+1,*next=NULL,
-    imat,node1,node2,j,k,m;
+  ITG *mast1=NULL,*next=NULL,imat,node1,node2,j,k,m;
 
   double val;
 
@@ -57,14 +56,16 @@ void mastructread(ITG *ipompc,ITG *nodempc,ITG *nmpc,ITG *nactdof,
     exit(0);
   }
   do{
-    if(fscanf(f1,"%d,%d,%d,%d,%lf\n",&node1,&k,&node2,&m,&val)==5){
+    if(fscanf(f1,"%" ITGFORMAT ",%" ITGFORMAT ",%" ITGFORMAT ",%" ITGFORMAT ",%lf\n",&node1,&k,&node2,&m,&val)==5){
       mastructmatrix(ipompc,nodempc,nmpc,nactdof,jq,&mast1,neq,ipointer,nzs_,
-		     nmethod,iperturb,mi,&next,&node1,&k,&node2,&m,ifree);
-      //      printf("%d,%d,%d,%d,%e\n",node1,k,node2,m,val);
+		     nmethod,iperturb,mi,&next,&node1,&k,&node2,&m,ifree,
+		     icalcnactdof);
     }else{
       break;
     }
   }while(1);
+
+  fclose(f1);
   
   *mast1p=mast1;*nextp=next;
   

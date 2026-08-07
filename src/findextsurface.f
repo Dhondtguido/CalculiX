@@ -35,7 +35,7 @@
      &     ithree,ifour,ifaceq(8,6),konfa(*),ipkonfa(*),nelemm,jfacem,
      &     ifacet(6,4),ifacew2(8,5),ifree,ifreenew,index,indexold,
      &     i,j,k,nodes(4),indexe,konl(26),nope,nsurfs,iflag2d,
-     &     ifacew1(4,5),ifreemax,istart
+     &     ifacew1(4,5),ifreemax,istart,iend
 !     
 !     nodes belonging to the element faces
 !     
@@ -105,12 +105,20 @@
         indexe=ipkon(i)
 !     
         if((lakon(i)(4:4).eq.'2').or.(lakon(i)(4:4).eq.'8')) then
-          if(iflag2d.eq.0) then
+!         3D elements
+	  if((iflag2d.eq.0).and.(lakon(i)(7:7).eq.' ')) then
             istart=1
+	    iend=6
+!         Expandend shell elements (only bottom surface considered)
+          elseif((iflag2d.eq.1).and.(lakon(i)(7:7).eq.'L')) then
+	    istart=1
+	    iend=1
+!         All other expanded 2D elements (only side surfaces considered)
           else
             istart=3
+	    iend=6
           endif
-          do j=istart,6
+          do j=istart,iend
             do k=1,4
               nodes(k)=kon(indexe+ifaceq(k,j))
             enddo
@@ -273,7 +281,11 @@
 !     
 !     treatment of hexahedral elements
 !     
-          if(lakon(nelemm)(4:4).eq.'8') then
+          if(lakon(nelemm)(4:5).eq.'8I') then
+            nopem=4
+            nope=11
+          elseif((lakon(nelemm)(4:5).eq.'8 ').or.
+     &           (lakon(nelemm)(4:5).eq.'8R')) then
             nopem=4
             nope=8
           elseif(lakon(nelemm)(4:5).eq.'20') then
@@ -330,12 +342,12 @@
 !     
 !     linear quad external face
 !     
-          elseif((nope.eq.8).or.
+          elseif((nope.eq.8).or.(nope.eq.11).or.
      &           ((nope.eq.6).and.(jfacem.gt.2))) then
             lakonfa(nsurfs)='S4'
             ipkonfa(nsurfs)=ifree
             do m=1,nopem
-              if(nope.eq.8) then
+              if((nope.eq.8).or.(nope.eq.11)) then
                 konfa(ifree+m)=konl(ifaceq(m,jfacem))
               else
                 konfa(ifree+m)=konl(ifacew1(m,jfacem))

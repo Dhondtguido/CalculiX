@@ -55,7 +55,7 @@
          write(*,*)
       endif               
 !
-!     calc inifinity norms of the correction vector and 
+!     calc infinity norms of the correction vector and 
 !     gradient projection vector and normalize gradient fields
 !
       do i=1,ndesi

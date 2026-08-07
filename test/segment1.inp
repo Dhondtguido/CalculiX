@@ -2,6 +2,7 @@
 **   Structure: disk segment
 **   Test objective: SPC's in cylindrical coordinates;
 **                   no cascading.
+**                   parameter "fixed" for cylindrical coordinates;
 **                   
 *HEADING
 Model: segment
@@ -166,4 +167,10 @@ Eall,CENTRIF,1000000000.,0.,0.,0.,1.,0.,0.
 U
 *EL PRINT,ELSET=Eall
 S
+*END STEP
+*STEP
+*STATIC
+*BOUNDARY,FIXED
+Nfixy,2,2
+19,1,1
 *END STEP

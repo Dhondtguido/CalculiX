@@ -42,7 +42,8 @@ void mastructcs(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
     ist1,ist2,node1,node2,isubtract,nmast,ifree,istart,istartold,
     index1,index2,m,node,nzs_,ist,kflag,indexe,nope,isize,*mast1=NULL,
     *irow=NULL,inode,icomplex,inode1,icomplex1,inode2,*next=NULL,
-      icomplex2,kdof1,kdof2,ilength,lprev,ij,mt=mi[1]+1,jstart;
+    icomplex2,kdof1,kdof2,ilength,lprev,ij,mt=mi[1]+1,jstart,
+    icalcnactdof,ndof,nopeold=0,indexeold,identical;
 
   /* the indices in the comments follow FORTRAN convention, i.e. the
      fields start with 1 */
@@ -54,7 +55,9 @@ void mastructcs(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
   nzs_=nzs[1];
   NNEW(next,ITG,nzs_);
 
-  /* initialisation of nactmpc */
+  /* initialisation of nactdof */
+
+  icalcnactdof=1;
 
   for(i=0;i<mt**nk;++i){nactdof[i]=0;}
 
@@ -65,44 +68,65 @@ void mastructcs(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
     if(ipkon[i]<0) continue;
     indexe=ipkon[i];
     if(strcmp1(&lakon[8*i],"U")==0){
+      if((strcmp1(&lakon[8*i+1],"1")==0)||
+	 (strcmp1(&lakon[8*i+1],"S45")==0)||
+	 (strcmp1(&lakon[8*i+1],"S3")==0)){
+	  
+	/* user element
+	   number of dofs: 7th entry of label
+	   number of nodes: 8th entry of label */
+	  
+	ndof=lakon[8*i+6];
+	nope=lakon[8*i+7];
+      }else{
 
-      /* user element
-	 number of dofs: 7th entry of label
-	 number of nodes: 8th entry of label */
-
-      nope=lakon[8*i+7];}
+	/* substructure (superelement) 
+	   only for mechanical isothermal calculations */
+	  
+	mastructreadcs(ipompc,nodempc,nmpc,nactdof,jq,&mast1,neq,ipointer,
+		       &nzs_,nmethod,mi,&next,&ifree,&i,ielmat,
+		       matname,labmpc,mcs,cs,ics,&icalcnactdof);
+	continue;
+      }
+    }
     /* Bernhardi start */
-    else if (strcmp1(&lakon[8*i+3],"8I")==0)nope=11;
-    else if(strcmp1(&lakon[8*i+3],"20")==0)nope=20;
+    else if (strcmp1(&lakon[8*i+3],"8I")==0){nope=11;ndof=3;}
+    else if(strcmp1(&lakon[8*i+3],"20")==0){nope=20;ndof=3;}
 /* Bernhardi end */
-    else if(strcmp1(&lakon[8*i+3],"2")==0)nope=26;
-    else if (strcmp1(&lakon[8*i+3],"8")==0)nope=8;
-    else if (strcmp1(&lakon[8*i+3],"10")==0)nope=10;
+    else if (strcmp1(&lakon[8*i+3],"8")==0){nope=8;ndof=3;}
+    else if (strcmp1(&lakon[8*i+3],"10")==0){nope=10;ndof=3;}
     else if ((strcmp1(&lakon[8*i+3],"4")==0)||
-	     (strcmp1(&lakon[8*i+2],"4")==0)) nope=4;
-    else if (strcmp1(&lakon[8*i+3],"15")==0)nope=15;
-    else if (strcmp1(&lakon[8*i+3],"6")==0)nope=6;
+	     (strcmp1(&lakon[8*i+2],"4")==0)){nope=4;ndof=3;}
+    else if (strcmp1(&lakon[8*i+3],"15")==0){nope=15;ndof=3;}
+    else if (strcmp1(&lakon[8*i+3],"6")==0){nope=6;ndof=3;}
     else if (strcmp1(&lakon[8*i],"E")==0){
-	if((strcmp1(&lakon[8*i+6],"C")==0)&&(*mortar==1)){
-	    nope=kon[ipkon[i]-1];
-	}else{
-	    lakonl[0]=lakon[8*i+7];
-	    nope=atoi(lakonl)+1;
-	}
-    }else continue;
+      if((strcmp1(&lakon[8*i+6],"C")==0)&&(*mortar==1)){
 
-/*    else if (strcmp1(&lakon[8*i],"E")==0){
+	/* face-to-face contact (all nodes already belong
+	   to other elements */
+
+	continue;
+      }else{
+
+	/* node-to-face contact */
+
 	lakonl[0]=lakon[8*i+7];
-	nope=atoi(lakonl)+1;}
-	else continue;*/
+	nope=atoi(lakonl)+1;
+	ndof=3;
+      }
+    }else{
+      continue;
+    }
 
     for(j=0;j<nope;++j){
       node=kon[indexe+j]-1;
-      for(k=1;k<4;++k){
+      for(k=1;k<=ndof;++k){
 	nactdof[mt*node+k]=1;
       }
     }
   }
+
+  icalcnactdof=0;
 
   /* determining the active degrees of freedom due to mpc's */
 
@@ -151,29 +175,14 @@ void mastructcs(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
                              column i */
       
   for(i=0;i<6**nk;++i){ipointer[i]=0;}
+
+  indexeold=0;
     
   for(i=0;i<*ne;++i){
       
     if(ipkon[i]<0) continue;
     indexe=ipkon[i];
-/*  Bernhardi start  */
-    if(strcmp1(&lakon[8*i],"C3D8I")==0){nope=11;}
-    else if(strcmp1(&lakon[8*i+3],"20")==0)nope=20;
-/*  Bernhardi end */
-    else if(strcmp1(&lakon[8*i+3],"2")==0)nope=26;
-    else if (strcmp1(&lakon[8*i+3],"8")==0)nope=8;
-    else if (strcmp1(&lakon[8*i+3],"10")==0)nope=10;
-    else if (strcmp1(&lakon[8*i+3],"4")==0)nope=4;
-    else if (strcmp1(&lakon[8*i+3],"15")==0)nope=15;
-    else if (strcmp1(&lakon[8*i+3],"6")==0)nope=6;
-    else if (strcmp1(&lakon[8*i],"E")==0){
-	if((strcmp1(&lakon[8*i+6],"C")==0)&&(*mortar==1)){
-	    nope=kon[ipkon[i]-1];
-	}else{
-	    lakonl[0]=lakon[8*i+7];
-	    nope=atoi(lakonl)+1;
-	}
-    }else if(strcmp1(&lakon[8*i],"U")==0){
+    if(strcmp1(&lakon[8*i],"U")==0){
       if((strcmp1(&lakon[8*i+1],"1")==0)||
 	 (strcmp1(&lakon[8*i+1],"S45")==0)||
 	 (strcmp1(&lakon[8*i+1],"S3")==0)){
@@ -182,38 +191,62 @@ void mastructcs(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 	   number of dofs: 7th entry of label
 	   number of nodes: 8th entry of label */
 	  
+	ndof=lakon[8*i+6];
 	nope=lakon[8*i+7];
       }else{
 
 	/* substructure (superelement) */
-	  
-	nope=-1;
+	
+	mastructreadcs(ipompc,nodempc,nmpc,nactdof,jq,&mast1,neq,ipointer,
+		       &nzs_,nmethod,mi,&next,&ifree,&i,ielmat,
+		       matname,labmpc,mcs,cs,ics,&icalcnactdof);
+      }
+    }
+    /*  Bernhardi start  */
+    else if(strcmp1(&lakon[8*i],"C3D8I")==0){nope=11;ndof=3;}
+    else if(strcmp1(&lakon[8*i+3],"20")==0){nope=20;ndof=3;}
+/*  Bernhardi end */
+    else if (strcmp1(&lakon[8*i+3],"8")==0){nope=8;ndof=3;}
+    else if (strcmp1(&lakon[8*i+3],"10")==0){nope=10;ndof=3;}
+    else if (strcmp1(&lakon[8*i+3],"4")==0){nope=4;ndof=3;}
+    else if (strcmp1(&lakon[8*i+3],"15")==0){nope=15;ndof=3;}
+    else if (strcmp1(&lakon[8*i+3],"6")==0){nope=6;ndof=3;}
+    else if (strcmp1(&lakon[8*i],"E")==0){
+      if((strcmp1(&lakon[8*i+6],"C")==0)&&(*mortar==1)){
+	//	    nope=kon[ipkon[i]-1];
+	nope=kon[indexe-1];
+	if(nope==nopeold){
+	  identical=1;
+	  for(j=0;j<nope;j++){
+	    if(kon[indexe+j]!=kon[indexeold+j]){
+	      identical=0;
+	      break;
+	    }
+	  }
+	  if(identical==1)continue;
+	}
+	nopeold=nope;
+	indexeold=indexe;
+	ndof=3;
+      }else{
+	lakonl[0]=lakon[8*i+7];
+	nope=atoi(lakonl)+1;
+	ndof=3;
       }
     }else continue;
-
-    if(nope==-1){
-
-      /* substructure (superelement) */
-	
-      mastructreadcs(ipompc,nodempc,nmpc,nactdof,jq,&mast1,neq,ipointer,
-		     &nzs_,nmethod,mi,&next,&ifree,&i,ielmat,
-		     matname,labmpc,mcs,cs,ics);
-	  
-      continue;
-    }
       
-    for(jj=0;jj<3*nope;++jj){
+    for(jj=0;jj<ndof*nope;++jj){
 	
-      j=jj/3;
-      k=jj-3*j;
+      j=jj/ndof;
+      k=jj-ndof*j;
 	
       node1=kon[indexe+j];
       jdof1=nactdof[mt*(node1-1)+k+1];
 	
-      for(ll=jj;ll<3*nope;++ll){
+      for(ll=jj;ll<ndof*nope;++ll){
 	  
-	l=ll/3;
-	m=ll-3*l;
+	l=ll/ndof;
+	m=ll-ndof*l;
 	  
 	node2=kon[indexe+l];
 	jdof2=nactdof[mt*(node2-1)+m+1];

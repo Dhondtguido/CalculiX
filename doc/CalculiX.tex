@@ -45,15 +45,15 @@ performed in a parallel way. In CalculiX one can
   default is 1. If both are set, CCX\_NPROC\_STIFFNESS takes
   precedence. The maximum number of cores is detected automatically by CalculiX
   by using
-  the sysconf(\_SC\_NPROCESSORS\_CONF) function. It can be overriden by the
+  the sysconf(\_SC\_NPROCESSORS\_CONF) function. It can be overridden by the
   user by means of environment variable NUMBER\_OF\_CPUS.
 
   Notice that older GNU-compiler versions (e.g. gcc 4.2.1) may have problems with this
-  parallellization due to the size of the fields to be allocated within each
+  parallelization due to the size of the fields to be allocated within each
   thread (e.g. s(100,100) in routine e\_3d.f). This should not be a problem
   with the actual compiler version.
 
-\item solve the system of equations with the multithreaded version of
+\item solve the system of equations with the multi-threaded version of
   SPOOLES. To this end
 
 \begin{itemize}
@@ -69,9 +69,9 @@ performed in a parallel way. In CalculiX one can
   precedence. 
 \end{itemize} 
 
-\item solve the system of equations with the multithreaded version of
+\item solve the system of equations with the multi-threaded version of
   PARDISO. PARDISO is proprietary. Look at the PARDISO documentation how to link the
-  multithreaded version. At execution
+  multi-threaded version. At execution
   time the environment variable OMP\_NUM\_THREADS must be set to the number of cores,
   default is 1.
 
@@ -81,7 +81,7 @@ performed in a parallel way. In CalculiX one can
   default is 1. If both are set, CCX\_NPROC\_RESULTS takes
   precedence. The maximum number of cores is detected automatically by CalculiX
   by using
-  the sysconf(\_SC\_NPROCESSORS\_CONF) function. It can be overriden by the
+  the sysconf(\_SC\_NPROCESSORS\_CONF) function. It can be overridden by the
   user by means of environment variable NUMBER\_OF\_CPUS. Notice that if a
   material user subroutine (Sections \ref{user} and \ref{thuser}) is used, certain rules have to be complied with in
   order to allow parallelization. These include (this list is possibly not exhaustive):
@@ -92,7 +92,7 @@ performed in a parallel way. In CalculiX one can
 \item no write statements
 \end{itemize}
 
-\item calculate the viewfactors for thermal radiation computations in parallel. No special compilation flag is needed. At execution
+\item calculate the view factors for thermal radiation computations in parallel. No special compilation flag is needed. At execution
   time the environment variable OMP\_NUM\_THREADS or the environment variable CCX\_NPROC\_VIEWFACTOR must be set to the number of cores,
   default is 1. If both are set, CCX\_NPROC\_VIEWFACTOR takes precedence. The maximum number of cores is detected automatically by CalculiX by using
   the sysconf(\_SC\_NPROCESSORS\_CONF) function. It can be overriden by the
@@ -2815,7 +2815,7 @@ The output for the reaction forces in the .dat file looks like:
 The nodal output is again very accurate, while the section output has clearly
 improved: the total reaction force is now -9.25 force units, the moment about
 the center of gravity is 72.12 [force][length]. The finer mesh leads to more
-accurate nodal stresses, which are the ones which have been used to determined
+accurate nodal stresses, which are the ones which have been used to determine
 the section forces.
 
 \section{Theory \label{strains}}
@@ -4171,7 +4171,7 @@ Notice that three-node network elements are one-dimensional and can account for 
 three-dimensional effects in the fluid flow only to a limited degree.
 
 A special kind of network element is one in which one of the corner nodes is
-zero (also called a dummy network element). This type is element is used at those locations where mass flow enters
+zero (also called a dummy network element). This type of element is used at those locations where mass flow enters
 or leaves the network. In this case the corner node which is not connected to any
 other network element gets the label zero. This node has no degrees of
 freedom. The degree of freedom 1 of the midside node corresponds to the entering or
@@ -4311,7 +4311,7 @@ sense to extend the force-elongation curve to negative elongation values
  
 \subsubsection{One-node coupling element (DCOUP3D)}
 
-This type is element is used to define the reference node of a distributing
+This type of element is used to define the reference node of a distributing
 coupling constraint (cf. \htmlref{*DISTRIBUTING COUPLING}{distributingcoupling}). The node should not belong to any other element. The
 coordinates of this node are immaterial.
  
@@ -4344,7 +4344,10 @@ The user can define his/her own elements. In order to do so he/she has to:
 \item write a FORTRAN subroutine extrapolate\_uxxxx.f calculating the value of
   the secondary variables (usually strains, stresses..) at the nodes based on
   their values at the integration points within the element. Add a call to
-  this routine in extrapolate\_u.f
+  this routine in extrapolate\_u.
+\item include the name of your element in the if constructs in mastruct.c and
+  mastructcs.c (2 instances in each file, look for
+  ``user element''.
 \end{itemize}
  
 \subsubsection{User Element: 3D Timoshenko beam element (U1)}
@@ -4353,11 +4356,326 @@ An example for a 3D Timoshenko beam element (for static linear elastic
 calculations and small deformations) according to \cite{Yunhua} is
 implemented as element ``U1'' in CalculiX. It is used in example userbeam.inp
 in the test suite. The reader is referred to files resultsmech\_u1.f,
-e\_c3d\_u1.f and extrapolate\_u1.f for details on how a user elements is coded.
+e\_c3d\_u1.f and extrapolate\_u1.f for details on how a user elements is coded. 
+It has to be stated here, that the 2nd order moment $I_T$, which is  
+used in the torsional stiffness, is such that it is assumed to be identical to
+the polar 2nd order moment $I_p$. This, however, restricts the application 
+of this element to beams with circular cross-sections.
+
+\noindent
+In addition to \cite{Yunhua} the current implementation also 
+contains a mass matrix for dynamic analyses, which has been 
+derived based on the assumptions, that 
+\begin{itemize}
+  \item the cross-section does not change over the length of the beam element
+  \item the deformations are small, such that geometrically linear theory can be used, 
+    where all inertia terms are uncoupled (e.g. pure torsion does not activate shear inertia
+    forces).
+\end{itemize}
+
+\paragraph{Differential inertia terms in  a local main axis coordinate frame}\mbox{} \\
+ 
+\noindent
+At first all inertia terms are derived in a local coordinate frame $X_i$, with axes  
+$X_2$, $X_3$ corresponding to the principal axes of the cross-section, i.e. $I_{23}=0$.
+%
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{u1_mass_derivation}
+  \put(-190,112){\textcolor{red}{$\textrm{d}J^S_{1} \ddot{\varphi}_1$}}
+  \put(-60,140){\textcolor{red}{$\textrm{d}J^S_{22} \ddot{\varphi}_2$}}
+  \put(-130,140){\textcolor{red}{$\textrm{d}J^S_{33} \ddot{\varphi}_3$}}
+  \put(-139, 90){\textcolor{red}{$\textrm{d}m \ddot{u}_1$}}
+  \put(-80,110){\textcolor{red}{$\textrm{d}m \ddot{u}_2$}}
+  \put(-114,120){\textcolor{red}{$\textrm{d}m \ddot{u}_3$}}
+  \put(-285,0){$\hat X_1$}
+  \put(-340,47){$\hat X_2$}
+  \put(-345,12){$\hat X_3$}
+  \put(-110,75){$S$}
+  \put(-240,25){$\hat{\boldsymbol{X}}_S$}
+  \put(-17,48){\textcolor{red}{$X_1$}}
+  \put(-162,50){\textcolor{red}{$X_2$}}
+  \put(-70,50){\textcolor{red}{$X_3$}}
+  \caption{Cylindrical beam with arbitrary cross-section (principal cross-section axes $X_2$, $X_3$)}
+\end{figure}
+%
+\noindent
+With the moments of inertia
+%
+\begin{eqnarray}
+  \textrm{d}I_{33} & =&    X_2^2 \textrm{d}A   \nonumber \\
+  \textrm{d}I_{22} & =&    X_3^2 \textrm{d}A  \nonumber \\
+  \textrm{d}I_p & = &  (X_2^2 + X_3^2) \textrm{d}A 
+\end{eqnarray}
+%
+\noindent
+the inertia forces of a differential cross-section $\textrm{d}M = \rho A \textrm{d}X_1$ can be derived
+by integration of the above quantities over $A$:
+
+\noindent
+\begin{eqnarray}
+  \textrm{d}F_1  & = & -\int_A  \ddot{U}_1 \textrm{d}m = -\rho A \ddot{U}_1 \textrm{d}X \nonumber \\
+  \textrm{d}F_2  & = & -\int_A  \ddot{U}_2 \textrm{d}m = -\rho A \ddot{U}_2 \textrm{d}X \nonumber \\
+  \textrm{d}F_3  & = & -\int_A  \ddot{U}_3 \textrm{d}m = -\rho A \ddot{U}_3 \textrm{d}X \nonumber \\
+  \textrm{d}M_1  & = & -\int_A  \ddot{\psi}_1 \rho  (X_2^2 + X_3^2) \textrm{d}A \textrm{d}X_1 = -\rho I_{p} \ddot{\psi}_1 \textrm{d}X_1 \nonumber \\
+  \textrm{d}M_2  & = & -\int_A  \ddot{\psi}_2 \rho  X_3^2 \textrm{d}A \textrm{d}X_1 = -\rho I_{22} \ddot{\psi}_2 \textrm{d}X_1 \nonumber \\
+  \textrm{d}M_3  & = & -\int_A  \ddot{\psi}_3 \rho  X_2^2 \textrm{d}A \textrm{d}X_1 = -\rho I_{33} \ddot{\psi}_3 \textrm{d}X_1
+\end{eqnarray}
+%
+%
+\paragraph{Discretization of inertia terms (principal axis coordinate frame)}\mbox{} \\
+%
+\noindent
+A Galerkin discretization of the (virtual) displacements and rotations $\boldsymbol{U}$ 
+%
+%
+\begin{equation}
+  \boldsymbol{U} \approx \boldsymbol{U}^h = \left[
+    \begin{array}{c}
+      U_1(\xi) \\
+      U_2(\xi) \\
+      U_3(\xi) \\
+      \psi_1(\xi) \\
+      \psi_2(\xi) \\
+      \psi_3(\xi) 
+    \end{array}
+    \right]
+  = \boldsymbol{N} \boldsymbol{d}
+  \quad  \textrm{and} \quad 
+  \delta \boldsymbol{U} \approx \delta \boldsymbol{U}^h = \left[
+    \begin{array}{c}
+      \delta U_1(\xi) \\
+      \delta U_2(\xi) \\
+      \delta U_3(\xi) \\
+      \delta \psi_1(\xi) \\
+      \delta \psi_2(\xi) \\
+      \delta \psi_3(\xi) 
+    \end{array}
+    \right]
+  = \boldsymbol{N} \delta \boldsymbol{d}
+\end{equation}
+%
+\noindent
+leads along with the nodal (virtual) displacements and rotations
+%
+\begin{equation}
+  \boldsymbol{d} = 
+   \left[
+    \begin{array}{c}
+      (U_1)_1 \\
+      (U_2)_1 \\
+        : \\
+      (\psi_{3})_2
+    \end{array}
+    \right]
+  \quad  \textrm{and} \quad 
+  \delta \boldsymbol{d} = 
+   \left[
+    \begin{array}{c}
+      \delta (U_1)_1 \\
+      \delta (U_2)_1 \\
+        : \\
+      \delta (\psi_{3})_2
+    \end{array}
+    \right]
+\end{equation}
+%
+\noindent
+and the with isoparametric shape functions
+$\boldsymbol{N}(\xi)$ 
+%
+\begin{equation}
+  \boldsymbol{N} = 
+    \left[
+        \begin{array}{cccccccccccc}
+            \varphi_1 &   0 & 0   & 0   & 0   & 0&  \varphi_2 &   0 & 0   & 0   & 0   & 0 \\
+              0 & \varphi_1 & 0   & 0   & 0   & 0&    0 & \varphi_2 & 0   & 0   & 0   & 0 \\
+              0 &   0 & \varphi_1 & 0   & 0   & 0&    0 &   0 & \varphi_2 & 0   & 0   & 0 \\
+              0 & 0   & 0   & \varphi_1 & 0   & 0&    0 & 0   & 0   & \varphi_2 & 0   & 0 \\
+              0 & 0   & 0   & 0   & \varphi_1 & 0&    0 & 0   & 0   & 0   & \varphi_2 & 0 \\
+              0 & 0   & 0   & 0   & 0 & \varphi_1&    0 & 0   & 0   & 0   & 0 & \varphi_2 
+        \end{array}
+    \right]
+\end{equation}
+%
+\noindent
+where 
+%
+\begin{equation}
+  \varphi_1(\xi) = \frac{1}{2}(1-\xi) \ ,  \varphi_2(\xi) = \frac{1}{2}(1+\xi)
+\end{equation}
+%
+%
+\noindent
+to the following weak formulation of the inertia terms:
+%
+%
+\begin{equation}
+  \int_x \delta \boldsymbol{U}^T \cdot 
+    \left[\begin{array}{c}
+        \textrm{d}F_1 \\
+        \textrm{d}F_2\\
+        \textrm{d}F_3  \\
+        \textrm{d}M_1 \\
+        \textrm{d}M_2 \\
+        \textrm{d}M_3 
+  \end{array}
+  \right]  \textrm{d}X_1 = 
+   \delta \boldsymbol{d}^T \boldsymbol{M} \ddot{\boldsymbol{d}} 
+\end{equation}
+%
+\noindent
+Requiring a constant cross-section along the entire element thus yields constant material
+parameters, which can be pulled out of the above integration of $\boldsymbol{M}$ over $X_1$.
+Thus  the integration of the product of the shape functions  can be performed analytically
+(under consideration of the transformation of the length differential $\textrm{d}X_1$ to 
+ $\textrm{d}\xi$ according to
+%
+%
+\begin{equation}
+  \textrm{d}X_1 =  \textrm{det}\boldsymbol{J} \textrm{d}\xi =   \frac{1}{2}(X_2 - X_1)\textrm{d}\xi
+\end{equation}
+%
+\begin{equation}
+  \int_L \varphi_i \varphi_j \textrm{d}X_1 = \frac{1}{2}(X_2 - X_1)\int_{-\frac{1}{2}}^\frac{1}{2}  \varphi_i \varphi_j \textrm{d}\xi 
+  =  \left\{
+   \begin{array}{c}
+      \frac{1}{3}(X_2 - X_1) \ , \quad i = j\\
+      \frac{1}{6}(X_2 - X_1) \ , \quad i \ne j 
+  \end{array}
+    \right.
+\end{equation}
+%
+
+\paragraph{Mass matrix in (local) main axis coordinate frame}\mbox{} \\
+ 
+\noindent
+Consequently, the mass matrix becomes in the principal axis coordinates
+%
+%
+\begin{equation}
+  \boldsymbol{M}
+        = \left[
+           \begin{array}{cc}
+             \boldsymbol{M}_D & \boldsymbol{M}_{ND} \\
+             \boldsymbol{M}^T_{ND} & \boldsymbol{M}_D 
+           \end{array}
+    \right]
+\end{equation}
+%
+\noindent
+with
+\begin{equation}
+  \boldsymbol{M}_D = 
+    \frac{1}{3}(X_2 - X_1)
+    \left[
+        \begin{array}{cccccc}
+            \rho A & 0 & 0 & 0 & 0 & 0 \\
+            0 & \rho A & 0 & 0 & 0 & 0  \\
+            0 & 0 & \rho A & 0 & 0 & 0 \\
+            0 & 0 & 0 & \rho I_p & 0 & 0 \\
+            0 & 0 & 0 & 0 & \rho I_{22} & 0  \\
+            0 & 0 & 0 & 0 & 0 & \rho I_{33}
+        \end{array}
+    \right]
+\end{equation}
+%
+\noindent
+and
+\begin{equation}
+  \boldsymbol{M}_{ND} = 
+    \frac{1}{6}(X_2 - X_1)
+    \left[
+        \begin{array}{cccccc}
+          \rho A & 0 & 0 & 0 & 0 & 0\\
+            0 & \rho A & 0 & 0 & 0 &0  \\
+            0 & 0 & \rho A & 0 & 0 & 0 \\
+            0 & 0 & 0 & \rho I_p & 0 & 0 \\
+            0 & 0 & 0 & 0 & \rho I_{22} & 0  \\
+            0 & 0 & 0 & 0 & 0 & \rho I_{33}
+        \end{array}
+    \right]
+\end{equation}
+%
+%
+\paragraph{ Mass matrix in global coordinate frame}\mbox{} \\
+
+\noindent
+Transformation of a vector $\boldsymbol{a}$ %$\delta \boldsymbol{U}^h$ and $\boldsymbol{U}^h$ 
+from local  coordinate frame
+$\boldsymbol{e}_i$ into global coordinate frame $\hat{\boldsymbol{e}}_i$ 
+yields
+%
+\begin{eqnarray}
+  \hat{a}_i \hat{\boldsymbol{e}}_i & = & a_j \boldsymbol{e}_j \quad \vert \cdot \hat{\boldsymbol{e}}_k \\
+  \hat{a}_i \delta_{ik} & =&  a_j \boldsymbol{e}_j \cdot \hat{\boldsymbol{e}}_k \\
+  \hat{a}_k & = &  T_{jk} a_j =  (T^T)_{kj} a_j 
+\end{eqnarray}
+
+\noindent or
+
+\begin{equation}
+  \boldsymbol{a} = \boldsymbol{T}  \boldsymbol{\hat{a}},
+\end{equation} 
+%
+\noindent
+with the transformation matrix 
+%
+\begin{equation}
+  \boldsymbol{T} 
+    = \left[
+        \begin{array}{ccc}
+          - & \boldsymbol{e}_1 & - \\
+          - & \boldsymbol{e}_2 & - \\
+          - & \boldsymbol{e}_3 & -
+        \end{array}
+      \right]
+\end{equation}
+%
+\noindent
+Therefore, the variation of the kinetic energy becomes
+%
+\begin{equation}
+  \delta \boldsymbol{d}^T \boldsymbol{M} \boldsymbol{d} = \delta
+  \boldsymbol{\hat{d}}^T \boldsymbol{T}^T \boldsymbol{M} \boldsymbol{T}
+  \boldsymbol{\hat{d}}      
+\end{equation}
+%
+\noindent
+and thus the final mass matrix in global coordinate frame
+$\hat{\boldsymbol{e}}_i$ yields
+%
+\begin{equation}
+  \hat{\boldsymbol{M}} =  \boldsymbol{T}^T \boldsymbol{M} \boldsymbol{T}
+\end{equation}
+ 
+\paragraph{Input deck syntax}\mbox{} \\
+
+\noindent
+Declare the usage of a user element:
+\begin{verbatim}
+*USER ELEMENT,TYPE=U1,NODES=2,INTEGRATION POINTS=2,MAXDOF=6
+\end{verbatim}
+Specify its properties
+\begin{verbatim}
+*BEAM SECTION, SECTION=GENERAL, ELSET=<elset_label>, MATERIAL=<Material>
+\end{verbatim}
+%
+\noindent
+{\bf First line}\\
+cross-section area $A$, \\
+2nd order moment $I_{22}$, \\
+2nd order deviation moment $I_{12}$ (must be zero!), \\
+2nd order moment $I_{33}$, \\
+shear correction factor $\kappa$.\\[2mm]
+{\bf Second line}\\
+Global $\hat X$-coordinate of local cross-section main axis $X_2$, \\
+Global $\hat Y$-coordinate of local cross-section main axis $X_2$,\\
+Global $\hat Z$-coordinate of local cross-section main axis $X_2$.\\
  
 \subsubsection{User Element: 3-node shell element (US3)}
 
-\begin{figure}
+\begin{figure}[htbp]
   \centering
 \epsfig{file=rama.eps,width=5cm}
 \caption{\label{us3}Definition of the US3 element}
@@ -5815,7 +6133,7 @@ present formulas cannot be used for this element type. Integrating Equation
 (\ref{eqM105}) leads to:
 
 \begin{equation}
- f:=  a \ln \frac{Z2}{Z1} + \frac{b}{\beta } \ln \frac{\alpha + \beta Z_2}{\alpha
+ f:=  a \ln \frac{Z_2}{Z_1} + \frac{b}{\beta } \ln \frac{\alpha + \beta Z_2}{\alpha
     + \beta Z_1} +  \frac{2c}{\kappa-1} \ln \left( \frac{1 +
     \frac{\kappa-1}{2}Z_2  }{1 +
    \frac{\kappa-1}{2}Z_1} \right ) = L.
@@ -5853,7 +6171,7 @@ conditions are observed at the end of a converged calculation, the result may
 not be correct.
 
 Although the rotating pipe is adiabatic, i.e. no heat is transported to the
-envoronment, the total temperature changes due to conversion of rotational
+environment, the total temperature changes due to conversion of rotational
 energy into heat or vice versa. Centrifugal motion leads to a total
 temperature increase, centripetal motion to a decrease. The change in total
 temperature amounts to \cite{Greitzer}:
@@ -10420,10 +10738,10 @@ these requirements.
 In order to apply this formulation in CalculiX, the user has to specify the
 parameter NLGEOM on the *STEP card. In those elements, in which
 rotation-insensitive linear strains should be used, the user has to replace
-the linear elastic isotropic material he/she would usually apply by the user
-material coded in routine umat\_undo\_nlgeom\_lin\_iso\_el.f. To that end the
+the linear elastic material he/she would usually apply by the user
+material coded in routine umat\_undo\_nlgeom\_lin\_el.f. To that end the
 user gives a new name to the material starting with
-UNDO\_NLGEOM\_LIN\_ISO\_EL. The constants of this user material are the
+UNDO\_NLGEOM\_LIN\_EL. The constants of this user material are the
 Young's modulus and Poisson's coefficient of the original material. Suppose
 the original material formulation was:
 
@@ -10436,13 +10754,13 @@ the original material formulation was:
 \noindent Then, the new material is defined by:
 
 \begin{verbatim}
-*MATERIAL,NAME=UNDO_NLGEOM_LIN_ISO_ELx
+*MATERIAL,NAME=UNDO_NLGEOM_LIN_ELx
 *USER MATERIAL,CONSTANTS=2
 210000.,.3
 \end{verbatim}
 
 \noindent where x can be whatever character string preferred by the user, minimum 0
-characters, maximum 58 characters long. Only linear elastic isotropic
+characters, maximum 58 characters long. Only isotropic and orthotropic
 materials are allowed so far.
    
 
@@ -10590,7 +10908,7 @@ $\sigma_0$, $n$ and $\alpha$ directly (by plotting a Cauchy stress versus logari
 \subsubsection{\label{incplas}Incremental (visco)plasticity: multiplicative decomposition}
 
 The implementation of incremental plasticity for nonlinear geometrical
-calculations in CalculiX follows the algorithms in \cite{Simo3} and \cite{Simo4} and is based on the notion of an intermediate stress-free configuration. The deformation is viewed as a plastic flow due to dislocation motion followed by elastic stretching and rotation of the crystal lattice. This is synthesized by a local multiplicative decomposition of the deformation gradient $\textbf{F}=\textbf{F}^e \textbf{F}^p$ where $F_{kK}=x_{k,K}$ in Cartesian coordinates.
+calculations in CalculiX (routine incplas.f) follows the algorithms in \cite{Simo3} and \cite{Simo4} and is based on the notion of an intermediate stress-free configuration. The deformation is viewed as a plastic flow due to dislocation motion followed by elastic stretching and rotation of the crystal lattice. This is synthesized by a local multiplicative decomposition of the deformation gradient $\textbf{F}=\textbf{F}^e \textbf{F}^p$ where $F_{kK}=x_{k,K}$ in Cartesian coordinates.
 
 In the present implementation, the elastic response is isotropic and is deduced from a stored-energy function (hyperelastic response). Furthermore, the plastic flow is isochoric (the volume is conserved) and the classical von Mises-Huber yield condition applies. This condition can be visualized as a sphere in principal deviatoric stress space. 
 
@@ -10641,7 +10959,7 @@ stress is set to zero by means of a *CHANGE MATERIAL and *CHANGE PLASTIC card.
 \subsubsection{\label{incplasa}Incremental (visco)plasticity: additive decomposition}
 
 The implementation of incremental plasticity for linear geometrical
-calculations in CalculiX follows the algorithms in \cite{Dhondt}, section
+calculations in CalculiX (routine: incplas\_lin.f) follows the algorithms in \cite{Dhondt}, section
 5.3 and is based on an additive decomposition of the strain tensor into an
 elastic and a plastic part. In CalculiX, it is used in the absence of the
 NLGEOM parameter on the \htmlref{*STEP}{step} card. The internal variables are
@@ -10653,7 +10971,8 @@ may also be attributable to the general nonlinear geometrical setup).
 \subsubsection{\label{johnsoncook}Plasticity with Johnson-Cook hardening.}
 
 In some sense this is a special case of the previous section, however, since
-it has been implemented as a Abaqus Material User Subroutine in CalculiX,
+it has been implemented as a Abaqus Material User Subroutine in CalculiX
+(in routine umat\_abaqusnl\_total),
 establishing a relationship between the corotational Cauchy stress and the
 corotational logarithmic strain it can also be used for large deformations.
 
@@ -11313,6 +11632,11 @@ transformed into the global system by:
   \boldsymbol{\sigma '} = \boldsymbol{A}^T \cdot \boldsymbol{\sigma }.
 \end{equation}
 
+In CalculiX, the routine has been implemented for linear strains. As soon as
+NLGEOM is activated, however, the material law is applied to the corotational Cauchy stress
+vs. the corotational logarithmic strain (in routine umat\_abaqusnl\_total.f) yielding good
+results for large deformations too.
+
 
 \subsubsection{Tension-only and compression-only materials.}
 
@@ -11387,7 +11711,7 @@ Following line:
 Repeat this line if needed to define complete temperature
 dependence.
 
-For a compression-only materials the name of the material has to start with
+For compression-only materials the name of the material has to start with
 ''COMPRESSION\_ONLY'' (maximum 64 characters left to be chosen by the user)
 and the second constant is the maximum allowed tension. Examples are
 leifer2 and concretebeam in the test example suite. 
@@ -11904,10 +12228,11 @@ These variables are accessible through the \htmlref{*EL
 PRINT}{elprint} (.dat file) and \htmlref{*EL FILE}{elfile} (.frd file)
 keywords in exactly this order (label SDV).
 
-This model is for small deformations (small strains and small
+This model (implemented in ortho\_plas.f) is for small deformations (small strains and small
 rotations). However, if NLGEOM is activated on the \htmlref{*STEP}{step} card
 this model is considered to be an Abaqus umat routine linking the corotational
-Cauchy stress to the corotational mechanical logarithmic strain. In this way, the routine
+Cauchy stress to the corotational mechanical logarithmic strain (by calling
+ortho\_plas.f from umat\_abaqusnl\_total.f). In this way, the routine
 can also be used for large deformations.
 
 \begin{verbatim}
@@ -11996,10 +12321,11 @@ routine is the equivalent deviatoric creep strain, the output is the von Mises
 stress and the derivative of the equivalent deviatoric creep strain increment
 w.r.t. the von Mises stress.
 
-This model is for small deformations (small strains and small
+This model (implemented in umat\_aniso\_creep.f) is for small deformations (small strains and small
 rotations). However, if NLGEOM is activated on the \htmlref{*STEP}{step} card
 this model is considered to be an Abaqus umat routine linking the corotational
-Cauchy stress to the corotational mechanical logarithmic strain. In this way, the routine
+Cauchy stress to the corotational mechanical logarithmic strain (by calling
+umat\_aniso\_creep.f from umat\_abaqusnl\_total.f). In this way, the routine
 can also be used for large deformations.
 
 \begin{verbatim}
@@ -12240,7 +12566,70 @@ the resulting tangent matrix is performed, leading to 21 constants instead of
 36 constants. The above procedure was implemented in umat\_abaqusnl.f and
 umat\_abaqusnl\_total.f. It is used for those material models, which were only
 formulated for small strains, such as isotropic plasticity for an elastically
-orthotropic material, Johnson\_Cook plasticity and Mohr\_Coulomb plasticity.
+orthotropic material, Johnson-Cook plasticity and Mohr-Coulomb plasticity.
+
+\subsubsection{Damage initiation models \label{daminit}}
+
+These are models which predict the onset of damage based on the accumulated
+equivalent plastic strain. They can only be used for models for which the
+equivalent plastic strain is calculated, i.e. \htmlref{*DEFORMATION
+  PLASTICITY}{deformationplasticity}, \htmlref{*PLASTIC}{plastic} (with isotropic
+or orthotropic elasticity, including Johnson-Cook hardening),
+\htmlref{*CREEP}{creep} and \htmlref{*MOHR COULOMB}{mohrcoulomb}. Damage is
+initiated if the damage initiation criterion $\omega_D$ reaches a limit
+provided by the user,usually 1. $\omega_D$ is calculated as the sum of the change in
+equivalent plastic strain in each increment divided by the equivalent plastic
+strain at the onset of damage ${\epsilon }_D^{\text{peq}}$:
+
+\begin{equation}
+  \omega_D = \sum \frac{\Delta \epsilon^{\text{peq}}
+  }{\epsilon_D^{\text{peq}}}.
+\end{equation}
+
+\noindent According to the Rice-Tracey model ${\epsilon }_D^{\text{peq}}$ satisfies:
+
+\begin{equation}
+  {\epsilon }_D^{\text{peq}}=1.65 \epsilon _0^{RT} \exp \left( - \frac{3
+    \sigma_{hy}}{2 \sigma_{vm}} \right),
+\end{equation}
+
+\noindent where $\sigma_{hy}$ is the hydrostatic stress and $\sigma_{vm}$ the
+von Mises stress. The ratio of both is called the triaxiality
+$\eta=\sigma_{hy}/\sigma_{vm}$. For a one-dimensional tensile test it takes the
+value 1/3.
+
+\noindent According to the Johnson-Cook model  ${\epsilon }_D^{\text{peq}}$ is
+determined by:
+
+\begin{equation}
+ {\epsilon }_D^{\text{peq}}= (d_1 + d_2 \exp ( -d_3 \eta )) ( 1 + d_4 \ln
+ \left ( \frac{\dot{\epsilon }^{\text{peq}}}{\dot{\epsilon }_0 } \right) \left
+        [1-(T^*)^m \right ],
+\end{equation}
+
+where
+
+\begin{eqnarray}
+  T^* &=& 0  \;\;\;  \text{for} \; T<T_0 \nonumber \\
+  T^* &=& \left(\frac{T-T_0}{T_m-T_0}\right) \;\;\; \text{for}\; T_0 \le T \le T_m
+  \nonumber \\
+  T^* &=& 1  \;\;\; \text{for}\; T>T_m
+\end{eqnarray}
+
+Here, $d_1, d_2, d_3, d_4, d_5,\dot{\epsilon_0},T_0$ and $T_m$ are material constants. The
+constant $T_0$ has the physical meaning of transition temperature, i.e. the
+temperature above which the equivalent strain at the onset of damage starts to
+increase and $T_m$ has the
+physical meaning of melt temperature, i.e. the temperature above which
+${\epsilon }_D^{\text{peq}}$ remains constant. The model is meant to describe
+highly dynamic phenomena.
+
+As soon as the damage initiation criterion reaches the user-defined limit in
+any integration point within this element, the element is deleted.
+
+Damage initation is defined using the \htmlref{*DAMAGE
+  INITIATION}{damageinitiation} card underneath the
+\htmlref{*MATERIAL}{material} card for the material at stake.
 
 \subsection{Types of analysis}
 
@@ -12619,7 +13008,7 @@ displacement field is taken to be zero.
 The displacement
 boundary conditions in a modal dynamic analysis should match zero boundary
   conditions in the same nodes and same directions in the step used for the
-  determination of the eigenmodes. This corresponds to what is called base
+  determination of the eigenmodes AND they should be defined in the same order. This corresponds to what is called base
   motion in ABAQUS. A typical application for nonzero boundary conditions is
   the base motion of a building due to an earthquake. Notice that in a modal
   dynamic 
@@ -13502,7 +13891,7 @@ absolute basis temperature (in K). Furthermore, the balance of momentum reduces 
 For details, the reader is referred to \cite{Eringen} and
 \cite{Anderson}. Equation~(\ref{waveeq}) is the well-known wave
 equation. By comparison with the heat equation, the correspondence in Table
-~(\ref{t1}) arises. 
+\ref{t1} arises. 
 
 \begin{table}
 \caption{Correspondence between the heat equation and the gas momentum equation.\label{t1}}
@@ -13570,7 +13959,7 @@ following assumptions are made:
 Due to the integration process the above equation is two-dimensional,
 i.e. only the surface of the fluid has to be meshed. 
 By comparison with the heat equation, the correspondence in Table
-~(\ref{t2}) arises. Therefore, shallow water motion can be simulated using the
+\ref{t2} arises. Therefore, shallow water motion can be simulated using the
 \htmlref{*HEAT TRANSFER}{heattransfer} procedure.
 
 \begin{table}
@@ -13636,7 +14025,7 @@ fluid). This term is zero if the walls are not porous.
 
 For practical calculations the density and thickness of the film is assumed to
 be known, the pressure is the unknown. By comparison with the heat equation, the correspondence in Table
-~(\ref{t3}) arises. $\overline{ \boldsymbol{ v}}$ is the mean velocity over
+\ref{t3} arises. $\overline{ \boldsymbol{ v}}$ is the mean velocity over
 the film, $\overline{ v}_n$ its component orthogonal to the boundary. Since
 the governing equation is the result of an integration across the film
 thickness, it is again two-dimensional and applies in the present form to a
@@ -13691,7 +14080,7 @@ and the balance of momentum for gravitational flow yields
 where $g$ is the earth acceleration, $p$ is the pressure, $\rho_0$ is the
 density and z is the coordinate in earth direction.
 By comparison with the heat equation, the correspondence in Table
-~(\ref{t4}) arises. 
+\ref{t4} arises. 
 
 \begin{table}
 \caption{Correspondence between the heat equation and the equation for
@@ -13719,13 +14108,13 @@ special, the application field is rather large. Flow starting from rest is
 irrotational since the initial field is irrotational. Flow at speeds below 0.3
 times the speed of sound can be considered to be incompressible. Finally, the
 flow outside the tiny boundary layer around an object is inviscid. A favorite
-examples is the flow around a wing profile. However, if the boundary
+example is the flow around a wing profile. However, if the boundary
 layer separates and vortices arise the above theory cannot be used any
 more. For further applications see \cite{Kundu}.
 
 \subsubsection{\label{electrostatics}Electrostatics}
 
-The governing equations of electrostatics are
+The governing equations of electrostatics in vacuum are
 
 \begin{equation}
 \boldsymbol{ E} = - \nabla V
@@ -13769,7 +14158,7 @@ yields the governing equation
 
 Accordingly,
 by comparison with the heat equation, the correspondence in Table
-~(\ref{t5}) arises. Notice that the electrostatics equation is a steady state
+\ref{t5} arises. Notice that the electrostatics equation is a steady state
 equation, and there is no equivalent to the heat capacity term.
 
 \begin{table}
@@ -13834,7 +14223,7 @@ $\epsilon_r$=11.68). Now, the governing equation yields
 \nabla \cdot (- \epsilon \boldsymbol{ I} \cdot \nabla V) =  \rho^f
 \end{equation}
 
-and the analogy in Table~(\ref{t11}) arises. The equivalent of Equation
+and the analogy in Table \ref{t11} arises. The equivalent of Equation
 (\ref{surfcharge}) now reads
 
 \begin{equation}
@@ -13898,7 +14287,7 @@ The resulting equation now reads
 
 Accordingly,
 by comparison with the heat equation, the correspondence in Table
-~(\ref{t6}) arises. Notice that the groundwater flow equation is a steady state
+\ref{t6} arises. Notice that the groundwater flow equation is a steady state
 equation, and there is no equivalent to the heat capacity term.
 
 \begin{table}
@@ -14040,7 +14429,7 @@ or
 
 Accordingly,
 by comparison with the heat equation, the correspondence in Table
-~(\ref{t7}) arises. 
+\ref{t7} arises. 
 
 \begin{table}
 \caption{Correspondence between the heat equation and mass diffusion equation.\label{t7}}
@@ -14981,7 +15370,7 @@ $v^{n+1/2}$ without loss of accuracy. Therefore, the terms quadratic in $\Delta
 t$ in the first two lines can be merged into:
 
 \begin{equation}
-v^{n+1/2}  \frac{\Delta t^2}{2} \Delta t^2 \frac{\partial v^{n+1/2}}{\partial x}
+v^{n+1/2}  \frac{\Delta t^2}{2} \frac{\partial v^{n+1/2}}{\partial x}
   \frac{\partial \phi }{\partial x} + (v^{n+1/2})^2 \frac{\Delta t^2}{2}  \frac{\partial^2 \phi }{\partial x^2} = v^{n+1/2} \frac{\Delta t^2}{2}
   \frac{\partial }{\partial x } \left( v^{n+1/2} \frac{\partial \phi
   }{\partial x} \right ),
@@ -15386,14 +15775,14 @@ equations read
 
 \begin{equation}
 \frac{\partial \rho k}{\partial t} = - [ v_k (\rho k)]_{,k} + [(\mu+\sigma_k
-\rho \nu_t)k_{,k}]_{,k} + (t_{ij}^R u_{i,j} - \beta^* \rho \omega k)
+\rho \nu_t)k_{,k}]_{,k} + (t_{ij}^R v_{i,j} - \beta^* \rho \omega k)
 \end{equation}
 
 and
 
 \begin{equation}
 \frac{\partial \rho \omega}{\partial t} = - [ v_k (\rho \omega)]_{,k} + [(\mu+\sigma_{\omega}
-\rho \nu_t)\omega_{,k}]_{,k} + (\frac{\gamma}{\nu_t} t_{ij}^R u_{i,j} -
+\rho \nu_t)\omega_{,k}]_{,k} + (\frac{\gamma}{\nu_t} t_{ij}^R v_{i,j} -
 \beta \rho \omega^2 + \frac{2}{\omega}(1-F_1) \rho \sigma_{\omega 2} k_{,j} \omega_{,j}).
 \end{equation}
 
@@ -15408,10 +15797,10 @@ scheme is straightforward:
   \varphi_{\beta})_{,k} (\rho k)_{\beta}^n \right] dV \nonumber \\ 
 &-   \Delta t \int_V \varphi_{\alpha,k} (\mu+\sigma_k
 \rho \nu_t)k_{,k}^{n+1/2} dV \nonumber \\
-&+ \Delta t \int_V \varphi_{\alpha} [t_{ij}^R u_{i,j} - \beta^* \rho \omega k]^{n+1/2} dV \nonumber \\
+&+ \Delta t \int_V \varphi_{\alpha} [t_{ij}^R v_{i,j} - \beta^* \rho \omega k]^{n+1/2} dV \nonumber \\
 &- \frac{{\Delta t}^2}{2} \int_V ( \varphi_{\alpha} v_l^{n+1/2} )_{,l} \left [ \sum_{\beta} (v_k^{n+1/2}
   \varphi_{\beta})_{,k} (\rho k)_{\beta}^n \right] dV \nonumber \\
-&+ \frac{{\Delta t}^2}{2} \int_V ( \varphi_{\alpha} v_l^{n+1/2} )_{,l} [t_{ij}^R u_{i,j} - \beta^* \rho \omega k]^n dV \nonumber
+&+ \frac{{\Delta t}^2}{2} \int_V ( \varphi_{\alpha} v_l^{n+1/2} )_{,l} [t_{ij}^R v_{i,j} - \beta^* \rho \omega k]^n dV \nonumber
 \\
 &+ \Delta t \int_A \varphi_{\alpha} (\mu+\sigma_k
 \rho \nu_t)k_{,k}^{n+1/2} n_k dA.
@@ -15423,11 +15812,11 @@ scheme is straightforward:
   \varphi_{\beta})_{,k} (\rho \omega )_{\beta}^n \right] dV \nonumber \\ 
 &-   \Delta t \int_V \varphi_{\alpha,k} (\mu+\sigma_{\omega}
 \rho \nu_t)\omega_{,k}^{n+1/2} dV \nonumber \\
-&+ \Delta t \int_V \varphi_{\alpha} [\frac{\gamma}{\nu_t} t_{ij}^R u_{i,j} -
+&+ \Delta t \int_V \varphi_{\alpha} [\frac{\gamma}{\nu_t} t_{ij}^R v_{i,j} -
 \beta \rho \omega^2 \nonumber \\ &+ \frac{2}{\omega}(1-F_1) \rho \sigma_{\omega 2} k_{,j} \omega_{,j}]^{n+1/2}  dV \nonumber \\
 &- \frac{{\Delta t}^2}{2} \int_V ( \varphi_{\alpha} v_l^{n+1/2} )_{,l} \left [ \sum_{\beta} (v_k^{n+1/2}
   \varphi_{\beta})_{,k} (\rho \omega )_{\beta}^n \right] dV \nonumber \\
-&+ \frac{{\Delta t}^2}{2} \int_V ( \varphi_{\alpha} v_l^{n+1/2} )_{,l} [\frac{\gamma}{\nu_t} t_{ij}^R u_{i,j} -
+&+ \frac{{\Delta t}^2}{2} \int_V ( \varphi_{\alpha} v_l^{n+1/2} )_{,l} [\frac{\gamma}{\nu_t} t_{ij}^R v_{i,j} -
 \beta \rho \omega^2 \nonumber \\ &+ \frac{2}{\omega}(1-F_1) \rho \sigma_{\omega 2} k_{,j} \omega_{,j}]^n dV \nonumber
 \\
 &+ \Delta t \int_A \varphi_{\alpha} (\mu+\sigma_{\omega}
@@ -15891,7 +16280,7 @@ $\overline{p}=0$.
 This procedure can be used to create the stiffness matrix of a substructure
 (sometimes also called a superelement) and store it in a file. A substructure
 consists of selected degrees of freedom of a model. It can be used in a
-subsequent linear analysis (this option is not available in CalculiX). In such an analysis,
+subsequent linear analysis. In such an analysis,
 only the selected degrees of freedom are addressable, e.g. to apply loads or
 boundary conditions. The other degrees of freedom have been removed, thereby
 substantially reducing the size of the stiffness matrix. The retained degrees
@@ -16695,7 +17084,7 @@ takes the form
   \boldsymbol{j}= \boldsymbol{j_0} e^{i \omega t},
 \end{equation}
 
-and qa solution for the vector $\{U\}$ is looked for with the same time
+and a solution for the vector $\{U\}$ is looked for with the same time
 dependency. Substitution in the governing equation and separating real and
 imaginary part leads to
 
@@ -16734,9 +17123,9 @@ to induce the skin effect in structures \cite{Fitzpatrick}, i.e. the electric fi
 concentrated in a thin layer underneath the surface. To order to capture this
 effect a sufficiently fine mesh is needed in that area.
 
-Experience has shown that the matrices inthe above systems of equations are
+Experience has shown that the matrices in the above systems of equations are
 not always well conditioned, especially if the temperature is included and a
-coupled thermal-electromagnetic system is solved. To improve the conditiono a
+coupled thermal-electromagnetic system is solved. To improve the condition a
 scaling of the diagonal terms can be introduced. For a diagonal term $a_{ii}$
 the scaling term is defined as $a_{ii}^s = |a_{ii}| $ if $|a_{ii}| \ge
 10^{-30}$ and $a_{ii}^s =1$ else. The original system of equations
@@ -16907,7 +17296,7 @@ is defined with the keyword \htmlref{DESIGNVARIABLES}{designvariables} and a
 sensitivity analysis is introduced with the procedure card
 \htmlref{*SENSITIVITY}{sensitivity}. 
 
-If the parameter NLGEOM is not used on the *SENSITIVITY card, the calculation
+If the parameter NLGEOM is not used on the *STEP card in the *SENSITIVITY procedure, the calculation
 of $\frac{\partial K}{\partial s}$ does not contain the large deformation and
 stress stiffness, else it does. Similarly, without NLGEOM  $\frac{\partial
   G}{\partial s}$ is calculated based on the linear strains, else the
@@ -16945,7 +17334,7 @@ or
 
 \noindent The NLGEOM parameter is kept if the *SENSITIVITY and *STATIC step
 are in the same input deck (so then NLGEOM does not have to be repeated on the
-*SENSITIVITY step).
+*STEP card in the *SENSITIVITY step).
 
 If the objective functions are the eigenfrequencies (which include the
 eigenmodes),  a  \htmlref{*FREQUENCY}{frequency} step must have been
@@ -18072,6 +18461,28 @@ In a large deformation analysis the pressure is applied to the deformed face of 
 \epsfig{file=TetPres.eps,width=10cm}
 \caption{\label{tetpres}Equivalent nodal forces for a face of a C3D10 element}
 \end{figure}
+
+\subsubsection{\label{ifloading}Interface loading}
+
+The concept of interface loading allows for the application of a facial
+distributed pressure on an arbitrary part of the body's external surface. This
+part does not have to coincide with external faces of the body's volumetric
+mesh. In order to apply the interface loading the user has to:
+
+\begin{itemize}
+\item Mesh the part of the body's external surface to be loaded using shell elements (S3,
+  S4, S6 or S8). The order of the nodes should be clockwise when looking
+  towards the body, i.e. the normal to the shell should point into the body.
+\item Declare that the sole purpose of these elements is to apply facial
+  loading by specifying the parameter DLOAD on the
+  \htmlref{*ELEMENT}{element} card  used to define these shells.
+\item Apply a pressure to these shell elements using the label 'I' (for
+  Interface) instead of the label 'P' (which is the conventional label for
+  pressure loading on faces) on a \htmlref{*DLOAD}{dload} card. The pressure loading acts in the direction of
+  the normal to the shell elements. The normal on a shell element is such,
+  that while looking in the direction of the normal the node numbering is
+  clockwise.
+\end{itemize}
  
 \subsubsection{Centrifugal distributed loading}
 Centrifugal loading is selected by the \htmlref{*DLOAD}{dload} card,
@@ -18394,9 +18805,9 @@ The following output variables are available:
 \endhead
 \hline
 \endfoot
+A & acceleration of a structure & nodal & ACCE & x \\
 CDIS & relative contact displacements & nodal & CONTACT & x \\ 
  &  &  & CONTACTI & x \\ 
-PEEQ & equivalent plastic strain & int.point & PE & x \\
 CELS & contact energy & nodal & CELS & x \\
 CF & total contact force & surface & & x \\
 CFN & total normal contact force & surface & & x \\
@@ -18413,6 +18824,7 @@ DEPT & fluid depth (in direction of the gravity vector) & nodal & DEPTH & \\
  &  in a channel network &  &  & \\
 DTF & fluid time increment in 3D fluids & nodal & DTIMF & \\
 DRAG & stress on surface & surface & & x \\
+DUCT & damage initiation criterion & int.point & DUCT & x \\
 \hline
 E & Lagrange strain & int.point & TOSTRAIN & x \\
  &  &  & TOSTRAII & x \\
@@ -18680,7 +19092,7 @@ The TYPE parameter can take the string DISPLACEMENT or ACCELERATION. Default
 is ACCELERATION. Acceleration boundary conditions can only be used for
 harmonic steady state dynamics calculations, displacements can be used for any
 modal dynamic or steady state dynamic calculation. Since only three degrees of
-freedom are at the user's disposal, defining more than three *base motion
+freedom are at the user's disposal, defining more than three *BASE MOTION
 cards does not make sense.
 
 The *BASE MOTION card is more restrictive than the *BOUNDARY card in the sense
@@ -18863,7 +19275,7 @@ directions coincide with the global ones. Notice that a *TRANSFORM card is not
 allowed for nodes in which boundary conditions are applied to rotations.
 
 Optional parameters are OP, AMPLITUDE, TIME DELAY, LOAD CASE, USER, MASS FLOW,
-FIXED, SUBMODEL, STEP, DATA SET and LINTEMP. OP can take the value NEW or
+FIXED, SUBMODEL, MASTER, STEP, DATA SET and LINTEMP. OP can take the value NEW or
 MOD. OP=MOD is default and implies that previously prescribed
 displacements remain active in subsequent steps. Specifying a
 displacement in the same node and direction for which a displacement
@@ -18907,7 +19319,12 @@ Next, the SUBMODEL parameter specifies that the displacements in the nodes
 listed underneath will be obtained by interpolation from a global model. To
 this end these nodes have to be part of a
 \htmlref{*SUBMODEL}{submodel},TYPE=NODE card. On the latter card the result
-file (frd file) of the global model is defined. The use of the SUBMODEL
+file (frd file) of the global model is defined. A submodel must be
+three-dimensional (i.e. made up of volumetric elements), the global model may
+be made up of axisymmetric elements or be truly three-dimensional. In the
+former case the parameter MASTER with value 2D, i.e. MASTER=2D must be
+used. Furthermore the direction of the axis in the global axisymmetric model
+must correspond with the global y-axis in the submodel. Default is MASTER=3D. The use of the SUBMODEL
 parameter requires the STEP or the DATA SET parameter. 
 
 In case the global
@@ -18930,7 +19347,7 @@ are stored in a local coordinate system, this local system also applies to the
 submodel nodes in which these displacements are interpolated. So
 the submodel nodes in which the displacements of the global model are
 interpolated, inherit the coordinate system in which the displacements of the
-global model were stored. The SUBMODEL parameter and the AMPLITUDE parameter
+global model were stored. The SUBMODEL parameter and the AMPLITUDE parameters
 are mutually exclusive.
 
 Finally, the LINTEMP parameter can be used to define a linear temperature
@@ -18981,7 +19398,7 @@ Example:
 fixes the degrees of freedom one through three (global if no transformation was defined for node 73, else local) of node 73.
 
 \bigskip
-Example files: achteld.
+Example files: achteld, submodel\_2d3d.
 
 \subsubsection{Inhomogeneous Conditions}
 
@@ -19714,7 +20131,8 @@ freedom of the nodes
 listed underneath will be obtained by interpolation from a global model. To
 this end these nodes have to be part of a
 \htmlref{*SUBMODEL}{submodel},TYPE=NODE card. On the latter card the result
-file (frd file) of the global model is defined. The use of the SUBMODEL
+file (frd file) of the global model is defined. The global model must be truly
+three-dimensional, i.e. be made up of three-dimensional elements. The use of the SUBMODEL
 parameter requires the STEP  or the DATA SET parameter. 
 
 In case the global
@@ -19736,7 +20154,7 @@ applied to the nodes in the submodel. Consequently, if the forces of the global 
 are stored in a local coordinate system, this local system also applies to the
 submodel nodes in which these forces are interpolated. So the submodel nodes in which the forces of the global model are
 interpolated, inherit the coordinate system in which the forces of the
-global model were stored. The SUBMODEL parameter and the AMPLITUDE parameter
+global model were stored. The SUBMODEL parameter and the AMPLITUDE parameters
 are mutually exclusive.
 
 Notice that the interpolation of the forces from a global model onto a
@@ -20062,7 +20480,7 @@ Keyword type: step
 
 This option is used to print selected nodal contact variables in file jobname.frd for
 subsequent viewing by CalculiX GraphiX. The following variables can be
-selected (the label is square
+selected (the label in square
 brackets [] is the one used in the .frd file; for frequency calculations with
 cyclic symmetry both a real and an imaginary part may be stored, in all other cases only the
 real part is stored):
@@ -20419,7 +20837,7 @@ segment of $2^\circ$. So for the total spring energy this value has to be multip
 
 The parameters SLAVE and MASTER are used to define a contact pair. They are
 only needed for the output variables CF, CFN and CFS. They have to correspond
-to the face based master of slave surface of an existing contact pair.
+to the face based master or slave surface of an existing contact pair.
 
 \bigskip
 
@@ -20888,7 +21306,9 @@ location of the reference node determines the center of the rigid motion. For
 of the reference node. Choosing another reference node will change the effect
 of these forces (e.g. the moment about the center of gravity of the coupling
 surface will be different).  The
-reference node should not be one of the nodes of the surface to which the constraint applies.
+reference node should not be one of the nodes of the surface to which the
+constraint applies. The user can enter a concrete node number, or a node set
+containing exactly one node.
 
 With SURFACE the nodes are selected to which the constraint applies (so-called
 coupling nodes). This surface must be face-based.
@@ -21132,7 +21552,8 @@ in a cyclic symmetric structure for use in a cyclic symmetry calculation
 must be preceded by two *SURFACE cards defining the nodes belonging to the
 left and right boundary of the sector and a *TIE card linking those surfaces. The axis of symmetry is defined by two points a and b, defined in global Cartesian coordinates.
 
-For structural calculations there are seven parameters, N, NPHYS, NGRAPH, TIE, ELSET,
+For structural calculations there are eight parameters, N, NPHYS, NGRAPH, TIE,
+CONTACT, ELSET,
 MATRIX and CHECK. The parameter N,
 specifying the number of (numerical) sectors, is required, TIE is required if more than
 one cyclic symmetry tie is defined. The number of sectors can exceed the
@@ -21153,6 +21574,14 @@ dependent surface (slave) to the independent surface (master).
 The parameter TIE specifies the name of the tie constraint to which the cyclic symmetry
 model definition applies. It need not be specified if only one *TIE card has
 been defined.
+
+The parameter CONTACT is only needed if surface-to-surface penalty contact is defined between
+the dependent and independent cyclic symmetry surfaces. The effect is that the
+elements adjacent to the independent cyclic symmetry surface are rotated to
+the dependent side by an angle calculated from the physical number of
+sector. It does not lead to a change in any contact definition. This option only works
+if both the cyclic symmetric dependent and independent surfaces defined by the
+tie to which the *CYCLIC SYMMETRY CARD refers are face based.
 
 The element set specified by ELSET specifies the elements to which the
 parameter NGRAPH should be applied. Default if only one cyclic symmetry *TIE
@@ -21222,7 +21651,64 @@ Example:
 defines a cyclic symmetric structure consisting of $30^\circ$ sectors and axis of symmetry through the points (0.,0.,0.) and (1.,0.,0.). The solution will be stored for three connected sectors ($120^\circ$).
 
 \bigskip
-Example files: segment, fullseg, couette1per, couettecyl4.
+Example files: segment, fullseg, couette1per, couettecyl4, cycliccontact.
+
+\subsection{\label{damageinitiation}*DAMAGE INITIATION}
+
+Keyword type: model definition, material
+
+This option is used to define the properties of a damage initiation model. There
+is one required parameter CRITERION. Two criteria are available: RICE TRACEY
+and JOHNSON COOK, cf. Section \ref{daminit}.
+
+\bigskip
+
+First line:
+\begin{itemize}
+\item *DAMAGE INITIATION
+\item Enter the CRITERION parameter and its value
+\end{itemize}
+
+Following line for CRITERION=RICE TRACEY:
+\begin{itemize}
+\item $\epsilon_0^{RT}$.
+\item value of the damage initiation criterion $\omega_D$ at the onset of damage.
+\end{itemize}
+
+Following lines for CRITERION=JOHNSON COOK:
+
+First line of pair:
+\begin{itemize}
+\item $d_1$
+\item $d_2$
+\item $d_3$
+\item $d_4$
+\item $d_5$
+\item $T_m$ (melt temperature)
+\item $T_0$ (transition temperature $< T_m$)
+\item $\dot{\epsilon}_0$ (reference strain rate $>0$)
+\end{itemize}
+  
+Second line of pair:
+\begin{itemize}
+\item value of the damage initiation criterion $\omega_D$ at the onset of damage.
+\end{itemize}
+
+
+\begin{verbatim}
+Example:
+
+*DAMAGE INITIATION,CRITERION=JOHNSON COOK
+1.,1.,-1.,0.,1.,1000.,500.,1.E-2,
+0.045
+\end{verbatim}
+
+defines a damage initiation model according to the Johnson--Cook model with
+$d_1=d_2=d_5=1$, $d_3=-1$, $d_4=0$, $ T_m=1000.$,
+$T_0=500.$, $\dot{\epsilon}_0=0.01$ and $\omega_{d,\text{limit}}=0.045$.
+
+\bigskip
+Example files: damage1, damage2.
 
 \subsection{\label{damping}*DAMPING}
 
@@ -21374,7 +21860,7 @@ This option defines the elasto-plastic behavior of a material by means of the ge
 \begin{equation}
 E\epsilon=\sigma + \alpha \left( \frac {\left| \sigma \right| }{\sigma_0} \right)^{n-1}\sigma
 \end{equation}
-where $\epsilon$ is the logarithmic strain and $\sigma$ the Cauchy stress. In the present implementation, the Eulerian strain is used, which is very similar to the logarithmic strain (about 1.3 \% difference dat 20 \% engineering strain). All coefficients may be temperature dependent.
+where $\epsilon$ is the logarithmic strain and $\sigma$ the Cauchy stress. All coefficients may be temperature dependent.
 \bigskip
 
 First line:
@@ -21960,7 +22446,7 @@ equation. This leads to a large, fully populated submatrix in the system of
 equations leading to long solution times. Therefore, it is recommended not to
 include more than maybe 50 nodes in a distributing coupling condition.
 
-The first node underneath the keyword card is taken as dependent node n the
+The first node underneath the keyword card is taken as dependent node in the
 MPC. Therefore, this node should not be repeated in any other MPC or at the
 first location in any other distributing coupling definition. It can be used
 as independent node in another distributing coupling (all but the first
@@ -22204,7 +22690,13 @@ patterns (maximum 16 characters). A typical
 example of a nonuniform loading is the hydrostatic pressure. Another option is to assign the pressure of a fluid node to an element
 side. In that case the label takes the form PxNP, where NP stands for network
 pressure. The fluid node must be an corner node of a network element. Instead of a
-concrete pressure value the user must provide the fluid node number.
+concrete pressure value the user must provide the fluid node number. By
+replacing the letter 'P' by 'I' in the load type label (only allowed for
+loading on shell elements) the user specifies that the loading is an interface
+loading. This means that the shell element is fictitious and is only used to
+load an arbitrary part of the body's surface (not coincident with the faces of
+the body's mesh) adjacent to
+the shell element, cf Section \ref{ifloading}.
 
 Edge loading is only provided for shell elements. Its units are force per unit
 length. The label is EDNORx where x can take a value between one and three for
@@ -22347,7 +22839,7 @@ Se1,P3,10.
 assigns a pressure loading with magnitude 10. times the amplitude curve of amplitude A1 to face number three of all elements belonging to set Se1.
 
 \bigskip
-Example files: beamd.
+Example files: beamd, interface1.
 
 \bigskip
 Following line for centrifugal loading:
@@ -22437,7 +22929,8 @@ parameters: SUBMODEL and either STEP or DATA SET. Underneath the *DSLOAD card fa
 for which a section stress will be calculated by interpolation from the global
 model. To this end these faces have to be part of a *SUBMODEL card,
 TYPE=SURFACE. The latter card also lists the name of the global model results
-file.  
+file. The global model must be truly
+three-dimensional, i.e. be made up of three-dimensional elements. 
 
 In case the global
 calculation was a *STATIC calculation the STEP parameter specifies the step in the global model
@@ -22956,7 +23449,7 @@ Example files: induction, induction2, induction3.
 Keyword type: model definition
 
 With this option elements are defined. There is one required
-parameter, TYPE and one optional parameter, ELSET. The parameter TYPE
+parameter, TYPE and two optional parameters, ELSET and DLOAD. The parameter TYPE
 defines the kind of element which is being defined. The following
 types can be selected:
 
@@ -23065,7 +23558,15 @@ types can be selected:
 
 Notice that the S8, S8R, CPS8, CPS8R, CPE8, CPE8R, CAX8, CAX8R, B32
 and B32R element are internally expanded into 20-node brick
-elements. Please have a look at Section \ref{elements} for details and decision criteria which element to take. The element choice determines to a large extent the quality of the results. Do not take element choice lightheartedly! The parameter ELSET is used to assign the elements to an element set. If the set already exists, the elements are ADDED to the set.
+elements. Please have a look at Section \ref{elements} for details and
+decision criteria which element to take. The element choice determines to a
+large extent the quality of the results. Do not take element choice
+lightheartedly! The parameter ELSET is used to assign the elements to an
+element set. If the set already exists, the elements are ADDED to the set.
+
+Finally, the parameter DLOAD can only be used for shell elements. It specifies
+that the shell elements are fictitious and are defined to apply a pressure on
+an arbitrary part of a body's surface adjacent to the shells, cf Section \ref{ifloading}.
 \bigskip
 
 First line:
@@ -23092,7 +23593,7 @@ Example:
 defines one 20-node element with reduced integration and stores it in set Eall.
 
 \bigskip
-Example files: beam8p, beam10p, beam20p.
+Example files: beam8p, beam10p, beam20p, interface1.
 
 \subsection{\label{elementoutput}*ELEMENT OUTPUT}
 
@@ -23136,8 +23637,8 @@ real part is stored):
 \item CEEQ [PE]: equivalent creep strain (is converted internally into PEEQ
   since the viscoplastic theory does not distinguish between the two;
   consequently, the user will find PEEQ in the frd file, not CEEQ)
-\item E [TOSTRAIN (real),TOSTRAII (imaginary)]: strain. This is the total Lagrangian strain for (hyper)elastic
-materials and incremental plasticity and the total Eulerian strain for deformation plasticity.
+\item DUCT [DUCT]: damage initiation criterion.
+\item E [TOSTRAIN (real),TOSTRAII (imaginary)]: total Lagrangian strain.
 \item ECD [CURR]: electrical current density. This only applies to electromagnetic calculations.
 \item EMFB [EMFB]: Magnetic field. This only applies to electromagnetic calculations.
 \item EMFE [EMFE]: Electric field. This only applies to electromagnetic calculations.
@@ -23158,9 +23659,7 @@ materials and incremental plasticity and the total Eulerian strain for deformati
   stored for nodes belonging to the node set with name STRESSDOMAIN. This node
   set must have been defined by the user with the \htmlref{*NSET}{nset} command. The worst principal stress is the maximum of the
   absolute value of the principal stresses times its original sign.
-\item ME [MESTRAIN (real), MESTRAII (imaginary)]: strain. This is the mechanical  Lagrangian strain for (hyper)elastic
-materials and incremental plasticity and the mechanical Eulerian strain for
-deformation plasticity (mechanical strain = total strain - thermal strain).
+\item ME [MESTRAIN (real), MESTRAII (imaginary)]: mechanical  Lagrangian strain  (mechanical strain = total strain - thermal strain).
 \item PEEQ [PE]: equivalent plastic strain.
 \item PHS [PSTRESS]: stress: magnitude and phase (only for \htmlref{*STEADY
   STATE DYNAMICS}{steadystatedynamics} calculations and
@@ -23384,30 +23883,30 @@ The following  variables can be selected:
 \item Integration point variables
 
 \begin{itemize}
-\item true (Cauchy) stress in structures (key=S). 
-\item viscous stress in CFD calculations (key=SVF). 
-\item strain (key=E). This is the total Lagrangian strain for (hyper)elastic
-materials and incremental plasticity and the total Eulerian strain for deformation plasticity.
-\item strain (key=ME). This is the mechanical Lagrangian strain for (hyper)elastic
-materials and incremental plasticity and the mechanical Eulerian strain for
-deformation plasticity (mechanical strain = total strain - thermal strain).
-\item equivalent plastic strain (key=PEEQ)
 \item equivalent creep strain (key=CEEQ; is converted internally into PEEQ
   since the viscoplastic theory does not distinguish between the two;
   consequently, the user will find PEEQ in the dat file, not CEEQ)
+\item global coordinates (key=COORD).
+\item damage initiation criterion (key=DUCT).
+\item total Lagrangian strain (key=E).
 \item the energy density (key=ENER)
-\item the internal state variables (key=SDV)
+\item mechanical Lagrangian strain (key=ME) (mechanical strain = total strain - thermal strain).
 \item heat flux for structures (key=HFL). 
 \item heat flux in CFD calculations(key=HFLF).
-\item global coordinates (key=COORD).
+\item equivalent plastic strain (key=PEEQ)
+\item true (Cauchy) stress in structures (key=S). 
+\item the internal state variables (key=SDV)
+\item viscous stress in CFD calculations (key=SVF). 
 \end{itemize}
 
 \item Whole element variables
 
 \begin{itemize}
-\item the internal energy (key=ELSE)
+\item the rotational speed square ($\omega^2$) (key=CENT)
+\item the heating power (key=EBHE)
 \item the kinetic energy (key=ELKE)
-\item the volume (key=EVOL)
+\item the internal energy (key=ELSE)
+\item the magnetic energy (key=ELME)
 \item the mass and the mass moments of inertia about the global axes $I_{xx}$,
   $I_{yy}$, $I_{zz}$, $I_{xy}$, $I_{xz}$ and $I_{yz}$, where
 
@@ -23419,8 +23918,7 @@ and similar for the other expressions. If TOTALS=YES or TOTALS=ONLY is
 selected the center of gravity and the mass moments of inertia about the
 global axes through the center of gravity are calculated too (key=EMAS).
 
-\item the heating power (key=EBHE)
-\item the rotational speed square ($\omega^2$) (key=CENT)
+\item the volume (key=EVOL)
 \end{itemize}
 
 \end{itemize}
@@ -23612,13 +24110,19 @@ the left hand side of the equation. The first variable is considered to be the
 dependent one, and is subsequently eliminated from the equation, i.e. the
 corresponding degree of freedom does not show up in the stiffness matrix. This
 reduces the size of the matrix. A degree of freedom in a node can only be used once as the dependent
-node in an equation or in a SPC. For CFD-applications it is important for the
+term in an equation or in a SPC. For CFD-applications it is important for the
 stability of the calculation that the
 coefficient of the dependent degree of freedom is as large as possible
 compared to the coefficients of the independent degrees of freedom. For
 instance, setting the radial velocity orthogonal to the z-axis to zero
 corresponds to a MPC linking the x- and y-component of the velocity. The
-component with the largest coefficient should be chosen as dependent degree of freedom.
+component with the largest coefficient should be chosen as dependent degree of
+freedom.
+
+The node in the dependent term (i.e. the first term) of an equation may be
+replaced by a node set. In that case, the equation is applied successively for
+all nodes in the node set as dependent node. Consequently, as many equations
+are created as nodes in the node set.
 
 There are two optional parameters: REMOVE and REMOVE ALL. The parameter REMOVE
 can be used to remove equations corresponding with selected dependent degrees
@@ -23683,6 +24187,26 @@ Example:
 \end{verbatim}
 
 defines an equation of the form $2.3 v_3 + 4.05 u_{28} - 8.22 u_{17} = 0$, where u, v and w are the displacement for degree of freedom one, two and three, respectively.
+
+\begin{verbatim}
+Example:
+
+*NSET,NSET=N1
+1,13
+*EQUATION
+2
+N1,3,1.,100,3,-1.
+\end{verbatim}
+
+is the same as
+
+\begin{verbatim}
+*EQUATION
+2
+1,3,1.,100,3,-1.
+2
+13,3,1.,100,3,-1.
+\end{verbatim}
 
 \begin{verbatim}
 Example:
@@ -26048,7 +26572,7 @@ defined in a previous step.
 
 First line:
 \begin{itemize}
-\item *MODAL DAMPING,RAYLEIGH
+\item *MODAL DAMPING
 \item Enter any needed parameters and their values.
 \end{itemize}
 
@@ -26105,7 +26629,16 @@ state (a zero state if the parameter PERTURBATION was not used on the *STEP card
 is removed. The loading defined within the
 step is multiplied by the amplitude history for each load as specified by the
 AMPLITUDE parameter on the loading card, if any. If no amplitude applies all
-loading is applied at the start of the step. Loading histories extending beyond the amplitude time scale are extrapolated in a constant way. The absence of the AMPLITUDE parameter on a loading card leads to a constant load.
+loading is applied at the start of the step. Loading histories extending
+beyond the amplitude time scale are extrapolated in a constant way. The
+absence of the AMPLITUDE parameter on a loading card leads to a constant load.
+
+Notice that if the *FREQUENCY step is in the same input deck, any *INITIAL
+CONDITIONS on the displacement or velocity field are removed during that
+step. Therefore, if the user wants to introduce such initial conditions, the
+*FREQUENCY step must be performed in a separate calculation with the option
+STORAGE=YES. The appropriate initial condition cards should be introduced in a
+second input deck containing the *MODAL DYNAMIC card.
 
 There are four optional parameters: SOLVER, DIRECT, DELTMX, and STEADY STATE. SOLVER determines the
 package used to solve for the steady state solution in the presence of nonzero
@@ -26402,6 +26935,12 @@ the user can define new nonlinear MPC's. Examples are given in Section
 \ref{usermpc}, e.g. the mean rotation MPC.
 \end{itemize}
 
+Since the 3-D expansion of standard beam, shell, plane stress, plane strain and axisymmetric
+elements frequently involves the use of extra linear equations and/or nonlinear MPC's such as knots, the additional
+application of nonlinear MPC's to such elements is problematic. Therefore, it
+is not allowed to apply STRAIGHT, PLANE, BEAM and MEANROT MPC's to any node
+belonging to such elements.
+
 A *MPC card automatically triggers the NLGEOM parameter, i.e. a geometrically
 nonlinear calculation is performed, except if the MPC is a mean rotation MPC.
 
@@ -26614,6 +27153,7 @@ cyclic symmetry both a real and an imaginary part may be stored, in all other ca
 real part is stored):
 
 \begin{itemize}
+\item A [ACCE]: Accelerations in structural dynamic calculations.
 \item CP [CP3DF]: Pressure coefficient in 3D compressible fluids.
 \item DEPF [DISP]: Vector denoting the change in fluid depth compared to the
   reference depth in 3D shallow water calculations.
@@ -26847,24 +27387,27 @@ jobname.dat. The following variables can be
 selected:
 
 \begin{itemize}
-\item Displacements (key=U)
+\item Accelerations in structures (key=A)
+\item Pressure coefficients in compressible 3D fluids (key=CP)
+\item Fluid depth in 3D shallow water calculations (key=DEPF)
+\item Mach numbers in compressible 3D fluids (key=MACH)
+\item Mass flows in networks (key=MF)
 \item Structural temperatures and total temperatures in networks (key=NT or TS; both are equivalent)
-\item Static temperatures in 3D fluids (key=TSF)
-\item Total temperatures in 3D fluids (key=TTF)
 \item Pressures in networks (key=PN). These are the total pressures for gases,
   static pressures for liquids and liquid depth for channels. The fluid
   section types dictate the kind of network.
-\item Static pressures in 3D fluids (key=PSF)
-\item Total pressures in 3D fluids (key=PTF)
-\item Mach numbers in compressible 3D fluids (key=MACH)
-\item Pressure coefficients in compressible 3D fluids (key=CP)
-\item Velocities in 3D fluids (key=VF)
-\item Fluid depth in 3D shallow water calculations (key=DEPF)
-\item Turbulent parameters in 3D fluids (key=TURB)
-\item Mass flows in networks (key=MF)
+\item Reactive current (key=RECUR); only for electromagnetic calculations.
 \item External forces (key=RF) (only static forces;
   dynamic forces, such as those caused by dashpots, are not included)
 \item External concentrated heat sources (key=RFL)
+\item Static pressures in 3D fluids (key=PSF)
+\item Total pressures in 3D fluids (key=PTF)
+\item Static temperatures in 3D fluids (key=TSF)
+\item Total temperatures in 3D fluids (key=TTF)
+\item Turbulent parameters in 3D fluids (key=TURB)
+\item Displacements (key=U)
+\item Velocities in structures (key=V)
+\item Velocities in 3D fluids (key=VF)
 \end{itemize}
 
 The external forces are the sum of
@@ -27368,10 +27911,11 @@ an element face surface can be defined on which the pre-tension acts. This
 is usually a cross section of the bolt. This option is used for volumetric
 elements. Alternatively, the bolt can be modeled with just one linear beam
 element (type B31). In that case the parameter ELEMENT is required pointing to
-the number of the beam element. 
+the number of the beam element or an element set containing exactly one element.
 
 The parameter NODE is used to define a
-reference node. This node should not be used elsewhere in the model. In
+reference node. The user can enter a concrete node number or a node set
+containing exactly one node. This node should not be used elsewhere in the model. In
 particular, it should not belong to any element. The coordinates of this node
 are immaterial. The first degree of freedom of this node is used to define a
 pre-tension force with \htmlref{*CLOAD}{cload} or a differential displacement
@@ -27752,20 +28296,27 @@ Keyword type: step
 
 With this keyword a user-defined part of the input mesh consisting of C3D4 and
 C3D10 elements is refined according to certain criteria and the
-calculation is automatically restarted with the refined mesh. Temperatures,
-volumetric distributed loading (e.g. centrifugal forces), point loads and
-single point constraints are automatically modified. This does not apply to
-facial distributed loads and multiple point constraints. These should not be
-applied to the part of the mesh to be refined. To determine the temperatures
-in the new mesh interpolation based on the unrefined mesh is done. For the
-point forces and single point constraints the definition in the unrefined mesh
-is kept and multiple point constraints are constructed between the concerned
-nodes in the old mesh and the tetrahedrons in the new mesh within which they
-are located.
+calculation is automatically restarted with the refined mesh. Temperatures, and
+volumetric distributed loading (e.g. centrifugal forces) are automatically
+modified. If the temperatures or volumetric distributed loading in the
+domain to be refined are applied using an amplitude (*AMPLITUDE), this
+amplitude should not vary within this domain. To determine the
+temperatures, initial displacements and initial velocities
+in the new mesh interpolation based on the unrefined mesh is done. Nodes
+belonging to single point or multiple point constraints, or in which a
+concentrated load is applied (using \htmlref{*CLOAD}{cload}) are not moved during
+refinement and the nodes numbers are kept. Faces on which pressure
+(\htmlref{*DLOAD}{dload}) is applied are allowed but are not refined. Their nodes or not moved
+ant their numbers are kept. This also applies to the element number to which
+the face belongs. Therefore, the *DLOAD card in the unrefined mesh remains valid.
 
 The refinement is done in the step in which *REFINE MESH is used and is based
-on the results calculated in that step. The keyword should occur at most once
-in the complete input deck.
+on the results calculated in that step. In particular, the user should take
+care that any node subject to a SPC, MPC, concentrated load or distributed
+facial load is subject to this constraint or loading in the mesh refinement
+step. If not, a fake loading of zero can be applied. The keyword *REFINE MESH should occur at most once
+in the complete input deck. It is not allowed in a restart calculation
+(characterized by *RESTART,READ).
 
 For the refinement the available criteria are the size of the displacements
 (label U), the velocity (label V), the stress (label S), the total strain
@@ -27775,7 +28326,8 @@ gradient based error estimator (label ERR) or a user-defined function (user
 subroutine ucalculateh.f). The size is defined as the absolute value if it
 concerns a scalar quantity and the norm if it concerns a vector or tensor.
 
-There is one required parameter LIMIT and two optional parameters ELSET and USER.
+There is one required parameter LIMIT and four optional parameters ELSET,
+USER, SMOOTHING ONLY and REPAIR ONLY.
 
 With the parameter LIMIT the user defines a positive value above which
 refinement is requested. For instance, if the limit is 50. and the value of
@@ -27794,8 +28346,25 @@ should not be longer than 60 characters.
 With the parameter USER a new criterion for the refinement can be coded in
 user subroutine ucalculateh.f.
 
-If the tetrahedral mesh in the input deck contains at least one quadratic
-element, the refined mesh contains C3D10 elements only, else it is a pure C3D4 mesh.
+The parameter SMOOTHING ONLY allows the user to perform a smoothing of the
+existing mesh without refining the mesh, i.e. the existing nodes and elements
+and their numbering is kept. This option does not need any results, therefore,
+the parameter LIMIT does not make sense and no line specifying the criterion
+is needed either.
+
+Finally, the parameter REPAIR ONLY performs the same actions as SMOOTHING
+ONLY in the case that during the calculation a non--positive Jacobian is
+detected. If all Jacobian values are strictly positive, no action is taken.
+
+Finally, if the tetrahedral mesh in the input deck contains at least one quadratic
+element, the refined mesh contains C3D10 elements only, else it is a pure C3D4
+mesh.
+
+The keyword *REFINE MESH is only available in a
+\htmlref{*STATIC}{static} or \htmlref{*DYNAMIC}{dynamic} step. If the job name
+is ``test'' the refined mesh is stored in input format in ``test.rfn.inp''
+(can be visualized with CalculiX GraphiX using ``cgx -c test.rfn.inp'') and
+the unrefined mesh in ``test.urf.frd''. 
 
 \bigskip
 
@@ -27820,7 +28389,7 @@ S
 requests a refinement based on the size of the stress and a limit of 50.
 
 \bigskip
-Example files: circ10p.
+Example files: circ10p, contact4bad, contact4badnl, segmentsmooth.
 
 
 \subsection{\label{restart}*RESTART}
@@ -27976,7 +28545,7 @@ is used as the rotation about the x-axis of the rigid body, the second
 as the the rotation about the y-axis and the third as the rotation
 about the z-axis. The
 rotational node can be defined explicitly using the parameter ROT
-NODE. In that case, this node must be been assigned coordinates (their value
+NODE. In that case, this node must be assigned coordinates (their value
 is irrelevant) and
 should not belong to any element of the structure.
 
@@ -28001,6 +28570,9 @@ unit normal on the axis and $\mathbf{u}_R$ is the displacement of the
 ROT NODE, this results in a linear MPC of the form $\mathbf{a}.\mathbf{u}_R
 =0$ to be specified by the user by means of a
 \htmlref{*EQUATION}{equation}  card.
+
+Notice that due to nodes belonging to shell or beam elements are not allowed
+to be part of a rigid body definition.
 \bigskip
 
 First and only line:
@@ -28231,21 +28803,8 @@ Example files: segment, fullseg, greencyc1.
 
 Keyword type: step
 
-This procedure is used to perform a sensitivity analysis. There are three
-optional parameters: NLGEOM, READ and WRITE. If NLGEOM is active, the change of the stiffness matrix
-w.r.t. the design variables is performed based on:
-
-\begin{itemize}
-\item a material tangent stiffness matrix at the strain at the end of the
-  previous static step
-\item displacements at the end of the previous static step (large deformation
-  stiffness)
-\item the stresses at the end of the previous static step (stress stiffness)
-\end{itemize}
-
-It makes sense to include NLGEOM if it was used on a previous static step and
-not to include it if it was not used on a prevous static step or in the
-absense of any prevous static step.
+This procedure is used to perform a sensitivity analysis. There are two
+optional parameters: READ and WRITE.
 
 The parameters READ and WRITE are mutually exclusive and can only be used if
 the coordinates are the design variables. If WRITE is selected,
@@ -28265,7 +28824,7 @@ step, possibly preceded by a *STATIC step, cf. \htmlref{*OBJECTIVE}{objective}.
 First line:
 \begin{itemize}
 \item *SENSITIVITY
-\item Enter the NLGEOM parameter if needed.
+\item Enter the READ or WRITE parameter if needed.
 \end{itemize}
 
 \begin{verbatim}
@@ -28882,9 +29441,10 @@ without perturbation parameter in the corresponding *FREQUENCY step).
 The loading active in a non-perturbative step is the accumulation of the loading in all previous steps since but not including the last perturbation step (or, if none has occurred, since the start of the calculation), unless OP=NEW has been specified since.
 
 If NLGEOM is specified, the calculation takes geometrically nonlinear effects
-into account. To this end a nonlinear strain tensor is used (Lagrangian strain
-for hyperelastic materials, Eulerian strain for deformation plasticity and the
-deviatoric elastic left Cauchy-Green tensor for incremental plasticity), the
+into account. To this end a nonlinear strain tensor is used (Lagrangian
+strain, which may be converted into another measure immediately before
+entering the material formulation; e.g. the Abaqus material user interface
+requires the logarithmic strain), the
 step is divided into increments and a Newton iteration is performed within
 each increment (notice that iterations are also performed for other kinds of
 nonlinearity, such as material nonlinearity or contact conditions). Although the internally used stresses are the Piola stresses
@@ -29191,15 +29751,12 @@ This option is used to define surfaces made up of nodes or surfaces made up of
 element faces. A mixture of nodes and element faces belonging to one and the
 same surface is not possible. There are
 two parameters: NAME and TYPE. The parameter NAME
-containing the name of the surface is required. The TYPE parameter takes the
+containing the name of the surface is required. If the name of an already
+existing surface is used, the latter is extended by the nodes or faces listed
+underneath the *SURFACE keyword. The TYPE parameter takes the
 value NODE for nodal surfaces and ELEMENT for element face surfaces. Default
-is TYPE=ELEMENT. 
-
-At present, surfaces are used to establish cyclic symmetry conditions and to
-define contact (including tied contact). The master and slave surfaces in cyclic symmetry conditions
-must be nodal surfaces. For contact, the slave surface can be a nodal or
-element face
-surface, while the master surface has to be a element face surface.
+is TYPE=ELEMENT. At present, surfaces are used e.g. to establish cyclic symmetry conditions or to
+define contact (including tied contact). 
 
 Element faces are identified by the surface label Sx where x is the number of the face. The numbering depends on the element type.
 
@@ -29373,7 +29930,7 @@ CONDUCTANCE card defining the thermal conductance across the contact elements.
 The tied pressure-overclosure behavior simulates a truly linear relationship
 between the pressure and the overclosure for positive and negative
 pressures. At zero overclosure the pressure is zero. It can only be used for 
-face-to-face penalty contact and similates tied contact between the slave and master
+face-to-face penalty contact and simulates tied contact between the slave and master
 face. Notice that all slave faces will be tied to opposite master faces, if
 any, irrespective whether there is a gap between them or not. The only parameter is the slope of the pressure-overclosure
 relationship. However, tied contact requires the specification of the stick
@@ -29401,7 +29958,7 @@ Following line if PRESSURE-OVERCLOSURE=EXPONENTIAL:
 Following line if PRESSURE-OVERCLOSURE=LINEAR:
 \begin{itemize}
 \item slope $K$ of the pressure-overclosure curve ($> 0$).
-\item $\sigma_{\infty}$ ($> 0$, irrelevant vor face-to-face contact).
+\item $\sigma_{\infty}$ ($> 0$, irrelevant for face-to-face contact).
 \item $c_0$ ($>0$, irrelevant for face-to-face contact, optional for
   node-to-face contact)
 \end{itemize}
@@ -29482,7 +30039,7 @@ elements, temperature gradients within a purely mechanical *STEP definition.
 thermomechanical analysis. In these types of analysis the 
 \htmlref{*BOUNDARY}{boundary} card for degree of freedom 11 should be used instead.  
 
-Optional parameter are OP, AMPLITUDE, TIME DELAY, USER, SUBMODEL, STEP, DATA
+Optional parameters are OP, AMPLITUDE, TIME DELAY, USER, SUBMODEL, MASTER, STEP, DATA
 SET, FILE, BSTEP and LINTEMP. OP can take the value NEW or
 MOD. OP=MOD is default and implies that thermal load in different
 nodes is accumulated over all steps starting from the last
@@ -29524,7 +30081,12 @@ the AMPLITUDE parameter has no effect and should not be used.
 The SUBMODEL parameter is used to specify that the nodes underneath the
 *TEMPERATURE card should get their temperature values by interpolation from a
 global model. Each of these nodes must be listed underneath exactly one nodal
-\htmlref{*SUBMODEL}{submodel} card. The SUBMODEL parameter automatically
+\htmlref{*SUBMODEL}{submodel} card.  A submodel must be
+three-dimensional (i.e. made up of volumetric elements), the global model may
+be made up of axisymmetric elements or be truly three-dimensional. In the
+former case the parameter MASTER with value 2D, i.e. MASTER=2D must be
+used. Furthermore the direction of the axis in the global axisymmetric model
+must correspond with the global y-axis in the submodel. Default is MASTER=3D.The SUBMODEL parameter automatically
 requires the use of the STEP or DATA SET parameter.
 
 In case the global
@@ -29540,7 +30102,7 @@ CalculiX GraphiX. Notice that the global frequency calculation is not allowed
 to contain preloading nor cyclic symmetry.
 
 If the SUBMODEL card is
-used no temperature values need be specified. The SUBMODEL parameter and the AMPLITUDE parameter
+used no temperature values need be specified. The SUBMODEL parameter and the AMPLITUDE parameters
 are mutually exclusive.  
 
 Temperature gradients are not influenced by the AMPLITUDE parameter.
@@ -29613,7 +30175,7 @@ assigns a temperature T=293 to all nodes in (node) set N1, and T=473 to nodes 30
 will read the temperatures from step 4 in file ``temperatures.frd''.
 
 \bigskip
-Example files: beam8t, beam20t, beamnlt, beamt4, beamfrdread.
+Example files: beam8t, beam20t, beamnlt, beamt4, beamfrdread, submodel\_2d3d\_thermal.
 
 \bigskip
 
@@ -29687,10 +30249,6 @@ was specified by the user. In order to create
 the MPC's connecting the slave and master side, the latter is
 triangulated. 
 
-The tie can be assigned a name by using the parameter NAME. This name can be
-referred to on the  \htmlref{*CYCLIC
-  SYMMETRY MODEL}{cyclicsymmetrymodel} card.
-
 The parameter CYCLIC SYMMETRY is used to tie two surfaces bounding one and the
 same datum sector in circumferential direction. Both the slave and the master
 surface can be node or face based. For face based surfaces the nodes belonging
@@ -29712,8 +30270,10 @@ master surface is identified to which the rotated slave node belongs, and a
 more elaborate multiple point constraint is generated. If none
 is found, the closest face is taken. If this face does not lie within $10 \%$
 of its length from the slave node, no MPC's are generated for this node, an error is issued and the node is stored in
-file jobname\_WarnNodeMissCyclicSymmetry.nam. This file can be read into CalculiX GraphiX by using
-the command ``read jobname\_WarnNodeMissCyclicSymmetry.nam inp''.
+file jobname\_WarnNodeMissCyclicSymmetry\_''tie''.nam, where ``tie'' is the name of
+the tie (if any) which was specified on the *CYCLIC SYMMETRY MODEL card for which no
+corresponding face was found. This file can be read into CalculiX GraphiX by using
+the command ``read jobname\_WarnNodeMissCyclicSymmetry\_''tie''.nam inp''. 
 
 The parameter MULTISTAGE is used to tie two coincident nodal surfaces (no
 face based surfaces allowed) each of which
@@ -29725,7 +30285,7 @@ encompass the smaller datum sector, i.e. it should extend beyond the smaller
 datum sector in both directions, clockwise and counterclockwise. This option
 should not be used in the presence of network elements.
 
-The parameter NAME is needed if more than one *TIE constraint is defined. It
+The parameter NAME is compulsary. It is actually needed if more than one *TIE constraint is defined. It
 allows the user to distinguish the tie constraints when referring to them in
 other keyword cards 
 (e.g. \htmlref{*CYCLIC SYMMETRY MODEL}{cyclicsymmetrymodel}).
@@ -30035,6 +30595,38 @@ in the step (default). The second line indicates that the initial time increment
 
 \bigskip
 Example files: thermomech2.
+
+\subsection{\label{userefinedmesh}*USE REFINED MESH}
+
+Keyword type: model definition
+
+With this option one can use a refined version of the mesh actually provided
+in the input deck. This refined mesh must have been generated using \htmlref{*REFINE MESH}{refinemesh} in another
+calculation with exactly the same unrefined mesh and applying boundary
+conditions and loads at exactly the same locations as in the present input
+deck. If the other calculation had as job name ``test1'' then the refined mesh
+has been stored in a file ``test1.rfn.inp'' and the unrefined mesh in a file
+``test1.urf.frd''. If the new job has has job name ``test2'',
+``test1.rfn.inp'' and ``test1.urf.frd'' have to be copied into
+``test2.rfn.inp'' and ``test2.urf.frd'' before starting test2. In the new job
+the user can e.g. change the material properties are the values of the
+boundary conditions and/or loadings.
+
+\bigskip
+
+First and only line:
+\begin{itemize}
+\item *USE REFINED MESH
+\end{itemize}
+
+\begin{verbatim}
+Example:
+
+*USE REFINED MESH
+\end{verbatim}
+
+\bigskip
+Example files: circ11p.
 
 \subsection{\label{userelement}*USER ELEMENT}
 
@@ -30776,8 +31368,10 @@ follows:
 \begin{verbatim}
       subroutine film(h,sink,temp,kstep,kinc,time,noel,npt,
      &  coords,jltyp,field,nfield,loadtype,node,area,vold,mi,
-     &  ipkon,kon,lakon,iponoel,inoel,ielprop,prop,ielmat,
-     &  shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon)
+     &  ipkon,kon,lakon,iponoeln,inoeln,ielprop,prop,ielmat,
+     &  shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon,
+     &  ipobody,xbody,ibody,heatnod,heatfac)
+!
 !
 !     user subroutine film
 !
@@ -30805,7 +31399,7 @@ follows:
 !     loadtype           load type label
 !     node               network node (only for forced convection)
 !     area               area covered by the integration point
-!     vold(0..4,1..nk)   solution field in all nodes; 
+!     vold(0..4,1..nk)   actual solution field in all nodes; 
 !                        for structural nodes:
 !                        0: temperature
 !                        1: displacement in global x-direction
@@ -30823,6 +31417,7 @@ follows:
 !                        over all elements)
 !     mi(2)              max degree of freedom per node (max over all
 !                        nodes) in fields like v(0:mi(2))...
+!     mi(3)              max # of layers in any element
 !     ipkon(i)           points to the location in field kon preceding
 !                        the topology of element i
 !     kon(*)             contains the topology of all elements. The
@@ -30830,11 +31425,11 @@ follows:
 !                        and continues until all nodes are covered. The
 !                        number of nodes depends on the element label
 !     lakon(i)           contains the label of element i
-!     iponoel(i)         the network elements to which node i belongs
-!                        are stored in inoel(1,iponoel(i)),
-!                        inoel(1,inoel(2,iponoel(i)))...... until
-!                        inoel(2,inoel(2,inoel(2......)=0
-!     inoel(1..2,*)      field containing the network elements
+!     iponoeln(i)        the network elements to which node i belongs
+!                        are stored in inoeln(1,iponoeln(i)),
+!                        inoeln(1,inoeln(2,iponoeln(i)))...... until
+!                        inoeln(2,inoeln(2,inoeln(2......)=0
+!     inoeln(1..2,*)      field containing the network elements
 !     ielprop(i)         points to the location in field prop preceding
 !                        the properties of element i
 !     prop(*)            contains the properties of all network elements. The
@@ -30845,7 +31440,8 @@ follows:
 !                        number and their order corresponds
 !                        to the description in the user's manual,
 !                        cf. the sections "Fluid Section Types"
-!     ielmat(i)          contains the material number for element i
+!     ielmat(j,i)        contains the material number for element i
+!                        and layer j
 !     shcon(0,j,i)       temperature at temperature point j of material i
 !     shcon(1,j,i)       specific heat at constant pressure at the
 !                        temperature point j of material i
@@ -30869,22 +31465,22 @@ follows:
 !                        j of material i
 !     cocon(k,j,i)       conductivity coefficient k at conductivity
 !                        temperature point j of material i
-!
-!     OUTPUT:
-!
-!     h(1)               magnitude of the film coefficient
-!     h(2)               not used; please do NOT assign any value
-!     sink               (updated) sink temperature (need not be
-!                        defined for forced convection)
-!     ntmat_             maximum number of temperature data points for 
-!                        any material property for any material
-!     ncocon(1,i)        number of conductivity constants for material i
-!     ncocon(2,i)        number of temperature data points for the 
-!                        conductivity coefficients of material i
-!     cocon(0,j,i)       temperature at conductivity temperature point
-!                        j of material i
-!     cocon(k,j,i)       conductivity coefficient k at conductivity
-!                        temperature point j of material i
+!     ipobody(1,i)       points to an entry in fields ibody and xbody 
+!                        containing the body load applied to element i, 
+!                        if any, else 0
+!     ipobody(2,i)       index referring to the line in field ipobody
+!                        containing a pointer to the next body load
+!                        applied to element i, else 0
+!     ibody(1,i)         code identifying the kind of body load i:
+!                        -1,1=centrifugal, 2=gravity, 3=generalized gravity
+!     ibody(2,i)         amplitude number for load i
+!     ibody(3,i)         load case number for load i
+!     xbody(1,i)         size of body load i
+!     xbody(2..4,i)      for centrifugal loading: point on the axis,
+!                        for gravity loading with known gravity vector:
+!                          normalized gravity vector
+!     xbody(5..7,i)      for centrifugal loading: normalized vector on the
+!                          rotation axis
 !
 !     OUTPUT:
 !
@@ -30896,6 +31492,7 @@ follows:
 !                        (zero if not specified)
 !     heatfac            extra heat flow going to the structural face
 !                        (zero if not specified)
+!           
 \end{verbatim}
 
 \subsubsection{\label{userboundary}Boundary conditions(uboun.f)}
@@ -31336,66 +31933,6 @@ the first iteration. Therefore, convergence in quasistatic
 calculations is often enhanced if the first iteration is completely
 linear, i.e. material and geometric nonlinearities are turned
 off. The parameter ielas is the appropriate flag for this.
-
-Two extra routines are at the user's disposal for conversion 
-purposes. ``str2mat.f'' can be used to convert Lagrangian strain into 
-Eulerian strain, Cauchy stress into PK2 stress, or Kirchhoff stress 
-into PK2 stress. The header and a short description are as follows:
-
-\begin{verbatim}
-
-      subroutine str2mat(str,ckl,vj,cauchy)
-!
-!     converts the stress in spatial coordinates into material coordinates 
-!     or the strain in material coordinates into spatial coordinates. 
-!
-!     INPUT:
-!
-!     str(6):     Cauchy stress, Kirchhoff stress or Lagrange strain
-!                 component order: 11,22,33,12,13,23
-!     ckl(3,3):   the inverse deformation gradient
-!     vj:         Jakobian determinant
-!     cauchy:     logical variable
-!                 if true: str contains the Cauchy stress
-!                 if false: str contains the Kirchhoff stress or
-!                           Lagrange strain
-!
-!     OUTPUT:
-!
-!     str(6):     Piola-Kirchhoff stress of the second kind (PK2) or
-!                 Euler strain
-!
-
-\end{verbatim}
-
-The second routine, ``stiff2mat.f'' converts the tangent stiffness matrix from spatial coordinates into material coordinates. 
-
-\begin{verbatim}
-
-      subroutine stiff2mat(elas,ckl,vj,cauchy)
-!
-!     converts an element stiffness matrix in spatial coordinates into
-!     an element stiffness matrix in material coordinates. 
-!
-!     INPUT:
-!
-!     elas(21):   stiffness constants in the spatial description, i.e.
-!                 the derivative of the Cauchy stress or the Kirchhoff
-!                 stress with respect to the Eulerian strain
-!     ckl(3,3):   inverse deformation gradient
-!     vj:         Jacobian determinant
-!     cauchy:     logical variable
-!                 if true: elas is written in terms of Cauchy stress
-!                 if false: elas is written in terms of Kirchhoff stress
-!
-!     OUTPUT:
-!
-!     elas(21):   stiffness constants in the material description,i.e.
-!                 the derivative of the second Piola-Kirchhoff stress (PK2)
-!                 with respect to the Lagrangian strain
-! 
-
-\end{verbatim}
 
 \paragraph{Calling mechanical behaviour defining shared libraries.}
 
@@ -32188,7 +32725,7 @@ been defined.
 
 It is important to know where fields are allocated, reallocated and
 deallocated. Most (re-, de-) allocation is done in
-CalculiX.c. Table~(\ref{talloc}) gives an overview where the allocation (A),
+CalculiX.c. Table \ref{talloc} gives an overview where the allocation (A),
 reallocation (R) and deallocation (D) is done in file CalculiX.c. A
 fundamental mark in this file is the call of subroutine calinput, where the
 input data is interpreted.
@@ -32386,8 +32923,8 @@ knor & A & & R & & &  infree[1] \\
 thickn & A & & D & & &  - \\
 thicke & A & & R & & &  mi[2]*nkon \\
 offset & A & & R & & network$>$0: R&  2*ne \\
-iponoel & A & & R & & &  infree[3] \\
-inoel & A & & R & & &  3*(infree[2]-1) \\
+iponoel2d & A & & R & & &  infree[3] \\
+inoel2d & A & & R & & &  3*(infree[2]-1) \\
 rig & A & & R & & &  infree[3] \\
 ne2boun & A & & R & & &  2*infree[3] \\
 \hline
@@ -33128,13 +33665,13 @@ The expansion of the elements requires several steps:
 \subsubsection{Cataloguing the elements belonging to a given node}
 
 A node can belong to several elements of different types. The structure to
-store this dependence consists of two fields: a one-dimensional field iponoel
-and a two-dimensional field inoel. For node i the value j1=iponoel(i) points
-to row j1 in field inoel containing in its first column the number k1 of an
+store this dependence consists of two fields: a one-dimensional field iponoel2d
+and a two-dimensional field inoel2d. For node i the value j1=iponoel2d(i) points
+to row j1 in field inoel2d containing in its first column the number k1 of an
 element to which
 node i belongs, in its second column the local number l1 which node i assumes in the
 topology of the element and in its third column the row number j2 in field
-inoel where another element to which node i belongs is listed. If no further
+inoel2d where another element to which node i belongs is listed. If no further
 element exists, this entry is zero (Figure \ref{iponoel}).
 
 \begin{figure}
@@ -33468,7 +34005,7 @@ scheme depends on the beam section.
 
 \subsection{Contact}
 
-\subsubsection{Penalty contact}
+\subsubsection{Penalty contact\label{penaltycontact}}
 
 \begin{figure}
 \epsfig{file=contact_edges.eps,width=10cm}
@@ -33579,7 +34116,7 @@ node}
 
 For the purpose of calculating the area corresponding to a given slave node,
 the fields iponoels and inoels are used (Figure \ref{iponoels}). For a slave node i, the value
-iponoels(i) points towards an entry inoels(1..3,iponoels(i)) containing the
+iponoels(i) points towards an entry inoels(1..2,iponoels(i)) containing the
 position within field islavsurf(1,*) of a face to which node i belongs and an entry inoels(2,iponoels(i))  pointing to any other
 faces to which node i belongs. Field xnoels contains the weight of the node
 within the face. This information is
@@ -33821,6 +34358,219 @@ The following remarks are due:
   case, no friction should be defined.
 \item tied pressure-overclosure is only available for face-to-face penalty contact
 \end{itemize}
+
+\subsubsection{Domain decomposition}
+
+In this section the domain decomposition algorithm implemented in CalculiX is
+explained in more detail, taking interface loading as example (cf. Section
+\ref{ifloading}; the main routine is interfaceloading.c). It runs as follows:
+
+\begin{enumerate}
+
+\item (only for interface loading; subroutine calcglobmastsurf.f) Determine the external faces of the
+  volumetric mesh of the structure. These faces constitute the master surface.
+  
+\item (subroutine triangucont\_load.f) Triangulate each face of the master surface by appropriately connecting
+its nodes. For instance, for a 8--noded face the triangulation can be performed
+as in Figure (\ref{domcom1}). The number of triangles is stored in ncont, and
+the topology of triangle i in field koncont(1...4,i): the first three entries
+are the node numbers belonging to the triangle in clockwise order when looking
+out of the body, koncont(4,i) contains the master face the triangle belongs to
+in the form
+10*elem+localface, where nelem is the master element number and localface is
+the local face number as explained e.g. under the keyword
+\htmlref{*DLOAD}{dload}. 
+
+\begin{figure}
+\begin{center}
+\epsfig{file=domcom1.eps,width=8cm}
+\caption{\label{domcom1}Examplary decomposition of a 8--noded face into
+triangles}
+\end{center}
+\end{figure}
+
+\item (trianeighbor.f) Catalogue the edges of the triangulation and
+  neighboring information of each triangle using the fields ipe, ime
+  and imastop as explained in the previous section.
+
+\item (catmastnodes.f) Catalogue the master nodes in imastnodes in ascending
+  order (cf previous section).
+  
+\item (updatecontpen\_load.f) For each triangle, store the coordinates of its center of gravity in
+  field cg (3,*) and
+  the coefficients of the plane's equation through each of its edges and bisecting the
+  normal on the triangle and the normal on the triangle adjacent
+  to the edge in straight(1...12,*) (4 coefficients per plane). Store the
+  coefficients of the triangle's plane in straight(13...16,*) (4 coefficients)
+
+\item For each slave face (mastintpoints.f):
+
+\begin{enumerate}
+
+\item Calculate a mean normal $\boldsymbol{n}$ satisfying:
+
+\begin{equation}
+\boldsymbol{n} = \frac{\sum_{i=1}^{n_s} \boldsymbol{n}_i
+}{\| \sum_{i=1}^{n_s} \boldsymbol{n}_i \|},
+\end{equation}
+
+\noindent and its center of gravity
+
+\begin{equation}
+\boldsymbol{x}_{\text{cg}} =  \frac{\sum_{i=1}^{n_s} \boldsymbol{x}_i}{n_s},
+\end{equation} 
+
+\noindent leading to its mean slave plane satisfying:
+
+\begin{equation}
+\boldsymbol{n} \cdot (\boldsymbol{x} - \boldsymbol{x}_{\text{cg}})=0.
+\end{equation}
+
+\noindent $n_s$ is the number of nodes belonging to the slave face,
+$\boldsymbol{x}_i$ the spatial coordinates of the nodes and $\boldsymbol{n}_i$ the local
+normal in the nodes in the spatial configuration. Notice that a slave face does not have to be plane.
+
+\item Identify for the nodes of the slave face opposite master faces. To this
+end identify for each node (the coordinates of which are slightly moved
+towards the slave face's center of gravity to avoid numerical difficulties
+for slave faces positioned exactly on one opposite master face) the master triangle the center of gravity of which is
+closest to the slave node (using the nearest neighbor algorithm of
+Section \ref{interpolation}. The triangle is considered to be valid if
+$\boldsymbol{n} \cdot \boldsymbol{n}_t < -0.7$ ($\boldsymbol{n}_t$ is the
+triangle's normal; slave and master face should
+have normals in opposite directions). If valid, store its parent master face
+to in field maface(i), i=1,...,nmaface.
+
+\begin{figure}
+\epsfig{file=domcom2.eps,width=12cm}
+\caption{\label{domcom2}Clipping the slave face with the triangles of a
+triangulated master face}
+\end{figure}
+
+\item For each master face $m^l$ on the stack (cf Figure \ref{domcom2}):
+
+\begin{enumerate}
+
+\item Subdivide the face into convex polygons such that the edges of the
+polygons are a subset of the edges of the master triangulation. The dashed
+line in Figure \ref{domcom2}, for instance, is an edge of the master triangulation but is not
+needed to create the subdivision of the master face in convex polygons.
+
+\item For each convex master polygon (e.g. the dashed triangle in Figure \ref{domcom2}):
+
+\begin{enumerate}
+
+\item Apply the Sutherland--Hodgman algorithm \cite{Sutherland} to clip the slave
+face by the polygon after projecting both on the mean slave plane. The field
+pvertex(1..3,i), i=1,..,nvertex, which contains at the start of the
+Sutherland--Hodgman algorithm the projected coordinates of the slave face,
+contains at the end the projected coordinates of the vertices of the clipped
+slave face.
+
+\item Determine the edges of the polygon the neighboring master faces of which
+deserve further attention (the so--called active edges). They are stored in
+iactiveline(1..2,i),i=1,...,nactiveline. The entry iactiveline(1,i) contains
+the edge number from field ime, iactiveline(2,i) contains the parent master
+face of the triangle to which the edge belongs and which has already been
+treated.
+
+\item Subdivide the clipped slave face (the doubly dashed triangle in Figure \ref{domcom2}) into triangles and determine the local
+master coordinates of their vertices by projecting back onto the master face
+(using the finite element containment algorithm in
+Section \ref{interpolation}). This point here is specific for interface
+loading. For contact calculations the projection is done on the slave surface,
+not on the master surface (routine treatmasterface.f).
+
+\item Determine the local coordinates of the integration points within each
+clipped slave face triangle using a 7--point integration scheme. Determine the
+local coordinates of these integrations points within the master face by using
+the local master coordinates of the triangle's vertices. The
+corresponding formula amounts to:
+
+\begin{equation}
+\xi_{\text{ip,glob}} = \xi_1 \xi_ {\text{ip,loc}} + \xi_2 \eta _
+{\text{ip,loc}} + \xi_3 (1 - \xi _ {\text{ip,loc}} - \eta_ {\text{ip,loc}}),
+\end{equation}
+
+\noindent where $(\xi_ {\text{ip,loc}}, \eta_ {\text{ip,loc}})$ are the local
+coordinates of the integration point within the clipped slave face triangle ($0 \le \xi_ {\text{ip,loc}}, \eta_
+{\text{ip,loc}} \le 1$) and $0 \le \xi_ {\text{ip,loc}}+\eta_
+{\text{ip,loc}} \le 1$), $(\xi_1,\xi_2,\xi_3)$ are the local coordinates of
+the vertices of the clipped polygon triangle within the master face and
+$(\xi_{\text{ip,glob}}, \eta_{\text{ip,glob}})$ are the local coordinates of
+the integration point within the master face. For each integration point,
+increment the integration point counter nintpoint by one, store its local
+coordinates within the master face and the weight in pmastload(1..3,nintpoint), store the
+slave face (10*element+local face) into imastload(1,nintpoint) and a pointer
+to any previous interface loading for this master face in
+imastload(2,nintpoint). If an interface loading iload already exists for the master face
+at stake, set nelemload(2,iload)=nintpoint, if not, create such loading. An
+interfaceloading is characterized by a label sideload(iload) starting with 'I'.
+
+The other way around, an interface loading i is characterized by
+sideload(i)(1:1)='I'. The master face with this loading is determined by the
+elenent number nelemload(1) and a local face number sideload(i)(2:2). The
+first integration point for this loading is at location j=nelemload(2) in
+fields imastload and pmastload yielding the local coordinates
+pmastload(1..2,j), the weight pmastload(3,j), the slave face imastload(1,j)
+and a pointer to the next integration point imastload(2,j), and so on until
+imastload(2,k)=0 for some k. The slave face is important, since the interface
+loading defined by the user on this slave face specifies the size of the
+loading and the load amplitude, if applicable.
+
+\end{enumerate}
+
+\end{enumerate}
+
+\item Mark the master face as treated by storing it in field
+  icovered(i),i=1,...,ncovered in the form 10*element+local face number (this
+  field is sorted in ascending order for searching purposes).
+
+\item Analyze the master faces adjacent to the active edges in the same
+way. Keep track of the active edges deactivating them as soon as all adjacent
+master faces were covered and activating new ones as needed. Continue until no master faces are left which can possibly have an intersection
+with the slave face
+
+\end{enumerate}
+
+\end{enumerate}
+
+One notices from the above discussion that the Sutherland--Hodgman algorithm
+is an important element in the overall algorithm. It clips a slave face (face
+a-b-c-d-e-f-g-h in Figure \ref{domcom2}) by a convex master polygon (e.g. polygon 1-2-3 in
+Figure \ref{domcom2}). The viewing angle in the figure is from outside onto
+the slave face, therefore the slave face is numbered counterclockwise, while
+the master polygon is numbered clockwise. The clipping is done taking one
+master polygon edge at a time, starting e.g. by edge 1-2. If the edge is
+active, it is deactivated, since an edge can belong to at most two master
+faces. Now, the edge is extended indefinitely (dot--dashed line in
+Figure \ref{domcom2}) and the state of each slave surface edge w.r.t. this
+line is verified. The following cases arise:
+
+\begin{enumerate}
+
+\item The edge is not cut and lies on the side of the master polygon (edge d-e)
+in the Figure: the downstream vertex (vertex e) is included in the clipped
+slave face description.
+
+\item The edge is cut such that the downstream vertex lies outside of the
+master polygon (edge e-f): the intersection point (A) is determined and included
+into the clipped slave face description. If the master polygon edge (1-2) was not
+deactivated it is activated.
+
+\item The edge is cut such that the upstream vertex lies outside the master polygon (edge c-d): the intersection point (B) and the downstream vertex (d) are
+both included into the clipped slave face description. If the master polygon edge (1-2)
+was not deactivated it is activated.
+
+\item The edge is not cut and lies outside the master polygon: no vertex is
+included into the clipped slave face description. If the master polygon edge (1-2) was
+not deactivated it is activated.
+
+\end{enumerate}
+
+\noindent After all master polygon edges have been treated, a check is
+performed whether at least 3 vertices belong to the clipped master face. If not,
+all master polygon edges are deactivated.
 
 \subsubsection{Massless contact}
 
@@ -34727,8 +35477,8 @@ degree of freedom in a gas node is active: if the entry is nonzero (actually
 positive; contrary to nactdof nactdog does not take negative values) it is
 active, else it is inactive (which means that the value is known or not
 applicable because the node is a structural node). The degrees of freedom
-correspond to the first three rows of Table~\ref{t8} and are repeated in
-Table~\ref{t9} for clarity. Here too, only the first three rows are
+correspond to the first three rows of Table \ref{t8} and are repeated in
+Table \ref{t9} for clarity. Here too, only the first three rows are
 relevant. 
 
 \begin{table}
@@ -34755,7 +35505,7 @@ in node 328. The number of the degree of freedom corresponds with the column
 number in the resulting set of equations. 
 What nactdog is for the degrees of freedom is nacteq for the equations. It is
 a field of the same size of nactdog but now a nonzero entry indicates that a
-specific conservation equation applies to the node, cf. Table ~\ref{t10}.
+specific conservation equation applies to the node, cf. Table \ref{t10}.
 
 \begin{table}
 \caption{Conservation equations in fluid nodes (field nacteq).\label{t10}}
@@ -34995,11 +35745,11 @@ Right now, the fluid element routines are the sluicegate (includes the
 weir), the straightchannel, the reservoir and the contraction (includes the
 enlargement and the step) routines. The IO elements (input/output) do not need
 a routine and are not considered to be ``true'' elements. Field ineighe(i)
-gives the number of true elements in end node i. Fields iponoel and inoel
+gives the number of true elements in end node i. Fields iponoeln and inoeln
 allow for the determination of ALL elements (true and IO)  belonging to node
-i. Entry iponoel(i) points to a first element in inoel(1,iponoel(i)),
-inoel(2,iponoel(i)) points to the next element etc. up to the point where
-inoel(2,...)=0. The upstream, middle and downstream node of an element nelem are
+i. Entry iponoeln(i) points to a first element in inoeln(1,iponoeln(i)),
+inoeln(2,iponoeln(i)) points to the next element etc. up to the point where
+inoeln(2,...)=0. The upstream, middle and downstream node of an element nelem are
 called nup, nmid and ndo, respectively, the upstream and downstream neighbor
 (assuming there is only one) nelup and neldo. The upstream and downstream
 depth is hup and hdo.
@@ -35034,7 +35784,7 @@ The above iterative procedure leads to the following algorithm:
   is the starting point of a frontwater curve calculation
 \item Proceed downstream calculating a supercritical flow. Determine the
   next downstream element using the actual element and its downstream node
-  (nelup and nup for the downstream element) and fields iponoel and inoel.
+  (nelup and nup for the downstream element) and fields iponoeln and inoeln.
 \item If no supercritical flow is possible, set hup = -1 and  move downstream until
   supercritical flow is feasible again, e.g. at node A. Store the
   appropriate information of this switching node in fields nstack and
@@ -35289,11 +36039,11 @@ distance is a geometrical entity and is determined in routine initialcfdfem.f.
   freestream node is a node belonging to an external face which is not a solid
   surface node and which does not belong to a cyclic MPC.
 \item Determining the fluid elements to which a given node belongs and storing
-  them in field iponoel and inoel. For a given node i one fluid element to
+  them in field iponoelf and inoelf. For a given node i one fluid element to
   which it belongs is stored in
-  inoel(1,iponoel(i)). inoel(3,iponoel(i)) is a pointer into field inoel
+  inoelf(1,iponoelf(i)). inoelf(3,iponoelf(i)) is a pointer into field inoelf
   pointing to another fluid element to which the node belongs. This is
-  continued until inoel(3,inoel(3,inoel(3.....inoel(3,iponoel(i)))))) is zero.
+  continued until inoelf(3,inoelf(3,inoelf(3.....inoelf(3,iponoelf(i)))))) is zero.
 \end{itemize}
 
 \begin{figure}
@@ -36328,8 +37078,10 @@ normal vector at i.
 \subsection{Mesh refinement}
 
 The mesh refinement procedure starts from the mesh in the input deck. All
-elements which are not of type C3D4 or C3D10 are kept and their element
-numbers are not modified. All other elements are deleted and the gaps in the
+elements which are not of type C3D4 or C3D10 or which do not belong to the
+part of the mesh to be refined (the user can specify a set of elements to be
+refined) are kept and their element
+numbers are not modified. All other elements are deleted and the resulting gaps in the
 numbering between the elements which are not tetrahedral are filled from low
 to high by the newly generated tetrahedral elements. The procedure for the
 refinement is based on the book by P.-L. George and H. Borouchaki \cite{George}.
@@ -36367,7 +37119,7 @@ containing a specific node (Figure \ref{ieln}). For a node i the value
 ipoeln(i) points to an entry ieln(1,ipoeln(i)) containing an element to which
 the node belongs. If there are more such elements, the next element is stored
 in ieln(1,ieln(2,ipoeln(i))) and so on until
-ieln(2,ieln(2,ieln(2...,ipoeln(i))))=0. At any time during the scalar ifreeln contains the next
+ieln(2,ieln(2,ieln(2...,ipoeln(i))))=0. At any time the scalar ifreeln contains the next
 free position in ieln, whereas the entry ieln(2,j) for any not used position j
 in the field points to a next free position. 
 
@@ -36418,7 +37170,7 @@ requested. Finally, there is the field iexternedg(*) which takes the value:
 \begin{itemize}
 \item it is used as parent edge for at least one newly generated edge during
   mesh refinement AND
-\item the normals on the adjacent external faces have an angle of less than
+\item the normals on the adjacent external faces have an angle exceeding
   about 0.05$^\circ$.
 \end{itemize}
 Fields iedgeextfa, ifacext, ifacexted and isharp are static, the contents of
@@ -36433,7 +37185,7 @@ projectnodes.f. All of these fields are needed for the projection
 \end{figure}
 
 The last fields ipoeled(i) and ieled(2,*) point to the elements to which edge
-i belongs in the same way the element per node relationship is stored in
+i belongs (called the ``shell'' of the edge) in the same way the element per node relationship is stored in
 ipoeln(*) and ieln(2,*), Figure \ref{ieled}.
 
 \subsubsection{Face fields\label{facefields}}
@@ -36481,11 +37233,18 @@ The topology of the tetrahedral elements is stored in field
 kontet(1..4,*). This field is dynamically updated during mesh refinement. The
 next free entry in kontet is pointed to by ifreetet, the entries kontet(4,*)
 of entries in the field which have not been used yet point to a next free
-entry. The field kontet is special in the sense that element numbers in the unrefined
-mesh which are no tetrahedral elements cannot be used for newly generated
-tetrahedral elements, i.e. the element numbers of such elements are kept. At
-the start of the mesh refinement the tetrahedral elements are renumbered such
-that they occupy the lowest possible element numbers. The corresponding middle
+entry. The field kontet is used for the new refined mesh. Entries belonging to
+element numbers of the part of the mesh which is not refined are not available
+for the new tetrahedral elements since they are still part of the mesh after
+refinement. Also the element numbers of elements which are refined are kept
+(and are not available for the new, refined mesh)
+and considered as ``parent'' elements of the newly created elements. Therefore,
+at
+the start of the mesh refinement the tetrahedral elements in the part of the
+mesh to be refined are copied (and
+considered as the initial mesh in the refinement procedure) such
+that they occupy the lowest possible free element numbers, i.e. any numbers not
+used by any element of the unrefined mesh. The corresponding middle
 nodes of these elements, if any, are stored in field kontetor(1..6,*). The
 field kontetor is static, i.e. it only contains the middles nodes of the
 quadratic tetrahedral elements of the unrefined mesh. This field is used to
@@ -36550,7 +37309,7 @@ Notice that the tetrahedral elements are stored as if all of them were linear,
 ie. C3D4-elements. The only quadratic information of the unrefined mesh is
 stored in fields iedgext and ifacext, to be discussed below.
 
-\paragraph{catedges.f}
+\paragraph{catedges\_refine.f}
 
 This routine catalogues the edges. This includes:
 
@@ -36575,8 +37334,8 @@ first set to 1, else it is 0.
 
 \paragraph{midexternaledges.f}
 
-Nodes generated on external sharp edges of the unrefined mesh are after the
-refinement projected onto the unrefined external edges (in
+Nodes generated on external sharp edges of the unrefined mesh are projected after the
+refinement onto the unrefined external edges (in
 projectvertexnodes.f and projectmidnodes.f). These edges may be
 quadratic. In routine midexternaledges.f the external edges are stored in
 consecutive order (no gaps in the numbering) in field iedgext(1..3,*). The
@@ -36596,7 +37355,7 @@ Nodes generated on the exterior of the body and which do not belong to
 external sharp edges of the unrefined mesh are projected onto the unrefined surface
 at the end of the remeshing routine (in projectvertexnodes.f and projectmidnodes.f). To that end the
 external face information of the unrefined mesh is first copied from field
-iexternfa into iexternfaor (or for ``original''). Then, the value of 1 in
+iexternfa into iexternfaor (``or'' for ``original''). Then, the value of 1 in
 iexternfaor(i) for the external faces i is replaced by a value j, pointing to
 the entries ifacext(1..6,j) containing the six nodes of the face (node
 numbering as in Figure \ref{c2d6}. The number
@@ -36671,7 +37430,8 @@ divided into n(i)+1 edges satisfying:
 \end{equation}
 
 where int(x) is the integer smaller than or equal to the real number x. This
-creates at most 2 edges out of 1.
+creates at most 2 edges out of 1. In edgedivide.f n(i) is determined and
+stored. The actual splitting of the edges is done in cavityext\_refine.f.
 
 \paragraph{newnodes.f}
 
@@ -36684,7 +37444,7 @@ divided into two sub-edges the following actions are taken:
   stored in the scalar nnewnodes. Let us assume that edge i is the j-th edge
   to be subdivided, then the coordinates are stored in conewnodes(1..3,j)
 \item determine a base element to which the edge belongs (an arbitrary element
-  of the shell of the edge) and store the number in ibasenewnodes(j)
+  of the ``shell'' of the edge) and store the number in ibasenewnodes(j)
 \item store the edge number on which the nodes lies (i.e. here i) in field
   iedgnewnodes(*), i.e. iedgnewnodes(j)=i. 
 \item determine the value of the h-field in the new node by interpolation
@@ -36701,7 +37461,7 @@ surface nodes. Indeed, the insertion procedure explained in \cite{George} works
 only for nodes not lying on the external surface. The insertion of the new nodes is done one by one after
 reordering them in an aleatoric way.
 
-\paragraph{cavityext.f}
+\paragraph{cavityext\_refine.f}
 
 The insertion of each node is performed in cavityext in the following way:
 
@@ -36715,7 +37475,7 @@ The insertion of each node is performed in cavityext in the following way:
   they belong from the cavity
 \item restore the unperturbed coordinates of the new node
 \item connect the new node with each of the faces bordering the cavity and
-  check the quality of the ensueing element. If 
+  check the quality of the ensuing element. If 
 \begin{itemize}
 \item the volume is not extremely small AND
 \item at least one height (a tetrahedral element has 4 heights) is
@@ -36742,7 +37502,7 @@ base element.
   the original mesh of the cavity is restored
 \item since elements have been deleted and created the base element numbers of
   the nodes still to be inserted may not be correct any more: perform a check
-  on these nodes and correct the base element numbers if necessary.
+  on these nodes and correct the base element numbers in field ibasenewnodes(*) if necessary.
 \item label the newly generated faces and edges as external or not. Sub-edges
   of the edge on which the new node was inserted inherit the label from field
   iexternaledg
@@ -36761,7 +37521,7 @@ external edges. Here too routines edgedivide.f and newnodes.f are called. The
 new nodes are perturbed similarly as for the external edges and reordered in
 an aleatoric way. Just the insertion of the nodes in cavity.f is more simple:
 
-\paragraph{cavity.f}
+\paragraph{cavity\_refine.f}
 
 It is done in the following way:
 
@@ -36784,7 +37544,8 @@ It is done in the following way:
   the original mesh of the cavity is restored
 \item since elements have been deleted and created the base element numbers of
   the nodes still to be inserted may not be correct any more: perform a check
-  on these nodes and correct the base element numbers if necessary.
+  on these nodes and correct the base element numbers in field
+  ibasenewnodes(*) if necessary.
 \end{itemize}
 
 \paragraph{SMOOTHING THE MESH}
@@ -36803,7 +37564,7 @@ node i is a neighbor of node i if:
 
 \begin{itemize}
 \item node i is internal OR
-\item node is is external, node j is external and no sharp edges are
+\item node i is external, node j is external and no sharp edges are
   attached to node i OR
 \item node i is external, node j is external and the edge connecting both is sharp.
 \end{itemize}
@@ -36870,15 +37631,17 @@ the correct face is found (i.e. the condition that the projection lies
 inside the face). While applying the adjacency relations field isharp is
 used to assure that sharp edges are not crossed.
 
-Since projection may lead to bad elements it is performed in several loops. In
+Since projection may lead to bad (i.e. with non-positive Jacobian determinant) elements it is performed in several loops. In
 each loop an increasing fraction of the motion from the actual position of
 the node to its projection on the external surface is performed. Each time a
 node is moved, the Jacobian determinant of all elements belonging to its ball
 is checked for positivity. If any Jacobian is negative, the size of the motion
 for this node in this iteration
 is decreased by half. If after three reductions there is still an element with
-a negative Jacobian the node is not moved at all in this iteration. If any reduction
-took place all nodes belonging to the ball are listed as bad nodes for further
+a negative Jacobian the node is not moved at all in this iteration. If any
+reduction of the target motion
+took place (i.e. the projection of the external node on the surface was not
+successfull) all nodes belonging to the ball are listed as bad nodes for further
 treatment in smoothbadvertex.f.
 
 \paragraph{smoothbadvertex.f}
@@ -36941,7 +37704,7 @@ synonym for ``middle node''.
 
 Recall that the smoothed position of a vertex node is only accepted if the
 quality of its ball did not get worse. In analogy, the smoothed position of a
-mnidnode will only be accepted if the quality of its shell does not get
+midnode will only be accepted if the quality of its shell does not get
 worse. For the quality measure of a quadratic element the largest difference of the
 Jacobian determinant at the integration points will be taken as
 measure. Recall that the 10-node tetrahedral element has 4 integration
@@ -36962,7 +37725,7 @@ is negative.
 
 The smoothing of the midnodes is done in a similar way as for the vertex
 nodes (using the modified definition of ``neighbors'', ``quality measure''
-etc.
+etc.)
 
 \paragraph{projectmidnodes.f}
 
@@ -36992,175 +37755,41 @@ shaped tetrahedrons. So basically the first term optimizes the volume of the 8
 linear subtetrahedra of the quadratic tetrahedron. The second term avoids the presence of negative Jacobian determinants at the
 integration points (abreviated as ip in the above formula).
 
-\subsubsection{Modifying the boundary conditions}
+\subsubsection{Boundary conditions and loading}
 
-After refining the mesh the boundary conditions have to be moved from the old
-(= unrefined) mesh to the new (= refined) mesh. This includes both single point constraints (SPC's) and
-multiple point constraints (MPC's). The general approach is the following: the
-boundary conditions on the old mesh are kept and new equations are generated
-linking all surface nodes of the old mesh (i.e. the part which has been remeshed) to
-those of the new mesh. Subsurface nodes are not relevant, since boundary
-conditions are usually only applied to surface nodes.
+After refining the mesh the boundary conditions and the loading have to be moved from the old
+(= unrefined) mesh to the new (= refined) mesh. This includes SPC's, MPC's,
+point loads, distributed facial load, distributed volumentric load and
+temperature loading.
 
-So for each surface node in the old mesh three equations (in 3D) are generated linking
-the displacement of this node to nodes of the new mesh. The coefficients of
-the equations are obtained by a standard interpolation procedure. For a node
-``a'' in the old mesh linked to nodes 30, 58, 123 and 4009 in the new mesh
-such an equation looks like:
+In the past SPC's, MPC's and point loads were taken care of by creating MPC's
+connecting the old node in which the SPC, MPC or point load was applied with
+the nodes of the element in the new mesh within which the old node was
+located. This, however, let to high concentrated stresses in the new
+mesh. Therefore, it was decided these old nodes are not to be moved during
+mesh refinement. Furthermore, their node number is kept. Therefore, the
+*BOUNDARY, *EQUATION and *CLOAD cards in the unrefined mesh remain valid.
 
-\begin{equation}
-  u_a = x_1 u_{30} + x_2 u_{58} + x_3 u_{123} + x_4 u_{4009}
-\end{equation}
+The same applies to the faces loading by facial distributed loading: the nodes
+of such faces are not moved during mesh refinement, their numbers are kept as
+well as the element number of the adjacent element. Therefore, the *DLOAD card
+in the unrefined mesh remains valid.
 
-or
+The volumetric distributed loading (centrifugal loading, gravity) in an
+element of the refined mesh is inherited from its parent element. The same
+applies to the material properties. Therefore, mesh refinement should not be
+performed across a material border.
 
-\begin{equation}
-  u_a - x_1 u_{30} - x_2 u_{58} - x_3 u_{123} - x_4 u_{4009} = 0
-\end{equation}
+Temperatures in the refined mesh are interpolated within each step from the
+temperature for that step in the unrefined mesh.
 
-for the displacement component u in x-direction. Notice that the coefficient
-of the dependent node (first node in the equation; belongs to the old mesh) is
-1, the other nodes in the equations can be considered to be independent nodes
-and belong to the new mesh.
-
-\begin{figure}
-\epsfig{file=modbc1.eps,width=10cm}
-\caption{\label{modbc1}Matrix structure of the connecting equations}
-\end{figure}
-
-\begin{figure}
-\epsfig{file=modbc2.eps,width=12cm}
-\caption{\label{modbc2}Fields describing the matrix structure}
-\end{figure}
-
-These equations can be put in matrix form, with the columns corresponding to
-the dependent nodes (ordered in ascending order with a total of nnodestet
-nodes) and the rows corresponding to the global nodes numbers of the surface
-nodes of the refined mesh, Figure \ref{modbc1}. The maximum independent node
-number occurring is labeled maxrow. Notice that, since the equations are
-identical for the global x-, y- and z-direction, only one equation per dependent
-node is stored. The matrix structure is stored with fields which are partially
-similar to the general way in which the stiffness matrix is stored in
-CalculiX, i.e. (see also Figure \ref{modbc2}):
-
-\begin{itemize}
-\item au: stores the nonzero entries in the matrix (i.e. the ``x'' in
-  Figure \ref{modbc1}) column by column. Entries within each column are
-  ordered corresponding to the ascending row numbers.
-\item irow: corresponds to the row number (the global number of the
-  independent nodes in the connecting equations) of the entries in au.
-\item icol(i): number of nonzero entries in column i
-\item jq(i): entry in fields au and irow corresponding to the first nonzero
-  value in column i. The size of the field is nnodestet+1 in order to mark the
-  last entry in fields au and irow (corresponds to jq(nnodestet+1)-1).
-\item irowt: lists the column numbers in the matrix, row by row. Contrary to
-  field irow the entries within each row are not ordered. 
-\item jqt(i): entry in field irowt corresponding to the first nonzero value in
-  row i.
-\item loc: localizes each entry in field irowt within field irow and au,
-  i.e. entry irowt(i) corresponds with entry irow(loc(i)) and au(loc(i)).
-\item ixcol(i)= icol(i)*(nnodestet+1)+i.  
-\end{itemize}
-
-\begin{figure}
-\epsfig{file=modbc3.eps,width=12cm}
-\caption{\label{modbc3}Example for the fields defining the connecting equations}
-\end{figure}
-
-Figure \ref{modbc3} describes these fields for a simple example involving the
-following connecting equations:
-
-\begin{equation}
-  u_{22}+a u_6 + b u_{31}=0
-\end{equation}
-
-\begin{equation}
-  u_{134}+c u_{31} + d u_{59} + e u_{78} =0
-\end{equation}
-
-\begin{equation}
-  u_{202}+f u_3 + g u_6 =0
-\end{equation}
-
-
-The fields above are needed because the terms in the connecting equations have to
-be reordered for each SPC or MPC on the unrefined mesh. Indeed, assume that
-the displacement in x for node 22 above was set to zero in the unrefined mesh
-by a SPC of the form $u_{22}=0$. Then $u_{22}$ occurs as dependent degree of
-freedom in the SPC and the MPC above. This is not allowed in
-CalculiX: a node can occur at most once as dependent dof. Therefore, the MPC has to be reordered, e.g. in the form
-
-\begin{equation}
-  a u_6+u_{22}+ b u_{31}=0
-\end{equation}
-
-making node 6 of the refined mesh the dependent dof. This reordering has to be
-done for each node of the unrefined mesh used in a SPC or MPC. In order not to
-run out of independent refined mesh nodes which can be used as dependent
-nodes, the equations are reordered starting from the ones with fewest terms to
-the ones with most terms. To that end field icol, which contains the number of
-independent terms in each equations, can be used and ordered. However, in
-order to keep the information to which column (i.e. unrefined mesh node) the
-independent count belongs, the field ixcol is created. Notice that this field,
-when ordered, keeps the same ordering as field icol.
-
-Before ordering ixcol it is modified in such a way that all entries
-corresponding to unrefined mesh nodes which do not belong to SPC's or MPC's
-are set to zero (since they do not have to be reorderd). Let us assume that
-in the example in Figure \ref{modbc3} there is a SPC defined in node 22 and
-134, then ixcol is rewritten as $ixcol=[9 14 0]$, which yields after
-reordering $ixcol=[0 9 14]$. Then, the columns are treated from low to high in
-ixcol. The first nonzero entry is 9, which corresponds to column 1. For this
-column the largest coefficient (in absolute value) is identified and the corresponding term used
-as dependent dof. Let us assume that $|b|>|a|$, then the original equation
-
-\begin{equation}
-  u_{22}+a u_6 + b u_{31}=0
-\end{equation}
-
-is reordered as
-
-\begin{equation}
-   b u_{31}+u_{22}+a u_6 =0,
-\end{equation}
-
-and node 31 cannot be used as dependent term in any other equation. Therefore,
-all row entries in row 31 have to be deactivated. This is done by reverting
-the sign all ``31'' entries in field irow, by use of fields irowt, jqt and
-loc. Subsequently, entry ``9'' in field ixcol is set to zero, since the
-corresponding column has been rearranged. Now only entry 14 is left, which
-corresponds to column 2 in field au. For the determination of the maximum
-coefficients only positive entries in field irow are taken into account,
-therefore, only coefficients d and e are compared. If $|d| > |e|$ then the
-original equation
-
-\begin{equation}
-  u_{134}+c u_{31} + d u_{59} + e u_{78} =0
-\end{equation}
-
-is reordered as
-
-\begin{equation}
-   d u_{59} + u_{134}+c u_{31}  + e u_{78} =0
-\end{equation}
-
-and row 59 is deactivated for further equation rearrangement by switching its
-sign in field irow.
-
-Notice that all coefficients in matrix au are nonpositive since the shape
-function values for a linear or quadratic triangle are nonnegative (used in
-the interpolation procedure). Therefore, all rearranged equations are
-characterized by a nonpositive coefficient of the dependent terms.
-
-The procedure may not be fool proof (especially if a lot of SPC's or MPC's
-contrain the unrefined mesh). If, due to the rearrangement of other
-equations no independent node in an equation not treated yet remains, an error
-message is issued and the program stops.
-
-The procedure just described is repeated for each step, since the SPC's and
-MPC's can change from step to step. Before starting the procedure, however,
-the equations from the last step are reordered in their original form
-(i.e. with a leading coefficient of 1).
+If an input deck contains several steps, in one of which refinement is
+performed, the decision in which nodes are not to be moved is based on the
+boundary conditions and loading in that step. If in another step other nodes
+are loaded, the latter will not be loading leading to wrong
+results. Therefore, the user should take care to include any node loaded or
+constrained in any step of the input deck in the mesh refinement step, e.g. by
+applying a zero point load.
 
 \subsection{Crack propagation}
 
@@ -37510,7 +38139,7 @@ After all increments have been calculated (or if nowhere along the crack front
 propagation occurred or if $K_c$ was exceeded anywhere along the crack
 fronts) the results are stored in frd-format.
 
-\subsection{Interpolation procedure}
+\subsection{Interpolation procedure \label{interpolation}}
 
 Interpolation in between an existing mesh is used in different places in
 CalculiX:
@@ -37966,6 +38595,39 @@ variable & meaning \\
                       applies corresponds to a MPC. inotr(2,j) contains
                       the number of a new node generated for the 
                       inhomogeneous part of the MPC \\
+
+      \textbf{For node i} & \\
+                      
+      iponoel(i) &    pointer for node i into field inoel, which
+                      stores the structural elements (including advection
+                      spring elements) belonging to the
+                      node. \\
+      inoel(2,i) &    field containing an element number 
+                      and a pointer to
+                      another entry (or zero if there is no
+                      other). \\
+                      
+      iponoelf(i) &    pointer for node i into field inoelf, which
+                      stores the fluid elements belonging to the
+                      node. \\
+      inoelf(2,i) &    field containing an element number 
+                      and a pointer to
+                      another entry (or zero if there is no
+                      other). \\
+                      
+      iponoeln(i) &    pointer for node i into field inoeln, which
+                       stores the network elements (starting with ``D'')
+                       belonging to the
+                      node. \\
+      inoeln(2,i) &    field containing an element number 
+                      and a pointer to
+                      another entry (or zero if there is no
+                      other). \\
+
+      \textbf{For a slave node i} & \\
+                      
+      iponoels(i) & cf Section \ref{penaltycontact} \\
+      inoels(i) & cf Section \ref{penaltycontact} \\
   
 
 \hline
@@ -38308,14 +38970,14 @@ nuel & number of different user element types \\
                       nodal entries in field kon \\
       offset(2,i) &    offsets (one for shells, two for beams) in
                       element i \\
-      iponoel(i) &     pointer for node i into field inoel, which
+      iponoel2d(i) &     pointer for node i into field inoel2d, which
                       stores the 1D and 2D elements belonging to the
                       node. \\
-      inoel(3,i) &     field containing an element number, a local node
+      inoel2d(3,i) &     field containing an element number, a local node
                       number within this element and a pointer to
                       another entry (or zero if there is no
                       other). \\
-      inoelfree &     next free field in inoel \\
+      inoel2dfree &     next free field in inoel2d \\
       rig(i) &        integer field indicating whether node i is a
                       rigid node (nonzero value) or not (zero value). In a rigid node
                       or knot all expansion nodes except the ones not
@@ -38578,11 +39240,6 @@ nuel & number of different user element types \\
 
       eei(i,j,k) &     in general :
                       Lagrange strain component i in integration point j
-                      of element k (linear strain in linear elastic 
-                      calculations) \\
-
-                  &    for elements with \*DEFORMATION PLASTICITY property:
-                      Eulerian strain component i in integration point j
                       of element k (linear strain in linear elastic 
                       calculations) \\
 
@@ -38961,7 +39618,7 @@ jmax(2) &              maximum number of CFD increments \\
        filab(46)='PCON', filab(47)=SEN ', filab(48)='RM  ' (the latter
        refers to mesh refinement), filab(49)='DEPF', filab(50)='DTF ',
        filab(51)='SNEG',filab(52)='SMID',filab(53)='SPOS',
-       filab(54)='KEQ ',filab(55)='THE '. Results are stored for the complete mesh. A field is not selected if
+       filab(54)='KEQ ',filab(55)='THE ',filab(56)='DUCT',filab(57)='A   '. Results are stored for the complete mesh. A field is not selected if
       the first 4 characters are blank, e.g. the stress is not stored if
       filab(3)(1:4)='    '.  An exception to this rule is formed for filab(1): here, only
       the first two characters are used and should be either 'U ' or '  ',
@@ -39104,9 +39761,9 @@ jmax(2) &              maximum number of CFD increments \\
       voldaux(0,i) & Total energy density $\rho \epsilon_t$ in node i  \\ 
       voldaux(1..3,i) & Momentum density components $\rho v_i$ in node i  \\ 
       voldaux(4,i) & Density $\rho$ in node i  \\ 
-      v(0,i) & Total energy density correction in node i  \\ 
-      v(1..3,i) & Momentum density correction components in node i  \\ 
-      v(4,i) & For fluids: Pressure correction in node i  \\ 
+      v(i,0) & Total energy density correction in node i  \\ 
+      v(i,1..3) & Momentum density correction components in node i  \\ 
+      v(i,4) & For fluids: Pressure correction in node i  \\ 
              & For gas: Density correction in node i \\
 
 \hline
@@ -39307,8 +39964,8 @@ flow over a two-dimensional compression corner. \textit{NASA TR R-385 Report}
   introduction}. Elsevier Butterworth-Heinemann, Oxford (2004).
 
 \bibitem{Chen} Chen, L., Bletzinger, K.-U., Geiser, A. and W\"uchner, R., A
-  modified search direction method for ineauality constrained optimization
-  problems using the singular-value decomposition of normalized resopnse
+  modified search direction method for inequality constrained optimization
+  problems using the singular-value decomposition of normalized response
   gradients. \textit{Structural and Multidisciplinary Optimization}. https://doi.org/10.1007/s00158-019-02320-9.
  
 \bibitem{Ciarlet} Ciarlet, P.G., \textit{ Mathematical Elasticity, Volume I: Three-dimensional Elasticty}. North Holland, New York (1988). 
@@ -39601,6 +40258,9 @@ Crystal Modeling for Structural Calculations: Part 2 - Finite Element Implementa
 \bibitem{Studer} Studer, C., \textit{Numerics of Unilateral Contacts and
   Friction}. Lecture Notes in Applied and Computational Mechanics Vol
   47. Springer Verlag Berlin Heidelberg (2009).
+
+\bibitem{Sutherland} Sutherland  and Hodgman, G.W., Reentrant Polygon
+  Clippings. \textit{Communications of the ACM}. \textbf{17} , 32-42 (1974).
 
 \bibitem{Taylor} Taylor, R.L, Beresford, P.J. and Wilson, E.L., A
   non-conforming element for stress analysis. \textit{Int. J. Num. Meth. Engng}. \textbf{10} , 1211-1219 (1976).

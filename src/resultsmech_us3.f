@@ -170,7 +170,7 @@
 !                        to be calculated from the PK2 stresses
 !     nener              if 0: internal energy calculation is not required
 !                        else: internal energy is required on output
-!     ikin               if 0: kinetic energy calculation is not requred
+!     ikin               if 0: kinetic energy calculation is not required
 !                        else: kinetic energy is required on output
 !     ne0                largest element number without contact elements (are
 !                        stored after all other elements)
@@ -324,7 +324,7 @@
       Db(:,:)=0.d0
       Ds(:,:)=0.d0
 !
-      do jjj=1,3              ! ----  start loop gauß points ----
+      do jjj=1,3              ! ----  start loop gauss points ----
 !
 ! natural coordinates z-dirc. -1,0,1
 !
@@ -380,7 +380,7 @@
 ! matrix 
         kode=2
         call linel(kode,mattyp,beta,eme,stre,stiff,elconloc,
-     &       iorien,orab,pgauss,ncmat_)
+     &       iorien,orab,pgauss,ncmat_,nalcon,imat,ithermal)
         do m1=1,21
           xstiff(m1,jjj,i)=stiff(m1) ! elas for each gp saved in xstiff    
         enddo
@@ -440,7 +440,7 @@
         stre(5)=tau(1)        ! tyz
         stre(6)=tau(2)        ! txz
 !
-      enddo                     ! ----  end loop gauß points ----
+      enddo                     ! ----  end loop gauss points ----
 !
 ! Thermal loads
 !   
@@ -486,7 +486,7 @@
         enddo
       endif       
 !
-! Internal forces based on displacments
+! Internal forces based on displacements
 !
       if(calcul_fn.eq.1)then     
 !

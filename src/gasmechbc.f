@@ -27,7 +27,7 @@
 !     
       real*8 vold(0:mi(2),*),xload(2,*)
 !
-!     updating the boudary conditions in a mechanical
+!     updating the boundary conditions in a mechanical
 !     calculation coming from a previous thermal calculation
 !     
 !     updating the pressure boundary conditions

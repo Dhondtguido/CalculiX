@@ -38,8 +38,8 @@ void convert2rowbyrow(double *ad,double *au, ITG *icol,ITG *irow,
 
   /* the matrix is stored as full matrix, row by row, in aupardiso
      (needed for shock smoothing), the corresponding row numbers
-     are stored in pointers and the start of row i is stored in
-     icolpardiso(i) (FORTRAN convention); */
+     are stored in icolpardiso and the start of row i is stored in
+     pointers(i) (FORTRAN convention); */
 
   icolpardiso=*icolpardisop;aupardiso=*aupardisop;pointers=*pointersp;
 	

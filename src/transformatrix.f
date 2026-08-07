@@ -18,7 +18,7 @@
 !
       subroutine transformatrix(xab,p,a)
 !
-!     determines the transformation matrix a in a point p for a carthesian 
+!     determines the transformation matrix a in a point p for a cartesian 
 !     (xab(7)>0) or cylindrical transformation (xab(7)<0)
 !
 !     the matrix a(i,j) corresponds to matrix T, p. 100 in 
@@ -33,7 +33,7 @@
 !
       if(xab(7).gt.0) then
 !
-!        carthesian transformation
+!        cartesian transformation
 !
          e1(1)=xab(1)
          e1(2)=xab(2)

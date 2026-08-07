@@ -505,7 +505,7 @@ c     if(nactdog(1,nodem).ne.0) v(1,nodem)=xflow/iaxial
             ee2=M2*(1.d0+bb*Z2)/(1.d0+bb*Z2*(1.d0+2.d0*cc))
             dfdM2=2.d0*(1.d0-kappa*Z2)/(kappa*M2**3)
 !     
-!     redidual
+!     residual
 !     
             f=(1.d0/Z1-1.d0/Z2)/kappa+dlog(Z1/Z2)-lld
 !     

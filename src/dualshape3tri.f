@@ -16,7 +16,7 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
-!     function to evaluate dual shape funciton \f$ shape(\xi,\eta) \f$
+!     function to evaluate dual shape function \f$ shape(\xi,\eta) \f$
 !      
 !  [in] xi		xi-coordinate
 !  [in] et		eta-coordinate

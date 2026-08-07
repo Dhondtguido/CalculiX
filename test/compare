@@ -26,12 +26,32 @@ for i in *.inp; do
 	    continue
 	fi
 	
+	if [ $i = circ11p.rfn.inp ]
+	then
+	    continue
+	fi
+	
 	if [ $i = segmentsmooth.rfn.inp ]
 	then
 	    continue
 	fi
 	
 	if [ $i = segmentsmooth2.rfn.inp ]
+	then
+	    continue
+	fi
+	
+	if [ $i = contact4tetrefine.rfn.inp ]
+	then
+	    continue
+	fi
+	
+	if [ $i = contact4bad.rfn.inp ]
+	then
+	    continue
+	fi
+	
+	if [ $i = contact4badnl.rfn.inp ]
 	then
 	    continue
 	fi
@@ -58,12 +78,28 @@ for i in *.inp; do
 	then
 	    rm -f substructure.dat
 	    mv substructure.mtx substructure.dat
+	    perl -pi -e 's/,/ /g' substructure.dat
 	fi
 	
 	if [ $i = substructure2.inp ]
 	then
 	    rm -f substructure2.dat
 	    mv substructure2.mtx substructure2.dat
+	    perl -pi -e 's/,/ /g' substructure2.dat
+	fi
+
+	if [ $i = beammrlin_diff.inp ]
+	then
+	    rm -f beammrlin_diff.dat
+	    mv beammrlin_diff.mtx beammrlin_diff.dat
+	    perl -pi -e 's/,/ /g' beammrlin_diff.dat
+	fi
+
+	if [ $i = beammrlin_same.inp ]
+	then
+	    rm -f beammrlin_same.dat
+	    mv beammrlin_same.mtx beammrlin_same.dat
+	    perl -pi -e 's/,/ /g' beammrlin_same.dat
 	fi
 
 #
@@ -141,7 +177,18 @@ for i in *.inp; do
 
 done
 
-rm -f *.rfn.inp
+rm -f beam10psmooth.rfn.inp
+rm -f circ10dload.rfn.inp
+rm -f circ10pcent.rfn.inp
+rm -f circ10p.rfn.inp
+rm -f circ10pnl.rfn.inp
+rm -f segmentsmooth.rfn.inp
+rm -f segmentsmooth3.rfn.inp
+rm -f segmentsmooth2.rfn.inp
+rm -f contact4tetrefine.rfn.inp
+rm -f contact4bad.rfn.inp
+rm -f contact4badnl.rfn.inp
+
 rm -f $tempfile
 echo "check the existence of file $errorfile"
 echo "if this file does not exist, the present results"

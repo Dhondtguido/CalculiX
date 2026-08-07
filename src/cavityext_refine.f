@@ -277,7 +277,7 @@ c     write(*,*) 'cavity add2',ibase,nfcav
         enddo
       enddo
 !     
-!     check for too smal elements (too small height)
+!     check for too small elements (too small height)
 !     
 !     restore the surface coordinates of the node
 !     
@@ -720,7 +720,7 @@ c     call exit(201)
             else
 !     
 !     no new mesh, only numbers may have changed:
-!     necav elemetns
+!     necav elements
 !     
               do i=1,necav
                 iel=inewel(i)

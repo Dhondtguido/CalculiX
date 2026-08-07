@@ -26,9 +26,12 @@
 !     
 !     reading the input deck: *BOUNDARY
 !     
+!     Author master2d-option: Marc Hassler     
+!     
       implicit none
 !     
-      logical boun_flag,user,massflowrate,fixed,submodel,lintemp
+      logical boun_flag,user,massflowrate,fixed,submodel,lintemp,
+     &     master2d
 !     
       character*1 typeboun(*),type,inpc(*)
       character*20 labmpc(*),label
@@ -47,7 +50,7 @@
      &     ktrue,mi(*),iglobstep,iamplitudedefault,ier
 !     
       real*8 xboun(*),bounval,coefmpc(*),trab(7,*),co(3,*),amta(2,*),
-     &     vold(0:mi(2),*),a,b,c,dd,d1,d2,temp1,temp2,gradient
+     &     vold(0:mi(2),*),a,b,c,dd,d1,d2,temp1,temp2,gradient    
 !     
       type='B'
       label='                    '
@@ -60,6 +63,7 @@
       iglobstep=0
       submodel=.false.
       lintemp=.false.
+      master2d=.false.
 !     
       do i=2,n
         if((textpart(i)(1:6).eq.'OP=NEW').and.(.not.boun_flag)) then
@@ -257,6 +261,8 @@
           fixed=.true.
         elseif(textpart(i)(1:8).eq.'SUBMODEL') then
           submodel=.true.
+        elseif(textpart(i)(1:9).eq.'MASTER=2D') then
+          master2d=.true.
         elseif(textpart(i)(1:5).eq.'STEP=') then
           read(textpart(i)(6:15),'(i10)',iostat=istat) iglobstep
           if(istat.gt.0) then
@@ -357,8 +363,20 @@
 !     
 !     dummy boundary condition consisting of the first primes
 !     
+!     user: 1,2,3,5,7,11,13,17
+!     
           if(user) bounval=1.2357111317d0
-          if(submodel) bounval=1.9232931374d0
+!     
+!     submodel: 19,23,29,31,37
+!               + 4 if 3d, +6 if 2d
+!     
+          if(submodel) then
+            if(master2d) then
+              bounval=1.9232931376d0
+            else
+              bounval=1.9232931374d0
+            endif
+          endif
 !     
           read(textpart(1)(1:10),'(i10)',iostat=istat) l
           if(istat.eq.0) then

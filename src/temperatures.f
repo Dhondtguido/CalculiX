@@ -17,12 +17,15 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine temperatures(inpc,textpart,set,istartset,iendset,
-     &     ialset,nset,t0,t1,nk,ithermal,iamt1,amname,nam,inoelfree,nk_,
+     &     ialset,nset,t0,t1,nk,ithermal,iamt1,amname,nam,inoel2dfree,
+     &     nk_,
      &     nmethod,temp_flag,istep,istat,n,iline,ipol,inl,ipoinp,inp,
      &     nam_,namtot_,namta,amta,ipoinpc,t1g,iamplitudedefault,
      &     namtot,ier,itempuser,jobnamec,nuel_,co)
 !     
 !     reading the input deck: *TEMPERATURE
+!     
+!     Author master2d-option: Marc Hassler     
 !     
 !     itempuser(1): flag: 0: temperatures in the input deck
 !     1: user subroutine utemp is used
@@ -32,7 +35,7 @@
 !     
       implicit none
 !     
-      logical temp_flag,user,submodel,utempusesteps,lintemp
+      logical temp_flag,user,submodel,utempusesteps,lintemp,master2d
 !     
       character*1 inpc(*)
       character*80 amname(*),amplitude
@@ -41,7 +44,7 @@
 !     
       integer istartset(*),iendset(*),ialset(*),iamt1(*),nmethod,id,
      &     nset,nk,ithermal(*),istep,istat,n,key,i,j,k,l,nam,
-     &     iamplitude,ipos,inoelfree,nk_,iline,ipol,inl,ipoinp(2,*),
+     &     iamplitude,ipos,inoel2dfree,nk_,iline,ipol,inl,ipoinp(2,*),
      &     inp(3,*),nam_,namtot,namtot_,namta(3,*),idelay,iglobstep,
      &     iamplitudedefault,ier,itempuser(*),nuel_,ipoinpc(0:*)
 !     
@@ -55,6 +58,7 @@
       iglobstep=0
       submodel=.false.
       lintemp=.false.
+      master2d=.false.
 !     
 !     defaults: 1) temperatures read from the input deck
 !     2) if read from file, then from the first step      
@@ -184,6 +188,8 @@
           utempusesteps=.true.
         elseif(textpart(i)(1:8).eq.'SUBMODEL') then
           submodel=.true.
+        elseif(textpart(i)(1:9).eq.'MASTER=2D') then
+          master2d=.true.
         elseif(textpart(i)(1:5).eq.'STEP=') then
           read(textpart(i)(6:15),'(i10)',iostat=istat) iglobstep
           if(istat.gt.0) then
@@ -268,10 +274,22 @@
 !     
 !     dummy temperature consisting of the first primes
 !     
-          if(user) temperature=1.2357111317d0
-          if(submodel) temperature=1.9232931374d0
+!     user: 1,2,3,5,7,11,13,17
 !     
-          if((inoelfree.ne.0).or.(nuel_.gt.0)) then
+          if(user) temperature=1.2357111317d0
+!     
+!     submodel: 19,23,29,31,37
+!               + 4 if 3d, +6 if 2d
+!     
+          if(submodel) then
+            if(master2d) then
+              temperature=1.9232931376d0
+            else
+              temperature=1.9232931374d0
+            endif
+          endif
+!     
+          if((inoel2dfree.ne.0).or.(nuel_.gt.0)) then
             tempgrad1=0.d0
             tempgrad2=0.d0
             if(n.gt.2) then
@@ -302,7 +320,7 @@
             endif
             t1(l)=temperature
             if(nam.gt.0) iamt1(l)=iamplitude
-            if((inoelfree.ne.0).or.(nuel_.gt.0)) then
+            if((inoel2dfree.ne.0).or.(nuel_.gt.0)) then
               t1g(1,l)=tempgrad1
               t1g(2,l)=tempgrad2
             endif
@@ -333,7 +351,7 @@ c     enddo
               if(ialset(j).gt.0) then
                 t1(ialset(j))=temperature
                 if(nam.gt.0) iamt1(ialset(j))=iamplitude
-                if((inoelfree.ne.0).or.(nuel_.gt.0)) then
+                if((inoel2dfree.ne.0).or.(nuel_.gt.0)) then
                   t1g(1,ialset(j))=tempgrad1
                   t1g(2,ialset(j))=tempgrad2
                 endif
@@ -344,7 +362,7 @@ c     enddo
                   if(k.ge.ialset(j-1)) exit
                   t1(k)=temperature
                   if(nam.gt.0) iamt1(k)=iamplitude
-                  if((inoelfree.ne.0).or.(nuel_.gt.0)) then
+                  if((inoel2dfree.ne.0).or.(nuel_.gt.0)) then
                     t1g(1,k)=tempgrad1
                     t1g(2,k)=tempgrad2
                   endif

@@ -37,7 +37,7 @@
 !         
       endif
 !    
-!     adiabatic expension factor yg isentropic eq 18
+!     adiabatic expansion factor yg isentropic eq 18
 !
       if(p2p1.ge.1d0) then
          yg=1.d0

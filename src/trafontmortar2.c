@@ -26,7 +26,7 @@
 #define max(a,b) ((a) >= (b) ? (a) : (b))
 
 /*
-  - Condense Lagrange Multiplier and embedd contact conditions for K_{AX}
+  - Condense Lagrange Multiplier and embed contact conditions for K_{AX}
   - changing au due to N and T (normal and tangential
     direction at the slave surface) 
   - changing b due to N and T (normal and tangential

@@ -55,9 +55,9 @@
       real*8 co(3,*),shp(4,20),stiini(6,mi(1),*),xener(*),physcon(*),
      &     stx(6,mi(1),*),xl(3,20),vl(0:mi(2),20),stre(6),prop(*),
      &     elcon(0:ncmat_,ntmat_,*),rhcon(0:1,ntmat_,*),xs2(3,7),
-     &     alcon(0:6,ntmat_,*),vini(0:mi(2),*),thickness,
+     &     alcon(0:6,ntmat_,*),vini(0:mi(2),*),thickness,xthi(3,3),
      &     alzero(*),orab(7,*),stiff(21),rho,qa(4),elineng(6),
-     &     fnl(3,10),beta(6),q(0:mi(2),20),xl2(3,8),
+     &     fnl(3,10),beta(6),q(0:mi(2),20),xl2(3,8),vthj,
      &     vkl(0:3,3),t0(*),t1(*),prestr(6,mi(1),*),
      &     ckl(3,3),vold(0:mi(2),*),eloc(9),veold(0:mi(2),*),
      &     springarea(2,*),elconloc(ncmat_),eth(6),xkl(3,3),
@@ -931,12 +931,13 @@ c     Bernhardi end
      &         stiff,rho,i,ithermal,alzero,mattyp,t0l,t1l,ihyper,
      &         istiff,elconloc,eth,kode,plicon,nplicon,
      &         plkcon,nplkcon,npmat_,plconloc,mi(1),dtime,jj,
-     &         xstiff,ncmat_)
+     &         xstiff,ncmat_,iperturb)
 !     
 !     determining the mechanical strain
 !     
           if(ithermal(1).ne.0) then
-            call calcmechstrain(vkl,vokl,emec,eth,iperturb)
+            call calcmechstrain(vkl,vokl,emec,eth,iperturb,nalcon,imat,
+     &           xthi,vthj)
 c     do m1=1,6
 c     emec(m1)=eloc(m1)-eth(m1)
 c     enddo
@@ -968,7 +969,16 @@ c     enddo
      &         amat,t1l,dtime,time,ttime,i,jj,nstate_,mi(1),
      &         iorien,pgauss,orab,eloc,mattyp,qa(3),istep,iinc,
      &         ipkon,nmethod,iperturb,qa(4),nlgeom_undo,physcon,
-     &         ncmat_)
+     &         ncmat_,nalcon,imat)
+!
+!     modifying the stress and stiffness for a multiplicative
+!     decomposition of the deformation gradient in a mechanical and
+!     a thermal part
+!
+          if((ithermal(1).ne.0).and.(iperturb(2).eq.1)) then
+            call modifystressstiff(stre,stiff,mattyp,eth,nalcon,imat,
+     &     xthi,vthj)
+          endif
 !     
           if(((nmethod.ne.4).or.(iperturb(1).ne.0)).and.
      &         (nmethod.ne.5)) then

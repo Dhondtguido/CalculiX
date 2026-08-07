@@ -40,13 +40,13 @@
       character*256 fn
 !     
       integer istartset(*),iendset(*),ialset(*),ipompc(*),nodempc(3,*),
-     &     nset,i,j,k,nk,nmpc,mpcfree,ics(*),l,ikmpc(*),ilmpc(*),
+     &     nset,i,j,k,nk,nmpc,mpcfree,ics(*),l,ikmpc(*),ilmpc(*),n,
      &     lcs(*),kflag,ncsnodes,mcs,ntie,nrcg(*),nzcg(*),jcs(*),
      &     kontri(3,*),ne,ipkon(*),kon(*),ifacetet(*),inodface(*),
-     &     nodele(4),noderi(4),indexe,nope,ipos,nelem,ilen,
+     &     nodele(4),noderi(4),indexe,nope,ipos,nelem,ilen,nprint,
      &     indcs,node_cycle,itemp(4),nx(*),ny(*),netri,noderi0,
      &     nodef(8),nterms,kseg,k2,ndir,idof,number,id,mpcfreeold,
-     &     lathyp(3,6),inum,ier,icount,imcs,nmethod
+     &     lathyp(3,6),inum,ier,icount,imcs,nmethod,ksegmin,ksegmax
 !     
       real*8 tolloc,co(3,* ),coefmpc(*),xind(*),yind(*),xind0(*),
      &     yind0(*),dd,xap,yap,zap,tietol(4,*),cs(18,*),xdep,ydep,
@@ -54,7 +54,8 @@
      &     straight(9,*),T(3,3),csab(7),ratio(8),Tinv(3,3),
      &     coord(3),pnod(3),T2D(3,3),phi0,al(3,3),ar(3,3),
      &     rind,dxmax,dxmin,drmax,drmin,pi,phi_min,xsegle(2),
-     &     xsegri(2),xtemp(2)
+     &     xsegri(2),xtemp(2),coglob(3),coloc(3),corotloc(3),
+     &     corotglob(3),radius,angle,phi_max
 !
       integer,dimension(:),allocatable::ksegmcs
 !     
@@ -289,8 +290,16 @@
 !     
           call invert3D(T,Tinv,3)
 !     
-!     mapping the independent nodes into the local system
-!     
+!         mapping the independent nodes into the local system;
+!         based on the number of sectors a circumferential base angle     
+!         is determined. Since the master surface can be slanted
+!         (changing phi-value for increasing radius for an axial
+!          multistage tie or changing phi-value for increasing 
+!          axial coordinate values for a radial multistage tie)
+!         it may cover a multiple (n) of the base angle. For n=0
+!         the surface does not exceed tha base angle, otherwise it
+!         exceeds the base angle n times
+!
           l=0
           do j=istartset(noderi(2)),iendset(noderi(2))
             l=l+1
@@ -307,25 +316,32 @@
             yind0(l)=yind(l)
             rind=dsqrt(coord(2)**2+coord(3)**2)
             phi=datan2(-coord(3),coord(2))
-            if (l.gt.1.d0) then
+            if (l.gt.1) then
               dxmax=max(dxmax,dabs(coord(1)))
               drmax=max(drmax,dabs(rind))
               
               dxmin=min(dxmin,dabs(coord(1)))
               drmin=min(drmin,dabs(rind))
               phi_min=min(phi_min,phi)
+              phi_max=max(phi_max,phi)
             else
               dxmax=dabs(coord(1))
               phi_min=phi
+              phi_max=phi
               drmax=rind
               dxmin=dabs(coord(1))
               drmin=rind
             endif
           enddo
+!
+!         allowing for 0.1 % sector angle error
+!
+          n=floor(xsegri(2)*(phi_max-phi_min)/(2.d0*pi)-0.001d0)
 !     
           cylindrical=.false.
           if ((dxmax-dxmin).ge.(drmax-drmin)) then
-            l=0.d0
+            l=0
+            n=0
             do j=istartset(noderi(2)),iendset(noderi(2))
               l=l+1
               pnod(1)=co(1,ialset(j))-csab(1)
@@ -333,7 +349,11 @@
               pnod(3)=co(3,ialset(j))-csab(3)
               call Mprod(T,pnod,coord,3)
               xind(l)=coord(1)
-              yind(l)=datan2(-coord(3),coord(2))
+              if(l.eq.1) radius=dsqrt(coord(2)**2+coord(3)**2)
+              angle=datan2(-coord(3),coord(2))
+              yind(l)=radius*angle
+              n=max(n,floor(xsegri(2)*(angle-phi_min)/
+     &             (2.d0*pi)-0.001d0))
               nx(l)=l
               ny(l)=l
               ics(l)=ialset(j)
@@ -366,78 +386,91 @@
 !         loop over all dependent nodes   
 !     
           do j=istartset(nodele(2)),iendset(nodele(2))
-            pnod(1)=co(1,ialset(j))-csab(1)
-            pnod(2)=co(2,ialset(j))-csab(2)
-            pnod(3)=co(3,ialset(j))-csab(3)
+            coglob(1)=co(1,ialset(j))-csab(1)
+            coglob(2)=co(2,ialset(j))-csab(2)
+            coglob(3)=co(3,ialset(j))-csab(3)
 !     
 !     change to local coordinates "coord"
 !     
-            call Mprod(T,pnod,coord,3)
+            call Mprod(T,coglob,coloc,3)
 !     
 !     Determining the phase shift for the tie constraints
 !     
-            phi=datan2(-coord(3),coord(2))
+            phi=datan2(-coloc(3),coloc(2))
 !     
 !     kseg is the number of times the base sector has to be shifted
 !     in order to contain the node at stake    
 !     
-            if (phi.gt.(-1.d-5+phi_min)) then
-              kseg=int(xsegri(2)*(phi-phi_min)/(2.d0*pi))
-            else 
-              kseg=int(xsegri(2)*(2.d0*pi+(phi-phi_min))/(2.d0*pi))
-            endif
-!     
-            T2D(1,1)=1.d0
-            T2D(1,2)=0.d0
-            T2D(1,3)=0.d0
-            T2D(2,1)=0.d0
-            T2D(2,2)=dcos(-kseg*phi0)
-            T2D(2,3)=dsin(-kseg*phi0)
-            T2D(3,1)=0.d0
-            T2D(3,2)=-dsin(-kseg*phi0)
-            T2D(3,3)=dcos(-kseg*phi0)
+            ksegmax=floor(xsegri(2)*(phi-phi_min)/(2.d0*pi))
+            ksegmin=ksegmax-n
+!
+            do kseg=ksegmin,ksegmax
+              T2D(1,1)=1.d0
+              T2D(1,2)=0.d0
+              T2D(1,3)=0.d0
+              T2D(2,1)=0.d0
+              T2D(2,2)=dcos(-kseg*phi0)
+              T2D(2,3)=dsin(-kseg*phi0)
+              T2D(3,1)=0.d0
+              T2D(3,2)=-dsin(-kseg*phi0)
+              T2D(3,3)=dcos(-kseg*phi0)
 !     
 !     Rotating the dependent nodes by the number of 
 !     segments to "pnod" in local coordinates
 !     
-            call Mprod(T2D,coord,pnod,3)
+              call Mprod(T2D,coloc,corotloc,3)
 !     
 !     copying the local coordinates to the local variables
 !     
-            if (cylindrical) then
+              if (cylindrical) then
 !     
-!             radial connection    
+!               radial connection    
 !     
-              xdep=pnod(1)
-              ydep=datan2(-pnod(3),pnod(2))
-            else
+                xdep=corotloc(1)
+                ydep=radius*datan2(-corotloc(3),corotloc(2))
+              else
 !     
-!             axial connection     
+!               axial connection     
 !     
-              xdep=pnod(2)
-              ydep=pnod(3)
-            endif
-            noderi0=nk+1
+                xdep=corotloc(2)
+                ydep=corotloc(3)
+              endif
+              noderi0=nk+1
 !     
 !     transforming back to global coordinates
 !     
-            call Mprod(Tinv,pnod,coord,3)
-            co(1,noderi0)=coord(1)
-            co(2,noderi0)=coord(2)
-            co(3,noderi0)=coord(3)
+              call Mprod(Tinv,corotloc,corotglob,3)
+              co(1,noderi0)=corotglob(1)
+              co(2,noderi0)=corotglob(2)
+              co(3,noderi0)=corotglob(3)
 !     
 !     determining the coefficients of the multistage MPC's
 !     
-            ier=0
-            call linkdissimilar(co,csab,
-     &           rcscg,rcs0cg,zcscg,zcs0cg,nrcg,nzcg,
-     &           straight,nodef,ratio,nterms,xdep,ydep,netri,
-     &           noderi0,ifacetet,inodface,ialset(j),
-     &           T(1,1),T(1,2),T(1,3),ier,multistage,icount)
+              ier=0
+              nprint=-1
+              call linkdissimilar(co,csab,
+     &             rcscg,rcs0cg,zcscg,zcs0cg,nrcg,nzcg,
+     &             straight,nodef,ratio,nterms,xdep,ydep,netri,
+     &             noderi0,ifacetet,inodface,ialset(j),
+     &             T(1,1),T(1,2),T(1,3),ier,multistage,nprint)
 !     
-!     if no corresponding face was found: go to next slave node
+!     if a corresponding face was found: go to next slave node
 !     
-            if(ier.ne.0) cycle
+              if(ier.eq.0) exit
+            enddo
+!
+            if(ier.lt.0) then
+              write(*,*)
+     &             '*WARNING in multistages: no suitable partner'
+              write(*,*) '         face found for node',ialset(j),'.'
+              write(*,*) 
+     &             '         Nodes belonging to the best partner face:'
+              write(*,*) (nodef(k2),k2=1,nterms)
+              write(*,*) 
+              write(40,*) ialset(j)
+              icount=icount+1
+            endif
+            if(kseg.lt.0) kseg=kseg+nint(xsegri(2))
 !     
 !     scaling the independent degrees of freedom of the
 !     multistage equations for non-frequency calculations

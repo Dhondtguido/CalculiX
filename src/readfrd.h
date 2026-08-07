@@ -109,7 +109,7 @@ typedef struct {
   int *icind2;
   int *iexist;
   double **dat;        /* node related data */
-  double ***edat;      /* element related data, not propper implemented */
+  double ***edat;      /* element related data, not properly implemented */
   double *max;         /* maximum datum */
   double *min;         /* minimum datum */
   int *nmax;          /* node with maximum datum */

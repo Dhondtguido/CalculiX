@@ -22,7 +22,7 @@
      &  inoelfree,nef,co,ipompc,nodempc,ikmpc,ilmpc,nmpc,set,istartset,
      &  iendset,ialset,nset,iturbulent)
 !
-!     cyclic update for cfd applicatons:
+!     cyclic update for cfd applications:
 !     - determining the external faces of the mesh and storing
 !       them in fields nelemface and sideface
 !     - determining the fluid elements belonging to a given node

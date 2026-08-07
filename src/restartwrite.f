@@ -29,7 +29,7 @@
      &     orab,ielorien,trab,inotr,amname,amta,namta,t0,t1,iamt1,veold,
      &     ielmat,matname,prlab,prset,filab,vold,nodebounold,
      &     ndirbounold,xbounold,xforcold,xloadold,t1old,eme,
-     &     iponor,xnor,knor,thicke,offset,iponoel,inoel,rig,
+     &     iponor,xnor,knor,thicke,offset,iponoel2d,inoel2d,rig,
      &     shcon,nshcon,cocon,ncocon,ics,sti,
      &     ener,xstate,jobnamec,infree,prestr,iprestr,cbody, 
      &     ibody,xbody,nbody,xbodyold,ttime,qaold,cs,mcs,output,
@@ -37,7 +37,7 @@
      &     nprop,ielprop,prop,mortar,nintpoint,ifacecount,islavsurf,
      &     pslavsurf,clearini,irstrt,vel,nef,velo,veloo,ne2boun,
      &     memmpc_,heading,nheading_,network,nfc,ndc,coeffc,ikdc,edc,
-     &     xmodal)
+     &     xmodal,ndmat_,ndmcon,dmcon,dam)
 !     
 !     writes all information needed for a restart to file
 !     
@@ -57,7 +57,7 @@
       character*80 orname(*),amname(*),matname(*),version
       character*81 set(*),prset(*),tieset(*),cbody(*)
       character*87 filab(*)
-      character*132 fnrstrt,jobnamec(*)
+      character*132 fnrstrt,jobnamec(*),fntemp
 !     
       integer nset,nload,nforc,nboun,nk,ne,nmpc,nalset,nmat,istat,
      &     ntmat_,npmat_,norien,nam,nprint,mi(*),ntrans,ncs_,
@@ -70,11 +70,11 @@
      &     nrhcon(*),nalcon(*),nplicon(*),nplkcon(*),ielorien(*),
      &     inotr(*),nintpoint,ifacecount,islavsurf(*),ielprop(*),
      &     namta(*),iamt1(*),ielmat(*),nodebounold(*),ndirbounold(*),
-     &     iponor(*),knor(*),iponoel(*),inoel(*),rig(*),iendset(*),
+     &     iponor(*),knor(*),iponoel2d(*),inoel2d(*),rig(*),iendset(*),
      &     nshcon(*),ncocon(*),ics(*),infree(*),i,ipos,nfc,ndc,
      &     nener,iprestr,istepnew,maxlenmpc,mcs,ntie,ikdc(*),
      &     ibody(*),nbody,mt,nslavs,namtot,nef,ne2boun(*),
-     &     memmpc_,nheading_,network,nevdamp_
+     &     memmpc_,nheading_,network,nevdamp_,ndmat_,ndmcon(*)
 !     
       real*8 co(*),xboun(*),coefmpc(*),xforc(*),xload(*),elcon(*),
      &     rhcon(*),alcon(*),alzero(*),plicon(*),plkcon(*),orab(*),
@@ -84,7 +84,7 @@
      &     shcon(*),cocon(*),sti(*),ener(*),xstate(*),pslavsurf(*),
      &     qaold(2),cs(*),physcon(*),ctrl(*),prop(*),coeffc(*),
      &     ttime,fmpc(*),xbody(*),xbodyold(*),vel(*),velo(*),veloo(*),
-     &     edc(*),xmodal(*)
+     &     edc(*),xmodal(*),dmcon(*),dam(*)
 !     
       mt=mi(2)+1
 !     
@@ -169,6 +169,7 @@ c     call system("rm -f temporaryrestartfile")
       write(15)ntmat_
       write(15)npmat_
       write(15)ncmat_
+      write(15)ndmat_
 !     
 !     property info
 !     
@@ -324,6 +325,14 @@ c     call system("rm -f temporaryrestartfile")
       write(15)(elcon(i),i=1,(ncmat_+1)*ntmat_*nmat)
       write(15)(nelcon(i),i=1,2*nmat)
 !     
+!     damage constants
+!
+      if(ndmat_.gt.0) then
+        write(15)(dmcon(i),i=1,(ndmat_+1)*ntmat_*nmat)
+        write(15)(ndmcon(i),i=1,2*nmat)
+        write(15)(dam(i),i=1,mi(1)*ne)
+      endif
+!     
 !     density
 !     
       write(15)(rhcon(i),i=1,2*ntmat_*nmat)
@@ -436,8 +445,8 @@ c     call system("rm -f temporaryrestartfile")
         write(15)(knor(i),i=1,infree(2))
         write(15)(thicke(i),i=1,mi(3)*nkon)
         write(15)(offset(i),i=1,2*ne)
-        write(15)(iponoel(i),i=1,infree(4))
-        write(15)(inoel(i),i=1,3*(infree(3)-1))
+        write(15)(iponoel2d(i),i=1,infree(4))
+        write(15)(inoel2d(i),i=1,3*(infree(3)-1))
         write(15)(rig(i),i=1,infree(4))
         write(15)(ne2boun(i),i=1,2*infree(4))
       endif
@@ -487,7 +496,7 @@ c     call system("rm -f temporaryrestartfile")
 !     
 !     control parameters
 !     
-      write(15) (ctrl(i),i=1,52)
+      write(15) (ctrl(i),i=1,60)
       write(15) (qaold(i),i=1,2)
       write(15) output
       write(15) ttime
@@ -506,13 +515,18 @@ c     call system("rm -f temporaryrestartfile")
 c     call system("rm -f "//fnrstrt(1:ipos+4))
         open(15,file=fnrstrt(1:ipos+4),status='old',iostat=istat)
         if(istat.eq.0) close(15,status='delete')
-        call system("mv temporaryrestartfile "//fnrstrt(1:ipos+4))
-c        istat=rename('temporaryrestartfile',fnrstrt(1:ipos+4))
-c        if(istat.ne.0) then
-c          write(*,*) '*ERROR in restartwrite:'
-c          write(*,*) '       Temporary restart file with name'
-c          write(*,*) '       temporaryrestartfile cannot be renamed'
-c        endif
+c     call system("mv temporaryrestartfile "//fnrstrt(1:ipos+4))
+        fntemp(1:20)='temporaryrestartfile'
+        do i=21,132
+          fntemp(i:i)=' '
+        enddo
+        call move(fntemp,fnrstrt(1:ipos+4),istat)
+c        call move('temporaryrestartfile',fnrstrt(1:ipos+4),istat)
+        if(istat.ne.0) then
+          write(*,*) '*ERROR in restartwrite:'
+          write(*,*) '       Temporary restart file with name'
+          write(*,*) '       temporaryrestartfile cannot be renamed'
+        endif
       endif
 !     
       return

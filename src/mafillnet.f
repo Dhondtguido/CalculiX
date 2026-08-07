@@ -24,7 +24,7 @@
      &     ielmat,nteq,prop,ielprop,nactdog,nacteq,physcon,
      &     rhcon,nrhcon,ipobody,ibody,xbodyact,nbody,vold,xloadold,
      &     reltime,nmethod,set,mi,nmpc,nodempc,ipompc,coefmpc,labmpc,
-     &     iaxial,cocon,ncocon,iponoel,inoel)
+     &     iaxial,cocon,ncocon,iponoeln,inoeln)
 !     
       implicit none
 !     
@@ -35,7 +35,7 @@
       character*81 set(*)
 !     
       integer mi(*),itg(*),ieg(*),ntg,nteq,nflow,nload,inv,
-     &     ielmat(mi(3),*),iaxial,ncocon(2,*),iponoel(*),inoel(2,*),
+     &     ielmat(mi(3),*),iaxial,ncocon(2,*),iponoeln(*),inoeln(2,*),
      &     nelemload(2,*),nope,nopes,mint2d,i,j,k,l,iflag,
      &     node,imat,ntmat_,id,ifaceq(8,6),ifacet(6,4),
      &     ifacew(8,5),node1,node2,nshcon(*),nelem,ig,index,konl(20),
@@ -793,7 +793,7 @@ c                        ac(ieq,idofm)=-ff1*T1/xflow360
                   call film(h,sinktemp,temp,istep,
      &                 iinc,tvar,nelem,l,coords,jltyp,field,nfield,
      &                 sideload(i),node,areaj,v,mi,ipkon,kon,lakon,
-     &                 iponoel,inoel,ielprop,prop,ielmat,shcon,nshcon,
+     &                 iponoeln,inoeln,ielprop,prop,ielmat,shcon,nshcon,
      &                 rhcon,nrhcon,ntmat_,cocon,ncocon,
      &                 ipobody,xbodyact,ibody,heatnod,heatfac)
 c                  if(nmethod.eq.1) h(1)=xloadold(1,i)+
@@ -837,8 +837,8 @@ c     &                 (h(1)-xloadold(1,i))*reltime
 !           user-defined network equation
 !
             call networkmpc_lhs(i,ipompc,nodempc,coefmpc,labmpc,
-     &          v,nactdog,ac,j,mi,nteq,ipkon,kon,lakon,iponoel,
-     &          inoel,ielprop,prop,ielmat,
+     &          v,nactdog,ac,j,mi,nteq,ipkon,kon,lakon,iponoeln,
+     &          inoeln,ielprop,prop,ielmat,
      &          shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon)
          endif
       enddo

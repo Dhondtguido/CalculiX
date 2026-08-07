@@ -341,8 +341,6 @@
                         kin=0
                         call plcopy(plicon,nplicon,plconloc,npmat_,
      &                       ntmat_,imat,itemp,iel,kin)
-                        if((id.eq.0).or.(id.eq.nplicon(0,imat))) then
-                        endif
                      else
                         kin=0
                         call plmix(plicon,nplicon,plconloc,npmat_,
@@ -373,8 +371,6 @@
                         kin=1
                         call plcopy(plkcon,nplkcon,plconloc,npmat_,
      &                       ntmat_,imat,itemp,iel,kin)
-                        if((id.eq.0).or.(id.eq.nplkcon(0,imat))) then
-                        endif
                      else
                         kin=1
                         call plmix(plkcon,nplkcon,plconloc,npmat_,
@@ -875,7 +871,7 @@
       !
       Kb = matmul(matmul(L,Qin),transpose(L))/V
       !
-      ! trasformation hierachical rotations
+      ! transformation hierachical rotations
       !
       T0(1,1) = x32/A4
       T0(1,2) = y32/A4      
@@ -1076,7 +1072,7 @@
       L(9,3) = h2*(x23*y32-x31*y13)*2.d0*ab 
       !
       !
-      ! trasformation hierachical rotations
+      ! transformation hierachical rotations
       !
       T0(1,1) = x32/A4
       T0(1,2) = y32/A4      

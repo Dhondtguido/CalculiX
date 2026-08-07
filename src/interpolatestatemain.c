@@ -90,7 +90,7 @@ void interpolatestatemain(ITG *ne,ITG *ipkon,ITG *kon,char *lakon,ITG *ne0,
     if(strcmp1(&tieset[i*243+80],"C")!=0) continue;
 
     /* parallellizing the loop over the contact slave faces for each tie
-       - numstart is the location in islavsurf(old) befor the first
+       - numstart is the location in islavsurf(old) before the first
        face of the present contact tie
        - numfaces is the total number of contact faces in the present
        contact tie */

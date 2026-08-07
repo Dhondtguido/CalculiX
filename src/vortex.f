@@ -331,7 +331,7 @@
             endif
          endif
 !
-!     outpout
+!     output
 !
          elseif(kflag.eq.3) then
 !

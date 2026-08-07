@@ -96,6 +96,8 @@
 !           
       implicit none
 !
+      logical printerror
+!
       character*8 lakonl
       character*20 loadtype
       character*80 amat
@@ -104,8 +106,6 @@
      &  mi(*)
 !
       real*8 f,time(2),coords(3),vold(0:mi(2),*),co(3,*),rho
-!
-!
 !
 !     the code starting here up to the end of the file serves as
 !     an example for combined mechanical-lubrication problems. 
@@ -186,7 +186,9 @@
             node=konl(ifaceq(i,ig))
             idof=8*(node-1)
             call nident(ikmpc,idof,nmpc,id)
-            if((id.eq.0).or.(ikmpc(id).ne.idof)) then
+            if(id.eq.0) printerror=.true.
+            if(ikmpc(id).ne.idof) printerror=.true.
+            if(printerror) then
                write(*,*) '*ERROR in dload: node ',node
                write(*,*) '       is not connected to the oil film'
                call exit(201)
@@ -200,7 +202,9 @@
             node=konl(ifaceq(i,ig))
             idof=8*(node-1)
             call nident(ikmpc,idof,nmpc,id)
-            if((id.eq.0).or.(ikmpc(id).ne.idof)) then
+            if(id.eq.0) printerror=.true.
+            if(ikmpc(id).ne.idof) printerror=.true.
+            if(printerror) then
                write(*,*) '*ERROR in dload: node ',node
                write(*,*) '       is not connected to the oil film'
                call exit(201)
@@ -214,7 +218,9 @@
             node=konl(ifaceq(i,ig))
             idof=8*(node-1)
             call nident(ikmpc,idof,nmpc,id)
-            if((id.eq.0).or.(ikmpc(id).ne.idof)) then
+            if(id.eq.0) printerror=.true.
+            if(ikmpc(id).ne.idof) printerror=.true.
+            if(printerror) then
                write(*,*) '*ERROR in dload: node ',node
                write(*,*) '       is not connected to the oil film'
                call exit(201)

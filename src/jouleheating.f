@@ -206,7 +206,7 @@
      &            sti(3,jj,nelem)**2)
           else
 !
-!           alernating current: 
+!           alternating current: 
 !           heat=sigma*(E_real**2+E_imaginary**2)
 !
             heat=heat+weight*xsj*alpha(1)*

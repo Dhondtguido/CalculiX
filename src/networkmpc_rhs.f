@@ -19,8 +19,8 @@
 !     construction of the B matrix      
 !     
       subroutine networkmpc_rhs(i,ipompc,nodempc,coefmpc,
-     &  labmpc,v,bc,j,mi,ipkon,kon,lakon,iponoel,
-     &  inoel,ielprop,prop,ielmat,
+     &  labmpc,v,bc,j,mi,ipkon,kon,lakon,iponoeln,
+     &  inoeln,ielprop,prop,ielmat,
      &  shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon)
 !
 !     user defined network mpc: calculation of the right hand
@@ -57,11 +57,11 @@
 !                        and continues until all nodes are covered. The
 !                        number of nodes depends on the element label
 !     lakon(i)           contains the label of element i
-!     iponoel(i)         the network elements to which node i belongs
-!                        are stored in inoel(1,iponoel(i)),
-!                        inoel(1,inoel(2,iponoel(i)))...... until
-!                        inoel(2,inoel(2,inoel(2......)=0
-!     inoel(1..2,*)      field containing the network elements
+!     iponoeln(i)         the network elements to which node i belongs
+!                        are stored in inoeln(1,iponoeln(i)),
+!                        inoeln(1,inoeln(2,iponoeln(i)))...... until
+!                        inoeln(2,inoeln(2,inoeln(2......)=0
+!     inoeln(1..2,*)      field containing the network elements
 !     ielprop(i)         points to the location in field prop preceding
 !                        the properties of element i
 !     prop(*)            contains the properties of all network elements. The
@@ -109,13 +109,11 @@
       character*20 labmpc(*)
 !     
       integer mi(*),i,ipompc(*),nodempc(3,*),j,index,node,idir,ipkon(*),
-     &  iponoel(*),inoel(2,*),ielprop(*),ielmat(mi(3),*),nshcon(*),
+     &  iponoeln(*),inoeln(2,*),ielprop(*),ielmat(mi(3),*),nshcon(*),
      &  nrhcon(*),ncocon(2,*),ntmat_,kon(*)
 !     
       real*8 coefmpc(*),v(0:mi(2),*),bc(*),prop(*),shcon(0:3,ntmat_,*),
      &  rhcon(0:1,ntmat_,*),cocon(0:6,ntmat_,*)
-!
-!
 !     
       if(labmpc(i)(8:16).eq.'QUADRATIC') then
 !

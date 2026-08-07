@@ -16,7 +16,7 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
-      subroutine genratio(co,doubleglob,integerglob,nkold,nk,iprfn,
+      subroutine genratio(co,doubleglob,integerglob,nka,nkb,iprfn,
      &     konrfn,ratiorfn)
 !     
 !     create MPC's connecting the nodes in the refined tet mesh to
@@ -27,7 +27,7 @@
 !     
       integer integerglob(*),nktet,netet,ne,nkon,
      &     nfaces,nfield,nselect,imastset,iselect(1),nterms,
-     &     nelem,ialset(1),iprfn(*),konrfn(*),nkold,nk,
+     &     nelem,ialset(1),iprfn(*),konrfn(*),nka,nkb,
      &     iendset(1),istartset(1),konl(20),loopa,i,j
 !     
       real*8 co(3,*),doubleglob(*),coords(3),ratio(20),value,
@@ -45,10 +45,10 @@
 !
       iprfn(1)=0
 !     
-      loop:do i=1,nk-nkold
+      loop:do i=1,nkb-nka+1
 !     
         do j=1,3
-          coords(j)=co(j,nkold+i)
+          coords(j)=co(j,nka+i-1)
         enddo
 !     
         call basis(doubleglob(1),doubleglob(netet+1),

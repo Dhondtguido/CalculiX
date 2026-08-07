@@ -251,7 +251,7 @@
       intent(inout) s,sm,ff,xload,nmethod
       indexe=ipkon(nelem)
       !         
-      ! Gauß points(4):
+      ! Gauss points(4):
       g_p(1,1) = -0.577350269189626
       g_p(2,1) = +0.577350269189626       
       g_p(3,1) = +0.577350269189626 
@@ -351,7 +351,7 @@
          enddo
       enddo 
       !
-      ! element frame & tranformation matrix tm (e1,e2,e3)T              
+      ! element frame & transformation matrix tm (e1,e2,e3)T              
       call us4_csys(xg,tm,tmg)
       ! nodal coordinates in element frame:
       x(1,:) = matmul(tm,xg(1,:))
@@ -381,7 +381,7 @@
      &     ihyper,istiff,elconloc,eth,kode,plicon,
      &     nplicon,plkcon,nplkcon,npmat_,
      &     plconloc,mi(1),dtime,kk,
-     &     xstiff,ncmat_)
+     &     xstiff,ncmat_,iperturb)
         !
         e   = xstiff(1,jjj,1)
         un  = xstiff(2,jjj,1)
@@ -402,7 +402,7 @@
       call us4_M(x,h,rho,Mshell)
       !
       Kshell = Kmem + Kb + Ks
-      ! artifical drilling stiffness (Krotz) in orede to avoid singularities 
+      ! artificial drilling stiffness (Krotz) in orede to avoid singularities 
       kdmax = 0.d0      
       do k = 1,24
         if(kdmax.LT.abs(Kshell(k,k))) then

@@ -19,7 +19,7 @@
       subroutine plastics(inpc,textpart,nelcon,nmat,ntmat_,npmat_,
      &     plicon,nplicon,plkcon,nplkcon,iplas,iperturb,nstate_,
      &     ncmat_,elcon,matname,irstrt,istep,istat,n,iline,ipol,
-     &     inl,ipoinp,inp,ipoinpc,ianisoplas,ier)
+     &     inl,ipoinp,inp,ipoinpc,ier)
 !     
 !     reading the input deck: *PLASTIC
 !     
@@ -35,7 +35,7 @@
      &     n,key,i,nplicon(0:ntmat_,*),nplkcon(0:ntmat_,*),ncmat_,
      &     iplas,iperturb(*),istat,nstate_,
      &     irstrt(*),iline,ipol,inl,ipoinp(2,*),inp(3,*),ipoinpc(0:*),
-     &     ianisoplas,ier
+     &     ier
 !     
       real*8 plicon(0:2*npmat_,ntmat_,*),plkcon(0:2*npmat_,ntmat_,*),
      &     temperature,elcon(0:ncmat_,ntmat_,*)
@@ -201,13 +201,12 @@ c          return
      &       ipoinp,inp,ipoinpc)
         return
       endif
-!     
+!
+      iplas=1
       if(nelcon(1,nmat).eq.2) then
-        iplas=1
         nelcon(1,nmat)=-51
         nstate_=max(nstate_,13)
       else
-        ianisoplas=1
         nelcon(1,nmat)=-54
         nstate_=max(nstate_,20)
       endif

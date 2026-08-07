@@ -27,8 +27,8 @@
 !     
       real*8 rhs(*),dgdxglob(2,nk,*)
 !  
-!     icopy=0: copy unfiltered sensitivites to dgdxglob
-!     icopy=1: copy filtered sensitivites to dgdxglob
+!     icopy=0: copy unfiltered sensitivities to dgdxglob
+!     icopy=1: copy filtered sensitivities to dgdxglob
 !
 !     FORTRAN convention for iobject
 !

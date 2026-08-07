@@ -653,13 +653,10 @@ c     write(*,*) '**regular solution'
               write(88,*) node  ! slave node
               write(88,'(I12)')  nodef(1:nopes) ! list master nodes
               write(88,'(E13.6)')  -ratio(iorder) ! list slave nodes
-!     write(*,'(E13.6)')  -ratio(iorder)! list slave nodes
             endif
 !     
             jbasis=3*(j-1)
-c     write(*,*) 'jbasis', jbasis
             do m2=1,3
-c     write(*,*)'ix@jqw',(jbasis+m2),'jqw(ix)',(nzsw+1)
 !     Setting new column
               jqw(jbasis+m2)=nzsw+1
 !     Filling for DEPENDENT
@@ -683,20 +680,12 @@ c     write(*,*)'ix@jqw',(jbasis+m2),'jqw(ix)',(nzsw+1)
 !     
             enddo
 c       following line is obsolete? 
-            if(mortar.ne.-1) cycle ! ommitted to capture clearances???
+            if(mortar.ne.-1) cycle ! omitted to capture clearances???
           endif
 !     
 !     distance from surface along normal (= clearance)
 !     
           clear=al(1)*xn(1)+al(2)*xn(2)+al(3)*xn(3)
-c     if((istep.eq.1).and.(iit.lt.0.d0)) then
-c     if(clear.lt.0.d0) then
-c     springarea(2,j)=clear
-c     endif
-c     endif
-c     if(nmethod.eq.1) then
-c     clear=clear-springarea(2,j)*(1.d0-reltime)
-c     endif
 !     
 !     check for an adjust parameter (only at the start
 !     of the first step)
@@ -867,41 +856,6 @@ c     ! TODO CMT: Taking it into account for N2F contact:
 !     
       if(mortar.eq.-1) then
         jqw(3*nslavnode(ntie+1)+1)=nzsw+1
-      endif
-!     
-!     DEBUG PRINT WB MATRIX
-      if((filab(1)(3:3).eq.'C').and.(mortar.eq.-1))then
-!     nmastnode(ntie+1) ! QUESTION: total master nodes?
-        open(unit=31416,file='WbPre_colsort.csv')
-        do i=1,nslavnode(ntie+1)
-          write(31416,*) islavnode(i) ,',N'
-          write(31416,*) islavnode(i) ,',T1'
-          write(31416,*) islavnode(i) ,',T2'
-        enddo
-        close(31416)
-
-        open(unit=31416,file='WbPre_size.csv')
-        write(31416,*) (nmastnode(ntie+1)+nslavnode(ntie+1))*3
-        write(31416,*) nslavnode(ntie+1)*3
-        close(31416)
-
-        open(unit=31416,file='WbPre_auw.csv')
-        do i=1,nzsw
-          write(31416,*) auw(i)
-        enddo
-        close(31416)
-
-        open(unit=31416,file='WbPre_iroww.csv')
-        do i=1,nzsw
-          write(31416,*) iroww(i)
-        enddo
-        close(31416)
-
-        open(unit=31416,file='WbPre_jqw.csv')
-        do i=1,(nslavnode(ntie+1)*3)+1
-          write(31416,*) jqw(i)
-        enddo
-        close(31416)
       endif
 !     
       return

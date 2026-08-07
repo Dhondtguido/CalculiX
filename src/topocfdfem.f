@@ -18,12 +18,12 @@
 !     
       subroutine topocfdfem(nelemface,sideface,nface,ipoface,nodface,
      &     ne,ipkon,kon,lakon,nk,isolidsurf,
-     &     nsolidsurf,ifreestream,nfreestream,neighsolidsurf,iponoel,
-     &     inoel,inoelfree,co,set,
+     &     nsolidsurf,ifreestream,nfreestream,neighsolidsurf,iponoelf,
+     &     inoelf,inoelfree,co,set,
      &     istartset,iendset,ialset,nset,iturbulent,inomat,ielmat,
      &     ipface,nknew)
 !     
-!     preliminary calculations for cfd applicatons:
+!     preliminary calculations for cfd applications:
 !     - determining the external faces of the mesh and storing
 !     them in fields nelemface and sideface
 !     - determining the nodes belonging to solid surfaces and
@@ -31,7 +31,7 @@
 !     - determining the nodes belonging to freestream surfaces
 !     and storing them in ifreestream (in ascending order)
 !     - determining the fluid elements belonging to a given node
-!     and storing them in fields iponoel and inoel
+!     and storing them in fields iponoelf and inoelf
 !     
       implicit none
 !     
@@ -44,8 +44,8 @@
      &     ifacew(8,5),ithree,ifour,iaux,kflag,nnodes,ierror,
      &     isolidsurf(*),nsolidsurf,ifreestream(*),nknew(*),
      &     nfreestream,id,nk,node,i,j,k,l,m,neighsolidsurf(*),
-     &     iponoel(*),noden,idn,nope,nodemin,ifree,indexold,
-     &     inoel(2,*),ifreenew,inoelfree,ipface(*),
+     &     iponoelf(*),noden,idn,nope,nodemin,ifree,indexold,
+     &     inoelf(2,*),ifreenew,inoelfree,ipface(*),
      &     iturbulent,istartset(*),iendset(*),ialset(*),nset,inomat(*),
      &     ielmat(*)
 !     
@@ -487,9 +487,9 @@
         indexe=ipkon(i)
         do j=1,nope
           node=kon(indexe+j)
-          inoel(1,inoelfree)=i
-          inoel(2,inoelfree)=iponoel(node)
-          iponoel(node)=inoelfree
+          inoelf(1,inoelfree)=i
+          inoelf(2,inoelfree)=iponoelf(node)
+          iponoelf(node)=inoelfree
           inoelfree=inoelfree+1
         enddo
       enddo
@@ -502,7 +502,7 @@
         call nident(nelemface,i,nface,ipface(i))
       enddo
 !     
-!     filling inomat: asigns a material to fluid nodes. 
+!     filling inomat: assigns a material to fluid nodes. 
 !     (a fluid nodes is not assumed to be part of two
 !     different fluids)
 !     
