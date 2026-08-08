@@ -40,9 +40,6 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
                   ITG *inputsteps,ITG *iperturb,ITG *irstrt,char **filabp,
                   ITG *nlabel)
 {
-#ifdef __WIN32
-    _set_output_format(_TWO_DIGIT_EXPONENT);
-#endif
 
   /* in FORTRAN convention:
 

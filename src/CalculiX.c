@@ -33,10 +33,7 @@ struct timespec totalCalculixTimeStart,totalCalculixTimeEnd;
 
 int main(int argc,char *argv[])
 {
-#ifdef __WIN32
-    _set_output_format(_TWO_DIGIT_EXPONENT);
-#endif
-
+  
   FILE *f1;
     
   char *sideload=NULL,*set=NULL,*matname=NULL,*orname=NULL,*amname=NULL,
