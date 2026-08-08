@@ -17,23 +17,43 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
       subroutine mafillprhs(nk,kon,ipkon,lakon,ipompc,nodempc,
-     &     coefmpc,nmpc,b1,nactdoh,mi,v,theta1,nea,neb,dtimef,ipvar,var,
-     &     compressible)
+     &     coefmpc,nmpc,b1,nactdoh,mi,v,theta1,ne,dtimef,ipvar,var,
+     &     compressible,num_cpus)
 !     
 !     filling the rhs b of the pressure equations (step 2)
-!     
+!
+      use omp_lib
+!
       implicit none
 !     
       character*8 lakon(*)
 !     
       integer kon(*),ipompc(*),nodempc(3,*),nactdoh(*),compressible,
-     &     mi(*),ipkon(*),nea,neb,ipvar(*),nk,nmpc,i,j,
-     &     id,ist,index,jdof1,node,indexe,nope
+     &     mi(*),ipkon(*),ne,ipvar(*),nk,nmpc,i,j,
+     &     id,ist,index,jdof1,node,indexe,nope,num_cpus,tid
 !     
-      real*8 coefmpc(*),b1(nk,0:mi(2)),v(nk,0:mi(2)),ff(8),theta1,
-     &     var(*),dtimef
-!     
-      do i=nea,neb
+      real*8 coefmpc(*),b1(nk,0:mi(2)),v(nk,0:mi(2)),
+     &     ff(8),theta1,var(*),dtimef
+!
+!     We use heap allocated b1_ where each thread owns a slice
+!     instead of an OpenMP array reduction clause into b1 which
+!     might exceed the default thread stack sizes for very large
+!     models.
+!     Thread index is leading so the reduction inner loop is contiguous.
+!
+      real*8, allocatable :: b1_(:,:)
+!
+      allocate(b1_(num_cpus,nk))
+!
+!$omp parallel do num_threads(num_cpus)
+      do i=1,nk
+         b1_(1:num_cpus,i)=0.d0
+      end do
+!
+!$omp parallel private(tid) num_threads(num_cpus)
+      tid = omp_get_thread_num() + 1
+!$omp do private(j,index,indexe,nope,node,jdof1,id,ist,ff)
+      do i=1,ne
 !     
         indexe=ipkon(i)
         if(lakon(i)(4:4).eq.'8') then
@@ -55,7 +75,7 @@
 !
           do j=1,nope
             node=kon(indexe+j)
-            b1(node,4)=b1(node,4)+ff(j)
+            b1_(tid,node)=b1_(tid,node)+ff(j)
           enddo
         else
 !
@@ -79,7 +99,7 @@
                   do
                     jdof1=nactdoh(nodempc(1,index))
                     if(jdof1.gt.0) then
-                      b1(jdof1,4)=b1(jdof1,4)
+                      b1_(tid,jdof1)=b1_(tid,jdof1)
      &                     -coefmpc(index)*ff(j)
      &                     /coefmpc(ist)
                     endif
@@ -90,11 +110,24 @@
               endif
               cycle
             endif
-            b1(jdof1,4)=b1(jdof1,4)+ff(j)
+            b1_(tid,jdof1)=b1_(tid,jdof1)+ff(j)
 !     
           enddo
         endif
       enddo
+!$omp end do
+!
+!$omp do
+         do i=1,nk
+            do j=1,num_cpus
+               b1(i,4)=b1(i,4)+b1_(j,i)
+            end do
+         end do
+!$omp end do
+!$omp end parallel
+!
+      deallocate(b1_)
+!
 c      write(*,*) 'mafillprhs '
 c      do i=1,nk
 c        write(*,*) i,b1(i,4)

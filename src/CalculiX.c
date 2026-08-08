@@ -15,10 +15,6 @@
 /*     along with this program; if not, write to the Free Software       */
 /*     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.         */
 
-#ifdef __WIN32
-_set_output_format(_TWO_DIGIT_EXPONENT);
-#endif
-
 #ifdef CALCULIX_MPI
 #include <spoolesMPI.h>
 #endif
@@ -159,7 +155,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Mon Mar  2 17:58:21 CET 2026\n");
+  printf("You are using an executable made on Wed Jul 29 17:05:34 CEST 2026\n");
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);
@@ -1520,7 +1516,7 @@ int main(int argc,char *argv[])
 		    ikforc,ilforc,thicke,jobnamef,mei,&nmat,ielprop,prop,orname,
 		    typeboun,t0g,t1g);
       }
-    else if((nmethod>7)&&(nmethod<12)){
+    else if((nmethod>7)&&(nmethod<11)){
 
       mpcinfo[0]=memmpc_;mpcinfo[1]=mpcfree;mpcinfo[2]=icascade;
       mpcinfo[3]=maxlenmpc;

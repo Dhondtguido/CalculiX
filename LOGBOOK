@@ -5577,3 +5577,43 @@ Dec 2002        - started to work on single crystal plasticity
                   variables)
 
  2 March 2026   - corrected an error in CalculiX.c
+
+ 10 March 2026  - corrected an error in frictions.f
+
+ 7 April 2026   - corrected an error in addizdofcload.f and rhsnodef.f
+                  (steady state dynamics with cyclic symmetry)
+
+ 13 April 2026  - reversed the change of Juli 16, 2021: intscheme=1 is
+                  moved from before the first call of results.c in
+		  nonlingeo.c to a line after this call.
+
+ 27 April 2026  - provided print and file output for the acceleration
+
+ 28 April 2026  - made a change for zero density in materialdata_th.f
+
+ 29 April 2026  - changed safefac*elemfac to 1/dsqrt(3) for C3D8R
+                  elements in explicit dynamic calculations
+
+ 12 May 2026    - removed errors in slavintpoints.f and neartriangle.f
+
+ 18 May 2026    - changed some ERROR messages in WARNINGS in generatecycmpcs.f
+
+ 5 June 2026    - switched from pthread to openmp for parallel CFD calculations
+
+ 8 June 2026    - changed noelfiles.f taking care of contact output requests
+                  without any contact pair definition
+
+ 12 July 2026   - worked on the calculation of self-inductance.
+
+ 14 July 2026   - coded the electromagnetic energy
+
+ 27 July 2026   - defined *DAMAGE INITIATION as *MATERIAL card in
+                  readinput.c
+
+ 28 July 2026   - corrected an error for the parameter fixed on the
+                  *boundary card for cylindrical coordinates
+
+ 29 July 2026   - changed *noel* into *noelf* in compfluidfem and
+                  its subroutines
+		- included all D* elements in inoeln (also the generic
+		  ones, with a blank after the D)

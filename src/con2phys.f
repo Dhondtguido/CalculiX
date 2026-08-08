@@ -18,7 +18,7 @@
 !     
       subroutine con2phys(vold,vcon,nk,ntmat_,shcon,nshcon,rhcon,nrhcon,
      &     physcon,ithermal,compressible,iturbulent,inomat,mi,
-     &     ierr,ifreesurface,dgravity,depth,nka,nkb)
+     &     ierr,ifreesurface,dgravity,depth,num_cpus)
 !     
 !     calculates the physical variable from the conservative
 !     variables:
@@ -30,15 +30,19 @@
 !     
       integer compressible,ifreesurface,nrhcon(*),ntmat_,iturbulent,
      &     mi(*),nshcon(*),nk,ithermal(*),i,j,k,imat,ierr,inomat(*),
-     &     nka,nkb
-!     
+     &     num_cpus
+!
       real*8 vold(0:mi(2),*),vcon(nk,0:mi(2)),rhcon(0:1,ntmat_,*),rho,
      &     c1,cp,r,temp,temp0,c2,shcon(0:3,ntmat_,*),physcon(*),
      &     dgravity,depth(*)
 !     
       if(ithermal(1).gt.1) then
-!     
-        do i=nka,nkb
+!
+!$omp parallel do private(j,k,imat,temp,temp0,cp,rho,r,c1,c2)
+!$omp&num_threads(num_cpus)
+      do i=1,nk
+          if (ierr.ne.0) cycle
+
           imat=inomat(i)
           temp=vold(0,i)
 !     
@@ -76,11 +80,15 @@
                 write(*,*) '       for node',i
                 write(*,*) '       increment is recalculated'
                 write(*,*) '       with a higher shock smoothing'
+!$omp critical
                 ierr=1
-                return
+!$omp end critical
+                exit
               endif
               temp0=temp
             enddo
+!
+            if(ierr.ne.0) cycle
 !     
             if(ifreesurface.eq.0) then
 !     
@@ -134,15 +142,20 @@
                 exit
               endif
               if(j.gt.100) then
-                write(*,*) 
+                write(*,*)
      &               '*ERROR in con2phys: too many iterations'
                 write(*,*) '       for node',i
                 write(*,*) '       actual temperature ',temp,' K'
-                stop
+!$omp critical
+                ierr=1
+!$omp end critical
+                exit
               endif
               temp0=temp
             enddo
-!     
+
+            if(ierr.ne.0) cycle
+!
 !     storing the density
 !     
             vcon(i,4)=rho
@@ -166,8 +179,9 @@
       else
 !     
 !     athermal calculations
-!     
-        do i=nka,nkb
+!
+!$omp parallel do private(k,rho) num_threads(num_cpus)
+        do i=1,nk
 !     
 !     calculating the fictitious pressure for shallow water
 !     calculations

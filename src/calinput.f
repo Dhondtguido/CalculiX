@@ -447,7 +447,7 @@
      &       nodefile_flag,elfile_flag,ifile_output,nener,ithermal,
      &       istep,istat,n,iline,ipol,inl,ipoinp,inp,out3d,nlabel,
      &       amname,nam,itpamp,idrct,ipoinpc,nef,contactfile_flag,
-     &       set,nset,xmodal,ier,physcon,output,ndmat_)
+     &       set,nset,xmodal,ier,physcon,output,ndmat_,mortar)
         contactfile_flag=.true.
 !     
       elseif(textpart(1)(1:12).eq.'*CONTACTPAIR') then
@@ -658,7 +658,7 @@ c
      &       nodefile_flag,elfile_flag,ifile_output,nener,ithermal,
      &       istep,istat,n,iline,ipol,inl,ipoinp,inp,out3d,nlabel,
      &       amname,nam,itpamp,idrct,ipoinpc,nef,contactfile_flag,
-     &       set,nset,xmodal,ier,physcon,output,ndmat_)
+     &       set,nset,xmodal,ier,physcon,output,ndmat_,mortar)
         elfile_flag=.true.
 !     
       elseif(textpart(1)(1:8).eq.'*ELPRINT') then
@@ -919,7 +919,7 @@ c
      &       nodefile_flag,elfile_flag,ifile_output,nener,ithermal,
      &       istep,istat,n,iline,ipol,inl,ipoinp,inp,out3d,nlabel,
      &       amname,nam,itpamp,idrct,ipoinpc,nef,contactfile_flag,
-     &       set,nset,xmodal,ier,physcon,output,ndmat_)
+     &       set,nset,xmodal,ier,physcon,output,ndmat_,mortar)
         nodefile_flag=.true.
 !     
       elseif(textpart(1)(1:10).eq.'*NODEPRINT') then
@@ -927,7 +927,7 @@ c
      &       nset,nset_,nalset,nprint,nprint_,jout,
      &       prlab,prset,nodeprint_flag,ithermal,istep,istat,n,iline,
      &       ipol,inl,ipoinp,inp,amname,nam,itpamp,idrct,ipoinpc,nef,
-     &       ier)
+     &       ier,nmethod,mortar)
         nodeprint_flag=.true.
 !     
       elseif(textpart(1)(1:7).eq.'*NORMAL') then

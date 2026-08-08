@@ -218,7 +218,7 @@ void rhsmain(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne,
   FORTRAN(rhsnodef,(co,kon,ne,
 		    ipompc,nodempc,coefmpc,nmpc,nodeforc,ndirforc,xforcact,
 		    nforc,fext,nactdof,nmethod,ikmpc,ntmat_,iperturb,
-		    mi,ikactmech,nactmech,ntrans,inotr,trab,fnext));
+		    mi,ikactmech,nactmech,ntrans,inotr,trab,fnext,ilmpc));
 	
 }
 

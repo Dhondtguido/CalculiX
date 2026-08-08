@@ -221,6 +221,11 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 
     if(ncont!=0){
 
+      if((*mortar<0)||(*mortar>1)){
+	printf(" *ERROR in arpack: only penalty contact is allowed in\n        combination with a perturbation *FREQUENCY step\n\n");
+	FORTRAN(stop,());
+      }	
+
       NNEW(cg,double,3*ncont);
       NNEW(straight,double,16*ncont);
 	  
@@ -595,7 +600,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
-	ielprop,prop,sti,damn,&errn);
+	ielprop,prop,sti,damn,&errn,accold);
     
     if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
     SFREE(inum);FORTRAN(stop,());
@@ -1196,7 +1201,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	  thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
-	  ielprop,prop,sti,damn,&errn);
+	  ielprop,prop,sti,damn,&errn,accold);
     }else{
       frd(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,
 	  kode,filab,een,t1old,fn,&freq,epn,ielmat,matname,enern,xstaten,
@@ -1205,7 +1210,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	  thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
-	  ielprop,prop,sti,damn,&errn);
+	  ielprop,prop,sti,damn,&errn,accold);
     }
 
     if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}

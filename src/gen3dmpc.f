@@ -56,11 +56,10 @@
      &             (labmpc(i)(1:4).eq.'BEAM').or.
      &             (labmpc(i)(1:8).eq.'MEANROT ').or.
      &             (labmpc(i)(1:6).eq.'CYCLIC')) then
-                write(*,*) '*ERROR in gen3dmpc: nodes belonging to'
-                write(*,*) '       1D/2D elements must not be'
-                write(*,*) '       subject to a ',labmpc(i)(1:20),
-     &               ' MPC.'
-                call exit(201)
+                write(*,*) '*WARNING in gen3dmpc: nodes belonging to'
+                write(*,*) '         1D/2D elements must not be'
+                write(*,*) '         subject to a ',labmpc(i)(1:20),
+     &               ' MPC. It may work or not.'
               endif
 !              
               if(nodempc(2,index1).gt.3) then
@@ -124,11 +123,10 @@
      &               (labmpc(i)(1:5).eq.'PLANE').or.
      &               (labmpc(i)(1:4).eq.'BEAM').or.
      &               (labmpc(i)(1:8).eq.'MEANROT ')) then
-                  write(*,*) '*ERROR in gen3dmpc: nodes belonging to'
-                  write(*,*) '       1D/2D elements must not be'
-                  write(*,*) '       subject to a ',labmpc(i)(1:20),
-     &                 ' MPC.'
-                  call exit(201)
+                  write(*,*) '*WARNING in gen3dmpc: nodes belonging to'
+                  write(*,*) '         1D/2D elements must not be'
+                  write(*,*) '         subject to a ',labmpc(i)(1:20),
+     &                 ' MPC. It may work or not.'
                 endif
 !
               ielem=inoel2d(1,index2)
@@ -143,11 +141,10 @@
 !     
               if(lakon(ielem)(7:7).eq.'L') then
                 if(labmpc(i)(1:5).eq.'RIGID') then
-                  write(*,*) '*ERROR in gen3dmpc: nodes belonging to'
-                  write(*,*) '       shell elements must not be'
-                  write(*,*) '       subject to a ',labmpc(i)(1:20),
-     &                 ' MPC.'
-                  call exit(201)
+                  write(*,*) '*WARNING in gen3dmpc: nodes belonging to'
+                  write(*,*) '         shell elements must not be'
+                  write(*,*) '         subject to a ',labmpc(i)(1:20),
+     &                 ' MPC. It may work or not.'
                 endif
                 newnode=knor(indexk+1)
                 idir=nodempc(2,index1)
@@ -293,11 +290,10 @@ c                endif
 !     1d beam element
 !     
                 if(labmpc(i)(1:5).eq.'RIGID') then
-                  write(*,*) '*ERROR in gen3dmpc: nodes belonging to'
-                  write(*,*) '       beam elements must not be'
-                  write(*,*) '       subject to a ',labmpc(i)(1:20),
-     &                 ' MPC.'
-                  call exit(201)
+                  write(*,*) '*WARNING in gen3dmpc: nodes belonging to'
+                  write(*,*) '         beam elements must not be'
+                  write(*,*) '         subject to a ',labmpc(i)(1:20),
+     &                 ' MPC. It may work or not.'
                 endif
                 newnode=knor(indexk+1)
                 idir=nodempc(2,index1)

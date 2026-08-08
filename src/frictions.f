@@ -82,7 +82,8 @@ c         do i=1,3
      &           "*FRICTION%",ier)
             return
          endif
-         if(elcon(7,1,imat).le.0.d0) then
+         if((mortar.ge.0).and.(mortar.le.1).and.
+     &        (elcon(7,1,imat).le.0.d0)) then
             write(*,*) '*WARNING reading *FRICTION: stick slope'
             write(*,*) '         must be strictly positive'
             write(*,*) 

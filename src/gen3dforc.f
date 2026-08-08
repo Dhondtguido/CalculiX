@@ -455,7 +455,7 @@ c     vold(1,iexpnode)=alpha
                 m=3
                 matz=1
                 ier=0
-                call rs(m,m,u,w,matz,z,fv1,fv2,ier)
+                call eigsymd(m,u,w,matz,z,ier)
                 if(ier.ne.0) then
                   write(*,*) 
      &                 '*ERROR in knotmpc while calculating the'

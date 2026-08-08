@@ -137,10 +137,10 @@
 !     piecewise linear approximation 
 !     
       if(nopes.eq.3) then
-        do i=1,3
-          p12(i)=xl3s(i,2)-xl3s(i,1)
-          p23(i)=xl3s(i,3)-xl3s(i,2)
-          p31(i)=xl3s(i,1)-xl3s(i,3)
+        do k=1,3
+          p12(k)=xl3s(k,2)-xl3s(k,1)
+          p23(k)=xl3s(k,3)-xl3s(k,2)
+          p31(k)=xl3s(k,1)-xl3s(k,3)
         enddo
 !     
 !     normalized vector normal to the triangle: xn = p12 x p23
@@ -149,8 +149,8 @@
         xn(2)=p12(3)*p23(1)-p12(1)*p23(3)
         xn(3)=p12(1)*p23(2)-p12(2)*p23(1)
         dd=dsqrt(xn(1)*xn(1)+xn(2)*xn(2)+xn(3)*xn(3))
-        do i=1,3
-          xn(i)=xn(i)/dd
+        do k=1,3
+          xn(k)=xn(k)/dd
         enddo
         xn(4)=-xn(1)*xl3s(1,1)-xn(2)*xl3s(2,1)-
      &       xn(3)*xl3s(3,1)
