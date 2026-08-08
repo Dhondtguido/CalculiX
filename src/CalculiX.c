@@ -1519,7 +1519,7 @@ int main(int argc,char *argv[])
 		    ikforc,ilforc,thicke,jobnamef,mei,&nmat,ielprop,prop,orname,
 		    typeboun,t0g,t1g);
       }
-    else if((nmethod>7)&&(nmethod<12)){
+    else if((nmethod>7)&&(nmethod<11)){
 
       mpcinfo[0]=memmpc_;mpcinfo[1]=mpcfree;mpcinfo[2]=icascade;
       mpcinfo[3]=maxlenmpc;

@@ -28,7 +28,7 @@
      &     islavact,cdn,mortar,islavnode,nslavnode,ntie,islavsurf,time,
      &     ielprop,prop,veold,ne0,nmpc,ipompc,nodempc,labmpc,energyini,
      &     energy,orname,xload,itiefac,pmastsurf,springarea,tieset,
-     &     ipobody,ibody,xbody,nbody,iinc,dam,damn)
+     &     ipobody,ibody,xbody,nbody,iinc,dam,damn,accold)
 !     
 !     - stores the results in the .dat file, if requested
 !     - nodal quantities at the nodes
@@ -70,7 +70,7 @@
      &     eme(6,mi(1),*),emn(6,*),shcon(0:3,ntmat_,*),
      &     prop(*),veold(0:mi(2),*),energy(*),energyini(*),xload(2,*),
      &     pmastsurf,springarea(2,*),xbody(7,*),pslavsurf(3,*),
-     &     cocon(0:6,ntmat_,*),dam(mi(1),*),damn(*)
+     &     cocon(0:6,ntmat_,*),dam(mi(1),*),damn(*),accold(0:mi(2),*)
 !     
       data iflag /3/
       data iperm /5,6,7,8,1,2,3,4,13,14,15,16,9,10,11,12,17,18,19,20/
@@ -120,7 +120,7 @@
      &     orab,ielorien,norien,nk,ne,inum,filab,vold,ikin,ielmat,
      &     thicke,eme,islavsurf,mortar,time,ielprop,prop,veold,orname,
      &     nelemload,nload,sideload,xload,rhcon,nrhcon,ntmat_,ipobody,
-     &     ibody,xbody,nbody,nmethod,dam,nactdof)
+     &     ibody,xbody,nbody,nmethod,dam,nactdof,accold)
 !     
 !     for facial information (*section print): if forces and/or
 !     moments in sections are requested, the stresses have to be
@@ -189,6 +189,16 @@ c     &       ne,cflag,co,vold,iforce,mi,ielprop,prop)
           cflag=filab(21)(5:5)
           iforce=0
           call map3dto1d2d(veold,ipkon,inum,kon,lakon,nfield,nk,
+     &         ne,cflag,co,vold,iforce,mi,ielprop,prop)
+        endif
+      endif
+!     
+      if(filab(21)(1:4).eq.'A   ') then
+        if(filab(21)(5:5).eq.'I') then
+          nfield=mt
+          cflag=filab(21)(5:5)
+          iforce=0
+          call map3dto1d2d(accold,ipkon,inum,kon,lakon,nfield,nk,
      &         ne,cflag,co,vold,iforce,mi,ielprop,prop)
         endif
       endif

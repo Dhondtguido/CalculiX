@@ -1,6 +1,6 @@
 
-CFLAGS = -Wall -g  -I ../../SPOOLES.2.2 -DARCH="Linux" -DSPOOLES -DARPACK -DMATRIXSTORAGE -DNETWORKOUT
-FFLAGS = -Wall -g -cpp 
+CFLAGS = -Wall -g  -I ../../SPOOLES.2.2 -DARCH="Linux" -DSPOOLES -DARPACK -DMATRIXSTORAGE -DNETWORKOUT -fopenmp
+FFLAGS = -Wall -g -cpp -fopenmp
 
 CC=cc
 FC=gfortran
@@ -22,6 +22,8 @@ DIR=../../SPOOLES.2.2
 
 LIBS = \
        $(DIR)/spooles.a \
+	../../LAPACK/lapack-3.12.1/liblapack.a \
+	../../LAPACK/lapack-3.12.1/librefblas.a \
 	../../ARPACK/libarpack_INTEL.a \
        -lpthread -lm -lc
 

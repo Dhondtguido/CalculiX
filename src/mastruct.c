@@ -822,7 +822,7 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
   
   if(neq[1]<num_cpus) num_cpus=neq[1];
   
-  printf(" Using up to %" ITGFORMAT " cpu(s) for setting up the structure of the matrix.\n", num_cpus);
+  printf(" Using up to %" ITGFORMAT " cpu(s) for setting up the structure of the matrix.\n\n", num_cpus);
   
   pthread_t tid[num_cpus];
 
@@ -898,7 +898,7 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
   
     if((neq[2]-neq[1])<num_cpus) num_cpus=neq[2]-neq[1];
 
-    printf(" Using up to %" ITGFORMAT " cpu(s) for setting up the structure of the matrix.\n", num_cpus);
+    printf(" Using up to %" ITGFORMAT " cpu(s) for setting up the structure of the matrix.\n\n", num_cpus);
   
     pthread_t tid[num_cpus];
 

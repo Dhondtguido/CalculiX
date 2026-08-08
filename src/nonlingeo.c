@@ -983,8 +983,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       
     MNEW(fn,double,mt**nk);
     NNEW(stx,double,6*mi[0]**ne);
-      
-    if((*iexpl<=1)||(*mortar==-1)){intscheme=1;}
+    //      
+    //    if((*iexpl<=1)||(*mortar==-1)){intscheme=1;}
       
     if(ne1d2d==1)NNEW(inum,ITG,*nk);
     results(co,nk,kon,ipkon,lakon,ne,vold,stn,inum,stx,
@@ -1078,6 +1078,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       
     NNEW(ad,double,neq[1]);
     NNEW(au,double,nzs[1]);
+    
+    if((*iexpl<=1)||(*mortar==-1)){intscheme=1;}
 
     mafillsmmain(co,nk,kon,ipkon,lakon,ne,nodeboun,ndirboun,xbounact,nboun,
 		 ipompc,nodempc,coefmpc,nmpc,nodeforc,ndirforc,xforcact,
@@ -1098,6 +1100,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		 iponoeln,inoeln,network,ntrans,inotr,trab,smscale,&mscalmethod,
 		 set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag,
 	         imastload,pmastload);
+    
+    intscheme=0;
     
     if(*nmethod==0){
 	  
@@ -1179,7 +1183,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	    mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	    cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	    thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
-	    ielprop,prop,sti,damn,&errn);
+	    ielprop,prop,sti,damn,&errn,accold);
 	  
 	if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}      
 #ifdef COMPANY
@@ -1528,7 +1532,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
        no new mass calculation is necessary for the remaining iterations
        in the present step */
       
-    mass[0]=0;intscheme=0;
+    mass[0]=0;
     energyref=energy[0]+energy[1]+energy[2]+energy[3];
 
     if(*iexpl<=1){
@@ -2771,7 +2775,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	      mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	      cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	      thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
-	      ielprop,prop,sti,damn,&errn);
+	      ielprop,prop,sti,damn,&errn,accold);
 
 	  if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);} 
 #ifdef COMPANY
@@ -3846,7 +3850,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
                nstate_,istep,&iinc,iperturb,ener,mi,output,ithermal,qfn,
                ialset,istartset,iendset,trab,inotr,ntrans,orab,ielorien,
 	       norien,stx,veold,&noddiam,set,nset,emn,thicke,jobnamec,&ne0,
-               cdn,mortar,nmat,qfx,ielprop,prop,damn,&errn);
+               cdn,mortar,nmat,qfx,ielprop,prop,damn,&errn,accold);
 
 	if(*mortar>1){
 	  mortar_postfrd(ne,nslavs,mi,nk,nkon,fn,cfs,cfm);      
@@ -3873,7 +3877,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	    mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	    cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	    thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,ielprop,
-	    prop,sti,damn,&errn);
+	    prop,sti,damn,&errn,accold);
 	if(*mortar>1){
 	  mortar_postfrd(ne,nslavs,mi,nk,nkon,fn,cfs,cfm);      
 	}
@@ -3991,7 +3995,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
              nstate_,istep,&iinc,iperturb,ener,mi,output,ithermal,qfn,
              ialset,istartset,iendset,trab,inotr,ntrans,orab,ielorien,
 	     norien,stx,veold,&noddiam,set,nset,emn,thicke,jobnamec,&ne0,
-             cdn,mortar,nmat,qfx,ielprop,prop,damn,&errn);
+             cdn,mortar,nmat,qfx,ielprop,prop,damn,&errn,accold);
       if(*mortar>1){
 	mortar_postfrd(ne,nslavs,mi,nk,nkon,fn,cfs,cfm);      
       }
@@ -4016,7 +4020,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	  thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,ielprop,
-	  prop,sti,damn,&errn);
+	  prop,sti,damn,&errn,accold);
       if(*mortar>1){
 	mortar_postfrd(ne,nslavs,mi,nk,nkon,fn,cfs,cfm);      
       }

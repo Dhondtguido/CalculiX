@@ -249,18 +249,22 @@ void readinput(char *jobnamec,char **inpcp,ITG *nline,ITG *nset,
         FORTRAN(keystart,(&ifreeinp,ipoinp,inp,"MATERIAL",
                           nline,&ikey));
       }
+      else if(strcmp1(&buff[0],"*DAMAGEINITIATION")==0){
+        FORTRAN(keystart,(&ifreeinp,ipoinp,inp,"MATERIAL",
+                          nline,&ikey));
+      }
       else if(strcmp1(&buff[0],"*DAMPING")==0){
         FORTRAN(keystart,(&ifreeinp,ipoinp,inp,"MATERIAL",
                           nline,&ikey));
       }
-      else if(strcmp1(&buff[0],"*DISTRIBUTION")==0){
+      /*     else if(strcmp1(&buff[0],"*DISTRIBUTION")==0){
         FORTRAN(keystart,(&ifreeinp,ipoinp,inp,"DISTRIBUTION",
                           nline,&ikey));
-      }
-      else if(strcmp1(&buff[0],"*ELASTIC")==0){
+			  }*/
+      /*      else if(strcmp1(&buff[0],"*ELASTIC")==0){
         FORTRAN(keystart,(&ifreeinp,ipoinp,inp,"MATERIAL",
                           nline,&ikey));
-      }
+			  }*/
       else if(strcmp1(&buff[0],"*DEFORMATIONPLASTICITY")==0){
         FORTRAN(keystart,(&ifreeinp,ipoinp,inp,"MATERIAL",
                           nline,&ikey));
@@ -271,6 +275,10 @@ void readinput(char *jobnamec,char **inpcp,ITG *nline,ITG *nset,
       }
       else if(strcmp1(&buff[0],"*DEPVAR")==0){
         FORTRAN(keystart,(&ifreeinp,ipoinp,inp,"MATERIAL",
+                          nline,&ikey));
+      }
+      else if(strcmp1(&buff[0],"*DISTRIBUTION")==0){
+        FORTRAN(keystart,(&ifreeinp,ipoinp,inp,"DISTRIBUTION",
                           nline,&ikey));
       }
       else if(strcmp1(&buff[0],"*ELASTIC")==0){

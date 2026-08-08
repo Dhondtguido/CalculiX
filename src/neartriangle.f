@@ -60,6 +60,7 @@
               itri=imastop(m1,itri)
               if(itri.gt.itietri(2,itie).or. 
      &             itri.lt.itietri(1,itie)) cycle loop1
+c              
 c     &             itri.lt.itietri(1,itie))then
 c                if(itri.ne.0)then
 c                endif
@@ -71,7 +72,8 @@ c              if(itel.gt.n) then
 c                exit loop1
 c              endif
 c              if(itri.eq.0) cycle loop1
-c              cycle loop2
+c              
+              cycle loop2
             endif
           enddo
 !     

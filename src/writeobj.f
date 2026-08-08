@@ -25,9 +25,10 @@
 !
       character*81 objectset(5,*)
 !      
-      integer iobject,i,j,nobject,ndesi,nodedesi(*),nk,nobjectstart
+      integer iobject,i,j,nobject,ndesi,nodedesi(*),nk,nobjectstart,
+     &     inode
 !
-      real*8 g0(*),dgdxglob(2,nk,*),dd,inode
+      real*8 g0(*),dgdxglob(2,nk,*),dd
 !          
 !
 !     write header in .dat file

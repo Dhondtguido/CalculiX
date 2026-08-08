@@ -317,7 +317,7 @@ void resultsinduction(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
        cdn,&mortar,islavnode,nslavnode,ntie,islavsurf,time,ielprop,prop,
        veold,ne0,nmpc,ipompc,nodempc,labmpc,energyini,energy,orname,
        xload,itiefac,pmastsurf,springarea,tieset,ipobody,ibody,xbody,
-       nbody,iinc,dam,damn));
+       nbody,iinc,dam,damn,accold));
   
   return;
 

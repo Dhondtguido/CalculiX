@@ -74,8 +74,6 @@
      &     ithermal,icmd,beta,stre,ncmat_)
       elseif(kode.eq.-50) then
          mattyp=3
-c         call defplas(elconloc,stiff,emec,ithermal,icmd,beta,stre,
-c     &     ckl,vj,xstate,nstate_,iel,iint,mi)
          call umat_abaqusnl_total(amat,iel,iint,kode,elconloc,emec,
      &        emec0,beta,xikl,vij,xkl,vj,ithermal,t1l,dtime,time,ttime,
      &        icmd,ielas,mi,nstate_,xstateini,xstate,stre,stiff,

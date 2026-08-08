@@ -118,7 +118,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
     *irowfreq=NULL,*icolfreq=NULL,*jqfreq=NULL,*jq=NULL,inoelsize,
     *itiefac=NULL,mscalmethod=0,nkon0,*nintpoint=0,num_cpus,sys_cpus,
     *islavquadel=NULL,*irowt=NULL,*jqt=NULL,mortartrafoflag=0,
-    materialchange=0;
+    materialchange=0,irflflag=-1;
 
   double *stn=NULL,*v=NULL,*een=NULL,cam[5],*epn=NULL,*cdn=NULL,
     *f=NULL,*fn=NULL,qa[4]={0.,0.,-1.,0.},qam[2]={0.,0.},dtheta,theta,
@@ -434,6 +434,10 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
     NNEW(t0,double,*nk);
   }
   if(strcmp1(&filab[3567],"ECD ")==0){NNEW(qfn,double,3**nk);}
+
+  /*  for(i=0;i<*nprint;i++){
+    if(strcmp1(&prlab[6*i],"RFL ")==0) {irflflag=i;strcpy2(&prlab[6*i],"    ",4);}
+    }*/
   
   /* the coil current is assumed to be applied at once, i.e. as 
      step loading; the calculation, however, is a quasi-static
@@ -551,7 +555,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 	mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,ielprop,
-	prop,sti,damn,&errn);
+	prop,sti,damn,&errn,accold);
       
     FORTRAN(stop,());
       
@@ -686,7 +690,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 	   nstate_,istep,&iinc,iperturb,ener,mi,output,&ithermalact,qfn,
 	   ialset,istartset,iendset,trab,inotr,ntrans,orab,ielorien,
 	   norien,stx,veold,&noddiam,set,nset,emn,thicke,jobnamec,ne,
-	   cdn,&mortar,nmat,qfx,ielprop,prop,damn,&errn);
+	   cdn,&mortar,nmat,qfx,ielprop,prop,damn,&errn,accold);
   }else{
       
     ptime=*ttime+time;
@@ -697,7 +701,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 	mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,ielprop,
-	prop,sti,damn,&errn);
+	prop,sti,damn,&errn,accold);
       
   }
   SFREE(inum);SFREE(v);SFREE(fn);
@@ -706,6 +710,15 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 
   if(ntflag==1){
     strcpy1(&filab[87],"NT  ",4);
+  }
+  /*  if(irflflag>-1){
+    strcpy2(&prlab[6*irflflag],"RFL ",4);
+    }*/
+
+  /* removing current output */
+  
+  for(i=0;i<*nprint;i++){
+    if(strcmp1(&prlab[6*i],"RECU")==0) {irflflag=i;strcpy2(&prlab[6*i],"    ",4);}
   }
 
   NNEW(inomat,ITG,*nk);
@@ -1201,7 +1214,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 	    mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	    cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	    thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
-	    ielprop,prop,sti,damn,&errn);
+	    ielprop,prop,sti,damn,&errn,accold);
 	      
       }
 	  
@@ -1638,7 +1651,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 	       nstate_,istep,&iinc,iperturb,ener,mi,output,ithermal,qfn,
 	       ialset,istartset,iendset,trab,inotr,ntrans,orab,ielorien,
 	       norien,stx,veold,&noddiam,set,nset,emn,thicke,jobnamec,ne,
-	       cdn,&mortar,nmat,qfx,ielprop,prop,damn,&errn);
+	       cdn,&mortar,nmat,qfx,ielprop,prop,damn,&errn,accold);
       }else{
 	      
 	ptime=*ttime+time;
@@ -1650,7 +1663,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 	    mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	    cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	    thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
-	    ielprop,prop,sti,damn,&errn);
+	    ielprop,prop,sti,damn,&errn,accold);
 	      
       }
 	  
@@ -1748,6 +1761,13 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 			    iamload,nam,idefload,ncmat_,ntmat_,
 			    alcon,nalcon,ithermal,vold,t1,nmethod));
       SFREE(idefload);
+	  
+      /* calculating and printing the magnetic energy  */
+      
+      FORTRAN(magneticenergy,(ipkon,lakon,kon,co,elcon,nelcon,
+          mi,ne,stx,ielmat,ncmat_,ntmat_,
+          alcon,nalcon,ithermal,vold,t1,nmethod,prlab,nprint,
+          ttime,&time,prset,istartset,iendset,ialset,set,nset));
 
       SFREE(stx);SFREE(fn);
 
@@ -1770,7 +1790,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	  thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
-	  ielprop,prop,sti,damn,&errn);
+	  ielprop,prop,sti,damn,&errn,accold);
 
       SFREE(v);
       
@@ -1833,7 +1853,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 	       nstate_,istep,&iinc,iperturb,ener,mi,output,ithermal,qfn,
 	       ialset,istartset,iendset,trab,inotr,ntrans,orab,ielorien,
 	       norien,stx,veold,&noddiam,set,nset,emn,thicke,jobnamec,ne,
-	       cdn,&mortar,nmat,qfx,ielprop,prop,damn,&errn);
+	       cdn,&mortar,nmat,qfx,ielprop,prop,damn,&errn,accold);
       }else{
 	      
 	ptime=*ttime+time;
@@ -1844,7 +1864,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 	    mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	    cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	    thicke,jobnamec,output,qfx,cdn,&mortar,cdnr,cdni,nmat,
-	    ielprop,prop,sti,damn,&errn);
+	    ielprop,prop,sti,damn,&errn,accold);
 	      
       }
 	  

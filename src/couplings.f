@@ -769,7 +769,7 @@ c        write(*,*) 'couplings s ',s(3,1),s(3,2),s(3,3)
         n=3
         matz=1
         ierrs=0
-        call rs(n,n,s,w,matz,z,fv1,fv2,ierrs)
+        call eigsymd(n,s,w,matz,z,ierrs)
         if(ierrs.ne.0) then
           write(*,*) '*ERROR in couplings while calculating the'
           write(*,*) '       principal moments of inertia'
