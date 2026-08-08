@@ -27,8 +27,8 @@ LIBS = \
 	../../ARPACK/libarpack_INTEL.a \
        -lpthread -lm -lc
 
-CalculiX: $(OCCXMAIN) CalculiX.a $(LIBS)
-	./date.pl; $(CC) $(CFLAGS) -c CalculiX.c; $(FC) -Wall -g -o $@ $(OCCXMAIN) CalculiX.a  $(LIBS) -fopenmp
+CalculiX: $(OCCXMAIN) CalculiX.a  $(LIBS)
+	$(CC) $(CFLAGS) -c CalculiX.c; $(FC)  -Wall -g -o $@ $(OCCXMAIN) CalculiX.a $(LIBS) -fopenmp
 
 CalculiX.a: $(OCCXF) $(OCCXC)
 	ar vr $@ $?

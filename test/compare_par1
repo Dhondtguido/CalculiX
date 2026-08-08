@@ -72,6 +72,6 @@ for i in *.inp; do
 #       executing CalculiX and generating the .dat and
 #       the .frd file
 #
-            ~/CalculiX/src/CalculiX  ${i%.inp} >> ${i%.inp}.lst 2>&1 &
+    ../src/CalculiX  ${i%.inp} >> ${i%.inp}.lst 2>&1 &
 	
 done

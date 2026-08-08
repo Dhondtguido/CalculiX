@@ -33,7 +33,7 @@ for i in *.inp; do
 #
 
 	echo "${i%.inp}" >> valgrind.out
-        valgrind ~/CalculiX/src/CalculiX  ${i%.inp} >> valgrind.out 2>&1
+        valgrind ../src/CalculiX  ${i%.inp} >> valgrind.out 2>&1
 
 #
 #       moving the .mtx file to the .dat file in order to compare

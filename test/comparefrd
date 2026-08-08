@@ -22,7 +22,7 @@ for i in *.inp; do
 #       the .frd file
 #
 
-        ~/CalculiX/CalculiX  ${i%.inp} >> $tempfile 2>&1
+        ../src/CalculiX  ${i%.inp} >> $tempfile 2>&1
 
 #
 #       check whether the .frd or the .frd.ref file exists
