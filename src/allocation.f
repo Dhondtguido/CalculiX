@@ -306,7 +306,6 @@
           endif
         enddo
         if(iflag.eq.2) mi(2)=max(mi(2),6)
-        write(*,*) 'mi(2)= ',mi(2)
         call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &       ipoinp,inp,ipoinpc)
       elseif(textpart(1)(1:6).eq.'*CFLUX') then

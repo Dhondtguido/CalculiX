@@ -106,7 +106,7 @@
          enddo
       enddo
 !     
-      call rs(ndim,ndim,cmm,al,matz,alz,fv1,fv2,ier)
+      call eigsymd(ndim,cmm,al,matz,alz,ier)
 !     
 !     normalize the eigenvectors
 !     

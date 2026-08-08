@@ -158,7 +158,8 @@ void resultsini(ITG *nk,double *v,ITG *ithermal,char *filab,ITG *iperturb,
     if(*calcul_fn!=1){
       for(i=0;i<*nprint;i++){
 	if((strcmp1(&prlab[6*i],"RF  ")==0)||
-	   (strcmp1(&prlab[6*i],"RFL ")==0)){
+	   (strcmp1(&prlab[6*i],"RFL ")==0)||
+	   (strcmp1(&prlab[6*i],"RECU")==0)){
 	  *calcul_fn=1;
 	  break;
 	}
@@ -379,7 +380,8 @@ void resultsini(ITG *nk,double *v,ITG *ithermal,char *filab,ITG *iperturb,
     if(*intpointvart!=1){
       for(i=0;i<*nprint;i++){
 	if((strcmp1(&prlab[6*i],"HFL")==0)||
-	   (strcmp1(&prlab[6*i],"RFL")==0)){
+	   (strcmp1(&prlab[6*i],"RFL")==0)||
+	   (strcmp1(&prlab[6*i],"RECU")==0)){
 	  *intpointvart=1;
 	  break;
 	}

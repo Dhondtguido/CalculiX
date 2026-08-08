@@ -22,16 +22,13 @@
 !     calling sutherland-hodgeman algorithm
 !     
 !     [in]       nopes		number of slave nodes for current slave surface
-!     [in]       slavstraight	plane equations for mean slave plane	
 !     [in]       xn			mean slave normal
 !     [in]       xns		slave normals in nodes of slave surface
 !     [in]       xl2s		current positions of lsave nodes
-!     [in]       xl2sp		projected positions of slave nodes
-!     [in]       ipe	 	(i) pointer to ime for node i 
-!     [in]       ime     		... cataloging the edges with node i
+!     [in]       xl3sp		projected positions of slave nodes
 !     [in,out]   iactiveline 	field storing the active master triangle lines for the active line search
 !     [in,out]   nactiveline 	number of active lines
-!     [in]       nelemm		current master element
+!     [in]       ifacem		current master element
 !     [in,out]   nintpoint		number of generated integration points
 !     [in,out]   pslavsurf		field storing position xil, etal and weight for integration point on slave side
 !     [in,out]   imastsurf		pointer into pmastsurf 
@@ -46,9 +43,9 @@
 !     [in,out]   areaslav		current covering of the slave surface (in the reference element) 
 !     
       subroutine treatmasterface_mortar(
-     &     nopes,slavstraight,xn,xns,xl2s,xl2sp,
+     &     nopes,xn,xns,xl2s,xl3sp,
      &     ipe,ime,iactiveline,nactiveline,
-     &     nelemm,nintpoint,pslavsurf,
+     &     ifacem,nintpoint,pslavsurf,
      &     imastsurf,pmastsurf,xl2m,nnodelem,xl2m2,nmp,
      &     nodem,gapmints,issurf,areaslav,clearance,
      &     cl2s,cl2m,shrink,reltime)
@@ -59,16 +56,17 @@
 !     
       logical shrink
 !     
-      integer nvertex,nopes,ipe(*),ime(4,*),iactiveline(3,*),
-     &     nactiveline,ifreeintersec,nmp,i,j,k,nintpoint,imastsurf(*),
-     &     nnodelem,ijk,nodem(*),modf,nelemm,k_max,issurf,ii,jj,nipold
+      integer nvertex,nopes,ipe(*),ime(4,*),iactiveline(2,*),
+     &     nactiveline,nmp,i,j,k,nintpoint,imastsurf(*),
+     &     nnodelem,ijk,nodem(*),modf,ifacem,num_of_tria,issurf,ii,
+     &     nipold
 !     
-      real*8 pvertex(3,13),slavstraight(36),xn(3),
+      real*8 pvertex(3,13),xn(4),
      &     xilm,etlm,xnl(3),clearance,p(3),dist,
      &     xl2s(3,*),p1(3),p2(3),pslavsurf(3,*),
      &     xil,etl,area,areax,areay,areaz,pmastsurf(2,*),
      &     xl2m(3,8),xl2m2(3,8),al,gapmints(*),err,xns(3,8),
-     &     xl2sp(3,*),xl2mp(3,8),cgp(3),spm,spmc,
+     &     xl3sp(3,*),xl2mp(3,8),cgp(3),spm,spmc,
      &     pm(3),ph(3),reltime,ps(3),xit(3),etat(3),phc(3),
      &     areaslav,cl2s(3,8),cl2m(3,8),psc(3),pmc(3)
 !     
@@ -77,7 +75,6 @@
 !     
       include "gauss.f"
 !     
-      ifreeintersec=0
       err=1.d-6
       nvertex=0
       nipold=nintpoint
@@ -87,20 +84,17 @@
       do j=1,nmp
         al=-xn(1)*xl2m2(1,j)-xn(2)*
      &       xl2m2(2,j)-xn(3)*
-     &       xl2m2(3,j)-slavstraight(nopes*4+4)
+     &       xl2m2(3,j)-xn(4)
         do k=1,3
           xl2mp(k,j)=xl2m2(k,j)+al*xn(k)    
         enddo
       enddo 
 !     
- 111  format(3(e27.20))
-!     
 !     call Sutherland-Hodgman Algo
 !     
-      call sutherland_hodgman(nopes,xn,xl2sp,xl2mp,nodem,
+      call sutherland_hodgman(nopes,xn,xl3sp,xl2mp,nodem,
      &     ipe,ime,iactiveline,nactiveline,
-     &     ifreeintersec,nelemm,nmp,
-     &     nvertex,pvertex) 
+     &     ifacem,nmp,nvertex,pvertex) 
 !     
 !     do we have a degenerated triangle?
 !     
@@ -114,14 +108,14 @@
           cgp(k)=pvertex(k,nvertex)
         enddo
         nvertex=nvertex-1
-        k_max=1
+        num_of_tria=1
       else
         do i=1,nvertex
           do k=1,3
             cgp(k)=cgp(k)+pvertex(k,i)/nvertex
           enddo
         enddo
-        k_max=nvertex
+        num_of_tria=nvertex
       endif 
 !     
 !     Project center point back on slave face
@@ -130,13 +124,13 @@
 !     
 !     generating integration points on the slave surface S
 !     
-      do k=1,k_max
+      do k=1,num_of_tria
 !     
 !     Project back on slave surface
 !     
-        call attachline(xl2s,pvertex(1:3,modf(nvertex,k)),
+        call attachline(xl2s,pvertex(1,modf(nvertex,k)),
      &       nopes,xit(1),etat(1),xn,p,dist)
-        call attachline(xl2s,pvertex(1:3,modf(nvertex,k+1)),
+        call attachline(xl2s,pvertex(1,modf(nvertex,k+1)),
      &       nopes,xit(2),etat(2),xn,p,dist)
         p1(1)=xit(1)-xit(3)
         p1(2)=etat(1)-etat(3)
@@ -232,7 +226,7 @@
           pslavsurf(3,nintpoint)=area*weight2d6(i)/0.5
           pmastsurf(1,nintpoint)=xilm
           pmastsurf(2,nintpoint)=etlm
-          imastsurf(nintpoint)=nelemm
+          imastsurf(nintpoint)=ifacem
         enddo
       enddo
 !     

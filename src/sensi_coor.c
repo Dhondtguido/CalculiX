@@ -60,7 +60,8 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		ITG *nzsprevstep,ITG *nlabel,double *physcon,char *jobnamef,
 		ITG *iponor2d,ITG *knor2d,ITG *ne2d,ITG *iponoel2d,ITG *inoel2d,
 		ITG *mpcend,double *dgdxglob,double *g0,ITG **nodedesip,
-		ITG *ndesi,ITG *nobjectstart,double **xdesip,ITG *rig){
+		ITG *ndesi,ITG *nobjectstart,double **xdesip,ITG *rig,
+		double *fei){
 	     
   char description[13]="            ",*lakon=NULL,cflag[1]=" ",fneig[132]="",
     stiffmatrix[132]="",*lakonfa=NULL,*objectset=NULL;
@@ -100,7 +101,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     distmin,*df=NULL,*dgdx=NULL,sigma=0,*extnor=NULL,*veold=NULL,
     *accold=NULL,bet,gam,sigmak=1.,sigmal=1.,dtime,time,reltime=1.,
     *fint=NULL,*xnor=NULL,*dgdxdy=NULL,*x=NULL,*y=NULL,*xo=NULL,*yo=NULL,
-    *zo=NULL,*dist=NULL,*dummy=NULL;
+    *zo=NULL,*dist=NULL,*dummy=NULL,fmin,fmax,pi;
 
   FILE *f1;
   
@@ -112,6 +113,8 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   kon=*konp;ielmat=*ielmatp;ielorien=*ielorienp;objectset=*objectsetp;
   nodedesi=*nodedesip;xdesi=*xdesip;
 
+  pi=4.*atan(1.);
+  
   tper=&timepar[1];
 
   time=*tper;
@@ -153,9 +156,13 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       idisplacement=1;
     }else if(strcmp1(&objectset[i*405],"EIGENFREQUENCY")==0){
       ieigenfrequency=1;
+      fmin=2*pi*fei[1];
+      fmax=2*pi*fei[2];
     }else if(strcmp1(&objectset[i*405],"MODALSTRESS")==0){
       ieigenfrequency=1;
       modalstress=1;
+      fmin=2*pi*fei[1];
+      fmax=2*pi*fei[2];
     }else if(strcmp1(&objectset[i*405],"GREEN")==0){
       ieigenfrequency=1;
       igreen=1;
@@ -538,7 +545,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       NNEW(ad,double,neq[1]);
       NNEW(adb,double,neq[1]);
       NNEW(au,double,nzsprevstep[2]);
-      NNEW(aub,double,nzs[1]);
+      NNEW(aub,double,nzsprevstep[2]);
 	  
       if(fread(ad,sizeof(double),neq[1],f1)!=neq[1]){
 	printf(" *ERROR in sensi_coor reading the diagonal of the stiffness matrix in the eigenvalue file");
@@ -567,7 +574,7 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	exit(0);
       }
 	  
-      if(fread(aub,sizeof(double),nzs[1],f1)!=nzs[1]){
+      if(fread(aub,sizeof(double),nzsprevstep[2],f1)!=nzsprevstep[2]){
 	printf(" *ERROR in sensi_coor reading the off-diagonals of the mass matrix in the  eigenvalue file");
 	printf(" *INFO  in sensi_coor: if there are problems reading the .eig file this may be due to:\n");
 	printf("        1) the nonexistence of the .eig file\n");
@@ -760,6 +767,26 @@ void sensi_coor(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       
     NNEW(dgdx,double,*ndesi**nobject);
 
+    /* Check for user defined lower frequency limit for the output */
+    
+    if(ieigenfrequency==1){
+      if(fmin>-0.5){
+        if(fmin*fmin>d[iev]){
+	  continue;
+	}
+      }
+    }
+
+    /* Check for user defined upper frequency limit for the output */
+    
+    if(ieigenfrequency==1){
+      if(fmax>-0.5){
+        if(fmax*fmax<d[iev]){
+	  continue;
+	}
+      }
+    }
+    
     /* Reading the "raw" sensititities */
 
     iread=0;

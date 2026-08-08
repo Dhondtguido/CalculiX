@@ -72,24 +72,24 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	       ITG *istep,ITG *nmat,ITG *ielprop,double *prop,char *typeboun,
 	       ITG *mortar,ITG *mpcinfo,double *tietol,ITG *ics,
 	       char *orname,ITG *itempuser,double *t0g,double *t1g,
-	       ITG *jmax){
+	       ITG *jmax,ITG *imastload,double *pmastload){
   
   char description[13]="            ",*lakon=NULL,stiffmatrix[132]="",
     jobnamef[396]="";
 
   ITG *inum=NULL,k,*icol=NULL,*irow=NULL,ielas=0,icmd=0,iinc=1,nasym=0,i,j,ic,ir,
     mass[2]={0,0},stiffness=1,buckling=0,rhsi=1,intscheme=0,*ncocon=NULL,
-    *nshcon=NULL,mode=-1,noddiam=-1,coriolis=0,iout,
+    *nshcon=NULL,mode=-1,noddiam=-1,coriolis=0,iout,*inoel=NULL,
     *itg=NULL,ntg=0,symmetryflag=0,inputformat=0,ngraph=1,im,
     mt=mi[1]+1,ne0,*integerglob=NULL,iglob=0,*ipneigh=NULL,*neigh=NULL,
     icfd=0,*inomat=NULL,*islavact=NULL,*islavnode=NULL,*nslavnode=NULL,
     *islavsurf=NULL,nretain,*iretain=NULL,*noderetain=NULL,*ndirretain=NULL,
-    nmethodl,nintpoint,ifacecount,memmpc_,mpcfree,icascade,maxlenmpc,
+    nintpoint,ifacecount,memmpc_,mpcfree,icascade,maxlenmpc,
     ncont=0,*itietri=NULL,*koncont=NULL,nslavs=0,ismallsliding=0,
     *itiefac=NULL,*imastnode=NULL,*nmastnode=NULL,*imastop=NULL,iitsta,
     *iponoels=NULL,*inoels=NULL,*ipe=NULL,*ime=NULL,iit=-1,iflagact=0,
     icutb=0,*kon=NULL,*ipkon=NULL,*ielmat=NULL,ialeatoric=0,kscale=1,
-    *iponoeln=NULL,*inoeln=NULL,*iponoel=NULL,
+    *iponoeln=NULL,*inoeln=NULL,*iponoel=NULL,inoelsize,nramp=-1,
     *ielorien=NULL,network=0,nrhs=1,iperturbsav,mscalmethod=0,*jqw=NULL,
     *iroww=NULL,nzsw,*islavquadel=NULL,*irowt=NULL,*jqt=NULL,
     mortartrafoflag=0,nmethodold=*nmethod;
@@ -126,8 +126,8 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
      (needed in resultsforc.c) */
   
   NNEW(iponoel,ITG,*nk);
-  FORTRAN(nodebelongstoel,(iponoel,lakon,ipkon,kon,ne));
-  
+  FORTRAN(nodebelongstoel,(iponoel,inoel,&inoelsize,lakon,ipkon,kon,ne,&nramp));
+ 
   for(k=0;k<3;k++){
     strcpy1(&jobnamef[k*132],&jobnamec[k*132],132);
   }
@@ -410,14 +410,12 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
     NNEW(au,double,nzs[2]);
     rhsi=0;
-    nmethodl=2;
 
   }else{
 
     /* linear static calculation */
 
     NNEW(au,double,*nzs);
-    nmethodl=*nmethod;
 
     /* if submodel calculation with a global model obtained by
        a *FREQUENCY calculation: replace stiffness matrix K by
@@ -434,7 +432,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   mafillsmmain(co,nk,kon,ipkon,lakon,ne,nodeboun,ndirboun,xbounact,nboun,
 	       ipompc,nodempc,coefmpc,nmpc,nodeforc,ndirforc,xforcact,
 	       nforc,nelemload,sideload,xloadact,nload,xbodyact,ipobody,
-	       nbody,cgr,ad,au,fext,nactdof,icol,jq,irow,neq,nzl,&nmethodl,
+	       nbody,cgr,ad,au,fext,nactdof,icol,jq,irow,neq,nzl,nmethod,
 	       ikmpc,ilmpc,ikboun,ilboun,
 	       elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
 	       ielorien,norien,orab,ntmat_,
@@ -448,11 +446,10 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	       tieset,istartset,iendset,ialset,ntie,&nasym,pslavsurf,
 	       pmastsurf,mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
 	       iponoeln,inoeln,&network,ntrans,inotr,trab,smscale,&mscalmethod,
-	       set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag);
+	       set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag,
+	       imastload,pmastload);
 
   /* check for negative Jacobians */
-
-  if(nmethodl==0) *nmethod=0;
 
   if(nasym==1){
     RENEW(au,double,2*nzs[1]);
@@ -476,7 +473,8 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		   xstateini,xstate,thicke,
 		   integerglob,doubleglob,tieset,istartset,iendset,
 		   ialset,ntie,&nasym,pslavsurf,pmastsurf,mortar,clearini,
-		   ielprop,prop,&ne0,&kscale,iponoeln,inoeln,&network,set,nset);
+		   ielprop,prop,&ne0,&kscale,iponoeln,inoeln,&network,set,
+		   nset,imastload,pmastload);
   }
 
   /* determining the right hand side */
@@ -847,7 +845,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	     nstate_,istep,&iinc,iperturb,ener,mi,output,ithermal,
 	     qfn,ialset,istartset,iendset,trab,inotr,ntrans,orab,
 	     ielorien,norien,sti,veold,&noddiam,set,nset,emn,thicke,
-	     jobnamec,&ne0,cdn,mortar,nmat,qfx,ielprop,prop,damn,&errn);
+	     jobnamec,&ne0,cdn,mortar,nmat,qfx,ielprop,prop,damn,&errn,accold);
     }
     else{
       if(strcmp1(&filab[1044],"ZZS")==0){
@@ -862,24 +860,24 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	  thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,ielprop,
-	  prop,sti,damn,&errn);
+	  prop,sti,damn,&errn,accold);
       if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
     }
 
     /* mesh refinement */
   
-      if(strcmp1(&filab[4089],"RM")==0){
-	refinemesh(nk,ne,co,ipkon,kon,v,veold,stn,een,emn,epn,enern,
-		   qfn,errn,filab,mi,lakon,jobnamec,istartset,iendset,
-		   ialset,set,nset,matname,ithermal,output,nmat,
-		   nelemload,nload,sideload,nodeforc,
-		   nforc,nodeboun,nboun,nodempc,ipompc,nmpc);
+    if(strcmp1(&filab[4089],"RM")==0){
+      refinemesh(nk,ne,co,ipkon,kon,v,veold,stn,een,emn,epn,enern,
+		 qfn,errn,filab,mi,lakon,jobnamec,istartset,iendset,
+		 ialset,set,nset,matname,ithermal,output,nmat,
+		 nelemload,nload,sideload,nodeforc,
+		 nforc,nodeboun,nboun,nodempc,ipompc,nmpc);
 
-	/* free errn */
+      /* free errn */
 	
-	if(((*nmethod!=5)||(mode==-1))&&
-	    ((strcmp1(&filab[1044],"ERR")==0)&&(*ithermal!=2))) SFREE(errn);
-      }
+      if(((*nmethod!=5)||(mode==-1))&&
+	 ((strcmp1(&filab[1044],"ERR")==0)&&(*ithermal!=2))) SFREE(errn);
+    }
 
     /* updating the .sta file */
 
@@ -894,30 +892,44 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     if(strcmp1(&filab[522],"ENER")==0) SFREE(enern);
     if(strcmp1(&filab[2175],"CONT")==0) SFREE(cdn);
 
-  }
-  else {
+  }else{
 
-    /* error occurred in mafill: storing the geometry in frd format */
+    /* error occurred in mafill: storing the geometry in frd format
+       option 1: smoothing is requested */
+    
+      if(strcmp1(&filab[4089],"RPONLY")==0){
+	strcpy1(&filab[4089],"RMSMOO",6);
+	refinemesh(nk,ne,co,ipkon,kon,v,veold,stn,een,emn,epn,enern,
+		   qfn,errn,filab,mi,lakon,jobnamec,istartset,iendset,
+		   ialset,set,nset,matname,ithermal,output,nmat,
+		   nelemload,nload,sideload,nodeforc,
+		   nforc,nodeboun,nboun,nodempc,ipompc,nmpc);
+	SFREE(au);SFREE(ad);SFREE(b);
+	if(iglob<0){SFREE(adb);SFREE(aub);}
+	
+      }else{
 
-    ++*kode;
-    NNEW(inum,ITG,*nk);for(k=0;k<*nk;k++) inum[k]=1;
-    if(strcmp1(&filab[1044],"ZZS")==0){
-      NNEW(neigh,ITG,40**ne);
-      NNEW(ipneigh,ITG,*nk);
-    }
-    ptime=*ttime+time;
-    frd(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,
-	kode,filab,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
-	nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
-	ntrans,orab,ielorien,norien,description,ipneigh,neigh,
-	mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
-	cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
-	thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,ielprop,
-	prop,sti,damn,&errn);
-    if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
-    SFREE(inum);
-    if(nmethodold==0){FORTRAN(stopwithout201,());}else{FORTRAN(stop,());}
-
+	/* option 2: no smoothing; the program stops */
+	
+	++*kode;
+	NNEW(inum,ITG,*nk);for(k=0;k<*nk;k++) inum[k]=1;
+	if(strcmp1(&filab[1044],"ZZS")==0){
+	  NNEW(neigh,ITG,40**ne);
+	  NNEW(ipneigh,ITG,*nk);
+	}
+	ptime=*ttime+time;
+	frd(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,
+	    kode,filab,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
+	    nstate_,istep,&iinc,ithermal,qfn,&mode,&noddiam,trab,inotr,
+	    ntrans,orab,ielorien,norien,description,ipneigh,neigh,
+	    mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
+	    cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
+	    thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,ielprop,
+	    prop,sti,damn,&errn,accold);
+	if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
+	SFREE(inum);
+	if(nmethodold==0){FORTRAN(stopwithout201,());}else{FORTRAN(stop,());}
+      }
   }
 
   if(*mortar>-2){

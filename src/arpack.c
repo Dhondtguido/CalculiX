@@ -75,7 +75,8 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	    ITG *ifacecount,ITG **islavsurfp,double **pslavsurfp,
 	    double **clearinip,ITG *nmat,char *typeboun,
 	    ITG *ielprop,double *prop,char *orname,ITG *inewton,
-	    double *t0g,double *t1g,double *alpha){
+	    double *t0g,double *t1g,double *alpha,ITG *imastload,
+	    double *pmastload){
 
   /* calls the Arnoldi Package (ARPACK) */
   
@@ -84,7 +85,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 
   ITG *inum=NULL,k,ido,ldz,iparam[11],ipntr[14],lworkl,ngraph=1,im,
     info,rvec=1,*select=NULL,lfin,j,lint,iout,ielas=1,icmd=0,mt=mi[1]+1,
-    iinc=1,nev,ncv,mxiter,jrow,iprestrsav=0,
+    iinc=1,nev,ncv,mxiter,jrow,iprestrsav=0,nramp=-1,inoelsize,*inoel=NULL,
     mass[2]={1,1}, stiffness=1, buckling=0, rhsi=0, intscheme=0,noddiam=-1,
     coriolis=0,symmetryflag=0,inputformat=0,*ipneigh=NULL,*neigh=NULL,ne0,
     *integerglob=NULL,nasym=0,zero=0,ncont=0,*itietri=NULL,kref,
@@ -135,7 +136,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
      (needed in resultsforc.c) */
   
   NNEW(iponoel,ITG,*nk);
-  FORTRAN(nodebelongstoel,(iponoel,lakon,ipkon,kon,ne));
+  FORTRAN(nodebelongstoel,(iponoel,inoel,&inoelsize,lakon,ipkon,kon,ne,&nramp));
 
   if(*nmethod==13){
     *nmethod=2;
@@ -219,6 +220,11 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	    iperturb,ikboun,nboun,co,istep,&xnoels);
 
     if(ncont!=0){
+
+      if((*mortar<0)||(*mortar>1)){
+	printf(" *ERROR in arpack: only penalty contact is allowed in\n        combination with a perturbation *FREQUENCY step\n\n");
+	FORTRAN(stop,());
+      }	
 
       NNEW(cg,double,3*ncont);
       NNEW(straight,double,16*ncont);
@@ -493,7 +499,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
   NNEW(au,double,nzs[2]);
 
   NNEW(adb,double,neq[1]);
-  NNEW(aub,double,nzs[1]);
+  NNEW(aub,double,nzs[2]);
 
   NNEW(fext,double,neq[1]);
 
@@ -514,8 +520,10 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 		 xstateini,xstate,thicke,integerglob,doubleglob,
 		 tieset,istartset,iendset,ialset,ntie,&nasym,pslavsurf,
 		 pmastsurf,mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
-		 iponoeln,inoeln,&network,ntrans,inotr,trab,smscale,&mscalmethod,
-		 set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag);
+		 iponoeln,inoeln,&network,ntrans,inotr,trab,smscale,
+		 &mscalmethod,
+		 set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag,
+		 imastload,pmastload);
   }
   else{
     mafillsmmain(co,nk,kon,ipkon,lakon,ne,nodeboun,ndirboun,xboun,nboun,
@@ -534,8 +542,10 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 		 xstateini,xstate,thicke,integerglob,doubleglob,
 		 tieset,istartset,iendset,ialset,ntie,&nasym,pslavsurf,
 		 pmastsurf,mortar,clearini,ielprop,prop,&ne0,fnext,&kscale,
-		 iponoeln,inoeln,&network,ntrans,inotr,trab,smscale,&mscalmethod,
-		 set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag);
+		 iponoeln,inoeln,&network,ntrans,inotr,trab,smscale,
+		 &mscalmethod,
+		 set,nset,islavquadel,aut,irowt,jqt,&mortartrafoflag,
+		 imastload,pmastload);
 
     if(nasym==1){
       RENEW(au,double,nzs[2]+nzs[1]);
@@ -560,7 +570,8 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 		     xstateini,xstate,thicke,
 		     integerglob,doubleglob,tieset,istartset,iendset,
 		     ialset,ntie,&nasym,pslavsurf,pmastsurf,mortar,clearini,
-		     ielprop,prop,&ne0,&kscale,iponoeln,inoeln,&network,set,nset);
+		     ielprop,prop,&ne0,&kscale,iponoeln,inoeln,&network,set,
+		     nset,imastload,pmastload);
     }
   }
 
@@ -589,7 +600,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
-	ielprop,prop,sti,damn,&errn);
+	ielprop,prop,sti,damn,&errn,accold);
     
     if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}
     SFREE(inum);FORTRAN(stop,());
@@ -989,7 +1000,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
       printf(" *ERROR saving the diagonal of the mass matrix to the eigenvalue file...");
       exit(0);
     }
-    if(fwrite(aub,sizeof(double),nzs[1],f1)!=nzs[1]){
+    if(fwrite(aub,sizeof(double),nzs[2],f1)!=nzs[2]){
       printf(" *ERROR saving the off-diagonal terms of the mass matrix to the eigenvalue file...");
       exit(0);
     }
@@ -1190,7 +1201,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	  thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
-	  ielprop,prop,sti,damn,&errn);
+	  ielprop,prop,sti,damn,&errn,accold);
     }else{
       frd(co,nk,kon,ipkon,lakon,ne,v,stn,inum,nmethod,
 	  kode,filab,een,t1old,fn,&freq,epn,ielmat,matname,enern,xstaten,
@@ -1199,7 +1210,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	  mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	  cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
 	  thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
-	  ielprop,prop,sti,damn,&errn);
+	  ielprop,prop,sti,damn,&errn,accold);
     }
 
     if(strcmp1(&filab[1044],"ZZS")==0){SFREE(ipneigh);SFREE(neigh);}

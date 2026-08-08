@@ -19,10 +19,10 @@
       subroutine gen3delem(kon,ipkon,lakon,ne,ipompc,nodempc,coefmpc,
      &     nmpc,nmpc_,mpcfree,ikmpc,ilmpc,labmpc,ikboun,ilboun,nboun,
      &     nboun_,nodeboun,ndirboun,xboun,iamboun,nam,
-     &     inotr,trab,nk,nk_,iponoel,inoel,iponor,xnor,thicke,thickn,
-     &     knor,istep,offset,t0,t1,ikforc,ilforc,rig,nforc,
-     &     nforc_,nodeforc,ndirforc,xforc,iamforc,sideload,
-     &     nload,ithermal,ntrans,co,ixfree,ikfree,inoelfree,iponoelmax,
+     &     inotr,trab,nk,nk_,iponoel2d,inoel2d,iponor,xnor,thicke,
+     &     thickn,knor,istep,offset,t0,t1,ikforc,ilforc,rig,nforc,
+     &     nforc_,nodeforc,ndirforc,xforc,iamforc,sideload,nload,
+     &     ithermal,ntrans,co,ixfree,ikfree,inoel2dfree,iponoel2dmax,
      &     iperturb,tinc,tper,tmin,tmax,ctrl,typeboun,nmethod,nset,set,
      &     istartset,iendset,ialset,prop,ielprop,vold,mi,nkon,ielmat,
      &     icomposite,t0g,t1g,idefforc,iamt1,orname,orab,norien,norien_,
@@ -47,10 +47,10 @@
      &     ilmpc(*),kon(*),ipkon(*),ne,indexe,i,j,node,index,
      &     ikboun(*),ilboun(*),nboun,nboun_,ishift,iexpand,
      &     neigh(7,8),nodeboun(*),ndirboun(*),nk,iflagpl,
-     &     nk_,iponoel(*),inoel(3,*),inoelfree,istep,nmpcold,
+     &     nk_,iponoel2d(*),inoel2d(3,*),inoel2dfree,istep,nmpcold,
      &     ikforc(*),ilforc(*),nodeforc(2,*),ndirforc(*),iamforc(*),
      &     nforc,nforc_,ithermal(*),nload,iamboun(*),itransaxial,
-     &     ntrans,inotr(2,*),nam,iponoelmax,iperturb(*),numnod,
+     &     ntrans,inotr(2,*),nam,iponoel2dmax,iperturb(*),numnod,
      &     rig(*),nmethod,nset,istartset(*),iendset(*),ialset(*),nkon,
      &     ielprop(*),mi(*),nope,ilen,
      &     ielmat(mi(3),*),iponor(2,*),knor(*),ixfree,ikfree,icomposite,
@@ -101,10 +101,10 @@
 !     catalogueing the element per node relationship for shell/beam
 !     elements and transferring the nodal thickness to the elements
 !     
-!     inoelfree=1 means that there is at least one 1D or 2D element
-!     in the structure. Otherwise inoelfree=0.
+!     inoel2dfree=1 means that there is at least one 1D or 2D element
+!     in the structure. Otherwise inoel2dfree=0.
 !     
-      if((istep.eq.1).and.(inoelfree.eq.1)) then
+      if((istep.eq.1).and.(inoel2dfree.eq.1)) then
 !     
 !     shift of the connectivity for composite elements
 !     
@@ -146,12 +146,12 @@
             indexe=ipkon(i)
             do j=1,numnod
               node=kon(indexe+j)
-              iponoelmax=max(iponoelmax,node)
-              inoel(1,inoelfree)=i
-              inoel(2,inoelfree)=j
-              inoel(3,inoelfree)=iponoel(node)
-              iponoel(node)=inoelfree
-              inoelfree=inoelfree+1
+              iponoel2dmax=max(iponoel2dmax,node)
+              inoel2d(1,inoel2dfree)=i
+              inoel2d(2,inoel2dfree)=j
+              inoel2d(3,inoel2dfree)=iponoel2d(node)
+              iponoel2d(node)=inoel2dfree
+              inoel2dfree=inoel2dfree+1
 !     
 !     default is element thickness unless NODAL THICKNESS
 !     was specified on the *SHELL SECTION or *BEAM SECTION
@@ -224,9 +224,9 @@
 !     
         nmpcold=nmpc
 !     
-        call gen3dnor(nk,nk_,co,iponoel,inoel,iponoelmax,kon,ipkon,
-     &       lakon,ne,thicke,offset,iponor,xnor,knor,rig,iperturb,tinc,
-     &       tper,tmin,tmax,ctrl,ipompc,nodempc,coefmpc,nmpc,nmpc_,
+        call gen3dnor(nk,nk_,co,iponoel2d,inoel2d,iponoel2dmax,kon,
+     &       ipkon,lakon,ne,thicke,offset,iponor,xnor,knor,rig,iperturb,
+     &       tinc,tper,tmin,tmax,ctrl,ipompc,nodempc,coefmpc,nmpc,nmpc_,
      &       mpcfree,ikmpc,ilmpc,labmpc,ikboun,ilboun,nboun,nboun_,
      &       nodeboun,ndirboun,xboun,iamboun,typeboun,nam,ntrans,inotr,
      &       trab,ikfree,ixfree,nmethod,ithermal,istep,mi,icomposite,
@@ -239,7 +239,7 @@
 !     if there is any plane stress, plane strain or axisymmetric
 !     element the structure should lie in the z=0 plane
 !     
-        if(inoelfree.ne.0) then
+        if(inoel2dfree.ne.0) then
           do i=1,ne
             if(ipkon(i).lt.0) cycle
             if((lakon(i)(1:2).eq.'CP').or.
@@ -265,7 +265,7 @@
 !     
 !     1D and 2D elements
 !     
-        if(inoelfree.ne.0) then
+        if(inoel2dfree.ne.0) then
           do i=1,ne
             if(ipkon(i).lt.0) cycle
             if((lakon(i)(1:2).eq.'CP').or.
@@ -416,7 +416,7 @@ c     Bernhardi end
 !     filling the new KNOT MPC's (needs the coordinates
 !     of the expanded nodes)
 !     
-        if(inoelfree.ne.0) then
+        if(inoel2dfree.ne.0) then
           call fillknotmpc(co,ipompc,nodempc,coefmpc,labmpc,
      &         nmpc,nmpcold,mpcfree,idim,e1,e2,xt1)
         endif
@@ -426,20 +426,22 @@ c     Bernhardi end
 !     generating MPC's to connect shells and beams with solid
 !     elements or spring elements or mass elements
 !     
-      if((inoelfree.ne.0).and.(istep.eq.1)) then
-        call gen3dconnect(kon,ipkon,lakon,ne,iponoel,inoel,iponoelmax,
+      if((inoel2dfree.ne.0).and.(istep.eq.1)) then
+        call gen3dconnect(kon,ipkon,lakon,ne,iponoel2d,inoel2d,
+     &       iponoel2dmax,
      &       rig,iponor,xnor,knor,ipompc,nodempc,coefmpc,nmpc,
      &       nmpc_,mpcfree,ikmpc,ilmpc,labmpc,vold,ikboun,ilboun,nboun,
      &       nboun_,nodeboun,ndirboun,xboun,iamboun,typeboun,ithermal,
      &       mi,trab,ntrans,nmethod,nk,nk_,nam,inotr,iperturb,co)
       endif
 !     
-      if(inoelfree.ne.0) then
+      if(inoel2dfree.ne.0) then
 !     
 !     multiplying existing boundary conditions
 !     
         call gen3dboun(ikboun,ilboun,nboun,nboun_,nodeboun,ndirboun,
-     &       xboun,iamboun,typeboun,iponoel,inoel,iponoelmax,kon,ipkon,
+     &       xboun,iamboun,typeboun,iponoel2d,inoel2d,iponoel2dmax,kon,
+     &       ipkon,
      &       lakon,ne,iponor,xnor,knor,ipompc,nodempc,coefmpc,nmpc,
      &       nmpc_,mpcfree,ikmpc,ilmpc,labmpc,rig,ntrans,inotr,trab,nam,
      &       nk,nk_,co,nmethod,iperturb,istep,vold,mi,ne2boun)
@@ -449,7 +451,7 @@ c     Bernhardi end
 !     for 2d elements, mean of corner nodes for 1d elements)
 !     
         if(istep.eq.1) then
-          call gen3dsurf(iponoel,inoel,iponoelmax,kon,ipkon,
+          call gen3dsurf(iponoel2d,inoel2d,iponoel2dmax,kon,ipkon,
      &         lakon,ne,iponor,knor,ipompc,nodempc,coefmpc,nmpc,nmpc_,
      &         mpcfree,ikmpc,ilmpc,labmpc,rig,ntrans,inotr,trab,nam,nk,
      &         nk_,co,nmethod,iperturb,nset,set,istartset,iendset,
@@ -465,17 +467,15 @@ c     Bernhardi end
 !     coordinates can be defined which correspond to
 !     MPC's in global coordinates
 !     
-c     if(istep.eq.1) then
         call gen3dmpc(ipompc,nodempc,coefmpc,nmpc,nmpc_,mpcfree,
-     &       ikmpc,ilmpc,labmpc,iponoel,inoel,iponoelmax,kon,ipkon,
-     &       lakon,ne,iponor,xnor,knor,rig)
-c     endif
+     &       ikmpc,ilmpc,labmpc,iponoel2d,inoel2d,iponoel2dmax,kon,
+     &       ipkon,lakon,ne,iponor,xnor,knor,rig)
 !     
 !     updating the temperatures
 !     
         if(ithermal(1).gt.0) then
-          call gen3dtemp(iponoel,inoel,iponoelmax,kon,ipkon,lakon,ne,
-     &         iponor,xnor,knor,t0,t1,thicke,offset,rig,nk,nk_,co,
+          call gen3dtemp(iponoel2d,inoel2d,iponoel2dmax,kon,ipkon,lakon,
+     &         ne,iponor,xnor,knor,t0,t1,thicke,offset,rig,nk,nk_,co,
      &         istep,ithermal,vold,mi,t0g,t1g,nam,iamt1,veold)
         endif
 !     
@@ -483,9 +483,9 @@ c     endif
 !     
         call gen3dforc(ikforc,ilforc,nforc,nforc_,nodeforc,ndirforc,
      &       xforc,iamforc,ntrans,inotr,trab,rig,ipompc,nodempc,coefmpc,
-     &       nmpc,nmpc_,mpcfree,ikmpc,ilmpc,labmpc,iponoel,inoel,
-     &       iponoelmax,kon,ipkon,lakon,ne,iponor,xnor,knor,nam,nk,nk_,
-     &       co,thicke,nodeboun,ndirboun,ikboun,ilboun,nboun,nboun_,
+     &       nmpc,nmpc_,mpcfree,ikmpc,ilmpc,labmpc,iponoel2d,inoel2d,
+     &       iponoel2dmax,kon,ipkon,lakon,ne,iponor,xnor,knor,nam,nk,
+     &       nk_,co,thicke,nodeboun,ndirboun,ikboun,ilboun,nboun,nboun_,
      &       iamboun,typeboun,xboun,nmethod,iperturb,istep,vold,mi,
      &       idefforc)
       endif

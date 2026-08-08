@@ -35,7 +35,7 @@ static ITG *nk1,*kon1,*ipkon1,*ne1,*nodeboun1,*ndirboun1,*nboun1,
   *integerglob1,*istartset1,*iendset1,*ialset1,*ntie1,*nasym1,
   *mortar1,*ielprop1,*ne01,num_cpus,*kscale1,*iponoeln1,*inoeln1,
   *network1,*neapar=NULL,*nebpar=NULL,*mscalmethod1,*nset1,
-  *irowt1,*jqt1,*islavquadel1,*mortartrafoflag1;
+  *irowt1,*jqt1,*islavquadel1,*mortartrafoflag1,*imastload1;
 
 static double *co1,*xboun1,*coefmpc1,*xforc1,*xload1,*xbody1,*cgr1,
   *ad1=NULL,*au1=NULL,*fext1=NULL,*elcon1,*rhcon1,*alcon1,*alzero1,
@@ -43,7 +43,7 @@ static double *co1,*xboun1,*coefmpc1,*xforc1,*xload1,*xbody1,*cgr1,
   *plicon1,*plkcon1,*xstiff1,*dtime1,*physcon1,*shcon1,*cocon1,
   *ttime1,*time1,*xloadold1,*reltime1,*veold1,*springarea1,
   *xstateini1,*xstate1,*thicke1,*doubleglob1,*pslavsurf1,*pmastsurf1,
-  *clearini1,*prop1,*fnext1=NULL,*smscale1,*aut1;
+  *clearini1,*prop1,*fnext1=NULL,*smscale1,*aut1,*pmastload1;
 
 void mafillsmmain(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		  ITG *ne,ITG *nodeboun,ITG *ndirboun,double *xboun, 
@@ -81,7 +81,7 @@ void mafillsmmain(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		  ITG *network,ITG *ntrans,ITG *inotr,double *trab,
 		  double *smscale,ITG *mscalmethod,char *set,ITG *nset,
 		  ITG *islavquadel,double *aut,ITG *irowt,ITG *jqt,
-		  ITG *mortartrafoflag){
+		  ITG *mortartrafoflag,ITG *imastload,double *pmastload){
 
   /* mafillsmmain = main program for MAtrix FILLing of the Stiffnes
      Matrix */
@@ -188,7 +188,7 @@ void mafillsmmain(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 
   if((mass[1]==1)||((mass[0]==1)||(*buckling==1))){
     NNEW(adb1,double,num_cpus*neq[1]);
-    NNEW(aub1,double,(long long)num_cpus*nzs[1]);
+    NNEW(aub1,double,(long long)num_cpus*nzs[2]);
   }
 
   if(*nmethod==4){
@@ -236,7 +236,7 @@ void mafillsmmain(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
   iponoeln1=iponoeln;inoeln1=inoeln;network1=network;
   smscale1=smscale;mscalmethod1=mscalmethod;set1=set;nset1=nset;
   islavquadel1=islavquadel;aut1=aut;irowt1=irowt;jqt1=jqt;
-  mortartrafoflag1=mortartrafoflag; 
+  mortartrafoflag1=mortartrafoflag;imastload1=imastload;pmastload1=pmastload; 
 
   /* calculating the stiffness/mass */
 
@@ -336,12 +336,12 @@ void mafillsmmain(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
       }
     }
 
-    for(i=nzs[0];i<nzs[1];i++){
+    for(i=nzs[0];i<nzs[2];i++){
       aub[i]=aub1[i];
     }
-    for(i=nzs[0];i<nzs[1];i++){
+    for(i=nzs[0];i<nzs[2];i++){
       for(j=1;j<num_cpus;j++){
-	aub[i]+=aub1[i+(long long)j*nzs[1]];
+	aub[i]+=aub1[i+(long long)j*nzs[2]];
       }
     }
   }
@@ -358,12 +358,12 @@ void mafillsmmain(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
       }
     }
 
-    for(i=0;i<nzs[0];i++){
+    for(i=0;i<nzs[2];i++){
       aub[i]=aub1[i];
     }
-    for(i=0;i<nzs[0];i++){
+    for(i=0;i<nzs[2];i++){
       for(j=1;j<num_cpus;j++){
-	aub[i]+=aub1[i+(long long)j*nzs[1]];
+	aub[i]+=aub1[i+(long long)j*nzs[2]];
       }
     }
   }
@@ -423,10 +423,10 @@ void *mafillsmmt(ITG *i){
   }
   if(mass1[1]==1){
     indexadb=*i*neq1[1];
-    indexaub=(long long)*i*nzs1[1];
+    indexaub=(long long)*i*nzs1[2];
   }else if((mass1[0]==1)||(*buckling1==1)){
-    indexadb=*i*neq1[0];
-    indexaub=(long long)*i*nzs1[0];
+    indexadb=*i*neq1[1];
+    indexaub=(long long)*i*nzs1[2];
   }
   if(nmethod1[0]==4){
     indexfnext=*i*(mi1[1]+1)**nk1;
@@ -456,7 +456,7 @@ void *mafillsmmt(ITG *i){
 		    pmastsurf1,mortar1,clearini1,ielprop1,prop1,ne01,
 		    &fnext1[indexfnext],&nea,&neb,kscale1,iponoeln1,inoeln1,
 		    network1,smscale1,mscalmethod1,set1,nset1,islavquadel1,
-		    aut1,irowt1,jqt1,mortartrafoflag1));
+		    aut1,irowt1,jqt1,mortartrafoflag1,imastload1,pmastload1));
 
   return NULL;
 }

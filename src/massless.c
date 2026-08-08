@@ -87,7 +87,6 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
 #endif
     }else if(*isolver==8){
 #ifdef PASTIX
-      pastix_solve_cp(qb,neqtot,&symmetryflag,&nrhs);
 #endif
     }
     SFREE(jqbi);SFREE(aubi);SFREE(irowbi);
@@ -620,7 +619,6 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
 #endif
       }else if(*isolver==8){
 #ifdef PASTIX
-	pastix_solve_cp(qb,neqtot,&symmetryflag,&nrhs);
 #endif
       }
     }

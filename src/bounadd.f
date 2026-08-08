@@ -177,7 +177,10 @@ c                  i=7
                call exit(201)
             endif
             if((fixed).and.(i.lt.5)) then
-               val=vold(i,nodetrue)
+c     val=vold(i,nodetrue)  corrected on 07.28.2026:
+              val=a(1,i)*vold(1,nodetrue)+
+     &             a(2,i)*vold(2,nodetrue)+
+     &             a(3,i)*vold(3,nodetrue)
             elseif(fixed) then
                write(*,*) '*ERROR in bounadd: parameter FIXED cannot'
                write(*,*) '       be used for rotations'

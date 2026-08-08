@@ -50,10 +50,12 @@ void dynboun(double *amta,ITG *namta,ITG *nam,double *ampli, double *time,
 
   ITG idiff[3],i,j,ic,ir,im,symmetryflag=0,nrhs=1,inputformat=0;
 
-  double *xbounmin=NULL,*xbounplus=NULL,*bplus=NULL,
-    *ba=NULL,deltatime,deltatime2,deltatimesq,timemin,ttimemin,
-    timeplus,ttimeplus,*aux=NULL,*b1=NULL,*b2=NULL,*bnew=NULL;
-
+  double *xbounmin=NULL,*xbounplus=NULL,*xbounpplus=NULL,*xbounppplus=NULL,
+    *xbounv=NULL,*xbouna=NULL,*bplus=NULL,*ba=NULL,
+    deltatime,deltatime2,deltatime3,deltatimesq,timemin,ttimemin,
+    timeplus,ttimeplus,timepplus,ttimepplus,timeppplus,ttimeppplus,
+    *b1=NULL,*b2=NULL,*bnew=NULL,*x1=NULL,*x2=NULL,*xnew=NULL;
+  
 #ifdef SGI
   ITG token=1;
 #endif
@@ -61,25 +63,63 @@ void dynboun(double *amta,ITG *namta,ITG *nam,double *ampli, double *time,
   NNEW(xbounmin,double,*nboun);
   NNEW(xbounplus,double,*nboun);
 
+  NNEW(xbounv,double,*nboun);
+  NNEW(xbouna,double,*nboun);
+
+  NNEW(x1,double,*nboun);
+  NNEW(x2,double,*nboun);  
+
   /* time increment for the calculation of the change of the
      particular solution (needed to account for nonzero
      SPC's) */
 
   deltatime=*dtime;
-  deltatime2=2.*deltatime;
   deltatimesq=deltatime*deltatime;
+  deltatime2=2.*deltatime;
 
-  /* the SPC value at timemin is stored in xbounmin */
+  timeplus=*time+deltatime;
+  ttimeplus=*ttime+deltatime;
+
+  /* the SPC value at timeplus is stored in xbounplus */
+
+  FORTRAN(temploadmodal,(amta,namta,nam,ampli,&timeplus,&ttimeplus,dtime,
+			 xbounold,xboun,xbounplus,iamboun,nboun,nodeboun,ndirboun,
+			 amname,reltime));
 
   if(*init==1){
+    NNEW(xbounpplus,double,*nboun);
+    NNEW(xbounppplus,double,*nboun);
 
-    /* at the start of a new step it is assumed that the previous step
-       has reached steady state (at least for the SPC conditions) */
+    deltatime3=3.*deltatime;
+    timepplus=*time+deltatime2;
+    ttimepplus=*ttime+deltatime2;
+    timeppplus=*time+deltatime3;
+    ttimeppplus=*ttime+deltatime3;
+    
+    FORTRAN(temploadmodal,(amta,namta,nam,ampli,&timepplus,&ttimepplus,&deltatime2,
+			   xbounold,xboun,xbounpplus,iamboun,nboun,nodeboun,ndirboun,
+			   amname,reltime));   
+    FORTRAN(temploadmodal,(amta,namta,nam,ampli,&timeppplus,&ttimeppplus,&deltatime3,
+			   xbounold,xboun,xbounppplus,iamboun,nboun,nodeboun,ndirboun,
+			   amname,reltime));
 
     for(i=0;i<*nboun;i++){
-      xbounmin[i]=xbounold[i];
       xbounact[i]=xbounold[i];
+
+      /* initial velocity of SPCs */
+      xbounv[i]=(-3.*xbounact[i]+4.*xbounplus[i]-xbounpplus[i])/deltatime2;
+
+      /* initial acceleration of SPCs */
+      xbouna[i]=(2.*xbounact[i]-5.*xbounplus[i]+4.*xbounpplus[i]-xbounppplus[i])/deltatimesq;
+
+      /* SPC value at min */
+      xbounmin[i]=xbounact[i]-deltatime*xbounv[i]+(deltatimesq/2.)*xbouna[i];
+
+      x1[i]=xbouna[i]+*alpham*xbounv[i];
+      x2[i]=*betam*xbounv[i];
     }
+    SFREE(xbounpplus);
+    SFREE(xbounppplus);
   }
   else{
     timemin=*time-deltatime;
@@ -87,23 +127,26 @@ void dynboun(double *amta,ITG *namta,ITG *nam,double *ampli, double *time,
     FORTRAN(temploadmodal,(amta,namta,nam,ampli,&timemin,&ttimemin,dtime,
 			   xbounold,xboun,xbounmin,iamboun,nboun,nodeboun,ndirboun,
 			   amname,reltime));
+
+    for(i=0;i<*nboun;i++){
+
+      /* velocity of SPCs */
+      xbounv[i]=(xbounplus[i]-xbounmin[i])/deltatime2;
+    
+      /* acceleration of SPCs */
+      xbouna[i]=(xbounplus[i]-2.*xbounact[i]+xbounmin[i])/deltatimesq;
+
+      x1[i]=xbouna[i]+*alpham*xbounv[i];
+      x2[i]=*betam*xbounv[i];
+    }
   }
-
-  /* the SPC value at timeplus is stored in xbounplus */
-
-  timeplus=*time+deltatime;
-  ttimeplus=*ttime+deltatime;
-  FORTRAN(temploadmodal,(amta,namta,nam,ampli,&timeplus,&ttimeplus,dtime,
-			 xbounold,xboun,xbounplus,iamboun,nboun,nodeboun,ndirboun,
-			 amname,reltime));
 
   NNEW(bplus,double,neq[1]);
   NNEW(ba,double,neq[1]);
   NNEW(b1,double,neq[1]);
   NNEW(b2,double,neq[1]);
 
-  /* check whether boundary conditions changed 
-     comparison of min with prev */
+  /* initial static displacements resulting from SPCs  */
 
   if(*init==1){
     for(i=0;i<*nboun;i++){
@@ -111,31 +154,43 @@ void dynboun(double *amta,ITG *namta,ITG *nam,double *ampli, double *time,
       for(j=jq[ic]-1;j<jq[ic+1]-1;j++){
 	ir=irow[j]-1;
 	bmin[ir]=bmin[ir]-au[j]*xbounmin[i];
+	bact[ir]=bact[ir]-au[j]*xbounact[i];
+	bplus[ir]=bplus[ir]-au[j]*xbounplus[i];
       }
     }
     if(*isolver==0){
 #ifdef SPOOLES
       spooles_solve(bmin,&neq[1]);
+      spooles_solve(bact,&neq[1]);
+      spooles_solve(bplus,&neq[1]);
 #endif
     }
     else if(*isolver==4){
 #ifdef SGI
       sgi_solve(bmin,token);
+      sgi_solve(bact,token);
+      sgi_solve(bplus,token);
 #endif
     }
     else if(*isolver==5){
 #ifdef TAUCS
       tau_solve(bmin,&neq[1]);
+      tau_solve(bact,&neq[1]);
+      tau_solve(bplus,&neq[1]);
 #endif
     }
     if(*isolver==7){
 #ifdef PARDISO
       pardiso_solve(bmin,&neq[1],&symmetryflag,&inputformat,&nrhs);
+      pardiso_solve(bact,&neq[1],&symmetryflag,&inputformat,&nrhs);
+      pardiso_solve(bplus,&neq[1],&symmetryflag,&inputformat,&nrhs);
 #endif
     }
     if(*isolver==8){
 #ifdef PASTIX
       pastix_solve(bmin,&neq[1],&symmetryflag,&nrhs);
+      pastix_solve(bact,&neq[1],&symmetryflag,&nrhs);
+      pastix_solve(bplus,&neq[1],&symmetryflag,&nrhs);
 #endif
     }
   }
@@ -144,44 +199,12 @@ void dynboun(double *amta,ITG *namta,ITG *nam,double *ampli, double *time,
      comparison of act with min */
   
   idiff[1]=0;
-  for(i=0;i<*nboun;i++){
-    if(fabs(xbounact[i]-xbounmin[i])>1.e-10){
-      idiff[1]=1;
-      break;
-    }
-  }
-  if(*init==1){
+  if(*init!=1){
     for(i=0;i<*nboun;i++){
-      ic=neq[1]+i;
-      for(j=jq[ic]-1;j<jq[ic+1]-1;j++){
-	ir=irow[j]-1;
-	bact[ir]=bact[ir]-au[j]*xbounact[i];
+      if(fabs(xbounact[i]-xbounmin[i])>1.e-10){
+	idiff[1]=1;
+	break;
       }
-    }
-    if(*isolver==0){
-#ifdef SPOOLES
-      spooles_solve(bact,&neq[1]);
-#endif
-    }
-    else if(*isolver==4){
-#ifdef SGI
-      sgi_solve(bact,token);
-#endif
-    }
-    else if(*isolver==5){
-#ifdef TAUCS
-      tau_solve(bact,&neq[1]);
-#endif
-    }
-    if(*isolver==7){
-#ifdef PARDISO
-      pardiso_solve(bact,&neq[1],&symmetryflag,&inputformat,&nrhs);
-#endif
-    }
-    if(*isolver==8){
-#ifdef PASTIX
-      pastix_solve(bact,&neq[1],&symmetryflag,&nrhs);
-#endif
     }
   }
 
@@ -189,10 +212,12 @@ void dynboun(double *amta,ITG *namta,ITG *nam,double *ampli, double *time,
      comparison of plus with act */
   
   idiff[2]=0;
-  for(i=0;i<*nboun;i++){
-    if(fabs(xbounplus[i]-xbounact[i])>1.e-10){
-      idiff[2]=1;
-      break;
+  if(*init!=1){
+    for(i=0;i<*nboun;i++){
+      if(fabs(xbounplus[i]-xbounact[i])>1.e-10){
+	idiff[2]=1;
+	break;
+      }
     }
   }
   if(idiff[2]==1){
@@ -230,23 +255,18 @@ void dynboun(double *amta,ITG *namta,ITG *nam,double *ampli, double *time,
     }
   }
   
-  if((idiff[1]!=0)||(idiff[2]!=0)){
-
-    /* present value is not zero */
-
-    if(idiff[2]==0){
+  if((idiff[1]!=0)||(idiff[2]!=0)||(*init==1)){
+    if((idiff[2]==0)&&(*init!=1)){
       for(i=0;i<neq[1];i++){bplus[i]=bact[i];}
     }
     for(i=0;i<neq[1];i++){
-	  
-      /* bv is the velocity */
-	  
+
+      /* velocity of static displacements */
       bv[i]=(bplus[i]-bmin[i])/deltatime2;
 	  
-      /* ba is the acceleration */
-	  
+      /* acceleration of static displacements */
       ba[i]=(bmin[i]-2.*bact[i]+bplus[i])/deltatimesq;
-	  
+
       b1[i]=ba[i]+*alpham*bv[i];
       b2[i]=*betam*bv[i];
 
@@ -255,7 +275,15 @@ void dynboun(double *amta,ITG *namta,ITG *nam,double *ampli, double *time,
     }
     NNEW(bnew,double,neq[1]);
     opmain(&neq[1],b1,bplus,adb,aub,jq,irow);
-    for(i=0;i<neq[1];i++){bnew[i]=-bplus[i];}
+    NNEW(xnew,double,neq[1]);
+    for(i=0;i<*nboun;i++){
+      ic=neq[1]+i;
+      for(j=jq[ic]-1;j<jq[ic+1]-1;j++){
+	ir=irow[j]-1;
+	xnew[ir]=xnew[ir]+aub[j]*x1[i]+au[j]*x2[i];
+      }
+    }
+    for(i=0;i<neq[1];i++){bnew[i]=-(bplus[i]+xnew[i]);}
     opmain(&neq[1],b2,bplus,ad,au,jq,irow);
     if(*icorrect==2){
       for(i=0;i<neq[1];i++){
@@ -267,7 +295,6 @@ void dynboun(double *amta,ITG *namta,ITG *nam,double *ampli, double *time,
 	bnew[i]-=bplus[i];
 	bdiff[i]=bnew[i]-bprev[i];
 	b[i]+=bdiff[i];
-	//	      printf("dynboun %e,%e,%e,%e\n",bprev[i],bnew[i],bdiff[i],b[i]);
       }
       memcpy(&bprev[0],&bnew[0],sizeof(double)*neq[1]);
     }else{
@@ -279,6 +306,7 @@ void dynboun(double *amta,ITG *namta,ITG *nam,double *ampli, double *time,
       memcpy(&bprev[0],&bnew[0],sizeof(double)*neq[1]);
     }
     SFREE(bnew);
+    SFREE(xnew);
     *nactmech=neq[1];
     *iprev=1;
   }else if((*iprev!=0)&&(*icorrect!=2)){
@@ -305,8 +333,8 @@ void dynboun(double *amta,ITG *namta,ITG *nam,double *ampli, double *time,
     *iprev=0;
   }
   
-  SFREE(xbounmin);SFREE(xbounplus);
-  SFREE(bplus);SFREE(ba);SFREE(b1);SFREE(b2);
+  SFREE(xbounmin);SFREE(xbounplus);SFREE(xbounv);SFREE(xbouna);
+  SFREE(bplus);SFREE(ba);SFREE(b1);SFREE(b2);SFREE(x1);SFREE(x2);
   
   return;
 }

@@ -17,7 +17,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
       subroutine compdt(nk,dt,nshcon,shcon,vold,ntmat_,
-     &     iponoel,inoel,dtimef,ielmat,dh,cocon,
+     &     iponoelf,inoelf,dtimef,ielmat,dh,cocon,
      &     ncocon,ithermal,mi,
      &     vcon,compressible,tincf,ierr,ifreesurface,dgravity,iit)
 !     
@@ -26,7 +26,7 @@
 !     
       implicit none
 !     
-      integer nk,i,iponoel(*),inoel(2,*),index,nelem,ithermal(*),
+      integer nk,i,iponoelf(*),inoelf(2,*),index,nelem,ithermal(*),
      &     mi(*),compressible,ierr,ifreesurface,iit,
      &     nshcon(*),ntmat_,ielmat(mi(3),*),imat,ncocon(2,*),
      &     iflag
@@ -40,18 +40,18 @@
 !     
 !     determining the time increment dt for each node.
 !     
-!     edge nodes (fields iponoel and inoel are determined in precfd.f)
+!     edge nodes (fields iponoelf and inoelf are determined in precfd.f)
 !
       dtimefold=dtimef
       dtimef=1.d30
 !     
       do i=1,nk
-        index=iponoel(i)
+        index=iponoelf(i)
         if(index.le.0) cycle
 !     
 !     look at an element belonging to the edge node
 !     
-        nelem=inoel(1,index)
+        nelem=inoelf(1,index)
 !     
 !     determining the time increment
 !     

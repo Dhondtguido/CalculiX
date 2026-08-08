@@ -30,6 +30,7 @@ void frdvector(double *v,ITG *iset,ITG *ntrans,char * filabl,ITG *nkcoords,
     *iy=NULL,kflag;
       
   int iw;
+  int last=-1;
 
   float fl;
   
@@ -154,6 +155,7 @@ void frdvector(double *v,ITG *iset,ITG *ntrans,char * filabl,ITG *nkcoords,
     for(l=0;l<*ngraph;l++){
       for(k=0;k<nnodeset;k++){
 	i=inodeset[k]+l*nksegment-1;
+	if(i==last){continue;}else{last=i;}
 	if(*ioutall==0){
 	  if(inum[i]<=0) continue;
 	}else{

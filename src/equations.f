@@ -21,7 +21,7 @@
      &     labmpc,istep,istat,n,iline,ipol,inl,ipoinp,inp,ipoinpc,
      &     set,istartset,iendset,ialset,nset,nodempcref,coefmpcref,
      &     ikmpcref,memmpcref_,mpcfreeref,maxlenmpcref,memmpc_,
-     &     maxlenmpc,ier)
+     &     maxlenmpc,ier,mcs,cs)
 !     
 !     reading the input deck: *EQUATION
 !     
@@ -38,9 +38,10 @@
      &     ipoinp(2,*),inp(3,*),ipoinpc(0:*),impcstart,impcend,i1,
      &     istartset(*),iendset(*),ialset(*),nset,k,l,m,index1,ipos,
      &     impc,nodempcref(3,*),ikmpcref(*),memmpcref_,mpcfreeref,
-     &     maxlenmpcref,memmpc_,maxlenmpc,ier,iset,nnodes
+     &     maxlenmpcref,memmpc_,maxlenmpc,ier,iset,nnodes,mcs
 !     
-      real*8 coefmpc(*),co(3,*),trab(7,*),a(3,3),x,coefmpcref(*)
+      real*8 coefmpc(*),co(3,*),trab(7,*),a(3,3),x,coefmpcref(*),
+     &     cs(18,*)
 !
       integer,dimension(:,:),allocatable::nodempcset
       real*8,dimension(:),allocatable::coefmpcset
@@ -74,6 +75,14 @@
           nmpc=0
           call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &         ipoinp,inp,ipoinpc)
+!
+!         reset the nodal diameters (min,max) to default
+!
+          if(mcs.gt.0) then
+            cs(2,1)=-0.5d0
+            cs(3,1)=-0.5d0
+          endif
+!
           return
         elseif(textpart(m)(1:6).eq.'REMOVE') then
 !     

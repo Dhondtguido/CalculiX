@@ -17,7 +17,8 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine temperatures(inpc,textpart,set,istartset,iendset,
-     &     ialset,nset,t0,t1,nk,ithermal,iamt1,amname,nam,inoelfree,nk_,
+     &     ialset,nset,t0,t1,nk,ithermal,iamt1,amname,nam,inoel2dfree,
+     &     nk_,
      &     nmethod,temp_flag,istep,istat,n,iline,ipol,inl,ipoinp,inp,
      &     nam_,namtot_,namta,amta,ipoinpc,t1g,iamplitudedefault,
      &     namtot,ier,itempuser,jobnamec,nuel_,co)
@@ -43,7 +44,7 @@
 !     
       integer istartset(*),iendset(*),ialset(*),iamt1(*),nmethod,id,
      &     nset,nk,ithermal(*),istep,istat,n,key,i,j,k,l,nam,
-     &     iamplitude,ipos,inoelfree,nk_,iline,ipol,inl,ipoinp(2,*),
+     &     iamplitude,ipos,inoel2dfree,nk_,iline,ipol,inl,ipoinp(2,*),
      &     inp(3,*),nam_,namtot,namtot_,namta(3,*),idelay,iglobstep,
      &     iamplitudedefault,ier,itempuser(*),nuel_,ipoinpc(0:*)
 !     
@@ -288,7 +289,7 @@
             endif
           endif
 !     
-          if((inoelfree.ne.0).or.(nuel_.gt.0)) then
+          if((inoel2dfree.ne.0).or.(nuel_.gt.0)) then
             tempgrad1=0.d0
             tempgrad2=0.d0
             if(n.gt.2) then
@@ -319,7 +320,7 @@
             endif
             t1(l)=temperature
             if(nam.gt.0) iamt1(l)=iamplitude
-            if((inoelfree.ne.0).or.(nuel_.gt.0)) then
+            if((inoel2dfree.ne.0).or.(nuel_.gt.0)) then
               t1g(1,l)=tempgrad1
               t1g(2,l)=tempgrad2
             endif
@@ -350,7 +351,7 @@ c     enddo
               if(ialset(j).gt.0) then
                 t1(ialset(j))=temperature
                 if(nam.gt.0) iamt1(ialset(j))=iamplitude
-                if((inoelfree.ne.0).or.(nuel_.gt.0)) then
+                if((inoel2dfree.ne.0).or.(nuel_.gt.0)) then
                   t1g(1,ialset(j))=tempgrad1
                   t1g(2,ialset(j))=tempgrad2
                 endif
@@ -361,7 +362,7 @@ c     enddo
                   if(k.ge.ialset(j-1)) exit
                   t1(k)=temperature
                   if(nam.gt.0) iamt1(k)=iamplitude
-                  if((inoelfree.ne.0).or.(nuel_.gt.0)) then
+                  if((inoel2dfree.ne.0).or.(nuel_.gt.0)) then
                     t1g(1,k)=tempgrad1
                     t1g(2,k)=tempgrad2
                   endif

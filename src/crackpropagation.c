@@ -80,7 +80,8 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
     *xkeqf=NULL,*phif=NULL,*psif=NULL,*rglob=NULL,*r=NULL,*xplanecrack=NULL,
     *t0=NULL,*t1=NULL,*t0g=NULL,*t1g=NULL,*t1old=NULL,*vold=NULL,*errn=NULL,
     *prestr=NULL,*offset=NULL,*eme=NULL,*xstate=NULL,*dam=NULL,*damn=NULL,
-    *crackarea=NULL,*surfnor=NULL,*surfco=NULL,*resarea=NULL,*alambdapj=NULL;
+    *crackarea=NULL,*surfnor=NULL,*surfco=NULL,*resarea=NULL,*alambdapj=NULL,
+    *accold=NULL;
 
   co=*cop;lakon=*lakonp;ipkon=*ipkonp;kon=*konp;ielmat=*ielmatp;
   inotr=*inotrp;t0=*t0p;t1=*t1p;t0g=*t0gp;t1g=*t1gp;iamt1=*iamt1p;
@@ -866,7 +867,7 @@ void crackpropagation(ITG **ipkonp,ITG **konp,char **lakonp,ITG *ne,ITG *nk,
       mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
       cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
       thicke,jobnamec,output,qfx,cdn,mortar,cdnr,cdni,nmat,
-      ielprop,prop,sti,damn,&errn);
+      ielprop,prop,sti,damn,&errn,accold);
 
   /* storing the crack propagation fields in frd-format */
 

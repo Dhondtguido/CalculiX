@@ -124,8 +124,7 @@
 !     
       n=3
       matz=1
-      call rs(n,n,s,sb,matz,z,fv1,fv2,ier)
-!     
+      call eigsymd(n,s,sb,matz,z,ier)
       if(ier.ne.0) then
         write(*,*) '
      &*ERROR calculating the eigenvalues/vectors in umat_abaqusnl'

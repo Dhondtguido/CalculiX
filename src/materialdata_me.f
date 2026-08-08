@@ -55,7 +55,6 @@
       if(istiff.eq.1) then
 
         nelas=nelcon(1,imat)
-c     if((nelas.lt.0).or.((nelas.ne.2).and.(iorien.ne.0))) nelas=21
         if(nelas.lt.0) then
           nelas=21
         elseif((nelas.eq.2).and.(iperturb(2).eq.1)) then
@@ -360,8 +359,6 @@ c        if(j.gt.0) stop
                   kin=0
                   call plcopy(plicon,nplicon,plconloc,npmat_,
      &                 ntmat_,imat,itemp,iel,kin)
-                  if((id.eq.0).or.(id.eq.nplicon(0,imat))) then
-                  endif
                 else
                   kin=0
                   call plmix(plicon,nplicon,plconloc,npmat_,
@@ -392,8 +389,6 @@ c        if(j.gt.0) stop
                   kin=1
                   call plcopy(plkcon,nplkcon,plconloc,npmat_,
      &                 ntmat_,imat,itemp,iel,kin)
-                  if((id.eq.0).or.(id.eq.nplkcon(0,imat))) then
-                  endif
                 else
                   kin=1
                   call plmix(plkcon,nplkcon,plconloc,npmat_,

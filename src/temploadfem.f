@@ -26,7 +26,7 @@
      &     ntrans,trab,inotr,veold,integerglob,doubleglob,tieset,
      &     istartset,iendset,ialset,ntie,nmpc,ipompc,ikmpc,ilmpc,
      &     nodempc,coefmpc,set,nset,cocon,ncocon,rhcon,nrhcon,shcon,
-     &     nshcon,ielmat,ielprop,prop,iponoel,inoel,ipkon,kon,lakon,
+     &     nshcon,ielmat,ielprop,prop,iponoelf,inoelf,ipkon,kon,lakon,
      &     ipobody,ntmat_)
 !     
 !     calculates the loading at a given time
@@ -51,8 +51,8 @@
      &     istartset(*),iendset(*),ialset(*),ntie,iselect(1),
      &     nmpc,ikmpc(*),ilmpc(*),nodempc(3,*),k,ist,index,ipompc(*),
      &     ncocon(2,*),nshcon(*),nrhcon(*),ipobody(2,*),ipkon(*),
-     &     kon(*),ielprop(*),ielmat(mi(3),*),ntmat_,iponoel(*),
-     &     inoel(2,*)
+     &     kon(*),ielprop(*),ielmat(mi(3),*),ntmat_,iponoelf(*),
+     &     inoelf(2,*)
 !     
       real*8 xforc(*),xforcact(*),xload(2,*),xloadact(2,*),
      &     t1(*),t1act(*),amta(2,*),ampli(*),time,fixed_temp,
@@ -144,7 +144,7 @@
 !     
           if(ndirboun(i).eq.0) then
             call utemp(xbounact(i),msecpt,istep,iinc,abqtime,node,
-     &           coords,vold,mi,iponoel,inoel,ipobody,xbody,ibody,
+     &           coords,vold,mi,iponoelf,inoelf,ipobody,xbody,ibody,
      &           ipkon,kon,lakon,ielprop,prop,ielmat,
      &           shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon)
           else
@@ -352,7 +352,7 @@ c     xloadact(2,i)=xload(2,i)
               coords(j)=co(j,i)+vold(j,i)
             enddo
             call utemp(t1act(i),msecpt,istep,iinc,abqtime,i,
-     &           coords,vold,mi,iponoel,inoel,ipobody,xbody,ibody,
+     &           coords,vold,mi,iponoelf,inoelf,ipobody,xbody,ibody,
      &           ipkon,kon,lakon,ielprop,prop,ielmat,
      &           shcon,nshcon,rhcon,nrhcon,ntmat_,cocon,ncocon)
             cycle
