@@ -58,8 +58,8 @@ void sensi_orien(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 		 ITG *mortar,ITG *mpcinfo,double *tietol,ITG *ics,
 		 ITG *nobject,char **objectsetp,ITG *istat,char *orname,
 		 ITG *nzsprevstep,ITG *nlabel,double *physcon,char *jobnamef,
-		 ITG *iponor2d,ITG *knor2d,ITG *ne2d,ITG *iponoel2d,ITG *inoel2d,
-		 ITG *mpcend){
+		 ITG *iponor2d,ITG *knor2d,ITG *ne2d,ITG *iponoel2d,
+		 ITG *inoel2d,ITG *mpcend){
 	     
   char description[13]="            ",*lakon=NULL,cflag[1]=" ",fneig[132]="",
     stiffmatrix[132]="",*lakonfa=NULL,*objectset=NULL;

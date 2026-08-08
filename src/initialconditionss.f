@@ -991,10 +991,11 @@ c     endif
                   do j=1,jmax
                     read(textpart(j+2)(1:20),'(f20.0)',
      &                   iostat=istat) beta(j)
-                    if(istat.gt.0) 
-     &                   call inputerror(inpc,ipoinpc,iline,
-     &                   "*INITIAL CONDITIONS%",ier)
-                    return
+                    if(istat.gt.0) then
+                      call inputerror(inpc,ipoinpc,iline,
+     &                     "*INITIAL CONDITIONS%",ier)
+                      return
+                    endif
                     xstate(ntot+j,k,l)=beta(j)
                   enddo
                   ntot=ntot+jmax

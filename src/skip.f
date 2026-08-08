@@ -311,7 +311,7 @@
 !     
 !     control parameters
 !     
-      read(15) (r8,i=1,52)
+      read(15) (r8,i=1,60)
       read(15) (r8,i=1,2)
       read(15) c3
       read(15) r8

@@ -141,8 +141,7 @@ void precontact(ITG *ncont, ITG *ntie, char *tieset, ITG *nset, char *set,
 	RENEW(pslavsurf,double,3*(*nintpoint+ntri*66));		    
 	FORTRAN(slavintpoints,(ntie,itietri,ipkon,kon,
 			       lakon,straight,nintpoint,koncont,co,vold,
-			       xo,yo,zo,x,y,z,nx,ny,nz,islavsurf,
-			       islavnode,nslavnode,imastop,
+			       xo,yo,zo,x,y,z,nx,ny,nz,islavsurf,imastop,
 			       mi,ncont,ipe,ime,pslavsurf,&ii,&l,&ntri));
       }
     }else if(tieset[i*(81*3)+80]=='-'){

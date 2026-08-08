@@ -33,7 +33,8 @@
      &     istartset,iendset,ialset,ntie,nasym,pslavsurf,pmastsurf,
      &     mortar,clearini,ielprop,prop,ne0,fnext,nea,neb,kscale,
      &     iponoeln,inoeln,network,smscale,mscalmethod,set,nset,
-     &     islavquadel,aut,irowt,jqt,mortartrafoflag)
+     &     islavquadel,aut,irowt,jqt,mortartrafoflag,imastload,
+     &     pmastload)
 !     
 !     filling the stiffness matrix in spare matrix format (sm)
 !     
@@ -62,12 +63,12 @@
      &     nea,neb,kscale,iponoeln(*),inoeln(2,*),network,ndof,
      &     nset,islavquadel(*),jqt(*),irowt(*),ii,jqte(21),
      &     irowte(96),i1,j1,j2,konl(26),mortartrafoflag,ikmpc(*),
-     &     mscalmethod,imat,istiff,length
+     &     mscalmethod,imat,istiff,length,imastload(2,*)
 !     
       real*8 co(3,*),xboun(*),coefmpc(*),xforc(*),xload(2,*),p1(3),
      &     p2(3),ad(*),au(*),bodyf(3),fext(*),xloadold(2,*),reltime,
      &     t0(*),t1(*),prestr(6,mi(1),*),vold(0:mi(2),*),s(60,60),
-     &     ff(60),fnext(0:mi(2),*),
+     &     ff(60),fnext(0:mi(2),*),pmastload(3,*),
      &     sti(6,mi(1),*),sm(60,60),stx(6,mi(1),*),adb(*),aub(*),
      &     elcon(0:ncmat_,ntmat_,*),rhcon(0:1,ntmat_,*),springarea(2,*),
      &     alcon(0:6,ntmat_,*),physcon(*),cocon(0:6,ntmat_,*),prop(*),
@@ -269,7 +270,7 @@ c     mortar end
      &           iendset,ialset,ntie,nasym,pslavsurf,pmastsurf,mortar,
      &           clearini,ielprop,prop,kscale,smscale(i),mscalmethod,
      &           set,nset,islavquadel,aute,irowte,jqte,
-     &           mortartrafoflag)
+     &           mortartrafoflag,imastload,pmastload)
           else
             call e_c3d_u(co,kon,lakon(i),p1,p2,om,bodyf,nbody,s,sm,ff,i,
      &           nmethod,elcon,nelcon,rhcon,nrhcon,alcon,nalcon,

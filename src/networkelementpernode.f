@@ -35,20 +35,20 @@
 !
       inoelnfree=1
 !
-      if(network.gt.1) then
-         do k=1,nflow
-            i=ieg(k)
-            indexe=ipkon(i)
-            do j=1,3
-               node=kon(indexe+j)
-               if(node.eq.0) cycle
-               inoeln(1,inoelnfree)=i
-               inoeln(2,inoelnfree)=iponoeln(node)
-               iponoeln(node)=inoelnfree
-               inoelnfree=inoelnfree+1
-            enddo
-         enddo
-      else
+c      if(network.gt.1) then
+c         do k=1,nflow
+c            i=ieg(k)
+c            indexe=ipkon(i)
+c            do j=1,3
+c               node=kon(indexe+j)
+c               if(node.eq.0) cycle
+c               inoeln(1,inoelnfree)=i
+c               inoeln(2,inoelnfree)=iponoeln(node)
+c               iponoeln(node)=inoelnfree
+c               inoelnfree=inoelnfree+1
+c            enddo
+c         enddo
+c      else
          do i=1,ne
             if(lakon(i)(1:1).eq.'D') then
                indexe=ipkon(i)
@@ -62,7 +62,7 @@
                enddo
             endif
          enddo
-      endif
+c      endif
 !
 !     size of field inoeln
 !

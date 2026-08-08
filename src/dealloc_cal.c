@@ -58,7 +58,7 @@ void dealloc_cal(ITG *ncs_,ITG **icsp,ITG *mcs,double **csp,
 		 double **veoldp,double **velp,double **velop,
 		 double **veloop,ITG **iponorp,double **xnorp,
 		 ITG **knorp,double **thickep,double **offsetp,
-		 ITG **iponoelp,ITG **inoelp,ITG **rigp,
+		 ITG **iponoel2dp,ITG **inoel2dp,ITG **rigp,
 		 ITG **ne2bounp,ITG **islavsurfp,ITG *mortar,
 		 double **pslavsurfp,double **clearinip,
 		 ITG *nobject_,char **objectsetp,ITG *nmethod,ITG *iperturb,
@@ -81,8 +81,8 @@ void dealloc_cal(ITG *ncs_,ITG **icsp,ITG *mcs,double **csp,
     *namta=NULL,*istartset=NULL,*iendset=NULL,*ialset=NULL,*nelcon=NULL,
     *nrhcon=NULL,*nshcon=NULL,*ncocon=NULL,*nalcon=NULL,*ielprop=NULL,
     *nplicon=NULL,*nplkcon=NULL,*ielorien=NULL,*inotr=NULL,*iamt1=NULL,
-    *irandomtype=NULL,*ielmat=NULL,*iponor=NULL,*knor=NULL,*iponoel=NULL,
-    *inoel=NULL,*ne2boun=NULL,*islavsurf=NULL,*rig=NULL,*iparentel=NULL,
+    *irandomtype=NULL,*ielmat=NULL,*iponor=NULL,*knor=NULL,*iponoel2d=NULL,
+    *inoel2d=NULL,*ne2boun=NULL,*islavsurf=NULL,*rig=NULL,*iparentel=NULL,
     *iprfn=NULL,*konrfn=NULL,*nodedesi=NULL,*ikdc=NULL,*ndmcon=NULL;
 
   double *cs=NULL,*tietol=NULL,*co=NULL,*xboun=NULL,*xbounold=NULL,
@@ -118,8 +118,8 @@ void dealloc_cal(ITG *ncs_,ITG **icsp,ITG *mcs,double **csp,
   prlab=*prlabp;prset=*prsetp;filab=*filabp;xmodal=*xmodalp;ielmat=*ielmatp;
   matname=*matnamep;sti=*stip;eme=*emep;ener=*enerp;xstate=*xstatep;
   vold=*voldp;veold=*veoldp;vel=*velp;velo=*velop;veloo=*veloop;iponor=*iponorp;
-  xnor=*xnorp;knor=*knorp;thicke=*thickep;offset=*offsetp;iponoel=*iponoelp;
-  inoel=*inoelp;rig=*rigp;ne2boun=*ne2bounp;islavsurf=*islavsurfp;
+  xnor=*xnorp;knor=*knorp;thicke=*thickep;offset=*offsetp;iponoel2d=*iponoel2dp;
+  inoel2d=*inoel2dp;rig=*rigp;ne2boun=*ne2bounp;islavsurf=*islavsurfp;
   pslavsurf=*pslavsurfp;clearini=*clearinip;objectset=*objectsetp;
   iparentel=*iparentelp;coefmpcref=*coefmpcrefp;nodempcref=*nodempcrefp;
   ikmpcref=*ikmpcrefp;iprfn=*iprfnp;konrfn=*konrfnp;ratiorfn=*ratiorfnp;
@@ -198,7 +198,7 @@ void dealloc_cal(ITG *ncs_,ITG **icsp,ITG *mcs,double **csp,
 
   if((*ne1d!=0)||(*ne2d!=0)){
     SFREE(iponor);SFREE(xnor);SFREE(knor);SFREE(thicke);SFREE(offset);
-    SFREE(iponoel);SFREE(inoel);SFREE(rig);SFREE(ne2boun);
+    SFREE(iponoel2d);SFREE(inoel2d);SFREE(rig);SFREE(ne2boun);
   }
 
   SFREE(islavsurf);
@@ -233,8 +233,8 @@ void dealloc_cal(ITG *ncs_,ITG **icsp,ITG *mcs,double **csp,
   *prlabp=prlab;*prsetp=prset;*filabp=filab;*xmodalp=xmodal;*ielmatp=ielmat;
   *matnamep=matname;*stip=sti;*emep=eme;*enerp=ener;*xstatep=xstate;
   *voldp=vold;*veoldp=veold;*velp=vel;*velop=velo;*veloop=veloo;*iponorp=iponor;
-  *xnorp=xnor;*knorp=knor;*thickep=thicke;*offsetp=offset;*iponoelp=iponoel;
-  *inoelp=inoel;*rigp=rig;*ne2bounp=ne2boun;*islavsurfp=islavsurf;
+  *xnorp=xnor;*knorp=knor;*thickep=thicke;*offsetp=offset;*iponoel2dp=iponoel2d;
+  *inoel2dp=inoel2d;*rigp=rig;*ne2bounp=ne2boun;*islavsurfp=islavsurf;
   *pslavsurfp=pslavsurf;*clearinip=clearini;*objectsetp=objectset;
   *iparentelp=iparentel;*coefmpcrefp=coefmpcref;*nodempcrefp=nodempcref;
   *ikmpcrefp=ikmpcref;*iprfnp=iprfn;*konrfnp=konrfn;*ratiorfnp=ratiorfn;

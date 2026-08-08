@@ -17,48 +17,63 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
       subroutine updatecon(vold,vcon,v,nk,ithermal,iturbulent,
-     &     mi,compressible,nka,nkb)
+     &     mi,compressible,num_cpus)
 !     
 !     updating the conservative variables
 !     
       implicit none
 !     
-      integer iturbulent,mi(*),nk,ithermal(*),i,j,compressible,nka,nkb
+      integer iturbulent,mi(*),nk,ithermal(*),i,j,compressible,
+     &     num_cpus
 !     
       real*8 v(nk,0:mi(2)),vold(0:mi(2),*),vcon(nk,0:mi(2))
+!
+!$omp parallel num_threads(num_cpus)
 !     
 !     volumetric energy density
 !     
       if(ithermal(1).gt.1) then
-        do i=nka,nkb
+!$omp do
+        do i=1,nk
           vcon(i,0)=vcon(i,0)+v(i,0)
-        enddo
+       enddo
+!$omp end do nowait
       endif
 !     
 !     volumetric momentum density
 !     pressure (liquid) or density (gas)
-!     
-      do i=nka,nkb
-!     
-        do j=1,3
-          vcon(i,j)=vcon(i,j)+v(i,j)
-        enddo
-!     
-        if(compressible.eq.1) then
-!     
+!
+      do j=1,3
+!$omp do
+         do i=1,nk
+            vcon(i,j)=vcon(i,j)+v(i,j)
+         end do
+!$omp end do nowait
+      end do
+!
+      if(compressible.eq.1) then
+!
 !     explicit compressible: v contains the change in
 !     density, vcon the density
-!     
-          vcon(i,4)=vcon(i,4)+v(i,4)
-        else
-          vold(4,i)=vold(4,i)+v(i,4)
-        endif
-      enddo
+!
+!$omp do
+         do i=1,nk
+            vcon(i,4)=vcon(i,4)+v(i,4)
+         end do
+!$omp end do nowait
+      else
+!$omp do
+         do i=1,nk
+            vold(4,i)=vold(4,i)+v(i,4)
+         enddo
+!$omp end do nowait
+      endif
 !     
 !     volumetric turbulent density
 !     
       if(iturbulent.ne.0) then
-        do i=nka,nkb
+!$omp do
+        do i=1,nk
           if(vcon(i,5)+v(i,5).gt.1.d-10) then
             vcon(i,5)=vcon(i,5)+v(i,5)
           else
@@ -69,9 +84,11 @@
           else
             v(i,6)=0.d0
           endif
-        enddo
+       enddo
+!$omp end do nowait
       endif
-!     
+!
+!$omp end parallel
       return
       end
       

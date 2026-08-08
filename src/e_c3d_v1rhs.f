@@ -540,7 +540,8 @@ c     fric=0.02d0
             call nident2(nelemload,nelem,nload,id)
             areaj=xsj
             do
-              if((id.eq.0).or.(nelemload(1,id).ne.nelem)) exit
+              if(id.eq.0) exit
+              if(nelemload(1,id).ne.nelem) exit
               if(sideload(id)(1:2).ne.'BF') then
                 id=id-1
                 cycle
@@ -693,7 +694,8 @@ c        write(*,*) 'e_c3d_v1rhs nelem ipvarf(nelem)',nelem,index
         nopes=0
         idf=ipface(nelem)
         do
-          if((idf.eq.0).or.(nelemface(idf).ne.nelem)) exit
+          if(idf.eq.0) exit
+          if(nelemface(idf).ne.nelem) exit
           ig=ichar(sideface(idf)(1:1))-48
 !     
 !     check for distributed flux
@@ -703,7 +705,8 @@ c        write(*,*) 'e_c3d_v1rhs nelem ipvarf(nelem)',nelem,index
           iflux=0
           call nident2(nelemload,nelem,nload,id)
           do
-            if((id.eq.0).or.(nelemload(1,id).ne.nelem)) exit
+            if(id.eq.0) exit
+            if(nelemload(1,id).ne.nelem) exit
             if((sideload(id)(1:1).ne.'F').and.
      &           (sideload(id)(1:1).ne.'R').and.
      &           (sideload(id)(1:1).ne.'S')) then

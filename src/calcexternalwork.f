@@ -87,7 +87,8 @@ c** end change 20191219
          ipres=0
          call nident2(nelemload,nelem,nload,id)
          do
-            if((id.eq.0).or.(nelemload(1,id).ne.nelem)) exit
+           if(id.eq.0) exit
+           if(nelemload(1,id).ne.nelem) exit
             if(sideload(id)(1:1).ne.'P') then
                id=id-1
                cycle

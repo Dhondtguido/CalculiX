@@ -184,7 +184,7 @@ c      write(*,*) 'umat_undo_nlgeom_lin_el ielas=',ielas
       n=3
       matz=1
 !     
-      call rs(n,n,ca,w,matz,z,fv1,fv2,ier)
+      call eigsymd(n,ca,w,matz,z,ier)
 !     
       if(ier.ne.0) then
         write(*,*) '

@@ -31,7 +31,7 @@
      &     veold,springarea,thicke,integerglob,doubleglob,tieset,
      &     istartset,iendset,ialset,ntie,nasym,pslavsurf,pmastsurf,
      &     mortar,clearini,ielprop,prop,ne0,kscale,xstateini,xstate,
-     &     nstate_,set,nset,smscale,mscalmethod)
+     &     nstate_,set,nset,smscale,mscalmethod,imastload,pmastload)
 !     
 !     filling the stiffness matrix in spare matrix format (sm)
 !     for cyclic symmetry calculations
@@ -60,7 +60,7 @@
      &     inode1,icomplex1,inode2,icomplex2,ner,ncmat_,intscheme,istep,
      &     iinc,mcs,ielcs(*),nplicon(0:ntmat_,*),nplkcon(0:ntmat_,*),
      &     npmat_,islavquadel(1),irowt(1),jqt(1),mortartrafoflag,
-     &     mscalmethod,kk,imat
+     &     mscalmethod,kk,imat,imastload(2,*)
 !     
       real*8 co(3,*),xboun(*),coefmpc(*),xforc(*),xload(2,*),p1(3),
      &     p2(3),ad(*),au(*),bodyf(3),bb(*),xbody(7,*),cgr(4,*),prop(*),
@@ -73,7 +73,7 @@
      &     plkcon(0:2*npmat_,ntmat_,*),thicke(mi(3),*),doubleglob(*),
      &     xstiff(27,mi(1),*),pi,theta,ti,tr,veold(0:mi(2),*),om,valu2,
      &     value,dtime,walue,walu2,time,ttime,clearini(3,9,*),val,
-     &     pslavsurf(3,*),pmastsurf(6,*),aut(1),dd
+     &     pslavsurf(3,*),pmastsurf(6,*),aut(1),dd,pmastload(3,*)
 !
       mortartrafoflag=0
 !     
@@ -216,7 +216,7 @@ c     Bernhardi end
      &         iendset,ialset,ntie,nasym,pslavsurf,pmastsurf,mortar,
      &         clearini,ielprop,prop,kscale,smscale(i),mscalmethod,
      &         set,nset,islavquadel,aut,
-     &         irowt,jqt,mortartrafoflag)
+     &         irowt,jqt,mortartrafoflag,imastload,pmastload)
         else
           nope=-1
         endif

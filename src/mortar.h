@@ -385,7 +385,7 @@ void premortar(ITG *nzs,ITG *nzsc2,
 	       char *orname,ITG *network,
 	       char *typeboun,ITG *num_cpus,double *t0g,double *t1g,
 	       double *smscale,ITG *mscalmethod,ITG *nslavquadel,
-	       ITG *iponoel);
+	       ITG *iponoel,ITG *imastload,double *pmastload);
        
 void FORTRAN(regularization_gn_c,(double *lambdap,ITG *divmode,ITG *regmode,
 				  double *gnc,double *aninvloc,double *p0,
@@ -406,13 +406,13 @@ void FORTRAN(regularization_slip_lin,(double *utilt,double *bp,double *atauinv,
 				      double *rslip,double *ltslip,
 				      double *ltu));
      
-void FORTRAN(resultsini_mortar,(int *nk,double *v,int *ithermal,int *iperturb,
-				int *nactdof,int *iout,double *vold,double *b,
-				int *nodeboun,int *ndirboun,double *xboun,
-				int *nboun,int *ipompc,int *nodempc,
-				double *coefmpc,char *labmpc,int *nmpc,
-				int *nmethod,double *cam,double *bet,
-				double *gam,double *dtime,int *mi));     
+void FORTRAN(resultsini_mortar,(ITG *nk,double *v,ITG *ithermal,ITG *iperturb,
+				ITG *nactdof,ITG *iout,double *vold,double *b,
+				ITG *nodeboun,ITG *ndirboun,double *xboun,
+				ITG *nboun,ITG *ipompc,ITG *nodempc,
+				double *coefmpc,char *labmpc,ITG *nmpc,
+				ITG *nmethod,double *cam,double *bet,
+				double *gam,double *dtime,ITG *mi));     
 
 void FORTRAN(slavintmortar,(ITG *ntie,ITG *itietri,ITG *ipkon,ITG *kon,
 			    char *lakon,double *straight,ITG *nintpoint,

@@ -3532,7 +3532,7 @@ Eall,centrif,3.0853e8,0.,0.,0.,0.,0.,1.
 *end step
 *step,perturbation
 *complex frequency,coriolis
- 20,
+ 14,
 ***NODE FILE
 **PU
 *end step

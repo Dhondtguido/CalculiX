@@ -16,7 +16,8 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
-      subroutine gen3dtemp(iponoel,inoel,iponoelmax,kon,ipkon,lakon,ne,
+      subroutine gen3dtemp(iponoel2d,inoel2d,iponoel2dmax,kon,ipkon,
+     &     lakon,ne,
      &     iponor,xnor,knor,t0,t1,thicke,offset,rig,nk,nk_,co,istep,
      &     ithermal,vold,mi,t0g,t1g,nam,iamt1,veold)
 !     
@@ -29,7 +30,7 @@
 !     
       character*8 lakon(*)
 !     
-      integer iponoel(*),inoel(3,*),iponoelmax,kon(*),ipkon(*),ne,
+      integer iponoel2d(*),inoel2d(3,*),iponoel2dmax,kon(*),ipkon(*),ne,
      &     iponor(2,*),knor(*),rig(*),i,nk,nk_,index,ielem,j,m,
      &     indexe,indexk,k,node,istep,ithermal(*),mi(*),nam,iamt1(*)
 !     
@@ -39,15 +40,15 @@
 !     initial conditions
 !     
       if(istep.eq.1) then
-        do i=1,iponoelmax
-          index=iponoel(i)
+        do i=1,iponoel2dmax
+          index=iponoel2d(i)
           do
             if(index.eq.0) exit
-            ielem=inoel(1,index)
-            j=inoel(2,index)
+            ielem=inoel2d(1,index)
+            j=inoel2d(2,index)
             indexe=ipkon(ielem)
             if(indexe.lt.0) then
-              index=inoel(3,index)
+              index=inoel2d(3,index)
               cycle
             endif
             indexk=iponor(2,indexe+j)
@@ -182,7 +183,7 @@
               enddo
             endif
             if(rig(i).eq.0) exit
-            index=inoel(3,index)
+            index=inoel2d(3,index)
           enddo
         enddo
       endif
@@ -190,15 +191,15 @@
 !     temperature loading for mechanical calculations
 !     
       if(ithermal(1).eq.1) then
-        do i=1,iponoelmax
-          index=iponoel(i)
+        do i=1,iponoel2dmax
+          index=iponoel2d(i)
           do
             if(index.eq.0) exit
-            ielem=inoel(1,index)
-            j=inoel(2,index)
+            ielem=inoel2d(1,index)
+            j=inoel2d(2,index)
             indexe=ipkon(ielem)
             if(indexe.lt.0) then
-              index=inoel(3,index)
+              index=inoel2d(3,index)
               cycle
             endif
             indexk=iponor(2,indexe+j)
@@ -261,7 +262,7 @@
               if(nam.gt.0) iamt1(node)=iamt1(i)
             endif
             if(rig(i).eq.0) exit
-            index=inoel(3,index)
+            index=inoel2d(3,index)
           enddo
         enddo
       endif
