@@ -2626,7 +2626,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
            neglected, since the increment size in dynamic explicit
            calculations is usually small */
 
-	if((*mortar==-1)&&(masslesslinear==1)&&(iinc==2)){
+	//	if((*mortar==-1)&&(masslesslinear==1)&&(iinc==2)){
+	if((*mortar==-1)&&(masslesslinear==1)&&(iinc==2)&&(*nener==1)){
 
 	  /* check whether the distributed loading changes in this step 
 	   (only for linear massless explicit dynamic calculations) */
