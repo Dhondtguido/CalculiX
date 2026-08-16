@@ -53,9 +53,9 @@
      &     node,iponor(*),nodedesiinv(*),len,nsort(6),two,ne,kneigh,
      &     three,iponexp(2,*),nmpc,ipompc(*),nodempc(3,*),indexf,
      &     ipretinfo(*),pretflag,inoel(2,*),nope,idummy,isix,nodeext,
-     &     nodepret,kon(*),ipkon(*),iponoel(*),iface,n,nodes(*),
-     &     ifaceq(8,6),ifacew(8,5),iposn,iponor2d(2,*),inor(3),
-     &     knor2d(*),node2d,ipoface(*),node1,node2,node3,kflag,
+     &     nodepret,kon(*),ipkon(*),iponoel(*),nodes(*),
+     &     ifaceq(8,6),ifacew(8,5),iponor2d(2,*),inor(3),
+     &     knor2d(*),ipoface(*),node1,node2,node3,kflag,
      &     nodface(5,*),nopem,ifaceqmid(6),ifacewmid(5),node3d,
      &     nnor1,nnor2,inor1(3),inor2(3),nx(*),ny(*),nz(*),id,
      &     neigh(1),ne2d,nod1st(*),nod2nd3rd(2,*),one,nodedesi(*),
@@ -382,7 +382,7 @@
         if(ipkon(i).lt.0) cycle
         indexe=ipkon(i)
         if(lakon(i)(7:7).eq.'L') then
-	  imodeltype=1
+          imodeltype=1
           if(lakon(i)(4:5).eq.'20') then
             nopeexp=20
             nope=8
@@ -421,7 +421,7 @@
             label='CPS3    '
           endif
         else
-	  imodeltype=3
+          imodeltype=3
           nopeexp=0
           if(lakon(i)(4:5).eq.'20') then
             nope=20
@@ -507,8 +507,10 @@ c      enddo
           nope=8
         elseif(lakon(i)(4:4).eq.'6') then
           nope=6
-        else
+        elseif(lakon(i)(4:4).eq.'4') then
           nope=4
+        else
+          cycle
         endif
 !
 !     computation of the coordinates of the local nodes
@@ -631,9 +633,9 @@ c      enddo
         enddo
         write(20,110) i
         write(20,111) e
-	if(imodeltype.eq.1) then
+        if(imodeltype.eq.1) then
            write(20,114) i,i
-	elseif(imodeltype.eq.3) then
+        elseif(imodeltype.eq.3) then
            write(20,112) i,i
         endif
       enddo
@@ -667,7 +669,7 @@ c 112  format('*SOLID SECTION,ELSET=',i10,'E,MATERIAL=',i10,'M')
       do i=1,nk
         if((iponoel(i).eq.0).or.(ipretinfo(i).ne.i)) cycle
 !
-!     check if node is a designvariable
+!     check if node is not a expanded node from a 2D element
 !
         if(nodedesiinv(i).ge.0) then
 !
@@ -756,22 +758,20 @@ c 112  format('*SOLID SECTION,ELSET=',i10,'E,MATERIAL=',i10,'M')
 !
           if((lakon(ielem)(7:7).eq.'L').and.(nodedesiinv(i).eq.0)) then
             write(20,*) '*BOUNDARY'
-	    write(20,*) node,',1,3,0.0'
-	    cycle
-	  endif
+            write(20,*) node,',1,3,0.0'
+            cycle
+          endif
 !
 !     write equations in file "jobname.equ"
-!
-      write(20,109)
- 109  format('*EQUATION')
-!
-!     write equations in case nexp is greater or equal 3
 !
           nexp=iponexp(1,i)
           ixfree=iponexp(2,i)
 !
+!     write equations in case nexp is greater or equal 3
+!
           if(nexp.ge.3) then
-c     write(*,*) nodedesiinv(i),j,i,extnor(j,i)
+            write(20,109)
+c           write(*,*) nodedesiinv(i),j,i,extnor(j,i)
             do j=1,3
               if(nodedesiinv(i).eq.0) then
                 out=.true.
@@ -792,6 +792,7 @@ c     enddo
 !
           elseif(nexp.eq.1) then
             if(nodedesiinv(i).eq.0) then
+              write(20,109)
               do j=1,3
                 xnorloc(j)=xnor(ixfree+j)
                 sort(j)=dabs(xnorloc(j))
@@ -807,6 +808,7 @@ c     enddo
 !     write equations in case nexp is 2
 !
           elseif(nexp.eq.2) then
+            write(20,109)
             if(nodedesiinv(i).eq.0) then
 !
 !     node is not a design variable: both normal directions
@@ -943,6 +945,8 @@ c     enddo
         endif
 !
       enddo
+!
+ 109  format('*EQUATION')
 !
       do i=1,nk
         if(nodedesiinv(i).eq.-1) then

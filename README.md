@@ -18,10 +18,6 @@ Klaus Wittig(Pre- and Postprocessor)
 
   
 
-### **Version 2.22 of CalculiX is available!**
-
-* * *
-
 
 ![Maximum principal stress in a paraglider (thanks to Thomas
  Ripplinger)](pictures/GSStress.gif)
@@ -31,7 +27,7 @@ Maximum principal stress in a paraglider
 * * *
 
   
-**Notice:** The authors acknowledge that naming conventions and input style formats for CalculiX are based on those used by ABAQUS, a proprietary, general purpose finite element code developed and supported by Hibbitt, Karlsson & Sorensen, Inc (HKS) ([http://www.abaqus.com](http://www.abaqus.com)) and are used with kind permission from HKS. Results obtained from CalculiX are in no way connected to ABAQUS.  
+**Notice:** The authors acknowledge that naming conventions and input style formats for CalculiX are based on those used by ABAQUS, a proprietary, general purpose finite element code developed and supported by Hibbitt, Karlsson & Sorensen, Inc (HKS) ([http://www.3ds.com/products-services/simulia/products/abaqus](http://www.3ds.com/products-services/simulia/products/abaqus)) and are used with kind permission from HKS. Results obtained from CalculiX are in no way connected to ABAQUS.  
   
 
 * * *

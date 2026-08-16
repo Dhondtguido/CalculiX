@@ -437,7 +437,8 @@ void readnewmesh(char *jobnamec,ITG *nboun,ITG *nodeboun,ITG *iamboun,
 
   /* remove the refine request, if any */
   
-  if(strcmp1(&filab[4089],"RM")==0){
+   if((strcmp1(&filab[4089],"RM")==0)||
+      (strcmp1(&filab[4089],"RP")==0)){
     strcpy1(&filab[4089],"  ",2);
   }
 
