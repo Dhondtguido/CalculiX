@@ -173,7 +173,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
     for(i=jq_dan[j]-1;i<jq_dan[j+1]-1;i++){
       //loop over rows A  	  
       k=irow_dan[i]-1;         
-      islavnodeentry=floor(islavactdof[a_flagr[k]-1]/10.);	  
+      islavnodeentry=(ITG)floor(islavactdof[a_flagr[k]-1]/10.);	  
       jrow= islavactdof[a_flagr[k]-1]-10*islavnodeentry; 
       node=islavnode[islavnodeentry-1];	   
       idof1=nactdof[mt*node-3]-1;	   
@@ -356,7 +356,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
     for(i=jq_dam[j]-1;i<jq_dam[j+1]-1;i++){
       //loop over rows A  	  
       k=irow_dam[i]-1;
-      islavnodeentry=floor(islavactdof[a_flagr[k]-1]/10.);	  
+      islavnodeentry=(ITG)floor(islavactdof[a_flagr[k]-1]/10.);	  
       jrow= islavactdof[a_flagr[k]-1]-10*islavnodeentry; 
       node=islavnode[islavnodeentry-1];	   
       idof1=nactdof[mt*node-3]-1;	   
@@ -537,7 +537,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
     for(i=jq_bdtil2[j]-1;i<jq_bdtil2[j+1]-1;i++){
       //loop over rows A  
       k=irow_bdtil2[i]-1; 
-      islavnodeentry=floor(islavactdof[a_flagr[k]-1]/10.);	  
+      islavnodeentry=(ITG)floor(islavactdof[a_flagr[k]-1]/10.);	  
       jrow= islavactdof[a_flagr[k]-1]-10*islavnodeentry; 
       node=islavnode[islavnodeentry-1];	   
       idof1=nactdof[mt*node-3]-1;	   
@@ -782,7 +782,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
     for(i=jq_dai[j]-1;i<jq_dai[j+1]-1;i++){
       //loop over rows A  	  
       k=irow_dai[i]-1;         
-      islavnodeentry=floor(islavactdof[a_flagr[k]-1]/10.);	  
+      islavnodeentry=(ITG)floor(islavactdof[a_flagr[k]-1]/10.);	  
       jrow= islavactdof[a_flagr[k]-1]-10*islavnodeentry; 
       node=islavnode[islavnodeentry-1];	   
       idof1=nactdof[mt*node-3]-1;	   
@@ -964,7 +964,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
     for(i=jq_ddtil2i[j]-1;i<jq_ddtil2i[j+1]-1;i++){
       //loop over rows A  
       k=irow_ddtil2i[i]-1; 
-      islavnodeentry=floor(islavactdof[a_flagr[k]-1]/10.);	  
+      islavnodeentry=(ITG)floor(islavactdof[a_flagr[k]-1]/10.);	  
       jrow= islavactdof[a_flagr[k]-1]-10*islavnodeentry; 
       node=islavnode[islavnodeentry-1];	   
       idof1=nactdof[mt*node-3]-1;	   
@@ -1210,7 +1210,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
     for(i=jq_daa[j]-1;i<jq_daa[j+1]-1;i++){
       //loop over rows	  
       k=irow_daa[i]-1;         
-      islavnodeentry=floor(islavactdof[a_flagr[k]-1]/10.);	  
+      islavnodeentry=(ITG)floor(islavactdof[a_flagr[k]-1]/10.);	  
       jrow= islavactdof[a_flagr[k]-1]-10*islavnodeentry;	  
       node=islavnode[islavnodeentry-1];	   
       idof1=nactdof[mt*node-3]-1;	   
@@ -1391,7 +1391,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
     for(i=jq_ddtil2a[j]-1;i<jq_ddtil2a[j+1]-1;i++){
       //loop over rows A  
       k=irow_ddtil2a[i]-1; 
-      islavnodeentry=floor(islavactdof[a_flagr[k]-1]/10.);	  
+      islavnodeentry=(ITG)floor(islavactdof[a_flagr[k]-1]/10.);	  
       jrow= islavactdof[a_flagr[k]-1]-10*islavnodeentry; 
       node=islavnode[islavnodeentry-1];	   
       idof1=nactdof[mt*node-3]-1;	   
@@ -1628,7 +1628,7 @@ void trafontmortar2(ITG *neq,ITG *nzs,ITG *islavactdof,ITG *islavact,
 
   for(k=0;k<*row_la;k++){      
     if(islavactdof[a_flagr[k]-1]>0){	
-      islavnodeentry=floor(islavactdof[a_flagr[k]-1]/10.);
+      islavnodeentry=(ITG)floor(islavactdof[a_flagr[k]-1]/10.);
       jrow= islavactdof[a_flagr[k]-1]-10*islavnodeentry;
       node=islavnode[islavnodeentry-1];
       idof1=nactdof[mt*node-3]-1;

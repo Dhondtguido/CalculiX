@@ -1407,25 +1407,25 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	  printf("bdfill: something went wrong in aubdtil2! Stop!\n");
 	  printf("bdfill: noder %" ITGFORMAT " %" ITGFORMAT " nodec %"
 		 ITGFORMAT " %" ITGFORMAT " \n",
-		 islavnode[(ITG) floor(islavactdof[idofs-1]/10.)-1],idofs,
-		 islavnode[(ITG) floor(islavactdof[idofm-1]/10.)-1],idofm );
+		 islavnode[(ITG)floor(islavactdof[idofs-1]/10.)-1],idofs,
+		 islavnode[(ITG)floor(islavactdof[idofm-1]/10.)-1],idofm );
 	  FORTRAN(stop,());
 	}else if(islavactdof[idofs-1]<1 && islavactdof[idofm-1]<0 ){
 	  printf("bdfill: something went wrong in aubdtil2! Stop!\n");
 	  printf("bdfill: slavenode row   %" ITGFORMAT " %" ITGFORMAT
 		 " master node column %" ITGFORMAT " %" ITGFORMAT " \n",
-		 islavnode[(ITG) floor(islavactdof[idofs-1]/10.)-1],idofs,
-		 imastnode[-((ITG) floor(islavactdof[idofm-1]/10.))-1],idofm );
+		 islavnode[(ITG)floor(islavactdof[idofs-1]/10.)-1],idofs,
+		 imastnode[-((ITG)floor(islavactdof[idofm-1]/10.))-1],idofm );
 	  FORTRAN(stop,()); 
 	}else if(islavactdof[idofs-1]<1 && islavactdof[idofm-1]==0 ){
 	  printf("bdfill: something went wrong in aubdtil2! Stop!\n");	
 	  printf("bdfill: slavenode row   %" ITGFORMAT " %" ITGFORMAT
 		 " master node column %" ITGFORMAT " \n",
-		 islavnode[(ITG) floor(islavactdof[idofs-1]/10.)-1],idofs,
+		 islavnode[(ITG)floor(islavactdof[idofs-1]/10.)-1],idofs,
 		 idofm );
 	  FORTRAN(stop,());
 	}
-	islavnodeentry=floor(islavactdof[idofs-1]/10.);
+	islavnodeentry=(ITG)floor(islavactdof[idofs-1]/10.);
 	jrow= islavactdof[idofs-1]-10*islavnodeentry;
 	nodesf=islavnode[islavnodeentry-1];	   
         idof1=nactdof[mt*nodesf-3];	   
@@ -1496,7 +1496,7 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	idofm=i+1;
 	if(islavactdof[idofm-1]<0 ||
 	   (islavactdof[idofm-1]>0 &&
-	    islavact[(ITG) floor(islavactdof[idofm-1]/10.)-1]<0) ||
+	    islavact[(ITG)floor(islavactdof[idofm-1]/10.)-1]<0) ||
 	   islavactdof[idofm-1]==0){
 	  
 	  // only Mast Dofs and possibly N dofs due to mpcs
@@ -1506,8 +1506,8 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	    printf("bdfill: something went wrong in aubdtil2! Stop!\n");
 	    printf("bdfill: noder %" ITGFORMAT " %" ITGFORMAT " nodec %"
 		   ITGFORMAT " %" ITGFORMAT " \n",
-		   islavnode[(ITG) floor(islavactdof[idofs-1]/10.)-1],idofs,
-		   islavnode[(ITG) floor(islavactdof[idofm-1]/10.)-1],idofm );
+		   islavnode[(ITG)floor(islavactdof[idofs-1]/10.)-1],idofs,
+		   islavnode[(ITG)floor(islavactdof[idofm-1]/10.)-1],idofm );
 	    FORTRAN(stop,());
 	    
 	  }else if(islavactdof[idofs-1]<1 && islavactdof[idofm-1]<0 ){
@@ -1515,8 +1515,8 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	    printf("bdfill: something went wrong in aubdtil2! Stop!\n");
 	    printf("bdfill: slavenode row   %" ITGFORMAT " %" ITGFORMAT
 		   " master node column %" ITGFORMAT " %" ITGFORMAT " \n",
-		   islavnode[(ITG) floor(islavactdof[idofs-1]/10.)-1],idofs,
-		   imastnode[-((ITG) floor(islavactdof[idofm-1]/10.))-1],idofm);
+		   islavnode[(ITG)floor(islavactdof[idofs-1]/10.)-1],idofs,
+		   imastnode[-((ITG)floor(islavactdof[idofm-1]/10.))-1],idofm);
 	    FORTRAN(stop,());
 	    
 	  }else if(islavactdof[idofs-1]<1 && islavactdof[idofm-1]==0 ){
@@ -1524,11 +1524,11 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	    printf("bdfill: something went wrong in aubdtil2! Stop!\n");	
 	    printf("bdfill: slavenode row   %" ITGFORMAT " %" ITGFORMAT
 		   " master node column %" ITGFORMAT " \n",
-		   islavnode[(ITG) floor(islavactdof[idofs-1]/10.)-1],idofs,
+		   islavnode[(ITG)floor(islavactdof[idofs-1]/10.)-1],idofs,
 		   idofm );
 	    FORTRAN(stop,());
 	  }
-	  islavnodeentry=floor(islavactdof[idofs-1]/10.);
+	  islavnodeentry=(ITG)floor(islavactdof[idofs-1]/10.);
 	  jrow= islavactdof[idofs-1]-10*islavnodeentry;
 	  nodesf=islavnode[islavnodeentry-1];	   
 	  idof1=nactdof[mt*nodesf-3];	   

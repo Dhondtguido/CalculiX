@@ -164,9 +164,9 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 
   fmin=2.*pi*xmodal[2];
   fmax=2.*pi*xmodal[3];
-  ndata=floor(xmodal[4]);
+  ndata=(ITG)floor(xmodal[4]);
   bias=xmodal[5];
-  nfour=floor(xmodal[6]);
+  nfour=(ITG)floor(xmodal[6]);
   if(nfour>0){
     tmin=xmodal[7];
     tmax=xmodal[8];
@@ -2676,7 +2676,7 @@ void steadystate(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,ITG 
 	      
 	/* frequency */
 	      
-	freq[l]=freqnh[ii]*floor((l+1.)/2.+0.1);
+	freq[l]=freqnh[ii]*(ITG)floor((l+1.)/2.+0.1);
 
 	/* calculating cc */
 

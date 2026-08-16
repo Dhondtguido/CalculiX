@@ -123,7 +123,7 @@ void frdheader(ITG *icounter,double *oner,double *time,double *pi,
   if(*time<=0.){
       sprintf(tmp,"%12.5E",*time);
   }else if((log10(*time)>=0)&&(log10(*time)<10.)){
-      ncomma=10-floor(log10(*time)+1.);
+      ncomma=10-(ITG)floor(log10(*time)+1.);
       if(ncomma==0){
 	  sprintf(tmp,"%12.0f",*time);
       }else if(ncomma==1){

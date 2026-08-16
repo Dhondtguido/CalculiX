@@ -2535,7 +2535,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
          number of segments change the sign of the axis */
       
       //      if(nm>cs[0]/2){
-      if(nm-floor(nm/cs[0])*cs[0]>cs[0]/2){
+      if(nm-(ITG)floor(nm/cs[0])*cs[0]>cs[0]/2){
 	for(k=5;k<11;k++){cs[k]=-cs[k];}
       }
       frd(cot,&nkt,kont,ipkont,lakont,&net,vt,stnt,inumt,nmethod,

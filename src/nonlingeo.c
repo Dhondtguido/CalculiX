@@ -227,7 +227,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   /* determining whether a node belongs to at least one element
      (needed in resultsforc.c) */
 
-  nramp=ctrl[58];
+  nramp=(ITG)floor(ctrl[58]);
   NNEW(iponoel,ITG,*nk);
   if(nramp>=0) NNEW(inoel,ITG,2**nkon);
   FORTRAN(nodebelongstoel,(iponoel,inoel,&inoelsize,lakon,ipkon,kon,ne,&nramp));
@@ -3219,7 +3219,7 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 	      if(ncont!=0){
 		if(iinc==1){
 		  for(i=0;i<neqtot;i++){
-		    k=floor(ltot[i]/10);
+		    k=(ITG)floor(ltot[i]/10);
 		    l=ltot[i]-10*k;
 		    b[ktot[i]-1]=veold[mt*(k-1)+l];
 		  }

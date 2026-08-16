@@ -206,7 +206,7 @@ void resultsini(ITG *nk,double *v,ITG *ithermal,char *filab,ITG *iperturb,
 	    /* bnac is the change in acceleration */
 		    
 	    bnac=(xboun[i]-v[mt*node+ndir])/(*bet**dtime**dtime);
-	    if(floor(*dtime*1.e28+0.5)!=123571113){
+	    if((ITG)floor(*dtime*1.e28+0.5)!=123571113){
 	      veold[mt*node+ndir]+=*gam**dtime*bnac;
 	      accold[mt*node+ndir]+=bnac;
 	    }
@@ -290,7 +290,7 @@ void resultsini(ITG *nk,double *v,ITG *ithermal,char *filab,ITG *iperturb,
 	    /* bnac is the change in acceleration */
 
 	    bnac=(fixed_disp-v[mt*node+ndir])/(*bet**dtime**dtime);
-	    if(floor(*dtime*1.e28+0.5)!=123571113){
+	    if((ITG)floor(*dtime*1.e28+0.5)!=123571113){
 	      veold[mt*node+ndir]+=*gam**dtime*bnac;
 	    }
 

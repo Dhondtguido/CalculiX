@@ -99,7 +99,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
   ia=ctrl[7];df=ctrl[10];dc=ctrl[11];db=ctrl[12];da=ctrl[13];dd=ctrl[16];
   ran=ctrl[18];can=ctrl[19];rap=ctrl[22];ea=ctrl[23];cae=ctrl[24];
   ral=ctrl[25];cetol=ctrl[39];kscalemax=ctrl[55];itf2f=ctrl[56];
-  xramp=ctrl[57];nramp=ctrl[58];xdel=ctrl[59];
+  xramp=ctrl[57];nramp=(ITG)floor(ctrl[58]);xdel=ctrl[59];
 
   /* for face-to-face penalty contact: increase the number of iterations
      in two subsequent increments in order to increase the increment size */
