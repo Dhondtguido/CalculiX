@@ -736,24 +736,26 @@ c
 !     for knor
 !     
             nexp=nexp+1
+!
+!           introduced on Aug. 16 2026 a fix proposed by Victor Kemp
+!
+            if(ifix.eq.0) then
+              indexx=ixfree
+            else
+              indexx=iponor(1,ipkon(iel(jact))+jl(jact))
+            endif
+!            
             do j=nelshell,nel
               if(ial(j).eq.1) then
                 ial(j)=2
-                if(ifix.eq.0) then
-                  iponor(1,ipkon(iel(j))+jl(j))=ixfree
-                else
-                  iponor(1,ipkon(iel(j))+jl(j))=
-     &                 iponor(1,ipkon(iel(jact))+jl(jact))
-                endif
+                iponor(1,ipkon(iel(j))+jl(j))=indexx
                 iponor(2,ipkon(iel(j))+jl(j))=ikfree
               endif
             enddo
 !     
             do j=1,3
-              xnor(ixfree+j)=xn1(j,jact)
-            enddo
-            do j=1,3
-              xnor(ixfree+3+j)=xnoref(j)
+              xnor(indexx+j)=xn1(j,jact)
+              xnor(indexx+3+j)=xnoref(j)
             enddo
             ixfree=ixfree+6
             if(lakon(iel(jact))(1:1).ne.'T') then
