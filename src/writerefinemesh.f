@@ -32,51 +32,57 @@
 !
       real*8 cotet(3,*)
 !
-!     give nodes of the unrefined mesh which were not fixed
-!     a new node number in order to avoid collisions with the
-!     refined mesh
-!      
-c      do i=1,netet_
-c        if(kontet(1,i).ne.0) then
-c          do j=1,4
-c            node=kontet(j,i)
-c            if((jfix(node).ne.1).and.(node.le.nk)) then
-c              if(number(node).ne.0) then
-c                kontet(j,i)=number(node)
-c              else
-c                nktet=nktet+1
-c                number(node)=nktet
-c                kontet(j,i)=nktet
-c                do k=1,3
-c                  cotet(k,nktet)=cotet(k,node)
-c                enddo
-c              endif
-c            endif
-c          enddo
-c        endif
-c      enddo
+      integer,dimension(:),allocatable::iactive
 !
+      allocate(iactive(nktet))
+      do i=1,nktet
+        iactive(i)=0
+      enddo
+!     
 !     stores the refined mesh in input format
-!
+!     
       do i=1,132
-         if(ichar(jobnamec(1)(i:i)).eq.0) exit
+        if(ichar(jobnamec(1)(i:i)).eq.0) exit
       enddo
       if(i.gt.125) then
-         write(*,*) '*ERROR in writerefinemesh'
-         write(*,*) '       jobname has more than 124 characters'
-         call exit(201)
+        write(*,*) '*ERROR in writerefinemesh'
+        write(*,*) '       jobname has more than 124 characters'
+        call exit(201)
       endif
       fnrfn(1:i+7)=jobnamec(1)(1:i-1)//'.rfn.inp'
-!
+!     
 !     storing the mesh in input format
-!
+!     
       if(maxnnewnodes.gt.0) then
-!
+!     
 !     new nodes were created: do not keep the original numbering
 !     of the midnodes
-!
-        open(2,file=fnrfn(1:i+7),status='unknown',position='append')
 !     
+        open(2,file=fnrfn(1:i+7),status='unknown',position='append')
+!
+!     check which nodes are used by elements
+!
+        if(iquad.eq.0) then
+          do i=1,netet_
+            if(kontet(1,i).ne.0) then
+              do j=1,4
+                iactive(kontet(j,i))=1
+              enddo
+            endif
+          enddo
+        else
+          do i=1,netet_
+            if(kontet(1,i).ne.0) then
+              do j=1,4
+                iactive(kontet(j,i))=1
+              enddo
+              do j=1,6
+                iactive(iedgmid(iedtet(j,i)))=1
+              enddo
+            endif
+          enddo
+        endif
+!
 !     storing the nodes
 !     
         write(2,102)
@@ -85,11 +91,13 @@ c      enddo
 !     
 !     setting too small numbers to zero (else the exponent in the
 !     output contains 3 digits and the letter "D" is omitted)
-!     
-          do j=1,3
-            if(dabs(cotet(j,i)).lt.1.d-99) cotet(j,i)=0.d0
-          enddo
-          write(2,100) i,(cotet(j,i),j=1,3)
+!
+          if(iactive(i).eq.1) then
+            do j=1,3
+              if(dabs(cotet(j,i)).lt.1.d-99) cotet(j,i)=0.d0
+            enddo
+            write(2,100) i,(cotet(j,i),j=1,3)
+          endif
         enddo
 !     
 !     storing the tetrahedral elements
@@ -136,63 +144,85 @@ c      enddo
         endif
 !     
         close(2)
-!
+!     
       else
-!
-!       no new nodes were created: keep the original numbering
-!       of the midnodes (only smoothing)
-!
+!     
+!     no new nodes were created: keep the original numbering
+!     of the midnodes (only smoothing)
+!     
         open(2,file=fnrfn(1:i+7),status='unknown',err=51)
         close(2,status='delete',err=52)
         open(2,file=fnrfn(1:i+7),status='unknown',err=51)
-!
+!     
         write(2,102)
+!
+!       checking which nodes belong to elements
+!
         if(iquad.eq.0) then
-          do i=1,nktet
-!     
-!           setting too small numbers to zero (else the exponent in the
-!           output contains 3 digits and the letter "D" is omitted)
-!     
-            do j=1,3
-              if(dabs(cotet(j,i)).lt.1.d-99) cotet(j,i)=0.d0
-            enddo
-            write(2,100) i,(cotet(j,i),j=1,3)
+          do i=1,netet_
+            if(kontet(1,i).ne.0) then
+              do j=1,4
+                iactive(kontet(j,i))=1
+              enddo
+            endif
           enddo
         else
+          do i=1,netet_
+            if(kontet(1,i).ne.0) then
+              do j=1,4
+                iactive(kontet(j,i))=1
+              enddo
+              do j=1,6
+                iactive(kontetor(j,i))=1
+              enddo
+            endif
+          enddo
+        endif
+!
+        if(iquad.ne.0) then
 !     
-!         the modified midnodes (modified w.r.t. their location) got
-!         new node numbers. If only smoothing was performed, these
-!         modified coordinates should be attached to the orginal midnode
-!         numbers
+!     the modified midnodes (modified w.r.t. their location) got
+!     new node numbers. If only smoothing was performed, these
+!     modified coordinates should be attached to the orginal midnode
+!     numbers
 !     
           do i=1,netet_
             if(kontet(1,i).ne.0) then
-c              write(*,*) i,(kontet(j,i),j=1,10)
               do j=1,6
                 nodeold=kontetor(j,i)
                 nodenew=iedgmid(iedtet(j,i))
-c                write(*,*) 'writerefinemesh',nodeold,nodenew
                 do k=1,3
                   cotet(k,nodeold)=cotet(k,nodenew)
                 enddo
               enddo
             endif
           enddo
-!     
-!         writing the coordinates to file     
-!     
-          do i=1,nk
-            write(2,100) i,(cotet(j,i),j=1,3)
-          enddo
         endif
+!     
+!     writing the coordinates to file     
+!     
+        do i=1,nktet
+!     
+!     setting too small numbers to zero (else the exponent in the
+!     output contains 3 digits and the letter "D" is omitted)
+!
+          if(iactive(i).eq.1) then
+            do j=1,3
+              if(dabs(cotet(j,i)).lt.1.d-99) cotet(j,i)=0.d0
+            enddo
+            write(2,100) i,(cotet(j,i),j=1,3)
+          endif
+        enddo
 !     
         close(2)
 !     
       endif
+!
+      deallocate(iactive)
 !     
  100  format(i10,',',e20.13,',',e20.13,',',e20.13)
  101  format(11(i10,','))
-!
+!     
       if(iwrite.eq.1) then
         ilen=index(jobnamec(1),char(0))-1
         fn=jobnamec(1)(1:ilen)//'_WarnNodeNotProjected.nam'
@@ -211,11 +241,11 @@ c                write(*,*) 'writerefinemesh',nodeold,nodenew
       endif
 !     
       return
-!
+!     
  51   write(*,*) '*ERROR in openfile: could not open file ',fnrfn(1:i+7)
       call exit(201)
  52   write(*,*) '*ERROR in openfile: could not delete file ',
-     &  fnrfn(1:i+7)
+     &     fnrfn(1:i+7)
       call exit(201)
-!
+!     
       end
