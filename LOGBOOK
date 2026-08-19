@@ -5622,3 +5622,7 @@ Dec 2002        - started to work on single crystal plasticity
                 - corrected an error in readnewmesh.c
                 - inserted "floor" in front of ctrl[58]
 		- changed floor into (ITG)floor for several occasions
+
+ 19 Aug 2026    - made a change in gen3dnor (proposed by Victor Kemp)
+                - improve the implementation of "DOUBLE" to store real*8
+                  accurate data in binary format in the frd-format.

@@ -455,6 +455,7 @@ c
 !     locating the beam elements to which node i belongs
 !     
         index=iponoel2d(i)
+        beam=.false.
         do
           if(index.eq.0) exit
           ielem=inoel2d(1,index)
@@ -462,8 +463,9 @@ c
      &         (lakon(ielem)(1:1).eq.'T')) then
             if(lakon(ielem)(1:1).eq.'B') then
               beam=.true.
-            else
-              beam=.false.
+c   Change made August 19th, 2026. Proposed by Victor Kemp              
+c            else
+c              beam=.false.
             endif
             indexe=ipkon(ielem)
             nel=nel+1

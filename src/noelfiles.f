@@ -307,11 +307,21 @@
            filab(1)(4:4)='I'
         elseif(textpart(ii)(1:15).eq.'CONTACTELEMENTS') then
            filab(1)(3:3)='C'
-        elseif(textpart(ii)(1:6).eq.'DOUBLE') then
-           output(1:3)='dbi '
+         elseif(textpart(ii)(1:6).eq.'DOUBLE') then
+           if(output(1:3).eq.'bin') then
+             output(1:3)='dbl'
+           else
+             write(*,*) '*WARNING reading *NODE/EL/CONTACT'
+             write(*,*) '         FILE: parameter DOUBLE'
+             write(*,*) '         is only allowed on a'
+             write(*,*) '         NODE/ELEMENT/CONTACT OUTPUT'
+             write(*,*) '         card'
+           endif
         else
             write(*,*) 
-     &             '*WARNING reading *NODE/EL/CONTACT FILE:' 
+     &             '*WARNING reading *NODE/EL/CONTACT FILE  or' 
+            write(*,*) 
+     &           '         *NODE/ELEMENT/CONTACT OUTPUT:' 
             write(*,*) '         parameter not recognized:'
             write(*,*) '         ',
      &                 textpart(ii)(1:index(textpart(ii),' ')-1)
