@@ -5626,3 +5626,5 @@ Dec 2002        - started to work on single crystal plasticity
  19 Aug 2026    - made a change in gen3dnor (proposed by Victor Kemp)
                 - improve the implementation of "DOUBLE" to store real*8
                   accurate data in binary format in the frd-format.
+
+ 20 Agu 2020    - made a small change in writeinputdeck.f

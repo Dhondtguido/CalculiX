@@ -604,6 +604,7 @@ c      enddo
       ifree=0
       do i=1,ne
         if(ipkon(i).lt.0) cycle
+        if(lakon(i)(1:3).ne.'C3D') cycle
 !
 !       normalizing the distance (0 to 1)
 !
