@@ -17,7 +17,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine noanalysiss(inpc,textpart,nmethod,iperturb,istep,
-     &  istat,n,iline,ipol,inl,ipoinp,inp,ipoinpc,tper,ier)
+     &  istat,n,iline,ipol,inl,ipoinp,inp,ipoinpc,tper,ier,idrct)
 !
 !     reading the input deck: *NO ANALYSIS
 !
@@ -27,7 +27,7 @@
       character*132 textpart(16)
 !
       integer nmethod,iperturb(*),istep,istat,n,key,iline,ipol,inl,
-     &  ipoinp(2,*),inp(3,*),ipoinpc(0:*),ier
+     &  ipoinp(2,*),inp(3,*),ipoinpc(0:*),ier,idrct
 !
       real*8 tper
 !
@@ -44,6 +44,7 @@
       nmethod=0
       iperturb(1)=0
       tper=1.d0
+      idrct=0
 !
       call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &     ipoinp,inp,ipoinpc)

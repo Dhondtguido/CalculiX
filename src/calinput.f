@@ -892,7 +892,7 @@ c
 !     
       elseif(textpart(1)(1:11).eq.'*NOANALYSIS') then
         call noanalysiss(inpc,textpart,nmethod,iperturb,istep,
-     &       istat,n,iline,ipol,inl,ipoinp,inp,ipoinpc,tper,ier)
+     &       istat,n,iline,ipol,inl,ipoinp,inp,ipoinpc,tper,ier,idrct)
 !     
       elseif(textpart(1)(1:15).eq.'*NODALTHICKNESS') then
         call nodalthicknesss(inpc,textpart,set,istartset,iendset,
