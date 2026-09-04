@@ -485,6 +485,4 @@ void *genratiomt(ITG *i){
 
   FORTRAN(genratio,(co1,doubleglob1,integerglob1,&nka,&nkb,
 		    &iprfn1[index1],&konrfn1[index2],&ratiorfn1[index2]));
-
-  return NULL;
 }
