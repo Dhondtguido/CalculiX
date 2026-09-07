@@ -23,6 +23,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
+#include <locale.h>
 #include "CalculiX.h"
 
 #ifdef CALCULIX_MPI
@@ -134,6 +135,14 @@ int main(int argc,char *argv[])
       strcpy2(jobnamec,argv[1],132);
       strcpy1(jobnamef,argv[1],132);}
   }
+
+  /* The .frd, .dat and .net files are read by cgx, FreeCAD and everything
+     else downstream with the "C" locale, so the C runtime has to format
+     numbers with a decimal point whatever the user's regional settings say.
+     Nothing here selects a locale, but the process this runs in may already
+     have, and printf then writes "0,00000E+00". */
+
+  setlocale(LC_NUMERIC,"C");
 
   putenv("CCX_JOBNAME_GETJOBNAME=jobnamec");
 
