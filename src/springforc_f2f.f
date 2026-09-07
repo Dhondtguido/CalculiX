@@ -35,7 +35,7 @@
      &  nmethod,ne0,nstate_,ielas,jfaces,kscale,konl(26),
      &  igauss,nopes,nopem,nopep,iout,nelem,mscalmethod
 !
-      real*8 xl(3,10),stiff(21),t1l,al(3),vl(0:mi(2),19),stickslope,
+      real*8 xl(3,19),stiff(21),t1l,al(3),vl(0:mi(2),19),stickslope,
      &  pl(3,19),xn(3),alpha,beta,fnl(3,17),tp(3),te(3),ftrial(3),
      &  t(3),dftrial,elcon(0:ncmat_,ntmat_,*),pproj(3),clear,
      &  xi,et,elconloc(*),plconloc(82),xk,val,xiso(20),yiso(20),
