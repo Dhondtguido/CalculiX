@@ -530,8 +530,16 @@ c     write(*,*)'STICK'
 !     
 !     storing the tangential displacements
 !     
-         cstr(2)=t(1)*t1(1)+t(2)*t1(2)+t(3)*t1(3)
-         cstr(3)=t(1)*t2(1)+t(2)*t2(2)+t(3)*t2(3)
+         if(um.gt.0.d0) then
+            cstr(2)=t(1)*t1(1)+t(2)*t1(2)+t(3)*t1(3)
+            cstr(3)=t(1)*t2(1)+t(2)*t2(2)+t(3)*t2(3)
+         else
+!     
+!     without friction t, t1 and t2 were never calculated
+!     
+            cstr(2)=0.d0
+            cstr(3)=0.d0
+         endif
       endif
 !     
 !     force in the master nodes
