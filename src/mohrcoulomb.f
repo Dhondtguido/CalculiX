@@ -691,6 +691,19 @@ c      write(*,*) 'mohrcoulomb ',iel,iint,iregion
      &         -dhr(1,2)*(dhr(2,1)*dhr(3,3)-dhr(2,3)*dhr(3,1))
      &         +dhr(1,3)*(dhr(2,1)*dhr(3,2)-dhr(2,2)*dhr(3,1))
 !     
+!     for a dilatation angle of zero (xm=1) s6=s1-s2, so the three
+!     flow directions are linearly dependent and, without hardening,
+!     det vanishes identically: the plastic flow is isochoric and the
+!     stress cannot be returned to the apex.  Solving anyway yields
+!     multipliers of the order 1/det, i.e. pure round-off amplified by
+!     ten orders of magnitude, which then trips the dlambdar<0 test
+!     below.  Ask for a smaller increment instead.
+!     
+          if(dabs(det).le.1.d-10*dabs(dhr(1,1)*dhr(2,2)*dhr(3,3))) then
+            pnewdt=0.25d0
+            return
+          endif
+!     
 !     solving the system
 !     
           ddlambdar(1)=-(hr(1)*(dhr(2,2)*dhr(3,3)-dhr(2,3)*dhr(3,2))
