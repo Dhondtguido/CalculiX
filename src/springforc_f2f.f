@@ -36,7 +36,7 @@
      &  igauss,nopes,nopem,nopep,iout,nelem,mscalmethod
 !
       real*8 xl(3,10),stiff(21),t1l,al(3),vl(0:mi(2),19),stickslope,
-     &  pl(3,19),xn(3),alpha,beta,fnl(3,19),tp(3),te(3),ftrial(3),
+     &  pl(3,19),xn(3),alpha,beta,fnl(3,17),tp(3),te(3),ftrial(3),
      &  t(3),dftrial,elcon(0:ncmat_,ntmat_,*),pproj(3),clear,
      &  xi,et,elconloc(*),plconloc(82),xk,val,xiso(20),yiso(20),
      &  plicon(0:2*npmat_,ntmat_,*),um,senergy,cstr(6),dg,venergy,
@@ -436,27 +436,6 @@ c            dftrial=dsqrt(ftrial(1)**2+ftrial(2)**2+ftrial(3)**2)
               fnl(i,nopem+j)=shp2s(4,j)*fnl(i,nopep)
           enddo
       enddo
-!
-!     write statements for Malte Krack
-!
-c      if(iout.gt.0) then
-c         write(*,*) 'contact element: ',nelem
-c         write(*,*) 'undeformed location of the integration point'
-c         write(*,*) ((pl(j,nopep)-vl(j,nopep)),j=1,3)
-c         write(*,*) 'deformed location of the integration point'
-c         write(*,*) (pl(j,nopep),j=1,3)
-c         write(*,*) 'nodes and shape values'
-c         do j=1,nopem
-c            write(*,*) konl(j),-shp2m(4,j)
-c         enddo
-c         do j=1,nopes
-c            write(*,*) konl(nopem+j),shp2s(4,j)
-c         enddo
-c         write(*,*) 'contact force'
-c         write(*,*) fnl(1,nopep),fnl(2,nopep),fnl(3,nopep)
-c         write(*,*) 'slave area'
-c         write(*,*) springarea(1)
-c      endif
 !
       return
       end

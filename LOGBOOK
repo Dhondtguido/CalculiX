@@ -5627,4 +5627,9 @@ Dec 2002        - started to work on single crystal plasticity
                 - improve the implementation of "DOUBLE" to store real*8
                   accurate data in binary format in the frd-format.
 
- 20 Agu 2020    - made a small change in writeinputdeck.f
+ 20 Aug 2026    - made a small change in writeinputdeck.f
+
+ 16 Sept 2026   - set the dimension of fnl to (3,17) (in *springforc*
+                  files and some others)
+		  
+ 17 Sept 2026   - corrected an error in initialconditionss.f

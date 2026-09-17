@@ -26,7 +26,7 @@
      &  reltime,calcul_fn,calcul_qa,calcul_cauchy,nener,
      &  ikin,nal,ne0,thicke,emeini,i,ielprop,prop,t0g,t1g)
 !
-!     calculates fn for a substructure (also called superelement,
+!     calculates fn for a substructure (also called superelement)
 !                provided using *MATRIX ASSEMBLE
 !     
 !     INPUT:

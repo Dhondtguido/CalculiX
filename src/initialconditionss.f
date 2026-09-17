@@ -989,7 +989,7 @@ c     endif
      &                 ipol,inl,ipoinp,inp,ipoinpc)
                   if((istat.lt.0).or.(key.eq.1)) return
                   do j=1,jmax
-                    read(textpart(j+2)(1:20),'(f20.0)',
+                    read(textpart(j)(1:20),'(f20.0)',
      &                   iostat=istat) beta(j)
                     if(istat.gt.0) then
                       call inputerror(inpc,ipoinpc,iline,
