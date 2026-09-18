@@ -500,7 +500,14 @@ c     endif
 !     
 !     determining a new dependent term       
 !     
+!     
+!     lmax/mmax must be seeded with the current direction: if neither
+!     of the two other directions beats ddmax they are never assigned,
+!     and i=lmax/j=mmax below would be garbage used as array indices
+!     
             ddmax=abs(c2)
+            lmax=i
+            mmax=j
             l=i
             m=j
             do k=1,2
