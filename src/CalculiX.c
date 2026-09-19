@@ -33,6 +33,10 @@ struct timespec totalCalculixTimeStart,totalCalculixTimeEnd;
 
 int main(int argc,char *argv[])
 {
+
+#if defined(_WIN32) && !defined(_UCRT)
+_set_output_format(_TWO_DIGIT_EXPONENT);
+#endif
   
   FILE *f1;
     
