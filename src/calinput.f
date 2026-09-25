@@ -460,7 +460,7 @@
         call contactprints(inpc,textpart,nprint,nprint_,jout,
      &       prlab,prset,contactprint_flag,ithermal,istep,istat,n,
      &       iline,ipol,inl,ipoinp,inp,amname,nam,itpamp,idrct,
-     &       ipoinpc,nener,ier,ntie,tieset)
+     &       ipoinpc,nener,ier,ntie,tieset,mortar)
         contactprint_flag=.true.
 !     
       elseif(textpart(1)(1:9).eq.'*CONTROLS') then

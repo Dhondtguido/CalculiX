@@ -5633,3 +5633,7 @@ Dec 2002        - started to work on single crystal plasticity
                   files and some others)
 		  
  17 Sept 2026   - corrected an error in initialconditionss.f
+
+ 25 Sept 2026   - added an ERROR message in bdfill.c
+                - check for surface-to-surface contact in contactprints.f
+		

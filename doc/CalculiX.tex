@@ -10018,8 +10018,8 @@ using Mortar contact:
     temperature-displacement calculations, to name a few.
   \item It is advised to use the mortar method for contact between genuine
     3-dimensional elements only. Usage for contact in between 1-d or 2-d elements will cause
-    problems. In general, the mortar method is not well suited if the contact
-    areas are too much constrained by extra multiple point constraints.  
+    problems. In general, the mortar method may fail if SPCs and/or
+    MPCs are defined on the slave and/or master contact surface.  
   \item The mortar method cannot be combined with the penalty method in one
     input file. 
   \item Using the \htmlref{*CYCLIC SYMMETRY MODEL}{cyclicsymmetrymodel} option, one has

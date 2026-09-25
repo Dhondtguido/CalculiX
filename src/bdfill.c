@@ -1299,8 +1299,10 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	    -dloc[9*j+6]*dloc[9*j+4]*dloc[9*j+2]
 	    -dloc[9*j+0]*dloc[9*j+7]*dloc[9*j+5]
 	    -dloc[9*j+3]*dloc[9*j+1]*dloc[9*j+8];
-	  if(detdloc<1.e-19&&detdloc>-1.e-19){
-	    fflush(stdout); 
+	  if((detdloc<1.e-19)&&(detdloc>-1.e-19)){
+	    fflush(stdout);
+	  printf("bdfill: something went wrong in aubdtil2! Stop!\n");
+	  printf("*ERROR in bdfill. This may be caused by SPCs or MPCs\n on the slave and master contact surfaces\n\n");
 	    FORTRAN(stop,());
 	  }
 	  dinvloc[9*j+0]=+1.0/detdloc*(dloc[9*j+4]*dloc[9*j+8]-
@@ -1404,22 +1406,22 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	// only Mast Dofs and possibly N dofs due to mpcs
 	
 	if(islavactdof[idofs-1]<1 && islavactdof[idofm-1]>0 ){
-	  printf("bdfill: something went wrong in aubdtil2! Stop!\n");
-	  printf("bdfill: noder %" ITGFORMAT " %" ITGFORMAT " nodec %"
+	  printf("*ERROR in bdfill: something went wrong in aubdtil2! Stop!\n");
+	  printf("*ERROR in bdfill: noder %" ITGFORMAT " %" ITGFORMAT " nodec %"
 		 ITGFORMAT " %" ITGFORMAT " \n",
 		 islavnode[(ITG)floor(islavactdof[idofs-1]/10.)-1],idofs,
 		 islavnode[(ITG)floor(islavactdof[idofm-1]/10.)-1],idofm );
 	  FORTRAN(stop,());
 	}else if(islavactdof[idofs-1]<1 && islavactdof[idofm-1]<0 ){
-	  printf("bdfill: something went wrong in aubdtil2! Stop!\n");
-	  printf("bdfill: slavenode row   %" ITGFORMAT " %" ITGFORMAT
+	  printf("*ERROR in bdfill: something went wrong in aubdtil2! Stop!\n");
+	  printf("*ERROR in bdfill: slavenode row   %" ITGFORMAT " %" ITGFORMAT
 		 " master node column %" ITGFORMAT " %" ITGFORMAT " \n",
 		 islavnode[(ITG)floor(islavactdof[idofs-1]/10.)-1],idofs,
 		 imastnode[-((ITG)floor(islavactdof[idofm-1]/10.))-1],idofm );
 	  FORTRAN(stop,()); 
 	}else if(islavactdof[idofs-1]<1 && islavactdof[idofm-1]==0 ){
-	  printf("bdfill: something went wrong in aubdtil2! Stop!\n");	
-	  printf("bdfill: slavenode row   %" ITGFORMAT " %" ITGFORMAT
+	  printf("*ERROR in bdfill: something went wrong in aubdtil2! Stop!\n");	
+	  printf("*ERROR in bdfill: slavenode row   %" ITGFORMAT " %" ITGFORMAT
 		 " master node column %" ITGFORMAT " \n",
 		 islavnode[(ITG)floor(islavactdof[idofs-1]/10.)-1],idofs,
 		 idofm );
@@ -1503,8 +1505,8 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	  
 	  if(islavactdof[idofs-1]<1 && islavactdof[idofm-1]>0 ){
 	    
-	    printf("bdfill: something went wrong in aubdtil2! Stop!\n");
-	    printf("bdfill: noder %" ITGFORMAT " %" ITGFORMAT " nodec %"
+	    printf("*ERROR in bdfill: something went wrong in aubdtil2! Stop!\n");
+	    printf("*ERROR in bdfill: noder %" ITGFORMAT " %" ITGFORMAT " nodec %"
 		   ITGFORMAT " %" ITGFORMAT " \n",
 		   islavnode[(ITG)floor(islavactdof[idofs-1]/10.)-1],idofs,
 		   islavnode[(ITG)floor(islavactdof[idofm-1]/10.)-1],idofm );
@@ -1512,8 +1514,8 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	    
 	  }else if(islavactdof[idofs-1]<1 && islavactdof[idofm-1]<0 ){
 	    
-	    printf("bdfill: something went wrong in aubdtil2! Stop!\n");
-	    printf("bdfill: slavenode row   %" ITGFORMAT " %" ITGFORMAT
+	    printf("*ERROR in bdfill: something went wrong in aubdtil2! Stop!\n");
+	    printf("*ERROR in bdfill: slavenode row   %" ITGFORMAT " %" ITGFORMAT
 		   " master node column %" ITGFORMAT " %" ITGFORMAT " \n",
 		   islavnode[(ITG)floor(islavactdof[idofs-1]/10.)-1],idofs,
 		   imastnode[-((ITG)floor(islavactdof[idofm-1]/10.))-1],idofm);
@@ -1521,8 +1523,8 @@ void bdfill(ITG **irowbdp,ITG *jqbd,double **aubdp,ITG *nzsbd,
 	    
 	  }else if(islavactdof[idofs-1]<1 && islavactdof[idofm-1]==0 ){
 	    
-	    printf("bdfill: something went wrong in aubdtil2! Stop!\n");	
-	    printf("bdfill: slavenode row   %" ITGFORMAT " %" ITGFORMAT
+	    printf("*ERROR in bdfill: something went wrong in aubdtil2! Stop!\n");	
+	    printf("*ERROR in bdfill: slavenode row   %" ITGFORMAT " %" ITGFORMAT
 		   " master node column %" ITGFORMAT " \n",
 		   islavnode[(ITG)floor(islavactdof[idofs-1]/10.)-1],idofs,
 		   idofm );

@@ -20,7 +20,7 @@
      &     nprint,nprint_,jout,prlab,prset,
      &     contactprint_flag,ithermal,istep,istat,n,iline,ipol,inl,
      &     ipoinp,inp,amname,nam,itpamp,idrct,ipoinpc,nener,ier,
-     &     ntie,tieset)
+     &     ntie,tieset,mortar)
 !
 !     reading the *CONTACT PRINT cards in the input deck
 !
@@ -37,7 +37,7 @@
       integer ii,i,nam,itpamp,ier,ntie,iposslave,iposmaster,
      &  jout(2),joutl,ithermal(*),nprint,nprint_,istep,itie,
      &  istat,n,key,ipos,iline,ipol,inl,ipoinp(2,*),inp(3,*),idrct,
-     &  ipoinpc(0:*),nener
+     &  ipoinpc(0:*),nener,mortar
 !
       if(istep.lt.1) then
          write(*,*) '*ERROR reading *CONTACT PRINT: *CONTACT PRINT 
@@ -207,7 +207,15 @@ c      jout=max(jout,1)
                   write(*,*) '       existing contact pair defined'
                   ier=1
                   return
-               endif
+                endif
+                if(mortar.ne.1) then
+                  write(*,*) '*ERROR reading *CONTACT PAIR: contact'
+                  write(*,*) '       forces (CF, CFN or CFS)'
+                  write(*,*) '       can only be requested for'
+                  write(*,*) '       contact of type '
+                  write(*,*) '       SURFACE TO SURFACE'
+                  cycle
+                endif
                write(prset(nprint)(1:10),'(i10)') itie
                do i=11,81
                   prset(nprint)(i:i)=' '
