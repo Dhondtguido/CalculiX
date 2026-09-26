@@ -189,6 +189,21 @@ c      jout=max(jout,1)
                cycle
             endif
 !
+!           contact forces can only be requested for surface
+!           to surface contact
+!
+            if(textpart(ii)(1:2).eq.'CF') then
+              if(mortar.ne.1) then
+                write(*,*) '*WARNING reading *CONTACT PAIR: contact'
+                write(*,*) '         forces (CF, CFN or CFS)'
+                write(*,*) '         can only be requested for'
+                write(*,*) '         contact of type '
+                write(*,*) '         SURFACE TO SURFACE'
+                write(*,*)
+                cycle
+              endif
+            endif
+!
             if(textpart(ii)(1:4).eq.'CELS') nener=1
 !
             nprint=nprint+1
@@ -202,26 +217,18 @@ c      jout=max(jout,1)
 !           else the surface name
 !
             if(textpart(ii)(1:2).eq.'CF') then
-               if(itie.eq.0) then
-                  write(*,*) '*ERROR reading *CONTACT PRINT: no'
-                  write(*,*) '       existing contact pair defined'
-                  ier=1
-                  return
-                endif
-                if(mortar.ne.1) then
-                  write(*,*) '*ERROR reading *CONTACT PAIR: contact'
-                  write(*,*) '       forces (CF, CFN or CFS)'
-                  write(*,*) '       can only be requested for'
-                  write(*,*) '       contact of type '
-                  write(*,*) '       SURFACE TO SURFACE'
-                  cycle
-                endif
-               write(prset(nprint)(1:10),'(i10)') itie
-               do i=11,81
-                  prset(nprint)(i:i)=' '
-               enddo
+              if(itie.eq.0) then
+                write(*,*) '*ERROR reading *CONTACT PRINT: no'
+                write(*,*) '       existing contact pair defined'
+                ier=1
+                return
+              endif
+              write(prset(nprint)(1:10),'(i10)') itie
+              do i=11,81
+                prset(nprint)(i:i)=' '
+              enddo
             else
-               prset(nprint)=noset
+              prset(nprint)=noset
             endif
 !            
             prlab(nprint)(1:4)=textpart(ii)(1:4)
