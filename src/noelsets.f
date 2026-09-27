@@ -330,6 +330,16 @@ ccc   to remove end
 !     
 !     node or element number
 !     
+              if(ialset(nalset+1).le.0) then
+                write(*,*) 
+     &               '*ERROR reading *NSET/ELSET: value ',
+     &               ialset(nalset+1)
+                write(*,*) '       in set ',
+     &               set(iset)(1:index(set(iset),' ')-2),' <= 0'
+                call inputerror(inpc,ipoinpc,iline,
+     &               "*NSET or *ELSET%",ier)
+                return
+              endif
               if(kode.eq.0) then
                 if(ialset(nalset+1).gt.nk) then
                   write(*,*) 
