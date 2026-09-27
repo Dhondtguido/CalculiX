@@ -34,7 +34,6 @@
       real*8 alcon(0:6,ntmat_,*),alzero(*)
 !
       ntmat=0
-      alzero(nmat)=0.d0
 !
       if((istep.gt.0).and.(irstrt(1).ge.0)) then
          write(*,*) '*ERROR reading *ELECTRICAL CONDUCTIVITY:'
@@ -51,6 +50,8 @@
          ier=1
          return
       endif
+!
+      alzero(nmat)=0.d0
 !
       ityp=1
 !
