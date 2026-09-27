@@ -1261,6 +1261,16 @@ c
 !     
       enddo loop
 !     
+!     massless contact is only allowed in explicit dynamic steps
+!     
+      if((istep.gt.0).and.(mortar.eq.-1).and.
+     &     ((nmethod.ne.4).or.(iexpl.le.1))) then
+        write(*,*) '*ERROR in calinput: massless contact is only'
+        write(*,*) '       allowed in an explicit dynamic step'
+        write(*,*) '       (*DYNAMIC,EXPLICIT)'
+        ier=1
+      endif
+!     
       if(ier.ge.1) then
         write(*,*) '*ERROR in calinput: at least one fatal'
         write(*,*) '       error message while reading the'
