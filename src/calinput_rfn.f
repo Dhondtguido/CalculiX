@@ -66,7 +66,8 @@
      &         ne,ne_,set,istartset,iendset,ialset,nset,nset_,nalset,
      &         nalset_,mi(1),ixfree,iponor,xnor,istep,istatrfn,n,iline,
      &         ipol,inl,ipoinp,inp,iaxial,ipoinpc,solid,
-     &         network,filab,nlabel,out3d,iuel,nuel_,ier,iparentel)
+     &         network,filab,nlabel,out3d,iuel,nuel_,ier,iparentel,
+     &         nk)
 !     
         elseif(textpart(1)(1:12).eq.'*MODELCHANGE') then
           call modelchanges(inpc,textpart,tieset,istatrfn,n,iline,
