@@ -378,6 +378,13 @@
           ntmatl=ntmatl+1
           ntmat_=max(ntmatl,ntmat_)
         enddo
+      elseif(textpart(1)(1:20).eq.'*SPECIFICGASCONSTANT') then
+!
+!       the specific gas constant is stored in shcon(3,1,*)
+!
+        ntmat_=max(1,ntmat_)
+        call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
+     &       ipoinp,inp,ipoinpc)
       elseif(textpart(1)(1:11).eq.'*CONSTRAINT') then
         do
           call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
