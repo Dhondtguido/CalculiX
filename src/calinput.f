@@ -1260,20 +1260,21 @@ c
 !     
       enddo loop
 !     
-      if(ier.ge.1) then
-        write(*,*) '*ERROR in calinput: at least one fatal'
-        write(*,*) '       error message while reading the'
-        write(*,*) '       input deck: CalculiX stops.'
-        write(*,*)
-        call exit(201)
-      endif
-!     
 !     check whether the *END STEP card was preceded by a *STEP card    
 !     
       if(newstep.eq.0) then
         write(*,*) '*ERROR in calinput: *END STEP card in step ',
      &       istep+1
         write(*,*) '       was not preceded by a *STEP card'
+        ier=1
+      endif
+!     
+      if(ier.ge.1) then
+        write(*,*) '*ERROR in calinput: at least one fatal'
+        write(*,*) '       error message while reading the'
+        write(*,*) '       input deck: CalculiX stops.'
+        write(*,*)
+        call exit(201)
       endif
 !     
 !     reorganizing the input in field inpc
