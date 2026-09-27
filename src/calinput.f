@@ -898,7 +898,7 @@ c
       elseif(textpart(1)(1:15).eq.'*NODALTHICKNESS') then
         call nodalthicknesss(inpc,textpart,set,istartset,iendset,
      &       ialset,nset,thickn,nk,istep,istat,n,iline,ipol,inl,
-     &       ipoinp,inp,iaxial,ipoinpc,ier)
+     &       ipoinp,inp,iaxial,ipoinpc,ier,ne1d,ne2d)
 !     
       elseif((textpart(1)(1:5).eq.'*NODE').and.
      &       (textpart(1)(1:10).ne.'*NODEPRINT').and.

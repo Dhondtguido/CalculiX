@@ -18,7 +18,7 @@
 !
       subroutine nodalthicknesss(inpc,textpart,set,istartset,iendset,
      &  ialset,nset,thickn,nk,istep,istat,n,iline,ipol,inl,ipoinp,
-     &  inp,iaxial,ipoinpc,ier)
+     &  inp,iaxial,ipoinpc,ier,ne1d,ne2d)
 !
 !     reading the input deck: *NODAL THICKNESS
 !
@@ -30,7 +30,7 @@
 !
       integer istartset(*),iendset(*),ialset(*),nset,nk,istep,istat,n,
      &  key,i,j,k,l,ipos,iline,ipol,inl,ipoinp(2,*),inp(3,*),iaxial,
-     &  ipoinpc(0:*),ier,id
+     &  ipoinpc(0:*),ier,id,ne1d,ne2d
 !
       real*8 thickn(2,*),thickness1,thickness2
 !
@@ -38,6 +38,17 @@
          write(*,*) '*ERROR reading *NODAL THICKNESS: *NODAL THICKNESS'
          write(*,*) '      should be placed before all step definitions'
          ier=1
+         return
+      endif
+!
+!     the nodal thickness field only exists if 1-D or 2-D elements
+!     were defined
+!
+      if((ne1d.eq.0).and.(ne2d.eq.0)) then
+         write(*,*) '*ERROR reading *NODAL THICKNESS: no 1-D or 2-D'
+         write(*,*) '       elements were defined'
+         call inputerror(inpc,ipoinpc,iline,
+     &        "*NODAL THICKNESS%",ier)
          return
       endif
 !
@@ -73,6 +84,12 @@
          endif
          read(textpart(1)(1:10),'(i10)',iostat=istat) l
          if(istat.eq.0) then
+            if((l.gt.nk).or.(l.le.0)) then
+               write(*,*) '*ERROR reading *NODAL THICKNESS:'
+               write(*,*) '       node ',l,' is not defined'
+               ier=1
+               return
+            endif
             thickn(1,l)=thickness1
             thickn(2,l)=thickness2
          else
