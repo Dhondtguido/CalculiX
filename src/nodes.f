@@ -134,6 +134,13 @@ ccc   to remove end
      &         "*NODE%",ier)
           return
         endif
+        if(i.le.0) then
+          write(*,*) '*ERROR reading *NODE: node number ',i
+          write(*,*) '       is not positive'
+          call inputerror(inpc,ipoinpc,iline,
+     &         "*NODE%",ier)
+          return
+        endif
         if(n.eq.1) then
           co(1,i)=0.d0
         else
