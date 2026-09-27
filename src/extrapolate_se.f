@@ -1073,7 +1073,7 @@ c     Bernhardi end
 !     
       if((cflag.ne.' ').and.(cflag.ne.'E')) then
         call map3dto1d2d(yn,ipkon,inum,kon,lakon,nfield,nk,ne,cflag,
-     &       co,vold,iforce,mi)
+     &       co,vold,iforce,mi,ielprop,prop)
       endif
 !     
       return
