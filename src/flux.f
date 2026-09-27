@@ -215,7 +215,7 @@
 !
          call rcavi(node1,node2,nodem,nelem,lakon,kon,ipkon,
      &     nactdog,identity,ielprop,prop,kflag,v,xflow,f,
-     &     nodef,idirf,df,cp,R,dvi,numf,set,mi,ttime,time,
+     &     nodef,idirf,df,cp,R,physcon,dvi,numf,set,mi,ttime,time,
      &     iaxial,iplausi)
 !
 !     code not available in the internet distribution of CalculiX
@@ -224,7 +224,7 @@
 !
          call rcavi2(node1,node2,nodem,nelem,lakon,kon,ipkon,
      &     nactdog,identity,ielprop,prop,kflag,v,xflow,f,
-     &     nodef,idirf,df,cp,R,dvi,numf,set,mi,ttime,time,
+     &     nodef,idirf,df,cp,R,physcon,dvi,numf,set,mi,ttime,time,
      &     iaxial,iplausi)
 !
 !     restrictors
