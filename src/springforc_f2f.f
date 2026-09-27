@@ -38,7 +38,7 @@
       real*8 xl(3,10),stiff(21),t1l,al(3),vl(0:mi(2),19),stickslope,
      &  pl(3,19),xn(3),alpha,beta,fnl(3,17),tp(3),te(3),ftrial(3),
      &  t(3),dftrial,elcon(0:ncmat_,ntmat_,*),pproj(3),clear,
-     &  xi,et,elconloc(*),plconloc(82),xk,val,xiso(20),yiso(20),
+     &  xi,et,elconloc(*),plconloc(802),xk,val,xiso(200),yiso(200),
      &  plicon(0:2*npmat_,ntmat_,*),um,senergy,cstr(6),dg,venergy,
      &  dfshear,dfnl,springarea(2),overlap,pres,clearini(3,9,*),
      &  xstate(nstate_,mi(1),*),xstateini(nstate_,mi(1),*),t1(3),t2(3),
@@ -208,7 +208,7 @@
          call materialdata_sp(elcon,nelcon,imat,ntmat_,i,t1l,
      &     elconloc,kode,plicon,nplicon,npmat_,plconloc,ncmat_)
          overlap=-clear
-         niso=int(plconloc(81))
+         niso=int(plconloc(801))
          do i=1,niso
             xiso(i)=plconloc(2*i-1)
             yiso(i)=plconloc(2*i)
