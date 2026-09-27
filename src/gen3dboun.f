@@ -602,6 +602,19 @@
               lend=1
               linc=-1
               ialeatoric=1
+            else
+!
+!     plane stress, plane strain and axisymmetric elements
+!     have no rotational DOFs: there is nothing to constrain
+!
+              write(*,*) '*WARNING in gen3dboun: in node ',node
+              write(*,*) '         rotational DOF ',idir,' is'
+              write(*,*) '         constrained by a SPC; however,'
+              write(*,*) '         the elements to which this node'
+              write(*,*) '         belongs do not have rotational'
+              write(*,*) '         DOFs; the SPC is ignored'
+              write(*,*)
+              cycle
             endif
 !     
 !     check for transformations

@@ -633,6 +633,13 @@ c     vold(1,iexpnode)=alpha
               lend=1
               linc=-1
               ialeatoric=1
+            else
+              write(*,*) '*ERROR in gen3dforc: in node ',node
+              write(*,*) '       a rotational DOF is loaded;'
+              write(*,*) '       however, the elements to which'
+              write(*,*) '       this node belongs do not have'
+              write(*,*) '       rotational DOFs'
+              call exit(201)
             endif
 !     
 !     check for transformations
