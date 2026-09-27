@@ -94,7 +94,7 @@
         write(*,*) '         ',
      &       textpart(i)(1:index(textpart(i),' ')-1)
         call inputerror(inpc,ipoinpc,iline,
-     &       "*HCF%")
+     &       "*HCF%",ier)
       endif
 !     
       if(mei(1).eq.0) then
@@ -103,7 +103,7 @@
         write(*,*) '         ',
      &       textpart(i)(1:index(textpart(i),' ')-1)
         call inputerror(inpc,ipoinpc,iline,
-     &       "*HCF%")
+     &       "*HCF%",ier)
       endif
 !     
       if(mei(2).eq.0) then
@@ -112,7 +112,7 @@
         write(*,*) '         ',
      &       textpart(i)(1:index(textpart(i),' ')-1)
         call inputerror(inpc,ipoinpc,iline,
-     &       "*HCF%")
+     &       "*HCF%",ier)
       endif
 !     
       if(tincf.eq.0.d0) then
