@@ -316,7 +316,7 @@
      &         ialset,nset,ielmat,matname,nmat,ielorien,orname,norien,
      &         thicke,ipkon,iponor,xnor,ixfree,
      &         offset,lakon,irstrt,istep,istat,n,iline,ipol,inl,
-     &         ipoinp,inp,ipoinpc,mi,nelcon,ier)
+     &         ipoinp,inp,ipoinpc,mi,nelcon,ier,ne)
         endif
 !     
       elseif(textpart(1)(1:10).eq.'*BOUNDARYF') then
@@ -1065,14 +1065,14 @@ c
      &       ialset,nset,ielmat,matname,nmat,ielorien,orname,
      &       norien,thicke,kon,ipkon,offset,irstrt,istep,istat,n,
      &       iline,ipol,inl,ipoinp,inp,lakon,iaxial,ipoinpc,mi,
-     &       icomposite,nelcon,ier)
+     &       icomposite,nelcon,ier,ne)
 !     
       elseif(textpart(1)(1:13).eq.'*SOLIDSECTION') then
         call solidsections(inpc,textpart,set,istartset,iendset,
      &       ialset,nset,ielmat,matname,nmat,ielorien,orname,
      &       norien,lakon,thicke,kon,ipkon,irstrt,istep,istat,n,iline,
      &       ipol,inl,ipoinp,inp,cs,mcs,iaxial,ipoinpc,mi,co,
-     &       ixfree,xnor,iponor,ier,orab)
+     &       ixfree,xnor,iponor,ier,orab,ne)
 !     
       elseif(textpart(1)(1:20).eq.'*SPECIFICGASCONSTANT') then
         call specificgasconstants(inpc,textpart,shcon,nshcon,

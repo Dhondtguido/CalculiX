@@ -20,7 +20,7 @@
      &  ialset,nset,ielmat,matname,nmat,ielorien,orname,norien,
      &  thicke,ipkon,iponor,xnor,ixfree,
      &  offset,lakon,irstrt,istep,istat,n,iline,ipol,inl,ipoinp,inp,
-     &  ipoinpc,mi,nelcon,ier)
+     &  ipoinpc,mi,nelcon,ier,ne)
 !
 !     reading the input deck: *BEAM SECTION
 !
@@ -40,7 +40,7 @@
      &  ielorien(mi(3),*),ipkon(*),iline,ipol,inl,ipoinp(2,*),
      &  inp(3,*),nset,nmat,norien,istep,istat,n,key,i,j,k,l,imaterial,
      &  iorientation,ipos,m,iponor(2,*),ixfree,
-     &  indexx,indexe,irstrt(*),nelcon(2,*),ier
+     &  indexx,indexe,irstrt(*),nelcon(2,*),ier,ne
 !
       real*8 thicke(mi(3),*),thickness1,thickness2,p(3),xnor(*),
      &  offset(2,*),offset1,offset2,dd
@@ -164,6 +164,20 @@
      &        "*BEAM SECTION%",ier)
          return
       endif
+!
+!     check that all elements of the set are defined
+!
+      do j=istartset(i),iendset(i)
+         if(ialset(j).gt.ne) then
+            write(*,*) '*ERROR reading *BEAM SECTION: element ',
+     &           ialset(j)
+            write(*,*) '       of element set ',elset(1:ipos-1)
+            write(*,*) '       has not been defined'
+            call inputerror(inpc,ipoinpc,iline,
+     &           "*BEAM SECTION%",ier)
+            return
+         endif
+      enddo
 !
 !     assigning the elements of the set the appropriate material,
 !     orientation number, section and offset(s)
