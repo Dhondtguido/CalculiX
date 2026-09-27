@@ -112,6 +112,14 @@
                if(8*j.gt.nconstants+1) then
                   imax=nconstants-8*j+9
                endif
+               if(n.gt.imax) then
+                  write(*,*) 
+     &           '*ERROR reading *USER MATERIAL: more entries than'
+                  write(*,*) '  allowed by the CONSTANTS parameter'
+                  call inputerror(inpc,ipoinpc,iline,
+     &                 "*USER MATERIAL%",ier)
+                  return
+               endif
                do i=1,imax
                   if(isum+i.le.nconstants) then
                      read(textpart(i)(1:20),'(f20.0)',iostat=istat) 
