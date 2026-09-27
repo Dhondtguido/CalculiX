@@ -98,7 +98,7 @@
           do
             call getnewline(inpc,textpart,istatrfn,n,key,iline,ipol,inl,
      &           ipoinp,inp,ipoinpc)
-            if(key.eq.1) exit
+            if((istatrfn.lt.0).or.(key.eq.1)) exit
           enddo
           ier=2
         endif

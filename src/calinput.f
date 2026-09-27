@@ -265,6 +265,13 @@
       loop: do
 !     
       if(istat.lt.0) then
+        if(ier.ge.1) then
+          write(*,*) '*ERROR in calinput: at least one fatal'
+          write(*,*) '       error message while reading the'
+          write(*,*) '       input deck: CalculiX stops.'
+          write(*,*)
+          call exit(201)
+        endif
         write(*,*)
         write(*,*) 'Job finished'
         write(*,*)
@@ -1253,7 +1260,7 @@ c
         do
           call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &         ipoinp,inp,ipoinpc)
-          if(key.eq.1) exit
+          if((istat.lt.0).or.(key.eq.1)) exit
         enddo
         ier=2
       endif
