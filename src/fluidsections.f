@@ -57,6 +57,8 @@
 !     
       typename='
      &'
+      material=' '
+      nconstants=-1
 !     
       do i=2,n
         if(textpart(i)(1:9).eq.'MATERIAL=') then
@@ -485,6 +487,11 @@ C     ndprop=20
           elname='RCVL   '
         else if(typename(15:23).eq.'NONLINEAR')then
           elname='RCVN   '
+        else
+          write(*,*) '*ERROR reading *FLUID SECTION: ',typename
+          write(*,*) '       is an unknown fluid section type'
+          ier=1
+          return
         endif
         ndprop=6
 !     
@@ -503,12 +510,24 @@ C     ndprop=20
         elseif(typename(7:12).eq.'FORCED') then
           elname='VOFO   '
           ndprop=10
+        else
+          write(*,*) '*ERROR reading *FLUID SECTION: ',typename
+          write(*,*) '       is an unknown fluid section type'
+          ier=1
+          return
         endif
 !     
       elseif(typename(1:1).eq.' ') then
         elname='       '
         ndprop=0
       elseif(typename(1:1).eq.'U') then
+        if(nconstants.lt.0) then
+          write(*,*) '*ERROR reading *FLUID SECTION: user element ',
+     &         typename(1:7)
+          write(*,*) '       needs a CONSTANTS parameter'
+          ier=1
+          return
+        endif
         elname(1:7)=typename(1:7)
         ndprop=nconstants
       else
