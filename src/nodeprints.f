@@ -196,7 +196,7 @@
       do
          call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &        ipoinp,inp,ipoinpc)
-         if(key.eq.1) exit
+         if((istat.lt.0).or.(key.eq.1)) exit
          do ii=1,n
             if((textpart(ii)(1:4).ne.'U   ').and.
      &         (textpart(ii)(1:4).ne.'NT  ').and.

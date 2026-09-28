@@ -378,6 +378,13 @@
           ntmatl=ntmatl+1
           ntmat_=max(ntmatl,ntmat_)
         enddo
+      elseif(textpart(1)(1:20).eq.'*SPECIFICGASCONSTANT') then
+!
+!       the specific gas constant is stored in shcon(3,1,*)
+!
+        ntmat_=max(1,ntmat_)
+        call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
+     &       ipoinp,inp,ipoinpc)
       elseif(textpart(1)(1:11).eq.'*CONSTRAINT') then
         do
           call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
@@ -871,7 +878,9 @@ c          endif
      &           inl,ipoinp,inp,ipoinpc)
             if((istat.lt.0).or.(key.eq.1)) exit
             ntmatl=ntmatl+1
-            iline=iline+1
+            call getnewline(inpc,textpart,istat,n,key,iline,ipol,
+     &           inl,ipoinp,inp,ipoinpc)
+            if((istat.lt.0).or.(key.eq.1)) exit
           enddo
           ntmat_=max(ntmatl,ntmat_)
         elseif(ityp.eq.21) then
@@ -880,7 +889,12 @@ c          endif
      &           inl,ipoinp,inp,ipoinpc)
             if((istat.lt.0).or.(key.eq.1)) exit
             ntmatl=ntmatl+1
-            iline=iline+2
+            call getnewline(inpc,textpart,istat,n,key,iline,ipol,
+     &           inl,ipoinp,inp,ipoinpc)
+            if((istat.lt.0).or.(key.eq.1)) exit
+            call getnewline(inpc,textpart,istat,n,key,iline,ipol,
+     &           inl,ipoinp,inp,ipoinpc)
+            if((istat.lt.0).or.(key.eq.1)) exit
           enddo
           ntmat_=max(ntmatl,ntmat_)
         endif
@@ -1507,7 +1521,9 @@ c            nmpc_=nmpc_+3
             if((istat.lt.0).or.(key.eq.1)) exit
             ntmatl=ntmatl+1
             ntmat_=max(ntmatl,ntmat_)
-            iline=iline+1
+            call getnewline(inpc,textpart,istat,n,key,iline,ipol,
+     &           inl,ipoinp,inp,ipoinpc)
+            if((istat.lt.0).or.(key.eq.1)) exit
           enddo
         endif
       elseif(textpart(1)(1:10).eq.'*HYPERFOAM') then
@@ -1541,7 +1557,9 @@ c            nmpc_=nmpc_+3
             if((istat.lt.0).or.(key.eq.1)) exit
             ntmatl=ntmatl+1
             ntmat_=max(ntmatl,ntmat_)
-            iline=iline+1
+            call getnewline(inpc,textpart,istat,n,key,iline,ipol,
+     &           inl,ipoinp,inp,ipoinpc)
+            if((istat.lt.0).or.(key.eq.1)) exit
           enddo
         endif
       elseif(textpart(1)(2:10).eq.'KINEMATIC') then

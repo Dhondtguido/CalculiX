@@ -463,6 +463,13 @@ c          enddo
             call bodyadd(cbody,ibody,xbody,nbody,nbody_,elset,label,
      &           iamplitude,xmagnitude,p1,p2,bodyf,xbodyold,lc,idefbody)
           else
+            if(istartset(i).gt.iendset(i)) then
+              elset(ipos:ipos)=' '
+              write(*,*) '*WARNING reading *DLOAD: element set'
+              write(*,*) '         or facial surface ',elset
+              write(*,*) '         is empty'
+              cycle
+            endif
             l=ialset(istartset(i))
             if(surface) then
               write(label(2:2),'(i1)') l-10*(l/10)
