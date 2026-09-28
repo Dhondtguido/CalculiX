@@ -270,7 +270,7 @@ c     call reorderampl(amname,namta,nam)
 !     
         read(textpart(1)(1:10),'(i10)',iostat=istat) l
         if(istat.eq.0) then
-          if(l.gt.ne) then
+          if((l.gt.ne).or.(l.lt.1)) then
             write(*,*) '*ERROR reading *FILM: element ',l
             write(*,*) '       is not defined'
             ier=1
