@@ -108,7 +108,7 @@
                   return
                endif
             enddo
-            read(textpart(3)(1:20),'(f20.0)',iostat=istat) 
+            read(textpart(iend+1)(1:20),'(f20.0)',iostat=istat) 
      &              elcon(0,ntmat,nmat)
             if(istat.gt.0) then
                call inputerror(inpc,ipoinpc,iline,

@@ -738,7 +738,7 @@ c      if(icmd.eq.1) then
 !
 !     elastomeric foam behavior
 !
-         if((kode.lt.-15).and.(kode.gt.-18)) then
+         if((kode.lt.-14).and.(kode.gt.-18)) then
             if(kode.eq.-15) then
                nelconst=1
             elseif(kode.eq.-16) then
