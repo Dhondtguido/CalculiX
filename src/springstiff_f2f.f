@@ -37,8 +37,8 @@
      &  al(3),s(60,60),voldl(0:mi(2),19),pl(3,19),xn(3),
      &  c1,c3,alpha,beta,elcon(0:ncmat_,ntmat_,*),xm(3),
      &  fpu(3,3),xi,et,fnl(3),
-     &  xs2(3,7),t1l,elconloc(*),plconloc(82),xk,stickslope,
-     &  xiso(20),yiso(20),plicon(0:2*npmat_,ntmat_,*),
+     &  xs2(3,7),t1l,elconloc(*),plconloc(802),xk,stickslope,
+     &  xiso(200),yiso(200),plicon(0:2*npmat_,ntmat_,*),
      &  springarea(2),t(3),tu(3,3),overlap,pres,dpresdoverlap,
      &  xstate(nstate_,mi(1),*),xstateini(nstate_,mi(1),*),
      &  um,dftdt(3,3),tp(3),te(3),ftrial(3),clear,
@@ -188,7 +188,7 @@ c     &       kscale
          call materialdata_sp(elcon,nelcon,imat,ntmat_,i,t1l,
      &     elconloc,kode,plicon,nplicon,npmat_,plconloc,ncmat_)
          overlap=-clear
-         niso=int(plconloc(81))
+         niso=int(plconloc(801))
          do i=1,niso
             xiso(i)=plconloc(2*i-1)
             yiso(i)=plconloc(2*i)
