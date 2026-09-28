@@ -31,8 +31,8 @@
      &  kode,niso,id,nplkcon(0:ntmat_,*),npmat_,nelcon(2,*),
      &  node,noel,istep,iinc,npred,iperturb(*)
 !
-      real*8 xl(3,10),ratio(9),t0l,t1l,al(3),vl(0:mi(2),10),
-     &  pl(3,10),xn(3),dm,alpha,beta,tnl(10),pressure,dtemp,
+      real*8 xl(3,*),ratio(9),t0l,t1l,al(3),vl(0:mi(2),*),
+     &  pl(3,9),xn(3),dm,alpha,beta,tnl(*),pressure,dtemp,
      &  dist,conductance,eps,pi,springarea,timeend(2),ak(5),
      &  elcon(0:ncmat_,ntmat_,*),pproj(3),xsj2(3),xs2(3,7),val,
      &  shp2(7,9),xi,et,elconloc(*),plconloc(802),xk,d(2),flowm(2),

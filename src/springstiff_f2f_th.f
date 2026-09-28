@@ -35,8 +35,8 @@
      &  nmethod,mi(*),node,noel,jfaces,igauss,nopem,nopes,nopep,
      &  nplkcon(0:ntmat_,*),istep,iinc
 !
-      real*8 xl(3,19),pproj(3),shp2m(7,9),ak(5),
-     &  al(3),s(60,60),voldl(0:mi(2),19),pl(3,19),xn(3),
+      real*8 xl(3,*),pproj(3),shp2m(7,9),ak(5),
+     &  al(3),s(60,60),voldl(0:mi(2),*),pl(3,17),xn(3),
      &  alpha,beta,elcon(0:ncmat_,ntmat_,*),xm(3),
      &  xi,et,dpresdoverlap,xs2(3,7),elconloc(*),plconloc(802),
      &  xk,temp(2),xiso(20),yiso(20),plicon(0:2*npmat_,ntmat_,*),d(2),

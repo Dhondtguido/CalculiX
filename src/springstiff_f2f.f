@@ -33,8 +33,8 @@
      &  iperturb(*),nmethod,mi(*),ne0,nstate_,nasym,
      &  jfaces,igauss,nopem,nopes,nopep,kscale
 !
-      real*8 xl(3,19),stiff(21),pproj(3),val,shp2m(7,9),
-     &  al(3),s(60,60),voldl(0:mi(2),19),pl(3,19),xn(3),
+      real*8 xl(3,*),stiff(21),pproj(3),val,shp2m(7,9),
+     &  al(3),s(60,60),voldl(0:mi(2),*),pl(3,17),xn(3),
      &  c1,c3,alpha,beta,elcon(0:ncmat_,ntmat_,*),xm(3),
      &  fpu(3,3),xi,et,fnl(3),
      &  xs2(3,7),t1l,elconloc(*),plconloc(82),xk,stickslope,

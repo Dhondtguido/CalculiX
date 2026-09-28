@@ -34,8 +34,8 @@
      &  nmethod,ne0,nstate_,ielas,norien,nelem,ielorien(mi(3),*),
      &  iorien,idof,idof1,idof2,mscalmethod
 !
-      real*8 xl(3,10),stiff(21),ratio(9),t1l,al(3),vl(0:mi(2),10),
-     &  pl(3,10),xn(3),dm,alpha,beta,fnl(3,17),tp(3),te(3),ftrial(3),
+      real*8 xl(3,*),stiff(21),ratio(9),t1l,al(3),vl(0:mi(2),*),
+     &  pl(3,9),xn(3),dm,alpha,beta,fnl(3,*),tp(3),te(3),ftrial(3),
      &  dist,t(3),dftrial,overclosure,venergy,orab(7,*),a(3,3),
      &  elcon(0:ncmat_,ntmat_,*),pproj(3),xsj2(3),xs2(3,7),clear,
      &  shp2(7,9),xi,et,elconloc(*),plconloc(802),xk,fk,dd,val,

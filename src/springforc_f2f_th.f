@@ -36,15 +36,15 @@
      &  nmethod,jfaces,istep,iinc,npred,node,
      &  igauss,nopes,nopem,nopep,nplkcon(0:ntmat_,*)
 !
-      real*8 xl(3,19),al(3),vl(0:mi(2),19),conductance,
-     &  pl(3,19),xn(3),alpha,beta,
+      real*8 xl(3,*),al(3),vl(0:mi(2),*),conductance,
+     &  pl(3,17),xn(3),alpha,beta,
      &  elcon(0:ncmat_,ntmat_,*),pproj(3),clear,
      &  xi,et,elconloc(*),plconloc(802),xk,xiso(20),yiso(20),
      &  plicon(0:2*npmat_,ntmat_,*),coords(3),
      &  springarea(2),overlap,clearini(3,9,*),
      &  reltime,weight,xsj2m(3),xs2m(3,7),shp2m(7,9),
      &  xsj2s(3),xs2s(3,7),shp2s(7,9),pslavsurf(3,*),pmastsurf(6,*),
-     &  t1ls,t1lm,tmean,pressure,temp(2),timeend(2),ak(5),d(2),tnl(19),
+     &  t1ls,t1lm,tmean,pressure,temp(2),timeend(2),ak(5),d(2),tnl(*),
      &  constant,dtemp,flowm(2),predef(2),plkcon(0:2*npmat_,ntmat_,*)
 !
       include "gauss.f"
