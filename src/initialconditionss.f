@@ -231,6 +231,13 @@ c                    t1(k)=temperature
 !     
                 do j=1,nope
                   konl(j)=kon(indexe+j)
+                  if((konl(j).lt.1).or.(konl(j).gt.nk)) then
+                    write(*,*) '*ERROR reading *INITIAL CONDITIONS:'
+                    write(*,*) '       element ',i,' contains node ',
+     &                   konl(j),' which does not exist'
+                    ier=1
+                    return
+                  endif
                   do k=1,3
                     xl(k,j)=co(k,konl(j))
                   enddo
