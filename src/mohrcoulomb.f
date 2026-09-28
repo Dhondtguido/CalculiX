@@ -42,7 +42,7 @@
      &     plconloc(802),xk,xm,sa,dsde(6,6),ttime,ee,un,um,al,epl(6),
      &     ftrial,xiso(200),yiso(200),da6(3),fiso,dfiso,ep,dtime,denom,
      &     epini,el(6),tracee,a2(3),a6(3),time,xstate(nstate_,mi(1),*),
-     &     xstateini(nstate_,mi(1),*),tracea,da1(3),
+     &     xstateini(nstate_,mi(1),*),tracea,da1(3),dsb,dn,
      &     pnewdt,um2,fv1(3),fv2(3),ps1r1,ps1r6,
      &     ps1s2,ps6s1,traceb,z(3,3),s(3,3),b1(3),b2(3),b6(3),
      &     r6(3),s1xr1(3),sb(3),s1xr6(3),r1(3),s1(3),s2(3),s6(3),
@@ -207,6 +207,16 @@
 !     
       sa=2.d0*fiso*dsqrt(xk)/(xk-1.d0)
 !     
+!     norm of the principal stress vector relative to the apex; the
+!     sector boundary tests below are divided by it and by the norm of
+!     the plane normal, turning them into direction cosines.  Without
+!     that scaling a stress state lying exactly on a sector boundary --
+!     pure shear in a material with zero dilatation angle, say -- is
+!     assigned to a sector by round-off alone.
+!     
+      dsb=dsqrt((sb(1)-sa)**2+(sb(2)-sa)**2+(sb(3)-sa)**2)
+      if(dsb.lt.1.d-30) dsb=1.d0
+!     
 !     s1 x r1
 !     
       s1xr1(1)=s1(2)*r1(3)-s1(3)*r1(2)
@@ -225,6 +235,8 @@
       ps1r1=s1xr1(1)*(sb(1)-sa)+
      &     s1xr1(2)*(sb(2)-sa)+
      &     s1xr1(3)*(sb(3)-sa)
+      dn=dsqrt(s1xr1(1)**2+s1xr1(2)**2+s1xr1(3)**2)*dsb
+      if(dn.gt.0.d0) ps1r1=ps1r1/dn
 !     
 !     boundary plane between sector I and VI
 !     (s1 x r6).(sb-sa)
@@ -232,8 +244,10 @@
       ps1r6=s1xr6(1)*(sb(1)-sa)+
      &     s1xr6(2)*(sb(2)-sa)+
      &     s1xr6(3)*(sb(3)-sa)
+      dn=dsqrt(s1xr6(1)**2+s1xr6(2)**2+s1xr6(3)**2)*dsb
+      if(dn.gt.0.d0) ps1r6=ps1r6/dn
 !     
-      if((ps1r1.ge.0.d0).and.(ps1r6.le.0.d0)) then
+      if((ps1r1.ge.-1.d-10).and.(ps1r6.le.1.d-10)) then
         iregion=1
       else
 !     
@@ -258,6 +272,8 @@
         ps1s2=s1xs2(1)*(sb(1)-sa)+
      &       s1xs2(2)*(sb(2)-sa)+
      &       s1xs2(3)*(sb(3)-sa)
+        dn=dsqrt(s1xs2(1)**2+s1xs2(2)**2+s1xs2(3)**2)*dsb
+        if(dn.gt.0.d0) ps1s2=ps1s2/dn
         if((ps1r1.le.0.d0).and.(ps1s2.le.0.d0)) then
           iregion=2
         else
@@ -283,6 +299,8 @@
           ps6s1=s6xs1(1)*(sb(1)-sa)+
      &         s6xs1(2)*(sb(2)-sa)+
      &         s6xs1(3)*(sb(3)-sa)
+          dn=dsqrt(s6xs1(1)**2+s6xs1(2)**2+s6xs1(3)**2)*dsb
+          if(dn.gt.0.d0) ps6s1=ps6s1/dn
           if((ps1r6.ge.0.d0).and.(ps6s1.le.0.d0)) then
             iregion=3
           else
@@ -672,6 +690,19 @@ c      write(*,*) 'mohrcoulomb ',iel,iint,iregion
           det=dhr(1,1)*(dhr(2,2)*dhr(3,3)-dhr(2,3)*dhr(3,2))
      &         -dhr(1,2)*(dhr(2,1)*dhr(3,3)-dhr(2,3)*dhr(3,1))
      &         +dhr(1,3)*(dhr(2,1)*dhr(3,2)-dhr(2,2)*dhr(3,1))
+!     
+!     for a dilatation angle of zero (xm=1) s6=s1-s2, so the three
+!     flow directions are linearly dependent and, without hardening,
+!     det vanishes identically: the plastic flow is isochoric and the
+!     stress cannot be returned to the apex.  Solving anyway yields
+!     multipliers of the order 1/det, i.e. pure round-off amplified by
+!     ten orders of magnitude, which then trips the dlambdar<0 test
+!     below.  Ask for a smaller increment instead.
+!     
+          if(dabs(det).le.1.d-10*dabs(dhr(1,1)*dhr(2,2)*dhr(3,3))) then
+            pnewdt=0.25d0
+            return
+          endif
 !     
 !     solving the system
 !     
