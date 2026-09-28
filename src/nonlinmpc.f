@@ -503,6 +503,8 @@ c     endif
             ddmax=abs(c2)
             l=i
             m=j
+            lmax=i
+            mmax=j
             do k=1,2
                l=l+1
                m=m+1
