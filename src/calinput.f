@@ -1402,7 +1402,13 @@ c
      &     then
         warning=((nmethod.eq.1).or.(nmethod.eq.3).or.(nmethod.eq.4))
         if(nmethod.eq.2) then
-          if((mcs.eq.0).or.(cs(2,1).lt.0)) then
+!
+!         cs is only allocated for cyclic symmetry (mcs>0), and Fortran
+!         does not short-circuit .or., so test mcs first
+!
+          if(mcs.eq.0) then
+            warning=.true.
+          elseif(cs(2,1).lt.0) then
             warning=.true.
           endif
         endif
