@@ -19,7 +19,8 @@
       subroutine shellsections(inpc,textpart,set,istartset,iendset,
      &     ialset,nset,ielmat,matname,nmat,ielorien,orname,norien,
      &     thicke,kon,ipkon,offset,irstrt,istep,istat,n,iline,ipol,
-     &     inl,ipoinp,inp,lakon,iaxial,ipoinpc,mi,icomposite,nelcon,ier)
+     &     inl,ipoinp,inp,lakon,iaxial,ipoinpc,mi,icomposite,nelcon,ier,
+     &     ne)
 !     
 !     reading the input deck: *SHELL SECTION
 !     
@@ -37,7 +38,7 @@
      &     ielorien(mi(3),*),kon(*),ipkon(*),indexe,irstrt(*),nset,nmat,
      &     norien,nlayer,iset,icomposite,nelcon(2,*),ier,numnod,id,
      &     istep,istat,n,key,i,j,k,l,imaterial,iorientation,ipos,
-     &     iline,ipol,inl,ipoinp(2,*),inp(3,*),iaxial,ipoinpc(0:*)
+     &     iline,ipol,inl,ipoinp(2,*),inp(3,*),iaxial,ipoinpc(0:*),ne
 !     
       real*8 thicke(mi(3),*),thickness,offset(2,*),offset1
 !     
@@ -146,6 +147,20 @@ c      enddo
         return
       endif
       iset=i
+!
+!     check that all elements of the set are defined
+!
+      do j=istartset(iset),iendset(iset)
+         if(ialset(j).gt.ne) then
+            write(*,*) '*ERROR reading *SHELL SECTION: element ',
+     &           ialset(j)
+            write(*,*) '       of element set ',elset(1:ipos-1)
+            write(*,*) '       has not been defined'
+            call inputerror(inpc,ipoinpc,iline,
+     &           "*SHELL SECTION%",ier)
+            return
+         endif
+      enddo
 !     
 c     if(.not.nodalthickness) then
       call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
