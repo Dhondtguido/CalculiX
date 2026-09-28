@@ -39,6 +39,8 @@
 !     he:        normal depth
 !
       implicit none
+!
+      integer iter
 !      
       real*8 xflow,rho,b,dg,s0,he,theta,tth,friction,xks,henew,
      &     third,threetenth,fourtenth,cthi,c1
@@ -78,7 +80,15 @@
 !        
         he=(c1/(b*b))**third
 !        
+        iter=0
         do
+          iter=iter+1
+          if(iter.gt.1000) then
+            write(*,*) '*ERROR in hnorm: no convergence'
+            write(*,*) '       computing the normal water depth'
+            write(*,*) '       (check the input values)'
+            call exit(201)
+          endif
           henew=(c1*(b+2.d0*he*cthi))**third/(b+he*tth)
           if(dabs(henew-he).lt.1.d-3*he) exit
           he=henew
@@ -103,7 +113,15 @@
 !        
         he=c1*b**(fourtenth-1.d0)
 !        
+        iter=0
         do
+          iter=iter+1
+          if(iter.gt.1000) then
+            write(*,*) '*ERROR in hnorm: no convergence'
+            write(*,*) '       computing the normal water depth'
+            write(*,*) '       (check the input values)'
+            call exit(201)
+          endif
           henew=c1*(b+2d0*he*cthi)**fourtenth/(b+he*tth)
           if(dabs(henew-he).lt.1.d-3*he) exit
           he=henew
