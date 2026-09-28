@@ -20,7 +20,7 @@
      &     set,istartset,iendset,ialset,nset,nset_,nalset,nalset_,mi,
      &     ixfree,iponor,xnor,istep,istat,n,iline,ipol,inl,ipoinp,inp,
      &     iaxial,ipoinpc,solid,network,filab,nlabel,out3d,iuel,
-     &     nuel_,ier,iparentel)
+     &     nuel_,ier,iparentel,nk)
 !     
 !     reading the input deck: *ELEMENT
 !     
@@ -39,7 +39,8 @@
      &     nteller,j,ipkon(*),nkon,nope,indexe,mi(*),ipos,indexy,ixfree,
      &     iponor(2,*),nopeexp,iline,ipol,inl,ipoinp(2,*),inp(3,*),
      &     iaxial,ipoinpc(0:*),nlabel,network,iuel(4,*),nuel_,
-     &     id,four,number,ndof,intpoints,ier,iparentel(*),iparent
+     &     id,four,number,ndof,intpoints,ier,iparentel(*),iparent,
+     &     nk,node
 !     
       real*8 xnor(*)
 !     
@@ -451,6 +452,13 @@ c     Bernhardi end
      &         "*ELEMENT%",ier)
           return
         endif
+        if(i.le.0) then
+          write(*,*) '*ERROR reading *ELEMENT: element number',i
+          write(*,*) '       must be positive'
+          call inputerror(inpc,ipoinpc,iline,
+     &         "*ELEMENT%",ier)
+          return
+        endif
         if(i.gt.ne_) then
           write(*,*) '*ERROR reading *ELEMENT: increase ne_'
           ier=1
@@ -510,6 +518,22 @@ c     Bernhardi end
             if(nteller.eq.nope) exit
           enddo
         endif
+!     
+!     check whether the nodes of the element are defined; node 0
+!     denotes the entry or exit of a network element
+!     
+        do j=1,nope
+          node=kon(indexe+j)
+          if((node.gt.0).and.(node.le.nk)) cycle
+          if((node.eq.0).and.(j.ne.2).and.(label(1:1).eq.'D').and.
+     &         (label(1:7).ne.'DCOUP3D')) cycle
+          write(*,*) '*ERROR reading *ELEMENT: node',node
+          write(*,*) '       of element',i,' is not defined'
+          call inputerror(inpc,ipoinpc,iline,
+     &         "*ELEMENT%",ier)
+          return
+        enddo
+!     
         ne=max(ne,i)
 !     
         if(iparent.gt.0) iparentel(i)=iparent

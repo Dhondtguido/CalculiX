@@ -32,6 +32,8 @@
 !     
       integer istep,istat,n,key,i,ii,ier,iline,ipol,inl,ipoinp(2,*),
      &     inp(3,*),ipoinpc(0:*),nset,ipos,id
+!
+      real*8 targetsize
 !     
       if(istep.lt.1) then
         write(*,*) 
@@ -103,6 +105,21 @@
         do i=27,87
           filab(48)(i:i)=' '
         enddo
+      endif
+!     
+!     the target size (parameter LIMIT) must be positive unless
+!     only smoothing is requested (SMOOTHING ONLY, or REPAIR ONLY,
+!     which only smoothes)
+!     
+      if((.not.smoothingonly).and.(filab(48)(1:6).ne.'RPONLY')) then
+        read(filab(48)(7:26),'(f20.0)',iostat=istat) targetsize
+        if((istat.gt.0).or.(targetsize.le.0.d0)) then
+          write(*,*) '*ERROR reading *REFINE MESH: parameter LIMIT'
+          write(*,*) '       is missing or not positive'
+          call inputerror(inpc,ipoinpc,iline,
+     &         "*REFINE MESH%",ier)
+          return
+        endif
       endif
 !     
       if(smoothingonly) then

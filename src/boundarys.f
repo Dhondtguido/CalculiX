@@ -349,6 +349,14 @@
             endif
           endif
 !     
+          if((ibounstart.lt.0).or.(ibounend.lt.0)) then
+            write(*,*) '*ERROR reading *BOUNDARY: nonexistent'
+            write(*,*) '       degree of freedom'
+            call inputerror(inpc,ipoinpc,iline,
+     &           "*BOUNDARY%",ier)
+            return
+          endif
+!     
           if(textpart(4)(1:1).eq.' ') then
             bounval=0.d0
           else
