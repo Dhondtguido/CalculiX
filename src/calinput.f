@@ -1402,9 +1402,16 @@ c
      &     then
         warning=((nmethod.eq.1).or.(nmethod.eq.3).or.(nmethod.eq.4))
         if(nmethod.eq.2) then
-          if((mcs.eq.0).or.(cs(2,1).lt.0)) then
+          if(mcs.eq.0) then
             warning=.true.
+          elseif(mcs.gt.0) then
+            if(cs(2,1).lt.0) then
+              warning=.true.
+            endif
           endif
+c         if((mcs.eq.0).or.(cs(2,1).lt.0)) then
+c           warning=.true.
+c         endif
         endif
         if(warning) then
           write(*,*) '*WARNING in calinput: PU, PHS, MAXU or MAXS'
