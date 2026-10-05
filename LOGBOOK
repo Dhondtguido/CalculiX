@@ -5638,3 +5638,6 @@ Dec 2002        - started to work on single crystal plasticity
                 - check for surface-to-surface contact in contactprints.f
 		
  5 Oct 2026     - removed physcon from header of rcavi.f and rcavi2.f
+                - removed an error related to mcs in calinput.f
+		- removed an error in checkforhomnet.f
+		

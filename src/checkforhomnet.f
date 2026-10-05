@@ -187,7 +187,11 @@
 !     
                 if(newnode.ne.0) then
                   call nident(itgcp,newnode,ntg,id)
-                  itg(id)=-itg(id)
+!
+!     for elements coming together in one node itg may
+!     already be negative
+!
+                  if(itg(id).gt.0) itg(id)=-itg(id)
                 endif
                 index=inoeln(2,index)
                 if(index.eq.0) exit
