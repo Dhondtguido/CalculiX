@@ -17,7 +17,7 @@
 !     
       subroutine rcavi2(node1,node2,nodem,nelem,lakon,kon,ipkon,
      &     nactdog,identity,ielprop,prop,kflag,v,xflow,f,
-     &     nodef,idirf,df,cp,R,physcon,dvi,numf,set,mi,ttime,time,
+     &     nodef,idirf,df,cp,R,dvi,numf,set,mi,ttime,time,
      &     iaxial,iplausi)
 !     
 !     rotating cavity element
@@ -38,7 +38,7 @@
      &     iplausi
 !
       real*8 prop(*),v(0:mi(2),*),xflow,f,df(*),kappa,R,a,d,
-     &     p1,p2,T1,T2,Aeff,C1,C2,C3,cd,cp,physcon(*),p2p1,km1,dvi,
+     &     p1,p2,T1,T2,Aeff,C1,C2,C3,cd,cp,p2p1,km1,dvi,
      &     kp1,kdkm1,tdkp1,km1dk,x,y,ca1,cb1,ca2,cb2,dT1,alambda,
      &     reynolds,pi,xflow_oil,s,Tcav,pcav,pmin,pmax,ttime,time,
      &     Tref,Alpha1, Alpha2, Alpha3, GF,kf,MRTAP_ref_ein,
