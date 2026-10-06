@@ -93,6 +93,15 @@
           if(matname(i).eq.material) exit
         enddo
         if(i.gt.nmat) then
+          do i=1,nmat
+            if(matname(i)(1:11).eq.'ANISO_CREEP') then
+              if(matname(i)(12:20).eq.material(1:9)) exit
+            elseif(matname(i)(1:11).eq.'JOHNSONCOOK') then
+              if(matname(i)(12:20).eq.material(1:9)) exit
+            endif
+          enddo
+        endif
+        if(i.gt.nmat) then
           write(*,*) 
      &         '*ERROR reading *SHELL SECTION: nonexistent material'
           call inputerror(inpc,ipoinpc,iline,
@@ -283,6 +292,15 @@ c              offset(1,k)=offset1
           do i=1,nmat
             if(matname(i).eq.material) exit
           enddo
+          if(i.gt.nmat) then
+            do i=1,nmat
+              if(matname(i)(1:11).eq.'ANISO_CREEP') then
+                if(matname(i)(12:20).eq.material(1:9)) exit
+              elseif(matname(i)(1:11).eq.'JOHNSONCOOK') then
+                if(matname(i)(12:20).eq.material(1:9)) exit
+              endif
+            enddo
+          endif
           if(i.gt.nmat) then
             write(*,*) 
      &           '*ERROR reading *SHELL SECTION: nonexistent material'

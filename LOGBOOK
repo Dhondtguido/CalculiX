@@ -5642,3 +5642,5 @@ Dec 2002        - started to work on single crystal plasticity
 		- removed an error in checkforhomnet.f
 		
  6 Oct 2026     - replaced gauss/weight3d14 by *3d11 (are identisch)
+                - made a change in *sections.f to take ANISO_CREEP and
+		  JOHNSONCOOK into account
