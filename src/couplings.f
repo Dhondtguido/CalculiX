@@ -108,6 +108,7 @@
       enddo
 !     
       name(1:1)=' '
+      irefnode=0
       do i=2,n
         if(textpart(i)(1:8).eq.'REFNODE=') then
            read(textpart(i)(9:18),'(i10)',iostat=istat) irefnode
@@ -194,6 +195,15 @@
       if(name(1:1).eq.' ') then
         write(*,*)
      &       '*ERROR reading *COUPLING: no CONSTRAINT NAME given'
+        write(*,*) '  '
+        call inputerror(inpc,ipoinpc,iline,
+     &       "*COUPLING%",ier)
+        return
+      endif
+!     
+      if((irefnode.le.0).or.(irefnode.gt.nk)) then
+        write(*,*)
+     &       '*ERROR reading *COUPLING: no valid REF NODE given'
         write(*,*) '  '
         call inputerror(inpc,ipoinpc,iline,
      &       "*COUPLING%",ier)
