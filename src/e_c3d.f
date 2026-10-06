@@ -45,8 +45,8 @@
 !     intscheme=0: use the integration scheme corresponding to the element     
 !     type, i.e. reduced integration for reduced integration    
 !     elements etc.
-!     intscheme=1: use for C3D8R and C3D20R elements the integration point
-!     schemes for C3D8 and C3D20, respectively, for all other    
+!     intscheme=1: use for C3D8R, C3D20R and C3D4 elements the integration point
+!     schemes for C3D8, C3D20 and C3D10 respectively, for all other    
 !     elements the the integration scheme corresponding to the
 !     element type     
 !     

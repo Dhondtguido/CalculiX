@@ -20,10 +20,9 @@
 !     gauss3d8: wedge, 9 integration points
 !     gauss3d9: wedge, 18 integration points
 !     gauss3d10: wedge, 6 integration points
-!     gauss3d11: wedge, 1 integration points
+!     gauss3d11: wedge, 1 integration point
 !     gauss3d12: hex, 14 integration points (for c3d27)
 !     gauss3d13: hex, 2x5x5=50 integration points (for beams)
-!     gauss3d14: wedge, 1 integration point
 !
 !     weight2d1,... contains the weights
 !
@@ -33,13 +32,13 @@
      &  gauss2d5(2,3),gauss3d1(3,1),gauss3d2(3,8),gauss3d3(3,27),
      &  gauss3d4(3,1),gauss3d5(3,4),gauss3d6(3,15),gauss3d7(3,2),
      &  gauss3d8(3,9),gauss3d9(3,18),gauss3d10(3,6),gauss3d11(3,1),
-     &  gauss2d6(2,7),gauss3d12(3,14),gauss3d13(3,50),gauss3d14(3,1),
+     &  gauss2d6(2,7),gauss3d12(3,14),gauss3d13(3,50),
      &  weight1d2(2),weight1d3(3),weight2d1(1),weight2d2(4),
      &  weight2d3(9),weight2d4(1),weight2d5(3),weight3d1(1),
      &  weight3d2(8),weight3d3(27),weight3d4(1),weight3d5(4),
      &  weight3d6(15),weight3d7(2),weight3d8(9),weight3d9(18),
      &  weight3d10(6),weight3d11(1),weight2d6(7),weight3d12(14),
-     &  weight3d13(50),weight3d14(1),weight1d1(1)
+     &  weight3d13(50),weight1d1(1)
 !
       gauss1d1=reshape(( /0.d0/),(/1,1/))
 !
@@ -284,10 +283,6 @@
      & 0.577350269189626d+00, 0.9258200998d+00, 0.9258200998d+00/),
      & (/3,50/))
 !
-      gauss3d14=reshape((/
-     & 0.333333333333333d0,0.333333333333333d0,0.d0/),
-     &  (/3,1/))
-!
       weight1d1=(/2.d0/)
 !
       weight1d2=(/1.d0,1.d0/)
@@ -405,6 +400,4 @@ c     & 0.132394152788506d0/)
      & 0.971900826446281d-01, 0.391960004081216d-01,
      & 0.971900826446281d-01, 0.123187429854097d+00,
      & 0.971900826446281d-01, 0.391960004081216d-01/)
-!
-      weight3d14=(/1.d0/)
 !
