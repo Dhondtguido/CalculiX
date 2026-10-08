@@ -38,6 +38,8 @@
 !     lambda: friction coefficient
 !      
       implicit none
+!
+      integer iter
 !     
       real*8 l,d,ks,reynolds,form_fact,lambda,alfa2,
      &     rey_turb_min,rey_lam_max,lzd,dd,ds,friction,dfriction,
@@ -63,7 +65,16 @@
          friction=(-1.8d0*dlog10(6.9d0/4000.d0+(ksd/3.7d0)**1.11d0))
      &        **(-2d0)
 !     
+         iter=0
          do
+            iter=iter+1
+            if(iter.gt.1000) then
+               write(*,*) '*ERROR in friction_coefficient:'
+               write(*,*) '       no convergence'
+               write(*,*) '       computing the friction coefficient'
+               write(*,*) '       (check the input values)'
+               call exit(201)
+            endif
             ds=dsqrt(friction)
             dd=2.51d0/(4000.d0*ds)+0.27d0*ksd
             dfriction=(1.d0/ds+2.d0*dlog10(dd))*2.d0*friction*ds/
@@ -108,7 +119,16 @@
          friction=(-1.8d0*dlog10(6.9d0/reynolds+(ksd/3.7d0)
      &        **1.11d0))**(-2d0)
 !     
+         iter=0
          do
+            iter=iter+1
+            if(iter.gt.1000) then
+               write(*,*) '*ERROR in friction_coefficient:'
+               write(*,*) '       no convergence'
+               write(*,*) '       computing the friction coefficient'
+               write(*,*) '       (check the input values)'
+               call exit(201)
+            endif
             ds=dsqrt(friction)
             dd=2.51d0/(reynolds*ds)+0.27d0*ksd
             dfriction=(1.d0/ds+2.d0*dlog10(dd))*2.d0*friction*ds/

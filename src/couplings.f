@@ -287,6 +287,11 @@
               else
                 node =ialset(j)
               endif
+!
+!     a node outside 1..nk belongs to an element whose definition
+!     failed; that error was reported and ccx stops after the input
+!
+              if((node.lt.1).or.(node.gt.nk)) cycle
 !     
               call nident2(ics,node,npt,id)
               if(id.gt.0) then
@@ -596,6 +601,14 @@
               nodef(i)=kon(indexe+ifaceq(i,jface))
             enddo
           endif
+!
+!     skip a face with a node outside 1..nk: its element's definition
+!     failed, that error was reported and ccx stops after the input
+!
+          do i=1,nopes
+            if((nodef(i).lt.1).or.(nodef(i).gt.nk)) exit
+          enddo
+          if(i.le.nopes) cycle
 !     
 !     loop over the nodes belonging to the face   
 !     ics(1,*): surface node
