@@ -59,14 +59,21 @@
           nelas=21
         elseif((nelas.eq.2).and.(iperturb(2).eq.1)) then
           if(nalcon(1,imat).eq.3) then
-            nelas=9
+            if(iorien.eq.0) then
+              nelas=9
+            else
+              nelas=21
+            endif
           elseif(nalcon(1,imat).eq.6) then
             nelas=21
           endif
         elseif(nelas.eq.9) then
-          if((iorien.ne.0).or.
-     &         ((iperturb(2).eq.1).and.(nalcon(1,imat).eq.6))) then
+          if(iorien.ne.0) then
             nelas=21
+          elseif(iperturb(2).eq.1) then
+            if(nalcon(1,imat).eq.6) then
+              nelas=21
+            endif
           endif
         endif
 !     

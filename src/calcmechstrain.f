@@ -17,14 +17,14 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine calcmechstrain(vkl,vokl,emec,eth,iperturb,nalcon,imat,
-     &     xthi,vthj)
+     &     xthi,vthj,iorien)
 !
 !     calculates the mechanical strain from the displacement gradients
 !     and the thermal stretches (only called if ithermal(1).ne.0
 !
       implicit none
 !
-      integer iperturb(*),nalcon(2,*),imat
+      integer iperturb(*),nalcon(2,*),imat,iorien
 !
       real*8 elineng(6),vkl(0:3,3),vokl(3,3),emec(6),eth(6),
      &     wkl(3,3),wokl(3,3),xkl(3,3),xth(3,3),xthi(3,3),vthj
@@ -38,7 +38,8 @@
 !     multiplying with the inverse of the thermal deformation gradient
 !     at the end of the increment
 !
-        if(nalcon(1,imat).le.3) then
+        if((nalcon(1,imat).le.1).or.
+     &       ((nalcon(1,imat).eq.3).and.(iorien.eq.0))) then
 !
 !         isotropic or orthotropic expansion
 !
@@ -84,12 +85,12 @@
 !
 !         deformation gradient F
 !     
-          xkl(1,1)=1.d0+wkl(1,1)
-          xkl(2,2)=1.d0+wkl(2,2)
-          xkl(3,3)=1.d0+wkl(3,3)
-          xkl(1,2)=wkl(1,2)
-          xkl(1,3)=wkl(1,3)
-          xkl(2,3)=wkl(2,2)
+          xkl(1,1)=1.d0+vkl(1,1)
+          xkl(2,2)=1.d0+vkl(2,2)
+          xkl(3,3)=1.d0+vkl(3,3)
+          xkl(1,2)=vkl(1,2)
+          xkl(1,3)=vkl(1,3)
+          xkl(2,3)=vkl(2,2)
           xkl(2,1)=xkl(1,2)
           xkl(3,1)=xkl(1,3)
           xkl(3,2)=xkl(2,3)

@@ -17,14 +17,15 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
       subroutine linel(kode,mattyp,beta,emec,stre,stiff,elconloc,
-     &     iorien,orab,pgauss,ncmat_,nalcon,imat,ithermal)
+     &     iorien,orab,pgauss,ncmat_,nalcon,imat,ithermal,iperturb)
 !     
 !     calculates stresses for linear elastic materials
 !     
       implicit none
 !     
       integer mattyp,j1,j2,j3,j4,j5,j6,j7,j8,j,jj,kel(4,21),
-     &     iorien,i,kode,ncmat_,nalcon(2,*),imat,ithermal(*)
+     &     iorien,i,kode,ncmat_,nalcon(2,*),imat,ithermal(*),
+     &     iperturb(*)
 !     
       real*8 beta(6),stiff(21),stre(6),fxx,fyy,fzz,fxy,fxz,fyz,
      &     elconloc(*),emax,ya(3,3,3,3),orab(7,*),skl(3,3),e,un,
@@ -46,7 +47,7 @@
 !     
       if(kode.eq.2) then
 !     
-!     isotropic
+!     mechanically isotropic
 !     
         e=elconloc(1)
         un=elconloc(2)
@@ -65,14 +66,15 @@
 !     
 !     anisotropic expansion makes the tangent matrix anisotropic
 !     
-        if((ithermal(1).eq.0).or.(nalcon(1,imat).le.1)) then
+        if((iperturb(2).eq.0).or.(ithermal(1).eq.0).or.
+     &       (nalcon(1,imat).le.1)) then
 !     
 !     isotropic expansion
 !     
           stiff(1)=elconloc(1)
           stiff(2)=elconloc(2)
           mattyp=1
-        elseif(nalcon(1,imat).eq.3) then
+        elseif((nalcon(1,imat).eq.3).and.(iorien.eq.0)) then
 !     
 !     orthotropic expansion
 !     
@@ -82,11 +84,11 @@
           stiff(4)=al
           stiff(5)=al
           stiff(6)=am1
-          stiff(7)=um2
-          stiff(8)=um2
-          stiff(9)=um2
+          stiff(7)=um
+          stiff(8)=um
+          stiff(9)=um
           mattyp=2
-        elseif(nalcon(1,imat).eq.6) then
+        elseif(nalcon(1,imat).gt.0) then
 !     
 !     anorthotropic expansion
 !     
@@ -105,9 +107,9 @@
           stiff(4)=al
           stiff(5)=al
           stiff(6)=am1
-          stiff(10)=um2
-          stiff(15)=um2
-          stiff(21)=um2
+          stiff(10)=um
+          stiff(15)=um
+          stiff(21)=um
           mattyp=3
         endif
 !     
@@ -127,9 +129,10 @@
           stre(5)=elconloc(8)*fxz-beta(5)
           stre(6)=elconloc(9)*fyz-beta(6)
 !
-          if((ithermal(1).eq.0).or.(nalcon(1,imat).le.3)) then
+          if((iperturb(2).eq.0).or.(ithermal(1).eq.0).or.
+     &         (nalcon(1,imat).le.3)) then
 !
-!           isotropic or orthotropic expansion
+!           isotropic or orthotropic thermal expansion
 !
             do i=1,9
               stiff(i)=elconloc(i)
@@ -140,7 +143,7 @@
             mattyp=2
           elseif(nalcon(1,imat).eq.6) then
 !
-!           anorthotropic expansion
+!           anorthotropic thermal expansion
 !
             do i=1,6
               stiff(i)=elconloc(i)
@@ -203,9 +206,12 @@
 !     
 !     determining the type: orthotropic or anisotropic
 !
-            if((ithermal(1).eq.0).or.(nalcon(1,imat).le.3)) then
+            if((iperturb(2).eq.0).or.(ithermal(1).eq.0).or.
+     &           (nalcon(1,imat).eq.1)) then
 !     
-!             at most orthotropic expansion
+!             at most isotropic thermal expansion;
+!             check whether the stiffness matrix is may orthotropic
+!             instead of completely anisotropic              
 !
               emax=0.d0
               do j=1,21
@@ -235,7 +241,9 @@
               endif
             else
 !     
-!             anorthotropic expansion
+!             mechanically either orthotropic with orientation or
+!             completely anisotropic; thermally orthotropic
+!             expansion with orientation or anisotropic
 !
               emax=-1.d0
             endif

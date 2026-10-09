@@ -17,12 +17,12 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine modifystressstiff(stre,stiff,mattyp,eth,nalcon,imat,
-     &     xthi,vthj)
+     &     xthi,vthj,iorien)
 !
       implicit none
 !
       integer mattyp,i,nalcon(2,*),imat,kal(2,6),kel(4,21),jj,j1,j2,
-     &     j3,j4,j5,j6,j7,j8
+     &     j3,j4,j5,j6,j7,j8,iorien
 !
       real*8 stre(6),stiff(21),eth(6),fth1,fth2,fth3,skl(3,3),vthj,
      &     xthi(3,3),ya(3,3,3,3)
@@ -36,7 +36,7 @@
 !
       if(mattyp.eq.1) then
 !
-!       elastically isotropic and isotropic expansion
+!       elastically isotropic and isotropic thermal expansion
 !
         fth1=1.d0+eth(1)
         do i=1,6
@@ -45,7 +45,7 @@
         stiff(1)=stiff(1)/fth1
       elseif(mattyp.eq.2) then
 !
-!       elastically orthotropic or orthotropic expansion or both 
+!       elastically orthotropic or orthotropic thermal expansion or both 
 !
         if(nalcon(1,imat).eq.1) then
           fth1=1.d0+eth(1)
@@ -77,7 +77,7 @@
         endif
       else
 !
-!       elastically anisotropic or anisotropic expansion or both 
+!       elastically anisotropic or anisotropic thermal expansion or both 
 !
         if(nalcon(1,imat).eq.1) then
           fth1=1.d0+eth(1)
@@ -87,7 +87,7 @@
           do i=1,21
             stiff(i)=stiff(i)/fth1
           enddo
-        elseif(nalcon(1,imat).eq.3) then
+        elseif((nalcon(1,imat).eq.3).and.(iorien.eq.0)) then
           fth1=1.d0+eth(1)
           fth2=1.d0+eth(2)
           fth3=1.d0+eth(3)
@@ -118,7 +118,7 @@
           stiff(19)=stiff(19)/fth2
           stiff(20)=stiff(20)/fth3
           stiff(21)=stiff(21)*fth1/(fth2*fth3)
-        elseif(nalcon(1,imat).eq.6) then  
+        elseif(nalcon(1,imat).gt.0) then  
           skl(1,1)=stre(1)
           skl(2,2)=stre(2)
           skl(3,3)=stre(3)

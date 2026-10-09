@@ -217,7 +217,8 @@ c     &       iorien,pgauss,orab,nmethod,pnewdt)
      &       elconloc,emec,emec0,
      &       beta,xikl,vij,xkl,vj,ithermal,t1l,dtime,time,ttime,
      &       icmd,ielas,mi(1),nstate_,xstateini,xstate,stre,stiff,
-     &       iorien,pgauss,orab,eloc,nlgeom_undo,ncmat_,nalcon,imat)
+     &       iorien,pgauss,orab,eloc,nlgeom_undo,ncmat_,nalcon,imat,
+     &       iperturb)
 !     
       elseif(amat(1:22).eq.'UNDO_NLGEOM_LIN_ISO_EL') then
 !     

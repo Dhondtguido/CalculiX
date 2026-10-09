@@ -20,7 +20,7 @@
      &     elconloc,emec,emec0,beta,xokl,voj,xkl,vj,ithermal,t1l,
      &     dtime,time,ttime,icmd,ielas,mi,nstate_,xstateini,xstate,
      &     stre,stiff,iorien,pgauss,orab,eloc,nlgeom_undo,ncmat_,
-     &     nalcon,imat)
+     &     nalcon,imat,iperturb)
 !
 !     calculates stiffness and stresses for a linear elastic isotropic
 !     material with special modification of the strain tensor
@@ -143,7 +143,7 @@
 !
       integer ithermal(*),icmd,kode,ielas,iel,iint,nstate_,mi(*),iorien,
      &     i,j,k,nlgeom_undo,n,matz,ier,nconstants,mattyp,ncmat_,
-     &     nalcon(2,*),imat
+     &     nalcon(2,*),imat,iperturb(*)
 !
       real*8 elconloc(*),stiff(21),emec(6),emec0(6),beta(6),stre(6),
      &  vj,t1l,dtime,xkl(3,3),xokl(3,3),voj,pgauss(3),orab(7,*),
@@ -233,11 +233,7 @@ c      write(*,*) 'umat_undo_nlgeom_lin_el ielas=',ielas
 !     calculating the stress and the linear elastic material data
 !
       call linel(nconstants,mattyp,beta,emec,stre,stiff,elconloc,
-     &     iorien,orab,pgauss,ncmat_,nalcon,imat,ithermal)
-!
-c      do i=1,6
-c         write(*,*) 'umat...lin_el',time,iel,iint,elin(i),stre(i)
-c      enddo
+     &     iorien,orab,pgauss,ncmat_,nalcon,imat,ithermal,iperturb)
 !
 !     for a user material (umat) the material is considered to be
 !     fully anisotropic; rewriting the isotropic or orthotropic

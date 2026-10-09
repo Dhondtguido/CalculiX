@@ -977,10 +977,7 @@ c     Bernhardi end
 !     
           if(ithermal(1).ne.0) then
             call calcmechstrain(vkl,vokl,emec,eth,iperturb,nalcon,imat,
-     &           xthi,vthj)
-c            do m1=1,6
-c              emec(m1)=eloc(m1)-eth(m1)
-c            enddo
+     &           xthi,vthj,iorien)
           else
             do m1=1,6
               emec(m1)=eloc(m1)
@@ -1017,7 +1014,7 @@ c            enddo
 !
           if((ithermal(1).ne.0).and.(iperturb(2).eq.1)) then
             call modifystressstiff(stre,stiff,mattyp,eth,nalcon,imat,
-     &     xthi,vthj)
+     &           xthi,vthj,iorien)
           endif
 !     
           if(((nmethod.ne.4).or.(iperturb(1).ne.0)).and.

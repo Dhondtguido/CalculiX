@@ -66,7 +66,7 @@
 !
       if(kode.gt.0) then
          call linel(kode,mattyp,beta,emec,stre,stiff,elconloc,
-     &  iorien,orab,pgauss,ncmat_,nalcon,imat,ithermal)
+     &  iorien,orab,pgauss,ncmat_,nalcon,imat,ithermal,iperturb)
       elseif(kode.gt.-50) then
          mattyp=3
          call rubber(elconloc,stiff,emec,kode,didc,d2idc2,
