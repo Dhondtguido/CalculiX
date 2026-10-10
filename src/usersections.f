@@ -48,6 +48,8 @@
         return
       endif
 !     
+      ndprop=0
+!     
       do i=2,n
         if(textpart(i)(1:9).eq.'MATERIAL=') then
           material=textpart(i)(10:89)
@@ -73,6 +75,18 @@
      &         "*USER SECTION%")
         endif
       enddo
+!     
+!     the user elements take their section properties from field
+!     prop, which is only allocated if properties are defined
+!     
+      if(ndprop.le.0) then
+        write(*,*) 
+     &       '*ERROR reading *USER SECTION: the number of constants'
+        write(*,*) '       (parameter CONSTANTS) must be positive'
+        call inputerror(inpc,ipoinpc,iline,
+     &       "*USER SECTION%",ier)
+        return
+      endif
 !     
 !     check for the existence of the set and the material
 !     

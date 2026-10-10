@@ -42,6 +42,17 @@ void elementcpuload(ITG *neapar,ITG *nebpar,ITG *ne,ITG *ipkon,ITG *num_cpus){
 	    nepar++;
 	}
     }
+    if(nepar==0){
+
+	/* no active elements (e.g. all deleted): one thread with
+           an empty element range */
+
+	*num_cpus=1;
+	neapar[0]=0;
+	nebpar[0]=-1;
+	SFREE(ipar);
+	return;
+    }
     if(nepar<*num_cpus) *num_cpus=nepar;
 
     /* dividing the element number range into num_cpus equal numbers of 
