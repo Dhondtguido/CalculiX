@@ -5644,3 +5644,12 @@ Dec 2002        - started to work on single crystal plasticity
  6 Oct 2026     - replaced gauss/weight3d14 by *3d11 (are identisch)
                 - made a change in *sections.f to take ANISO_CREEP and
 		  JOHNSONCOOK into account
+
+ 9 Oct 2026     - removed unused test examples
+                - removed errors for the multiplicative decomposition of
+		  the deformation gradient into a thermal and mechanical
+		  part, in combination with an orientation.
+
+ 10 Oct 2026    - made a correction in calcmechstrain for
+                  anorthotropic thermal expansions
+		  

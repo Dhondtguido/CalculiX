@@ -66,8 +66,8 @@
 !     
 !     anisotropic expansion makes the tangent matrix anisotropic
 !     
-        if((iperturb(2).eq.0).or.(ithermal(1).eq.0).or.
-     &       (nalcon(1,imat).le.1)) then
+        if((iperturb(2).eq.0).or.(nalcon(1,imat).le.1)) then
+c        if((ithermal(1).eq.0).or.(nalcon(1,imat).le.1)) then
 !     
 !     isotropic expansion
 !     
@@ -88,7 +88,7 @@
           stiff(8)=um
           stiff(9)=um
           mattyp=2
-        elseif(nalcon(1,imat).gt.0) then
+        elseif(nalcon(1,imat).gt.1) then
 !     
 !     anorthotropic expansion
 !     
@@ -129,8 +129,8 @@
           stre(5)=elconloc(8)*fxz-beta(5)
           stre(6)=elconloc(9)*fyz-beta(6)
 !
-          if((iperturb(2).eq.0).or.(ithermal(1).eq.0).or.
-     &         (nalcon(1,imat).le.3)) then
+          if((iperturb(2).eq.0).or.(nalcon(1,imat).le.3)) then
+c          if((ithermal(1).eq.0).or.(nalcon(1,imat).le.3)) then
 !
 !           isotropic or orthotropic thermal expansion
 !
@@ -206,8 +206,8 @@
 !     
 !     determining the type: orthotropic or anisotropic
 !
-            if((iperturb(2).eq.0).or.(ithermal(1).eq.0).or.
-     &           (nalcon(1,imat).eq.1)) then
+            if((iperturb(2).eq.0).or.(nalcon(1,imat).le.1)) then
+c            if((ithermal(1).eq.0).or.(nalcon(1,imat).le.1)) then
 !     
 !             at most isotropic thermal expansion;
 !             check whether the stiffness matrix is may orthotropic

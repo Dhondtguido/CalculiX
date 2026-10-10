@@ -56,7 +56,7 @@
 !
 !         anisotropic expansion Fmech=F.(Fth)^{-1}
 !
-!         Fth
+!         Fth (is symmetric!) 
 !
           xth(1,1)=eth(1)+1.d0
           xth(2,2)=eth(2)+1.d0
@@ -83,17 +83,17 @@
           xthi(3,1)=xthi(1,3)
           xthi(3,2)=xthi(2,3)
 !
-!         deformation gradient F
+!         deformation gradient F (is not symmetric!)
 !     
           xkl(1,1)=1.d0+vkl(1,1)
           xkl(2,2)=1.d0+vkl(2,2)
           xkl(3,3)=1.d0+vkl(3,3)
           xkl(1,2)=vkl(1,2)
           xkl(1,3)=vkl(1,3)
-          xkl(2,3)=vkl(2,2)
-          xkl(2,1)=xkl(1,2)
-          xkl(3,1)=xkl(1,3)
-          xkl(3,2)=xkl(2,3)
+          xkl(2,3)=vkl(2,3)
+          xkl(2,1)=vkl(2,1)
+          xkl(3,1)=vkl(3,1)
+          xkl(3,2)=vkl(3,2)
 !
 !         wkl=F.(Fth)^{-1}-1.d0
 !
