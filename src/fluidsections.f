@@ -891,26 +891,26 @@ c     enddo
 !     
 !     gas type elements used for liquids are labeled with LP
 !     
-            if((liquid.and.(lakon(ialset(j))(2:3).eq.'RE')).or.
-     &           (liquid.and.(lakon(ialset(j))(2:3).eq.'OR'))) 
-     &           lakon(ialset(j))(2:3)='LP'
+            if((liquid.and.(lakon(k)(2:3).eq.'RE')).or.
+     &           (liquid.and.(lakon(k)(2:3).eq.'OR'))) 
+     &           lakon(k)(2:3)='LP'
 !     
-            if(liquid.and.(lakon(ialset(j))(2:3).eq.'VO')) then
-              lakon(ialset(j))(2:3)='LP'
-              if(lakon(ialset(j))(4:5).eq.'FR') then 
-                lakon(ialset(j))(4:5)='VF'
-              else if(lakon(ialset(j))(4:5).eq.'FO') then 
-                lakon(ialset(j))(4:5)='VS'
+            if(liquid.and.(lakon(k)(2:3).eq.'VO')) then
+              lakon(k)(2:3)='LP'
+              if(lakon(k)(4:5).eq.'FR') then 
+                lakon(k)(4:5)='VF'
+              else if(lakon(k)(4:5).eq.'FO') then 
+                lakon(k)(4:5)='VS'
               endif
             endif
 !     
-            if(liquid.and.((lakon(ialset(j))(4:5).eq.'BG').or.
-     &           (lakon(ialset(j))(4:5).eq.'BT').or.
-     &           (lakon(ialset(j))(4:5).eq.'MA').or.
-     &           (lakon(ialset(j))(4:5).eq.'MM').or.
-     &           (lakon(ialset(j))(4:5).eq.'PA').or.
-     &           (lakon(ialset(j))(4:5).eq.'PM').or.
-     &           (lakon(ialset(j))(4:5).eq.'PN'))) then
+            if(liquid.and.((lakon(k)(4:5).eq.'BG').or.
+     &           (lakon(k)(4:5).eq.'BT').or.
+     &           (lakon(k)(4:5).eq.'MA').or.
+     &           (lakon(k)(4:5).eq.'MM').or.
+     &           (lakon(k)(4:5).eq.'PA').or.
+     &           (lakon(k)(4:5).eq.'PM').or.
+     &           (lakon(k)(4:5).eq.'PN'))) then
               write(*,*) ''
               write(*,*)'*ERROR reading *FLUID SECTION: element ',k,
      &             ' is no valid incompressible orifice element.'
