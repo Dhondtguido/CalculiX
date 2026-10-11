@@ -28,7 +28,12 @@ LIBS = \
        -lpthread -lm -lc
 
 CalculiX: $(OCCXMAIN) CalculiX.a $(LIBS)
-	./date.pl; $(CC) $(CFLAGS) -c CalculiX.c; $(CC) $(CFLAGS) -c frd.c; ar vr CalculiX.a frd.o; $(FC) -Wall -g -o $@ $(OCCXMAIN) CalculiX.a  $(LIBS) -fopenmp
+	$(FC) -Wall -g -o $@ $(OCCXMAIN) CalculiX.a  $(LIBS) -fopenmp
 
-CalculiX.a: $(OCCXF) $(OCCXC)
+CalculiX.a: $(OCCXF) $(OCCXC) buildinfo.o
 	ar vr $@ $?
+
+# buildinfo.c contains the compile time. It is not part of SCCXC, since it
+# has to be recompiled whenever any other object file changes
+
+buildinfo.o: $(OCCXMAIN) $(OCCXF) $(OCCXC)

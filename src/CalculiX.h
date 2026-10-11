@@ -71,6 +71,10 @@
 #define ITGFORMAT "d"
 #endif
 
+/* compile time of the executable, defined in buildinfo.c */
+
+extern const char ccx_compiletime[];
+
 void FORTRAN(actideacti,(char *set,ITG *nset,ITG *istartset,ITG *iendset,
                          ITG *ialset,char *objectset,ITG *ipkon,ITG *ibject,
                          ITG *ne));
