@@ -102,7 +102,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
     *nactdog=NULL,nteq,nmastnode,imast,massact[2],*inoel=NULL,
     *ipkon=NULL,*kon=NULL,*ielorien=NULL,nmethodact,ne2=0,
     *ielmat=NULL,inext,itp=0,symmetryflag=0,inputformat=0,
-    iitterm=0,ngraph=1,ithermalact=2,*islavact=NULL,
+    iitterm=0,ngraph=1,ithermalact[2]={2,2},*islavact=NULL,
     *ipompc=NULL,*ikmpc=NULL,*ilmpc=NULL,i0ref,irref,icref,
     *islavnode=NULL,*imastnode=NULL,*nslavnode=NULL,mortar=0,
     mt=mi[1]+1,*nactdofinv=NULL,inode,idir,*islavsurf=NULL,
@@ -260,23 +260,10 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
   /* copying the rotation axis and/or acceleration vector */
   for(k=0;k<7**nbody;k++){xbodyact[k]=xbody[k];}
   
-  /* assigning the body forces to the elements */ 
-  
-  /* if(*nbody>0){
-    ifreebody=*ne+1;
-    NNEW(ipobody,ITG,2*ifreebody**nbody);
-    for(k=1;k<=*nbody;k++){
-      FORTRAN(bodyforce,(cbody,ibody,ipobody,nbody,set,istartset,
-			 iendset,ialset,&inewton,nset,&ifreebody,&k));
-      RENEW(ipobody,ITG,2*(*ne+ifreebody));
-    }
-    RENEW(ipobody,ITG,2*(ifreebody-1));
-    }*/
-  
   /* for thermal calculations: forced convection and cavity
      radiation*/
   
-  if(*ithermal>1){
+  if(ithermal[0]>1){
     NNEW(itg,ITG,*nload+3**nflow);
     NNEW(ieg,ITG,*nflow);
     /* max 6 triangles per face, 4 entries per triangle */
@@ -352,7 +339,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
     NNEW(bcr,double,ntr);
     NNEW(ipivr,ITG,ntr);
   }
-  if(*ithermal>1){NNEW(qfx,double,3*mi[0]**ne);}
+  if(ithermal[0]>1){NNEW(qfx,double,3*mi[0]**ne);}
   
   /* allocating a field for the instantaneous amplitude */
   
@@ -393,13 +380,13 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
   
   /* calculating an initial flux norm */
   
-  if(*ithermal!=2){
+  if(ithermal[0]!=2){
     if(qau>1.e-10){qam[0]=qau;}
     else if(qa0>1.e-10){qam[0]=qa0;}
     else if(qa[0]>1.e-10){qam[0]=qa[0];}
     else {qam[0]=1.e-2;}
   }
-  if(*ithermal>1){
+  if(ithermal[0]>1){
     if(qau>1.e-10){qam[1]=qau;}
     else if(qa0>1.e-10){qam[1]=qa0;}
     else if(qa[1]>1.e-10){qam[1]=qa[1];}
@@ -423,13 +410,13 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
   reltime=1.;
   time=0.;
   dtime=0.;
-  ithermalact=2;
+  // ithermalact=2;
 
   nmethodact=1;
   massact[0]=0;
   massact[1]=0;
 
-  if(*ithermal<=1){
+  if(ithermal[0]<=1){
     NNEW(qfx,double,3*mi[0]**ne);
     NNEW(t0,double,*nk);
   }
@@ -446,7 +433,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
   FORTRAN(tempload,(xforcold,xforc,xforcact,iamforc,&null,xloadold,xload,
 		    xloadact,iamload,&null,ibody,xbody,&null,xbodyold,xbodyact,
 		    t1old,t1,t1act,iamt1,nk,amta,
-		    namta,&null,ampli,&time,&reltime,ttime,&dtime,&ithermalact,
+		    namta,&null,ampli,&time,&reltime,ttime,&dtime,ithermalact,
 		    nmethod,
 		    xbounold,xboun,xbounact,iamboun,nboun,
 		    nodeboun,ndirboun,nodeforc,ndirforc,istep,&iinc,
@@ -473,7 +460,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 	     labmpc,nk,&memmpc_,&icascade,&maxlenmpc,
 	     kon,ipkon,lakon,ne,nactdof,icol,jq,&irow,isolver,
 	     neq,nzs,&nmethodact,&f,&fext,&b,&aux2,&fini,&fextini,
-	     &adb,&aub,&ithermalact,iperturb,mass,mi,iexpl,&mortar,
+	     &adb,&aub,ithermalact,iperturb,mass,mi,iexpl,&mortar,
              typeboun,&cv,&cvini,&iit,network,itiefac,&ne0,&nkon0,
 	     nintpoint,islavsurf,pmastsurf,tieset,ntie,&num_cpus,
 	     ielmat,matname);
@@ -495,7 +482,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 
   results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,
 	  elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
-	  ielorien,norien,orab,ntmat_,t0,t1act,&ithermalact,
+	  ielorien,norien,orab,ntmat_,t0,t1act,ithermalact,
 	  prestr,iprestr,filab,eme,emn,een,iperturb,f,fn,nactdof,&iout,
 	  qa,vold,b,nodeboun,ndirboun,xbounact,nboun,ipompc,nodempc,coefmpc,
 	  labmpc,nmpc,&nmethodact,cam,&neq[1],veold,accold,&bet,
@@ -528,7 +515,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 	       &nmethodact,ikmpc,ilmpc,ikboun,ilboun,
 	       elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,
 	       ielmat,ielorien,norien,orab,ntmat_,
-	       t0,t1act,&ithermalact,prestr,iprestr,vold,iperturb,sti,
+	       t0,t1act,ithermalact,prestr,iprestr,vold,iperturb,sti,
 	       nzs,stx,adb,aub,iexpl,plicon,nplicon,plkcon,nplkcon,
 	       xstiff,npmat_,&dtime,matname,mi,
 	       ncmat_,massact,&stiffness,&buckling,&rhsi,&intscheme,
@@ -550,7 +537,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
     ptime=*ttime+time;
     frd(co,nk,kon,ipkon,lakon,ne,v,stn,inum,&nmethodact,
 	kode,filab,een,t1,fn,&ptime,epn,ielmat,matname,enern,xstaten,
-	nstate_,istep,&iinc,&ithermalact,qfn,&mode,&noddiam,trab,inotr,
+	nstate_,istep,&iinc,ithermalact,qfn,&mode,&noddiam,trab,inotr,
 	ntrans,orab,ielorien,norien,description,ipneigh,neigh,
 	mi,sti,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
@@ -623,7 +610,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
   NNEW(inum,ITG,*nk);
   results(co,nk,kon,ipkon,lakon,ne,v,stn,inum,stx,
 	  elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,ielmat,
-	  ielorien,norien,orab,ntmat_,t0,t1act,&ithermalact,
+	  ielorien,norien,orab,ntmat_,t0,t1act,ithermalact,
 	  prestr,iprestr,filab,eme,emn,een,iperturb,
 	  f,fn,nactdof,&iout,qa,vold,b,nodeboun,
 	  ndirboun,xbounact,nboun,ipompc,
@@ -687,7 +674,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
     ptime=*ttime+time;
     frdcyc(co,nk,kon,ipkon,lakon,ne,v,stn,inum,&nmethodact,kode,filab,een,
 	   t1act,fn,&ptime,epn,ielmat,matname,cs,mcs,nkon,enern,xstaten,
-	   nstate_,istep,&iinc,iperturb,ener,mi,output,&ithermalact,qfn,
+	   nstate_,istep,&iinc,iperturb,ener,mi,output,ithermalact,qfn,
 	   ialset,istartset,iendset,trab,inotr,ntrans,orab,ielorien,
 	   norien,stx,veold,&noddiam,set,nset,emn,thicke,jobnamec,ne,
 	   cdn,&mortar,nmat,qfx,ielprop,prop,damn,&errn,accold);
@@ -696,7 +683,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
     ptime=*ttime+time;
     frd(co,nk,kon,ipkon,lakon,ne,v,stn,inum,&nmethodact,
 	kode,filab,een,t1act,fn,&ptime,epn,ielmat,matname,enern,xstaten,
-	nstate_,istep,&iinc,&ithermalact,qfn,&mode,&noddiam,trab,inotr,
+	nstate_,istep,&iinc,ithermalact,qfn,&mode,&noddiam,trab,inotr,
 	ntrans,orab,ielorien,norien,description,ipneigh,neigh,
 	mi,stx,vr,vi,stnr,stni,vmax,stnmax,&ngraph,veold,ener,ne,
 	cs,set,nset,istartset,iendset,ialset,eenmax,fnr,fni,emn,
@@ -733,7 +720,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 
   biosav(ipkon,kon,lakon,ne,co,qfx,h0ref,mi,inomat,nk);
 
-  if(*ithermal<=1){SFREE(qfx);SFREE(t0);}
+  if(ithermal[0]<=1){SFREE(qfx);SFREE(t0);}
   if(strcmp1(&filab[3567],"ECD ")==0)SFREE(qfn);
   
   /* deactivating the shell elements */
@@ -862,7 +849,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
   /* saving the distributed loads (volume heating will be
      added because of Joule heating) */
 
-  //  if((*ithermal==3)||(*nmethod==2)){
+  //  if((ithermal[0]==3)||(*nmethod==2)){
   if((*nmethod==2)||(*nmethod==4)){
     nloadref=*nload;
     NNEW(nelemloadref,ITG,2**nload);
@@ -883,7 +870,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
     RENEW(sideload,char,20**nload_);
   }
 
-  if((*ithermal==1)||(*ithermal>=3)){
+  if((ithermal[0]==1)||(ithermal[0]>=3)){
     NNEW(t1ini,double,*nk);
     NNEW(t1act,double,*nk);
     for(k=0;k<*nk;++k){t1act[k]=t1old[k];}
@@ -903,7 +890,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
       memcpy(&vini[0],&vold[0],sizeof(double)*mt**nk);
 	  
       for(k=0;k<*nboun;++k){xbounini[k]=xbounact[k];}
-      if((*ithermal==1)||(*ithermal>=3)){
+      if((ithermal[0]==1)||(ithermal[0]>=3)){
 	for(k=0;k<*nk;++k){t1ini[k]=t1act[k];}
       }
       for(k=0;k<neq[1];++k){
@@ -949,7 +936,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
     /* restoring the distributed loading before adding the
        Joule heating */
 
-    //    if((*ithermal==3)||(*nmethod==2)){
+    //    if((ithermal[0]==3)||(*nmethod==2)){
     if((*nmethod==2)||(*nmethod==4)){
       *nload=nloadref;
       DMEMSET(nelemload,0,2**nload_,0);
@@ -986,7 +973,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
     for(i=0;i<3**nk;i++){h0[i]=h0ref[i]*h0scale;}
 
     for(i=0;i<3;i++){cam[i]=0.;}for(i=3;i<5;i++){cam[i]=0.5;}
-    if(*ithermal>1){
+    if(ithermal[0]>1){
       radflowload(itg,ieg,&ntg,&ntr,adrad,aurad,bcr,ipivr,
 		  ac,bc,nload,sideload,nelemload,xloadact,lakon,ipiv,ntmat_,
 		  vold,shcon,nshcon,ipkon,kon,co,
@@ -1078,7 +1065,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 	/* restoring the distributed loading before adding the
 	   Joule heating */
 
-	//	if((*ithermal==3)||(*nmethod==2)){
+	//	if((ithermal[0]==3)||(*nmethod==2)){
 	if((*nmethod==2)||(*nmethod==4)){
 	  *nload=nloadref;
 	  DMEMSET(nelemload,0,2**nload_,0);
@@ -1117,7 +1104,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 	for(i=0;i<3**nk;i++){h0[i]=h0ref[i]*h0scale;}
 
 	for(i=0;i<3;i++){cam[i]=0.;}for(i=3;i<5;i++){cam[i]=0.5;}
-	if(*ithermal>1){
+	if(ithermal[0]>1){
 	  radflowload(itg,ieg,&ntg,&ntr,adrad,aurad,
 		      bcr,ipivr,ac,bc,nload,sideload,nelemload,xloadact,lakon,
 		      ipiv,
@@ -1155,7 +1142,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 	SFREE(idefload);
       }
 
-      if(*ithermal==3){
+      if(ithermal[0]==3){
 	for(k=0;k<*nk;++k){t1act[k]=vold[mt*k];}
       }
 	      
@@ -1284,7 +1271,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 
 	/* electromagnetic part */
 	      
-	if(*ithermal!=2){
+	if(ithermal[0]!=2){
 	  for(k=0;k<neq[0];++k){
 	    ad[k]=adb[k]/dtime+ad[k];
 	  }
@@ -1303,7 +1290,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 	      
 	/* thermal part */
 	      
-	if(*ithermal>1){
+	if(ithermal[0]>1){
 	  for(k=neq[0];k<neq[1];++k){
 	    ad[k]=adb[k]/dtime+ad[k];
 	  }
@@ -1327,7 +1314,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 	  
       if(*isolver==0){
 #ifdef SPOOLES
-	if(*ithermal<2){
+	if(ithermal[0]<2){
 	  spooles(ad,au,adb,aub,&sigma,b,icol,irow,&neq[0],&nzs[0],
 		  &symmetryflag,&inputformat,&nzs[2]);
 	}else{
@@ -1353,7 +1340,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 	  FORTRAN(stop,());
 	}
 	token=1;
-	if(*ithermal<2){
+	if(ithermal[0]<2){
 	  sgi_main(ad,au,adb,aub,&sigma,b,icol,irow,&neq[0],&nzs[0],token);
 	}else{
 	  sgi_main(ad,au,adb,aub,&sigma,b,icol,irow,&neq[1],&nzs[1],token);
@@ -1377,7 +1364,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
       }
       else if(*isolver==7){
 #ifdef PARDISO
-	if(*ithermal<2){
+	if(ithermal[0]<2){
 	  pardiso_main(ad,au,adb,aub,&sigma,b,icol,irow,&neq[0],&nzs[0],
 		       &symmetryflag,&inputformat,jq,&nzs[2],&nrhs);
 	}else{
@@ -1391,7 +1378,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
       }
       else if(*isolver==8){
 #ifdef PASTIX
-	if(*ithermal<2){
+	if(ithermal[0]<2){
 	  pastix_main(ad,au,adb,aub,&sigma,b,icol,irow,&neq[0],&nzs[0],
 		      &symmetryflag,&inputformat,jq,&nzs[2],&nrhs);
 	}else{
@@ -1451,14 +1438,14 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 		       nbody);
       SFREE(inum);
 	  
-      if(*ithermal!=2){
+      if(ithermal[0]!=2){
 	if(cam[0]>uam[0]){uam[0]=cam[0];}      
 	if(qau<1.e-10){
 	  if(qa[0]>ea*qam[0]){qam[0]=(qamold[0]*jnz+qa[0])/(jnz+1);}
 	  else {qam[0]=qamold[0];}
 	}
       }
-      if(*ithermal>1){
+      if(ithermal[0]>1){
 	if(cam[1]>uam[1]){uam[1]=cam[1];}      
 	if(qau<1.e-10){
 	  if(qa[1]>ea*qam[1]){qam[1]=(qamold[1]*jnz+qa[1])/(jnz+1);}
@@ -1485,9 +1472,9 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 	ram[k]=0.;
       }
 
-      if(*ithermal!=2) ram[0]=0.;
+      if(ithermal[0]!=2) ram[0]=0.;
 
-      if(*ithermal>1){
+      if(ithermal[0]>1){
 	for(k=neq[0];k<neq[1];++k){
 	  err=fabs(b[k]);
 	  if(err>ram[1]){ram[1]=err;ram[3]=k+0.5;}
@@ -1496,7 +1483,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 	  
       /* printing residuals */
 	  
-      if(*ithermal>1){
+      if(ithermal[0]>1){
 	if(ram[1]<1.e-6) ram[1]=0.;      
 	printf(" average flux= %f\n",qa[1]);
 	printf(" time avg. flux= %f\n",qam[1]);
@@ -1522,7 +1509,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
       /* athermal electromagnetic calculations are linear:
 	 set iit=2 to force convergence */
 
-      if(*ithermal<=1) iit=2;
+      if(ithermal[0]<=1) iit=2;
 	  
       // MPADD: need for fake energy values!
       double energy[4] = {0,0,0,0};
@@ -1565,7 +1552,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
       memcpy(&vold[0],&vini[0],sizeof(double)*mt**nk);
 	  
       for(k=0;k<*nboun;++k){xbounact[k]=xbounini[k];}
-      if((*ithermal==1)||(*ithermal>=3)){
+      if((ithermal[0]==1)||(ithermal[0]>=3)){
 	for(k=0;k<*nk;++k){t1act[k]=t1ini[k];}
       }
       for(k=0;k<neq[1];++k){
@@ -1585,7 +1572,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 	  
       NNEW(v,double,mt**nk);
       NNEW(fn,double,mt**nk);
-      if(*ithermal>1) NNEW(qfn,double,3**nk);
+      if(ithermal[0]>1) NNEW(qfn,double,3**nk);
       if((strcmp1(&filab[3741],"EMFE")==0)||
 	 (strcmp1(&filab[3828],"EMFB")==0)) NNEW(stn,double,6**nk);
       NNEW(inum,ITG,*nk);
@@ -1668,7 +1655,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
       }
 	  
       SFREE(v);SFREE(fn);SFREE(inum);
-      if(*ithermal>1){SFREE(qfn);}
+      if(ithermal[0]>1){SFREE(qfn);}
       if((strcmp1(&filab[3741],"EMFE")==0)||
 	 (strcmp1(&filab[3828],"EMFB")==0)) SFREE(stn);
 	  
@@ -1808,7 +1795,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
       
       NNEW(v,double,mt**nk);
       NNEW(fn,double,mt**nk);
-      if(*ithermal>1) NNEW(qfn,double,3**nk);
+      if(ithermal[0]>1) NNEW(qfn,double,3**nk);
       if((strcmp1(&filab[3741],"EMFE")==0)||
 	 (strcmp1(&filab[3828],"EMFB")==0)) NNEW(stn,double,6**nk);
       NNEW(inum,ITG,*nk);
@@ -1869,7 +1856,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
       }
 	  
       SFREE(v);SFREE(fn);SFREE(inum);
-      if(*ithermal>1){SFREE(qfn);}
+      if(ithermal[0]>1){SFREE(qfn);}
       if((strcmp1(&filab[3741],"EMFE")==0)||
 	 (strcmp1(&filab[3828],"EMFB")==0)) SFREE(stn);
     }
@@ -1878,7 +1865,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
 
   /* restoring the distributed loading  */
 
-  //  if((*ithermal==3)||(*nmethod==2)){
+  //  if((ithermal[0]==3)||(*nmethod==2)){
   if((*nmethod==2)||(*nmethod==4)){
     *nload=nloadref;
     (*nload_)-=ne2;
@@ -1914,7 +1901,7 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
        step was thermal or thermomechanical */
       
     if(ndirboun[k]==0){
-      if(*ithermal<2) continue;
+      if(ithermal[0]<2) continue;
 	  
       /* mechanical boundary conditions are updated only
 	 if the step was not thermal or the node is a
@@ -1927,20 +1914,20 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
       if(id>0){
 	if(itg[id-1]==node) networknode=1;
       }
-      if((*ithermal==2)&&(networknode==0)) continue;
+      if((ithermal[0]==2)&&(networknode==0)) continue;
     }
     xbounold[k]=xbounact[k];
   }
   for(k=0;k<*nforc;++k){xforcold[k]=xforcact[k];}
   for(k=0;k<2**nload;++k){xloadold[k]=xloadact[k];}
   for(k=0;k<7**nbody;k=k+7){xbodyold[k]=xbodyact[k];}
-  if(*ithermal==1){
+  if(ithermal[0]==1){
     for(k=0;k<*nk;++k){t1old[k]=t1act[k];}
     for(k=0;k<*nk;++k){vold[mt*k]=t1act[k];}
   }
-  else if(*ithermal>1){
+  else if(ithermal[0]>1){
     for(k=0;k<*nk;++k){t1[k]=vold[mt*k];}
-    if(*ithermal>=3){
+    if(ithermal[0]>=3){
       for(k=0;k<*nk;++k){t1old[k]=t1act[k];}
     }
   }
@@ -1953,9 +1940,9 @@ void electromagnetics(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,
   SFREE(xbounact);SFREE(xforcact);SFREE(xloadact);SFREE(xbodyact);
   //  if(*nbody>0) SFREE(ipobody);
   SFREE(fext);SFREE(ampli);SFREE(xbounini);SFREE(xstiff);
-  if((*ithermal==1)||(*ithermal>=3)){SFREE(t1act);SFREE(t1ini);}
+  if((ithermal[0]==1)||(ithermal[0]>=3)){SFREE(t1act);SFREE(t1ini);}
   
-  if(*ithermal>1){
+  if(ithermal[0]>1){
     SFREE(itg);SFREE(ieg);SFREE(kontri);SFREE(nloadtr);
     SFREE(nactdog);SFREE(nacteq);SFREE(ineighe);
     SFREE(tarea);SFREE(tenv);SFREE(fenv);SFREE(qfx);

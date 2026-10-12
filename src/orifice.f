@@ -31,7 +31,7 @@
       character*8 lakon(*)
       character*81 set(*)
 !     
-      integer nelem,nactdog(0:3,*),node1,node2,nodem,numf,
+      integer nelem,nactdog(0:3,*),node1,node2,nodem,numf,curve,
      &     ielprop(*),nodef(*),idirf(*),index,kflag,
      &     inv,ipkon(*),kon(*),number,kgas,nelemswirl,
      &     nodea,nodeb,iaxial,mi(*),i,itype,iplausi
@@ -42,7 +42,7 @@
      &     rad,beta,reynolds,theta,k_phi,c2u_new,u,pi,xflow_oil,
      &     ps1pt1,uref,cd_chamf,angle,vid,cdcrit,T2,radius,
      &     initial_radius,co(3,*),vold(0:mi(2),*),offset,ttime,time,
-     &     x_tab(100), y_tab(100),x_tab2(100),y_tab2(100),curve,xmach
+     &     x_tab(100), y_tab(100),x_tab2(100),y_tab2(100),xmach
 !
       pi=4.d0*datan(1.d0)   
       if(kflag.eq.0) then
