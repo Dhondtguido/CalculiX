@@ -661,24 +661,6 @@ c     if(intscheme.eq.0) then
             ze=gauss3d7(3,kk)
             weight=weight3d7(kk)
           endif
-c     else
-c     if((lakonl(4:4).eq.'8').or.(lakonl(4:4).eq.'2')) then
-c     xi=gauss3d3(1,kk)
-c     et=gauss3d3(2,kk)
-c     ze=gauss3d3(3,kk)
-c     weight=weight3d3(kk)
-c     elseif((lakonl(4:5).eq.'10').or.(lakonl(4:4).eq.'4')) then
-c     xi=gauss3d6(1,kk)
-c     et=gauss3d6(2,kk)
-c     ze=gauss3d6(3,kk)
-c     weight=weight3d6(kk)
-c     else
-c     xi=gauss3d8(1,kk)
-c     et=gauss3d8(2,kk)
-c     ze=gauss3d8(3,kk)
-c     weight=weight3d8(kk)
-c     endif
-c     endif
 !     
 !     calculation of the shape functions and their derivatives
 !     in the gauss point

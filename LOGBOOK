@@ -5653,3 +5653,6 @@ Dec 2002        - started to work on single crystal plasticity
  10 Oct 2026    - made a correction in calcmechstrain for
                   anorthotropic thermal expansions
 		  
+ 12 Oct 2026    - removed an error in allocation.f for dynamic mixed
+                  element input decks
+		  

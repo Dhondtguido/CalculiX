@@ -64,7 +64,7 @@
      &     iposs,iposm,nslavs,nlayer,nkon_,nopeexp,iremove,mcs,
      &     ifacecount,nintpoint,mortar,infree(4),nheading_,icfd,
      &     multslav,multmast,nobject_,numnodes,iorientation,id,
-     &     nuel,iuel(4,*),number,four,maxsectors_,
+     &     nuel,iuel(4,*),number,four,maxsectors_,ipdyn,
      &     iprestr,nstam,ier,ndamp,nef,nbounold,nforcold,nloadold,
      &     nbodyold,mpcend,irobustdesign(3),iflag,network,
      &     nsubmodel,nfc_,ndc_
@@ -86,6 +86,7 @@
 !     
       ier=0
       maxsectors_=1
+      ipdyn=0
 !     
 !     in the presence of mechanical steps the highest number
 !     of DOF is at least 3
@@ -820,13 +821,14 @@ c          endif
 !     CFD-calculation
 !     
         if(icfd.ne.1) then
-          if((mi(1).eq.1).or.(mi(1).eq.8)) then
-            mi(1)=27
-          elseif(mi(1).eq.4) then
-            mi(1)=15
-          elseif(mi(1).eq.2) then
-            mi(1)=9
-          endif
+          mi(1)=ipdyn
+c          if((mi(1).eq.1).or.(mi(1).eq.8)) then
+c            mi(1)=27
+c          elseif(mi(1).eq.4) then
+c            mi(1)=15
+c          elseif(mi(1).eq.2) then
+c            mi(1)=9
+c          endif
         endif
         call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &       ipoinp,inp,ipoinpc)
@@ -936,33 +938,40 @@ c          endif
 !     
             if(label.eq.'C3D20   ') then
               mi(1)=max(mi(1),27)
+              ipdyn=max(ipdyn,27)
               nope=20
               nopeexp=20
             elseif(label(1:8).eq.'C3D20R  ') then
               mi(1)=max(mi(1),8)
+              ipdyn=max(ipdyn,27)
               nope=20
               nopeexp=20
             elseif((label.eq.'C3D8R   ').or.(label.eq.'F3D8R   '))
      &             then
               mi(1)=max(mi(1),1)
+              ipdyn=max(ipdyn,8)
               nope=8
               nopeexp=8
             elseif((label.eq.'C3D10   ').or.
      &             (label.eq.'C3D10T  ')) then
               mi(1)=max(mi(1),4)
+              ipdyn=max(ipdyn,4)
               nope=10
               nopeexp=10
             elseif((label.eq.'C3D4    ').or.
      &             (label.eq.'F3D4    ')) then
               mi(1)=max(mi(1),1)
+              ipdyn=max(ipdyn,4)
               nope=4
               nopeexp=4
             elseif(label.eq.'C3D15   ') then
               mi(1)=max(mi(1),9)
+              ipdyn=max(ipdyn,9)
               nope=15
               nopeexp=15
             elseif(label.eq.'C3D6    ') then
               mi(1)=max(mi(1),2)
+              ipdyn=max(ipdyn,2)
               nope=6
               nopeexp=6
             elseif(label.eq.'F3D6    ') then
@@ -972,11 +981,13 @@ c          endif
             elseif((label.eq.'C3D8    ').or.(label.eq.'F3D8    '))
      &             then
               mi(1)=max(mi(1),8)
+              ipdyn=max(ipdyn,8)
               nope=8
               nopeexp=8
 c     Bernhardi start
             elseif(label.eq.'C3D8I   ') then
               mi(1)=max(mi(1),8)
+              ipdyn=max(ipdyn,8)
               nope=8
               nopeexp=11
 c     Bernhardi end
@@ -986,6 +997,7 @@ c     Bernhardi end
      &             (label.eq.'M3D3    ').or.
      &             (label.eq.'S3      ')) then
               mi(1)=max(mi(1),2)
+              ipdyn=max(ipdyn,2)
               nope=3
               nopeexp=9
             elseif((label.eq.'CPE4R   ').or.
@@ -994,6 +1006,7 @@ c     Bernhardi end
      &             (label.eq.'M3D4R   ').or.
      &             (label.eq.'S4R     ')) then
               mi(1)=max(mi(1),1)
+              ipdyn=max(ipdyn,1)
               nope=4
               nopeexp=12
             elseif((label.eq.'CPE4    ').or.
@@ -1001,10 +1014,12 @@ c     Bernhardi end
      &             (label.eq.'CAX4    ').or.
      &             (label.eq.'M3D4    ')) then
               mi(1)=max(mi(1),8)
+              ipdyn=max(ipdyn,8)
               nope=4
               nopeexp=12
             elseif(label.eq.'S4      ') then
               mi(1)=max(mi(1),8)
+              ipdyn=max(ipdyn,8)
               nope=4
 !     modified into C3D8I (11 nodes)
               nopeexp=15
@@ -1014,6 +1029,7 @@ c     Bernhardi end
      &             (label.eq.'M3D6    ').or.
      &             (label.eq.'S6      ')) then
               mi(1)=max(mi(1),9)
+              ipdyn=max(ipdyn,9)
               nope=6
               nopeexp=21
             elseif((label.eq.'CPE8R   ').or.
@@ -1022,6 +1038,7 @@ c     Bernhardi end
      &             (label.eq.'M3D8R   ').or.
      &             (label.eq.'S8R     ')) then
               mi(1)=max(mi(1),8)
+              ipdyn=max(ipdyn,8)
               nope=8
               nopeexp=28
             elseif((label.eq.'CPE8    ').or.
@@ -1030,6 +1047,7 @@ c     Bernhardi end
      &             (label.eq.'M3D8    ').or.
      &             (label.eq.'S8      ')) then
               mi(1)=max(mi(1),27)
+              ipdyn=max(ipdyn,27)
               nope=8
               nopeexp=28
             elseif((label.eq.'B31     ').or.
@@ -1037,22 +1055,26 @@ c     Bernhardi end
      &             (label.eq.'T3D2    ').or.
      &             (label.eq.'T2D2    ')) then
               mi(1)=max(mi(1),8)
+              ipdyn=max(ipdyn,8)
               mi(3)=max(mi(3),2)
               nope=2
 !     modified into C3D8I (11 nodes)
               nopeexp=13
             elseif(label.eq.'B31R    ') then
               mi(1)=max(mi(1),1)
+              ipdyn=max(ipdyn,1)
               nope=2
               nopeexp=10
             elseif((label.eq.'B32     ').or.
      &             (label.eq.'T3D3    ')) then
               mi(1)=max(mi(1),27)
+              ipdyn=max(ipdyn,27)
               mi(3)=max(mi(3),2)
               nope=3
               nopeexp=23
             elseif(label.eq.'B32R    ') then
               mi(1)=max(mi(1),50)
+              ipdyn=max(ipdyn,50)
               nope=3
               nopeexp=23
             elseif(label(1:8).eq.'DASHPOTA') then
@@ -1068,23 +1090,27 @@ c     Bernhardi end
               mi(2)=max(3,mi(2))
             elseif(label(1:7).eq.'SPRINGA') then
               mi(1)=max(mi(1),1)
+              ipdyn=max(ipdyn,1)
               label='ESPRNGA1'
               nope=2
               nopeexp=2
             elseif(label(1:7).eq.'SPRING1') then
               mi(1)=max(mi(1),1)
+              ipdyn=max(ipdyn,1)
               label='ESPRNG10'
               nope=1
               nopeexp=1
               ncmat_=max(3,ncmat_)
             elseif(label(1:7).eq.'SPRING2') then
               mi(1)=max(mi(1),1)
+              ipdyn=max(ipdyn,1)
               label='ESPRNG21'
               nope=2
               nopeexp=2
               ncmat_=max(4,ncmat_)
             elseif(label.eq.'GAPUNI  ') then
               mi(1)=max(mi(1),1)
+              ipdyn=max(ipdyn,1)
               label='ESPGAPA1'
               nope=2
               nopeexp=2
@@ -1106,6 +1132,7 @@ c     Bernhardi end
               if(id.gt.0) then
                 if(iuel(1,id).eq.number) then
                   mi(1)=max(mi(1),iuel(2,id))
+                  ipdyn=max(ipdyn,iuel(2,id))
                   mi(2)=max(mi(2),iuel(3,id))
                   nope=iuel(4,id)
                   nopeexp=nope
@@ -2014,6 +2041,7 @@ c            nmpc_=nmpc_+3
           nforcold=nforc_
           nloadold=nload_
           nbodyold=nbody_
+          ipdyn=mi(1)
         else
         endif
         call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
@@ -2149,6 +2177,7 @@ c            nmpc_=nmpc_+3
 !     composite shell element
 !     
               mi(1)=max(mi(1),8*nlayer)
+              ipdyn=max(ipdyn,8*nlayer)
               mi(3)=max(mi(3),nlayer)
               if(js.le.nset_) then
                 nk_=nk_+20*nlayer*meminset(js)
