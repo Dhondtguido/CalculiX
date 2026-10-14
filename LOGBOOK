@@ -5659,3 +5659,4 @@ Dec 2002        - started to work on single crystal plasticity
 
  14 Oct 2026    - sharpened the *INFO for recurring OP=NEW flags within
                   one and the same step
+		- changed dtheta=1. into dtheta=0.5 in radflowload.c

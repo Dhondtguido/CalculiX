@@ -98,7 +98,7 @@ void radflowload(ITG *itg,ITG *ieg,ITG *ntg,ITG *ntr,double *adrad,
 
   double camt[2],camf[2],camp[2],qat,qaf,ramt,ramf,ramp,
     cam1t=0.,cam1f=0.,cam1p=0.,sidemean,qa0,qau,ea,*prop_store=NULL,
-    cam2t=0.,cam2f=0.,cam2p=0.,dtheta=1.,*v=NULL,cama[2],cam1a=0.,
+    cam2t=0.,cam2f=0.,cam2p=0.,dtheta=0.5,*v=NULL,cama[2],cam1a=0.,
     cam2a=0.,vamt=0.,vamf=0.,vamp=0.,vama=0.,cam0t=0.,cam0f=0.,
     cam0p=0.,cam0a=0.,sigma=0.,*adbrad=NULL,*aubrad=NULL,*q=NULL,
     *area=NULL,*pmid=NULL,*e1=NULL,*e2=NULL,*e3=NULL,
@@ -367,8 +367,10 @@ void radflowload(ITG *itg,ITG *ieg,ITG *ntg,ITG *ntr,double *adrad,
 	  
       /* for purely thermal calculations no iterations are
 	 deemed necessary */
-	  
-      if(*network<=2) {icntrl=1;}
+
+      // next change is due to dtheta=0.5 instead of 1.
+      //      if(*network<=2) {icntrl=1;}
+      if(*network<2) {icntrl=1;}
       else {
 
 	/* check the convergence */
