@@ -63,27 +63,27 @@
           jobnamec(5)(1:126)=textpart(i)(7:132)
           jobnamec(5)(127:132)='      '
           loop1: do j=1,126
-          if(jobnamec(5)(j:j).eq.'"') then
-            do k=j+1,126
-              if(jobnamec(5)(k:k).eq.'"') then
-                do l=k-1,126
-                  jobnamec(5)(l:l)=' '
-                  exit loop1
-                enddo
-              endif
-              jobnamec(5)(k-1:k-1)=jobnamec(5)(k:k)
-            enddo
-            jobnamec(5)(126:126)=' '
-          endif
-        enddo loop1
-      else
-        write(*,*) 
-     &       '*WARNING reading *HCF: parameter not recognized:'
-        write(*,*) '         ',
-     &       textpart(i)(1:index(textpart(i),' ')-1)
-        call inputwarning(inpc,ipoinpc,iline,
-     &       "*HCF%")
-      endif
+            if(jobnamec(5)(j:j).eq.'"') then
+              do k=j+1,126
+                if(jobnamec(5)(k:k).eq.'"') then
+                  do l=k-1,126
+                    jobnamec(5)(l:l)=' '
+                    exit loop1
+                  enddo
+                endif
+                jobnamec(5)(k-1:k-1)=jobnamec(5)(k:k)
+              enddo
+              jobnamec(5)(126:126)=' '
+            endif
+          enddo loop1
+        else
+          write(*,*) 
+     &         '*WARNING reading *HCF: parameter not recognized:'
+          write(*,*) '         ',
+     &         textpart(i)(1:index(textpart(i),' ')-1)
+          call inputwarning(inpc,ipoinpc,iline,
+     &         "*HCF%")
+        endif
       enddo
 !     
 !     check for the INPUT parameter
@@ -91,8 +91,6 @@
       if(.not.input) then
         write(*,*) 
      &       '*ERROR reading *HCF: no input file specified:'
-        write(*,*) '         ',
-     &       textpart(i)(1:index(textpart(i),' ')-1)
         call inputerror(inpc,ipoinpc,iline,
      &       "*HCF%",ier)
       endif
@@ -100,8 +98,6 @@
       if(mei(1).eq.0) then
         write(*,*) 
      &       '*ERROR reading *HCF: no mode specified:'
-        write(*,*) '         ',
-     &       textpart(i)(1:index(textpart(i),' ')-1)
         call inputerror(inpc,ipoinpc,iline,
      &       "*HCF%",ier)
       endif
@@ -109,8 +105,6 @@
       if(mei(2).eq.0) then
         write(*,*) 
      &       '*ERROR reading *HCF: no mission step specified:'
-        write(*,*) '         ',
-     &       textpart(i)(1:index(textpart(i),' ')-1)
         call inputerror(inpc,ipoinpc,iline,
      &       "*HCF%",ier)
       endif
@@ -118,8 +112,6 @@
       if(tincf.eq.0.d0) then
         write(*,*) '*WARNING reading *HCF: no scaling specified;'
         write(*,*) '         a default of 1. is taken:'
-        write(*,*) '         ',
-     &       textpart(i)(1:index(textpart(i),' ')-1)
         call inputwarning(inpc,ipoinpc,iline,
      &       "*HCF%")
         tincf=1.d0

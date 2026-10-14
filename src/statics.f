@@ -149,7 +149,7 @@
      &        istartset,
      &        iendset,ialset,ipompc,nodempc,coefmpc,nmpc,nmpc_,ikmpc,
      &        ilmpc,mpcfree,mcs,set,nset,labmpc,istep,istat,n,iline,
-     &        ipol,inl,ipoinp,inp,nmethod,key,ipoinpc)
+     &        ipol,inl,ipoinp,inp,nmethod,key,ipoinpc,ier)
          nmethod=1
          do i=1,mcs
             cs(2,i)=-0.5d0

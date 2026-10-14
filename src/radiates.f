@@ -81,6 +81,13 @@
               xload(1,j)=0.d0
             endif
           enddo
+        elseif(textpart(i)(1:6).eq.'OP=NEW') then
+          write(*,*)
+     &         '*INFO reading *RADIATE: OP=NEW only makes sense'
+          write(*,*)
+     &         '      on the first *RADIATE card within a step.'
+          write(*,*) '      No further action is taken.'
+          write(*,*)
         elseif(textpart(i)(1:10).eq.'AMPLITUDE=') then
           read(textpart(i)(11:90),'(a80)') amplitude
           do j=nam,1,-1

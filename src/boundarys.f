@@ -178,7 +178,8 @@
           write(*,*)
      &         '*INFO reading *BOUNDARY: OP=NEW only makes sense'
           write(*,*)
-     &         '      on the first *BOUNDARY card within a step'
+     &         '      on the first *BOUNDARY card within a step.'
+          write(*,*) '      No further action is taken.'
           write(*,*)
         elseif(textpart(i)(1:10).eq.'AMPLITUDE=') then
           read(textpart(i)(11:90),'(a80)') amplitude

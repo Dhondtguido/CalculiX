@@ -63,6 +63,13 @@
             do j=1,nforc
                if(ndirforc(j).eq.0) xforc(j)=0.d0
             enddo
+          elseif(textpart(i)(1:6).eq.'OP=NEW') then
+            write(*,*)
+     &           '*INFO reading *CFLUX: OP=NEW only makes sense'
+            write(*,*)
+     &           '      on the first *CFLUX card within a step.'
+            write(*,*) '      No further action is taken.'
+            write(*,*)
          elseif(textpart(i)(1:10).eq.'AMPLITUDE=') then
             read(textpart(i)(11:90),'(a80)') amplitude
             do j=nam,1,-1

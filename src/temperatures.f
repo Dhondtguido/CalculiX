@@ -99,6 +99,13 @@
           do j=1,nk
             t1(j)=t0(j)
           enddo
+        elseif(textpart(i)(1:6).eq.'OP=NEW') then
+          write(*,*)
+     &         '*INFO reading *TEMPERATURE: OP=NEW only makes sense'
+          write(*,*)
+     &         '      on the first *TEMPERATURE card within a step.'
+          write(*,*) '      No further action is taken.'
+          write(*,*)
         elseif(textpart(i)(1:10).eq.'AMPLITUDE=') then
           read(textpart(i)(11:90),'(a80)') amplitude
           do j=nam,1,-1
