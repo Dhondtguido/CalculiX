@@ -44,6 +44,8 @@
          return
       endif
 !
+      itype=0
+!
       do i=2,n
         if(textpart(i)(1:10).eq.'CRITERION=') then
           if(textpart(i)(11:20).eq.'RICETRACEY') then
@@ -69,6 +71,14 @@
      &         "*DAMAGE INITIATION%")
         endif
       enddo
+!
+      if(itype.eq.0) then
+        write(*,*) 
+     &       '*ERROR reading *DAMAGE INITIATION: criterion is lacking'
+        call inputerror(inpc,ipoinpc,iline,
+     &       "*DAMAGE INITIATION%",ier)
+        return
+      endif
 !
 !     the damage initiation is stored as a mechanical user material
 !

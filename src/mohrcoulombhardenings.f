@@ -56,7 +56,15 @@
         ier=1
         return
       endif
-!     
+!
+      if(nelcon(1,nmat).ne.-53) then
+        write(*,*) '*ERROR reading *MOHR COULOMB HARDENING:'
+        write(*,*) '       *MOHR COULOMB HARDENING should be preceded'
+        write(*,*) '       by a *MOHR COULOMB card'
+        ier=1
+        return
+      endif
+!
       iperturb(1)=3
 !     
       do i=2,n

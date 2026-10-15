@@ -31,6 +31,9 @@
      &  inl,ipol
 !
       four=4
+      nodes=0
+      intpoints=0
+      maxdof=0
 !
       do i=2,n
          if(textpart(i)(1:6).eq.'TYPE=U') then
@@ -63,6 +66,29 @@
       enddo
 !
 !     check range
+!
+      if(intpoints.lt.1) then
+         write(*,*) '*ERROR reading *USER ELEMENT'
+         write(*,*) '       number of integration points ',intpoints,
+     &       ' is not positive'
+         ier=1
+         return
+      endif
+!
+      if(maxdof.lt.1) then
+         write(*,*) '*ERROR reading *USER ELEMENT'
+         write(*,*) '       highest degree of freedom ',maxdof,
+     &       ' is not positive'
+         ier=1
+         return
+      endif
+!
+      if(nodes.lt.1) then
+         write(*,*) '*ERROR reading *USER ELEMENT'
+         write(*,*) '       number of nodes ',nodes,' is not positive'
+         ier=1
+         return
+      endif
 !
       if(intpoints.gt.255) then
          write(*,*) '*ERROR reading *USER ELEMENT'

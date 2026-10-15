@@ -1611,6 +1611,13 @@ c         endif
         nprint=ii
       endif
 !     
+!     check whether any element was defined
+!     
+      if(ne.eq.0) then
+        write(*,*) '*ERROR in calinput: no elements were defined'
+        call exit(201)
+      endif
+!     
 !     check whether a material was assigned to each active element
 !     
       ierror=0

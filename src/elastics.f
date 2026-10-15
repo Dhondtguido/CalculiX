@@ -85,7 +85,14 @@
          do
             call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &           ipoinp,inp,ipoinpc)
-            if((istat.lt.0).or.(key.eq.1)) return
+            if((istat.lt.0).or.(key.eq.1)) then
+               if(ntmat.eq.0) then
+                  write(*,*) 
+     &            '*ERROR reading *ELASTIC: *ELASTIC card without data'
+                  ier=1
+               endif
+               return
+            endif
             ntmat=ntmat+1
             nelcon(2,nmat)=ntmat
             if(ntmat.gt.ntmat_) then
@@ -144,7 +151,14 @@
          do
             call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &           ipoinp,inp,ipoinpc)
-            if((istat.lt.0).or.(key.eq.1)) return
+            if((istat.lt.0).or.(key.eq.1)) then
+               if(ntmat.eq.0) then
+                  write(*,*) 
+     &            '*ERROR reading *ELASTIC: *ELASTIC card without data'
+                  ier=1
+               endif
+               return
+            endif
             ntmat=ntmat+1
             nelcon(2,nmat)=ntmat
             if(ntmat.gt.ntmat_) then
@@ -223,7 +237,14 @@
          do
             call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &           ipoinp,inp,ipoinpc)
-            if((istat.lt.0).or.(key.eq.1)) return
+            if((istat.lt.0).or.(key.eq.1)) then
+               if(ntmat.eq.0) then
+                  write(*,*) 
+     &            '*ERROR reading *ELASTIC: *ELASTIC card without data'
+                  ier=1
+               endif
+               return
+            endif
             ntmat=ntmat+1
             nelcon(2,nmat)=ntmat
             if(ntmat.gt.ntmat_) then
