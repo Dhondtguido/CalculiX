@@ -83,7 +83,8 @@
             else
                cd_correction=cd_correction_tab(1,idy)
      &           +(cd_correction_tab(1,idy+1)-cd_correction_tab(1,idy))
-     &              *(szb-szb_tab(idx))/(szb_tab(idx+1)-szb_tab(idx))
+     &              *(p1p2-puszpds_tab(idy))/(puszpds_tab(idy+1)
+     &              -puszpds_tab(idy))
             endif 
          endif
 !     
@@ -96,7 +97,8 @@
             else
             cd_correction=cd_correction_tab(nx,idy)
      &     +(cd_correction_tab(nx,idy+1)-cd_correction_tab(nx,idy))
-     &     *(szb-szb_tab(idx))/(szb_tab(idx+1)-szb_tab(idx))
+     &     *(p1p2-puszpds_tab(idy))/(puszpds_tab(idy+1)
+     &     -puszpds_tab(idy))
             endif 
          endif
       else
@@ -104,13 +106,11 @@
 !     
             cd_correction=cd_correction_tab(idx,1)
      &          +(cd_correction_tab(idx+1,1)-cd_correction_tab(idx,1))
-     &           *(p1p2-puszpds_tab(idy))/(puszpds_tab(idy+1)
-     &           -puszpds_tab(idy))
+     &           *(szb-szb_tab(idx))/(szb_tab(idx+1)-szb_tab(idx))
          elseif(idy.ge.ny) then
             cd_correction=cd_correction_tab(idx,ny)
      &         +(cd_correction_tab(idx+1,ny)-cd_correction_tab(idx,ny))
-     &           *(p1p2-puszpds_tab(idy))/(puszpds_tab(idy+1)
-     &           -puszpds_tab(idy))
+     &           *(szb-szb_tab(idx))/(szb_tab(idx+1)-szb_tab(idx))
          else
             et=(p1p2-puszpds_tab(idy))/(puszpds_tab(idy+1)
      &           -puszpds_tab(idy))
