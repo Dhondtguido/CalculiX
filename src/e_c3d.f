@@ -99,7 +99,7 @@
      &     sax(60,60),ffax(60),gs(8,4),a,stress(6),stre(3,3),
      &     pslavsurf(3,*),pmastsurf(6,*),xmass,xsjmass,shpmass(4,20),
      &     shpjmass(4,20),smscalel,smfactor,shptil(4,20),aute(*),
-     &     shptil2(7,9),autf(16),doubleglob(*),pmastload(3,*)
+     &     shptil2(7,9),autf(16),doubleglob(*),pmastload(3,*),sumc3d8i
 !     
       include "gauss.f"
 !     
@@ -2295,14 +2295,25 @@ c     Bernhardi end
           alp=0.1203d0
         elseif(nope.eq.15) then
           alp=0.2141d0
-        elseif(nope.eq.11) then
-          alp=0.1852d0
+c        elseif(nope.eq.11) then
+c          alp=0.1852d0
         endif
 !     
         if((nope.eq.20).or.(nope.eq.10).or.
-     &       (nope.eq.15).or.(nope.eq.11)) then
+     &       (nope.eq.15)) then
+c        if((nope.eq.20).or.(nope.eq.10).or.
+c     &       (nope.eq.15).or.(nope.eq.11)) then
           factore=summass*alp/(1.d0+alp)/sume
           factorm=summass/(1.d0+alp)/summ
+        elseif(nope.eq.11) then
+!
+!         summing the mass corresponding to shape function 9 to 11
+!
+          sumc3d8i=sm(25,25)+2.d0*sm(25,28)+2.d0*sm(25,31)
+     &                           +sm(28,28)+2.d0*sm(28,31)
+     &                                          +sm(31,31)
+          factore=summass/sume
+          factorm=sumc3d8i/summ
         else
           factore=summass/sume
         endif

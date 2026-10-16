@@ -272,8 +272,10 @@
      &s'
                write(*,100) i,elcon(k,j,nmat)
                write(*,*) '         (units: [L][L]/[F]).'
-               write(*,*) '         This corresponds to a Poisson'
-               write(*,*) '         coefficient of 0.475'
+               if(i.eq.1) then
+                 write(*,*) '         This corresponds to a Poisson'
+                 write(*,*) '         coefficient of 0.475'
+               endif
                write(*,*)
             endif
          enddo
