@@ -265,7 +265,7 @@
             k=jcoef(i,abs(ityp))
             if(k.eq.0) exit
             if(dabs(elcon(k,j,nmat)).lt.1.d-10) then
-               elcon(k,j,nmat)=(0.1d0/um)**i
+               elcon(k,j,nmat)=max(1.d-10,(0.1d0)**i/um)
                write(*,*) 
      &             '*WARNING reading *HYPERELASTIC: default value was'
                write(*,*) '         used for compressibility coefficient
