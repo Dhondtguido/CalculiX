@@ -68,6 +68,7 @@
         matname(nmat)(i:i)=' '
       enddo
 !     
+      ipos=0
       do i=2,n
         if(textpart(i)(1:9).eq.'NONLINEAR') then
           linear=.false.
@@ -325,6 +326,13 @@
 c     do i=1,nset
 c     if(set(i).eq.elset) exit
 c     enddo
+      if(ipos.eq.0) then
+        write(*,*) '*ERROR reading *SPRING: no ELSET parameter'
+        call inputerror(inpc,ipoinpc,iline,
+     &       "*SPRING%",ier)
+        return
+      endif
+!
       call cident81(set,elset,nset,id)
       i=nset+1
       if(id.gt.0) then

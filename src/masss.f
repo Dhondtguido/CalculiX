@@ -58,6 +58,7 @@
          matname(nmat)(i:i)=' '
       enddo
 !
+      ipos=0
       do i=2,n
          if(textpart(i)(1:6).eq.'ELSET=') then
             elset=textpart(i)(7:86)
@@ -115,6 +116,13 @@
 c      do i=1,nset
 c         if(set(i).eq.elset) exit
 c      enddo
+      if(ipos.eq.0) then
+        write(*,*) '*ERROR reading *MASS: no ELSET parameter'
+        call inputerror(inpc,ipoinpc,iline,
+     &       "*MASS%",ier)
+        return
+      endif
+!
       call cident81(set,elset,nset,id)
       i=nset+1
       if(id.gt.0) then

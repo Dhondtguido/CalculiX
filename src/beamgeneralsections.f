@@ -63,6 +63,7 @@
       ipos=1
       npropstart=nprop
 !     
+      ipos=0
       do i=2,n
         if(textpart(i)(1:9).eq.'MATERIAL=') then
           material=textpart(i)(10:89)
@@ -173,6 +174,13 @@ c     iorientation=0
 c     do i=1,nset
 c     if(set(i).eq.elset) exit
 c     enddo
+      if(ipos.eq.0) then
+        write(*,*) '*ERROR reading *BEAM SECTION: no ELSET parameter'
+        call inputerror(inpc,ipoinpc,iline,
+     &       "*BEAM SECTION%",ier)
+        return
+      endif
+!
       call cident81(set,elset,nset,id)
       i=nset+1
       if(id.gt.0) then
