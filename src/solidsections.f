@@ -20,7 +20,7 @@
      &  ialset,nset,ielmat,matname,nmat,ielorien,orname,norien,
      &  lakon,thicke,kon,ipkon,irstrt,istep,istat,n,iline,ipol,inl,
      &  ipoinp,inp,cs,mcs,iaxial,ipoinpc,mi,co,ixfree,xnor,iponor,
-     &  ier,orab)
+     &  ier,orab,ne)
 !
 !     reading the input deck: *SOLID SECTION
 !
@@ -39,7 +39,7 @@
      &  norien,ielem,node1,node2,m,indexx,ixfree,iponor(2,*),id,
      &  istep,istat,n,key,i,j,k,l,imaterial,iorientation,ipos,
      &  iline,ipol,inl,ipoinp(2,*),inp(3,*),mcs,iaxial,ipoinpc(0:*),
-     &  ier,numnod
+     &  ier,numnod,ne
 !
       real*8 thicke(mi(3),*),thickness,pi,cs(18,*),xn(3),co(3,*),p(3),
      &     dd,xnor(*),orab(7,*)
@@ -158,6 +158,20 @@ c      enddo
      &        "*SOLID SECTION%",ier)
          return
       endif
+!
+!     check that all elements of the set are defined
+!
+      do j=istartset(i),iendset(i)
+         if(ialset(j).gt.ne) then
+            write(*,*) '*ERROR reading *SOLID SECTION: element ',
+     &           ialset(j)
+            write(*,*) '       of element set ',elset(1:ipos-1)
+            write(*,*) '       has not been defined'
+            call inputerror(inpc,ipoinpc,iline,
+     &           "*SOLID SECTION%",ier)
+            return
+         endif
+      enddo
 !
 !     assigning the elements of the set the appropriate material
 !     and orientation number

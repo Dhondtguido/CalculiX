@@ -316,7 +316,7 @@
      &         ialset,nset,ielmat,matname,nmat,ielorien,orname,norien,
      &         thicke,ipkon,iponor,xnor,ixfree,
      &         offset,lakon,irstrt,istep,istat,n,iline,ipol,inl,
-     &         ipoinp,inp,ipoinpc,mi,nelcon,ier)
+     &         ipoinp,inp,ipoinpc,mi,nelcon,ier,ne)
         endif
 !     
       elseif(textpart(1)(1:10).eq.'*BOUNDARYF') then
@@ -1065,14 +1065,14 @@ c
      &       ialset,nset,ielmat,matname,nmat,ielorien,orname,
      &       norien,thicke,kon,ipkon,offset,irstrt,istep,istat,n,
      &       iline,ipol,inl,ipoinp,inp,lakon,iaxial,ipoinpc,mi,
-     &       icomposite,nelcon,ier)
+     &       icomposite,nelcon,ier,ne)
 !     
       elseif(textpart(1)(1:13).eq.'*SOLIDSECTION') then
         call solidsections(inpc,textpart,set,istartset,iendset,
      &       ialset,nset,ielmat,matname,nmat,ielorien,orname,
      &       norien,lakon,thicke,kon,ipkon,irstrt,istep,istat,n,iline,
      &       ipol,inl,ipoinp,inp,cs,mcs,iaxial,ipoinpc,mi,co,
-     &       ixfree,xnor,iponor,ier,orab)
+     &       ixfree,xnor,iponor,ier,orab,ne)
 !     
       elseif(textpart(1)(1:20).eq.'*SPECIFICGASCONSTANT') then
         call specificgasconstants(inpc,textpart,shcon,nshcon,
@@ -1260,20 +1260,21 @@ c
 !     
       enddo loop
 !     
-      if(ier.ge.1) then
-        write(*,*) '*ERROR in calinput: at least one fatal'
-        write(*,*) '       error message while reading the'
-        write(*,*) '       input deck: CalculiX stops.'
-        write(*,*)
-        call exit(201)
-      endif
-!     
 !     check whether the *END STEP card was preceded by a *STEP card    
 !     
       if(newstep.eq.0) then
         write(*,*) '*ERROR in calinput: *END STEP card in step ',
      &       istep+1
         write(*,*) '       was not preceded by a *STEP card'
+        ier=1
+      endif
+!     
+      if(ier.ge.1) then
+        write(*,*) '*ERROR in calinput: at least one fatal'
+        write(*,*) '       error message while reading the'
+        write(*,*) '       input deck: CalculiX stops.'
+        write(*,*)
+        call exit(201)
       endif
 !     
 !     reorganizing the input in field inpc

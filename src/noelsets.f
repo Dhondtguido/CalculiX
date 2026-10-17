@@ -214,6 +214,14 @@ ccc   to remove end
               return
             endif
           enddo
+          if((ialset(nalset+1).le.0).or.(ialset(nalset+2).le.0)) then
+            write(*,*) 
+     &           '*ERROR reading *NSET/ELSET: starting or end value in'
+            write(*,*) '       set ',
+     &           set(iset)(1:index(set(iset),' ')-2),' <=0'
+            ier=1
+            return
+          endif
           if(kode.eq.0) then
             if(ialset(nalset+1).gt.nk) then
               write(*,*) 
@@ -250,7 +258,7 @@ ccc   to remove end
               write(*,*) '         set ',
      &             set(iset)(1:index(set(iset),' ')-2),' > ne;'
               write(*,*) '         replaced by ne'
-              ialset(nalset+2)=nk
+              ialset(nalset+2)=ne
             elseif(ialset(nalset+3).le.0) then
               write(*,*) '*ERROR reading *NSET/ELSET: increment in'
               write(*,*) '       set ',
