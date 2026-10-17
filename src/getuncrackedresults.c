@@ -110,7 +110,15 @@ void getuncrackedresults (char *masterfile,ITG **integerglobp,
 //    anz->nnext=0;
 //    anz->enext=0;
     
-    readfrd( datin, anz, &node, &elem, &lcase, read_mode);
+    /* readfrd sets anz->n and anz->e to -1 before it opens the file, so a
+       missing or unreadable file is not caught by the ==0 checks further
+       down: the sizes stay negative and end up in a calloc, which reports a
+       bogus out-of-memory error.  Fail here instead. */
+
+    if(readfrd( datin, anz, &node, &elem, &lcase, read_mode)<0){
+	printf(" *ERROR in getuncrackedresults: the frd-file \"%s\"\n        could not be read\n",datin);
+	FORTRAN(stop,());
+    }
     
     /* calculation of the highest node number */
     
