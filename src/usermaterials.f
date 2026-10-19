@@ -54,6 +54,7 @@
       endif
 !
       imech=1
+      nconstants=0
 !
       do i=2,n
          if(textpart(i)(1:10).eq.'CONSTANTS=') then
@@ -74,6 +75,15 @@
      &"*USER MATERIAL%")
          endif
       enddo
+!
+      if(nconstants.le.0) then
+         write(*,*) 
+     &   '*ERROR reading *USER MATERIAL: the number of constants'
+         write(*,*) '       (parameter CONSTANTS) must be positive'
+         call inputerror(inpc,ipoinpc,iline,
+     &        "*USER MATERIAL%",ier)
+         return
+      endif
 !
       if(imech.eq.1) then
 !

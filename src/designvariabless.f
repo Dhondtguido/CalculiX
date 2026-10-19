@@ -83,6 +83,15 @@
          return
       endif
 !
+      if((tieset(1,ntie)(1:10).ne.'COORDINATE').and.
+     &   (tieset(1,ntie)(1:11).ne.'ORIENTATION')) then
+         write(*,*)
+     &'*ERROR reading *DESIGN VARIABLES: unknown type'
+         call inputerror(inpc,ipoinpc,iline,
+     &        "*DESIGN VARIABLES%",ier)
+         return
+      endif
+!
 !     Add "D" at the end of the name of the designvariable keyword
 !      
       tieset(1,ntie)(81:81)='D' 
