@@ -38,7 +38,8 @@
      &     ipoinp(2,*),inp(3,*),ipoinpc(0:*),impcstart,impcend,i1,
      &     istartset(*),iendset(*),ialset(*),nset,k,l,m,index1,ipos,
      &     impc,nodempcref(3,*),ikmpcref(*),memmpcref_,mpcfreeref,
-     &     maxlenmpcref,memmpc_,maxlenmpc,ier,iset,nnodes,mcs
+     &     maxlenmpcref,memmpc_,maxlenmpc,ier,iset,nnodes,mcs,
+     &     index2,index2old
 !     
       real*8 coefmpc(*),co(3,*),trab(7,*),a(3,3),x,coefmpcref(*),
      &     cs(18,*)
@@ -546,6 +547,39 @@ c              enddo
 !     
             if(ii.eq.nterm) then
               nodempc(3,mpcfreeold)=0
+!
+!             collecting terms corresponding to the same DOF (e.g.
+!             from a transformed node): the matrix assembly needs
+!             each DOF only once in an equation
+!
+              index1=ipompc(nmpc)
+              do
+                index2old=index1
+                index2=nodempc(3,index1)
+                do
+                  if(index2.eq.0) exit
+                  if((nodempc(1,index2).eq.nodempc(1,index1)).and.
+     &               (nodempc(2,index2).eq.nodempc(2,index1))) then
+                    coefmpc(index1)=coefmpc(index1)+coefmpc(index2)
+                    nodempc(3,index2old)=nodempc(3,index2)
+                    nodempc(3,index2)=mpcfree
+                    mpcfree=index2
+                    index2=nodempc(3,index2old)
+                  else
+                    index2old=index2
+                    index2=nodempc(3,index2)
+                  endif
+                enddo
+                index1=nodempc(3,index1)
+                if(index1.eq.0) exit
+              enddo
+              if(dabs(coefmpc(ipompc(nmpc))).lt.1.d-10) then
+                write(*,*) '*ERROR reading *EQUATION: zero coefficient'
+                write(*,*) '       on the dependent side of equation',
+     &               nmpc
+                ier=1
+                return
+              endif
               exit
             endif
           enddo

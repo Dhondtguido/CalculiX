@@ -1,0 +1,25 @@
+**
+**   Structure: spring on node 1, tied to node 2.
+**   Test objective: *EQUATION with the node-2 DOF in two terms;
+**                   u1 = F/k = 0.01 at both nodes.
+**
+*NODE, NSET=NALL
+1, 0., 0., 0.
+2, 1., 0., 0.
+*ELEMENT, TYPE=SPRING1, ELSET=EK
+1, 1
+*SPRING, ELSET=EK
+1
+100.
+*BOUNDARY
+NALL, 2, 3
+*EQUATION
+3
+1, 1, 1., 2, 1, -0.5, 2, 1, -0.5
+*STEP
+*STATIC
+*CLOAD
+2, 1, 1.
+*NODE PRINT, NSET=NALL
+U
+*END STEP
