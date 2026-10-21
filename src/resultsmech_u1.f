@@ -424,8 +424,8 @@ c      write(*,*) 'u1 element ',i
       xi(1)=0.d0
       xi(2)=1.d0
 !     
-      aly=12.d0*e*xi11/(xk*um*a*dl*dl)
-      alz=12.d0*e*xi22/(xk*um*a*dl*dl)
+      aly=-12.d0*e*xi11/(xk*um*a*dl*dl)
+      alz=-12.d0*e*xi22/(xk*um*a*dl*dl)
       bey=1.d0/(1.d0-aly)
       bez=1.d0/(1.d0-alz)
 !     
