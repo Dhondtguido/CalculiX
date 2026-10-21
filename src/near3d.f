@@ -213,6 +213,11 @@ c         call dsort(c,idummy,eight,iflag)
          endif
          if(c(1).ge.r(k)) exit
 !
+!        all nodes have been checked (the test above never succeeds
+!        if r(k) is NaN or infinite, e.g. for diverged coordinates)
+!
+         if(i.gt.n) exit
+!
          i=i+1
 !
       enddo

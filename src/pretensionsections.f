@@ -113,6 +113,7 @@
       endif
 !     
       ielem=0
+      irefnode=0
       do i=1,81
         surface(i:i)=' '
       enddo
@@ -233,6 +234,17 @@
      &         "*PRE-TENSION SECTION%")
         endif
       enddo
+!     
+!     checking whether a reference node was specified
+!     
+      if(irefnode.eq.0) then
+        write(*,*) '*ERROR reading *PRE-TENSION SECTION:'
+        write(*,*) '       no reference node (parameter NODE)'
+        write(*,*) '       specified'
+        call inputerror(inpc,ipoinpc,iline,
+     &       "*PRE-TENSION SECTION%",ier)
+        return
+      endif
 !     
 !     checking whether the surface exists and is an element face
 !     surface

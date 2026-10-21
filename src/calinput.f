@@ -644,7 +644,8 @@ c
      &       ne,ne_,set,istartset,iendset,ialset,nset,nset_,nalset,
      &       nalset_,mi(1),ixfree,iponor,xnor,istep,istat,n,iline,
      &       ipol,inl,ipoinp,inp,iaxial,ipoinpc,solid,
-     &       network,filab,nlabel,out3d,iuel,nuel_,ier,iparentel)
+     &       network,filab,nlabel,out3d,iuel,nuel_,ier,iparentel,
+     &       nk)
 !     
       elseif((textpart(1)(1:7).eq.'*ELFILE').or.
      &       (textpart(1)(1:14).eq.'*ELEMENTOUTPUT')) then
@@ -897,7 +898,7 @@ c
       elseif(textpart(1)(1:15).eq.'*NODALTHICKNESS') then
         call nodalthicknesss(inpc,textpart,set,istartset,iendset,
      &       ialset,nset,thickn,nk,istep,istat,n,iline,ipol,inl,
-     &       ipoinp,inp,iaxial,ipoinpc,ier)
+     &       ipoinp,inp,iaxial,ipoinpc,ier,ne1d,ne2d)
 !     
       elseif((textpart(1)(1:5).eq.'*NODE').and.
      &       (textpart(1)(1:10).ne.'*NODEPRINT').and.
@@ -1259,6 +1260,16 @@ c
       endif
 !     
       enddo loop
+!     
+!     massless contact is only allowed in explicit dynamic steps
+!     
+      if((istep.gt.0).and.(mortar.eq.-1).and.
+     &     ((nmethod.ne.4).or.(iexpl.le.1))) then
+        write(*,*) '*ERROR in calinput: massless contact is only'
+        write(*,*) '       allowed in an explicit dynamic step'
+        write(*,*) '       (*DYNAMIC,EXPLICIT)'
+        ier=1
+      endif
 !     
       if(ier.ge.1) then
         write(*,*) '*ERROR in calinput: at least one fatal'
