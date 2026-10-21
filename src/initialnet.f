@@ -503,7 +503,7 @@ c     enddo
 !     
       do i=1,nflow
         nelem=ieg(i)
-        if(lakon(i)(2:5).ne.'REBR') cycle
+        if(lakon(nelem)(2:5).ne.'REBR') cycle
         index=ielprop(nelem)
 !     
         nelem1=nint(prop(index+2))
@@ -530,7 +530,7 @@ c     enddo
           node2=node12
         endif
 !     
-        if(lakon(i)(6:6).eq.'S') then
+        if(lakon(nelem)(6:6).eq.'S') then
 !     
 !     maximum
 !     
@@ -539,7 +539,7 @@ c     enddo
           else
             v(2,node1)=v(2,node2)
           endif
-        elseif(lakon(i)(6:6).eq.'J') then
+        elseif(lakon(nelem)(6:6).eq.'J') then
 !     
 !     minimum
 !     
