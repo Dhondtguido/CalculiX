@@ -237,7 +237,7 @@
      &     xstateini(nstate_,mi(1),*),tm(3,3),a,reltime,ttime,
      &     thicke(mi(3),*),emeini(6,mi(1),*),aly,alz,bey,bez,xi(2),
      &     vlp(6,2),xi11,xi12,xi22,xk,offset1,offset2,e1(3),e2(3),e3(3),
-     &     t0g(2,*),t1g(2,*)
+     &     t0g(2,*),t1g(2,*),fac
 !     
       kal=reshape((/1,1,2,2,3,3,1,2,1,3,2,3/),(/2,6/))
 !     
@@ -504,7 +504,7 @@ c      write(*,*) 'u1 element ',i
         stre(3)=e*xi22*emec(3)
         stre(4)=xk*um*a*emec(4)
         stre(5)=xk*um*a*emec(5)
-        stre(6)=xk*um*(xi11+xi22)*emec(6)
+        stre(6)=um*(xi11+xi22)*emec(6)
 !     
 !     rotating the strain into the global system
 !     
@@ -608,17 +608,25 @@ c        enddo
         stx(5,jj,i)=stre(5)
         stx(6,jj,i)=stre(6)
 !     
-!     calculation of the global nodal forces
+!     calculation of the global nodal forces: the section forces
+!     act on the second node and, with opposite sign, on the first
+!     node; the moment about the local 2-axis is stre(3), the moment
+!     about the local 3-axis is -stre(2)
 !     
         if(calcul_fn.eq.1)then
           node=kon(indexe+jj)
+          if(jj.eq.1) then
+            fac=-1.d0
+          else
+            fac=1.d0
+          endif
           do j=1,3
-            fn(j,node)=fn(j,node)+tm(1,j)*stre(1)
+            fn(j,node)=fn(j,node)+fac*(tm(1,j)*stre(1)
      &           +tm(2,j)*stre(4)
-     &           +tm(3,j)*stre(5)
-            fn(j+3,node)=fn(j+3,node)+tm(1,j)*stre(6)
-     &           +tm(2,j)*stre(2)
-     &           +tm(3,j)*stre(3)
+     &           +tm(3,j)*stre(5))
+            fn(j+3,node)=fn(j+3,node)+fac*(tm(1,j)*stre(6)
+     &           +tm(2,j)*stre(3)
+     &           -tm(3,j)*stre(2))
 c            fn(j,node)=fn(j,node)+tm(1,j)*stre(1)
 c     &           +tm(2,j)*stre(2)
 c     &           +tm(3,j)*stre(3)

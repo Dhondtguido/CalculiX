@@ -1,0 +1,55 @@
+**
+**   Structure: four free bars, U1 elements.
+**   Test objective: user beam element U1
+**                   thermal load: free expansion, no force
+**
+*NODE, NSET=NALL
+1, 0., 0., 0.
+2, 10., 0., 0.
+11, 0., 5., 0.
+12, 5., 5., 0.
+13, 10., 5., 0.
+21, 0., 10., 0.
+22, 2.5, 10., 0.
+23, 5., 10., 0.
+24, 7.5, 10., 0.
+25, 10., 10., 0.
+31, 0., 15., 0.
+32, 10., 15., 0.
+*NSET, NSET=NFREE
+2, 13, 25, 31
+*NSET, NSET=NFIX
+1, 11, 21, 32
+*USER ELEMENT, TYPE=U1, INTEGRATION POINTS=2, MAXDOF=6, NODES=2
+*ELEMENT, TYPE=U1, ELSET=EALL
+1, 1, 2
+11, 11, 12
+12, 12, 13
+21, 21, 22
+22, 22, 23
+23, 23, 24
+24, 24, 25
+31, 31, 32
+*MATERIAL, NAME=STEEL
+*ELASTIC
+2.e5, 0.3
+*EXPANSION, ZERO=0.
+1.e-5
+*BEAM SECTION, ELSET=EALL, MATERIAL=STEEL, SECTION=GENERAL
+100., 833.3333, 0., 833.3333, 0.8333333
+0., 1., 0.
+*BOUNDARY
+NFIX, 1, 6
+*INITIAL CONDITIONS, TYPE=TEMPERATURE
+NALL, 0.
+*STEP
+*STATIC
+*TEMPERATURE
+NALL, 100.
+*NODE PRINT, NSET=NFREE
+U
+*NODE PRINT, NSET=NFIX
+RF
+*EL PRINT, ELSET=EALL
+S
+*END STEP
