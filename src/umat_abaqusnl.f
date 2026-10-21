@@ -294,6 +294,19 @@
       um1(3,1)=um1(1,3)
       um1(3,2)=um1(2,3)
 !     
+!     calculating the mechanical right stretch tensor U at the start
+!     of the increment
+!     
+      u0(1,1)=xm1(1)/wum1(1)+xm2(1)/wum1(2)+xm3(1)/wum1(3)
+      u0(2,2)=xm1(2)/wum1(1)+xm2(2)/wum1(2)+xm3(2)/wum1(3)
+      u0(3,3)=xm1(3)/wum1(1)+xm2(3)/wum1(2)+xm3(3)/wum1(3)
+      u0(1,2)=xm1(4)/wum1(1)+xm2(4)/wum1(2)+xm3(4)/wum1(3)
+      u0(1,3)=xm1(5)/wum1(1)+xm2(5)/wum1(2)+xm3(5)/wum1(3)
+      u0(2,3)=xm1(6)/wum1(1)+xm2(6)/wum1(2)+xm3(6)/wum1(3)
+      u0(2,1)=u0(1,2)
+      u0(3,1)=u0(1,3)
+      u0(3,2)=u0(2,3)
+!     
 !     calculation of the local rotation tensor at the start of the
 !     increment
 !     
