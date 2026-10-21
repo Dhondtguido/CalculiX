@@ -342,6 +342,20 @@ c            if(mortar.eq.-1) elemfac=0.9d0
 !         volume=area*h*volfac
 !
           volume=weight*xsj
+!
+!         beam with circular cross section: the corner nodes lie on
+!         the circle at 45 degrees, so the one-point rule yields the
+!         volume of the square around the circle and the side faces
+!         as their chords; therefore 3x3x3 (3x3) points are used
+!
+          if(lakon(nelem)(7:8).eq.'BC') then
+            volume=0.d0
+            do i=1,27
+              call shape20h(gauss3d3(1,i),gauss3d3(2,i),gauss3d3(3,i),
+     &             xl,xsj,shp,iflag)
+              volume=volume+weight3d3(i)*xsj
+            enddo
+          endif
           volfac=1.d0
           if((lakon(nelem)(4:5).eq.'10').or.
      &         (lakon(nelem)(4:4).eq.'4')) then
@@ -410,6 +424,15 @@ c            if(mortar.eq.-1) elemfac=0.9d0
 !     
             area=weight*dsqrt(xsj2(1)*xsj2(1)+xsj2(2)*xsj2(2)+
      &           xsj2(3)*xsj2(3))
+            if(lakon(nelem)(7:8).eq.'BC') then
+              area=0.d0
+              do i=1,9
+                call shape8q(gauss2d3(1,i),gauss2d3(2,i),xl2,xsj2,xs2,
+     &               shp2,iflag)
+                area=area+weight2d3(i)*dsqrt(xsj2(1)*xsj2(1)+
+     &               xsj2(2)*xsj2(2)+xsj2(3)*xsj2(3))
+              enddo
+            endif
 
             hmin=min(hmin,(volume*volfac/area))
 !     
