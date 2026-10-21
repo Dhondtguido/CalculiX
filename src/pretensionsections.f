@@ -260,6 +260,13 @@ c     enddo
      &         "*PRE-TENSION SECTION%",ier)
           return
         endif
+        if(istartset(iset).gt.iendset(iset)) then
+          write(*,*) 
+     &        '*ERROR reading *PRE-TENSION SECTION: surface is empty'
+          call inputerror(inpc,ipoinpc,iline,
+     &         "*PRE-TENSION SECTION%",ier)
+          return
+        endif
       elseif(ielem.gt.0) then
         if(lakon(ielem)(1:3).ne.'B31') then
           write(*,*) '*ERROR reading PRE-TENSION SECTION:'

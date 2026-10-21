@@ -113,7 +113,7 @@
      &           "*RIGID BODY%",ier)
             return
           endif
-          if(irefnode.gt.nk) then
+          if((irefnode.lt.0).or.(irefnode.gt.nk)) then
             write(*,*) '*ERROR reading *RIGID BODY: ref node',
      &           irefnode
             write(*,*) '       has not been defined'
@@ -127,7 +127,7 @@
      &           "*RIGID BODY%",ier)
             return
           endif
-          if(irotnode.gt.nk) then
+          if((irotnode.lt.0).or.(irotnode.gt.nk)) then
             write(*,*) '*ERROR reading *RIGID BODY: rot node',
      &           irotnode
             write(*,*) '       has not been defined'

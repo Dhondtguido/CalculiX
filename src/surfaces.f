@@ -303,6 +303,12 @@
                 if(l.gt.0) then
                   kstart=kend
                   kend=l
+                  if(l.gt.ne) then
+                    write(*,*) '*WARNING reading *SURFACE: element ',
+     &                   l
+                    write(*,*) '         in set ',set(iset),' > ne'
+                    cycle
+                  endif
                   nalset=nalset+1
                   if(nalset.gt.nalset_) then
                     write(*,*) 
@@ -331,9 +337,10 @@
                   ialset(nalset)=iside+10*l
                 else
                   kstart=kstart
-                  nalset=nalset-1
+                  if(kend.le.ne) nalset=nalset-1
                   kincrement=-ialset(j)
                   do l=kstart+kincrement,kend,kincrement
+                    if(l.gt.ne) exit
                     nalset=nalset+1
                     if(nalset.gt.nalset_) then
                       write(*,*) 
@@ -374,7 +381,13 @@
               return
             endif
           else
-            if(l.gt.ne) then
+            if(l.le.0) then
+              write(*,*) '*ERROR reading *SURFACE: element ',
+     &             l,' is not a valid element number'
+              call inputerror(inpc,ipoinpc,iline,
+     &             "*SURFACE%",ier)
+              return
+            elseif(l.gt.ne) then
               write(*,*) '*WARNING reading *SURFACE: element ',
      &             l
               write(*,*) '         in set ',set(iset),' > ne'

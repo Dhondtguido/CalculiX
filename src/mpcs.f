@@ -141,6 +141,13 @@
                   inode=inode-1
                   cycle
                endif
+               if((node.lt.0).or.(node.gt.nk)) then
+                  write(*,*) '*ERROR reading *MPC: node ',node
+                  write(*,*) '       does not exist'
+                  call inputerror(inpc,ipoinpc,iline,
+     &"*MPC%",ier)
+                  return
+               endif
                if(label(1:8).eq.'STRAIGHT') then
                   call straightmpc(ipompc,nodempc,coefmpc,
      &                 labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,

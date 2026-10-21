@@ -484,6 +484,11 @@ void readinput(char *jobnamec,char **inpcp,ITG *nline,ITG *nset,
       }
   }while(1);
 
+  if(ikey==0){
+      printf(" *ERROR in readinput: file %s\n contains no keyword cards\n",fninp);
+      exit(201);
+  }
+
   inp[3*ipoinp[2*ikey-1]-2]=*nline;
   RENEW(inpc,char,(long long)132**nline);
   
