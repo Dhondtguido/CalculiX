@@ -1,0 +1,44 @@
+**
+**   Structure: one S8R composite shell, three plies.
+**   Test objective: a ply without orientation takes the section's
+**                   (here none: global axes), not the previous ply's;
+**                   layup 90/0/90, total RF_x = 40.22.
+**
+*NODE
+1, 0., 0., 0.
+2, 1., 0., 0.
+3, 1., 1., 0.
+4, 0., 1., 0.
+5, 0.5, 0., 0.
+6, 1., 0.5, 0.
+7, 0.5, 1., 0.
+8, 0., 0.5, 0.
+*ELEMENT, TYPE=S8R, ELSET=EALL
+1, 1, 2, 3, 4, 5, 6, 7, 8
+*NSET, NSET=NALL
+1, 2, 3, 4, 5, 6, 7, 8
+*NSET, NSET=X0
+1, 4, 8
+*NSET, NSET=X1
+2, 3, 6
+*MATERIAL, NAME=UD
+*ELASTIC, TYPE=ENGINEERING CONSTANTS
+100000., 10000., 10000., 0.3, 0.3, 0.3, 5000., 5000.,
+5000.
+*ORIENTATION, NAME=OR90
+0., 1., 0., -1., 0., 0.
+*SHELL SECTION, ELSET=EALL, COMPOSITE
+0.333333333333, , UD, OR90
+0.333333333333, , UD
+0.333333333333, , UD, OR90
+*BOUNDARY
+X0, 1, 1
+1, 2, 2
+NALL, 3, 3
+*STEP
+*STATIC
+*BOUNDARY
+X1, 1, 1, 0.001
+*NODE PRINT, NSET=X1, TOTALS=ONLY
+RF
+*END STEP

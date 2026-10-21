@@ -37,7 +37,8 @@
      &     ielorien(mi(3),*),kon(*),ipkon(*),indexe,irstrt(*),nset,nmat,
      &     norien,nlayer,iset,icomposite,nelcon(2,*),ier,numnod,id,
      &     istep,istat,n,key,i,j,k,l,imaterial,iorientation,ipos,
-     &     iline,ipol,inl,ipoinp(2,*),inp(3,*),iaxial,ipoinpc(0:*)
+     &     iline,ipol,inl,ipoinp(2,*),inp(3,*),iaxial,ipoinpc(0:*),
+     &     iorientation0
 !     
       real*8 thicke(mi(3),*),thickness,offset(2,*),offset1
 !     
@@ -265,6 +266,7 @@ c              offset(1,k)=offset1
         endif
 !     
         nlayer=0
+        iorientation0=iorientation
         do
           read(textpart(1)(1:20),'(f20.0)',iostat=istat) thickness
           if(istat.gt.0) then
@@ -314,6 +316,7 @@ c              offset(1,k)=offset1
 !     if no orientation is specified, the global orientation defined
 !     by the ORIENTATION parameter, if any, will be used
 !     
+          iorientation=iorientation0
           read(textpart(4)(1:80),'(a80)',iostat=istat) orientation
 !     
           if(orientation(1:1).ne.' ') then
