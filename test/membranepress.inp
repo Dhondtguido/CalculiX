@@ -1,0 +1,33 @@
+**
+**   Structure: two M3D4 membranes forming a gable roof.
+**   Test objective: *DLOAD label P (no face number) on membranes
+**                   in the first step acts as on shells (as P1).
+**
+*NODE
+1,0.,0.,0.
+2,1.,0.,0.
+3,1.,0.5,0.5
+4,0.,0.5,0.5
+5,1.,1.,0.
+6,0.,1.,0.
+*ELEMENT,TYPE=M3D4,ELSET=EALL
+1,1,2,3,4
+2,4,3,5,6
+*NSET,NSET=EAVES
+1,2,5,6
+*NSET,NSET=RIDGE
+3,4
+*MATERIAL,NAME=STEEL
+*ELASTIC
+210000.,0.3
+*MEMBRANE SECTION,ELSET=EALL,MATERIAL=STEEL
+0.01
+*BOUNDARY
+EAVES,1,3
+*STEP
+*STATIC
+*DLOAD
+EALL,P,1.
+*NODE PRINT,NSET=RIDGE
+U
+*END STEP

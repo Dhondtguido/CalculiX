@@ -371,6 +371,8 @@ c     BernhardiEnd
      &             (lakon(l)(7:7).eq.'B')) then
               if(label(1:2).eq.'P2') label(1:2)='P5'
             elseif((lakon(l)(1:1).eq.'S').or.
+     &             ((lakon(l)(1:3).eq.'M3D').and.
+     &              (label(1:1).eq.'P')).or.
      &             (lakon(l)(7:7).eq.'L')) then
 c     BernhardiStart
               if(label(1:6).eq.'EDNOR1') then
@@ -407,6 +409,14 @@ c     BernhardiStart
                 xxmagnitude=xmagnitude/thickness
               endif
 c     BernhardiEnd
+            endif
+            if(label(1:2).eq.'P ') then
+              write(*,*) '*ERROR reading *DLOAD: label P without'
+              write(*,*) '       face number can only be used for'
+              write(*,*) '       shell and membrane elements'
+              call inputerror(inpc,ipoinpc,iline,
+     &             "*DLOAD%",ier)
+              return
             endif
             if(lc.ne.1) then
               jsector=isector+maxsectors
@@ -493,6 +503,8 @@ c          enddo
      &             (lakon(l)(7:7).eq.'B')) then
               if(label(1:2).eq.'P2') label(1:2)='P5'
             elseif((lakon(l)(1:1).eq.'S').or.
+     &             ((lakon(l)(1:3).eq.'M3D').and.
+     &              (label(1:1).eq.'P')).or.
      &             (lakon(l)(7:7).eq.'L')) then
 c     BernhardiStart
               if(label(1:6).eq.'EDNOR1') then
@@ -514,6 +526,14 @@ c     BernhardiStart
                 label(1:2)='P1'
               endif
 c     BernhardiEnd
+            endif
+            if(label(1:2).eq.'P ') then
+              write(*,*) '*ERROR reading *DLOAD: label P without'
+              write(*,*) '       face number can only be used for'
+              write(*,*) '       shell and membrane elements'
+              call inputerror(inpc,ipoinpc,iline,
+     &             "*DLOAD%",ier)
+              return
             endif
 !     
             do j=istartset(i),iendset(i)
