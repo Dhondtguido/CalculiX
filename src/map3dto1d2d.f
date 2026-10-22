@@ -555,6 +555,21 @@ c                     write(*,*) 's4-6',s(4),s(5),s(6)
                         do k=1,nfield
                            yn(k,node2d)=yn(k,node2d)+yn(k,node3d)
                         enddo
+                        if((lakonl(7:7).eq.'A').and.(nfield.ge.4)) then
+!
+!                          axisymmetric elements: the radial force
+!                          is the component along the radial
+!                          direction of the 3d-node; its x-component
+!                          also contains part of the hoop force on
+!                          the faces of the segment
+!
+                           dd=dsqrt(co(1,node3d)**2+co(3,node3d)**2)
+                           if(dd.gt.0.d0) then
+                              yn(2,node2d)=yn(2,node2d)-yn(2,node3d)+
+     &                             (yn(2,node3d)*co(1,node3d)+
+     &                             yn(4,node3d)*co(3,node3d))/dd
+                           endif
+                        endif
                      enddo
                   else
 !
@@ -568,6 +583,21 @@ c                     write(*,*) 's4-6',s(4),s(5),s(6)
                         do k=1,nfield
                            yn(k,node2d)=yn(k,node2d)+yn(k,node3d)
                         enddo
+                        if((lakonl(7:7).eq.'A').and.(nfield.ge.4)) then
+!
+!                          axisymmetric elements: the radial force
+!                          is the component along the radial
+!                          direction of the 3d-node; its x-component
+!                          also contains part of the hoop force on
+!                          the faces of the segment
+!
+                           dd=dsqrt(co(1,node3d)**2+co(3,node3d)**2)
+                           if(dd.gt.0.d0) then
+                              yn(2,node2d)=yn(2,node2d)-yn(2,node3d)+
+     &                             (yn(2,node3d)*co(1,node3d)+
+     &                             yn(4,node3d)*co(3,node3d))/dd
+                           endif
+                        endif
                      enddo
                   endif
                endif

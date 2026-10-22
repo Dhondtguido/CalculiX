@@ -1,0 +1,31 @@
+**
+**   Structure: one CAX4 ring, inner radius pushed out.
+**   Test objective: radial RF of axisymmetric elements: the inner
+**                   reaction is the full one, free nodes have none
+**
+*NODE, NSET=NALL
+1, 10., 0.
+2, 20., 0.
+3, 20., 5.
+4, 10., 5.
+*ELEMENT, TYPE=CAX4, ELSET=EALL
+1, 1, 2, 3, 4
+*NSET, NSET=INNER
+1, 4
+*MATERIAL, NAME=M
+*ELASTIC
+210000., 0.3
+*SOLID SECTION, ELSET=EALL, MATERIAL=M
+*BOUNDARY
+NALL, 2, 2
+*STEP
+*STATIC
+*BOUNDARY
+INNER, 1, 1, 8.098171E-05
+*NODE PRINT, NSET=NALL
+RF
+*NODE PRINT, NSET=INNER, TOTALS=ONLY
+RF
+*NODE FILE
+RF
+*END STEP
