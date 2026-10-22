@@ -1,0 +1,47 @@
+**
+**   Structure: C3D8 cantilever with a *RIGID BODY tip.
+**   Test objective: *EQUATION on the rigid body's reference node
+**                   *FREQUENCY after an NLGEOM step: the MPC's
+**                   are decascaded again (same as a linear step 1)
+**
+*NODE
+1, 0., 0., 0.
+2, 0., 0., 20.
+3, 0., 20., 0.
+4, 0., 20., 20.
+5, 100., 0., 0.
+6, 100., 0., 20.
+7, 100., 20., 0.
+8, 100., 20., 20.
+9, 200., 0., 0.
+10, 200., 0., 20.
+11, 200., 20., 0.
+12, 200., 20., 20.
+100, 200., 10., 10.
+101, 200., 10., 10.
+*ELEMENT, TYPE=C3D8, ELSET=E
+1, 1, 5, 7, 3, 2, 6, 8, 4
+2, 5, 9, 11, 7, 6, 10, 12, 8
+*NSET, NSET=FIX
+1, 2, 3, 4
+*NSET, NSET=TIP
+9, 10, 11, 12
+*MATERIAL, NAME=M
+*ELASTIC
+210000., 0.3
+*DENSITY
+7.8e-9
+*SOLID SECTION, ELSET=E, MATERIAL=M
+*RIGID BODY, NSET=TIP, REF NODE=100, ROT NODE=101
+*EQUATION
+2
+100, 3, 1., 6, 3, -1.
+*BOUNDARY
+FIX, 1, 3
+*STEP, NLGEOM
+*STATIC
+*END STEP
+*STEP
+*FREQUENCY
+3
+*END STEP

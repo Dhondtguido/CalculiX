@@ -69,7 +69,7 @@ int main(int argc,char *argv[])
     iprestr,kode,isolver,nslavs,nkon_,ne1,nkon0,mortar,ndmat_,
     jout[2],nlabel,nkon,idrct,jmax[2],iexpl,nevtot,ifacecount,
     iplas,npmat_,mi[3],ntrans,mpcend,namtot_,iheading,ishift,
-    icascade,maxlenmpc,mpcinfo[4],ne1d,ne2d,infree[4],
+    icascade,icascadeprev,maxlenmpc,mpcinfo[4],ne1d,ne2d,infree[4],
     callfrommain,nflow,jin=0,irstrt[2],nener,jrstrt,nenerold,
     nline,*ipoinp=NULL,*inp=NULL,ntie,ntie_,mcs,nprop_,
     nprop,itpamp,iviewfile,nkold,nevdamp_,npt_,cyclicsymmetry,
@@ -704,6 +704,10 @@ int main(int argc,char *argv[])
       iheading=1;
     }
 
+    /* MPC's which a nonlinear step left undecascaded (icascade==2)
+       have to be decascaded again for a linear step */
+
+    icascadeprev=icascade;
     if((abs(nmethod)!=1)||(iperturb[0]<2))icascade=0;
 
     //    FORTRAN(writeboun,(nodeboun,ndirboun,xboun,typeboun,&nboun));
@@ -1175,7 +1179,8 @@ int main(int argc,char *argv[])
  
     /* decascading MPC's only necessary if MPC's changed */
 
-    if(((istep==1)||(ntrans>0)||(mpcend<0)||(nk!=nkold)||(nmpc!=nmpcold))&&(icascade==0)){
+    if(((istep==1)||(ntrans>0)||(mpcend<0)||(nk!=nkold)||(nmpc!=nmpcold)||
+	(icascadeprev==2))&&(icascade==0)){
 
       /* decascading the MPC's */
 
