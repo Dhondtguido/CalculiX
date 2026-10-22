@@ -1,0 +1,72 @@
+**
+**   Structure: S8R plate with OFFSET=0.5 and B32 cantilever with
+**              OFFSET1=0.5, OFFSET2=-0.25, with temperature
+**              gradients.
+**   Test objective: the expanded nodes get the temperature at
+**                   their position; the results equal those of
+**                   the same solids without offset.
+**
+*NODE, NSET=NPLATE
+1, 0, 0, 0.0
+2, 0.5, 0, 0.0
+3, 1, 0, 0.0
+4, 1.5, 0, 0.0
+5, 2, 0, 0.0
+6, 0, 0.5, 0.0
+7, 1, 0.5, 0.0
+8, 2, 0.5, 0.0
+9, 0, 1, 0.0
+10, 0.5, 1, 0.0
+11, 1, 1, 0.0
+12, 1.5, 1, 0.0
+13, 2, 1, 0.0
+*NODE, NSET=NBEAM
+101, 10.0, 0.0, 0.0
+102, 10.0, 0.0, 0.25
+103, 10.0, 0.0, 0.5
+104, 10.0, 0.0, 0.75
+105, 10.0, 0.0, 1.0
+*ELEMENT, TYPE=S8R, ELSET=EPLATE
+1, 1, 3, 11, 9, 2, 7, 10, 6
+2, 3, 5, 13, 11, 4, 8, 12, 7
+*ELEMENT, TYPE=B32, ELSET=EBEAM
+11, 101, 102, 103
+12, 103, 104, 105
+*MATERIAL, NAME=M
+*ELASTIC
+1000., 0.
+*EXPANSION
+1.E-3
+*SHELL SECTION, ELSET=EPLATE, MATERIAL=M, OFFSET=0.5
+0.1
+*BEAM SECTION, ELSET=EBEAM, MATERIAL=M, SECTION=RECT, OFFSET1=0.5, OFFSET2=-0.25
+0.1, 0.1
+1., 0., 0.
+*BOUNDARY
+1, 1, 3
+3, 2, 3
+9, 3, 3
+101, 1, 6
+*INITIAL CONDITIONS, TYPE=TEMPERATURE
+NPLATE, 0., 100.
+NBEAM, 10., 100., 60.
+*STEP
+*STATIC
+*TEMPERATURE
+NPLATE, 0., 0.
+NBEAM, 0., 0., 0.
+*NODE PRINT, NSET=NPLATE
+U
+*NODE PRINT, NSET=NBEAM
+U
+*END STEP
+*STEP
+*STATIC
+*TEMPERATURE
+NPLATE, 10., 50.
+NBEAM, 20., 40., 80.
+*NODE PRINT, NSET=NPLATE
+U
+*NODE PRINT, NSET=NBEAM
+U
+*END STEP
