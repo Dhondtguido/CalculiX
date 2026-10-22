@@ -1754,7 +1754,8 @@ int main(int argc,char *argv[])
        mean rotation MPC's (gen3dforc.f), which stay */
 
     if((iperturb[0]==1)&&(nmethod==3)){
-      for(k=0;k<nforc;k++){xforc[k]=0.;}
+      for(k=0;k<nforc;k++){xforc[k]=0.;xforcold[k]=0.;}
+      if(nam>0){for(k=0;k<nforc;k++){iamforc[k]=0;}}
       nload=0;
       nbody=0;
       if(ithermal[0]==1){

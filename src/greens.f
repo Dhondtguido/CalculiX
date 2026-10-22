@@ -38,11 +38,12 @@
       mei(4)=0
       fei(4)=0.d0
 !
-!     a Green function is calculated for each point load entry; in a
-!     PERTURBATION step only the entries of the present step count
-!     (*STEP, PERTURBATION only sets the previous point loads to zero)
+!     a Green function is calculated for each point load entry: only
+!     the *CLOAD cards of the present step count, so earlier entries
+!     (which *STEP, PERTURBATION and *BUCKLE only set to zero) are
+!     removed
 !
-      if(iperturb(1).eq.1) nforc=0
+      nforc=0
 !
       if(istep.lt.1) then
          write(*,*) 
