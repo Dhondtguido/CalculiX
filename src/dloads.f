@@ -56,7 +56,6 @@
       isector=0
       submodel=.false.
       iglobstep=0
-      edgeload=.false.
       surface=.false.
 !     
       if(istep.lt.1) then
@@ -235,6 +234,10 @@
         call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &       ipoinp,inp,ipoinpc)
         if((istat.lt.0).or.(key.eq.1)) return
+!
+!     an EDNOR label only applies to its own line
+!
+        edgeload=.false.
 !     
         read(textpart(2)(1:20),'(a20)',iostat=istat) label
 !     
