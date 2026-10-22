@@ -42,7 +42,7 @@
      &     index2,index2old
 !     
       real*8 coefmpc(*),co(3,*),trab(7,*),a(3,3),x,coefmpcref(*),
-     &     cs(18,*)
+     &     cs(18,*),coefmax
 !
       integer,dimension(:,:),allocatable::nodempcset
       real*8,dimension(:),allocatable::coefmpcset
@@ -553,13 +553,16 @@ c              enddo
 !             each DOF only once in an equation
 !
               index1=ipompc(nmpc)
+              coefmax=0.d0
               do
+                coefmax=max(coefmax,dabs(coefmpc(index1)))
                 index2old=index1
                 index2=nodempc(3,index1)
                 do
                   if(index2.eq.0) exit
                   if((nodempc(1,index2).eq.nodempc(1,index1)).and.
      &               (nodempc(2,index2).eq.nodempc(2,index1))) then
+                    coefmax=max(coefmax,dabs(coefmpc(index2)))
                     coefmpc(index1)=coefmpc(index1)+coefmpc(index2)
                     nodempc(3,index2old)=nodempc(3,index2)
                     nodempc(3,index2)=mpcfree
@@ -573,7 +576,11 @@ c              enddo
                 index1=nodempc(3,index1)
                 if(index1.eq.0) exit
               enddo
-              if(dabs(coefmpc(ipompc(nmpc))).lt.1.d-10) then
+!
+!             the dependent coefficient is zero if it is negligible
+!             with respect to the largest coefficient before collecting
+!
+              if(dabs(coefmpc(ipompc(nmpc))).le.1.d-10*coefmax) then
                 write(*,*) '*ERROR reading *EQUATION: zero coefficient'
                 write(*,*) '       on the dependent side of equation',
      &               nmpc
