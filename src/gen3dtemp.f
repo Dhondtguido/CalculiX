@@ -35,7 +35,7 @@
      &     indexe,indexk,k,node,istep,ithermal(*),mi(*),nam,iamt1(*)
 !     
       real*8 xnor(*),t0(*),t1(*),thicke(mi(3),*),offset(2,*),co(3,*),
-     &     vold(0:mi(2),*),t0g(2,*),t1g(2,*),veold(0:mi(2),*)
+     &     vold(0:mi(2),*),t0g(2,*),t1g(2,*),veold(0:mi(2),*),thick,sc
 !     
 !     initial conditions
 !     
@@ -67,9 +67,16 @@
                 enddo
               enddo
             elseif(lakon(ielem)(7:7).eq.'L') then
+!
+!             thickness: sum over the layers, as in gen3dfrom2d.f
+!
+              thick=0.d0
+              do k=1,mi(3)
+                thick=thick+thicke(k,indexe+j)
+              enddo
               node=knor(indexk+1)
               t0(node)=t0(i)
-     &             -t0g(1,i)*thicke(1,indexe+j)*(0.5d0+offset(1,ielem))
+     &             -t0g(1,i)*thick*(0.5d0+offset(1,ielem))
               if(ithermal(1).gt.1) vold(0,node)=t0(node)
               do m=1,mi(2)
                 vold(m,node)=vold(m,i)
@@ -79,7 +86,7 @@
               enddo
               node=knor(indexk+2)
               t0(node)=t0(i)
-     &             -t0g(1,i)*thicke(1,indexe+j)*offset(1,ielem)
+     &             -t0g(1,i)*thick*offset(1,ielem)
               if(ithermal(1).gt.1) vold(0,node)=t0(node)
               do m=1,mi(2)
                 vold(m,node)=vold(m,i)
@@ -89,7 +96,7 @@
               enddo
               node=knor(indexk+3)
               t0(node)=t0(i)
-     &             +t0g(1,i)*thicke(1,indexe+j)*(0.5d0-offset(1,ielem))
+     &             +t0g(1,i)*thick*(0.5d0-offset(1,ielem))
               if(ithermal(1).gt.1) vold(0,node)=t0(node)
               do m=1,mi(2)
                 vold(m,node)=vold(m,i)
@@ -98,10 +105,20 @@
                 veold(m,node)=veold(m,i)
               enddo
             elseif(lakon(ielem)(7:7).eq.'B') then
+!
+!             the corner nodes 1 to 4 of a circular cross section lie
+!             at sc instead of 0.5 times the thickness, as in
+!             gen3dfrom1d.f
+!
+              if(lakon(ielem)(8:8).eq.'C') then
+                sc=0.5d0/dsqrt(2.d0)
+              else
+                sc=0.5d0
+              endif
               node=knor(indexk+1)
               t0(node)=t0(i)
-     &             -t0g(2,i)*thicke(1,indexe+j)*(0.5d0+offset(1,ielem))
-     &             +t0g(1,i)*thicke(2,indexe+j)*(0.5d0-offset(2,ielem))
+     &             -t0g(2,i)*thicke(1,indexe+j)*(sc+offset(1,ielem))
+     &             +t0g(1,i)*thicke(2,indexe+j)*(sc-offset(2,ielem))
               if(ithermal(1).gt.1) vold(0,node)=t0(node)
               do m=1,mi(2)
                 vold(m,node)=vold(m,i)
@@ -111,8 +128,8 @@
               enddo
               node=knor(indexk+2)
               t0(node)=t0(i)
-     &             -t0g(2,i)*thicke(1,indexe+j)*(0.5d0+offset(1,ielem))
-     &             -t0g(1,i)*thicke(2,indexe+j)*(0.5d0+offset(2,ielem))
+     &             -t0g(2,i)*thicke(1,indexe+j)*(sc+offset(1,ielem))
+     &             -t0g(1,i)*thicke(2,indexe+j)*(sc+offset(2,ielem))
               if(ithermal(1).gt.1) vold(0,node)=t0(node)
               do m=1,mi(2)
                 vold(m,node)=vold(m,i)
@@ -122,8 +139,8 @@
               enddo
               node=knor(indexk+3)
               t0(node)=t0(i)
-     &             +t0g(2,i)*thicke(1,indexe+j)*(0.5d0-offset(1,ielem))
-     &             -t0g(1,i)*thicke(2,indexe+j)*(0.5d0+offset(2,ielem))
+     &             +t0g(2,i)*thicke(1,indexe+j)*(sc-offset(1,ielem))
+     &             -t0g(1,i)*thicke(2,indexe+j)*(sc+offset(2,ielem))
               if(ithermal(1).gt.1) vold(0,node)=t0(node)
               do m=1,mi(2)
                 vold(m,node)=vold(m,i)
@@ -133,8 +150,8 @@
               enddo
               node=knor(indexk+4)
               t0(node)=t0(i)
-     &             +t0g(2,i)*thicke(1,indexe+j)*(0.5d0-offset(1,ielem))
-     &             +t0g(1,i)*thicke(2,indexe+j)*(0.5d0-offset(2,ielem))
+     &             +t0g(2,i)*thicke(1,indexe+j)*(sc-offset(1,ielem))
+     &             +t0g(1,i)*thicke(2,indexe+j)*(sc-offset(2,ielem))
               if(ithermal(1).gt.1) vold(0,node)=t0(node)
               do m=1,mi(2)
                 vold(m,node)=vold(m,i)
@@ -217,38 +234,55 @@
                 if(nam.gt.0) iamt1(node)=iamt1(i)
               enddo
             elseif(lakon(ielem)(7:7).eq.'L') then
+!
+!             thickness: sum over the layers, as in gen3dfrom2d.f
+!
+              thick=0.d0
+              do k=1,mi(3)
+                thick=thick+thicke(k,indexe+j)
+              enddo
               node=knor(indexk+1)
               t1(node)=t1(i)
-     &             -t1g(1,i)*thicke(1,indexe+j)*(0.5d0+offset(1,ielem))
+     &             -t1g(1,i)*thick*(0.5d0+offset(1,ielem))
               if(nam.gt.0) iamt1(node)=iamt1(i)
               node=knor(indexk+2)
               t1(node)=t1(i)
-     &             -t1g(1,i)*thicke(1,indexe+j)*offset(1,ielem)
+     &             -t1g(1,i)*thick*offset(1,ielem)
               if(nam.gt.0) iamt1(node)=iamt1(i)
               node=knor(indexk+3)
               t1(node)=t1(i)
-     &             +t1g(1,i)*thicke(1,indexe+j)*(0.5d0-offset(1,ielem))
+     &             +t1g(1,i)*thick*(0.5d0-offset(1,ielem))
               if(nam.gt.0) iamt1(node)=iamt1(i)
             elseif(lakon(ielem)(7:7).eq.'B') then
+!
+!             the corner nodes 1 to 4 of a circular cross section lie
+!             at sc instead of 0.5 times the thickness, as in
+!             gen3dfrom1d.f
+!
+              if(lakon(ielem)(8:8).eq.'C') then
+                sc=0.5d0/dsqrt(2.d0)
+              else
+                sc=0.5d0
+              endif
               node=knor(indexk+1)
               t1(node)=t1(i)
-     &             -t1g(2,i)*thicke(1,indexe+j)*(0.5d0+offset(1,ielem))
-     &             +t1g(1,i)*thicke(2,indexe+j)*(0.5d0-offset(2,ielem))
+     &             -t1g(2,i)*thicke(1,indexe+j)*(sc+offset(1,ielem))
+     &             +t1g(1,i)*thicke(2,indexe+j)*(sc-offset(2,ielem))
               if(nam.gt.0) iamt1(node)=iamt1(i)
               node=knor(indexk+2)
               t1(node)=t1(i)
-     &             -t1g(2,i)*thicke(1,indexe+j)*(0.5d0+offset(1,ielem))
-     &             -t1g(1,i)*thicke(2,indexe+j)*(0.5d0+offset(2,ielem))
+     &             -t1g(2,i)*thicke(1,indexe+j)*(sc+offset(1,ielem))
+     &             -t1g(1,i)*thicke(2,indexe+j)*(sc+offset(2,ielem))
               if(nam.gt.0) iamt1(node)=iamt1(i)
               node=knor(indexk+3)
               t1(node)=t1(i)
-     &             +t1g(2,i)*thicke(1,indexe+j)*(0.5d0-offset(1,ielem))
-     &             -t1g(1,i)*thicke(2,indexe+j)*(0.5d0+offset(2,ielem))
+     &             +t1g(2,i)*thicke(1,indexe+j)*(sc-offset(1,ielem))
+     &             -t1g(1,i)*thicke(2,indexe+j)*(sc+offset(2,ielem))
               if(nam.gt.0) iamt1(node)=iamt1(i)
               node=knor(indexk+4)
               t1(node)=t1(i)
-     &             +t1g(2,i)*thicke(1,indexe+j)*(0.5d0-offset(1,ielem))
-     &             +t1g(1,i)*thicke(2,indexe+j)*(0.5d0-offset(2,ielem))
+     &             +t1g(2,i)*thicke(1,indexe+j)*(sc-offset(1,ielem))
+     &             +t1g(1,i)*thicke(2,indexe+j)*(sc-offset(2,ielem))
               if(nam.gt.0) iamt1(node)=iamt1(i)
               node=knor(indexk+5)
               t1(node)=t1(i)
