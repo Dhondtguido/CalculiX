@@ -127,6 +127,10 @@ c      if(icmd.eq.1) then
 !
       do ii=istart,iend
 !
+!        neig is set for the Ogden and the hyperfoam form below
+!
+         neig=3
+!
 !        calculation of the Green deformation tensor for the total
 !        strain and the thermal strain
 !
@@ -337,6 +341,8 @@ c      if(icmd.eq.1) then
                sdev(3,1)=sdev(1,3)
                sdev(3,2)=sdev(2,3)
             endif
+            ceq1=0.d0
+            ceq2=0.d0
             if(neig.eq.2) then
                ieq1=3
                ieq2=1
