@@ -101,6 +101,14 @@
             t1(j)=t0(j)
           enddo
 !
+!         the initial values have no amplitude
+!
+          if(nam.gt.0) then
+            do j=1,nk
+              iamt1(j)=0
+            enddo
+          endif
+!
 !         the gradients of shells and beams are reset to their
 !         initial values as well
 !

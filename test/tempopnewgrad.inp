@@ -2,7 +2,8 @@
 **   Structure: S8R plate and B32 cantilever with initial
 **              temperature gradients.
 **   Test objective: *TEMPERATURE, OP=NEW resets the temperatures
-**                   and the gradients to their initial values;
+**                   and the gradients to their initial values,
+**                   without the amplitude of step 1;
 **                   step 2 only feels its loads.
 **
 *NODE, NSET=NPLATE
@@ -46,12 +47,14 @@
 3, 2, 3
 9, 3, 3
 101, 1, 6
+*AMPLITUDE, NAME=A, TIME=TOTAL TIME
+0., 0., 1., 1., 2., 2.
 *INITIAL CONDITIONS, TYPE=TEMPERATURE
 NPLATE, 0., 50.
 NBEAM, 0., 50., 30.
 *STEP
 *STATIC
-*TEMPERATURE
+*TEMPERATURE, AMPLITUDE=A
 NPLATE, 20., 100.
 NBEAM, 20., 100., 60.
 *NODE PRINT, NSET=NPLATE
