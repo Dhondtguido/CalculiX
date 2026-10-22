@@ -195,8 +195,9 @@
 !
 !         no temperature was defined in node i (t1 still holds the
 !         marker set in CalculiX.c): the expanded nodes keep their
-!         values; in the first step checktemp.f replaces them by
-!         their initial values
+!         values; in the first step checktemp.f replaces the marker
+!         in the nodes of the elements by their initial values
+!         (temperatures from the input deck)
 !
           if(dabs(t1(i)-1.2357111319d0).lt.1.d-10) cycle
           index=iponoel2d(i)
