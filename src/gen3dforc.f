@@ -667,7 +667,7 @@ c     vold(1,iexpnode)=alpha
               if(dabs(dot).gt.0.999d0) then
                 write(*,*) '*WARNING in gen3dforc: applied'
                 write(*,*) '         moment in node ',node
-                write(*,*) '         and direction ',idir-1
+                write(*,*) '         and direction ',idir
                 write(*,*) '         is nearly'
                 write(*,*) 
      &               '         along the drilling'
@@ -743,7 +743,7 @@ c     vold(1,iexpnode)=alpha
               write(*,*) '*WARNING in gen3dforc: no mean rotation MPC'
               write(*,*) '         could be generated for the moment'
               write(*,*) '         in node ',node
-              write(*,*) '         and direction ',idir-1,'; this'
+              write(*,*) '         and direction ',idir,'; this'
               write(*,*) '         load is not taken into account'
               write(*,*)
             endif
