@@ -1,7 +1,8 @@
 **
 **   Structure: four one-element S4 cantilevers.
 **   Test objective: *DLOAD BX/BZ on shells is a body force per
-**                   unit volume (as GRAV), independent of node order
+**                   unit volume (as GRAV), independent of node order;
+**                   *DLOAD, OP=NEW removes it (step 2)
 **
 *NODE
 1, 0., 0., 0.
@@ -36,15 +37,28 @@
 1, 4, 11, 14, 21, 24, 31, 34
 *NSET, NSET=TIP
 2, 3, 12, 13, 22, 23, 32, 33
+*ELSET, ELSET=E2
+2
 *BOUNDARY
 FIX, 1, 6
 *STEP
 *STATIC
 *DLOAD
 1, BZ, 2.
-2, BZ, 2.
+E2, BZ, 2.
 3, GRAV, 2., 0., 0., 1.
 4, BX, 2.
 *NODE PRINT, NSET=TIP
 U
+*NODE PRINT, NSET=FIX, TOTALS=ONLY
+RF
+*END STEP
+*STEP
+*STATIC
+*DLOAD, OP=NEW
+3, GRAV, 2., 0., 0., 1.
+*NODE PRINT, NSET=TIP
+U
+*NODE PRINT, NSET=FIX, TOTALS=ONLY
+RF
 *END STEP

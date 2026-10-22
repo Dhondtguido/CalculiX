@@ -70,7 +70,10 @@
         if((textpart(i)(1:6).eq.'OP=NEW').and.(.not.dload_flag)) then
           do j=1,nload
             if((sideload(j)(1:1).eq.'P').or.
-     &           (sideload(j)(1:1).eq.'I')) then
+     &           (sideload(j)(1:1).eq.'I').or.
+     &           (sideload(j)(1:2).eq.'BX').or.
+     &           (sideload(j)(1:2).eq.'BY').or.
+     &           (sideload(j)(1:2).eq.'BZ')) then
               sideload(j)(3:4)='  '
               xload(1,j)=0.d0
             endif
