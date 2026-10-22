@@ -388,6 +388,12 @@ c     BernhardiStart
               elseif(label(1:1).eq.'I') then
                 label(1:2)='I1'
                 if(interfaceload.le.0) interfaceload=1
+              elseif(label(1:1).eq.'B') then
+!
+!               body forces (BX, BY, BZ) are volumetric loads: they
+!               are integrated over the expanded element
+!
+                continue
               else
                 label(1:2)='P1'
               endif
@@ -510,6 +516,12 @@ c     BernhardiStart
               elseif(label(1:1).eq.'I') then
                 label(1:2)='I1'
                 if(interfaceload.le.0) interfaceload=1
+              elseif(label(1:1).eq.'B') then
+!
+!               body forces (BX, BY, BZ) are volumetric loads: they
+!               are integrated over the expanded element
+!
+                continue
               else
                 label(1:2)='P1'
               endif
