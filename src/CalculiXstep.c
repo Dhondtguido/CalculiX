@@ -1877,7 +1877,7 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
     /* deleting the perturbation loads and temperatures */
 
     if((iperturb[0]==1)&&(*nmethod==3)) {
-      nforc=0;
+      for(k=0;k<nforc;k++){xforc[k]=0.;}
       *nload=0;
       nbody=0;
       if(ithermal[0]==1) {

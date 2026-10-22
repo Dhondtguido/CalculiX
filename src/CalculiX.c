@@ -1748,10 +1748,13 @@ int main(int argc,char *argv[])
   
     itempuser[0]=0;
 
-    /* deleting the perturbation loads and temperatures */
+    /* deleting the perturbation loads and temperatures; the point
+       loads are set to zero instead of being removed, since the load
+       entries of moments on beam and shell nodes are linked to their
+       mean rotation MPC's (gen3dforc.f), which stay */
 
     if((iperturb[0]==1)&&(nmethod==3)){
-      nforc=0;
+      for(k=0;k<nforc;k++){xforc[k]=0.;}
       nload=0;
       nbody=0;
       if(ithermal[0]==1){

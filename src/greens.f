@@ -19,7 +19,7 @@
       subroutine greens(inpc,textpart,nmethod,
      &  mei,iperturb,istep,istat,n,iline,ipol,inl,
      &  ipoinp,inp,ithermal,isolver,xboun,nboun,ipoinpc,
-     &  ier,fei)
+     &  ier,fei,nforc)
 !
 !     reading the input deck: *GREEN
 !
@@ -31,12 +31,18 @@
 !
       integer nmethod,mei(4),istep,istat,iperturb(*),i,nboun,ier,
      &  n,key,iline,ipol,inl,ipoinp(2,*),inp(3,*),ithermal(*),isolver,
-     &  ipoinpc(0:*)
+     &  ipoinpc(0:*),nforc
 !
       real*8 xboun(*),fei(4)
 !
       mei(4)=0
       fei(4)=0.d0
+!
+!     a Green function is calculated for each point load entry; in a
+!     PERTURBATION step only the entries of the present step count
+!     (*STEP, PERTURBATION only sets the previous point loads to zero)
+!
+      if(iperturb(1).eq.1) nforc=0
 !
       if(istep.lt.1) then
          write(*,*) 
