@@ -1,0 +1,81 @@
+**
+**   Structure: two C3D8 cubes in contact and a U1 cantilever.
+**   Test objective: user beam element U1
+**                   nodal forces in an iterated step (contact):
+**                   tip force and moments including a torque,
+**                   shear coefficient 0.8333; the tip displacements
+**                   and rotations are those of Timoshenko theory
+**
+*NODE, NSET=NALL
+1, 0., 0., 0.
+2, 1., 0., 0.
+3, 1., 1., 0.
+4, 0., 1., 0.
+5, 0., 0., 1.
+6, 1., 0., 1.
+7, 1., 1., 1.
+8, 0., 1., 1.
+11, 0., 0., 1.
+12, 1., 0., 1.
+13, 1., 1., 1.
+14, 0., 1., 1.
+15, 0., 0., 2.
+16, 1., 0., 2.
+17, 1., 1., 2.
+18, 0., 1., 2.
+101, 5., 0., 0.
+102, 15., 0., 0.
+*ELEMENT, TYPE=C3D8, ELSET=ECUBES
+1, 1, 2, 3, 4, 5, 6, 7, 8
+2, 11, 12, 13, 14, 15, 16, 17, 18
+*ELSET, ELSET=E1
+1
+*ELSET, ELSET=E2
+2
+*NSET, NSET=BOT
+1, 2, 3, 4
+*NSET, NSET=TOP
+15, 16, 17, 18
+*NSET, NSET=SLAVE
+11, 12, 13, 14
+*NSET, NSET=NTIP
+102
+*MATERIAL, NAME=STEEL
+*ELASTIC
+1.e7, 0.3
+*SOLID SECTION, ELSET=ECUBES, MATERIAL=STEEL
+*USER ELEMENT, TYPE=U1, INTEGRATION POINTS=2, MAXDOF=6, NODES=2
+*ELEMENT, TYPE=U1, ELSET=EBEAM
+3, 101, 102
+*BEAM SECTION, ELSET=EBEAM, MATERIAL=STEEL, SECTION=GENERAL
+0.01, 8.333333e-6, 0., 8.333333e-6, 0.8333333
+0., 1., 0.
+*SURFACE, NAME=SMASTER
+E1, S2
+*SURFACE, NAME=SSLAVE, TYPE=NODE
+SLAVE
+*SURFACE INTERACTION, NAME=SI
+*SURFACE BEHAVIOR, PRESSURE-OVERCLOSURE=LINEAR
+1.e8
+*CONTACT PAIR, INTERACTION=SI, TYPE=NODE TO SURFACE
+SSLAVE, SMASTER
+*BOUNDARY
+BOT, 1, 3
+TOP, 1, 2
+101, 1, 6
+*STEP
+*STATIC
+*BOUNDARY
+TOP, 3, 3, -0.01
+*CLOAD
+102, 1, 10.
+102, 2, 1.
+102, 3, 2.
+102, 4, 1.
+102, 5, 0.5
+102, 6, 0.3
+*NODE PRINT, NSET=TOP, TOTALS=ONLY
+RF
+*NODE PRINT, NSET=NTIP
+U
+*END STEP

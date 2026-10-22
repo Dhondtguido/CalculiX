@@ -1,7 +1,10 @@
 **
-**   Structure: four free bars, U1 elements.
+**   Structure: four free bars and one bar clamped at both ends,
+**              U1 elements.
 **   Test objective: user beam element U1
-**                   thermal load: free expansion, no force
+**                   thermal load: free expansion without force;
+**                   the clamped bar has N = -E*A*alpha*dT = -2.e4
+**                   and reactions of 2.e4
 **
 *NODE, NSET=NALL
 1, 0., 0., 0.
@@ -16,10 +19,13 @@
 25, 10., 10., 0.
 31, 0., 15., 0.
 32, 10., 15., 0.
+41, 0., 20., 0.
+42, 5., 20., 0.
+43, 10., 20., 0.
 *NSET, NSET=NFREE
 2, 13, 25, 31
 *NSET, NSET=NFIX
-1, 11, 21, 32
+1, 11, 21, 32, 41, 43
 *USER ELEMENT, TYPE=U1, INTEGRATION POINTS=2, MAXDOF=6, NODES=2
 *ELEMENT, TYPE=U1, ELSET=EALL
 1, 1, 2
@@ -30,6 +36,8 @@
 23, 23, 24
 24, 24, 25
 31, 31, 32
+41, 41, 42
+42, 42, 43
 *MATERIAL, NAME=STEEL
 *ELASTIC
 2.e5, 0.3
