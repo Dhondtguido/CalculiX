@@ -40,7 +40,7 @@
      &  coef,bb,cc,cm,cn,tt,pi,dd,al(3),v1b,v2b,v3b,
      &  alb(3),beta(*),v33,v36,all(3),term,stre(*),total,coefa,
      &  coefb,coefd,coefm,constant(21),em,s11,s22,s33,ald(3),
-     &  sd(3,3),ss(3,3)
+     &  sd(3,3),ss(3,3),pr(3,3,3),d2c
 !
       kk=(/1,1,1,1,1,1,2,2,2,2,2,2,1,1,3,3,2,2,3,3,3,3,3,3,
      &  1,1,1,2,2,2,1,2,3,3,1,2,1,2,1,2,1,1,1,3,2,2,1,3,3,3,1,3,
@@ -404,9 +404,25 @@ c      if(icmd.eq.1) then
             if(icmd.ne.3) then
                if(neig.eq.3) then
 !
-!              three different principal stretches
+!              three different principal stretches: the second
+!              derivative of the eigenvalue c_i=al(i)**2 of c is the
+!              sum over j.ne.i of (P_i x P_j + P_j x P_i)/(c_i-c_j)
+!              (symmetric products of the eigenprojections
+!              P_i=2*al(i)*dldc(.,.,i)); it keeps its digits for
+!              nearly equal stretches. Then
+!              d2ldc2=(d2c-2*dldc*dldc)/(2*al(i))
 !
                   do i=1,3
+                     do l=1,3
+                        do k=1,l
+                           pr(k,l,i)=2.d0*al(i)*dldc(k,l,i)
+                           pr(l,k,i)=pr(k,l,i)
+                        enddo
+                     enddo
+                  enddo
+                  do i=1,3
+                     j1=mod(i,3)+1
+                     j2=mod(i+1,3)+1
                      nt=0
                      do j=1,21
                         k=kk(nt+1)
@@ -414,17 +430,14 @@ c      if(icmd.eq.1) then
                         m=kk(nt+3)
                         n=kk(nt+4)
                         nt=nt+4
-                        d2ldc2(k,l,m,n,i)=(-30.d0*al(i)**4
-     &                    *dldc(k,l,i)*dldc(m,n,i)+al(i)**4
-     &                    *d2idc2(k,l,m,n,1)
-     &                    +4.d0*al(i)**3*(didc(k,l,1)*dldc(m,n,i)
-     &                    +didc(m,n,1)
-     &                    *dldc(k,l,i))+12.d0*v1*al(i)**2*dldc(k,l,i)*
-     &                    dldc(m,n,i)-d2idc2(k,l,m,n,2)*al(i)**2-2.d0
-     &                    *al(i)*
-     &                    didc(k,l,2)*dldc(m,n,i)-2.d0*v2*dldc(k,l,i)*
-     &                    dldc(m,n,i)-2.d0*al(i)*didc(m,n,2)*dldc(k,l,i)
-     &                    +d2idc2(k,l,m,n,3))/all(i)
+                        d2c=(pr(k,m,i)*pr(l,n,j1)+pr(k,n,i)*pr(l,m,j1)
+     &                      +pr(k,m,j1)*pr(l,n,i)+pr(k,n,j1)*pr(l,m,i))
+     &                      /(2.d0*(ald(i)-ald(j1)))
+     &                     +(pr(k,m,i)*pr(l,n,j2)+pr(k,n,i)*pr(l,m,j2)
+     &                      +pr(k,m,j2)*pr(l,n,i)+pr(k,n,j2)*pr(l,m,i))
+     &                      /(2.d0*(ald(i)-ald(j2)))
+                        d2ldc2(k,l,m,n,i)=(d2c-2.d0*dldc(k,l,i)
+     &                       *dldc(m,n,i))/(2.d0*al(i))
                      enddo
                   enddo
                elseif(neig.eq.1) then
