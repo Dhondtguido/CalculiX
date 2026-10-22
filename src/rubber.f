@@ -31,7 +31,7 @@
       integer ogden,hyperfoam,taylor
 !
       integer nelconst,kode,kk(84),i,j,k,l,m,nt,icmd,istart,iend,
-     &  nc,n,ithermal(*),ii,jj,mm,neig,ncmat_
+     &  nc,n,ithermal(*),ii,jj,mm,neig,ncmat_,j1,j2
 !
       real*8 elconloc(*),stiff(*),emec(*),didc(3,3,3),
      &  d2idc2(3,3,3,3,3),dibdc(3,3,3),d2ibdc2(3,3,3,3,3),dudc(3,3),
@@ -39,7 +39,8 @@
      &  d2lbdc2(3,3,3,3,3),v1,v2,v3,c(3,3),cinv(3,3),d(3,3),djth,
      &  coef,bb,cc,cm,cn,tt,pi,dd,al(3),v1b,v2b,v3b,
      &  alb(3),beta(*),v33,v36,all(3),term,stre(*),total,coefa,
-     &  coefb,coefd,coefm,constant(21)
+     &  coefb,coefd,coefm,constant(21),em,s11,s22,s33,ald(3),
+     &  sd(3,3),ss(3,3)
 !
       kk=(/1,1,1,1,1,1,2,2,2,2,2,2,1,1,3,3,2,2,3,3,3,3,3,3,
      &  1,1,1,2,2,2,1,2,3,3,1,2,1,2,1,2,1,1,1,3,2,2,1,3,3,3,1,3,
@@ -271,8 +272,20 @@ c      if(icmd.eq.1) then
 !
             neig=3
 !
-            bb=v2-v1*v1/3.d0
-            cc=-2.d0*v1**3/27.d0+v1*v2/3.d0-v3
+!           bb=v2-v1*v1/3 and cc=-2*v1**3/27+v1*v2/3-v3 are
+!           the invariants of the deviator of c; they are computed
+!           from the deviatoric strain, so that they keep their
+!           digits when the stretches are nearly equal
+!
+            em=(emec(1)+emec(2)+emec(3))/3.d0
+            s11=2.d0*(emec(1)-em)
+            s22=2.d0*(emec(2)-em)
+            s33=2.d0*(emec(3)-em)
+            bb=-(s11*s11+s22*s22+s33*s33)/2.d0
+     &         -(c(1,2)*c(1,2)+c(1,3)*c(1,3)+c(2,3)*c(2,3))
+            cc=-s11*(s22*s33-c(2,3)*c(2,3))
+     &         +c(1,2)*(c(1,2)*s33-c(1,3)*c(2,3))
+     &         -c(1,3)*(c(1,2)*c(2,3)-c(1,3)*s22)
             if(dabs(bb).le.1.d-10) then
                if(dabs(cc).gt.1.d-10) then
                   al(1)=-cc**(1.d0/3.d0)
@@ -306,9 +319,20 @@ c      if(icmd.eq.1) then
                al(2)=cm*al(2)
                al(3)=cm*al(3)
             endif
+!
+!           ald(i) are the eigenvalues of the deviator of c;
+!           all(i)=6*al(i)**5-4*v1*al(i)**3+2*al(i)*v2 (times dd) is
+!           2*al(i) times the product of the differences of the
+!           eigenvalues of c, and is formed as such
+!
             do i=1,3
+               ald(i)=al(i)
                al(i)=dsqrt(al(i)+v1/3.d0)
-               all(i)=(6.d0*al(i)**5-4.d0*v1*al(i)**3+2.d0*al(i)*v2)*dd
+            enddo
+            do i=1,3
+               j1=mod(i,3)+1
+               j2=mod(i+1,3)+1
+               all(i)=2.d0*al(i)*(ald(i)-ald(j1))*(ald(i)-ald(j2))*dd
             enddo
 !
 !        first derivative of the principal stretches w.r.t. c(k,l)
@@ -317,11 +341,33 @@ c      if(icmd.eq.1) then
 !
 !              three different principal stretches
 !
+!              al(i)**4*didc(k,l,1)-al(i)**2*didc(k,l,2)+didc(k,l,3)
+!              is (c-c_j*I)*(c-c_k*I), c_j and c_k the other two
+!              eigenvalues of c; it is formed with the deviator sd of
+!              c and its eigenvalues ald
+!
+               sd(1,1)=s11
+               sd(2,2)=s22
+               sd(3,3)=s33
+               sd(1,2)=c(1,2)
+               sd(1,3)=c(1,3)
+               sd(2,3)=c(2,3)
+               sd(2,1)=sd(1,2)
+               sd(3,1)=sd(1,3)
+               sd(3,2)=sd(2,3)
+               do l=1,3
+                  do k=1,l
+                     ss(k,l)=sd(k,1)*sd(1,l)+sd(k,2)*sd(2,l)
+     &                    +sd(k,3)*sd(3,l)
+                  enddo
+               enddo
                do i=1,3
+                  j1=mod(i,3)+1
+                  j2=mod(i+1,3)+1
                   do l=1,3
                      do k=1,l
-                        dldc(k,l,i)=(al(i)**4*didc(k,l,1)
-     &                       -al(i)**2*didc(k,l,2)+didc(k,l,3))/all(i)
+                        dldc(k,l,i)=(ss(k,l)-(ald(j1)+ald(j2))*sd(k,l)
+     &                       +ald(j1)*ald(j2)*d(k,l))/all(i)
                      enddo
                   enddo
                enddo
@@ -345,7 +391,7 @@ c      if(icmd.eq.1) then
                      do k=1,l
                         dldc(k,l,i)=(dcos(tt+(i-1)*2.d0*pi/3.d0)*
      &                    (2.d0*v1*didc(k,l,1)-3.d0*didc(k,l,2))/
-     &                    (3.d0*dsqrt(v1*v1-3.d0*v2))+didc(k,l,1)/3.d0)/
+     &                    (3.d0*dsqrt(-3.d0*bb))+didc(k,l,1)/3.d0)/
      &                    (2.d0*al(i))
                      enddo
                   enddo
@@ -412,10 +458,10 @@ c      if(icmd.eq.1) then
                         d2ldc2(k,l,m,n,i)=(dcos(tt+(i-1)*2.d0*pi/3.d0)*
      &                   (-(2.d0*v1*didc(k,l,1)-3.d0*didc(k,l,2))*
      &                    (2.d0*v1*didc(m,n,1)-3.d0*didc(m,n,2))/
-     &                    (6.d0*(v1*v1-3.d0*v2)**1.5d0)+
+     &                    (6.d0*(-3.d0*bb)**1.5d0)+
      &                    (2.d0*didc(k,l,1)*didc(m,n,1)+2.d0*v1*
      &                     d2idc2(k,l,m,n,1)-3.d0*d2idc2(k,l,m,n,2))/
-     &                     (3.d0*dsqrt(v1*v1-3.d0*v2)))
+     &                     (3.d0*dsqrt(-3.d0*bb)))
      &                     +d2idc2(k,l,m,n,1)/3.d0)/(2.d0*al(i))-
      &                     dldc(k,l,i)*dldc(m,n,i)/al(i)
                      enddo
