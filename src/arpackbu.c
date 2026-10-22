@@ -757,6 +757,43 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 
   } while(iconverged<0);
 
+  /* checking the buckling factors: each pair (factor, mode x) must
+     satisfy K x = factor KG x; the residual relative to K x may be at
+     most 0.1 (rnorm and knorm are squares). Correct pairs have
+     residuals of about 1.e-6 or less; with a singular stiffness matrix
+     K ARPACK may return values with residuals near 1 or larger */
+
+  {
+    ITG ierror=0;
+    double *xk=NULL,*xg=NULL,rnorm,knorm;
+    NNEW(xk,double,neq[0]);
+    NNEW(xg,double,neq[0]);
+    for(j=0;j<nev;j++){
+      opmain(&neq[0],&z[j*neq[0]],xk,ad,au,jq,irow);
+      opmain(&neq[0],&z[j*neq[0]],xg,adb,aub,jq,irow);
+      rnorm=0.;knorm=0.;
+      for(k=0;k<neq[0];k++){
+	rnorm+=(xk[k]-d[j]*xg[k])*(xk[k]-d[j]*xg[k]);
+	knorm+=xk[k]*xk[k];
+      }
+      if(!(rnorm<=1.e-2*knorm)){
+	printf(" *ERROR in arpackbu: buckling factor %" ITGFORMAT " (%e)\n",j+1,d[j]);
+	printf("        does not satisfy K x = factor KG x\n");
+	if(knorm>0.){
+	  printf("        (relative residual %e)\n",sqrt(rnorm/knorm));
+	}
+	ierror=1;
+      }
+    }
+    SFREE(xk);SFREE(xg);
+    if(ierror==1){
+      printf("        the stiffness matrix is probably singular:\n");
+      printf("        check for rigid body modes, mechanisms or\n");
+      printf("        zero-energy modes\n\n");
+      FORTRAN(stop,());
+    }
+  }
+
   SFREE(aub);SFREE(adb);SFREE(au);SFREE(ad);SFREE(b);
 
   FORTRAN(writebv,(d,&nev));
