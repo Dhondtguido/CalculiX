@@ -21,7 +21,7 @@
      &     nk_,
      &     nmethod,temp_flag,istep,istat,n,iline,ipol,inl,ipoinp,inp,
      &     nam_,namtot_,namta,amta,ipoinpc,t1g,iamplitudedefault,
-     &     namtot,ier,itempuser,jobnamec,nuel_,co)
+     &     namtot,ier,itempuser,jobnamec,nuel_,co,t0g)
 !     
 !     reading the input deck: *TEMPERATURE
 !     
@@ -49,7 +49,8 @@
      &     iamplitudedefault,ier,itempuser(*),nuel_,ipoinpc(0:*)
 !     
       real*8 t0(*),t1(*),temperature,tempgrad1,tempgrad2,amta(2,*),
-     &     t1g(2,*),a,b,c,dd,d1,d2,temp1,temp2,gradient,co(3,*)
+     &     t1g(2,*),a,b,c,dd,d1,d2,temp1,temp2,gradient,co(3,*),
+     &     t0g(2,*)
 !     
       iamplitude=iamplitudedefault
       idelay=0
@@ -99,6 +100,16 @@
           do j=1,nk
             t1(j)=t0(j)
           enddo
+!
+!         the gradients of shells and beams are reset to their
+!         initial values as well
+!
+          if((inoel2dfree.ne.0).or.(nuel_.gt.0)) then
+            do j=1,nk
+              t1g(1,j)=t0g(1,j)
+              t1g(2,j)=t0g(2,j)
+            enddo
+          endif
         elseif(textpart(i)(1:6).eq.'OP=NEW') then
           write(*,*)
      &         '*INFO reading *TEMPERATURE: OP=NEW only makes sense'
