@@ -845,6 +845,16 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   NNEW(eei,double,6*mi[0]**ne);
   NNEW(stiini,double,6*mi[0]**ne);
   NNEW(emeini,double,6*mi[0]**ne);
+
+  /* stresses and mechanical strains at the start of the step: the
+     calculation of the initial acceleration of a dynamic step updates
+     the internal energy from these values */
+  
+  if(*ithermal!=2){
+    isiz=6*mi[0]**ne;
+    cpypardou(stiini,sti,&isiz,&num_cpus);
+    cpypardou(emeini,eme,&isiz,&num_cpus);
+  }
   
   if(*nener==1){
     if((*mortar!=1)||(ncont==0)){
