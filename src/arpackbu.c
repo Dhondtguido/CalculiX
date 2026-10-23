@@ -757,6 +757,54 @@ void arpackbu(double *co, ITG *nk, ITG *kon, ITG *ipkon, char *lakon,
 
   } while(iconverged<0);
 
+  /* checking the buckling factors: each converged pair (factor,
+     mode x) must satisfy K x = factor KG x. Relative to K x, the
+     residual is about 1.e-6 or less for factors near the shift 1;
+     it grows for factors far from 1, which ARPACK computes less
+     accurately (warning above 0.01), and it is near 1 or larger for
+     values that are no buckling factors at all, which ARPACK may
+     return for a singular stiffness matrix K (error above 0.5;
+     rnorm and knorm are squares) */
+
+  {
+    ITG ierror=0,nconv;
+    double *xk=NULL,*xg=NULL,rnorm,knorm;
+    nconv=iparam[4];
+    if(nconv>nev) nconv=nev;
+    NNEW(xk,double,neq[0]);
+    NNEW(xg,double,neq[0]);
+    for(j=0;j<nconv;j++){
+      opmain(&neq[0],&z[j*neq[0]],xk,ad,au,jq,irow);
+      opmain(&neq[0],&z[j*neq[0]],xg,adb,aub,jq,irow);
+      rnorm=0.;knorm=0.;
+      for(k=0;k<neq[0];k++){
+	rnorm+=(xk[k]-d[j]*xg[k])*(xk[k]-d[j]*xg[k]);
+	knorm+=xk[k]*xk[k];
+      }
+      if((knorm<=0.)||!(rnorm<=0.25*knorm)){
+	printf(" *ERROR in arpackbu: buckling factor %" ITGFORMAT " (%e)\n",j+1,d[j]);
+	printf("        does not satisfy K x = factor KG x\n");
+	if(knorm>0.){
+	  printf("        (relative residual %e)\n",sqrt(rnorm/knorm));
+	}
+	ierror=1;
+      }else if(rnorm>1.e-4*knorm){
+	printf(" *WARNING in arpackbu: buckling factor %" ITGFORMAT " (%e)\n",j+1,d[j]);
+	printf("          is inaccurate: relative residual %e\n",sqrt(rnorm/knorm));
+	printf("          of K x = factor KG x; factors far from 1\n");
+	printf("          are less accurate: scale the load such that\n");
+	printf("          the buckling factors are near 1\n\n");
+      }
+    }
+    SFREE(xk);SFREE(xg);
+    if(ierror==1){
+      printf("        the stiffness matrix is probably singular:\n");
+      printf("        check for rigid body modes, mechanisms or\n");
+      printf("        zero-energy modes\n\n");
+      FORTRAN(stop,());
+    }
+  }
+
   SFREE(aub);SFREE(adb);SFREE(au);SFREE(ad);SFREE(b);
 
   FORTRAN(writebv,(d,&nev));
