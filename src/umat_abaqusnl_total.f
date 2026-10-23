@@ -39,7 +39,7 @@
 !     logarithmic. The mechanical strain at the start of the increment is 
 !     left unchanged and so is the stress. So the constitutive equation 
 !     should be based solely on the mechanical strain at the end of the
-!     increment, on not on its change within the increment.
+!     increment, and not on its change within the increment.
 ! 
 !     emec is the mechanical Lagrange strain (excluding thermal effects)
 !     xkl is the total deformation gradient (including thermal effects)
@@ -74,7 +74,7 @@
      &     dum1dc(21),delndc(21),dum1dcexp(3,3,3,3),delndcexp(3,3,3,3),
      &     stiffexp(3,3,3,3),term1(36),term24(36),term3(36),
      &     stiffasym(36),aa(21),bb(21),dwum1(3),dweln(3),ym14(21),
-     &     ym24(21),ym34(21)
+     &     ym24(21),ym34(21),stressfactor
 !     
       kal=reshape((/1,1,2,2,3,3,1,2,1,3,2,3/),(/2,6/))
 !     
@@ -125,9 +125,9 @@ c      write(*,*) 'umat_abaqusnl_total ',(emec(i),i=1,6)
       endif
 !     
 !     calculating the - principal stretches square at the end of the increment
-!                       = eigenvalues of the right Cauchy-Green tensor
-!                     - eigenvalues of the logarithmic strain
-!                     - eigenvalues of the inverse right stretch tensor
+!                       = eigenvalues of the right Cauchy-Green tensor: w(i)
+!                     - eigenvalues of the logarithmic strain: weln(i)
+!                     - eigenvalues of the inverse right stretch tensor: wum1(i)
 !     
       do i=1,3
         if(w(i).lt.-0.5d0) then
@@ -324,9 +324,15 @@ c      write(*,*) 'umat_abaqusnl_total ',(emec(i),i=1,6)
       endif
 !     
 !     rotating the stress into the global system
+!     
+!     for linear geometric applications:   
 !     S=J.U^(-1).s'.U^(-T)  (no orientation card) or
 !     S=J.U^(-1).T.s'.T^T.U^(-T) (orientation card)
 !     
+!     for nonlinear geometric applications:   
+!     Sm=Jm.Um^(-1).s'.Um^(-T)  (no orientation card) or
+!     Sm=Jm.Um^(-1).T.s'.T^T.Um^(-T) (orientation card)
+!     "m"=mechanical
 !     
 !     Here, U is the total right stretch tensor, i.e. the
 !     thermal effects have to be included.
@@ -349,9 +355,14 @@ c      write(*,*) 'umat_abaqusnl_total ',(emec(i),i=1,6)
 !     
 !     Ctot=C*(1+alpha*Delta T)**2
 !     expansion:=1+alpha*Delta T
-!     
-      expansion=dsqrt((ctot(1,1)/c(1,1)+ctot(2,2)/c(2,2)+
-     &     ctot(3,3)/c(3,3))/3.d0)
+!
+      if(iperturb(2).eq.0) then
+        expansion=dsqrt((ctot(1,1)/c(1,1)+ctot(2,2)/c(2,2)+
+     &       ctot(3,3)/c(3,3))/3.d0)
+        stressfactor=vj/expansion**2
+      else
+        stressfactor=dsqrt(w(1)*w(2)*w(3))
+      endif
 !     
       if(iorien.ne.0) then
         do i=1,3
@@ -392,7 +403,7 @@ c     &           skl(i,3)*um1(3,j)
      &           scc(j3,j4)*tkl(j1,j3)*tkl(j2,j4)
           enddo
         enddo
-        stre(jj)=stre(jj)*vj/expansion**2
+        stre(jj)=stre(jj)*stressfactor
       enddo
 !     
 !     calculate the stiffness matrix (the matrix is symmetrized)
@@ -423,29 +434,6 @@ c     &           skl(i,3)*um1(3,j)
                enddo
             enddo
          endif
-c!     
-c!     rotating the stiffness coefficients into the global system
-c!     
-c        call anisotropic(stiff,ya)
-c!     
-c        do jj=1,21
-c          j1=kel(1,jj)
-c          j2=kel(2,jj)
-c          j3=kel(3,jj)
-c          j4=kel(4,jj)
-c          stiff(jj)=0.d0
-c          do j5=1,3
-c            do j6=1,3
-c              do j7=1,3
-c                do j8=1,3
-c                  stiff(jj)=stiff(jj)+ya(j5,j6,j7,j8)*
-c     &                 tkl(j1,j5)*tkl(j2,j6)*tkl(j3,j7)*tkl(j4,j8)
-c                enddo
-c              enddo
-c            enddo
-c          enddo
-c          stiff(jj)=stiff(jj)*vj/expansion**2
-c        enddo
 !     
 !       sccum1=scc*um1
 !
@@ -747,8 +735,8 @@ c           write(*,*) 'w(1)!=w(2)!=w(3)!=w(1) ',w(1),w(2),w(3)
                enddo
              enddo
            enddo
-           stiffasym(jj)=vj*(term1(jj)+2.d0*(term24(jj)+term3(jj)))/
-     &          expansion**2
+           stiffasym(jj)=(term1(jj)+2.d0*(term24(jj)+term3(jj)))*
+     &          stressfactor
          enddo
 !
 !        symmetrizing stiffasym -> stiff
