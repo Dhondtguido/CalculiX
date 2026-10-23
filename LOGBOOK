@@ -5665,3 +5665,6 @@ Dec 2002        - started to work on single crystal plasticity
                 - made a correction in e_c3d.f for explicit dynamics
 		  with c3d8i-elements
               
+ 23 Oct 2026    - made a correction in umat_abaqusnl_total.f: transformation
+                  has to be applied to the corotational stress before
+		  applying the pull-back with U^{-1}

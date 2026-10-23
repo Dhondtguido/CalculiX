@@ -325,7 +325,7 @@ c      write(*,*) 'umat_abaqusnl_total ',(emec(i),i=1,6)
 !     
 !     rotating the stress into the global system
 !     S=J.U^(-1).s'.U^(-T)  (no orientation card) or
-!     S=J.T.U^(-1).s'.U^(-T).T^T (orientation card)
+!     S=J.U^(-1).T.s'.T^T.U^(-T) (orientation card)
 !     
 !     
 !     Here, U is the total right stretch tensor, i.e. the
@@ -356,8 +356,10 @@ c      write(*,*) 'umat_abaqusnl_total ',(emec(i),i=1,6)
       if(iorien.ne.0) then
         do i=1,3
           do j=1,3
-            tkl(i,j)=skl(i,1)*um1(1,j)+skl(i,2)*um1(2,j)+
-     &           skl(i,3)*um1(3,j)
+c            tkl(i,j)=skl(i,1)*um1(1,j)+skl(i,2)*um1(2,j)+
+c     &           skl(i,3)*um1(3,j)
+            tkl(i,j)=um1(i,1)*skl(1,j)+um1(i,2)*skl(2,j)+
+     &           um1(i,3)*skl(3,j)
           enddo
         enddo
       else
