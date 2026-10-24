@@ -247,7 +247,8 @@
 !     reference temperature and radiation coefficient
 !     (for non uniform loading: use user routine radiation.f)
 !     
-        if((label(3:4).ne.'NU').and.(label(5:5).ne.'N')) then
+        if((label(3:4).ne.'NU').and.(label(3:4).ne.'  ').and.
+     &       (label(5:5).ne.'N')) then
           if(environmentnode) then
             read(textpart(3)(1:10),'(i10)',iostat=istat) node
           else
