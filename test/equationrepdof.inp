@@ -1,0 +1,33 @@
+**
+**   Structure: springs on nodes 1 and 11, tied to nodes 2 and 12.
+**   Test objective: *EQUATION with the DOF of node 2 (node 12) in
+**                   two terms; the second equation is the first
+**                   one scaled by 1.e-12. u1 = F/k = 0.01 at all
+**                   four nodes.
+**
+*NODE, NSET=NALL
+1, 0., 0., 0.
+2, 1., 0., 0.
+11, 0., 1., 0.
+12, 1., 1., 0.
+*ELEMENT, TYPE=SPRING1, ELSET=EK
+1, 1
+11, 11
+*SPRING, ELSET=EK
+1
+100.
+*BOUNDARY
+NALL, 2, 3
+*EQUATION
+3
+1, 1, 1., 2, 1, -0.5, 2, 1, -0.5
+3
+11, 1, 1.e-12, 12, 1, -0.5e-12, 12, 1, -0.5e-12
+*STEP
+*STATIC
+*CLOAD
+2, 1, 1.
+12, 1, 1.
+*NODE PRINT, NSET=NALL
+U
+*END STEP
