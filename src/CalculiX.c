@@ -39,6 +39,7 @@ int main(int argc,char *argv[])
     
   char *sideload=NULL,*set=NULL,*matname=NULL,*orname=NULL,*amname=NULL,
     *filab=NULL,*lakon=NULL,*labmpc=NULL,*prlab=NULL,*prset=NULL,
+    *labmpcsav=NULL,
     jobnamec[792]="",jobnamef[132]="",output[5],*typeboun=NULL,
     *inpc=NULL,*tieset=NULL,*cbody=NULL,fneig[132],*sideloadtemp=NULL,
     kind1[2],kind2[2],*heading=NULL,*objectset=NULL;
@@ -69,7 +70,8 @@ int main(int argc,char *argv[])
     iprestr,kode,isolver,nslavs,nkon_,ne1,nkon0,mortar,ndmat_,
     jout[2],nlabel,nkon,idrct,jmax[2],iexpl,nevtot,ifacecount,
     iplas,npmat_,mi[3],ntrans,mpcend,namtot_,iheading,ishift,
-    icascade,maxlenmpc,mpcinfo[4],ne1d,ne2d,infree[4],
+    icascade,icascadeprev,maxlenmpc,mpcinfo[4],ne1d,ne2d,infree[4],
+    *nodempcsav=NULL,memmpcsav,mpcfreesav,maxlenmpcsav,nmpcsav,mpcendsav,
     callfrommain,nflow,jin=0,irstrt[2],nener,jrstrt,nenerold,
     nline,*ipoinp=NULL,*inp=NULL,ntie,ntie_,mcs,nprop_,
     nprop,itpamp,iviewfile,nkold,nevdamp_,npt_,cyclicsymmetry,
@@ -85,6 +87,7 @@ int main(int argc,char *argv[])
     ntrans_,ncs_,nstate_,ncmat_,memmpc_,nprint_,nuel_=0;
     
   double *co=NULL,*xboun=NULL,*coefmpc=NULL,*xforc=NULL,*clearini=NULL,
+    *coefmpcsav=NULL,
     *xload=NULL,*xbounold=NULL,*xforcold=NULL,*randomval=NULL,
     *vold=NULL,*sti=NULL,*xloadold=NULL,*xnor=NULL,*dmcon=NULL,
     *reorder=NULL,*dcs=NULL,*thickn=NULL,*thicke=NULL,*offset=NULL,
@@ -704,6 +707,10 @@ int main(int argc,char *argv[])
       iheading=1;
     }
 
+    /* MPC's which a nonlinear step left undecascaded (icascade==2)
+       have to be decascaded again for a linear step */
+
+    icascadeprev=icascade;
     if((abs(nmethod)!=1)||(iperturb[0]<2))icascade=0;
 
     //    FORTRAN(writeboun,(nodeboun,ndirboun,xboun,typeboun,&nboun));
@@ -1175,11 +1182,27 @@ int main(int argc,char *argv[])
  
     /* decascading MPC's only necessary if MPC's changed */
 
-    if(((istep==1)||(ntrans>0)||(mpcend<0)||(nk!=nkold)||(nmpc!=nmpcold))&&(icascade==0)){
+    if(((istep==1)||(ntrans>0)||(mpcend<0)||(nk!=nkold)||(nmpc!=nmpcold)||
+	(icascadeprev==2))&&(icascade==0)){
 
       /* decascading the MPC's */
 
       printf(" Decascading the MPC's\n\n");
+
+      /* MPC's which a nonlinear step left undecascaded are restored
+	 at the end of this step, since a later nonlinear step needs
+	 them in that form (nonlinmpc.f) */
+
+      if(icascadeprev==2){
+	memmpcsav=memmpc_;mpcfreesav=mpcfree;maxlenmpcsav=maxlenmpc;
+	nmpcsav=nmpc;mpcendsav=mpcend;
+	NNEW(nodempcsav,ITG,3*memmpc_);
+	memcpy(nodempcsav,nodempc,sizeof(ITG)*3*memmpc_);
+	NNEW(coefmpcsav,double,memmpc_);
+	memcpy(coefmpcsav,coefmpc,sizeof(double)*memmpc_);
+	NNEW(labmpcsav,char,20*nmpc+1);
+	memcpy(labmpcsav,labmpc,20*nmpc);
+      }
 
       callfrommain=1;
       cascade(ipompc,&coefmpc,&nodempc,&nmpc,
@@ -1742,6 +1765,23 @@ int main(int argc,char *argv[])
 
 	continue;
 	//      }
+    }
+
+    /* restoring the undecascaded MPC's (see above) */
+
+    if(nodempcsav!=NULL){
+      if(nmpc==nmpcsav){
+	memmpc_=memmpcsav;mpcfree=mpcfreesav;maxlenmpc=maxlenmpcsav;
+	mpcend=mpcendsav;
+	RENEW(nodempc,ITG,3*memmpc_);
+	memcpy(nodempc,nodempcsav,sizeof(ITG)*3*memmpc_);
+	RENEW(coefmpc,double,memmpc_);
+	memcpy(coefmpc,coefmpcsav,sizeof(double)*memmpc_);
+	memcpy(labmpc,labmpcsav,20*nmpc);
+	icascade=2;
+      }
+      SFREE(nodempcsav);SFREE(coefmpcsav);SFREE(labmpcsav);
+      nodempcsav=NULL;coefmpcsav=NULL;labmpcsav=NULL;
     }
 
     /* reset tempuserflag */
