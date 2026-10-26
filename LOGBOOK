@@ -5670,3 +5670,7 @@ Dec 2002        - started to work on single crystal plasticity
 		  applying the pull-back with U^{-1}
 		- replaced the PK2-stress by the mechanical PK2-stress in
 		  umat_abaqusnl_total.f (only for large deformations)
+
+ 26 Oct 2026    - use of the Daleckii-Krein-Theorem to accelerate
+                  umat_abaqusnl_total.f
+                - corrected umat_abaqusnl.f based on umat_abaqusnl_total.f
