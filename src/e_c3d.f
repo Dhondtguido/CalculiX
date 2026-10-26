@@ -2295,19 +2295,15 @@ c     Bernhardi end
           alp=0.1203d0
         elseif(nope.eq.15) then
           alp=0.2141d0
-c        elseif(nope.eq.11) then
-c          alp=0.1852d0
         endif
 !     
         if((nope.eq.20).or.(nope.eq.10).or.
      &       (nope.eq.15)) then
-c        if((nope.eq.20).or.(nope.eq.10).or.
-c     &       (nope.eq.15).or.(nope.eq.11)) then
           factore=summass*alp/(1.d0+alp)/sume
           factorm=summass/(1.d0+alp)/summ
         elseif(nope.eq.11) then
 !
-!         summing the mass corresponding to shape function 9 to 11
+!         C3D8I: summing the mass corresponding to shape function 9 to 11
 !
           sumc3d8i=sm(25,25)+2.d0*sm(25,28)+2.d0*sm(25,31)
      &                           +sm(28,28)+2.d0*sm(28,31)
@@ -2345,32 +2341,60 @@ c     &       (nope.eq.15).or.(nope.eq.11)) then
      &     ((nmethod.eq.2).and.(mscalmethod.gt.0)))) then
         if((mscalmethod.eq.1).or.(mscalmethod.eq.3)) then
 !     
+!     C3D8I: separate treatment for "global" DOFs and "local" modes
+!     "global" DOFs are treated similar to C3D8 
+!     "local" modes do not contain rigid body translations; thus 
+!     simple scaling of the diagonal entries (O. Bernhardi)
+!     
+          if(nope.eq.11) then
+            smfactor=smscalel*summass*8.0d0/7.0d0
+            do i=1,24
+              sm(i,i)=sm(i,i)+7.0d0*smfactor
+            enddo
+            i=0
+            do j=0,23,3
+              i=i+1
+              do k=1,8-i
+                do l=1,3
+                  sm(j+l+k*3,j+l)=sm(j+l+k*3,j+l)-smfactor
+                  sm(j+l,j+l+k*3)=sm(j+l,j+l+k*3)-smfactor
+                enddo
+              enddo
+            enddo
+            smfactor=smscalel*sumc3d8i*3.0d0/2.0d0
+            do i=25,33
+              sm(i,i)=sm(i,i)+2.0d0*smfactor
+            enddo
+          else
+!     
 !     beta = smscalel
 !     
-          smfactor=smscalel*summass/((nope-1)*nope)
+            smfactor=smscalel*summass/((nope-1)*nope)
 !     
-          do i=1,3*nope
-            sm(i,i)=sm(i,i)+(nope-1)*smfactor
-          enddo
+            do i=1,3*nope
+              sm(i,i)=sm(i,i)+(nope-1)*smfactor
+            enddo
 !     
 !     nondiagonal terms of M for SMS
 !     
 !     no massless method: regular mass matrix was lumped     
 !     
-          i=0
-          do j=0,nope*3-1,3
-            i=i+1
-            do k=1,(nope-i)
-              do l=1,3
-                sm(j+l+k*3,j+l)=sm(j+l+k*3,j+l)-smfactor
-                sm(j+l,j+l+k*3)=sm(j+l,j+l+k*3)-smfactor
+            i=0
+            do j=0,nope*3-1,3
+              i=i+1
+              do k=1,(nope-i)
+                do l=1,3
+                  sm(j+l+k*3,j+l)=sm(j+l+k*3,j+l)-smfactor
+                  sm(j+l,j+l+k*3)=sm(j+l,j+l+k*3)-smfactor
+                enddo
               enddo
             enddo
-          enddo
+          endif
+!     
 !     to calculate additional energy in resultsmech.f:
+!     
           smscalel=smfactor
         endif
-!     
       endif
 !     
       return

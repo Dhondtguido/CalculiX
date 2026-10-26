@@ -173,7 +173,8 @@ c        write(*,*) 'calcstabletimeincvol ',nelem
             nope=8
             nopes=4
             nfaces=6
-            elemfac=0.125d0
+            elemfac=0.9d0
+c            elemfac=0.125d0
           elseif(lakon(nelem)(4:5).eq.'8R') then
             nope=8
             nopes=4

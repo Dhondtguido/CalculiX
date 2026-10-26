@@ -5674,3 +5674,5 @@ Dec 2002        - started to work on single crystal plasticity
  26 Oct 2026    - use of the Daleckii-Krein-Theorem to accelerate
                   umat_abaqusnl_total.f
                 - corrected umat_abaqusnl.f based on umat_abaqusnl_total.f
+                - added a section in e_c3d.f for C3D8I with selective
+		  mass scaling
