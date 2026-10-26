@@ -32,10 +32,7 @@
 !
       real*8 s(60,60),gs(8,4),a,elas(1),hgls,ahr
 !
-!
-!
       ahr=elas(1)*a
-c     write(6,*) "stiffness:", ahr
 !
       jj1=1
       do jj=1,8
