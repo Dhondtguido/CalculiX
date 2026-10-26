@@ -664,15 +664,15 @@ c     vold(1,iexpnode)=alpha
             if(lakon(ielem)(7:7).eq.'L') then
               dot=a(1,idirref)*xn(1)+a(2,idirref)*xn(2)+
      &             a(3,idirref)*xn(3)
-              if(dot.gt.999d0) then
+              if(dabs(dot).gt.0.999d0) then
                 write(*,*) '*WARNING in gen3dforc: applied'
                 write(*,*) '         moment in node ',node
-                write(*,*) '         and direction ',idir-1
+                write(*,*) '         and direction ',idir
                 write(*,*) '         is nearly'
                 write(*,*) 
      &               '         along the drilling'
                 write(*,*) '         direction; this load is'
-                write(*,*) '         taken into account'
+                write(*,*) '         not taken into account'
                 write(*,*)
                 cycle
               endif
@@ -739,6 +739,13 @@ c     vold(1,iexpnode)=alpha
 !     value in ilboun(id)
 !     
               ilforc(id)=nforc
+            else
+              write(*,*) '*WARNING in gen3dforc: no mean rotation MPC'
+              write(*,*) '         could be generated for the moment'
+              write(*,*) '         in node ',node
+              write(*,*) '         and direction ',idir,'; this'
+              write(*,*) '         load is not taken into account'
+              write(*,*)
             endif
 !     
             cycle
