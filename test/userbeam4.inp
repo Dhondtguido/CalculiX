@@ -1,0 +1,32 @@
+**
+**   Structure: cantilever beam.
+**   Test objective: user beam element U1
+**                   nodal forces: RF balances the loads
+**
+*NODE, NSET=NALL
+1, 0., 0., 0.
+2, 10., 0., 0.
+*USER ELEMENT, TYPE=U1, INTEGRATION POINTS=2, MAXDOF=6, NODES=2
+*ELEMENT, TYPE=U1, ELSET=EBEAM
+1, 1, 2
+*MATERIAL, NAME=STEEL
+*ELASTIC
+1.e7, 0.3
+*BEAM SECTION, ELSET=EBEAM, MATERIAL=STEEL, SECTION=GENERAL
+0.01, 8.333333e-6, 0., 8.333333e-6, 1.e4
+0., 1., 0.
+*BOUNDARY
+1, 1, 6
+*STEP
+*STATIC
+*CLOAD
+2, 1, 10.
+2, 2, 1.
+2, 3, 2.
+*NODE PRINT, NSET=NALL
+U
+*NODE PRINT, NSET=NALL, TOTALS=YES
+RF
+*EL PRINT, ELSET=EBEAM
+S
+*END STEP
