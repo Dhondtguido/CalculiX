@@ -1,0 +1,78 @@
+**
+**   Structure: one C3D8 cube, OGDEN N=2 (alpha 8 and -2).
+**   Test objective: stiffness at equal principal stretches:
+**                   step 1 the unstressed state (three equal
+**                   stretches, eigenvalues of *ELASTIC with
+**                   E=5.142857, nu=0.2857143), step 3 after a
+**                   uniaxial stretch (two equal stretches).
+**
+*NODE, NSET=NALL
+1, 0, 0, 0
+2, 1, 0, 0
+3, 1, 1, 0
+4, 0, 1, 0
+5, 0, 0, 1
+6, 1, 0, 1
+7, 1, 1, 1
+8, 0, 1, 1
+*ELEMENT, TYPE=C3D8, ELSET=E
+1, 1, 2, 3, 4, 5, 6, 7, 8
+*MATERIAL, NAME=M
+*HYPERELASTIC, OGDEN, N=2
+1.5, 8., 0.5, -2., 0.5, 100.
+*DENSITY
+1.
+*SOLID SECTION, ELSET=E, MATERIAL=M
+*BOUNDARY
+1, 1, 3
+2, 2, 3
+4, 1, 1
+4, 3, 3
+5, 1, 2
+6, 2, 2
+8, 1, 1
+*STEP
+*FREQUENCY
+4
+*END STEP
+*STEP, NLGEOM
+*STATIC
+0.25, 1.
+*BOUNDARY, OP=NEW
+1, 1, 1, 0.000000000000e+00
+1, 2, 2, -0.000000000000e+00
+1, 3, 3, -0.000000000000e+00
+2, 1, 1, 5.000000000000e-02
+2, 2, 2, -0.000000000000e+00
+2, 3, 3, -0.000000000000e+00
+3, 1, 1, 5.000000000000e-02
+3, 2, 2, -2.214812690557e-02
+3, 3, 3, -0.000000000000e+00
+4, 1, 1, 0.000000000000e+00
+4, 2, 2, -2.214812690557e-02
+4, 3, 3, -0.000000000000e+00
+5, 1, 1, 0.000000000000e+00
+5, 2, 2, -0.000000000000e+00
+5, 3, 3, -2.214812690557e-02
+6, 1, 1, 5.000000000000e-02
+6, 2, 2, -0.000000000000e+00
+6, 3, 3, -2.214812690557e-02
+7, 1, 1, 5.000000000000e-02
+7, 2, 2, -2.214812690557e-02
+7, 3, 3, -2.214812690557e-02
+8, 1, 1, 0.000000000000e+00
+8, 2, 2, -2.214812690557e-02
+8, 3, 3, -2.214812690557e-02
+*END STEP
+*STEP, PERTURBATION
+*FREQUENCY
+4
+*BOUNDARY, OP=NEW
+1, 1, 3
+2, 2, 3
+4, 1, 1
+4, 3, 3
+5, 1, 2
+6, 2, 2
+8, 1, 1
+*END STEP
