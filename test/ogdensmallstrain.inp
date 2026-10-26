@@ -1,0 +1,49 @@
+**
+**   Structure: block of 2 x 2 x 1 C3D8 elements, OGDEN N=1 with
+**              alpha=2 (the NEO HOOKE potential), pulled to 0.1 %
+**              strain in increments of 0.1.
+**   Test objective: the principal stretches keep their digits at
+**                   small strains; the result equals NEO HOOKE.
+**
+*NODE
+1, 0., 0., 0.
+2, 0.05, 0., 0.
+3, 0.1, 0., 0.
+4, 0., 0.05, 0.
+5, 0.05, 0.05, 0.
+6, 0.1, 0.05, 0.
+7, 0., 0.1, 0.
+8, 0.05, 0.1, 0.
+9, 0.1, 0.1, 0.
+10, 0., 0., 0.1
+11, 0.05, 0., 0.1
+12, 0.1, 0., 0.1
+13, 0., 0.05, 0.1
+14, 0.05, 0.05, 0.1
+15, 0.1, 0.05, 0.1
+16, 0., 0.1, 0.1
+17, 0.05, 0.1, 0.1
+18, 0.1, 0.1, 0.1
+*ELEMENT, TYPE=C3D8, ELSET=E
+1, 1, 2, 5, 4, 10, 11, 14, 13
+2, 2, 3, 6, 5, 11, 12, 15, 14
+3, 4, 5, 8, 7, 13, 14, 17, 16
+4, 5, 6, 9, 8, 14, 15, 18, 17
+*NSET, NSET=BASE
+1, 2, 3, 4, 5, 6, 7, 8, 9
+*NSET, NSET=TOP
+10, 11, 12, 13, 14, 15, 16, 17, 18
+*MATERIAL, NAME=M
+*HYPERELASTIC, OGDEN, N=1
+2.E6, 2., 1.0909091E-6
+*SOLID SECTION, ELSET=E, MATERIAL=M
+*BOUNDARY
+BASE, 1, 3
+*STEP, NLGEOM, INC=100
+*STATIC
+0.1, 1.
+*BOUNDARY
+TOP, 3, 3, 1.E-4
+*NODE PRINT, NSET=TOP, TOTALS=ONLY
+RF
+*END STEP
