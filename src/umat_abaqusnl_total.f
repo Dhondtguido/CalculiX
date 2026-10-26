@@ -64,11 +64,11 @@
       real*8 elconloc(*),stiff(21),emec(6),emec0(6),beta(6),stre(6),
      &     vj,t1l,dtime,xkl(3,3),xokl(3,3),voj,pgauss(3),orab(7,*),
      &     time,ttime,skl(3,3),scc(3,3),ya(3,3,3,3),z(3,3),depvisc,
-     &     xstateini(nstate_,mi(1),*),w(3),fv1(3),fv2(3),d(6),c(3,3),
-     &     v1,v2,v3,eln(6),e(3,3),tkl(3,3),u(6),c2(6),dd,um1(3,3),
+     &     xstateini(nstate_,mi(1),*),w(3),d(6),c(3,3),
+     &     eln(6),e(3,3),tkl(3,3),um1(3,3),
      &     expansion,ctot(3,3),ddsdde(6,6),spd,rpl,pnewdt,stran(6),temp,
      &     xstate(nstate_,mi(1),*),xm1(6),xm2(6),plconloc(802),
-     &     xm3(6),wum1(3),weln(3),um1new(3,3),xa(3,3),ym1(3,3),
+     &     xm3(6),wum1(3),weln(3),xa(3,3),ym1(3,3),
      &     ym2(3,3),ym3(3,3),sccum1(3,3),cm1(3,3),um1sccum1(3,3),
      &     c4(21),d4(21),dxm1dc(21),dxm2dc(21),dxm3dc(21),
      &     dum1dc(21),delndc(21),dum1dcexp(3,3,3,3),delndcexp(3,3,3,3),
@@ -109,7 +109,6 @@
       e(2,1)=emec(4)
       e(3,1)=emec(5)
       e(3,2)=emec(6)
-c      write(*,*) 'umat_abaqusnl_total ',(emec(i),i=1,6)
 !     
 !     calculating the eigenvalues and eigenvectors
 !     
@@ -508,13 +507,51 @@ c     &           skl(i,3)*um1(3,j)
           dwum1(i)=-wum1(i)/(2.d0*w(i))
         enddo
 !
-!       calculating A, B, dM_i/dC, dU^{-1}/dC and dln(e)/dC
+!       calculating dU^{-1}/dC and dln(e)/dC
 !       (all of them symmetric, i.e. 21 constants)
 !
-c          write(*,*) 'eigenvalues ',w(1),w(2),w(3)
+!       Touco start (still to check)
+!
+!!       Deformation plasticity: evaluate the Frechet derivatives directly
+!!       with spectral divided differences. This avoids cancellation in
+!!       eigenprojector derivatives for nearly coincident eigenvalues.
+!!
+!          do jj=1,21
+!            j1=kel(1,jj)
+!            j2=kel(2,jj)
+!            j3=kel(3,jj)
+!            j4=kel(4,jj)
+!            dum1dc(jj)=0.d0
+!            delndc(jj)=0.d0
+!            do i=1,3
+!              do j=1,3
+!                v1=z(j1,i)*z(j2,j)*
+!     &               (z(j3,i)*z(j4,j)+z(j4,i)*z(j3,j))/2.d0
+!                dum1dc(jj)=dum1dc(jj)-v1*wum1(i)*wum1(j)/
+!     &               (dsqrt(w(i))+dsqrt(w(j)))
+!!
+!!               ln(w_i)-ln(w_j) = 2*atanh((w_i-w_j)/(w_i+w_j)).
+!!               The short series is accurate to roundoff below 1.e-3,
+!!               and includes the equal-eigenvalue limit.
+!!
+!                v2=(w(i)-w(j))/(w(i)+w(j))
+!                if(dabs(v2).lt.1.d-3) then
+!                  v3=(1.d0+v2**2/3.d0+v2**4/5.d0)/
+!     &                 (w(i)+w(j))
+!                else
+!                  v3=(weln(i)-weln(j))/(w(i)-w(j))
+!                endif
+!                delndc(jj)=delndc(jj)+v1*v3
+!              enddo
+!            enddo
+!          enddo
+!
+!          Touco end
+!
+!          to replace start
+!
         if((dabs(w(1)-w(2)).lt.1.d-10).and.
      &       (dabs(w(2)-w(3)).lt.1.d-10)) then
-c          write(*,*) 'w(1)=w(2)=w(3) ',w(1),w(2),w(3)
 !
 !         three equal eigenvalues
 !     
@@ -523,7 +560,6 @@ c          write(*,*) 'w(1)=w(2)=w(3) ',w(1),w(2),w(3)
             delndc(jj)=d4(jj)*dweln(1)
           enddo
         elseif(dabs(w(1)-w(2)).lt.1.d-10) then
-c          write(*,*) 'w(1)=w(2)!=w(3) ',w(1),w(2),w(3)
 !
 !         first and second eigenvalue are equal    
 !         (M3 o I + I o M3)'    
@@ -649,7 +685,6 @@ c           write(*,*) 'w(2)!=w(1)=w(3) ',w(1),w(2),w(3)
      &           dweln(3)*(d4(jj)+ym24(jj)-c4(jj))
           enddo
        else
-c           write(*,*) 'w(1)!=w(2)!=w(3)!=w(1) ',w(1),w(2),w(3)
 !
 !         derivative of c*c w.r.t. c (symmetric 4th order tensor)     
 !     
@@ -701,6 +736,9 @@ c           write(*,*) 'w(1)!=w(2)!=w(3)!=w(1) ',w(1),w(2),w(3)
      &           +ym34(jj)*dweln(3)+weln(3)*dxm3dc(jj)
           enddo
         endif
+!
+!          to replace end
+!
 !     
 !        expanding dum1dc(21), delndc(21) and stiff(21) into     
 !        dum1dcexp(3,3,3,3), delndcexp(3,3,3,3) and stiffexp(3,3,3,3) 
@@ -762,16 +800,6 @@ c           write(*,*) 'w(1)!=w(2)!=w(3)!=w(1) ',w(1),w(2),w(3)
          stiff(19)=(stiffasym(19)+stiffasym(35))/2.d0
          stiff(20)=(stiffasym(20)+stiffasym(36))/2.d0
          stiff(21)=stiffasym(21)
-c
-c         write(*,*) 'umat_abaqusnl_total'
-c         do i=1,21
-cc     write(*,*) i,stiff(i),stiffasym(i)
-c           write(*,'(i5,5(1x,e11.4))') i,stiff(i),
-c     &          dabs(stiff(i)-stiffasym(i))/dabs(stiff(i)),
-c     &          vj*term1(i)/expansion**2,
-c     &          vj*2.d0*term24(i)/expansion**2,
-c     &          vj*2.d0*term3(i)/expansion**2
-c         enddo
 !     
        endif
 !     

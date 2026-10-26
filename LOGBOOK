@@ -5668,3 +5668,5 @@ Dec 2002        - started to work on single crystal plasticity
  23 Oct 2026    - made a correction in umat_abaqusnl_total.f: transformation
                   has to be applied to the corotational stress before
 		  applying the pull-back with U^{-1}
+		- replaced the PK2-stress by the mechanical PK2-stress in
+		  umat_abaqusnl_total.f (only for large deformations)
