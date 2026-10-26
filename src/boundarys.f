@@ -349,6 +349,20 @@
               return
             endif
           endif
+!
+!     degree of freedom 8 is mapped onto 4, the rotation about x in
+!     a structure; mi(2)<4 means that there are neither fluid elements
+!     nor electromagnetic steps
+!
+          if((ibounstart.le.8).and.(ibounend.ge.8).and.(mi(2).lt.4))
+     &         then
+            write(*,*) '*ERROR reading *BOUNDARY: degree of freedom 8'
+            write(*,*) '       can only be used in CFD and'
+            write(*,*) '       electromagnetic calculations'
+            call inputerror(inpc,ipoinpc,iline,
+     &           "*BOUNDARY%",ier)
+            return
+          endif
 !     
           if(textpart(4)(1:1).eq.' ') then
             bounval=0.d0
