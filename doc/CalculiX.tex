@@ -10901,7 +10901,8 @@ strain. Because tensile and compressive test results coincide well when
 plotting the Cauchy (true) stress versus the logarithmic strain, these quantities are generally used in the deformation plasticity law. 
 The implementation in CalculiX (keyword card \htmlref{*DEFORMATION
   PLASTICITY}{deformationplasticity}) implicitly uses the Abaqus interface in
-CalculiX for large deformations. The three-dimensional extension of the
+CalculiX for large deformations, i.e. the parameter NLGEOM on the *STEP card
+is automatically activated. The three-dimensional extension of the
 Ramberg-Osgood law reads \cite{ABAQUS}:
 
 \begin{equation}
@@ -18966,6 +18967,30 @@ containing the eigenfrequencies, the eigenmodes, the stiffness and the mass
 matrix with the name jobname.eig. If the step is a *MODAL DYNAMIC or *STEADY
 STATE DYNAMICS step, CalculiX will look for a file with that name. If any of the files it needs does not exist, an error message is generated and CalculiX will stop.
 
+\begin{table}
+\caption{Maximum length in characters of some entities.\label{maxlen}}
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+ entity & maximum number of characters\\
+\hline
+integer number & 10 \\
+real number & 20 \\
+\hline
+dflux, dload, film &  \\
+MPC, radiate labels & 20 \\
+\hline
+amplitude, objective  & \\
+set, surface, tie labels & 80 \\
+\hline
+any line & 1320 \\
+any field on a line &  \\
+(separated by commata) & 132  \\
+\hline
+\end{tabular}
+\end{center}        
+\end{table}
+
 The input deck basically consists of a set of keywords, followed by
 data required by the keyword on lines underneath the keyword. The
 keywords can be accompanied by parameters on the same line, separated
@@ -18976,7 +19001,10 @@ alphanumeric information can be written in upper
 case, lower case, or any mixture. The input deck is case insensitive:
 internally, all alphanumeric characters are changed into upper
 case. The data do not follow a fixed format and are to be separated by
-a comma. A line can only contain as many data as dictated by the keyword definition. The maximum length for user-defined names, e.g. for materials or sets, is 80 characters, unless specified otherwise.The structure of an input deck consists of geometric, topological and material data before the first step definition, and loading data (mechanical, thermal, or prescribed displacements) in one or more subsequent steps. The user must make sure that all data are given in consistent units (the units do not appear in the calculation).
+a comma. A line can only contain as many data as dictated by the keyword
+definition. The maximum length for user-defined names, e.g. for materials or
+sets, is 80 characters, unless specified otherwise. The reader is referred to
+Table \ref{maxlen} for the character length of other fields. The structure of an input deck consists of geometric, topological and material data before the first step definition, and loading data (mechanical, thermal, or prescribed displacements) in one or more subsequent steps. The user must make sure that all data are given in consistent units (the units do not appear in the calculation).
 
 A keyword can be of type step or model definition. Model Definition
 cards must be used before the first *STEP card. Step keywords can only
