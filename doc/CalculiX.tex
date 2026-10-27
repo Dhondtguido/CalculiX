@@ -10866,7 +10866,25 @@ should be used to define the value of absolute zero temperature.
 \subsubsection{\label{hel}Hyperelastic and hyperfoam materials}
 
 Hyperelastic materials are materials for which a potential function exists such that the second Piola-Kirchhoff stress tensor can be written as the derivative of this potential with respect to the Lagrangian strain tensor. This definition includes linear elastic materials, although the term hyperelastic material is usually reserved for proper nonlinear elastic materials. 
-One important class constitutes the isotropic hyperelastic materials, for which the potential function is a function of the strain invariants only. All rubber material models presently included in CalculiX are of that type (Arruda-Boyce, Mooney-Rivlin, Neo Hooke, Ogden, Polynomial, Reduced Polynomial and Yeoh). They are selected by the keyword \htmlref{*HYPERELASTIC}{hyperelastic}. Rubber materials are virtually incompressible (virtually no dependence on the third Lagrangian strain invariant which takes values close to 1). The dependence on the third invariant (the compressibility) is separated from the dependence on the first two invariants and is governed by so called compressibility coefficients, taking the value 0 for perfectly incompressible materials. Perfectly incompressible materials require the use of hybrid finite elements, in which the pressure is taken as an additional independent variable (in addition to the displacements). CalculiX does not provide such elements. Consequently, a slight amount of compressibility is required for CalculiX to work. If the user inserts zero compressibility coefficients, CalculiX uses a default value corresponding to an initial value of the Poisson coefficient of 0.475.
+One important class constitutes the isotropic hyperelastic materials, for
+which the potential function is a function of the strain invariants only. All
+rubber material models presently included in CalculiX are of that type
+(Arruda-Boyce, Mooney-Rivlin, Neo Hooke, Ogden, Polynomial, Reduced Polynomial
+and Yeoh). They are selected by the keyword
+\htmlref{*HYPERELASTIC}{hyperelastic}. Rubber materials are virtually
+incompressible (virtually no dependence on the third Lagrangian strain
+invariant which takes values close to 1). The dependence on the third
+invariant (the compressibility) is separated from the dependence on the first
+two invariants and is governed by so called compressibility coefficients,
+taking the value 0 for perfectly incompressible materials. Perfectly
+incompressible materials require the use of hybrid finite elements, in which
+the pressure is taken as an additional independent variable (in addition to
+the displacements). CalculiX does not provide such elements. Consequently, a
+slight amount of compressibility is required for CalculiX to work. If the user
+inserts a zero compressibility coefficient $D_1$ (actually $< 1.e-30$), CalculiX uses a default
+value corresponding to an initial value of the Poisson coefficient of
+0.475. If the compressibility coefficient $D_2$ or $D_3$ is zero (actually $< 1.e-30$), the program
+throws an error and stops.
 
 Another example of isotropic hyperelastic materials are the hyperfoam materials, which are also implemented in CalculiX (activated by the keyword \htmlref{*HYPERFOAM}{hyperfoam}). Hyperfoam materials are very compressible.
 
@@ -25665,6 +25683,12 @@ Denoting the principal stretches by $\lambda_1$, $\lambda_2$ and $\lambda_3$ ($\
 \begin{equation}
 U=\sum_{i=1}^{N} \frac{2 \mu_i}{\alpha_i^2}(\bar{\lambda}_1^{\alpha_i}+\bar{\lambda}_2^{\alpha_i}+\bar{\lambda}_3^{\alpha_i}-3)+\sum_{i=1}^{N}\frac{1}{D_i}(J-1)^{2i}.
 \end{equation}
+
+The parameters $D_i$ are the compressibility coefficients. If the user enters
+$D_1<1.e-30$, $D_1$ is replaced by a default corresponding to a Poisson
+coefficient of 0.475 in the initial state  \cite{Dhondt}. If
+$D_2<1.e-30$ (for $N>1$) or $D_3<1.e-30$ (for $N>2$), the program throws an
+error and stops.
 
 The input deck for a hyperelastic material looks as follows:
 \bigskip

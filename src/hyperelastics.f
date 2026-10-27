@@ -264,8 +264,8 @@
          do i=1,3
             k=jcoef(i,abs(ityp))
             if(k.eq.0) exit
-            if(dabs(elcon(k,j,nmat)).lt.1.d-10) then
-               elcon(k,j,nmat)=max(1.d-10,(0.1d0)**i/um)
+            if((i.eq.1).and.((elcon(k,j,nmat)).lt.1.d-30)) then
+               elcon(k,j,nmat)=max(1.d-30,0.1d0/um)
                write(*,*) 
      &             '*WARNING reading *HYPERELASTIC: default value was'
                write(*,*) '         used for compressibility coefficient
@@ -274,14 +274,22 @@
                write(*,*) '         (units: [L][L]/[F]).'
                if(i.eq.1) then
                  write(*,*) '         This corresponds to a Poisson'
-                 write(*,*) '         coefficient of 0.475'
+                 write(*,*) '         coefficient in the initial'
+                 write(*,*) '         state of 0.475'
                endif
                write(*,*)
+             elseif((i.gt.1).and.((elcon(k,j,nmat)).lt.1.e-30)) then
+               write(*,*) '*ERROR reading *HYPERELASTIC:'
+               write(*,101) i,elcon(k,j,nmat)
+               ier=1
+               return
             endif
          enddo
       enddo
 !
  100  format('   D',i1,' = ',e11.4)
+ 101  format('        compressibility coefficient D',i1,/,
+     &       '        is smaller than 1.e-30: ',e11.4)
 !
       return
       end
