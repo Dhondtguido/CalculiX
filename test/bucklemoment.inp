@@ -1,0 +1,36 @@
+**
+**   Structure: one B31 cantilever.
+**   Test objective: moment in a static step, a *BUCKLE step, the
+**                   moment again: one mean rotation MPC, u = M L^2/(2EI)
+**
+*NODE, NSET=NALL
+1, 0., 0., 0.
+2, 0., 0., 1.
+*ELEMENT, TYPE=B31, ELSET=B
+1, 1, 2
+*BEAM SECTION, ELSET=B, MATERIAL=M, SECTION=RECT
+0.2, 0.3
+1., 0., 0.
+*MATERIAL, NAME=M
+*ELASTIC
+1000., 0.3
+*BOUNDARY
+1, 1, 6
+*STEP
+*STATIC
+*CLOAD
+2, 4, 0.1
+*END STEP
+*STEP
+*BUCKLE
+2
+*CLOAD
+2, 3, -1.
+*END STEP
+*STEP
+*STATIC
+*CLOAD
+2, 4, 0.2
+*NODE PRINT, NSET=NALL
+U
+*END STEP

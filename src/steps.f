@@ -18,6 +18,7 @@
 !
       subroutine steps(inpc,textpart,iperturb,iprestr,nbody,
      &  nforc,nload,ithermal,t0,t1,nk,irstrt,istep,istat,n,jmax,ctrl,
+     &  xforc,
      &  iline,ipol,inl,ipoinp,inp,newstep,ipoinpc,network,
      &  iamplitudedefault,amname,nam,nam_,namta,amta,namtot,
      &  nstam,ier,namtot_,physcon)
@@ -36,7 +37,7 @@
      &  newstep,nbody,ipoinpc(0:*),network,iamplitudedefault,nam,
      &  nam_,namta(3,*),namtot,nstam,ier
 !
-      real*8 t0(*),t1(*),ctrl(*),amta(2,*),physcon(*)
+      real*8 t0(*),t1(*),ctrl(*),amta(2,*),physcon(*),xforc(*)
 !
       if(newstep.eq.1) then
          write(*,*) '*ERROR reading *STEP: *STEP statement detected'
@@ -142,9 +143,14 @@
             write(*,*) '      effects are turned on'
             write(*,*)
 !
-!           removing the present loading (check!!)
+!           removing the present loading (check!!); the point loads
+!           are set to zero instead of being removed, since the load
+!           entries of moments on beam and shell nodes are linked to
+!           their mean rotation MPC's (gen3dforc.f), which stay
 !
-            nforc=0
+            do j=1,nforc
+               xforc(j)=0.d0
+            enddo
 c   change on 26012024            
 c            iprestr=0
             if((ithermal(1).eq.1).or.(ithermal(1).eq.3)) then
