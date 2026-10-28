@@ -16,6 +16,7 @@
 /*     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.         */
 
 #include <pthread.h>
+#include <stdio.h>
 
 #define Linux 1
 #define IRIX 2
@@ -70,6 +71,9 @@
 #define ITG int
 #define ITGFORMAT "d"
 #endif
+
+/* compile time of the executable, defined in buildinfo.c */
+extern const char ccx_compiletime[];
 
 void FORTRAN(actideacti,(char *set,ITG *nset,ITG *istartset,ITG *iendset,
                          ITG *ialset,char *objectset,ITG *ipkon,ITG *ibject,
@@ -1223,6 +1227,10 @@ void dealloc_cal(ITG *ncs_,ITG **icsp,ITG *mcs,double **csp,
 		 double **coinip,ITG *ndmat_,ITG **ndmconp,double **dmconp,
 		 double **damp);
 
+void densify(double *A, const ITG *n, const double *ad, const double *au,
+             const ITG *irow, const ITG *jq, const ITG *nzs,
+             const ITG *inputformat);
+
 void FORTRAN(desiperelem,(ITG *ndesi,ITG *istartdesi,ITG *ialdesi,
                           ITG *ipoeldi,ITG *ieldi,ITG *ne,
                           ITG *istartelem,ITG *ialelem));
@@ -1242,6 +1250,10 @@ void dfdbj(double *bcont,double **dbcontp,ITG *neq,ITG *nope,
            double *coefmpc,double *fnl,ITG *nev,
            ITG **ikactcontp,ITG **ilactcontp,ITG *nactcont,ITG *nactcont_,
            ITG *mi,ITG *cyclicsymmetry,ITG *izdof,ITG *nzdof);
+
+void FORTRAN(dgesdd,(char *jobz,ITG *m,ITG *n,double *A,ITG *lda,double *s,
+                     double *u, ITG *ldu,double *vt, ITG *ldvt, double *work,
+                     ITG *lwork, ITG *IWORK, ITG *info));
       
 void FORTRAN(dgesv,(ITG *nteq,ITG *nhrs,double *ac,ITG *lda,ITG *ipiv,
                      double *bc,ITG *ldb,ITG *info)); 
@@ -1962,6 +1974,10 @@ void FORTRAN(gentiedmpc,(char *tieset,ITG *ntie,ITG *itietri,ITG *ipkon,
 void FORTRAN(geomview,(double *vold,double *co,double *pmid,double *e1,
              double *e2,double *e3,ITG *kontri,double *area,double *cs,
              ITG *mcs,ITG *inocs,ITG *ntrit,ITG *nk,ITG *mi,double *sidemean));
+
+double getcond(const ITG *n, const double *ad, const double *au,
+               const ITG *irow, const ITG *jq, const ITG *nzs,
+               const ITG *inputformat, ITG *ierr);
 
 void FORTRAN(getbasis,(double *xmin,double *ymin,double *zmin,double *charlen,
 		       ITG *node,double *cotet,ITG *ifatet,ITG *itetfa,

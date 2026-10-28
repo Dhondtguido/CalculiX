@@ -283,6 +283,9 @@ void filterforwardmain(double *co,double *gradproj,ITG *nk,
     SFREE(weighting);SFREE(irowf);SFREE(jqf);SFREE(icolf);SFREE(adf);
     SFREE(auf);SFREE(xo);SFREE(yo);SFREE(zo);SFREE(x);SFREE(y);SFREE(z);
     SFREE(nx);SFREE(ny);SFREE(nz);SFREE(temparray);
+    
+    SFREE(au),SFREE(ad);SFREE(aub);SFREE(adb);SFREE(irow);SFREE(jq);SFREE(icol);
+    SFREE(rhs);SFREE(area);
 
   /*--------------------------------------------------------------------------*/
   /* Implicit Filtering                                                       */
@@ -416,24 +419,36 @@ void filterforwardmain(double *co,double *gradproj,ITG *nk,
 
 
     /* free the fields */
-    
-    SFREE(au),SFREE(ad);SFREE(aub);SFREE(adb);SFREE(irow);SFREE(jq);SFREE(icol);
-    SFREE(rhs);SFREE(area);
 
-  /*--------------------------------------------------------------------------*/
-  /* No filtering                                                             */
-  /*--------------------------------------------------------------------------*/
+    SFREE(au),SFREE(ad);SFREE(aub);SFREE(adb);SFREE(irow);SFREE(jq);SFREE(icol);
+    SFREE(rhs);SFREE(area);SFREE(adb2);SFREE(aub2);
+
+    /*--------------------------------------------------------------------------*/
+    /* No filtering */
+    /*--------------------------------------------------------------------------*/
   
   }else{
 
     printf(" No filtering, taking feasible direction directly\n\n");
+
+    /* Multiply the feasible direction with the mass matrix and copy to rhs */
+
+    NNEW(rhs,double,*ndesi);
+    iflag=0;
+    FORTRAN(filterforward_imp,(ad,au,adb,aub,feasdir,gradproj,rhs,ndesi,
+                               nodedesi,&iflag,jq,irow,objectset));
 
     /* copying of unfiltered sensitivities in dgdxglob 
        --> routine "filterforward_imp.f" can be used therfore too */
        
     iflag=1;
     FORTRAN(filterforward_imp,(ad,au,adb,aub,feasdir,gradproj,rhs,ndesi,
-                               nodedesi,&iflag,jq,irow,objectset));  
+                               nodedesi,&iflag,jq,irow,objectset));
+
+    /* free the fields */
+    
+    SFREE(au),SFREE(ad);SFREE(aub);SFREE(adb);SFREE(irow);SFREE(jq);SFREE(icol);
+    SFREE(rhs);SFREE(area);
 
   }
   

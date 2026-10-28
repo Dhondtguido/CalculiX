@@ -359,8 +359,8 @@
             write(*,*) '       element number: ',nelem
             call exit(201)
           endif
-          if((prop(index+3).gt.5000.d0)
-     &         .or.(prop(index+3).lt.0.d0)) then
+          if((prop(index+4).gt.5000.d0)
+     &         .or.(prop(index+4).lt.0.d0)) then
             write(*,*) '*ERROR in checkinputvaluesnet:'
             write(*,*) '       the selected diameter d'
             write(*,*) '       for the labyrinth is not correct'
@@ -378,8 +378,8 @@
             write(*,*) '       element number: ',nelem
             call exit(201)
           endif
-          if((prop(index+5).gt.100.d0)
-     &         .or.(prop(index+5).lt.0.d0)) then
+          if((prop(index+6).gt.100.d0)
+     &         .or.(prop(index+6).lt.0.d0)) then
             write(*,*) '*ERROR in checkinputvaluesnet:'
             write(*,*) '       the selected spike breadth'
             write(*,*) '       for the labyrinth is not correct'
@@ -387,17 +387,17 @@
             write(*,*) '       element number: ',nelem
             call exit(201)
           endif
-          if((prop(index+6).gt.9.d0)
-     &         .or.(prop(index+6).lt.0.d0)) then
+          if((prop(index+7).gt.9.d0)
+     &         .or.(prop(index+7).lt.0.d0)) then
             write(*,*) '*ERROR in checkinputvaluesnet:'
             write(*,*) '       the selected spike height'
             write(*,*) '       for the labyrinth is not correct'
-            write(*,*) '       0<=b<=20 mm'
+             write(*,*) '       0<=h<=20 mm'
             write(*,*) '       element number: ',nelem
             call exit(201)
           endif
-          if((prop(index+7).gt.4.d0)
-     &         .or.(prop(index+7).lt.0.d0)) then
+          if((prop(index+8).gt.4.d0)
+     &         .or.(prop(index+8).lt.0.d0)) then
             write(*,*) '*ERROR in checkinputvaluesnet:'
             write(*,*) '       the selected Honeycomb cell width'
             write(*,*) '       for the labyrinth is not correct'
@@ -405,8 +405,8 @@
             write(*,*) '       element number: ',nelem
             call exit(201)
           endif
-          if((prop(index+8).gt.5.d0)
-     &         .or.(prop(index+8).lt.0.d0)) then
+          if((prop(index+9).gt.5.d0)
+     &         .or.(prop(index+9).lt.0.d0)) then
             write(*,*) '*ERROR in checkinputvaluesnet:'
             write(*,*) '       the selected edge radius'
             write(*,*) '       for the labyrinth is not correct'
@@ -414,8 +414,8 @@
             write(*,*) '       element number: ',nelem
             call exit(201)
           endif
-          if((prop(index+9).gt.100.d0)
-     &         .or.(prop(index+9).lt.0.d0)) then
+          if((prop(index+10).gt.100.d0)
+     &         .or.(prop(index+10).lt.0.d0)) then
             write(*,*) '*ERROR in checkinputvaluesnet:'
             write(*,*) '       the selected position of the spike'
             write(*,*) '       for the labyrinth is not correct'
@@ -423,13 +423,43 @@
             write(*,*) '       element number: ',nelem
             call exit(201)
           endif
-          if((prop(index+10).gt.100.d0)
-     &         .or.(prop(index+10).lt.0.d0)) then
+          if(lakon(nelem)(2:6).eq.'LABSP'.and.
+     &         ((prop(index+11).gt.100.d0)
+     &         .or.(prop(index+11).le.0.d0))) then
             write(*,*) '*ERROR in checkinputvaluesnet:'
             write(*,*) '       the selected height of the step'
             write(*,*) '       for the labyrinth is not correct'
-            write(*,*) '       0<=Hst<=0.1 mm'
+             write(*,*) '       0<Hst<=100. mm'
             write(*,*) '       element number: ',nelem
+             call exit(201)
+          endif
+!
+       elseif(lakon(nelem)(2:5).eq.'LABF')then
+!
+          if((nint(prop(index+1)).eq.0).and.
+     &         (nint(prop(index+2)).eq.0).and.
+     &         (nint(prop(index+3)).eq.0).and.
+     &         (nint(prop(index+4)).eq.0))then
+             write(*,*)
+     &            '*ERROR in checkinputvaluesnet: ',
+     &            'all rad nodes of the flexible element are undef'
+             write(*,*) '       please check element: ',nelem
+             call exit(201)             
+          endif
+          if((nint(prop(index+5)).eq.0).and.
+     &         (nint(prop(index+6)).eq.0).and.
+     &         (nint(prop(index+7)).eq.0).and.
+     &         (nint(prop(index+8)).eq.0))then
+             write(*,*)
+     &            '*WARNING in checkinputvaluesnet: ',
+     &            'all ax nodes of the flexible element are undef'
+             write(*,*) '       please check element: ',nelem             
+          endif
+          if((nint(prop(index+22)).gt.1))then
+             write(*,*)
+     &            '*ERROR in checkinputvaluesnet: ',
+     &            'the choosen gap method is not supported'
+             write(*,*) '       please check element: ',nelem
             call exit(201)
           endif
 !     

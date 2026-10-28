@@ -1019,6 +1019,7 @@ dam1parll.c \
 dam2parll.c \
 dealloc_cal.c \
 decascade_mortar.c \
+densify.c \
 dfdbj.c \
 dgmresmain.c \
 divparll.c \
@@ -1043,6 +1044,7 @@ frdset.c \
 frdvector.c \
 frecord.c \
 genrandmain.c \
+getcond.c \
 getglobalresults.c \
 getlocalresults.c \
 getSystemCPUs.c \
