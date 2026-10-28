@@ -72,8 +72,8 @@ void filterforwardmain(double *co,double *gradproj,ITG *nk,
 
   ITG *nx=NULL,*ny=NULL,*nz=NULL,i,j,*irow=NULL,*icol=NULL,
     *ipointer=NULL,nzs,symmetryflag=0,iflag,inputformat=0,nrhs=1,
-    *mast=NULL,*nodedesipos=NULL,*jq=NULL,
-    *irowf=NULL,*icolf=NULL,*jqf=NULL,ndesifaces,*idesiface=NULL;
+    *mast=NULL,*nodedesipos=NULL,*jq=NULL,ifilter,*irowf=NULL,
+    *icolf=NULL,*jqf=NULL,ndesifaces,*idesiface=NULL;
         
   double *xo=NULL,*yo=NULL,*zo=NULL,*x=NULL,*y=NULL,*z=NULL,
     filterrad=0,*ad=NULL,*adb=NULL,*aub=NULL,*adb2=NULL,*aub2=NULL,
@@ -135,103 +135,117 @@ void filterforwardmain(double *co,double *gradproj,ITG *nk,
   
   pthread_t tid[num_cpus];
 
-  /*--------------------------------------------------------------------------*/
-  /* Determination of mass matrix M and it's derivative K		      */
-  /*--------------------------------------------------------------------------*/
-
-  /* Determine position of designvariables in nodedesi */
+  /* check if filter is defined */
   
-  NNEW(nodedesipos,ITG,*nk);
-  for(i=0;i<*ndesi;i++){
-    nodedesipos[nodedesi[i]-1]=i+1;
+  if((strcmp1(&objectset[89],"E")==0)||(strcmp1(&objectset[89],"I")==0)){
+    ifilter=1;
+  }else{
+    ifilter=0;
   }
   
-  /* Catalogue all external faces containing design variables */
+  /* if a filter is defined (ifilter=1), calc M and K */
   
-  NNEW(idesiface,ITG,*nsurfs);
+  if(ifilter==1){
   
-  FORTRAN(identdesifaces,(iregion,nsurfs,ipkonfa,lakonfa,konfa,&ndesifaces,
-  			  idesiface,nodedesiinv));
-  
-  RENEW(idesiface,ITG,ndesifaces);
-  
-  /* define the non-zero entries (both matrices have the same structure) */ 
+    /*--------------------------------------------------------------------------*/
+    /* Determination of mass matrix M and it's derivative K		      */
+    /*--------------------------------------------------------------------------*/
 
-  nzs=20000000;
-  NNEW(mast,ITG,nzs);
-  NNEW(irow,ITG,1);
-  NNEW(icol,ITG,*ndesi);
-  NNEW(jq,ITG,*ndesi+1);
-  NNEW(ipointer,ITG,*ndesi);
-
-  mastructmm(icol,jq,&mast,&irow,ipointer,&nzs,ndesi,nodedesi,iponoelfa,
-             inoelfa,nk,lakonfa,konfa,ipkonfa,nodedesiinv,nodedesipos);
-  					      
-  SFREE(mast);SFREE(ipointer);    
-  RENEW(irow,ITG,nzs);
-  NNEW(aub,double,nzs);  
-  NNEW(adb,double,*ndesi);
-  NNEW(au,double,nzs);
-  NNEW(ad,double,*ndesi);
-  NNEW(aub1,double,(long long)num_cpus*nzs);  
-  NNEW(adb1,double,num_cpus**ndesi);
-  NNEW(au1,double,(long long)num_cpus*nzs);
-  NNEW(ad1,double,num_cpus**ndesi);
-  NNEW(area,double,*ndesi);
-  NNEW(area1,double,num_cpus**ndesi);
+    /* Determine position of designvariables in nodedesi */
   
-  /* calculate the entries of the filter matrix */
+    NNEW(nodedesipos,ITG,*nk);
+    for(i=0;i<*ndesi;i++){
+      nodedesipos[nodedesi[i]-1]=i+1;
+    }
+  
+    /* Catalogue all external faces containing design variables */
+  
+    NNEW(idesiface,ITG,*nsurfs);
+  
+    FORTRAN(identdesifaces,(iregion,nsurfs,ipkonfa,lakonfa,konfa,&ndesifaces,
+  			    idesiface,nodedesiinv));
+  
+    RENEW(idesiface,ITG,ndesifaces);
+  
+    /* define the non-zero entries (both matrices have the same structure) */ 
+
+    nzs=20000000;
+    NNEW(mast,ITG,nzs);
+    NNEW(irow,ITG,1);
+    NNEW(icol,ITG,*ndesi);
+    NNEW(jq,ITG,*ndesi+1);
+    NNEW(ipointer,ITG,*ndesi);
+
+    mastructmm(icol,jq,&mast,&irow,ipointer,&nzs,ndesi,nodedesi,iponoelfa,
+               inoelfa,nk,lakonfa,konfa,ipkonfa,nodedesiinv,nodedesipos);
+  		  			      
+    SFREE(mast);SFREE(ipointer);    
+    RENEW(irow,ITG,nzs);
+    NNEW(aub,double,nzs);  
+    NNEW(adb,double,*ndesi);
+    NNEW(au,double,nzs);
+    NNEW(ad,double,*ndesi);
+    NNEW(aub1,double,(long long)num_cpus*nzs);  
+    NNEW(adb1,double,num_cpus**ndesi);
+    NNEW(au1,double,(long long)num_cpus*nzs);
+    NNEW(ad1,double,num_cpus**ndesi);
+    NNEW(area,double,*ndesi);
+    NNEW(area1,double,num_cpus**ndesi);
+  
+    /* calculate the entries of the filter matrix */
         		  
-  ndesi1=ndesi;nodedesi1=nodedesi;co1=co;iregion1=iregion;irow1=irow;
-  nodedesiinv1=nodedesiinv;icol1=icol;jq1=jq;nzs1=nzs;nsurfs1=nsurfs;
-  ipkonfa1=ipkonfa;konfa1=konfa;lakonfa1=lakonfa;nodedesipos1=nodedesipos;
-  idesiface1=idesiface;ndesifaces1=ndesifaces;
+    ndesi1=ndesi;nodedesi1=nodedesi;co1=co;iregion1=iregion;irow1=irow;
+    nodedesiinv1=nodedesiinv;icol1=icol;jq1=jq;nzs1=nzs;nsurfs1=nsurfs;
+    ipkonfa1=ipkonfa;konfa1=konfa;lakonfa1=lakonfa;nodedesipos1=nodedesipos;
+    idesiface1=idesiface;ndesifaces1=ndesifaces;
   
-  printf(" Using up to %" ITGFORMAT " cpu(s) for the mass matrix entries.\n\n", num_cpus);
+    printf(" Using up to %" ITGFORMAT " cpu(s) for the mass matrix entries.\n\n", num_cpus);
   
-  /* create threads and wait */
+    /* create threads and wait */
   
-  NNEW(ithread,ITG,num_cpus);
-  for(i=0; i<num_cpus; i++)  {
-    ithread[i]=i;     
-    pthread_create(&tid[i], NULL, (void *)mafillmmmt2, (void *)&ithread[i]);
-  }
-  for(i=0; i<num_cpus; i++)
-    pthread_join(tid[i], NULL);
-  
-  SFREE(ithread);
-  
-  /* copying accumulating the filter matrices from the different threads */
-  
-  for(i=0;i<*ndesi;i++){
-    for(j=0;j<num_cpus;j++){
-      ad[i]+=ad1[i+j**ndesi];
+    NNEW(ithread,ITG,num_cpus);
+    for(i=0; i<num_cpus; i++)  {
+      ithread[i]=i;     
+      pthread_create(&tid[i], NULL, (void *)mafillmmmt2, (void *)&ithread[i]);
     }
-  }
-  for(i=0;i<nzs;i++){
-    for(j=0;j<num_cpus;j++){
-      au[i]+=au1[i+(long long)j*nzs];
+    for(i=0; i<num_cpus; i++)
+      pthread_join(tid[i], NULL);
+  
+    SFREE(ithread);
+  
+    /* copying accumulating the filter matrices from the different threads */
+  
+    for(i=0;i<*ndesi;i++){
+      for(j=0;j<num_cpus;j++){
+        ad[i]+=ad1[i+j**ndesi];
+      }
     }
-  }
-  for(i=0;i<*ndesi;i++){
-    for(j=0;j<num_cpus;j++){
-      adb[i]+=adb1[i+j**ndesi];
+    for(i=0;i<nzs;i++){
+      for(j=0;j<num_cpus;j++){
+        au[i]+=au1[i+(long long)j*nzs];
+      }
     }
-  }
-  for(i=0;i<nzs;i++){
-    for(j=0;j<num_cpus;j++){
-      aub[i]+=aub1[i+(long long)j*nzs];
+    for(i=0;i<*ndesi;i++){
+      for(j=0;j<num_cpus;j++){
+        adb[i]+=adb1[i+j**ndesi];
+      }
     }
-  }
-  for(i=0;i<*ndesi;i++){
-    for(j=0;j<num_cpus;j++){
-      area[i]+=area1[i+j**ndesi];
+    for(i=0;i<nzs;i++){
+      for(j=0;j<num_cpus;j++){
+        aub[i]+=aub1[i+(long long)j*nzs];
+      }
     }
+    for(i=0;i<*ndesi;i++){
+      for(j=0;j<num_cpus;j++){
+        area[i]+=area1[i+j**ndesi];
+      }
+    }
+  
+    SFREE(ad1);SFREE(au1);SFREE(aub1);SFREE(adb1);SFREE(nodedesipos);
+    SFREE(idesiface);SFREE(area1);
+  
   }
   
-  SFREE(ad1);SFREE(au1);SFREE(aub1);SFREE(adb1);SFREE(nodedesipos);
-  SFREE(idesiface);SFREE(area1);
-
   /*--------------------------------------------------------------------------*/
   /* Explicit Filtering                                                       */
   /*--------------------------------------------------------------------------*/
@@ -300,7 +314,7 @@ void filterforwardmain(double *co,double *gradproj,ITG *nk,
     NNEW(rhs,double,*ndesi);
     iflag=0;
     FORTRAN(filterforward_imp,(ad,au,adb,aub,feasdir,gradproj,rhs,ndesi,
-                               nodedesi,&iflag,jq,irow,objectset));
+                               nodedesi,&iflag,jq,irow,objectset,&ifilter));
     
     /* Solve the system of equations */
 
@@ -388,7 +402,7 @@ void filterforwardmain(double *co,double *gradproj,ITG *nk,
 
     iflag=1;
     FORTRAN(filterforward_imp,(ad,au,adb,aub,feasdir,gradproj,rhs,ndesi,
-                               nodedesi,&iflag,jq,irow,objectset));
+                               nodedesi,&iflag,jq,irow,objectset,&ifilter));
 
     /* clean the system */
         
@@ -426,6 +440,7 @@ void filterforwardmain(double *co,double *gradproj,ITG *nk,
     /*--------------------------------------------------------------------------*/
     /* No filtering */
     /*--------------------------------------------------------------------------*/
+
   
   }else{
 
@@ -433,17 +448,13 @@ void filterforwardmain(double *co,double *gradproj,ITG *nk,
 
     /* Multiply the feasible direction with the mass matrix and copy to rhs */
 
-    NNEW(rhs,double,*ndesi);
-    iflag=0;
-    FORTRAN(filterforward_imp,(ad,au,adb,aub,feasdir,gradproj,rhs,ndesi,
-                               nodedesi,&iflag,jq,irow,objectset));
-
     /* copying of unfiltered sensitivities in dgdxglob 
        --> routine "filterforward_imp.f" can be used therfore too */
-       
+
+    NNEW(rhs,double,*ndesi);
     iflag=1;
     FORTRAN(filterforward_imp,(ad,au,adb,aub,feasdir,gradproj,rhs,ndesi,
-                               nodedesi,&iflag,jq,irow,objectset));
+                               nodedesi,&iflag,jq,irow,objectset,&ifilter));
 
     /* free the fields */
     
