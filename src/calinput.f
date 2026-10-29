@@ -1151,7 +1151,8 @@ c
      &       ialset,nset,t0,t1,nk,ithermal,iamt1,amname,nam,
      &       inoel2dfree,nk_,nmethod,temp_flag,istep,istat,n,iline,
      &       ipol,inl,ipoinp,inp,nam_,namtot_,namta,amta,ipoinpc,t1g,
-     &       iamplitudedefault,namtot,ier,itempuser,jobnamec,nuel_,co)
+     &       iamplitudedefault,namtot,ier,itempuser,jobnamec,nuel_,co,
+     &       t0g)
         temp_flag=.true.
 !     
       elseif(textpart(1)(1:4).eq.'*TIE') then
