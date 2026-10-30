@@ -74,9 +74,11 @@ void cascade(ITG *ipompc, double **coefmpcp, ITG **nodempcp, ITG *nmpc,
   idepend=0;
 
   /*        check whether a node is used as a dependent node in a MPC
-	    and in a SPC */
+	    and in a SPC. Skip RIGID BODY MPCs. */
 
   for(i=0;i<*nmpc;i++){
+    /* Skip RIGID BODY MPCs */
+    if(strcmp1(&labmpc[20*i],"RIGID")==0) continue;
     if(*nboun>0){
       FORTRAN(nident,(ikboun,&ikmpc[i],nboun,&id));}
     else{id=0;}

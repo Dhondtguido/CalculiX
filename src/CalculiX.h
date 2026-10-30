@@ -62,7 +62,7 @@
 /* reallocating memory; no initialization */
 #define RENEW(a,b,c) a=(b *)u_realloc((b *)(a),(c)*sizeof(b),__FILE__,__LINE__,#a)
 /* freeing memory */
-#define SFREE(a) u_free(a,__FILE__,__LINE__,#a)
+#define SFREE(a) ((a)=u_free(a,__FILE__,__LINE__,#a))
 
 #ifdef INTSIZE64
 #define ITG long long

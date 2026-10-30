@@ -228,8 +228,9 @@ c            tincf=1.d-2
          write(*,*) '       initial increment size is negative'
       endif
       if(tper.le.0.d0) then
-         write(*,*) '*ERROR reading *COUPLED TEMPERATURE-DISPLACEMENT:'
-         write(*,*) '       step size is negative'
+         write(*,*) '*WARNING reading *COUPLED TEMPERATURE-DISPLACEMENT:'
+         write(*,*) '       step size is zero or negative, resetting to 1.0'
+         tper=1.d0
       endif
       if(tinc.gt.tper) then
          write(*,*) '*ERROR reading *COUPLED TEMPERATURE-DISPLACEMENT:'
