@@ -23,7 +23,6 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
-#include <locale.h>
 #include "CalculiX.h"
 
 #ifdef CALCULIX_MPI
@@ -110,8 +109,6 @@ int main(int argc,char *argv[])
   MPI_Comm_size(MPI_COMM_WORLD, &nproc) ;
 #endif
 
-  setlocale(LC_NUMERIC,"C");
-  
   clock_gettime(CLOCK_MONOTONIC, &totalCalculixTimeStart);
 
   if(argc==1){printf("Usage: CalculiX.exe -i jobname\n");FORTRAN(stop,());}
@@ -158,7 +155,7 @@ int main(int argc,char *argv[])
   printf("software, and you are welcome to redistribute it under\n");
   printf("certain conditions, see gpl.htm\n\n");
   printf("************************************************************\n\n");
-  printf("You are using an executable made on Tue Oct 27 17:36:31 CET 2026\n");
+  printf("You are using an executable made on %s\n",ccx_compiletime);
   fflush(stdout);
 
   NNEW(ipoinp,ITG,2*nentries);

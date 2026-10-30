@@ -1,0 +1,75 @@
+{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "intel-llvm-ilp64",
+            "displayName": "Intel LLVM (integer size: 64-bit)",
+            "binaryDir": "${sourceDir}/build/intel-llvm-ilp64",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_C_COMPILER": "icx",
+                "CMAKE_Fortran_COMPILER": "ifx",
+                "CALCULIX_INT64": "ON",
+                "BLA_SIZEOF_INTEGER": "8",
+                "MKL": "ON"
+            }
+        },
+        {
+            "name": "intel-llvm-lp64",
+            "displayName": "Intel LLVM (integer size: 32-bit)",
+            "binaryDir": "${sourceDir}/build/intel-llvm-lp64",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_C_COMPILER": "icx",
+                "CMAKE_Fortran_COMPILER": "ifx",
+                "CALCULIX_INT64": "OFF",
+                "BLA_SIZEOF_INTEGER": "4",
+                "MKL": "ON"
+            }
+        },
+        {
+            "name": "gnu-ilp64",
+            "displayName": "GCC (integer size: 64-bit)",
+            "binaryDir": "${sourceDir}/build/gnu-ilp64",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_Fortran_COMPILER": "gfortran",
+                "CALCULIX_INT64": "ON",
+                "BLA_SIZEOF_INTEGER": "8",
+                "MKL": "OFF"
+            }
+        },
+        {
+            "name": "gnu-lp64",
+            "displayName": "GCC (integer size: 32-bit)",
+            "binaryDir": "${sourceDir}/build/gnu-lp64",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_Fortran_COMPILER": "gfortran",
+                "CALCULIX_INT64": "OFF",
+                "BLA_SIZEOF_INTEGER": "4",
+                "MKL": "OFF"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "intel-llvm-ilp64",
+            "configurePreset": "intel-llvm-ilp64"
+        },
+        {
+            "name": "intel-llvm-lp64",
+            "configurePreset": "intel-llvm-lp64"
+        },
+        {
+            "name": "gnu-ilp64",
+            "configurePreset": "gnu-ilp64"
+        },
+        {
+            "name": "gnu-lp64",
+            "configurePreset": "gnu-lp64"
+        }
+    ]
+}

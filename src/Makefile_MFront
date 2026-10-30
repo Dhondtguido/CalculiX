@@ -32,5 +32,10 @@ CalculiX_helfer: $(OCCXMAIN) libCalculiX_helfer.so
 	./date.pl; $(CC) $(CFLAGS) -c CalculiX.c; $(CC) $(CFLAGS) -c frd.c; ar vr CalculiX.a frd.o;
 	$(FC) -fopenmp -Wall -O3 -o $@ $(OCCXMAIN) -L. -lCalculiX_helfer $(LIBS)
 
-libCalculiX_helfer.so: $(OCCXF) $(OCCXC)
-	$(FC) --shared  $(OCCXF) $(OCCXC) -o $@ 
+libCalculiX_helfer.so: $(OCCXF) $(OCCXC) buildinfo.o
+	$(FC) --shared  $(OCCXF) $(OCCXC) buildinfo.o -o $@ 
+
+# buildinfo.c contains the compile time. It is not part of SCCXC, since it
+# has to be recompiled whenever any other object file changes
+
+buildinfo.o: $(OCCXMAIN) $(OCCXF) $(OCCXC)
