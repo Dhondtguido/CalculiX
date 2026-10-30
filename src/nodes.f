@@ -28,7 +28,7 @@
       character*81 set(*),noset
       character*132 textpart(16)
 !     
-      integer nk,nk_,nset,nset_,nalset,nalset_,istep,istat,n,key,id,
+      integer nk,nk_,nset,nset_,nalset,nalset_,istep,istat,n,key,
      &     i,j,js,k,nn,inoset,ipos,istartset(*),iendset(*),ialset(*),
      &     iline,ipol,inl,ipoinp(2,*),inp(3,*),ipoinpc(0:*),ier
 !     
@@ -134,11 +134,24 @@ ccc   to remove end
      &         "*NODE%",ier)
           return
         endif
-        if(n.eq.1) then
+        if((i.lt.1).or.(i.gt.nk_)) then
+            write(*,*) '*ERROR reading *NODE: node ',i
+            write(*,*) '       either < 1 or exceeds the allocated area'
+            call inputerror(inpc,ipoinpc,iline,
+     &           "*NODE%",ier)
+            return
+        elseif(n.eq.1) then
           co(1,i)=0.d0
         else
           read(textpart(2)(1:20),'(f20.0)',iostat=istat) co(1,i)
           if(istat.gt.0) then
+            call inputerror(inpc,ipoinpc,iline,
+     &           "*NODE%",ier)
+            return
+          endif
+          if(textpart(2)(21:21).ne.' ') then
+            write(*,*) '*ERROR reading *NODE. Nodal coefficient'
+            write(*,*) '       contains more than 20 characters.'
             call inputerror(inpc,ipoinpc,iline,
      &           "*NODE%",ier)
             return
@@ -153,6 +166,13 @@ ccc   to remove end
      &           "*NODE%",ier)
             return
           endif
+          if(textpart(3)(21:21).ne.' ') then
+            write(*,*) '*ERROR reading *NODE. Nodal coefficient'
+            write(*,*) '       contains more than 20 characters.'
+            call inputerror(inpc,ipoinpc,iline,
+     &           "*NODE%",ier)
+            return
+          endif
         endif
         if(n.le.3) then
           co(3,i)=0.d0
@@ -163,13 +183,15 @@ ccc   to remove end
      &           "*NODE%",ier)
             return
           endif
+          if(textpart(4)(21:21).ne.' ') then
+            write(*,*) '*ERROR reading *NODE. Nodal coefficient'
+            write(*,*) '       contains more than 20 characters.'
+            call inputerror(inpc,ipoinpc,iline,
+     &           "*NODE%",ier)
+            return
+          endif
         endif
         nk=max(nk,i)
-        if(nk.gt.nk_) then
-          write(*,*) '*ERROR reading *NODE: increase nk_'
-          ier=1
-          return
-        endif
 !     
 !     assigning node to set
 !     

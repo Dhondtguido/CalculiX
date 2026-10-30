@@ -24,10 +24,10 @@
       implicit none
 !     
       character*1 inpc(*)
-      character*81 set(*),noset
+      character*81 set(*)
       character*132 textpart(16)
 !     
-      integer nk,nk_,nkini,istat,n,key,id,i,j,js,k,nn,inoset,ipos,
+      integer nk,nk_,nkini,istat,n,key,i,
      &     iline,ipol,inl,ipoinp(2,*),inp(3,*),ipoinpc(0:*),ier
 !     
       real*8 coini(3,*)
@@ -41,16 +41,29 @@
         read(textpart(1)(1:10),'(i10)',iostat=istat) i
         if(istat.gt.0) then
           call inputerror(inpc,ipoinpc,iline,
-     &         "*NODE%",ier)
+     &         "*INITIAL MESH%",ier)
           return
         endif
-        if(n.eq.1) then
+        if((i.lt.1).or.(i.gt.nk_)) then
+            write(*,*) '*ERROR reading *INITIAL MESH: node ',i
+            write(*,*) '       either < 1 or exceeds the allocated area'
+            call inputerror(inpc,ipoinpc,iline,
+     &           "*INITIAL MESH%",ier)
+            return
+        elseif(n.eq.1) then
           coini(1,i)=0.d0
         else
           read(textpart(2)(1:20),'(f20.0)',iostat=istat) coini(1,i)
           if(istat.gt.0) then
             call inputerror(inpc,ipoinpc,iline,
-     &           "*NODE%",ier)
+     &           "*INITIAL MESH%",ier)
+            return
+          endif
+          if(textpart(2)(21:21).ne.' ') then
+            write(*,*) '*ERROR reading *INITIAL MESH. Nodal coefficient'
+            write(*,*) '       contains more than 20 characters.'
+            call inputerror(inpc,ipoinpc,iline,
+     &           "*INITIAL MESH%",ier)
             return
           endif
         endif
@@ -60,7 +73,14 @@
           read(textpart(3)(1:20),'(f20.0)',iostat=istat) coini(2,i)
           if(istat.gt.0) then
             call inputerror(inpc,ipoinpc,iline,
-     &           "*NODE%",ier)
+     &           "*INITIAL MESH%",ier)
+            return
+          endif
+          if(textpart(3)(21:21).ne.' ') then
+            write(*,*) '*ERROR reading *INITIAL MESH. Nodal coefficient'
+            write(*,*) '       contains more than 20 characters.'
+            call inputerror(inpc,ipoinpc,iline,
+     &           "*INITIAL MESH%",ier)
             return
           endif
         endif
@@ -70,7 +90,14 @@
           read(textpart(4)(1:20),'(f20.0)',iostat=istat) coini(3,i)
           if(istat.gt.0) then
             call inputerror(inpc,ipoinpc,iline,
-     &           "*NODE%",ier)
+     &           "*INITIAL MESH%",ier)
+            return
+          endif
+          if(textpart(4)(21:21).ne.' ') then
+            write(*,*) '*ERROR reading *INITIAL MESH. Nodal coefficient'
+            write(*,*) '       contains more than 20 characters.'
+            call inputerror(inpc,ipoinpc,iline,
+     &           "*INITIAL MESH%",ier)
             return
           endif
         endif

@@ -5683,3 +5683,4 @@ Dec 2002        - started to work on single crystal plasticity
                   hyperelastics.f
 
  30 Oct 2026    - made a correction in resultstherm.f for C3D8R.
+                - created additional input checks

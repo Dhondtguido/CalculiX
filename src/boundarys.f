@@ -44,7 +44,7 @@
      &     nset,nboun,nboun_,istat,n,i,j,k,l,ibounstart,ibounend,
      &     key,nk,iamboun(*),nam,iamplitude,ipompc(*),nodempc(3,*),
      &     nmpc,nmpc_,mpcfree,inotr(2,*),ikboun(*),ilboun(*),ikmpc(*),
-     &     ilmpc(*),nmpcold,id,idof,index1,ntrans,nk_,ipos,m,node,is,ie,
+     &     ilmpc(*),nmpcold,id,idof,index1,ntrans,nk_,ipos,m,
      &     iline,ipol,inl,ipoinp(2,*),inp(3,*),nam_,namtot,namtot_,
      &     namta(3,*),idelay,nmethod,iperturb(*),lc,iaxial,ipoinpc(0:*),
      &     ktrue,mi(*),iglobstep,iamplitudedefault,ier
@@ -338,12 +338,38 @@
      &           "*BOUNDARY%",ier)
             return
           endif
+          if(ibounstart.eq.8) then
+            ibounstart=4
+          elseif(ibounstart.eq.11) then
+            ibounstart=0
+          endif
+          if((ibounstart.lt.0).or.(ibounstart.gt.6)) then
+            write(*,*) 
+     &           '*ERROR reading *BOUNDARY: boundary DOF '
+            write(*,*) ibounstart,'        is inappropriate '
+            call inputerror(inpc,ipoinpc,iline,
+     &           "*BOUNDARY%",ier)
+            return
+          endif
 !     
           if(textpart(3)(1:1).eq.' ') then
             ibounend=ibounstart
           else
             read(textpart(3)(1:10),'(i10)',iostat=istat) ibounend
             if(istat.gt.0) then
+              call inputerror(inpc,ipoinpc,iline,
+     &             "*BOUNDARY%",ier)
+              return
+            endif
+            if(ibounend.eq.8) then
+              ibounend=4
+            elseif(ibounend.eq.11) then
+              ibounend=0
+            endif
+            if((ibounend.lt.0).or.(ibounend.gt.6)) then
+              write(*,*) 
+     &             '*ERROR reading *BOUNDARY: boundary DOF '
+              write(*,*) ibounend,'        is inappropriate '
               call inputerror(inpc,ipoinpc,iline,
      &             "*BOUNDARY%",ier)
               return
@@ -384,7 +410,8 @@
             if((l.gt.nk).or.(l.le.0)) then
               write(*,*) '*ERROR reading *BOUNDARY:'
               write(*,*) '       node ',l,' is not defined'
-              ier=1
+              call inputerror(inpc,ipoinpc,iline,
+     &             "*BOUNDARY%",ier)
               return
             endif
             if(submodel) then

@@ -122,10 +122,11 @@ c      enddo
 !     
          read(textpart(1)(1:10),'(i10)',iostat=istat) node
          if(istat.eq.0) then
-            if(node.gt.nk) then
+            if((node.lt.1).or.(node.gt.nk)) then
                write(*,*) '*ERROR reading *DISTRIBUTING COUPLING:'
                write(*,*) '       node ',node,' is not defined'
-               ier=1
+               call inputerror(inpc,ipoinpc,iline,
+     &              "*DISTRIBUTING COUPLING%",ier)
                return
             endif
 !     

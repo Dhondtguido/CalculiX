@@ -105,10 +105,6 @@
 !     
 !     check whether new set or old set 
 !     
-ccc   to remove start      
-c     do iset=1,nset
-c     if(set(iset).eq.noelset) then
-ccc   to remove end
       iset=0
       call cident81(set,noelset,nset,id)
       if(id.gt.0) then
@@ -147,10 +143,6 @@ ccc   to remove end
           endif
         endif
       endif
-ccc   to remove start
-c     enddo
-c     if(iset.gt.nset) then
-ccc   to remove end
       if(iset.eq.0) then
         nset=nset+1
         if(nset.gt.nset_) then
@@ -158,12 +150,6 @@ ccc   to remove end
           ier=1
           return
         endif
-ccc   to remove start          
-c     set(nset)=noelset
-c     istartset(nset)=nalset+1
-c     iendset(nset)=0
-c     iset=nset
-ccc   to remove end
         do j=nset,id+2,-1
           istartset(j)=istartset(j-1)
           iendset(j)=iendset(j-1)
@@ -179,9 +165,6 @@ ccc   to remove end
         call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &       ipoinp,inp,ipoinpc)
         if((istat.lt.0).or.(key.eq.1)) then
-ccc   to remove start           
-c     if(iendset(nset).eq.0) then
-ccc   to remove end
           if(iendset(iset).eq.0) then
             do j=iset+1,nset
               istartset(j-1)=istartset(j)
@@ -214,13 +197,23 @@ ccc   to remove end
               return
             endif
           enddo
+          if(ialset(nalset+1).lt.1) then
+            write(*,*) 
+     &           '*ERROR reading *NSET/ELSET: starting value in'
+            write(*,*) '       set ',
+     &           set(iset)(1:index(set(iset),' ')-2),' < 1'
+            call inputerror(inpc,ipoinpc,iline,
+     &           "*NSET/ELSET%",ier)
+            return
+          endif
           if(kode.eq.0) then
             if(ialset(nalset+1).gt.nk) then
               write(*,*) 
      &             '*ERROR reading *NSET/ELSET: starting value in'
               write(*,*) '       set ',
      &             set(iset)(1:index(set(iset),' ')-2),' > nk'
-              ier=1
+              call inputerror(inpc,ipoinpc,iline,
+     &             "*NSET/ELSET%",ier)
               return
             elseif(ialset(nalset+2).gt.nk) then
               write(*,*) 
@@ -233,7 +226,10 @@ ccc   to remove end
               write(*,*) '*ERROR reading *NSET/ELSET: increment in'
               write(*,*) '       set ',
      &             set(iset)(1:index(set(iset),' ')-2),' <=0'
-              ier=1
+              call inputerror(inpc,ipoinpc,iline,
+     &             "*NSET/ELSET%",ier)
+              call inputerror(inpc,ipoinpc,iline,
+     &             "*NSET/ELSET%",ier)
               return
             endif
           else
@@ -242,7 +238,8 @@ ccc   to remove end
      &             '*ERROR reading *NSET/ELSET: starting value in'
               write(*,*) '       set ',
      &             set(iset)(1:index(set(iset),' ')-2),' > ne'
-              ier=1
+              call inputerror(inpc,ipoinpc,iline,
+     &             "*NSET/ELSET%",ier)
               return
             elseif(ialset(nalset+2).gt.ne) then
               write(*,*) 
@@ -255,7 +252,8 @@ ccc   to remove end
               write(*,*) '*ERROR reading *NSET/ELSET: increment in'
               write(*,*) '       set ',
      &             set(iset)(1:index(set(iset),' ')-2),' <=0'
-              ier=1
+              call inputerror(inpc,ipoinpc,iline,
+     &             "*NSET/ELSET%",ier)
               return
             endif
           endif
@@ -284,19 +282,6 @@ ccc   to remove end
               else
                 noelset(ipos:ipos)='E'
               endif
-ccc   to remove start                   
-c     do j=1,nset
-c     if(j.eq.iset)cycle
-c     if(noelset.eq.set(j)) then
-c     m=iendset(j)-istartset(j)+1
-c     do k=1,m
-c     ialset(nalset+k)=ialset(istartset(j)+k-1)
-c     enddo
-c     nalset=nalset+m
-c     exit
-c     endif
-c     enddo
-ccc   to remove end
               j=0
               call cident81(set,noelset,nset,id)
               if(id.gt.0) then
@@ -330,6 +315,15 @@ ccc   to remove end
 !     
 !     node or element number
 !     
+              if(ialset(nalset+1).lt.1) then
+                write(*,*) 
+     &               '*ERROR reading *NSET/ELSET: starting value in'
+                write(*,*) '       set ',
+     &               set(iset)(1:index(set(iset),' ')-2),' < 1'
+                call inputerror(inpc,ipoinpc,iline,
+     &               "*NSET/ELSET%",ier)
+                return
+              endif
               if(kode.eq.0) then
                 if(ialset(nalset+1).gt.nk) then
                   write(*,*) 
@@ -351,8 +345,6 @@ ccc   to remove end
                   write(*,*) 
      &                 '         global elsets in combination'
                   write(*,*) '         with submodels'
-c     else
-c     nalset=nalset+1
                 endif
                 nalset=nalset+1
               endif

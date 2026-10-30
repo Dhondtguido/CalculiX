@@ -103,15 +103,15 @@ c            temperature=1.d-6*int(1.d6*temperature+0.5d0)
 !     
             read(textpart(1)(1:10),'(i10)',iostat=istat) l
             if(istat.eq.0) then
-              if(l.gt.nk) then
+              if((l.lt.1).or.(l.gt.nk)) then
                 write(*,*) 
-     &               '*WARNING reading *INITIAL CONDITIONS: node ',l
-                write(*,*)'          exceeds the largest defined ',
-     &               'node number'
-                cycle
+     &               '*ERROR reading *INITIAL CONDITIONS: node ',l
+                write(*,*)'        does not exist '
+                call inputerror(inpc,ipoinpc,iline,
+     &               "*INITIAL CONDITIONS%",ier)
+                return
               endif
               t0(l)=temperature
-c              t1(l)=temperature
               vold(0,l)=temperature
               if((inoelfree.ne.0).or.(nuel_.gt.0)) then
                 t0g(1,l)=tempgrad1
@@ -342,15 +342,24 @@ c                    t1(k)=temperature
      &             "*INITIAL CONDITIONS%",ier)
               return
             endif
-            if(l.gt.ne) then
+            if((l.lt.1).or.(l.gt.ne)) then
               write(*,*) 
-     &             '*WARNING reading *INITIAL CONDITIONS: element ',l
-              write(*,*)'          exceeds the largest defined ',
-     &             'element number'
-              cycle
+     &             '*ERROR reading *INITIAL CONDITIONS: element ',l
+              write(*,*)'        does not exist '
+              call inputerror(inpc,ipoinpc,iline,
+     &             "*INITIAL CONDITIONS%",ier)
+              return
             endif
             read(textpart(2)(1:10),'(i10)',iostat=istat) k
             if(istat.eq.0) then
+              if((k.lt.1).or.(k.gt.mi(1))) then
+                write(*,*) 
+     &               '*ERROR reading *INITIAL CONDITIONS: int.point ',k
+                write(*,*)'        does not exist '
+                call inputerror(inpc,ipoinpc,iline,
+     &               "*INITIAL CONDITIONS%",ier)
+                return
+              endif
               do j=1,6
                 prestr(j,k,l)=beta(j)
               enddo
@@ -415,6 +424,14 @@ c                    t1(k)=temperature
      &             "*INITIAL CONDITIONS%",ier)
               return
             endif
+            if((idir.lt.1).or.(idir.gt.3)) then
+              write(*,*) 
+     &             '*ERROR reading *INITIAL CONDITIONS: direction '
+              write(*,*) idir,'        is not appropriate '
+              call inputerror(inpc,ipoinpc,iline,
+     &             "*INITIAL CONDITIONS%",ier)
+              return
+            endif
             read(textpart(3)(1:20),'(f20.0)',iostat=istat) dispvelo
             if(istat.gt.0) then
               call inputerror(inpc,ipoinpc,iline,
@@ -423,12 +440,13 @@ c                    t1(k)=temperature
             endif
             read(textpart(1)(1:10),'(i10)',iostat=istat) l
             if(istat.eq.0) then
-              if(l.gt.nk) then
+              if((l.lt.1).or.(l.gt.nk)) then
                 write(*,*) 
-     &               '*WARNING reading *INITIAL CONDITIONS: node ',l
-                write(*,*)'          exceeds the largest defined ',
-     &               'node number'
-                cycle
+     &               '*ERROR reading *INITIAL CONDITIONS: node ',l
+                write(*,*)'        does not exist '
+                call inputerror(inpc,ipoinpc,iline,
+     &               "*INITIAL CONDITIONS%",ier)
+                return
               endif
               vold(idir,l)=dispvelo
             else
@@ -436,9 +454,6 @@ c                    t1(k)=temperature
               noset(81:81)=' '
               ipos=index(noset,' ')
               noset(ipos:ipos)='N'
-c              do ii=1,nset
-c                if(set(ii).eq.noset) exit
-c              enddo
               call cident81(set,noset,nset,id)
               ii=nset+1
               if(id.gt.0) then
@@ -483,6 +498,14 @@ c              enddo
      &             "*INITIAL CONDITIONS%",ier)
               return
             endif
+            if((idir.lt.1).or.(idir.gt.3)) then
+              write(*,*) 
+     &             '*ERROR reading *INITIAL CONDITIONS: direction '
+              write(*,*) idir,'        is not appropriate '
+              call inputerror(inpc,ipoinpc,iline,
+     &             "*INITIAL CONDITIONS%",ier)
+              return
+            endif
             read(textpart(3)(1:20),'(f20.0)',iostat=istat) velocity
             if(istat.gt.0) then
               call inputerror(inpc,ipoinpc,iline,
@@ -491,12 +514,13 @@ c              enddo
             endif
             read(textpart(1)(1:10),'(i10)',iostat=istat) l
             if(istat.eq.0) then
-              if(l.gt.nk) then
+              if((l.lt.1).or.(l.gt.nk)) then
                 write(*,*) 
-     &               '*WARNING reading *INITIAL CONDITIONS: node ',l
-                write(*,*)'          exceeds the largest defined ',
-     &               'node number'
-                cycle
+     &               '*ERROR reading *INITIAL CONDITIONS: node ',l
+                write(*,*)'        does not exist '
+                call inputerror(inpc,ipoinpc,iline,
+     &               "*INITIAL CONDITIONS%",ier)
+                return
               endif
               veold(idir,l)=velocity
             else
@@ -553,12 +577,13 @@ c              enddo
             endif
             read(textpart(1)(1:10),'(i10)',iostat=istat) l
             if(istat.eq.0) then
-              if(l.gt.nk) then
+              if((l.lt.1).or.(l.gt.nk)) then
                 write(*,*) 
-     &               '*WARNING reading *INITIAL CONDITIONS: node ',l
-                write(*,*)'          exceeds the largest defined ',
-     &               'node number'
-                cycle
+     &               '*ERROR reading *INITIAL CONDITIONS: node ',l
+                write(*,*)'        does not exist '
+                call inputerror(inpc,ipoinpc,iline,
+     &               "*INITIAL CONDITIONS%",ier)
+                return
               endif
               vold(4,l)=pressure
             else
@@ -566,9 +591,6 @@ c              enddo
               noset(81:81)=' '
               ipos=index(noset,' ')
               noset(ipos:ipos)='N'
-c              do ii=1,nset
-c                if(set(ii).eq.noset) exit
-c              enddo
               call cident81(set,noset,nset,id)
               ii=nset+1
               if(id.gt.0) then
@@ -618,12 +640,13 @@ c              enddo
             endif
             read(textpart(1)(1:10),'(i10)',iostat=istat) l
             if(istat.eq.0) then
-              if(l.gt.nk) then
+              if((l.lt.1).or.(l.gt.nk)) then
                 write(*,*) 
-     &               '*WARNING reading *INITIAL CONDITIONS: node ',l
-                write(*,*)'          exceeds the largest defined ',
-     &               'node number'
-                cycle
+     &               '*ERROR reading *INITIAL CONDITIONS: node ',l
+                write(*,*)'        does not exist '
+                call inputerror(inpc,ipoinpc,iline,
+     &               "*INITIAL CONDITIONS%",ier)
+                return
               endif
               do m=5,mi(2)
                 vold(m,l)=turbini(m)
@@ -633,9 +656,6 @@ c              enddo
               noset(81:81)=' '
               ipos=index(noset,' ')
               noset(ipos:ipos)='N'
-c              do ii=1,nset
-c                if(set(ii).eq.noset) exit
-c              enddo
               call cident81(set,noset,nset,id)
               ii=nset+1
               if(id.gt.0) then
@@ -686,12 +706,13 @@ c              enddo
             endif
             read(textpart(1)(1:10),'(i10)',iostat=istat) l
             if(istat.eq.0) then
-              if(l.gt.nk) then
+              if((l.lt.1).or.(l.gt.nk)) then
                 write(*,*) 
-     &               '*WARNING reading *INITIAL CONDITIONS: node ',l
-                write(*,*)'          exceeds the largest defined ',
-     &               'node number'
-                cycle
+     &               '*ERROR reading *INITIAL CONDITIONS: node ',l
+                write(*,*)'        does not exist '
+                call inputerror(inpc,ipoinpc,iline,
+     &               "*INITIAL CONDITIONS%",ier)
+                return
               endif
               vold(2,l)=totpres
             else
@@ -699,9 +720,6 @@ c              enddo
               noset(81:81)=' '
               ipos=index(noset,' ')
               noset(ipos:ipos)='N'
-c              do ii=1,nset
-c                if(set(ii).eq.noset) exit
-c              enddo
               call cident81(set,noset,nset,id)
               ii=nset+1
               if(id.gt.0) then
@@ -749,22 +767,20 @@ c              enddo
             endif
             read(textpart(1)(1:10),'(i10)',iostat=istat) l
             if(istat.eq.0) then
-              if(l.gt.nk) then
+              if((l.lt.1).or.(l.gt.nk)) then
                 write(*,*) 
-     &               '*WARNING reading *INITIAL CONDITIONS: node ',l
-                write(*,*)'          exceeds the largest defined ',
-     &               'node number'
-                cycle
-              endif
+     &               '*ERROR reading *INITIAL CONDITIONS: node ',l
+                write(*,*)'        does not exist '
+                call inputerror(inpc,ipoinpc,iline,
+     &               "*INITIAL CONDITIONS%",ier)
+                return
+               endif
               vold(1,l)=xmassflow
             else
               read(textpart(1)(1:80),'(a80)',iostat=istat) noset
               noset(81:81)=' '
               ipos=index(noset,' ')
               noset(ipos:ipos)='N'
-c              do ii=1,nset
-c                if(set(ii).eq.noset) exit
-c              enddo
               call cident81(set,noset,nset,id)
               ii=nset+1
               if(id.gt.0) then
@@ -959,12 +975,13 @@ c     endif
      &               "*INITIAL CONDITIONS%",ier)
                 return
               endif
-              if(l.gt.ne) then
+              if((l.lt.1).or.(l.gt.ne)) then
                 write(*,*) 
-     &               '*WARNING reading *INITIAL CONDITIONS: element ',l
-                write(*,*)'          exceeds the largest defined ',
-     &               'element number'
-                cycle
+     &               '*ERROR reading *INITIAL CONDITIONS: element ',l
+                write(*,*)'        does not exist '
+                call inputerror(inpc,ipoinpc,iline,
+     &               "*INITIAL CONDITIONS%",ier)
+                return
               endif
               read(textpart(2)(1:10),'(i10)',iostat=istat) k
               if(istat.eq.0) then

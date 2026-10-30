@@ -411,7 +411,7 @@
      &       nam_,namtot_,namta,amta,nmethod,iaxial,iperturb,ipoinpc,
      &       maxsectors,idefforc,ipompc,nodempc,
      &       nmpc,ikmpc,ilmpc,labmpc,iamplitudedefault,namtot,ier,
-     &       edc,orab,coeffc,ikdc,ndc)
+     &       edc,orab,coeffc,ikdc,ndc,mi)
         cload_flag=.true.
 !     
       elseif(textpart(1)(1:17).eq.'*COMPLEXFREQUENCY') then
@@ -613,7 +613,7 @@ c
      &       iline,ipol,inl,ipoinp,inp,cbody,ibody,xbody,nbody,nbody_,
      &       xbodyold,iperturb,physcon,nam_,namtot_,namta,amta,nmethod,
      &       ipoinpc,maxsectors,mi,idefload,idefbody,ipkon,thicke,
-     &       iamplitudedefault,namtot,ier,interfaceload)
+     &       iamplitudedefault,namtot,ier,interfaceload,nk)
         dload_flag=.true.
 !     
       elseif(textpart(1)(1:8).eq.'*DYNAMIC') then
@@ -644,7 +644,7 @@ c
      &       ne,ne_,set,istartset,iendset,ialset,nset,nset_,nalset,
      &       nalset_,mi(1),ixfree,iponor,xnor,istep,istat,n,iline,
      &       ipol,inl,ipoinp,inp,iaxial,ipoinpc,solid,
-     &       network,filab,nlabel,out3d,iuel,nuel_,ier,iparentel)
+     &       network,filab,nlabel,out3d,iuel,nuel_,ier,iparentel,nk)
 !     
       elseif((textpart(1)(1:7).eq.'*ELFILE').or.
      &       (textpart(1)(1:14).eq.'*ELEMENTOUTPUT')) then
@@ -684,7 +684,7 @@ c
      &       labmpc,istep,istat,n,iline,ipol,inl,ipoinp,inp,ipoinpc,
      &       set,istartset,iendset,ialset,nset,nodempcref,coefmpcref,
      &       ikmpcref,memmpcref_,mpcfreeref,maxlenmpcref,memmpc_,
-     &       maxlenmpc,ier,mcs,cs)
+     &       maxlenmpc,ier,mcs,cs,mi)
 !     
       elseif(textpart(1)(1:10).eq.'*EXPANSION') then
         call expansions(inpc,textpart,alcon,nalcon,

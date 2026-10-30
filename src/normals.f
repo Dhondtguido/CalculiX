@@ -101,10 +101,11 @@
          y=y/dd
          z=z/dd
 !
-         if(ielement.gt.ne) then
-            write(*,*) '*ERROR reading *NORMAL: element number',ielement
-            write(*,*) '       exceeds ne'
-            ier=1
+         if((ielement.lt.1).or.(ielement.gt.ne)) then
+            write(*,*) '*ERROR reading *NORMAL: element ',ielement
+            write(*,*) '       does not exist'
+            call inputerror(inpc,ipoinpc,iline,
+     &           "*NORMAL%",ier)
             return
          endif
 !

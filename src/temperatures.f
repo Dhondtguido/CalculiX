@@ -319,11 +319,12 @@
 !     
           read(textpart(1)(1:10),'(i10)',iostat=istat) l
           if(istat.eq.0) then
-            if(l.gt.nk) then
+            if((l.lt.1).or.(l.gt.nk)) then
               write(*,*) '*WARNING reading *TEMPERATURE: node ',l
-              write(*,*) '         exceeds the largest defined ',
-     &             'node number'
-              cycle
+              write(*,*) '         does not exist '
+              call inputerror(inpc,ipoinpc,iline,
+     &             "*TEMPERATURE%",ier)
+              return
             endif
             t1(l)=temperature
             if(nam.gt.0) iamt1(l)=iamplitude

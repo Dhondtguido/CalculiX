@@ -20,7 +20,7 @@
      &     set,istartset,iendset,ialset,nset,nset_,nalset,nalset_,mi,
      &     ixfree,iponor,xnor,istep,istat,n,iline,ipol,inl,ipoinp,inp,
      &     iaxial,ipoinpc,solid,network,filab,nlabel,out3d,iuel,
-     &     nuel_,ier,iparentel)
+     &     nuel_,ier,iparentel,nk)
 !     
 !     reading the input deck: *ELEMENT
 !     
@@ -38,8 +38,8 @@
      &     nset_,nalset,nalset_,istep,istat,n,key,i,ielset,js,k,nn,
      &     nteller,j,ipkon(*),nkon,nope,indexe,mi(*),ipos,indexy,ixfree,
      &     iponor(2,*),nopeexp,iline,ipol,inl,ipoinp(2,*),inp(3,*),
-     &     iaxial,ipoinpc(0:*),nlabel,network,iuel(4,*),nuel_,
-     &     id,four,number,ndof,intpoints,ier,iparentel(*),iparent
+     &     iaxial,ipoinpc(0:*),nlabel,network,iuel(4,*),nuel_,node,
+     &     id,four,number,ndof,intpoints,ier,iparentel(*),iparent,nk
 !     
       real*8 xnor(*)
 !     
@@ -451,9 +451,11 @@ c     Bernhardi end
      &         "*ELEMENT%",ier)
           return
         endif
-        if(i.gt.ne_) then
-          write(*,*) '*ERROR reading *ELEMENT: increase ne_'
-          ier=1
+        if((i.lt.0).or.(i.gt.ne_)) then
+          write(*,*) '*ERROR reading *ELEMENT: element ',i
+          write(*,*) '       either < 1 or exceeds allocated area'
+          call inputerror(inpc,ipoinpc,iline,
+     &         "*ELEMENT%",ier)
           return
         endif
 !     
@@ -477,12 +479,27 @@ c     Bernhardi end
         nkon=nkon+nopeexp
 !     
         do j=2,min(n,nope+1)
-          read(textpart(j)(1:10),'(i10)',iostat=istat) kon(indexe+j-1)
+          read(textpart(j)(1:10),'(i10)',iostat=istat) node
           if(istat.gt.0) then
             call inputerror(inpc,ipoinpc,iline,
      &           "*ELEMENT%",ier)
             return
           endif
+          if((node.lt.1).or.(node.gt.nk)) then
+!
+!           taking care of the entry and exit zero node for
+!           network elements
+!            
+            if((label(1:1).ne.'D').or.(nope.ne.3).or.
+     &           ((j.ne.2).and.(j.ne.4))) then
+              write(*,*) '*ERROR reading *ELEMENT: node ',node
+              write(*,*) '       does not exist'
+              call inputerror(inpc,ipoinpc,iline,
+     &             "*ELEMENT%",ier)
+              return
+            endif
+          endif
+          kon(indexe+j-1)=node
         enddo
         nteller=n-1
         if(nteller.lt.nope) then
@@ -499,12 +516,27 @@ c     Bernhardi end
             if(nteller+n.gt.nope) n=nope-nteller
             do j=1,n
               read(textpart(j)(1:10),'(i10)',iostat=istat) 
-     &             kon(indexe+nteller+j)
+     &             node
               if(istat.gt.0) then
                 call inputerror(inpc,ipoinpc,iline,
      &               "*ELEMENT%",ier)
                 return
               endif
+              if((node.lt.1).or.(node.gt.nk)) then
+!     
+!     taking care of the entry and exit zero node for
+!     network elements
+!     
+                if((label(1:1).ne.'D').or.(nope.ne.3).or.
+     &               ((j.ne.2).and.(j.ne.4))) then
+                  write(*,*) '*ERROR reading *ELEMENT: node ',node
+                  write(*,*) '       does not exist'
+                  call inputerror(inpc,ipoinpc,iline,
+     &                 "*ELEMENT%",ier)
+                  return
+                endif
+              endif
+              kon(indexe+nteller+j)=node
             enddo
             nteller=nteller+n
             if(nteller.eq.nope) exit

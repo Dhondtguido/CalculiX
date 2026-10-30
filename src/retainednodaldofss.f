@@ -82,7 +82,15 @@
             call inputerror(inpc,ipoinpc,iline,
      &           "*RETAINED NODAL DOFS%",ier)
             return
-         endif
+          endif
+          if((ibounstart.lt.1).or.(ibounstart.gt.mi(2))) then
+            write(*,*) '*ERROR reading *RETAINED NODAL DOFS: ',
+     &           'degree of freedom ',ibounstart
+            write(*,*) '       is not appropriate'
+            call inputerror(inpc,ipoinpc,iline,
+     &           "*RETAINED NODAL DOFS%",ier)
+            return
+          endif
 !     
          if(textpart(3)(1:1).eq.' ') then
             ibounend=ibounstart
@@ -93,7 +101,15 @@
      &              "*RETAINED NODAL DOFS%",ier)
                return
             endif
-         endif
+            if((ibounend.lt.1).or.(ibounend.gt.mi(2))) then
+              write(*,*) '*ERROR reading *RETAINED NODAL DOFS: ',
+     &             'degree of freedom ',ibounend
+              write(*,*) '       is not appropriate'
+              call inputerror(inpc,ipoinpc,iline,
+     &             "*RETAINED NODAL DOFS%",ier)
+              return
+            endif
+          endif
 !     
          bounval=0.d0
 !

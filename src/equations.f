@@ -21,7 +21,7 @@
      &     labmpc,istep,istat,n,iline,ipol,inl,ipoinp,inp,ipoinpc,
      &     set,istartset,iendset,ialset,nset,nodempcref,coefmpcref,
      &     ikmpcref,memmpcref_,mpcfreeref,maxlenmpcref,memmpc_,
-     &     maxlenmpc,ier,mcs,cs)
+     &     maxlenmpc,ier,mcs,cs,mi)
 !     
 !     reading the input deck: *EQUATION
 !     
@@ -38,7 +38,7 @@
      &     ipoinp(2,*),inp(3,*),ipoinpc(0:*),impcstart,impcend,i1,
      &     istartset(*),iendset(*),ialset(*),nset,k,l,m,index1,ipos,
      &     impc,nodempcref(3,*),ikmpcref(*),memmpcref_,mpcfreeref,
-     &     maxlenmpcref,memmpc_,maxlenmpc,ier,iset,nnodes,mcs
+     &     maxlenmpcref,memmpc_,maxlenmpc,ier,iset,nnodes,mcs,mi(*)
 !     
       real*8 coefmpc(*),co(3,*),trab(7,*),a(3,3),x,coefmpcref(*),
      &     cs(18,*)
@@ -137,6 +137,19 @@
      &             "*EQUATION%",ier)
               return
             endif
+            if(impcstart.eq.8) then
+              impcstart=4
+            elseif(impcstart.eq.11) then
+              impcstart=0
+            endif
+            if((impcstart.lt.1).or.(impcstart.gt.mi(2))) then
+              write(*,*) 
+     &             '*ERROR reading *EQUATION: mpc DOF '
+              write(*,*) impcstart,'        is inappropriate '
+              call inputerror(inpc,ipoinpc,iline,
+     &             "*EQUATION%",ier)
+              return
+            endif
 !     
             if(textpart(3)(1:1).eq.' ') then
               impcend=impcstart
@@ -147,14 +160,28 @@
      &               "*EQUATION%",ier)
                 return
               endif
+              if(impcend.eq.8) then
+                impcend=4
+              elseif(impcend.eq.11) then
+                impcend=0
+              endif
+              if((impcend.lt.1).or.(impcend.gt.mi(2))) then
+                write(*,*) 
+     &               '*ERROR reading *EQUATION: mpc DOF '
+                write(*,*) impcend,'        is inappropriate '
+                call inputerror(inpc,ipoinpc,iline,
+     &               "*EQUATION%",ier)
+                return
+              endif
             endif
 !     
             read(textpart(1)(1:10),'(i10)',iostat=istat) l
             if(istat.eq.0) then
               if((l.gt.nk).or.(l.le.0)) then
                 write(*,*) '*ERROR reading *BOUNDARY:'
-                write(*,*) '       node ',l,' is not defined'
-                ier=1
+                write(*,*) '       node ',l,' does not exist'
+                call inputerror(inpc,ipoinpc,iline,
+     &               "*EQUATION%",ier)
                 return
               endif
               do i1=impcstart,impcend
@@ -270,6 +297,19 @@ c              enddo
      &       ipoinp,inp,ipoinpc)
         if((istat.lt.0).or.(key.eq.1)) return
         read(textpart(1)(1:10),'(i10)',iostat=istat) nterm
+        if(istat.gt.0) then
+          call inputerror(inpc,ipoinpc,iline,
+     &         "*EQUATION%",ier)
+          return
+        endif
+        if(nterm.lt.1) then
+          write(*,*) 
+     &         '*ERROR reading *EQUATION: nterm = ',nterm
+          write(*,*) '        is inappropriate '
+          call inputerror(inpc,ipoinpc,iline,
+     &         "*EQUATION%",ier)
+          return
+        endif
 !     
         nmpc=nmpc+1
         if(nmpc.gt.nmpc_) then
@@ -301,6 +341,14 @@ c              enddo
         read(textpart(1)(1:10),'(i10)',iostat=istat) node
         if(istat.eq.0) then
           nnodes=1
+          if((node.lt.1).or.(node.gt.nk)) then
+            write(*,*) 
+     &           '*ERROR reading *EQUATION: node ',nk
+            write(*,*) '        does not exist '
+            call inputerror(inpc,ipoinpc,iline,
+     &           "*EQUATION%",ier)
+            return
+          endif
         else
 !
 !         first term contains a node set instead of a node

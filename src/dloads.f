@@ -22,7 +22,7 @@
      &     istat,n,iline,ipol,inl,ipoinp,inp,cbody,ibody,xbody,nbody,
      &     nbody_,xbodyold,iperturb,physcon,nam_,namtot_,namta,amta,
      &     nmethod,ipoinpc,maxsectors,mi,idefload,idefbody,ipkon,
-     &     thicke,iamplitudedefault,namtot,ier,interfaceload)
+     &     thicke,iamplitudedefault,namtot,ier,interfaceload,nk)
 !     
 !     reading the input deck: *DLOAD
 !     
@@ -44,7 +44,7 @@
      &     namtot_,namta(3,*),idelay,nmethod,lc,isector,node,id,node1,
      &     ipoinpc(0:*),maxsectors,jsector,iglobstep,idefload(*),node2,
      &     idefbody(*),ipkon(*),k,indexe,iamplitudedefault,ier,
-     &     interfaceload
+     &     interfaceload,nk
 !     
       real*8 xload(2,*),xbody(7,*),xmagnitude,dd,p1(3),p2(3),bodyf(3),
      &     xbodyold(7,*),physcon(*),amta(2,*),xxmagnitude,
@@ -248,28 +248,29 @@
 !     
         if(label(3:4).ne.'NP') then
           read(textpart(3)(1:20),'(f20.0)',iostat=istat) xmagnitude
+          if(istat.gt.0) then
+            call inputerror(inpc,ipoinpc,iline,
+     &           "*DLOAD%",ier)
+            return
+          endif
         else
           read(textpart(3)(1:10),'(i10)',iostat=istat) node
+          if(istat.gt.0) then
+            call inputerror(inpc,ipoinpc,iline,
+     &           "*DLOAD%",ier)
+            return
+          endif
+          if((node.lt.1).or.(node.gt.nk)) then
+            write(*,*) 
+     &           '*ERROR reading *DLOAD: node ',node
+            write(*,*)'        does not exist '
+            call inputerror(inpc,ipoinpc,iline,
+     &           "*DLOAD%",ier)
+            return
+          endif
         endif
-        if(istat.gt.0) then
-          call inputerror(inpc,ipoinpc,iline,
-     &         "*DLOAD%",ier)
-          return
-        endif
-        if(label(1:8).eq.'CENTRIFP') then
 !
-!         centrifugal axis is defined by two nodes (may move during
-!         the calculation)
-!
-          read(textpart(4)(1:10),'(i10)',iostat=istat) node1
-          read(textpart(5)(1:10),'(i10)',iostat=istat) node2
-          p1(1)=node1+0.5d0
-          p1(2)=node2+0.5d0
-          p1(3)=0.d0
-          p2(1)=1.d0
-          p2(2)=0.d0
-          p2(3)=0.d0
-        elseif(label(1:7).eq.'CENTRIF') then
+        if(label(1:7).eq.'CENTRIF') then
 !
 !         centrifugal axis by the coordinates of a point and a
 !         direction vector (fixed during the calculation)
@@ -339,10 +340,11 @@ c     BernhardiEnd
 !     
         read(textpart(1)(1:10),'(i10)',iostat=istat) l
         if(istat.eq.0) then
-          if(l.gt.ne) then
+          if((l.lt.1).or.(l.gt.ne)) then
             write(*,*) '*ERROR reading *DLOAD: element ',l
-            write(*,*) '       is not defined'
-            ier=1
+            write(*,*) '       does not exist'
+            call inputerror(inpc,ipoinpc,iline,
+     &           "*DLOAD%",ier)
             return
           endif
           if((label(1:7).eq.'CENTRIF').or.(label(1:4).eq.'GRAV').or.
@@ -431,9 +433,6 @@ c     BernhardiEnd
 !     check for element set
 !     
           elset(ipos:ipos)='E'
-c          do i=1,nset
-c            if(set(i).eq.elset) exit
-c          enddo
           call cident81(set,elset,nset,id)
           i=nset+1
           if(id.gt.0) then

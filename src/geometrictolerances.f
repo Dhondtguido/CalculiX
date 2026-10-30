@@ -83,10 +83,9 @@
 !     
         read(textpart(1)(1:10),'(i10)',iostat=istat) inode
         if(istat.eq.0) then
-          if(inode.gt.nk) then
+          if((inode.lt.1).or.(inode.gt.nk)) then
             write(*,*) '*ERROR reading *GEOMETRIC TOLERANCE:'
-            write(*,*) '       node ',inode,' is not defined'
-            ier=1
+            write(*,*) '       node ',inode,' does not exist'
             call inputerror(inpc,ipoinpc,iline,
      &           "*GEOMETRIC TOLERANCE%",ier)
             return

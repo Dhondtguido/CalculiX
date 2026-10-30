@@ -194,10 +194,11 @@ c            call reorderampl(amname,namta,nam)
 !
          read(textpart(1)(1:10),'(i10)',iostat=istat) l
          if(istat.eq.0) then
-            if(l.gt.nk) then
+            if((l.lt.1).or.(l.gt.nk)) then
                write(*,*) '*ERROR reading *CFLUX: node ',l
-               write(*,*) '       is not defined'
-               ier=1
+               write(*,*) '       does not exist'
+               call inputerror(inpc,ipoinpc,iline,
+     &              "*CFLUX%",ier)
                return
             endif
             call forcadd(l,iforcdir,forcval,
