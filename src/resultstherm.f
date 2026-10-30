@@ -47,7 +47,7 @@
      &     nelemload(2,*),nload,ithermal(*),nmethod,nopered,
      &     jfaces,node,nplicon(0:ntmat_,*),null,ielprop(*),
      &     iponoeln(*),inoeln(2,*),network,ipobody(2,*),ibody(3,*),
-     &     ilayer,nlayer,mint2d,nopes,ki,kl
+     &     ilayer,nlayer,mint2d,nopes,ki,kl,ihg,jhg,khg
 !     
       real*8 co(3,*),v(0:mi(2),*),shp(4,20),reltime,thickness,
      &     xl(3,20),vl(0:mi(2),20),elcon(0:ncmat_,ntmat_,*),xsj2(3),
@@ -62,7 +62,7 @@
      &     xload(2,*),xloadold(2,*),clearini(3,9,*),pslavsurf(3,*),
      &     pmastsurf(6,*),plicon(0:2*npmat_,ntmat_,*),prop(*),
      &     xbody(7,*),tlayer(4),dlayer(4),xlayer(mi(3),4),shp2(7,8),
-     &     thicke(mi(3),*)
+     &     thicke(mi(3),*),ahr,gs(8,4),a,hgls
 !     
       include "gauss.f"
 !     
@@ -479,8 +479,10 @@
             ze=gauss3d7(3,jj)
             weight=weight3d7(jj)
           endif
-!     
-          if(nope.eq.20) then
+!
+          if(lakonl(1:5).eq.'C3D8R') then
+            call shape8hr(xl,xsj,shp,gs,a)
+          elseif(nope.eq.20) then
             if(lakonl(7:7).eq.'A') then
               call shape20h_ax(xi,et,ze,xl,xsj,shp,iflag)
             elseif((lakonl(7:7).eq.'E').or.
@@ -603,6 +605,20 @@
               enddo
             endif
           endif
+!     hourglassing control start
+          if(lakonl(1:5).eq.'C3D8R') then
+            ahr=a*coconloc(1)
+            do khg=1,4
+              hgls=0.d0
+              do jhg=1,8
+                hgls=hgls+gs(jhg,khg)*vl(0,jhg)
+              enddo
+              do ihg=1,8
+                fn(0,konl(ihg))=fn(0,konl(ihg))+ahr*gs(ihg,khg)*hgls
+              enddo
+            enddo
+          endif
+! hourglassing control end
         enddo
 !     
 !     q contains the contributions to the nodal force in the nodes

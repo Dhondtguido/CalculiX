@@ -5681,3 +5681,5 @@ Dec 2002        - started to work on single crystal plasticity
 		  
  27 Oct 2026    - changed the logic about small D1, D2 and D3 in
                   hyperelastics.f
+
+ 30 Oct 2026    - made a correction in resultstherm.f for C3D8R.
