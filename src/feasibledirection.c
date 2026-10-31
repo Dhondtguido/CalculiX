@@ -130,13 +130,6 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
 		       
   RENEW(ialdesi,ITG,istartdesi[*ndesi]-1);
 
-  /* determining the elements belonging to a given node */
-  
-  NNEW(iponoel,ITG,*nk);
-  NNEW(inoel,ITG,2**nkon);
-  FORTRAN(elementpernode,(iponoel,inoel,lakon,ipkon,kon,ne));
-
-  NNEW(nodedesipos,ITG,*nk);
   NNEW(ipoface,ITG,*nk);
   NNEW(nodface,ITG,5*6**ne);
   NNEW(konfa,ITG,8*6**ne);
@@ -176,6 +169,7 @@ void feasibledirection(ITG *nobject,char **objectsetp,double **dgdxglobp,
 
     NNEW(extnorini,double,3**nk);
     NNEW(extnor,double,3**nk);
+    NNEW(nodedesipos,ITG,*nk);
     
     /* calculating the normals w.r.t. to the initial geometry */
     
