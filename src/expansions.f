@@ -62,6 +62,13 @@
                ityp=3
             elseif(textpart(i)(6:10).eq.'ANISO') then
                ityp=6
+            else
+               write(*,*) '*ERROR reading *EXPANSION: unknown TYPE: ',
+     &              textpart(i)(6:index(textpart(i),' ')-1)
+               write(*,*) '       allowed are ISO, ORTHO and ANISO'
+               call inputerror(inpc,ipoinpc,iline,
+     &              "*EXPANSION%",ier)
+               return
             endif
          elseif(textpart(i)(1:5).eq.'ZERO=') then
             read(textpart(i)(6:25),'(f20.0)',iostat=istat) alzero(nmat)
