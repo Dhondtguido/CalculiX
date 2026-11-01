@@ -23,6 +23,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
+#include <locale.h>
 #include "CalculiX.h"
 
 #ifdef CALCULIX_MPI
@@ -109,6 +110,8 @@ int main(int argc,char *argv[])
   MPI_Comm_size(MPI_COMM_WORLD, &nproc) ;
 #endif
 
+  setlocale(LC_NUMERIC,"C");
+  
   clock_gettime(CLOCK_MONOTONIC, &totalCalculixTimeStart);
 
   if(argc==1){printf("Usage: CalculiX.exe -i jobname\n");FORTRAN(stop,());}

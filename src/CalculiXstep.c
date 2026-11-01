@@ -23,6 +23,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
+#include <locale.h>
 #include "CalculiX.h"
 
 #ifdef CALCULIX_MPI
@@ -156,6 +157,8 @@ void CalculiXstep(int argc,char argv[][133],ITG **nelemloadp,double **xloadp,
 
   */ 
 
+
+  setlocale(LC_NUMERIC,"C");
 
   // start change DLR
 

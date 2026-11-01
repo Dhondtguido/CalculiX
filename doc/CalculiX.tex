@@ -6633,7 +6633,7 @@ Example files: restrictor, restrictor-oil.
 Properties: adiabatic, not isentropic, directional, inlet based restrictor
 
 In a joint the flow from two gas pipes is united and redirected
-through a third pipe. So in principal three network elements of type GAS PIPE
+through a third pipe. So in principle, three network elements of type GAS PIPE
 have one node in common in a joint. The fluid  elements of type BRANCH JOINT represent the
 extra energy loss due to the merging of the flows and have to be inserted on
 the incoming branches of the joint. This is represented schematically in
@@ -6744,7 +6744,7 @@ Example files: branchjoint1, branchjoint2, branchjoint3, branchjoint4.
 Properties: adiabatic, not isentropic, directional, inlet based restrictor
 
 In a split the flow from a gas pipe is split and redirected
-through two other pipes. So in principal three network elements of type GAS PIPE
+through two other pipes. So in principle, three network elements of type GAS PIPE
 have one node in common in a split. The fluid  elements of type BRANCH SPLIT represent the
 extra energy loss due to the splitting of the flow and have to be inserted in
 the outward branches of the split. This is represented schematically in
@@ -6986,7 +6986,7 @@ by
 
 Finally, the
 parameter $T_{\text{flag}}$ controls the temperature increase due to the vortex. In
-principal, the rotational energy transferred to the gas also leads to a
+principle, the rotational energy transferred to the gas also leads to a
 temperature increase. If the user does not want to take that into account
 $T_{\text{flag}}=0$ should be selected, else $T_{\text{flag}}=1$ or $T_{\text{flag}}=-1$ should be
 specified, depending on whether the vortex is defined in the absolute
@@ -10929,7 +10929,11 @@ $\sigma_0$, $n$ and $\alpha$ directly (by plotting a Cauchy stress versus logari
 The implementation of incremental plasticity for nonlinear geometrical
 calculations in CalculiX (routine incplas.f) follows the algorithms in \cite{Simo3} and \cite{Simo4} and is based on the notion of an intermediate stress-free configuration. The deformation is viewed as a plastic flow due to dislocation motion followed by elastic stretching and rotation of the crystal lattice. This is synthesized by a local multiplicative decomposition of the deformation gradient $\textbf{F}=\textbf{F}^e \textbf{F}^p$ where $F_{kK}=x_{k,K}$ in Cartesian coordinates.
 
-In the present implementation, the elastic response is isotropic and is deduced from a stored-energy function (hyperelastic response). Furthermore, the plastic flow is isochoric (the volume is conserved) and the classical von Mises-Huber yield condition applies. This condition can be visualized as a sphere in principal deviatoric stress space. 
+In the present implementation, the elastic response is isotropic and is
+deduced from a stored-energy function (hyperelastic response). Furthermore,
+the plastic flow is isochoric (the volume is conserved) and the classical von
+Mises-Huber yield condition applies. This condition can be visualized as a
+sphere in principal deviatoric stress space. 
 
 The hardening can consist of isotropic hardening, resulting in an expansion or contraction of the yield surface, of kinematic hardening, resulting in a translation of the yield surface, or of a combination of both. The hardening curve should yield the von Mises true stress versus the equivalent plastic logarithmic strain (cf. deformation plasticity for its definition). 
 
@@ -10995,7 +10999,7 @@ it has been implemented as a Abaqus Material User Subroutine in CalculiX
 establishing a relationship between the corotational Cauchy stress and the
 corotational logarithmic strain it can also be used for large deformations.
 
-In principal, the Johnson-Cook model \cite{Johnson} proposes a yield curve for a conventional
+In principle, the Johnson-Cook model \cite{Johnson} proposes a yield curve for a conventional
 plasticity model with isotropic hardening in the form:
 
 \begin{equation}
@@ -37545,7 +37549,7 @@ on any edge) the mesh is smoothed. To this end three routines are called:
 \paragraph{catnodes.f}
 
 In the smoothing procedure the position of a node i is replaced by a weighted
-average of the position of its neighbors. In principal, all nodes belonging to
+average of the position of its neighbors. In principle, all nodes belonging to
 the ball of node i (the ball of a node is by definition the set of element to
 which this node belongs \cite{George}) are neighbors. However, for some nodes
 this set is further restricted. In general, a node j belonging to the ball of
