@@ -212,7 +212,7 @@ c              ddsdde(j,i)=eff_al
           end do 
           do i=1,6 
             do j=1,i 
-              ddsdde(j,i)=ddsdde(j,i)+flow(j)*flow(i)*(eff_hard-eff_um3)
+              ddsdde(i,j)=ddsdde(i,j)+flow(j)*flow(i)*(eff_hard-eff_um3)
             end do 
           end do
 c        do i=1,6
@@ -277,7 +277,7 @@ c              ddsdde(j,i)=al
           xrate=1.d0+c*dlog(epsdot)
 !     
           syield=xstrain*xrate
-          hard=xstrain*c/(epsdot*dtime)
+          hard=xstrain*c/(epsdot*dtime*epsdot0)
      &         +xrate*xn*dxstrain
         else
           dxstrain=b*delta**(xn-1.d0)
@@ -285,7 +285,7 @@ c              ddsdde(j,i)=al
           xrate=1.d0+c*dlog(epsdot)
 !     
           syield=xstrain*xrate
-          hard=xstrain*c/(epsdot*dtime)
+          hard=xstrain*c/(epsdot*dtime*epsdot0)
      &         +xrate*dxstrain
         endif
 !     
