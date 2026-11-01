@@ -1,0 +1,30 @@
+
+CFLAGS = -Wall -O2 -fopenmp -I ${MINGW_PREFIX}/include/spooles -DSPOOLES -I ${MINGW_PREFIX}/include/taucs -DTAUCS -DARCH="Linux" -DSPOOLES -DARPACK -DMATRIXSTORAGE -DNETWORKOUT -DUSE_MT=1 -DCALCULIX_EXTERNAL_BEHAVIOURS_SUPPORT -fcommon -Wno-implicit-function-declaration -Wno-incompatible-pointer-types
+FFLAGS = -Wall -O2 -fopenmp -cpp 
+
+CC=cc
+FC=gfortran
+
+.c.o :
+	$(CC) $(CFLAGS) -c $<
+.f.o :
+	$(FC) $(FFLAGS) -c $<
+
+include Makefile.inc
+
+SCCXMAIN = CalculiX.c
+
+OCCXF = $(SCCXF:.f=.o)
+OCCXC = $(SCCXC:.c=.o)
+OCCXMAIN = $(SCCXMAIN:.c=.o)
+
+LIBS = \
+       -lspoolesMT -lspooles -latucs \
+       -lopenblas -larpack \
+       -lpthread -lm
+
+CalculiX: $(OCCXMAIN) CalculiX.a
+	./date.pl; $(CC) $(CFLAGS) -c CalculiX.c; $(FC)  -Wall -g -o $@ $(OCCXMAIN) CalculiX.a $(LIBS) -fopenmp 
+
+CalculiX.a: $(OCCXF) $(OCCXC)
+	ar vr $@ $?
