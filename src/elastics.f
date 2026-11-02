@@ -66,7 +66,12 @@
                ityp=9
                engineering=.true.
             elseif(textpart(i)(6:10).eq.'ANISO') then
-               ityp=21
+              ityp=21
+            else
+              write(*,*) '*ERROR reading *ELASTIC: unknown type'
+              call inputerror(inpc,ipoinpc,iline,
+     &             "*ELASTIC%",ier)
+              return
             endif
             exit
          else

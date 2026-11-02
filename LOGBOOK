@@ -5684,3 +5684,5 @@ Dec 2002        - started to work on single crystal plasticity
 
  30 Oct 2026    - made a correction in resultstherm.f for C3D8R.
                 - created additional input checks
+
+ 2 Nov 2026     - treated unknown types for *ELASTIC and *EXPANSION
