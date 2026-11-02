@@ -420,8 +420,16 @@
             if(ithermal(1).ge.1) then
               t1l=0.d0
               if(ithermal(1).eq.1) then
+!
+!     C3D8I elements expanded from shells or beams (S4, B31,
+!     T3D2: 'L' or 'B' in position 7 of lakon) take the
+!     temperature in the integration point, so that their
+!     temperature gradients are kept
+!
                 if((lakonl(4:5).eq.'8 ').or.
-     &               (lakonl(4:5).eq.'8I')) then
+     &               ((lakonl(4:5).eq.'8I').and.
+     &               (lakonl(7:7).ne.'L').and.
+     &               (lakonl(7:7).ne.'B'))) then
                   do i1=1,8
                     t1l=t1l+t1(konl(i1))/8.d0
                   enddo
@@ -437,7 +445,9 @@
                 endif
               elseif(ithermal(1).ge.2) then
                 if((lakonl(4:5).eq.'8 ').or.
-     &               (lakonl(4:5).eq.'8I')) then
+     &               ((lakonl(4:5).eq.'8I').and.
+     &               (lakonl(7:7).ne.'L').and.
+     &               (lakonl(7:7).ne.'B'))) then
                   do i1=1,8
                     t1l=t1l+vold(0,konl(i1))/8.d0
                   enddo
