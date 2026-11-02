@@ -5686,3 +5686,4 @@ Dec 2002        - started to work on single crystal plasticity
                 - created additional input checks
 
  2 Nov 2026     - treated unknown types for *ELASTIC and *EXPANSION
+                - corrected OP=NEW for *TEMPERATURE
