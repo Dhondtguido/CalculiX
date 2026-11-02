@@ -24,7 +24,7 @@
 !     
       implicit none
 !     
-      logical gas,liquid,channel,negative,untreated
+      logical gas,liquid,channel,negative,untreated,flowelem
 !     
       character*8 lakon(*)
 !     
@@ -120,7 +120,18 @@
               index=iponoeln(node)
               do
                 nelem=inoeln(1,index)
-                if(ipkon(nelem).lt.-1) then
+!
+!     skip elements which were already treated, and elements which
+!     are no flow elements (not in ieg), such as generic D-elements:
+!     inoeln contains all D-elements, but only flow elements belong
+!     to a branch, and only their nodes are in itg
+!
+                call nident(ieg,nelem,nflow,id)
+                flowelem=.false.
+                if(id.gt.0) then
+                  if(ieg(id).eq.nelem) flowelem=.true.
+                endif
+                if((ipkon(nelem).lt.-1).or.(.not.flowelem)) then
                   index=inoeln(2,index)
                   if(index.eq.0) then
                     exit loop2
