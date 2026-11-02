@@ -1,0 +1,60 @@
+**
+**   Structure: two separate C3D8 cubes, *DYNAMIC.
+**   Test objective: a material without *DENSITY gets density 0,
+**                   not the density of the element before it
+**
+*NODE, NSET=NALL
+1, 0., 0., 0.
+2, 1., 0., 0.
+3, 1., 1., 0.
+4, 0., 1., 0.
+5, 0., 0., 1.
+6, 1., 0., 1.
+7, 1., 1., 1.
+8, 0., 1., 1.
+11, 3., 0., 0.
+12, 4., 0., 0.
+13, 4., 1., 0.
+14, 3., 1., 0.
+15, 3., 0., 1.
+16, 4., 0., 1.
+17, 4., 1., 1.
+18, 3., 1., 1.
+*ELEMENT, TYPE=C3D8, ELSET=EH
+1, 1, 2, 3, 4, 5, 6, 7, 8
+*ELEMENT, TYPE=C3D8, ELSET=EL
+2, 11, 12, 13, 14, 15, 16, 17, 18
+*NSET, NSET=HBOT
+1, 2, 3, 4
+*NSET, NSET=LBOT
+11, 12, 13, 14
+*NSET, NSET=LTOP
+15, 16, 17, 18
+*MATERIAL, NAME=HEAVY
+*ELASTIC
+1000., 0.
+*DENSITY
+1.
+*MATERIAL, NAME=LIGHT
+*ELASTIC
+1000., 0.
+*SOLID SECTION, ELSET=EH, MATERIAL=HEAVY
+*SOLID SECTION, ELSET=EL, MATERIAL=LIGHT
+*INITIAL CONDITIONS, TYPE=TEMPERATURE
+NALL, 20.
+*AMPLITUDE, NAME=RAMP
+0., 0., 1., 1.
+*STEP, INC=100
+*DYNAMIC, DIRECT
+0.1, 1.
+*BOUNDARY
+HBOT, 1, 3
+LBOT, 1, 3
+15, 1, 2
+16, 2, 2
+18, 1, 1
+*CLOAD, AMPLITUDE=RAMP
+LTOP, 3, 1.
+*NODE PRINT, NSET=LTOP
+U
+*END STEP

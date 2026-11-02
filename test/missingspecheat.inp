@@ -1,0 +1,54 @@
+**
+**   Structure: two separate DC3D8 cubes, transient heat transfer.
+**   Test objective: a material without *SPECIFIC HEAT gets 0,
+**                   not the specific heat of the element before it
+**
+*NODE, NSET=NALL
+1, 0., 0., 0.
+2, 1., 0., 0.
+3, 1., 1., 0.
+4, 0., 1., 0.
+5, 0., 0., 1.
+6, 1., 0., 1.
+7, 1., 1., 1.
+8, 0., 1., 1.
+11, 3., 0., 0.
+12, 4., 0., 0.
+13, 4., 1., 0.
+14, 3., 1., 0.
+15, 3., 0., 1.
+16, 4., 0., 1.
+17, 4., 1., 1.
+18, 3., 1., 1.
+*ELEMENT, TYPE=DC3D8, ELSET=EA
+1, 1, 2, 3, 4, 5, 6, 7, 8
+*ELEMENT, TYPE=DC3D8, ELSET=EB
+2, 11, 12, 13, 14, 15, 16, 17, 18
+*NSET, NSET=BOT
+1, 2, 3, 4, 11, 12, 13, 14
+*NSET, NSET=N17
+17
+*MATERIAL, NAME=A
+*CONDUCTIVITY
+5.
+*DENSITY
+1.
+*SPECIFIC HEAT
+1.
+*MATERIAL, NAME=B
+*CONDUCTIVITY
+5.
+*DENSITY
+1.
+*SOLID SECTION, ELSET=EA, MATERIAL=A
+*SOLID SECTION, ELSET=EB, MATERIAL=B
+*INITIAL CONDITIONS, TYPE=TEMPERATURE
+NALL, 0.
+*STEP, INC=100
+*HEAT TRANSFER, DIRECT
+0.1, 1.
+*BOUNDARY
+BOT, 11, 11, 100.
+*NODE PRINT, NSET=N17
+NT
+*END STEP
