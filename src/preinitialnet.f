@@ -320,29 +320,41 @@
 !                 (for compressible and incompressible networks)
 !
                   ierror=0
+!
+!                 nodenei is 0 if node1 or node2 is connected to an
+!                 inlet or outlet: there is no pressure to compare with
+!
                   if(v(1,nodem).gt.0.d0) then
                      if(v(2,node1).eq.0.d0) then
                         v(2,node1)=v(2,node2)*1.01d0
                         call networkneighbor(nelem,node1,nelemnei,
      &                       nodenei,ibranch,iponoeln,inoeln,ipkon,kon)
-                        if(v(2,nodenei).le.v(2,node1)) ierror=1
+                        if(nodenei.ne.0) then
+                           if(v(2,nodenei).le.v(2,node1)) ierror=1
+                        endif
                      else
                         v(2,node2)=v(2,node1)*0.99d0
                         call networkneighbor(nelem,node2,nelemnei,
      &                       nodenei,ibranch,iponoeln,inoeln,ipkon,kon)
-                        if(v(2,nodenei).ge.v(2,node2)) ierror=2
+                        if(nodenei.ne.0) then
+                           if(v(2,nodenei).ge.v(2,node2)) ierror=2
+                        endif
                      endif
                   else
                      if(v(2,node1).eq.0.d0) then
                         v(2,node1)=v(2,node2)*0.99d0
                         call networkneighbor(nelem,node1,nelemnei,
      &                       nodenei,ibranch,iponoeln,inoeln,ipkon,kon)
-                        if(v(2,nodenei).ge.v(2,node1)) ierror=1
+                        if(nodenei.ne.0) then
+                           if(v(2,nodenei).ge.v(2,node1)) ierror=1
+                        endif
                      else
                         v(2,node2)=v(2,node1)*1.01d0
                         call networkneighbor(nelem,node2,nelemnei,
      &                       nodenei,ibranch,iponoeln,inoeln,ipkon,kon)
-                        if(v(2,nodenei).le.v(2,node2)) ierror=2
+                        if(nodenei.ne.0) then
+                           if(v(2,nodenei).le.v(2,node2)) ierror=2
+                        endif
                      endif
                   endif
 !

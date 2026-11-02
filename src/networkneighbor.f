@@ -29,6 +29,7 @@
      &  iponoeln(*),inoeln(2,*),ipkon(*),kon(*),iel
 !
       nelemnei=0
+      nodenei=0
       ibranch=0
 !
       index=iponoeln(node)
