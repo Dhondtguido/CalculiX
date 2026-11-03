@@ -1,0 +1,49 @@
+**
+**   Structure: two M3D4 membranes forming a gable roof, and
+**              a separate S4 plate.
+**   Test objective: *DLOAD label P (no face number) on membranes
+**                   in the first step acts as on shells (as P1);
+**                   an EDNOR line on the plate does not change
+**                   the pressure on the next lines of the card.
+**
+*NODE
+1,0.,0.,0.
+2,1.,0.,0.
+3,1.,0.5,0.5
+4,0.,0.5,0.5
+5,1.,1.,0.
+6,0.,1.,0.
+*NODE
+11, 5., 0., 0.
+12, 6., 0., 0.
+13, 6., 1., 0.
+14, 5., 1., 0.
+*ELEMENT,TYPE=S4,ELSET=EPLATE
+3, 11, 12, 13, 14
+*SHELL SECTION,ELSET=EPLATE,MATERIAL=STEEL
+0.1
+*ELEMENT,TYPE=M3D4,ELSET=EALL
+1,1,2,3,4
+2,4,3,5,6
+*NSET,NSET=EAVES
+1,2,5,6
+*NSET,NSET=RIDGE
+3,4
+*MATERIAL,NAME=STEEL
+*ELASTIC
+210000.,0.3
+*MEMBRANE SECTION,ELSET=EALL,MATERIAL=STEEL
+0.01
+*BOUNDARY
+EAVES,1,3
+11,1,6
+14,1,6
+*STEP
+*STATIC
+*DLOAD
+3,EDNOR2,1.
+1,P,1.
+2,P,1.
+*NODE PRINT,NSET=RIDGE
+U
+*END STEP
