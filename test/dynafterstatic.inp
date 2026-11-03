@@ -1,0 +1,40 @@
+**
+**   Structure: one C3D8 cube.
+**   Test objective: internal energy of a *DYNAMIC step after a
+**                   loaded static step is not doubled
+**
+*NODE
+1, 0., 0., 0.
+2, 1., 0., 0.
+3, 1., 1., 0.
+4, 0., 1., 0.
+5, 0., 0., 1.
+6, 1., 0., 1.
+7, 1., 1., 1.
+8, 0., 1., 1.
+*ELEMENT, TYPE=C3D8, ELSET=EALL
+1, 1, 2, 3, 4, 5, 6, 7, 8
+*NSET, NSET=BOT
+1, 2, 3, 4
+*NSET, NSET=TOP
+5, 6, 7, 8
+*MATERIAL, NAME=M
+*ELASTIC
+1000., 0.
+*DENSITY
+0.3
+*SOLID SECTION, ELSET=EALL, MATERIAL=M
+*BOUNDARY
+BOT, 1, 3
+TOP, 1, 2
+*STEP
+*STATIC
+*CLOAD
+TOP, 3, 0.25
+*EL PRINT, ELSET=EALL
+ELSE
+*END STEP
+*STEP
+*DYNAMIC, DIRECT
+2.51327412287E-4, 2.51327412287E-3
+*END STEP
