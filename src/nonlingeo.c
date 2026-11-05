@@ -98,7 +98,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
   ITG *inum=NULL,k,l,iout=0,icntrl,iinc=0,jprint=0,iit=-1,jnz=0,
     icutb=0,istab=0,uncoupled,n1,n2,itruecontact=1,iclean=0,
     iperturb_sav[2],iforbou,*icol=NULL,*irow=NULL,ielas=0,icmd=0,
-    memmpc_,mpcfree,icascade,maxlenmpc,*nodempc=NULL,*iaux=NULL,
+    memmpc_,mpcfree,icascade,icascadeini,maxlenmpc,*nodempc=NULL,
+    *iaux=NULL,
     *nodempcref=NULL,memmpcref_,mpcfreeref,*itg=NULL,*ineighe=NULL,
     *ieg=NULL,ntg=0,ntr,*kontri=NULL,*nloadtr=NULL,idamping=0,
     *ipiv=NULL,ntri,newstep,mode=-1,noddiam=-1,nasym=0,im,
@@ -948,11 +949,18 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     }
 
     newstep=0;
+    icascadeini=icascade;
     FORTRAN(nonlinmpc,(co,vold,ipompc,nodempc,coefmpc,labmpc,
 		       nmpc,ikboun,ilboun,nboun,xbounold,aux,iaux,
 		       &maxlenmpc,ikmpc,ilmpc,&icascade,
 		       kon,ipkon,lakon,ne,&reltime,&newstep,xboun,fmpc,
 		       &iit,&idiscon,&ncont,trab,ntrans,ithermal,mi,&kchdep));
+
+    /* for icascade=1 CalculiX.c did not determine the structure of
+       the matrix: in an implicit calculation it has to be done by
+       remastruct below, so nonlinmpc must not reset icascade before */
+
+    if((icascadeini==1)&&(icascade==0)&&(*iexpl<=1)) icascade=1;
     if(icascade==2){
       for(k=0;k<3*memmpc_;k++){
 	nodempcref[k]=nodempc[k];}
