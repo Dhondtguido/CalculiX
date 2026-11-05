@@ -106,6 +106,7 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     *epn=NULL,*fnr=NULL,*fni=NULL,*emn=NULL,*emeini=NULL,
     *xstateini=NULL,*xstiff=NULL,*stiini=NULL,*vini=NULL,freq,*stx=NULL,
     *enern=NULL,*xstaten=NULL,*eei=NULL,*enerini=NULL,*fnext=NULL,
+    *enersav=NULL,
     *physcon=NULL,*qfx=NULL,*qfn=NULL,tol,fmin,fmax,pi,*cgr=NULL,
     *xloadold=NULL,reltime=1.,*vr=NULL,*vi=NULL,*stnr=NULL,*stni=NULL,
     *vmax=NULL,*stnmax=NULL,*springarea=NULL,*eenmax=NULL,
@@ -392,6 +393,14 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
     NNEW(qfx,double,3*mi[0]**ne);
   }
   NNEW(inum,ITG,*nk);
+
+  /* the eigenmodes do not change the internal energy of the
+     model: it is restored after the loop over the modes */
+
+  if(*nener==1){
+    NNEW(enersav,double,2*mi[0]**ne);
+    memcpy(&enersav[0],&ener[0],sizeof(double)*2*mi[0]**ne);
+  }
 
   /* following fields are needed if *ener==1 or kode<-100 */
     
@@ -1220,6 +1229,11 @@ void arpack(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 	xstate[k]=xstateini[k];
       }	  
     }
+  }
+
+  if(*nener==1){
+    memcpy(&ener[0],&enersav[0],sizeof(double)*2*mi[0]**ne);
+    SFREE(enersav);
   }
 
   if(iprestrsav!=0){*iprestr=iprestrsav;}
