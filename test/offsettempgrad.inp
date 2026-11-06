@@ -1,0 +1,125 @@
+**
+**   Structure: S8R plates with OFFSET=0.5 (one layer and two
+**              COMPOSITE layers), B32 cantilevers with RECT
+**              (OFFSET1=0.5, OFFSET2=-0.25) and CIRC (OFFSET1=0.25,
+**              OFFSET2=-0.5) sections, with temperature gradients.
+**   Test objective: the expanded nodes get the temperature at
+**                   their position; the results equal those of
+**                   the same solids without offset.
+**
+*NODE, NSET=NPLATE
+1, 0, 0, 0.0
+2, 0.5, 0, 0.0
+3, 1, 0, 0.0
+4, 1.5, 0, 0.0
+5, 2, 0, 0.0
+6, 0, 0.5, 0.0
+7, 1, 0.5, 0.0
+8, 2, 0.5, 0.0
+9, 0, 1, 0.0
+10, 0.5, 1, 0.0
+11, 1, 1, 0.0
+12, 1.5, 1, 0.0
+13, 2, 1, 0.0
+*NODE, NSET=NCOMP
+201, 0, 5.0, 0.0
+202, 0.5, 5.0, 0.0
+203, 1, 5.0, 0.0
+204, 1.5, 5.0, 0.0
+205, 2, 5.0, 0.0
+206, 0, 5.5, 0.0
+207, 1, 5.5, 0.0
+208, 2, 5.5, 0.0
+209, 0, 6.0, 0.0
+210, 0.5, 6.0, 0.0
+211, 1, 6.0, 0.0
+212, 1.5, 6.0, 0.0
+213, 2, 6.0, 0.0
+*NODE, NSET=NBEAM
+101, 10.0, 0.0, 0.0
+102, 10.0, 0.0, 0.25
+103, 10.0, 0.0, 0.5
+104, 10.0, 0.0, 0.75
+105, 10.0, 0.0, 1.0
+*NSET, NSET=NCOMPOUT
+201, 202, 203, 205, 206, 207, 208, 209, 210, 211, 213
+*NODE, NSET=NCIRC
+301, 20.0, 0.0, 0.0
+302, 20.0, 0.0, 0.25
+303, 20.0, 0.0, 0.5
+304, 20.0, 0.0, 0.75
+305, 20.0, 0.0, 1.0
+*ELEMENT, TYPE=S8R, ELSET=EPLATE
+1, 1, 3, 11, 9, 2, 7, 10, 6
+2, 3, 5, 13, 11, 4, 8, 12, 7
+*ELEMENT, TYPE=S8R, ELSET=ECOMP
+21, 201, 203, 211, 209, 202, 207, 210, 206
+22, 203, 205, 213, 211, 204, 208, 212, 207
+*ELEMENT, TYPE=B32, ELSET=EBEAM
+11, 101, 102, 103
+12, 103, 104, 105
+*ELEMENT, TYPE=B32, ELSET=ECIRC
+31, 301, 302, 303
+32, 303, 304, 305
+*MATERIAL, NAME=M
+*ELASTIC
+1000., 0.
+*EXPANSION
+1.E-3
+*SHELL SECTION, ELSET=EPLATE, MATERIAL=M, OFFSET=0.5
+0.1
+*SHELL SECTION, ELSET=ECOMP, COMPOSITE, OFFSET=0.5
+0.06, , M
+0.04, , M
+*BEAM SECTION, ELSET=EBEAM, MATERIAL=M, SECTION=RECT, OFFSET1=0.5, OFFSET2=-0.25
+0.1, 0.1
+1., 0., 0.
+*BEAM SECTION, ELSET=ECIRC, MATERIAL=M, SECTION=CIRC, OFFSET1=0.25, OFFSET2=-0.5
+0.05
+1., 0., 0.
+*BOUNDARY
+1, 1, 3
+3, 2, 3
+9, 3, 3
+201, 1, 3
+203, 2, 3
+209, 3, 3
+101, 1, 6
+301, 1, 6
+*INITIAL CONDITIONS, TYPE=TEMPERATURE
+NPLATE, 0., 100.
+NCOMP, 0., 100.
+NBEAM, 10., 100., 60.
+NCIRC, 10., 100., 60.
+*STEP
+*STATIC
+*TEMPERATURE
+NPLATE, 0., 0.
+NCOMP, 0., 0.
+NBEAM, 0., 0., 0.
+NCIRC, 0., 0., 0.
+*NODE PRINT, NSET=NPLATE
+U
+*NODE PRINT, NSET=NCOMPOUT
+U
+*NODE PRINT, NSET=NBEAM
+U
+*NODE PRINT, NSET=NCIRC
+U
+*END STEP
+*STEP
+*STATIC
+*TEMPERATURE
+NPLATE, 10., 50.
+NCOMP, 10., 50.
+NBEAM, 20., 40., 80.
+NCIRC, 20., 40., 80.
+*NODE PRINT, NSET=NPLATE
+U
+*NODE PRINT, NSET=NCOMPOUT
+U
+*NODE PRINT, NSET=NBEAM
+U
+*NODE PRINT, NSET=NCIRC
+U
+*END STEP
