@@ -17,7 +17,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !     
       subroutine filterforward_imp(ad,au,adb,aub,feasdir,gradproj,rhs,
-     &   ndesi,nodedesi,iflag,jq,irow,objectset)           
+     &   ndesi,nodedesi,iflag,jq,irow,objectset,ifilter)           
 !     
 !     calculates the values of the filter matrix
 !     
@@ -26,7 +26,7 @@
       character*81 objectset(5,*)
 !
       integer ndesi,nodedesi(*),idesvar,jdesvar,inode,jnode,iflag,j,
-     &   jq(*),irow(*),istat
+     &   jq(*),irow(*),istat,ifilter
 !     
       real*8 adb(*),aub(*),feasdir(2,*),gradproj(3,*),rhs(*),ad(*),
      &   au(*),filterrad
@@ -71,11 +71,21 @@
 !
 !        copy the filtered and unfiltered sensitivities from rhs 
 !        to feasdir
-         do idesvar=1,ndesi
-            inode=nodedesi(idesvar)
-            feasdir(1,inode)=gradproj(3,inode)
-            feasdir(2,inode)=rhs(idesvar)
-         enddo
+         if(ifilter.eq.1) then
+	    do idesvar=1,ndesi
+               inode=nodedesi(idesvar)
+               feasdir(1,inode)=gradproj(3,inode)
+               feasdir(2,inode)=rhs(idesvar)
+            enddo
+!
+!        copy the unfiltered sensitivities from rhs to feasdir
+	 elseif(ifilter.eq.0) then
+	    do idesvar=1,ndesi
+               inode=nodedesi(idesvar)
+               feasdir(1,inode)=gradproj(3,inode)
+               feasdir(2,inode)=gradproj(3,inode)
+            enddo
+	 endif	 
       endif
 !
       return        

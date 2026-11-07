@@ -1686,7 +1686,7 @@ void FORTRAN(filterforward_exp,(double *adf,double *auf,ITG *jqf,ITG *irowf,
  void FORTRAN(filterforward_imp,(double *ad,double *au,double *adb,double *aub,
 				 double *feasdir,double *gradproj,double *rhs,
 				 ITG *ndesi,ITG *nodedesi,ITG *iflag,ITG *jq,
-				 ITG *irow,char *objectset));
+				 ITG *irow,char *objectset,ITG *ifilter));
 
 void filterforwardmain(double *co,double *gradproj,ITG *nk,
 		       ITG *nodedesi,ITG *ndesi,char *objectset,double *xdesi,
