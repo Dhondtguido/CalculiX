@@ -1593,7 +1593,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
       /* determining the turning direction */
 	  
       FORTRAN(turningdirection,(v,e1,e2,xn,mi,nk,&turdir[j],lakon,ipkon,
-				kon,ne,co));
+      				kon,ne,co));
 	  
       if(strcmp1(&filab[1566],"MAXU")==0){
 	      
@@ -2604,8 +2604,8 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
 
     /* output of the turning direction */
       
-    FORTRAN(writeturdircs,(xn,turdir,&nev,&nm));
-    SFREE(turdir);
+      FORTRAN(writeturdircs,(xn,turdir,&nev,&nm));
+      SFREE(turdir);
 
     if(igreen==0){
       if((fmax>-0.5)&&(fmax*fmax>d[nev-1])){

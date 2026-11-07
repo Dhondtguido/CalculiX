@@ -5687,3 +5687,5 @@ Dec 2002        - started to work on single crystal plasticity
 
  2 Nov 2026     - treated unknown types for *ELASTIC and *EXPANSION
                 - corrected OP=NEW for *TEMPERATURE
+
+ 7 Nov 2026     - made some changes in mohrcoulomb.f

@@ -42,7 +42,7 @@
      &     plconloc(802),xk,xm,sa,dsde(6,6),ttime,ee,un,um,al,epl(6),
      &     ftrial,xiso(200),yiso(200),da6(3),fiso,dfiso,ep,dtime,denom,
      &     epini,el(6),tracee,a2(3),a6(3),time,xstate(nstate_,mi(1),*),
-     &     xstateini(nstate_,mi(1),*),tracea,da1(3),
+     &     xstateini(nstate_,mi(1),*),tracea,da1(3),dn,dsb,
      &     pnewdt,um2,fv1(3),fv2(3),ps1r1,ps1r6,
      &     ps1s2,ps6s1,traceb,z(3,3),s(3,3),b1(3),b2(3),b6(3),
      &     r6(3),s1xr1(3),sb(3),s1xr6(3),r1(3),s1(3),s2(3),s6(3),
@@ -206,6 +206,7 @@
       r6(3)=xk
 !     
       sa=2.d0*fiso*dsqrt(xk)/(xk-1.d0)
+      dsb=dsqrt((sb(1)-sa)**2+(sb(2)-sa)**2+(sb(3)-sa)**2)
 !     
 !     s1 x r1
 !     
@@ -225,6 +226,8 @@
       ps1r1=s1xr1(1)*(sb(1)-sa)+
      &     s1xr1(2)*(sb(2)-sa)+
      &     s1xr1(3)*(sb(3)-sa)
+      dn=dsqrt(s1xr1(1)**2+s1xr1(2)**2+s1xr1(3)**2)*dsb
+      if(dn.gt.0.d0) ps1r1=ps1r1/dn
 !     
 !     boundary plane between sector I and VI
 !     (s1 x r6).(sb-sa)
@@ -232,6 +235,8 @@
       ps1r6=s1xr6(1)*(sb(1)-sa)+
      &     s1xr6(2)*(sb(2)-sa)+
      &     s1xr6(3)*(sb(3)-sa)
+      dn=dsqrt(s1xr6(1)**2+s1xr6(2)**2+s1xr6(3)**2)*dsb
+      if(dn.gt.0.d0) ps1r6=ps1r6/dn
 !     
       if((ps1r1.ge.0.d0).and.(ps1r6.le.0.d0)) then
         iregion=1
@@ -258,6 +263,8 @@
         ps1s2=s1xs2(1)*(sb(1)-sa)+
      &       s1xs2(2)*(sb(2)-sa)+
      &       s1xs2(3)*(sb(3)-sa)
+        dn=dsqrt(s1xs2(1)**2+s1xs2(2)**2+s1xs2(3)**2)*dsb
+        if(dn.gt.0.d0) ps1s2=ps1s2/dn
         if((ps1r1.le.0.d0).and.(ps1s2.le.0.d0)) then
           iregion=2
         else
@@ -283,6 +290,8 @@
           ps6s1=s6xs1(1)*(sb(1)-sa)+
      &         s6xs1(2)*(sb(2)-sa)+
      &         s6xs1(3)*(sb(3)-sa)
+          dn=dsqrt(s6xs1(1)**2+s6xs1(2)**2+s6xs1(3)**2)*dsb
+          if(dn.gt.0.d0) ps6s1=ps6s1/dn
           if((ps1r6.ge.0.d0).and.(ps6s1.le.0.d0)) then
             iregion=3
           else
@@ -408,6 +417,10 @@ c      write(*,*) 'mohrcoulomb ',iel,iint,iregion
           dh2(2,2)=-xk*s2(2)+s2(3)-dk*dm*dfiso
 !     
           det=dh2(1,1)*dh2(2,2)-dh2(2,1)*dh2(1,2)
+          if(dabs(det).lt.1.d-30) then
+            pnewdt=0.25d0
+            return
+          endif
 !     
 !     solving the system
 !     
@@ -466,6 +479,10 @@ c      write(*,*) 'mohrcoulomb ',iel,iint,iregion
 !     inverting the matrix -> b(*,*)
 !     
           det=a(1,1)*a(2,2)-a(2,1)*a(1,2)
+          if(dabs(det).lt.1.d-30) then
+            pnewdt=0.25d0
+            return
+          endif
           b(1,1)=a(2,2)/det
           b(1,2)=-a(1,2)/det
           b(2,1)=-a(2,1)/det
@@ -530,6 +547,10 @@ c      write(*,*) 'mohrcoulomb ',iel,iint,iregion
           dh6(2,2)=-xk*s6(1)+s6(2)-dk*dm*dfiso
 !     
           det=dh6(1,1)*dh6(2,2)-dh6(2,1)*dh6(1,2)
+          if(dabs(det).lt.1.d-30) then
+            pnewdt=0.25d0
+            return
+          endif
 !     
 !     solving the system
 !     
@@ -588,6 +609,10 @@ c      write(*,*) 'mohrcoulomb ',iel,iint,iregion
 !     inverting the matrix -> b(*,*)
 !     
           det=a(1,1)*a(2,2)-a(2,1)*a(1,2)
+          if(dabs(det).lt.1.d-30) then
+            pnewdt=0.25d0
+            return
+          endif
           b(1,1)=a(2,2)/det
           b(1,2)=-a(1,2)/det
           b(2,1)=-a(2,1)/det
@@ -672,6 +697,10 @@ c      write(*,*) 'mohrcoulomb ',iel,iint,iregion
           det=dhr(1,1)*(dhr(2,2)*dhr(3,3)-dhr(2,3)*dhr(3,2))
      &         -dhr(1,2)*(dhr(2,1)*dhr(3,3)-dhr(2,3)*dhr(3,1))
      &         +dhr(1,3)*(dhr(2,1)*dhr(3,2)-dhr(2,2)*dhr(3,1))
+          if(dabs(det).lt.1.d-30) then
+            pnewdt=0.25d0
+            return
+          endif
 !     
 !     solving the system
 !     
@@ -753,6 +782,10 @@ c      write(*,*) 'mohrcoulomb ',iel,iint,iregion
           det=a(1,1)*(a(2,2)*a(3,3)-a(2,3)*a(3,2))
      &         -a(1,2)*(a(2,1)*a(3,3)-a(2,3)*a(3,1))
      &         +a(1,3)*(a(2,1)*a(3,2)-a(2,2)*a(3,1))
+          if(dabs(det).lt.1.d-30) then
+            pnewdt=0.25d0
+            return
+          endif
           b(1,1)=(a(2,2)*a(3,3)-a(3,2)*a(2,3))/det
           b(1,2)=-(a(1,2)*a(3,3)-a(3,2)*a(1,3))/det
           b(1,3)=-(a(1,2)*a(2,3)-a(2,2)*a(1,3))/det
