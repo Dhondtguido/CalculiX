@@ -311,8 +311,8 @@ c            else
 !     
             do j=istartset(iset),iendset(iset)
                if(ialset(j).gt.0) then
-                  if((lakon(ialset(j))(1:3).ne.'M3D8R').and.
-     &               (lakon(ialset(j))(1:2).ne.'M3D6')) then
+                  if((lakon(ialset(j))(1:5).ne.'M3D8R').and.
+     &               (lakon(ialset(j))(1:4).ne.'M3D6')) then
                      write(*,*) 
      &           '*ERROR reading *MEMBRANE SECTION: *MEMBRANE SECTION'
                      write(*,*) 
@@ -337,8 +337,8 @@ c            else
                   do
                      k=k-ialset(j)
                      if(k.ge.ialset(j-1)) exit
-                     if((lakon(k)(1:3).ne.'M3D8R').and.
-     &                  (lakon(k)(1:2).ne.'M3D6')) then
+                     if((lakon(k)(1:5).ne.'M3D8R').and.
+     &                  (lakon(k)(1:4).ne.'M3D6')) then
                         write(*,*) 
      &            '*ERROR reading *MEMBRANE SECTION: *MEMBRANE SECTION'
                         write(*,*) 
