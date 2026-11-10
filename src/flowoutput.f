@@ -445,12 +445,28 @@ c      write(*,*) 'nenet= ',nenet
           else
 !     
 !     incompressible
-!     
-            if((xflow.gt.0).and.(node1.ne.0)) then
-              gastemp=v(3,node1)
+!
+            if(xflow.gt.0) then
+              if(node1.ne.0) then
+                gastemp=v(3,node1)
+              else
+                gastemp=v(3,node2)
+              endif
             else
-              gastemp=v(3,node2)
+              if(node2.ne.0) then
+                gastemp=v(3,node2)
+              else
+                gastemp=v(3,node1)
+              endif
             endif
+c     
+c     write(*,*) node1,node2,xflow
+c     if((xflow.gt.0).and.(node1.ne.0)) then
+c     gastemp=v(3,node1)
+c     else
+c     gastemp=v(3,node2)
+c     endif
+c     
           endif
 !     
           imat=ielmat(1,nelem)
