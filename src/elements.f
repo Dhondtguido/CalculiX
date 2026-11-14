@@ -238,7 +238,9 @@ c     Bernhardi end
 !     
 !     dashpot element
 !     
-     &       (label.eq.'DASHPOTA'))
+     &       (label.eq.'DASHPOTA').or.
+     &       (label(1:8).eq.'DASHPOT2').or.
+     &       (label(1:8).eq.'DASHPOT3'))
      &       then
         solid=.true.
 !     

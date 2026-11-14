@@ -1077,7 +1077,9 @@ c     Bernhardi end
               ipdyn=max(ipdyn,50)
               nope=3
               nopeexp=23
-            elseif(label(1:8).eq.'DASHPOTA') then
+            elseif(label(1:8).eq.'DASHPOTA'.or.
+                 label(1:8).eq.'DASHPOT2'.or.
+                 label(1:8).eq.'DASHPOT3') then
               label='EDSHPTA1'
               nope=2
               nopeexp=2
