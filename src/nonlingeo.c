@@ -868,9 +868,8 @@ void nonlingeo(double **cop,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
 
   dthetaref=dtheta;
   if((dtheta<=1.e-6)&&(*iexpl<=1)){
-    printf("\n *ERROR in nonlingeo\n");
-    printf(" increment size smaller than one millionth of step size\n");
-    printf(" increase increment size\n\n");
+    printf("\n *WARNING in nonlingeo\n");
+    printf(" the increment size is smaller than one millionth of step size\n\n");
   }
   *tmin=*tmin/(*tper);
   *tmax=*tmax/(*tper);

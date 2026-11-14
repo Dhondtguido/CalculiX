@@ -199,7 +199,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
     if(*kscale>1){
       *kscale=1;
       iconvergence=0;
-      printf("\n restoring the elastic contact stifnesses to their original values \n\n");
+      printf(" Restoring the elastic contact stifnesses to their original values \n\n");
     }
   }
 
@@ -302,7 +302,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
       *r_abs=fabs(energy[0]+energy[1]+energy[2]+energy[3]-*energyref-*allwk-*dampwk);
       tmp=1.3*(2.0*(*r_abs)/(*emax))/(1.0+sqrt(*theta));
       *enetoll=max(*enetoll,tmp);
-      printf("\n Adaption of the max-decay boundary, enetoll = %f \n",*enetoll);
+      printf(" Adaption of the max-decay boundary, enetoll = %f \n\n",*enetoll);
     }
 	
     /*
@@ -314,8 +314,8 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
       tmp=energy[0]+energy[1]+energy[2]+energy[3]-*energyref-*allwk-*dampwk;
       if(tmp>*r_abs){
 	*r_abs=tmp;
-	printf("\n Adaption of the energy residual in persistent contact, \n");
-	printf("   an increasing trend has been detected.\n");
+	printf(" Adaption of the energy residual in persistent contact, \n");
+	printf("     an increasing trend has been detected.\n\n");
       }
     }
   } else {
@@ -336,7 +336,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	for(k=0;k<*nk;++k){t1[k]=vold[mt*k];}
 	*iit=1;
 	(ctrl[0])*=4;
-	printf(" thermal convergence\n\n");
+	printf(" Thermal convergence\n\n");
 	*iflagact=0;
 	return;
       }else{
@@ -366,7 +366,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
     if(iforceincsize==1){
       *dtheta=*sizemaxinc;
       *dthetaref=*sizemaxinc;
-      printf(" convergence; new increment size is forced to %e\n\n",*dtheta**tper);
+      printf(" Convergence; new increment size is forced to %e\n\n",*dtheta**tper);
     }
 	
     /* check whether next increment size must be decreased */
@@ -375,7 +375,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
       if(*mortar==0){
 	*dtheta=*dthetaref*db;
 	*dthetaref=*dtheta;
-	printf(" convergence; the increment size is decreased to %e\n\n",*dtheta**tper);
+	printf(" Convergence; the increment size is decreased to %e\n\n",*dtheta**tper);
 	if(*dtheta<*tmin){
 	  printf("\n *ERROR: increment size smaller than minimum\n");
 	  printf(" best solution and residuals are in the frd file\n\n");
@@ -405,7 +405,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	}
       }
       else{
-	printf("convergence\n\n");}
+	printf(" Convergence\n\n");}
     }
 	
     /* check whether next increment size can be increased */
@@ -414,17 +414,17 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
       if((*istab==1)&&(*idrct==0)){
 	*dtheta=*dthetaref*dd;
 	*dthetaref=*dtheta;
-	printf(" convergence; the increment size is increased to %e\n\n",*dtheta**tper);
+	printf(" Convergence; the increment size is increased to %e\n\n",*dtheta**tper);
       }
       else{
 	*istab=1;
-	printf(" convergence\n\n");
+	printf(" Convergence\n\n");
 	*dtheta=*dthetaref;
       }
     }
     else{
       *istab=0;
-      printf(" convergence\n\n");
+      printf(" Convergence\n\n");
       *dtheta=*dthetaref;
     }
 	
@@ -434,7 +434,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
     if((*dtheta>*sizemaxinc)&&(*idrct==0)){
       *dtheta=*sizemaxinc;
       *dthetaref=*dtheta;
-      printf(" the increment size exceeds the maximum allowed and is decreased to %e\n\n",*dtheta**tper);
+      printf(" The increment size exceeds the maximum allowed and is decreased to %e\n\n",*dtheta**tper);
     }
 
     /* check whether new time point exceeds end of step */
@@ -444,7 +444,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
       *dtheta=1.-*theta;
       *dthetaref=*dtheta;
       if(iexceed==1)
-	printf(" the increment size exceeds the remainder of the step and is decreased to %e\n\n",*dtheta**tper);
+	printf(" The increment size exceeds the remainder of the step and is decreased to %e\n\n",*dtheta**tper);
     }
 
     /* check whether the end of the new increment exceeds a time point;
@@ -489,7 +489,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	}
 	(*inext)++;
 	*itp=1;
-	printf(" the increment size exceeds a time point and is decreased to %e\n\n",*dtheta**tper);
+	printf(" The increment size exceeds a time point and is decreased to %e\n\n",*dtheta**tper);
       }else{*itp=0;}
 
       /* check whether material ramping was applied; if so,
@@ -559,7 +559,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
       if((*ithermal!=2)&&(*mortar==1)){
 
 	if(ram[0]>1.e9){
-	  printf("divergence allowed: residual force too large\n");
+	  printf(" Divergence allowed since residual force too large\n\n");
 	  if((ram1[0]>ram2[0])&&(ram[0]>ram2[0])&&(ram[0]>c1[0]*qam[0]))
 	    idivergence=1;
 	}
@@ -567,7 +567,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	/* number of contact elements does not change */
 
 	if(*iflagact==0){
-	  printf("divergence allowed: number of contact elements stabilized\n");
+	  printf(" Divergence allowed since number of contact elements stabilized\n\n");
 	  if((ram1[0]>ram2[0])&&(ram[0]>ram2[0])&&(ram[0]>c1[0]*qam[0])){
 	    if(cam[0]<=c2[0]*uam[0]){
 	      *ialeatoric=1;
@@ -581,7 +581,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 		    
 	  if(((ram[4]>0.98*ram1[4])&&(ram[4]<1.02*ram1[4]))&&
 	     ((ram[4]>0.98*ram2[4])&&(ram[4]<1.02*ram2[4]))){
-	    printf("divergence allowed: repetitive pattern detected\n");
+	    printf(" Divergence allowed since repetitive pattern detected\n\n");
 	    if((ram1[0]>ram2[0])&&(ram[0]>ram2[0])&&(ram[0]>c1[0]*qam[0]))
 	      idivergence=1;
 	  }
@@ -591,7 +591,10 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
       /* check whether in a viscous step the allowable increase in viscous
 	 strain has been exceeded */
 
-      if((idivergence==0)&&((*nmethod==-1)&&(qa[3]>cetol))) idivergence=2;
+      if((idivergence==0)&&((*nmethod==-1)&&(qa[3]>cetol))){
+	printf(" Divergence due to exceedance of CETOL \n\n");
+	idivergence=2;
+      }
 
 
       /* for thermal calculations the maximum temperature change
@@ -606,7 +609,10 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	   cf. CalculiX.c); therefore, a comparison of cam[2]
 	   with deltmx only makes sense for cam[2]<1.e30 */
 
-	if((cam[2]<1.e30)&&(cam[2]>*deltmx)) idivergence=2;
+	if((cam[2]<1.e30)&&(cam[2]>*deltmx)){
+	  printf(" Divergence due to exceedance of DELTMX \n\n");
+	  idivergence=2;
+	}
       }
 
       if(idivergence>0){
@@ -614,10 +620,6 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	  if((*mortar<=1)||((*mortar>1)&&(*iit>200))) {
 			
 	    /* fixed time increments */
-			
-	    printf("\n *ERROR: solution seems to diverge; please try \n");
-	    printf(" automatic incrementation; program stops\n");
-	    printf(" best solution and residuals are in the frd file\n\n");
 			
 	    FORTRAN(writestadiv,(istep,iinc,icutb,iit,ttime,time,
 				 dtime));
@@ -654,7 +656,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 
 	  if(qa[2]>0.){
 	    *dtheta=*dtheta*qa[2];
-	    printf("increment size decrease requested by a material user routine (through pnewdt)\n\n");
+	    printf(" Increment size decrease requested by a material user routine (through pnewdt)\n\n");
 	  }else{
 	    if(idivergence==1){
 	      if((*mortar!=1)||(*icutb!=0)){              // MPADD
@@ -673,7 +675,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	    }
 	  }
 	  *dthetaref=*dtheta;
-	  printf(" divergence; the increment size is decreased to %e\n",*dtheta**tper);
+	  printf(" Divergence; the increment size is decreased to %e\n",*dtheta**tper);
 	  printf(" the increment is reattempted\n\n");
 
 	  FORTRAN(writestadiv,(istep,iinc,icutb,iit,ttime,time,
@@ -734,7 +736,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	  (*icutb)++;
 	  if(*mortar==1){
 	    *kscale=kscalemax;
-	    printf("\n reducing the constant stiffnesses by a factor of %" ITGFORMAT " \n\n",*kscale);
+	    printf("\n Reducing the constant stiffnesses by a factor of %" ITGFORMAT " \n\n",*kscale);
 	  }
 
 	  /* check whether too many cutbacks */
@@ -810,7 +812,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
       }
       if(iest1>iest2){iest=iest1;}else{iest=iest2;}
       if((iest>0)&&(*mortar!=1)){
-	printf(" estimated number of iterations till convergence = %" ITGFORMAT "\n",
+	printf(" Estimated number of iterations till convergence = %" ITGFORMAT "\n\n",
 	       iest);
       }
       if((((iest>ic)||(*iit==ic))&&(*mortar!=1))||((*mortar==1)&&(*iit==itf2f))){
@@ -819,7 +821,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	  if((*mortar!=1)||(*icutb!=0)) *dtheta=*dtheta*dc;
 	  *dthetaref=*dtheta;
 	  if((*mortar==1)&&(*iit==itf2f)){
-	    printf( "maximum number of iterations for face-to-face contact reached\n");
+	    printf( " Maximum number of iterations for face-to-face contact reached\n");
 	    printf(" the increment size is decreased to %e\n",*dtheta**tper);
 	    printf(" the increment is reattempted\n\n");
 	  }else{
@@ -885,7 +887,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
 	  (*icutb)++;
 	  if(*mortar==1){
 	    *kscale=kscalemax;
-	    printf("\n reducing the constant stiffnesses by a factor of %" ITGFORMAT " \n\n",*kscale);
+	    printf("\n Reducing the constant stiffnesses by a factor of %" ITGFORMAT " \n\n",*kscale);
 	  }
 	  //		    if(*mortar==1) *kscale=100;
 
@@ -948,7 +950,7 @@ void checkconvergence(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,
       }
     }
 	
-    printf(" no convergence\n\n");
+    printf(" No convergence\n\n");
 	
     (*iit)++;
 	

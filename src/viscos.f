@@ -196,6 +196,16 @@
 !      
       if(idrct.ne.1) then
          if(dabs(tmin).lt.1.d-6*tper) then
+            write(*,*) '*WARNING reading *VISCO:'
+            write(*,*) '         the minimum increment ',tmin
+            write(*,*) '         is smaller then 1.e-6 times the '
+            write(*,*) '         step time;'
+            write(*,*) '         the minimum increment is changed'
+            write(*,*) '         to ',min(tinc,1.d-6*tper)
+            write(*,*) '         which is the minimum of the initial'
+            write(*,*) 
+     &         '         increment time and 1.e-6 times the step time'
+            write(*,*)
             tmin=min(tinc,1.d-6*tper)
          endif
          if(dabs(tmax).lt.1.d-10) then
