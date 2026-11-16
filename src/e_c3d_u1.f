@@ -477,14 +477,14 @@ c      write(*,*) 'u1 trans3 ',e3(1),e3(2),e3(3)
 !     stiffness matrix
 !   
             y1=xk*um*a*e*xi11*(12.d0*e*xi11+xk*um*a*dl*dl)
-            y2=(12.d0*e*xi11-xk*um*a*dl*dl)**2
+            y2=(12.d0*e*xi11+xk*um*a*dl*dl)**2
             y3=4.d0*e*xi11*((xk*um*a)**2*dl**4+
-     &         3.d0*xk*um*a*dl*dl*e*xi11+
+     &         15.d0*xk*um*a*dl*dl*e*xi11+
      &         36.d0*(e*xi11)**2)
             z1=xk*um*a*e*xi22*(12.d0*e*xi22+xk*um*a*dl*dl)
-            z2=(12.d0*e*xi22-xk*um*a*dl*dl)**2
+            z2=(12.d0*e*xi22+xk*um*a*dl*dl)**2
             z3=4.d0*e*xi22*((xk*um*a)**2*dl**4+
-     &         3.d0*xk*um*a*dl*dl*e*xi22+
+     &         15.d0*xk*um*a*dl*dl*e*xi22+
      &         36.d0*(e*xi22)**2)
 !  
 !     stiffness matrix S' in local coordinates
@@ -512,11 +512,11 @@ c      write(*,*) 'u1 trans3 ',e3(1),e3(2),e3(3)
             s(5,9)=6.d0*z1/z2
             s(5,11)=-2.d0*e*xi22*(72.d0*(e*xi22)**2-
      &              (xk*um*a)**2*dl**4-
-     &              30.d0*xk*um*a*dl*dl*e*xi22)/(dl*z2)
+     &              6.d0*xk*um*a*dl*dl*e*xi22)/(dl*z2)
             s(6,6)=y3/(dl*y2)
             s(6,8)=-6.d0*y1/y2
             s(6,12)=-2.d0*e*xi11*(-(xk*um*a)**2*dl**4-
-     &              30.d0*xk*um*a*dl*dl*e*xi11+
+     &              6.d0*xk*um*a*dl*dl*e*xi11+
      &              72.d0*(e*xi11)**2)/(dl*y2)
             s(1,7)=-s(1,1)
             s(7,7)=s(1,1)
