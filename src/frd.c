@@ -1,5 +1,5 @@
 /*     CalculiX - A 3-dimensional finite element program                 */
-/*              Copyright (C) 1998-2015 Guido Dhondt                          */
+/*              Copyright (C) 1998-2025 Guido Dhondt                          */
 
 /*     This program is free software; you can redistribute it and/or     */
 /*     modify it under the terms of the GNU General Public License as    */
@@ -39,8 +39,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	 double *eenmax,double *fnr,double *fni,double *emn,
 	 double *thicke,char *jobnamec,char *output,double *qfx,
          double *cdn,ITG *mortar,double *cdnr,double *cdni,ITG *nmat,
-         ITG *ielprop,double *prop,double *sti,double *damn,double **errnp,
-	 double *accold){
+         ITG *ielprop,double *prop,double *sti,double *damn,double **errnp){
 
   /* stores the results in frd format
 
@@ -69,6 +68,8 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
     ip8=8,ip9=9,ip10=10,ip11=11,ip12=12,imat,nelout,ioutall=0,*inumshell=NULL,
     nterms,nout,noutplus,noutmin,mt=mi[1]+1,iflag,numfield,iorienloc;
 
+  ITG n1=0,n2=0;
+
   ITG ncompscalar=1,ifieldscalar[1]={1},icompscalar[1]={0},
     nfieldscalar[2]={1,0};
   ITG ncompvector=3,ifieldvector[3]={1,1,1},icompvector[3]={0,1,2},
@@ -82,6 +83,9 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
     nfieldvectph[2]={mi[1]+1,mi[1]+1};
   ITG ncomptensph=12,ifieldtensph[12]={1,1,1,1,1,1,2,2,2,2,2,2},
     icomptensph[12]={0,1,2,3,5,4,0,1,2,3,5,4},nfieldtensph[2]={6,6};
+  /* UB31: 6-component vector for BFOR beam forces/moments */
+  ITG ncompvector6=6,ifieldvector6[6]={1,1,1,1,1,1},icompvector6[6]={0,1,2,3,4,5},
+    nfieldvector6[2]={6,0};
       
   int iw;
 
@@ -202,8 +206,8 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
     fprintf(f1,"%5sUTIME              %8s                                        \n",p1,newclock);
     fprintf(f1,"%5sUHOST                                                              \n",p1);
     fprintf(f1,"%5sUPGM               CalculiX                                        \n",p1);
-    fprintf(f1,"%5sUVERSION           Version DEVELOPMENT                             \n",p1);
-    fprintf(f1,"%5sUCOMPILETIME       %-48.48s\n",p1,ccx_compiletime);
+    fprintf(f1,"%5sUVERSION           Version 2.23                             \n",p1);
+    fprintf(f1,"%5sUCOMPILETIME       Thu Sep 17 10:01:44 PM CEST 2026                    \n",p1);
     fprintf(f1,"%5sUDIR                                                               \n",p1);
     fprintf(f1,"%5sUDBN                                                               \n",p1);
     
@@ -253,6 +257,7 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
        the nodal coordinates are stored in the frd file */
 
     nkcoords=*nk;
+
     if(strcmp1(output,"asc")==0)fprintf(f1,"%3s\n",m3);
 
     /* determining the number of elements */
@@ -295,15 +300,11 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	}else if(strcmp1(&lakon[8*i],"MASS")==0){
 	  continue;
 
-	  /* user element */
+	  /* user elements other than UB31/U1 skipped */
 
-	}else if(strcmp1(&lakon[8*i],"U")==0){
-
-	/* only user elements of type US3 and US45 are stored */
-	
-	  if((strcmp1(&lakon[8*i],"US3")!=0)&&(strcmp1(&lakon[8*i],"US45")!=0)){
-	    continue;
-	  }
+	}else if(strcmp1(&lakon[8*i],"U")==0 &&
+		 (strcmp1(&lakon[8*i],"U1")!=0 && strcmp1(&lakon[8*i],"UB31")!=0)){
+	  continue;
 	}
 	nelout++;
       }
@@ -345,14 +346,8 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	continue;
       }else if(strcmp1(&lakon[8*i],"MASS")==0){
 	continue;
-      }else if(strcmp1(&lakon[8*i],"U")==0){
-
-	/* only user elements of type US3 and US45 are stored */
-	
-	if((strcmp1(&lakon[8*i],"US3")!=0)&&(strcmp1(&lakon[8*i],"US45")!=0)){
-	  continue;
-	}
-	indexe=ipkon[i];
+      }else if(strcmp1(&lakon[8*i],"U")==0 && (strcmp1(&lakon[8*i],"U1")!=0 && strcmp1(&lakon[8*i],"UB31")!=0)){
+	continue;
       }else{
 	indexe=ipkon[i];
       }
@@ -781,40 +776,21 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	  iw=(int)kon[indexe];fwrite(&iw,sizeof(int),1,f1);
 	  iw=(int)kon[indexe+1];fwrite(&iw,sizeof(int),1,f1);
 	}
-	//      }else if(strcmp1(&lakon[8*i],"MASS")==0){
 
-	//  /* MASS: store nothing */
+      }else if(strcmp1(&lakon[8*i],"U1")==0 || strcmp1(&lakon[8*i],"UB31")==0){
 
-	/* user elements */
-	
-      }else if(strcmp1(&lakon[8*i],"US45")==0){
+	/* 2-node 1d user beam element */
+
 	if(strcmp1(output,"asc")==0){
-	  fprintf(f1,"%3s%10" ITGFORMAT "%5s%5s%5" ITGFORMAT "\n%3s",
-		  m1,i+1,p9,p0,imat,m2);
-	  for(j=0;j<4;j++)fprintf(f1,"%10" ITGFORMAT "",kon[indexe+j]);
-	  fprintf(f1,"\n");
+	  fprintf(f1,"%3s%10" ITGFORMAT "%5s%5s%5" ITGFORMAT "\n",m1,i+1,p11,p0,imat);
+	  fprintf(f1,"%3s%10" ITGFORMAT "%10" ITGFORMAT "\n",m2,kon[indexe],kon[indexe+1]);
 	}else{
 	  iw=(int)(i+1);fwrite(&iw,sizeof(int),1,f1);
-	  iw=(int)ip9;fwrite(&iw,sizeof(int),1,f1);
+	  iw=(int)ip11;fwrite(&iw,sizeof(int),1,f1);
 	  iw=(int)ip0;fwrite(&iw,sizeof(int),1,f1);
 	  iw=(int)imat;fwrite(&iw,sizeof(int),1,f1);
-	  for(j=0;j<4;j++){iw=(int)kon[indexe+j];
-	    fwrite(&iw,sizeof(int),1,f1);}
-	}
-      
-      }else if(strcmp1(&lakon[8*i],"US3")==0){
-	if(strcmp1(output,"asc")==0){
-	  fprintf(f1,"%3s%10" ITGFORMAT "%5s%5s%5" ITGFORMAT "\n%3s",
-		  m1,i+1,p7,p0,imat,m2);
-	  for(j=0;j<3;j++)fprintf(f1,"%10" ITGFORMAT "",kon[indexe+j]);
-	  fprintf(f1,"\n");
-	}else{
-	  iw=(int)(i+1);fwrite(&iw,sizeof(int),1,f1);
-	  iw=(int)ip7;fwrite(&iw,sizeof(int),1,f1);
-	  iw=(int)ip0;fwrite(&iw,sizeof(int),1,f1);
-	  iw=(int)imat;fwrite(&iw,sizeof(int),1,f1);
-	  for(j=0;j<3;j++){iw=(int)kon[indexe+j];
-	    fwrite(&iw,sizeof(int),1,f1);}
+	  iw=(int)kon[indexe];fwrite(&iw,sizeof(int),1,f1);
+	  iw=(int)kon[indexe+1];fwrite(&iw,sizeof(int),1,f1);
 	}
       }else{
 
@@ -956,29 +932,6 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	      &ioutall);
   }
 
-  /* storing the accelerations in the nodes */
-  
-  if((strcmp1(&filab[4872],"A   ")==0)&&(*ithermal!=2)){
-    iselect=1;
-    
-    frdset(&filab[4872],set,&iset,istartset,iendset,ialset,
-	   inum,&noutloc,&nout,nset,&noutmin,&noutplus,&iselect,
-	   ngraph);
-    
-    frdheader(&icounter,&oner,time,&pi,noddiam,cs,&null,mode,
-	      &noutloc,description,kode,nmethod,f1,output,istep,iinc);
-
-    fprintf(f1," -4  ACCE        4    1\n");
-    fprintf(f1," -5  A1          1    2    1    0\n");
-    fprintf(f1," -5  A2          1    2    2    0\n");
-    fprintf(f1," -5  A3          1    2    3    0\n");
-    fprintf(f1," -5  ALL         1    2    0    0    1ALL\n");
-
-    frdvector(accold,&iset,ntrans,&filab[4872],&nkcoords,inum,m1,inotr,
-	      trab,co,istartset,iendset,ialset,mi,ngraph,f1,output,m3,
-	      &ioutall);
-  }
-
   /* storing the temperatures in the nodes */
   
   if(strcmp1(&filab[87],"NT  ")==0){
@@ -1046,10 +999,133 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
       fprintf(f1," -5  SYZ         1    4    2    3\n");
       fprintf(f1," -5  SZX         1    4    3    1\n");
   
+      /* UB31 STRESS: assign physical end-node stn values from ub31_stx (stations 0 and 10) */
+      for(i=0; i<*ne0; i++){
+	if(ipkon[i] >= 0 &&
+	   (strcmp1(&lakon[8*i],"U1")==0 || strcmp1(&lakon[8*i],"UB31")==0)){
+	  double ub31buf[6*11];
+	  ITG nelem_1 = i + 1;
+	  FORTRAN(getub31stx,(&nelem_1, ub31buf));
+	  ITG indexe_s = ipkon[i];
+	  n1 = kon[indexe_s] - 1;
+	  n2 = kon[indexe_s+1] - 1;
+
+	  /* station 0 -> real node 1 */
+	  stn[6*n1+0] = ub31buf[6*0 + 0]; /* SXX: axial + bending */
+	  stn[6*n1+1] = 0.0;             /* SYY */
+	  stn[6*n1+2] = 0.0;             /* SZZ */
+	  stn[6*n1+3] = ub31buf[6*0 + 1]; /* SXY: tau_xy */
+	  stn[6*n1+4] = 0.0;             /* SYZ */
+	  stn[6*n1+5] = ub31buf[6*0 + 2] + ub31buf[6*0 + 3]; /* SZX: tau_xz + tau_tor */
+
+	  /* station 10 -> real node 2 */
+	  stn[6*n2+0] = ub31buf[6*10 + 0]; /* SXX: axial + bending */
+	  stn[6*n2+1] = 0.0;              /* SYY */
+	  stn[6*n2+2] = 0.0;              /* SZZ */
+	  stn[6*n2+3] = ub31buf[6*10 + 1]; /* SXY: tau_xy */
+	  stn[6*n2+4] = 0.0;              /* SYZ */
+	  stn[6*n2+5] = ub31buf[6*10 + 2] + ub31buf[6*10 + 3]; /* SZX: tau_xz + tau_tor */
+	}
+      }
       frdselect(stn,stn,&iset,&nkcoords,inum,m1,istartset,iendset,
 		ialset,ngraph,&ncomptensor,ifieldtensor,icomptensor,
 		nfieldtensor,&iselect,m2,f1,output,m3);
   
+    }
+  }
+
+  /* UB31 BFOR: beam internal forces/moments on real beam end-nodes.
+     Field order: NX (axial), VY, VZ (shear), TX (torsion), MY, MZ (moments). */
+  if((*nmethod!=5)||(*mode==-1)){
+    if((strcmp1(&filab[174],"S   ")==0)&&(*ithermal!=2)){
+      double *bfor_n = NULL;
+      iselect=1;
+      frdset(&filab[174],set,&iset,istartset,iendset,ialset,
+	     inum,&noutloc,&nout,nset,&noutmin,&noutplus,&iselect,
+	     ngraph);
+      frdheader(&icounter,&oner,time,&pi,noddiam,cs,&null,mode,
+		&noutloc,description,kode,nmethod,f1,output,istep,iinc);
+      fprintf(f1," -4  BFOR        6    1\n");
+      fprintf(f1," -5  NX          1    1    0    0\n");
+      fprintf(f1," -5  VY          1    1    0    0\n");
+      fprintf(f1," -5  VZ          1    1    0    0\n");
+      fprintf(f1," -5  TX          1    1    0    0\n");
+      fprintf(f1," -5  MY          1    1    0    0\n");
+      fprintf(f1," -5  MZ          1    1    0    0\n");
+      NNEW(bfor_n, double, 6*(*nk));
+      for(i=0; i<6*(*nk); i++) bfor_n[i] = 0.0;
+      /* fill bfor_n end-nodes from ub31_for stations 0 and 10 */
+      for(i=0; i<*ne0; i++){
+	if(ipkon[i] >= 0 &&
+	   (strcmp1(&lakon[8*i],"U1")==0 || strcmp1(&lakon[8*i],"UB31")==0)){
+	  double ub31buf[6*11];
+	  ITG nelem_1 = i + 1;
+	  FORTRAN(getub31for,(&nelem_1, ub31buf));
+	  ITG indexe_b = ipkon[i];
+	  n1 = kon[indexe_b] - 1;
+	  n2 = kon[indexe_b+1] - 1;
+	  for(j=0; j<6; j++){
+	    bfor_n[6*n1+j] = ub31buf[6*0 + j];
+	    bfor_n[6*n2+j] = ub31buf[6*10 + j];
+	  }
+	}
+      }
+      frdselect(bfor_n,bfor_n,&iset,&nkcoords,inum,m1,istartset,iendset,
+		ialset,ngraph,&ncompvector6,ifieldvector6,icompvector6,
+		nfieldvector6,&iselect,m2,f1,output,m3);
+      SFREE(bfor_n);
+    }
+  }
+
+  /* UB31 UCHK: beam code check utilizations (Eurocode 3 EN 1993-1-1). */
+  if((*nmethod!=5)||(*mode==-1)){
+    ITG iact_chk = 0;
+    FORTRAN(iscodecheckactive, (&iact_chk));
+    if(iact_chk == 1){
+      double *uchk_n = NULL;
+      iselect=1;
+      frdset(&filab[174],set,&iset,istartset,iendset,ialset,
+	     inum,&noutloc,&nout,nset,&noutmin,&noutplus,&iselect,
+	     ngraph);
+      /* Run beam code checking to evaluate all members and generate CSV report */
+      FORTRAN(run_beam_codecheck,(co, kon, ipkon, lakon, ne, nk,
+				  ielmat, matname, istep, iinc, mi,
+				  ielprop, prop, jobnamec,
+				  set, nset, istartset, iendset, ialset));
+      frdheader(&icounter,&oner,time,&pi,noddiam,cs,&null,mode,
+		&noutloc,description,kode,nmethod,f1,output,istep,iinc);
+      fprintf(f1," -4  UCHK        6    1\n");
+      fprintf(f1," -5  UCTOT       1    1    0    0\n");
+      fprintf(f1," -5  UCAX        1    1    0    0\n");
+      fprintf(f1," -5  UCSH        1    1    0    0\n");
+      fprintf(f1," -5  UCBND       1    1    0    0\n");
+      fprintf(f1," -5  UCSTAB      1    1    0    0\n");
+      fprintf(f1," -5  UCLTB       1    1    0    0\n");
+      NNEW(uchk_n, double, 6*(*nk));
+      for(i=0; i<6*(*nk); i++) uchk_n[i] = 0.0;
+      /* fill uchk_n end-nodes from codecheck station results (station 1=node 1, station 11=node 2) */
+      for(i=0; i<*ne0; i++){
+	if(ipkon[i] >= 0 &&
+	   (strcmp1(&lakon[8*i],"U1")==0 || strcmp1(&lakon[8*i],"UB31")==0)){
+	  double uc_st1[6], uc_st11[6];
+	  ITG nelem_1 = i + 1;
+	  ITG st_1 = 1;
+	  ITG st_11 = 11;
+	  FORTRAN(getcodecheckstationuc,(&nelem_1, &st_1, uc_st1));
+	  FORTRAN(getcodecheckstationuc,(&nelem_1, &st_11, uc_st11));
+	  ITG indexe_b = ipkon[i];
+	  n1 = kon[indexe_b] - 1;
+	  n2 = kon[indexe_b+1] - 1;
+	  for(j=0; j<6; j++){
+	    uchk_n[6*n1+j] = max(uchk_n[6*n1+j], uc_st1[j]);
+	    uchk_n[6*n2+j] = max(uchk_n[6*n2+j], uc_st11[j]);
+	  }
+	}
+      }
+      frdselect(uchk_n,uchk_n,&iset,&nkcoords,inum,m1,istartset,iendset,
+		ialset,ngraph,&ncompvector6,ifieldvector6,icompvector6,
+		nfieldvector6,&iselect,m2,f1,output,m3);
+      SFREE(uchk_n);
     }
   }
   
@@ -2263,6 +2339,16 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 
   }
 
+  /* mesh refinement */
+  
+  /*  if(strcmp1(&filab[4089],"RM")==0){
+    refinemesh(nk,ne,co,ipkon,kon,v,veold,stn,een,emn,epn,enern,
+	       qfn,errn,filab,mi,lakon,jobnamec,istartset,iendset,
+	       ialset,set,nset,matname,ithermal,output,nmat,
+	       nelemload,nload,sideload,nodeforc,
+	       nforc,nodeboun,nboun,nodempc,ipompc,nmpc);
+	       }*/
+
   /* remove auxiliary field for the error estimator at the nodes
      if no mesh refinement was requested */  
 
@@ -2271,6 +2357,8 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
      ((strcmp1(&filab[1044],"ERR")==0)&&(*ithermal!=2))){
     SFREE(errn);
   }else{*errnp=errn;}
+
+  //  if(((*nmethod!=5)||(*mode==-1)&&((strcmp1(&filab[1044],"ERR")==0)&&(*ithermal!=2))) SFREE(errn);
 
   /*  the remaining lines only apply to frequency calculations
       with cyclic symmetry, complex frequency and steady state calculations */
