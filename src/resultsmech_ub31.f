@@ -84,7 +84,7 @@
      &  sigma_x, sigma_b_y, sigma_b_z, w_load_val, xi_station,
      &  m1_eq_y, m2_eq_y, m1_eq_z,
      &  m2_eq_z, M1_y, M2_y, M1_z, M2_z, M0_y, M0_z, R1, R2,
-     &  phi_y, phi_z, vy_x, vz_x, geom_vy, geom_vz,
+     &  phi_y, phi_z, timo_val, vy_x, vz_x, geom_vy, geom_vz,
      &  geom_my, geom_mz, cos_pr, sin_pr,
      &  spring_k(12), col_r(12), denom, ks, s_rr
       integer station_i, load_dir, load_type, station_k, num_sub
@@ -164,6 +164,13 @@
          e2_in(1)=prop(index+17)
          e2_in(2)=prop(index+18)
          e2_in(3)=prop(index+19)
+         timo_val=prop(index+20)
+!        Identical constitutive branch to the stiffness kernel.
+         if(lakon(nelem)(5:5).eq.'E') then
+            timo_val=-1.d0
+         elseif(lakon(nelem)(5:5).eq.'T') then
+            timo_val=0.d0
+         endif
       else
          write(*,*) '*ERROR in resultsmech_ub31: element ',nelem,
      &        ' has no section properties.'
@@ -397,7 +404,19 @@
       s(1,7) = -s(1,1)
       s(7,7) = s(1,1)
 
-      phi_z = 12.d0 * e * xi11 / (um * a * xk_y * dl**2)
+      if(timo_val.lt.-1.d-6) then
+!        Euler-Bernoulli: zero shear compliance.
+         phi_z=0.d0
+         phi_y=0.d0
+      elseif(timo_val.gt.1.d-6) then
+!        Custom shear factor from *USER BEAM SECTION.
+         phi_z=12.d0*e*xi11/(um*a*timo_val*dl**2)
+         phi_y=12.d0*e*xi22/(um*a*timo_val*dl**2)
+      else
+!        Timoshenko: automatic cross-section shear corrections.
+         phi_z=12.d0*e*xi11/(um*a*xk_y*dl**2)
+         phi_y=12.d0*e*xi22/(um*a*xk_z*dl**2)
+      endif
       s(2,2) = 12.d0*e*xi11/((1.d0 + phi_z)*(dl**3))
       s(2,6) = 6.d0*e*xi11/((1.d0 + phi_z)*(dl**2))
       s(2,8) = -s(2,2)
@@ -411,7 +430,6 @@
       s(8,12) = -s(2,6)
       s(12,12) = s(6,6)
 
-      phi_y = 12.d0 * e * xi22 / (um * a * xk_z * dl**2)
       s(3,3) = 12.d0*e*xi22/((1.d0 + phi_y)*(dl**3))
       s(3,5) = -6.d0*e*xi22/((1.d0 + phi_y)*(dl**2))
       s(3,9) = -s(3,3)
