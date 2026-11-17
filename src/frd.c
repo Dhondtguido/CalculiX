@@ -21,6 +21,10 @@
 #include <string.h>
 #include "CalculiX.h"
 
+/* Direct-beam stress and section-force retrieval (Fortran bridge). */
+extern void FORTRAN(getub31stx,(ITG *, double *));
+extern void FORTRAN(getub31for,(ITG *, double *));
+
 #define min(a,b) ((a) <= (b) ? (a) : (b))
 #define max(a,b) ((a) >= (b) ? (a) : (b))
 
@@ -39,7 +43,8 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
 	 double *eenmax,double *fnr,double *fni,double *emn,
 	 double *thicke,char *jobnamec,char *output,double *qfx,
          double *cdn,ITG *mortar,double *cdnr,double *cdni,ITG *nmat,
-         ITG *ielprop,double *prop,double *sti,double *damn,double **errnp){
+         ITG *ielprop,double *prop,double *sti,double *damn,double **errnp,
+         double *accold){
 
   /* stores the results in frd format
 
