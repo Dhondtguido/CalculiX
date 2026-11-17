@@ -1076,6 +1076,12 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
       for(i=0;i<*nk;i++){
         if(beam_inum[i]>0)beam_count++;
       }
+      fprintf(stderr,"DBG_BFOR ne0=%ld ne=%ld nk=%ld "
+                       "coords=%ld matched=%ld first=%8.8s"
+                       " ipkon0=%ld inum0=%ld inum1=%ld\\n",
+              (long)*ne0,(long)*ne,(long)*nk,(long)nkcoords,
+              (long)beam_count,lakon,(long)ipkon[0],
+              (long)inum[0],(long)inum[1]);
       iset=0;
       iselect=1;
       noutloc=beam_count;
