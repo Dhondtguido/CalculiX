@@ -621,9 +621,23 @@
       elseif (nint(sect_type) .eq. 7) then
          cy = dims(2)/2.d0
          cz = dims(1)/2.d0
+      elseif (nint(sect_type) .eq. 8) then
+         cy = dims(1)
+         cz = dims(2)
+      elseif (nint(sect_type) .eq. 9) then
+!        Unequal-thickness Abaqus L: distances from centroid to
+!        extreme fibers (conservative for rotated principal axes).
+         w1=dims(1)*dims(3)
+         w2=dims(4)*(dims(2)-dims(3))
+         alpha=(w1*dims(1)/2.d0+w2*dims(4)/2.d0)/
+     &         (w1+w2)
+         beta=(w1*dims(3)/2.d0+
+     &         w2*(dims(2)+dims(3))/2.d0)/(w1+w2)
+         cy=max(alpha,dims(1)-alpha)
+         cz=max(beta,dims(2)-beta)
       else
-         cy = 0.05d0
-         cz = 0.05d0
+         write(*,*) '*ERROR: unsupported stress section'
+         call exit(201)
       endif
 !
 !     compute stress values

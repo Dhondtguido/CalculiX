@@ -256,6 +256,33 @@
          xk_y = (rb(2)*rh(2)) / A
          xk_z = (rh(1)*rb(1)) / A
 
+      elseif (st .eq. 9) then
+!        Abaqus unequal-thickness L section, a,b,t1,t2.
+!        Horizontal leg is a*t1, vertical remainder t2*(b-t1).
+         b=dims(1)
+         h=dims(2)
+         t_b=dims(3)
+         t_w=dims(4)
+         if(b.le.0.d0.or.h.le.0.d0.or.t_b.le.0.d0.or.
+     &      t_w.le.0.d0.or.t_b.ge.h.or.t_w.ge.b) then
+            write(*,*) '*ERROR: invalid Abaqus L geometry'
+            call exit(201)
+         endif
+         rb(1)=b
+         rh(1)=t_b
+         ry(1)=b/2.d0
+         rz(1)=t_b/2.d0
+         rb(2)=t_w
+         rh(2)=h-t_b
+         ry(2)=t_w/2.d0
+         rz(2)=t_b+(h-t_b)/2.d0
+         call compute_composite_inertia(2,rb,rh,ry,rz,
+     &        A,Iyy,Izz,Iyz)
+         J=(b*t_b**3+(h-t_b)*t_w**3)/3.d0
+!        Shear factors for thin angles are provisional estimates.
+         xk_y=rb(1)*rh(1)/A
+         xk_z=rb(2)*rh(2)/A
+!
       elseif (st .eq. 7) then
          ! Box section (dims: h, b, t1, t2, t3, t4)
          ! h = overall height, b = overall width

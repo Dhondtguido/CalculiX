@@ -69,7 +69,10 @@
 !
       real*8 thicke(mi(3),*),thickness1,thickness2,p(3),xnor(*),
      &  offset(2,*),offset1,offset2,dd,dims_temp(6),sect_type_val,
-     &  original_dims(6),
+     &  original_dims(6), abaqus_i_l, geom_y,geom_z,
+     &  ccx_offset1,ccx_offset2,ag,ac,as,ay,az,
+     &  aa,ab,aw,zc,ctmp,theta_geom,wt1,wt2,
+     &  Iyy_tmp,Izz_tmp,J_tmp,k1_tmp,k2_tmp,a_tmp,
      &  prop(*), off1(3), off2(3), off3(3), rel1, rel2, rel3,
      &  rot_angle_val, timo_val, custom_k, open_tol, flange_tol
 !
@@ -269,6 +272,74 @@
 !
 !     Native *BEAM SECTION geometry matches CCX rather than a
 !     bespoke Mecway BOX arrangement. USER BEAM SECTION stays legacy.
+      abaqus_i_l=0.d0
+      geom_y=0.d0
+      geom_z=0.d0
+      if(native_section.and.section.eq.'I   ') then
+!        Abaqus 2016 I shape: l,h,b1,b2,t1,t2,t3.
+!        The first field l positions the local section origin above
+!        the bottom flange. Convert geometry to the UB31 six-field
+!        property definition (h,b_top,t_top,b_bot,t_bot,t_web).
+         if(n.ne.7) then
+            write(*,*) '*ERROR: native SECTION=I expects 7 values'
+            ier=1
+            return
+         endif
+         read(textpart(7)(1:20),'(f20.0)',iostat=istat) wt2
+         if(istat.ne.0) then
+            write(*,*) '*ERROR: I section web thickness'
+            ier=1
+            return
+         endif
+         abaqus_i_l=dims_temp(1)
+         aa=dims_temp(2)
+         ab=dims_temp(3)
+         aw=dims_temp(4)
+         wt1=dims_temp(5)
+         ctmp=dims_temp(6)
+         if(aa.le.0.d0.or.ab.le.0.d0.or.aw.le.0.d0.or.
+     &      wt1.le.0.d0.or.ctmp.le.0.d0.or.wt2.le.0.d0.or.
+     &      wt1+ctmp.ge.aa.or.wt2.ge.min(ab,aw)) then
+            write(*,*) '*ERROR: invalid native I section geometry'
+            ier=1
+            return
+         endif
+         dims_temp(1)=aa
+         dims_temp(2)=aw
+         dims_temp(3)=ctmp
+         dims_temp(4)=ab
+         dims_temp(5)=wt1
+         dims_temp(6)=wt2
+         ag=ab*wt1+wt2*(aa-wt1-ctmp)+aw*ctmp
+         geom_z=(ab*wt1*(wt1/2.d0)+
+     &      wt2*(aa-wt1-ctmp)*
+     &      (wt1+(aa-wt1-ctmp)/2.d0)+
+     &      aw*ctmp*(aa-ctmp/2.d0))/ag-abaqus_i_l
+      elseif(native_section.and.section.eq.'L   ') then
+!        Abaqus L: a,b,t1(horizontal leg),t2(vertical leg).
+!        Reference origin is the outside section corner.
+         if(n.ne.4) then
+            write(*,*) '*ERROR: native SECTION=L expects 4 values'
+            ier=1
+            return
+         endif
+         aa=dims_temp(1)
+         ab=dims_temp(2)
+         wt1=dims_temp(3)
+         wt2=dims_temp(4)
+         if(aa.le.0.d0.or.ab.le.0.d0.or.
+     &      wt1.le.0.d0.or.wt2.le.0.d0.or.
+     &      wt1.ge.ab.or.wt2.ge.aa) then
+            write(*,*) '*ERROR: invalid native L section geometry'
+            ier=1
+            return
+         endif
+         ag=aa*wt1+wt2*(ab-wt1)
+         geom_y=(aa*wt1*aa/2.d0+
+     &      wt2*(ab-wt1)*wt2/2.d0)/ag
+         geom_z=(aa*wt1*wt1/2.d0+
+     &      wt2*(ab-wt1)*(ab+wt1)/2.d0)/ag
+      endif
       if(native_section.and.section.eq.'RECT'.and.n.eq.1) then
          dims_temp(2)=dims_temp(1)
       endif
@@ -310,7 +381,11 @@
       elseif(section.eq.'CHAN') then
          sect_type_val=5.d0
       elseif(section.eq.'L   ') then
-         sect_type_val=6.d0
+         if(native_section) then
+            sect_type_val=9.d0
+         else
+            sect_type_val=6.d0
+         endif
       elseif(section.eq.'BOX ') then
          if((.not.native_section).and.
      &      (dims_temp(3).gt.open_tol).and.
@@ -368,7 +443,7 @@
       thickness2=dims_temp(2)
 !
 !     --- read the second data line: orientation normal vector e2 ---
-!     If omitted or (0,0,0), auto-orientation upright rule applies at runtime.
+!     If omitted, native CCX section 1-axis is (0,0,-1).
 !
       call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
      &     ipoinp,inp,ipoinpc)
@@ -506,6 +581,60 @@
          endif
       endif
 
+!     Native CCX OFFSET1 and OFFSET2 are section-relative numbers.
+!     They locate the reference line relative to the section axis,
+!     not displacement vectors or physical lengths.
+      if(native_section) then
+         ccx_offset1=0.d0
+         ccx_offset2=0.d0
+         idx=index(header_str,'OFFSET1=')
+         if(idx.gt.0) then
+            read(header_str(idx+8:),*,iostat=istat) ccx_offset1
+            if(istat.ne.0) then
+               write(*,*) '*ERROR: invalid CCX OFFSET1'
+               ier=1
+               return
+            endif
+         endif
+         idx=index(header_str,'OFFSET2=')
+         if(idx.gt.0) then
+            read(header_str(idx+8:),*,iostat=istat) ccx_offset2
+            if(istat.ne.0) then
+               write(*,*) '*ERROR: invalid CCX OFFSET2'
+               ier=1
+               return
+            endif
+         endif
+         if(nodalthickness) then
+            write(*,*) '*ERROR: direct beams do not support'
+            write(*,*) '  *NODAL THICKNESS in *BEAM SECTION'
+            ier=1
+            return
+         endif
+!        Add the centroid-to-reference translation for I and L,
+!        and the CCX thickness-normalised offsets. Positive CCX
+!        OFFSET locates the reference line in the positive direction.
+         geom_y=geom_y-ccx_offset1*thickness1
+         geom_z=geom_z-ccx_offset2*thickness2
+!
+!        The stiffness kernel rotates asymmetric sections to
+!        principal axes. Convert physical geometric offsets to
+!        components of that principal system before storing them.
+         call compute_section_properties(sect_type_val,dims_temp,
+     &      1.d0,0.3d0,a_tmp,Iyy_tmp,Izz_tmp,J_tmp,
+     &      k1_tmp,k2_tmp,theta_geom)
+         theta_geom=(theta_geom+rot_angle_val)*
+     &      4.d0*datan(1.d0)/180.d0
+         ac=dcos(theta_geom)
+         as=dsin(theta_geom)
+         ay=geom_y*ac+geom_z*as
+         az=-geom_y*as+geom_z*ac
+         off1(2)=off1(2)+ay
+         off1(3)=off1(3)+az
+         off2(2)=off2(2)+ay
+         off2(3)=off2(3)+az
+      endif
+!
 !     Fallbacks for standard CCX arrays
       offset1 = off1(1)
       offset2 = off1(2)
