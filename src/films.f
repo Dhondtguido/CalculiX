@@ -235,7 +235,7 @@ c     call reorderampl(amname,namta,nam)
 !     reference temperature and film coefficient
 !     (for non uniform loading: use user routine film.f)
 !     
-        if((label(3:4).ne.'NU').and.(label(3:4).ne.'FC')) then
+        if((label(3:4).ne.'NU').and.(label(3:4).ne.'FC').and.(label(3:4).ne.'  ')) then
           read(textpart(3)(1:20),'(f20.0)',iostat=istat) xmagtemp
           if(istat.gt.0) then
             call inputerror(inpc,ipoinpc,iline,
