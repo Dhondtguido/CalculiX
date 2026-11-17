@@ -40,6 +40,15 @@ for name in ("32_b31e","33_b31t"):
     csv_endm=abs(float(tip["My_Bending"]))
     frd=records(name+"_force_units.frd","BFOR")
     if 1 not in frd or 2 not in frd:
+        print("BFOR records:",frd)
+        with open(name+"_force_units.frd",encoding="utf8",
+                  errors="replace") as debug:
+            lines=list(debug)
+        print("FRD datasets:",
+              [x.strip() for x in lines if x.startswith(" -4")])
+        for j,line in enumerate(lines):
+            if "BFOR" in line:
+                print("BFOR preview:",lines[j:j+15])
         sys.exit("Missing BFOR field at beam nodes for "+name)
     frd_v=abs(frd[1][2])
     frd_m=abs(frd[1][4])
