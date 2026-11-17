@@ -39,7 +39,7 @@ CalculiX.a: $(OCCXF) $(OCCXC) buildinfo.o
 buildinfo.o: $(OCCXMAIN) $(OCCXF) $(OCCXC)
 # Fortran module build-order dependencies for native B31T/B31E
 e_c3d_ub31.o: ub31_module.o
-resultsmech_ub31.o: ub31_module.o codecheck_module.o
-getub31stx.o: ub31_module.o codecheck_module.o
+resultsmech_ub31.o: ub31_module.o
+getub31stx.o: ub31_module.o
 userbeamreleases.o: ub31_module.o
 userbeamoutputs.o: ub31_module.o

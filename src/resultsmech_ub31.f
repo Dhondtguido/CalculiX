@@ -36,7 +36,6 @@
 !     - stx(6): bending moment M_z
 !
       use ub31_module
-      use codecheck_module
       implicit none
 !
       character*8 lakon(*)
@@ -100,7 +99,7 @@
       real*8 s_bend_res, alpha_t, beta_c, alpha_l, beta_l
       real*8 s_norm_val, r_dist, tau_tor_pt, s_vm_pt
       character*16 pt_labels(4)
-      integer ipt
+      integer ipt, iorient_error
       character*80 amat
 !
 !
@@ -226,46 +225,12 @@
          e1(j)=e1(j)/dl
       enddo
 !
-      len_e2=dsqrt(e2_in(1)**2 + e2_in(2)**2 + e2_in(3)**2)
-      if (len_e2 .gt. 1.d-6) then
-         do j=1,3
-            e2(j)=e2_in(j)/len_e2
-         enddo
-         c1 = e2(1)*e1(1) + e2(2)*e1(2) + e2(3)*e1(3)
-         do j=1,3
-            e2(j) = e2(j) - c1*e1(j)
-         enddo
-         len_e2=dsqrt(e2(1)**2 + e2(2)**2 + e2(3)**2)
-         if (len_e2 .lt. 1.d-6) then
-            if (dabs(e1(3)) .lt. 0.9999d0) then
-               e2(1)=-e1(2)
-               e2(2)= e1(1)
-               e2(3)= 0.d0
-            else
-               e2(1)=0.d0
-               e2(2)=1.d0
-               e2(3)=0.d0
-            endif
-            len_e2=dsqrt(e2(1)**2 + e2(2)**2 + e2(3)**2)
-         endif
-         do j=1,3
-            e2(j)=e2(j)/len_e2
-         enddo
-      else
-         ! Auto-orientation: standard structural upright rule (Z up)
-         if (dabs(e1(3)) .lt. 0.9999d0) then
-            e2(1)=-e1(2)
-            e2(2)= e1(1)
-            e2(3)= 0.d0
-            len_e2=dsqrt(e2(1)**2 + e2(2)**2)
-            do j=1,3
-               e2(j)=e2(j)/len_e2
-            enddo
-         else
-            e2(1)=0.d0
-            e2(2)=1.d0
-            e2(3)=0.d0
-         endif
+!     Same CCX section 1-direction as the stiffness kernel.
+      call ccx_beam_section_normal(e1,e2_in,e2,iorient_error)
+      if(iorient_error.ne.0) then
+         write(*,*) '*ERROR in resultsmech_ub31: invalid section'
+         write(*,*) '  orientation for element ',nelem
+         call exit(201)
       endif
 !
       rot_angle_total = rot_angle + principal_angle
@@ -355,50 +320,16 @@
          e1_curr(j)=e1_curr(j)/len_curr
       enddo
 
-!     initial e2_init
-      len_e2=dsqrt(e2_in(1)**2 + e2_in(2)**2 + e2_in(3)**2)
-      if (len_e2 .gt. 1.d-6) then
-         do j=1,3
-            e2_init(j)=e2_in(j)/len_e2
-         enddo
-         c1 = e2_init(1)*e1_init(1)+e2_init(2)*e1_init(2)+
-     &        e2_init(3)*e1_init(3)
-         do j=1,3
-            e2_init(j)=e2_init(j)-c1*e1_init(j)
-         enddo
-         len_e2=dsqrt(e2_init(1)**2+e2_init(2)**2+e2_init(3)**2)
-         if (len_e2 .lt. 1.d-6) then
-            if (dabs(e1_init(3)) .lt. 0.9999d0) then
-               e2_init(1)=-e1_init(2)
-               e2_init(2)= e1_init(1)
-               e2_init(3)= 0.d0
-            else
-               e2_init(1)=0.d0
-               e2_init(2)=1.d0
-               e2_init(3)=0.d0
-            endif
-            len_e2=dsqrt(e2_init(1)**2+e2_init(2)**2+e2_init(3)**2)
-         endif
-         do j=1,3
-            e2_init(j)=e2_init(j)/len_e2
-         enddo
-      else
-         if (dabs(e1_init(3)) .lt. 0.9999d0) then
-            e2_init(1)=-e1_init(2)
-            e2_init(2)= e1_init(1)
-            e2_init(3)= 0.d0
-            len_e2=dsqrt(e2_init(1)**2+e2_init(2)**2)
-            do j=1,3
-               e2_init(j)=e2_init(j)/len_e2
-            enddo
-         else
-            e2_init(1)=0.d0
-            e2_init(2)=1.d0
-            e2_init(3)=0.d0
-         endif
+!     CCX section normal in the initial configuration.
+      call ccx_beam_section_normal(e1_init,e2_in,e2_init,
+     &                             iorient_error)
+      if(iorient_error.ne.0) then
+         write(*,*) '*ERROR in resultsmech_ub31: invalid initial'
+         write(*,*) '  normal for element ',nelem
+         call exit(201)
       endif
-      if (dabs(rot_angle_total) .gt. 1.d-6) then
-         call rotate_vector_local(e2_init, e1_init, rot_angle_total,
+      if(dabs(rot_angle_total).gt.1.d-6) then
+         call rotate_vector_local(e2_init,e1_init,rot_angle_total,
      &                            e2_init)
       endif
 

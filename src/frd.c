@@ -1077,58 +1077,6 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
     }
   }
 
-  /* UB31 UCHK: beam code check utilizations (Eurocode 3 EN 1993-1-1). */
-  if((*nmethod!=5)||(*mode==-1)){
-    ITG iact_chk = 0;
-    FORTRAN(iscodecheckactive, (&iact_chk));
-    if(iact_chk == 1){
-      double *uchk_n = NULL;
-      iselect=1;
-      frdset(&filab[174],set,&iset,istartset,iendset,ialset,
-	     inum,&noutloc,&nout,nset,&noutmin,&noutplus,&iselect,
-	     ngraph);
-      /* Run beam code checking to evaluate all members and generate CSV report */
-      FORTRAN(run_beam_codecheck,(co, kon, ipkon, lakon, ne, nk,
-				  ielmat, matname, istep, iinc, mi,
-				  ielprop, prop, jobnamec,
-				  set, nset, istartset, iendset, ialset));
-      frdheader(&icounter,&oner,time,&pi,noddiam,cs,&null,mode,
-		&noutloc,description,kode,nmethod,f1,output,istep,iinc);
-      fprintf(f1," -4  UCHK        6    1\n");
-      fprintf(f1," -5  UCTOT       1    1    0    0\n");
-      fprintf(f1," -5  UCAX        1    1    0    0\n");
-      fprintf(f1," -5  UCSH        1    1    0    0\n");
-      fprintf(f1," -5  UCBND       1    1    0    0\n");
-      fprintf(f1," -5  UCSTAB      1    1    0    0\n");
-      fprintf(f1," -5  UCLTB       1    1    0    0\n");
-      NNEW(uchk_n, double, 6*(*nk));
-      for(i=0; i<6*(*nk); i++) uchk_n[i] = 0.0;
-      /* fill uchk_n end-nodes from codecheck station results (station 1=node 1, station 11=node 2) */
-      for(i=0; i<*ne0; i++){
-	if(ipkon[i] >= 0 &&
-	   (strcmp1(&lakon[8*i],"U1")==0 || strcmp1(&lakon[8*i],"UB31")==0)){
-	  double uc_st1[6], uc_st11[6];
-	  ITG nelem_1 = i + 1;
-	  ITG st_1 = 1;
-	  ITG st_11 = 11;
-	  FORTRAN(getcodecheckstationuc,(&nelem_1, &st_1, uc_st1));
-	  FORTRAN(getcodecheckstationuc,(&nelem_1, &st_11, uc_st11));
-	  ITG indexe_b = ipkon[i];
-	  n1 = kon[indexe_b] - 1;
-	  n2 = kon[indexe_b+1] - 1;
-	  for(j=0; j<6; j++){
-	    uchk_n[6*n1+j] = max(uchk_n[6*n1+j], uc_st1[j]);
-	    uchk_n[6*n2+j] = max(uchk_n[6*n2+j], uc_st11[j]);
-	  }
-	}
-      }
-      frdselect(uchk_n,uchk_n,&iset,&nkcoords,inum,m1,istartset,iendset,
-		ialset,ngraph,&ncompvector6,ifieldvector6,icompvector6,
-		nfieldvector6,&iselect,m2,f1,output,m3);
-      SFREE(uchk_n);
-    }
-  }
-  
   if((*nmethod!=5)||(*mode==-1)){
     if((strcmp1(&filab[4350],"SNEG")==0)&&(*ithermal!=2)){
       iselect=1;
