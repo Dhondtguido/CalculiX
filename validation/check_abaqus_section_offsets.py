@@ -75,7 +75,14 @@ box_props=props([
     (t,b-2*t,a-t/2,b/2)])
 b_result=axial_expected(box_props,-.25*a,+.25*b)
 
-checks=[("28_b31e_abaqus_i_ref",i_result),
+# Abaqus T profile, represented by an I with no lower flange.
+# l=0,h=.2,b1=0,b2=.1,t1=0,t2=.012,t3=.008
+pt=props([(0.,0.,.05,0.),
+          (.008,.2-.012,.05,(.2-.012)/2),
+          (.1,.012,.05,.2-.012/2)])
+t_result=axial_expected(pt,0.,pt[2])
+checks=[("37_b31e_abaqus_t_from_i",t_result),
+        ("28_b31e_abaqus_i_ref",i_result),
         ("29_b31e_abaqus_l_ref",l_result),
         ("30_b31e_ccx_offsets",r_result),
         ("31_b31e_ccx_box_offsets",b_result)]
@@ -90,4 +97,4 @@ for name,expected in checks:
         failed=True
 if failed:
     sys.exit("FAIL: native I/L reference or CCX offset conventions")
-print("PASS: four native I/L and CCX offset benchmarks")
+print("PASS: five native I/L/T and CCX offset benchmarks")

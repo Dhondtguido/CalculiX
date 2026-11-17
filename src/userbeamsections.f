@@ -297,9 +297,16 @@
          aw=dims_temp(4)
          wt1=dims_temp(5)
          ctmp=dims_temp(6)
-         if(aa.le.0.d0.or.ab.le.0.d0.or.aw.le.0.d0.or.
-     &      wt1.le.0.d0.or.ctmp.le.0.d0.or.wt2.le.0.d0.or.
-     &      wt1+ctmp.ge.aa.or.wt2.ge.min(ab,aw)) then
+!        Abaqus T sections are I sections with exactly one
+!        vanishing flange (both its width and thickness are zero).
+         if(aa.le.0.d0.or.ab.lt.0.d0.or.aw.lt.0.d0.or.
+     &      wt1.lt.0.d0.or.ctmp.lt.0.d0.or.wt2.le.0.d0.or.
+     &      wt1+ctmp.ge.aa.or.max(ab,aw).le.0.d0.or.
+     &      (ab.eq.0.d0.and.wt1.ne.0.d0).or.
+     &      (ab.gt.0.d0.and.wt1.eq.0.d0).or.
+     &      (aw.eq.0.d0.and.ctmp.ne.0.d0).or.
+     &      (aw.gt.0.d0.and.ctmp.eq.0.d0).or.
+     &      wt2.gt.max(ab,aw)) then
             write(*,*) '*ERROR: invalid native I section geometry'
             ier=1
             return

@@ -24,7 +24,7 @@ jobs:
           cp validation/1[67]_native_*.inp smoke/
           cp validation/19_*.inp validation/20_*.inp validation/21_*.inp smoke/
           cp validation/2[2-9]_*.inp smoke/
-          cp validation/3[0-6]_*.inp smoke/
+          cp validation/3[0-7]_*.inp smoke/
           cd smoke
           for inp in *.inp; do ../build/CalculiX "${inp%.inp}"; done
           python3 ../validation/check_ccx_beam_conventions.py
