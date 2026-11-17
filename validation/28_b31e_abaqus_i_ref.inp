@@ -1,0 +1,22 @@
+*HEADING
+28 - Abaqus I-section with l reference offset: axial tip force on eccentric reference line
+*NODE, NSET=NALL
+1,0.,0.,0.
+2,1.,0.,0.
+*ELEMENT, TYPE=B31E, ELSET=BEAMS
+1,1,2
+*MATERIAL, NAME=STEEL
+*ELASTIC
+2.1E11,0.3
+*BEAM SECTION, ELSET=BEAMS, MATERIAL=STEEL, SECTION=I
+0.015,0.2,0.12,0.10,0.012,0.016,0.008
+0.,1.,0.
+*BOUNDARY
+1,1,6
+*STEP
+*STATIC
+*CLOAD
+2,1,1000.
+*NODE FILE
+U,RF
+*END STEP
