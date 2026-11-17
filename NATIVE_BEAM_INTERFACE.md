@@ -38,7 +38,7 @@ The internal `T`/`E` marker is retained in `lakon(5:5)` and the UB31 kernel uses
 
 ## Current scope
 
-The native interface reuses the current UB31 section reader and therefore supports the section families already implemented there (`RECT`, `CIRC`, `PIPE`, `I`, `T`, `CHAN`, `L`, `BOX`). `SECTION=GENERAL` is not yet claimed as supported by this interface. See [CCX_BEAM_CONVENTIONS.md](CCX_BEAM_CONVENTIONS.md) for native geometric data, axis rules, and limitations.
+The native interface reuses the current UB31 section reader and therefore supports the section families already implemented there (`RECT`, `CIRC`, `PIPE`, `I`, `T`, `CHAN`, `L`, `BOX`). Native `I` and `L` geometry follows Abaqus 2016; `*USER BEAM SECTION` keeps the older I/L parameters. Abaqus T sections can be represented by degenerate native `I` profiles. `SECTION=GENERAL` is not yet claimed as supported by this interface. See [CCX_BEAM_CONVENTIONS.md](CCX_BEAM_CONVENTIONS.md) for native geometric data, axis rules, and limitations.
 
 ### Mecway open-section compatibility
 

@@ -36,13 +36,18 @@ Native CIRC includes ellipses and uses exact elastic section A,
 second moments and Saint-Venant J; the elliptical Timoshenko
 shear-correction factor remains an approximation.
 
-`I`, `L`, `T` and `CHAN` remain custom UB31 section
-extensions and do **not** claim Abaqus's I/L parameter ordering.
+`I` and `L` in native *BEAM SECTION follow the Abaqus 2016
+seven-parameter I and four-parameter L cross-section definitions
+including their reference axes; T is also available through a
+degenerate I with one absent flange. *USER BEAM SECTION keeps its
+legacy I/L input ordering. T and CHAN remain custom named shapes.
 
 ## Further verification required
 
-- Principal-axis rotation in asymmetric sections means the internal
-  solver axes need explicit validation against end-release conventions.
+- Asymmetric sections use principal bending axes internally.
+  Local BFOR/CSV shear and moments are converted back into geometric
+  section axes; single-axis M1 or M2 releases are rejected until
+  general geometric-axis release condensation is implemented.
 - Original CCX `SECTION FORCES`, internal force/moment units, sign
   conventions and CGX export are not yet certified as equivalent.
 - Cross-section integration with nonlinear material behavior,

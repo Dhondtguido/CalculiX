@@ -16,7 +16,9 @@ library field order. This is not a claim of full Abaqus compatibility.
   lower flange, total section depth `h`, lower flange width `b1`,
   upper flange width `b2`, lower/upper thicknesses `t1/t2`,
   web thickness `t3`. The line of nodes is at the specified `l`;
-  the beam kernel uses the computed centroid offset.
+  the beam kernel uses the computed centroid offset. An Abaqus T
+  section is represented by an I with an absent upper or lower
+  flange (zero width and matching zero thickness).
 - `L=a,b,t1,t2`: Abaqus horizontal leg length, vertical leg
   length, horizontal leg thickness, vertical leg thickness.
   The section reference lies at the lower-left outer corner;
@@ -48,15 +50,22 @@ not native CCX OFFSET1/2: their values must not be interchanged.
 ## Release and force-output limitations
 
 `*RELEASE` supports Abaqus S1/S2 and M1/M2/T codes for
-symmetric sections. The solver currently rotates asymmetric
-sections to principal axes before release condensation. Single-
-axis M1/M2 releases on such sections therefore need validation
-in geometric axes before claiming Abaqus equivalence.
+symmetric sections. The solver rotates asymmetric sections to
+principal bending axes internally. Single-axis geometric M1 or M2
+hinges for such sections are explicitly rejected: the present
+scalar principal-axis condensation cannot implement them correctly.
+M1-M2 combined release and torsion remain supported.
 
-`*USER BEAM OUTPUT` and FRD beam-force results have not
-been calibrated against Mecway for units, orientations and signs.
-A successful static-equilibrium test does not prove their full
-convention parity. Units follow the consistent input system.
+`*USER BEAM OUTPUT` and FRD BFOR use geometric section axes for
+local transverse shear and bending moments, even when the internal
+stiffness formulation uses rotated principal axes. Global CSV
+outputs retain global components. Force/moment magnitude tests
+check against 1000 N shear and 1000 N.m bending, and M1/M2
+releases are checked independently. The FRD BFOR dataset gives
+one value per physical node; at multi-beam joints it can be
+overwritten by the last incident element. Use the per-element CSV
+for member diagrams. End-to-end Mecway GUI sign/unit convention
+parity is still unverified. Units follow the input unit system.
 
 This implementation is elastic; it does not add Abaqus
 nonlinear cross-section integration, thin-wall warping,
@@ -64,7 +73,7 @@ nonlinear cross-section integration, thin-wall warping,
 
 ## Verification
 
-`validation/check_abaqus_section_offsets.py` checks four
+`validation/check_abaqus_section_offsets.py` checks five
 finite-element axial tip displacements under eccentric reference
 loading for I, L, RECT+OFFSET1/2 and BOX+OFFSET1/2 against
 independent section geometry and Euler-Bernoulli beam theory.
