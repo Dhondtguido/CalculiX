@@ -272,6 +272,10 @@ e_c3d_rhs_th.f \
 e_c3d_se.f \
 e_c3d_th.f \
 e_c3d_u1.f \
+ub31_module.f \
+codecheck_module.f \
+e_c3d_ub31.f \
+e_c3d_ubeam_utils.f \
 e_c3d_us3.f \
 e_c3d_us45.f \
 e_c3d_u.f \
@@ -314,6 +318,8 @@ extrapolateshell.f \
 extrapolateshell_us3.f \
 extrapolateshell_us45.f \
 extrapolate_se.f \
+extrapolate_ub31.f \
+getub31stx.f \
 extrapolate_u.f \
 extrapolate_u1.f \
 extrapolate_us3.f \
@@ -753,6 +759,7 @@ resultsmech.f \
 resultsmech_matrix.f \
 resultsmech_se.f \
 resultsmech_u1.f \
+resultsmech_ub31.f \
 resultsmech_us3.f \
 resultsmech_us45.f \
 resultsmech_u.f \
@@ -930,6 +937,9 @@ userefinedmeshs.f \
 userelements.f \
 usermaterials.f \
 usermpc.f \
+userbeamsections.f \
+userbeamreleases.f \
+userbeamoutputs.f \
 usersections.f \
 user_network_element.f \
 user_network_element_p0.f \
