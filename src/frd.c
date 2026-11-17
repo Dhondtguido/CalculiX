@@ -1039,17 +1039,48 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
     }
   }
 
-  /* UB31 BFOR: beam internal forces/moments on real beam end-nodes.
-     Field order: NX (axial), VY, VZ (shear), TX (torsion), MY, MZ (moments). */
+  /* UB31 BFOR: single result record at each direct beam end-node.
+     The standard STRESS filab refers to an element set. Using frdset()
+     on that element set as a nodal set can select zero physical nodes.
+     Instead, make a dedicated nodal mask for direct-beam endpoints.
+     At junctions, the last incident member defines the node's BFOR;
+     use the per-member CSV for unambiguous internal-force diagrams. */
   if((*nmethod!=5)||(*mode==-1)){
     if((strcmp1(&filab[174],"S   ")==0)&&(*ithermal!=2)){
-      double *bfor_n = NULL;
+      double *bfor_n=NULL;
+      ITG *beam_inum=NULL;
+      ITG beam_count=0;
+      NNEW(bfor_n,double,6*(*nk));
+      NNEW(beam_inum,ITG,*nk);
+      for(i=0;i<6*(*nk);i++)bfor_n[i]=0.0;
+      for(i=0;i<*nk;i++)beam_inum[i]=0;
+      for(i=0;i<*ne0;i++){
+        if(ipkon[i]>=0 &&
+           (strcmp1(&lakon[8*i],"U1")==0 ||
+            strcmp1(&lakon[8*i],"UB31")==0)){
+          double ub31buf[6*11];
+          ITG beam_id=i+1;
+          ITG indexe_b=ipkon[i];
+          n1=kon[indexe_b]-1;
+          n2=kon[indexe_b+1]-1;
+          if(n1<0||n2<0||n1>=*nk||n2>=*nk)continue;
+          FORTRAN(getub31for,(&beam_id,ub31buf));
+          if(inum[n1]>0)beam_inum[n1]=inum[n1];
+          if(inum[n2]>0)beam_inum[n2]=inum[n2];
+          for(j=0;j<6;j++){
+            bfor_n[6*n1+j]=ub31buf[j];
+            bfor_n[6*n2+j]=ub31buf[6*10+j];
+          }
+        }
+      }
+      for(i=0;i<*nk;i++){
+        if(beam_inum[i]>0)beam_count++;
+      }
+      iset=0;
       iselect=1;
-      frdset(&filab[174],set,&iset,istartset,iendset,ialset,
-	     inum,&noutloc,&nout,nset,&noutmin,&noutplus,&iselect,
-	     ngraph);
+      noutloc=beam_count;
       frdheader(&icounter,&oner,time,&pi,noddiam,cs,&null,mode,
-		&noutloc,description,kode,nmethod,f1,output,istep,iinc);
+                &noutloc,description,kode,nmethod,f1,output,istep,iinc);
       fprintf(f1," -4  BFOR        6    1\n");
       fprintf(f1," -5  NX          1    1    0    0\n");
       fprintf(f1," -5  VY          1    1    0    0\n");
@@ -1057,28 +1088,12 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
       fprintf(f1," -5  TX          1    1    0    0\n");
       fprintf(f1," -5  MY          1    1    0    0\n");
       fprintf(f1," -5  MZ          1    1    0    0\n");
-      NNEW(bfor_n, double, 6*(*nk));
-      for(i=0; i<6*(*nk); i++) bfor_n[i] = 0.0;
-      /* fill bfor_n end-nodes from ub31_for stations 0 and 10 */
-      for(i=0; i<*ne0; i++){
-	if(ipkon[i] >= 0 &&
-	   (strcmp1(&lakon[8*i],"U1")==0 || strcmp1(&lakon[8*i],"UB31")==0)){
-	  double ub31buf[6*11];
-	  ITG nelem_1 = i + 1;
-	  FORTRAN(getub31for,(&nelem_1, ub31buf));
-	  ITG indexe_b = ipkon[i];
-	  n1 = kon[indexe_b] - 1;
-	  n2 = kon[indexe_b+1] - 1;
-	  for(j=0; j<6; j++){
-	    bfor_n[6*n1+j] = ub31buf[6*0 + j];
-	    bfor_n[6*n2+j] = ub31buf[6*10 + j];
-	  }
-	}
-      }
-      frdselect(bfor_n,bfor_n,&iset,&nkcoords,inum,m1,istartset,iendset,
-		ialset,ngraph,&ncompvector6,ifieldvector6,icompvector6,
-		nfieldvector6,&iselect,m2,f1,output,m3);
+      frdselect(bfor_n,bfor_n,&iset,&nkcoords,beam_inum,m1,
+                istartset,iendset,ialset,ngraph,&ncompvector6,
+                ifieldvector6,icompvector6,nfieldvector6,
+                &iselect,m2,f1,output,m3);
       SFREE(bfor_n);
+      SFREE(beam_inum);
     }
   }
 
