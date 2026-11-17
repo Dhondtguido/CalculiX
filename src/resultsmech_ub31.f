@@ -202,18 +202,6 @@
       un=elconloc(2)
       um=e/(2.d0*(1.d0+un))
 !
-      if (allocated(elem_E)) then
-         if (nelem .le. size(elem_E)) then
-            elem_E(nelem) = e
-            elem_nu(nelem) = un
-            if (npmat_ .gt. 0 .and. ntmat_ .gt. 0) then
-               if (plicon(1,1,imat) .gt. 0.d0) then
-                  elem_fy(nelem) = plicon(1,1,imat)
-               endif
-            endif
-         endif
-      endif
-!
       call compute_section_properties(sect_type, dims, e, un, 
      &  a, xi22, xi11, j_tors, xk_y, xk_z, principal_angle)
 !
