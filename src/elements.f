@@ -141,6 +141,10 @@
 !     
         elseif(label(1:3).eq.'B21') then
           label='B31     '
+        elseif(label.eq.'B31T    ') then
+          label='UB31T   '
+        elseif(label.eq.'B31E    ') then
+          label='UB31E   '
         elseif(label(1:4).eq.'T2D2') then
           label='T3D2    '
         endif
@@ -416,6 +420,16 @@ c     Bernhardi end
         nope=1
         nopeexp=1
       elseif(label(1:1).eq.'U') then
+        if((label(1:5).eq.'UB31T').or.
+     &     (label(1:5).eq.'UB31E')) then
+          intpoints=1
+          ndof=6
+          nope=2
+          nopeexp=2
+          label(6:6)=char(intpoints)
+          label(7:7)=char(ndof)
+          label(8:8)=char(nope)
+        else
         number=ichar(label(2:2))*256**3+
      &       ichar(label(3:3))*256**2+
      &       ichar(label(4:4))*256+
@@ -428,6 +442,7 @@ c     Bernhardi end
         write(label(6:6),'(a1)') char(intpoints)
         write(label(7:7),'(a1)') char(ndof)
         write(label(8:8),'(a1)') char(nope)
+        endif
       endif
 !     
       do

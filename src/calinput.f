@@ -84,7 +84,9 @@
      &     dflux_flag,cflux_flag,film_flag,radiate_flag,out3d,
      &     solid,sectionprint_flag,contactprint_flag,pretension,
      &     beamgeneralsection,objective_flag,constraint_flag,
-     &     cyclicsymmetrymodel_flag,warning
+     &     cyclicsymmetrymodel_flag,warning,ub31beamsection
+      character*81 elsetbs
+      integer iposbs,ibs,jbs,kbs
 !     
       character*1 typeboun(*),inpc(*)
       character*4 output
@@ -295,28 +297,82 @@
      &       nelcon,ier)
 !     
       elseif(textpart(1)(1:12).eq.'*BEAMSECTION') then
-        beamgeneralsection=.false.
+!
+!       Native direct-beam interface.  B31T/B31E are stored internally
+!       as UB31T/UB31E.  Route their standard *BEAM SECTION card to the
+!       UB31 property reader.  Legacy B31 and all other beam types retain
+!       the original CalculiX section handling unchanged.
+!
+        ub31beamsection=.false.
+        elsetbs=' '
+        iposbs=1
         do i=2,n
-          if((textpart(i)(1:11).eq.'SECTION=BOX').or.
-     &         (textpart(i)(1:11).eq.'SECTION=PIP').or.
-     &         (textpart(i)(1:11).eq.'SECTION=GEN')) then
-            beamgeneralsection=.true.
+          if(textpart(i)(1:6).eq.'ELSET=') then
+            elsetbs=textpart(i)(7:86)
+            elsetbs(81:81)=' '
+            iposbs=index(elsetbs,' ')
+            elsetbs(iposbs:iposbs)='E'
             exit
           endif
         enddo
-        if(beamgeneralsection) then
-          call beamgeneralsections(inpc,textpart,set,istartset,
-     &         iendset,ialset,nset,ielmat,matname,nmat,ielorien,
-     &         orname,norien,thicke,ipkon,iponor,xnor,ixfree,
+        if(elsetbs.ne.' ') then
+          call cident81(set,elsetbs,nset,ibs)
+          if(ibs.gt.0) then
+            if(elsetbs.eq.set(ibs)) then
+              do jbs=istartset(ibs),iendset(ibs)
+                if(ialset(jbs).gt.0) then
+                  if((lakon(ialset(jbs))(1:5).eq.'UB31T').or.
+     &               (lakon(ialset(jbs))(1:5).eq.'UB31E')) then
+                    ub31beamsection=.true.
+                  endif
+                  exit
+                elseif(jbs.ge.3) then
+!                 Generated-set encoding: inspect the first member.
+                  kbs=ialset(jbs-2)-ialset(jbs)
+                  if(kbs.ge.ialset(jbs-1)) then
+                    if((lakon(kbs)(1:5).eq.'UB31T').or.
+     &                 (lakon(kbs)(1:5).eq.'UB31E')) then
+                      ub31beamsection=.true.
+                    endif
+                    exit
+                  endif
+                endif
+              enddo
+            endif
+          endif
+        endif
+!
+        if(ub31beamsection) then
+          call userbeamsections(inpc,textpart,set,istartset,iendset,
+     &         ialset,nset,ielmat,matname,nmat,ielorien,orname,norien,
+     &         thicke,ipkon,iponor,xnor,ixfree,
      &         offset,lakon,irstrt,istep,istat,n,iline,ipol,inl,
      &         ipoinp,inp,ipoinpc,mi,ielprop,nprop,nprop_,prop,
      &         nelcon,ier)
         else
-          call beamsections(inpc,textpart,set,istartset,iendset,
-     &         ialset,nset,ielmat,matname,nmat,ielorien,orname,norien,
-     &         thicke,ipkon,iponor,xnor,ixfree,
-     &         offset,lakon,irstrt,istep,istat,n,iline,ipol,inl,
-     &         ipoinp,inp,ipoinpc,mi,nelcon,ier)
+          beamgeneralsection=.false.
+          do i=2,n
+            if((textpart(i)(1:11).eq.'SECTION=BOX').or.
+     &           (textpart(i)(1:11).eq.'SECTION=PIP').or.
+     &           (textpart(i)(1:11).eq.'SECTION=GEN')) then
+              beamgeneralsection=.true.
+              exit
+            endif
+          enddo
+          if(beamgeneralsection) then
+            call beamgeneralsections(inpc,textpart,set,istartset,
+     &           iendset,ialset,nset,ielmat,matname,nmat,ielorien,
+     &           orname,norien,thicke,ipkon,iponor,xnor,ixfree,
+     &           offset,lakon,irstrt,istep,istat,n,iline,ipol,inl,
+     &           ipoinp,inp,ipoinpc,mi,ielprop,nprop,nprop_,prop,
+     &           nelcon,ier)
+          else
+            call beamsections(inpc,textpart,set,istartset,iendset,
+     &           ialset,nset,ielmat,matname,nmat,ielorien,orname,norien,
+     &           thicke,ipkon,iponor,xnor,ixfree,
+     &           offset,lakon,irstrt,istep,istat,n,iline,ipol,inl,
+     &           ipoinp,inp,ipoinpc,mi,nelcon,ier)
+          endif
         endif
 !     
       elseif(textpart(1)(1:10).eq.'*BOUNDARYF') then
@@ -1215,6 +1271,22 @@ c
      &       imat,ntmat_,ncmat_,iperturb,irstrt,istep,istat,n,
      &       iline,ipol,inl,ipoinp,inp,cocon,ncocon,ipoinpc,ier)
 !     
+      elseif(textpart(1)(1:16).eq.'*USERBEAMSECTION') then
+        call userbeamsections(inpc,textpart,set,istartset,iendset,
+     &       ialset,nset,ielmat,matname,nmat,ielorien,orname,norien,
+     &       thicke,ipkon,iponor,xnor,ixfree,
+     &       offset,lakon,irstrt,istep,istat,n,iline,ipol,inl,
+     &       ipoinp,inp,ipoinpc,mi,ielprop,nprop,nprop_,prop,
+     &       nelcon,ier)
+      elseif(textpart(1)(1:16).eq.'*USERBEAMRELEASE'.or.
+     &       textpart(1)(1:8).eq.'*RELEASE') then
+        call userbeamreleases(inpc,textpart,set,istartset,iendset,
+     &       ialset,nset,lakon,ne,irstrt,istep,istat,n,key,iline,
+     &       ipol,inl,ipoinp,inp,ipoinpc,ier)
+      elseif(textpart(1)(1:15).eq.'*USERBEAMOUTPUT') then
+        call userbeamoutputs(inpc,textpart,set,istartset,iendset,
+     &       ialset,nset,lakon,ne,irstrt,istep,istat,n,key,iline,
+     &       ipol,inl,ipoinp,inp,ipoinpc,jobnamec,ier)
       elseif(textpart(1)(1:12).eq.'*USERSECTION') then
         call usersections(inpc,textpart,set,istartset,iendset,
      &       ialset,nset,ielmat,matname,nmat,irstrt,istep,istat,n,

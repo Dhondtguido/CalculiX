@@ -147,6 +147,7 @@
         enddo
       elseif(textpart(1)(1:12).eq.'*BEAMSECTION') then
         mi(3)=max(mi(3),2)
+        nprop_=nprop_+32
         beamgeneralsection=.false.
         do i=2,n
           if((textpart(i)(1:11).eq.'SECTION=BOX').or.
@@ -1050,6 +1051,14 @@ c     Bernhardi end
               ipdyn=max(ipdyn,27)
               nope=8
               nopeexp=28
+            elseif((label.eq.'B31T    ').or.
+     &             (label.eq.'B31E    ')) then
+              mi(1)=max(mi(1),1)
+              ipdyn=max(ipdyn,1)
+              mi(2)=max(mi(2),6)
+              mi(3)=max(mi(3),2)
+              nope=2
+              nopeexp=2
             elseif((label.eq.'B31     ').or.
      &             (label.eq.'B21     ').or.
      &             (label.eq.'T3D2    ').or.
@@ -2657,6 +2666,22 @@ c            nmpc_=nmpc_+3
             call getnewline(inpc,textpart,istat,n,key,iline,ipol,
      &           inl,ipoinp,inp,ipoinpc)
           enddo
+        enddo
+      elseif(textpart(1)(1:16).eq.'*USERBEAMSECTION') then
+        nprop_=nprop_+32
+        mi(3)=max(mi(3),2)
+        do
+          call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
+     &         ipoinp,inp,ipoinpc)
+          if((istat.lt.0).or.(key.eq.1)) exit
+        enddo
+      elseif(textpart(1)(1:16).eq.'*USERBEAMRELEASE'.or.
+     &       textpart(1)(1:8).eq.'*RELEASE'.or.
+     &       textpart(1)(1:15).eq.'*USERBEAMOUTPUT') then
+        do
+          call getnewline(inpc,textpart,istat,n,key,iline,ipol,inl,
+     &         ipoinp,inp,ipoinpc)
+          if((istat.lt.0).or.(key.eq.1)) exit
         enddo
       elseif(textpart(1)(1:12).eq.'*USERSECTION') then
         nconstants=0
