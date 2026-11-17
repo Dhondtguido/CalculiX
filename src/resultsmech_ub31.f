@@ -84,7 +84,8 @@
      &  sigma_x, sigma_b_y, sigma_b_z, w_load_val, xi_station,
      &  m1_eq_y, m2_eq_y, m1_eq_z,
      &  m2_eq_z, M1_y, M2_y, M1_z, M2_z, M0_y, M0_z, R1, R2,
-     &  phi_y, phi_z, vy_x, vz_x,
+     &  phi_y, phi_z, vy_x, vz_x, geom_vy, geom_vz,
+     &  geom_my, geom_mz, cos_pr, sin_pr,
      &  spring_k(12), col_r(12), denom, ks, s_rr
       integer station_i, load_dir, load_type, station_k, num_sub
       integer station_pct, m_idx, itarg, iunit
@@ -204,6 +205,11 @@
 !
       call compute_section_properties(sect_type, dims, e, un, 
      &  a, xi22, xi11, j_tors, xk_y, xk_z, principal_angle)
+!     Rotations about n1/n2 in Mecway/CCX refer to geometric axes.
+!     Use principal axes internally, but report local beam forces
+!     back in the section 1/2 frame.
+      cos_pr=dcos(principal_angle*4.d0*datan(1.d0)/180.d0)
+      sin_pr=dsin(principal_angle*4.d0*datan(1.d0)/180.d0)
 !
       do j=1,3
          e1(j)=xl(j,2)-xl(j,1)
@@ -767,12 +773,18 @@
          ub31_stx(5, station_i+1, nelem) = sigma_b_y
          ub31_stx(6, station_i+1, nelem) = sigma_b_z
 
+!        Convert principal-axis shears and bending moments to the
+!        geometric section 1/2 axes for FRD BFOR and Mecway.
+         geom_vy=cos_pr*vy_x-sin_pr*vz_x
+         geom_vz=sin_pr*vy_x+cos_pr*vz_x
+         geom_my=cos_pr*my_x-sin_pr*mz_x
+         geom_mz=sin_pr*my_x+cos_pr*mz_x
          ub31_for(1, station_i+1, nelem) = -f_local(1)
-         ub31_for(2, station_i+1, nelem) = vy_x
-         ub31_for(3, station_i+1, nelem) = vz_x
+         ub31_for(2, station_i+1, nelem) = geom_vy
+         ub31_for(3, station_i+1, nelem) = geom_vz
          ub31_for(4, station_i+1, nelem) = tx
-         ub31_for(5, station_i+1, nelem) = my_x
-         ub31_for(6, station_i+1, nelem) = mz_x
+         ub31_for(5, station_i+1, nelem) = geom_my
+         ub31_for(6, station_i+1, nelem) = geom_mz
       enddo
 
 !     2. Dynamic Multi-Station CSV Results Streaming (*USER BEAM OUTPUT)
@@ -1010,6 +1022,27 @@
             q_csv(1) = qx_val
             q_csv(2) = qy_val
             q_csv(3) = qz_val
+!           Principal-to-geometric basis for local CSV components.
+            geom_vy=cos_pr*f_csv(2)-sin_pr*f_csv(3)
+            geom_vz=sin_pr*f_csv(2)+cos_pr*f_csv(3)
+            f_csv(2)=geom_vy
+            f_csv(3)=geom_vz
+            geom_my=cos_pr*m_csv(2)-sin_pr*m_csv(3)
+            geom_mz=sin_pr*m_csv(2)+cos_pr*m_csv(3)
+            m_csv(2)=geom_my
+            m_csv(3)=geom_mz
+            geom_vy=cos_pr*u_csv(2)-sin_pr*u_csv(3)
+            geom_vz=sin_pr*u_csv(2)+cos_pr*u_csv(3)
+            u_csv(2)=geom_vy
+            u_csv(3)=geom_vz
+            geom_my=cos_pr*rot_csv(2)-sin_pr*rot_csv(3)
+            geom_mz=sin_pr*rot_csv(2)+cos_pr*rot_csv(3)
+            rot_csv(2)=geom_my
+            rot_csv(3)=geom_mz
+            geom_vy=cos_pr*q_csv(2)-sin_pr*q_csv(3)
+            geom_vz=sin_pr*q_csv(2)+cos_pr*q_csv(3)
+            q_csv(2)=geom_vy
+            q_csv(3)=geom_vz
          endif
 
          ! Section Points Stress Recovery (Signed Normal Stresses at Corners/Fibers)

@@ -256,6 +256,25 @@
       call compute_section_properties(sect_type, dims, e, un,
      &  a, xi22, xi11, j_tors, xk_y, xk_z, principal_angle)
 !
+!     A single M1 or M2 release on a rotated principal system
+!     is a linear combination of principal-axis rotational DOFs.
+!     The current scalar condensation cannot represent it.
+!     Reject this case rather than silently releasing a different
+!     geometrical direction. Dual bending release and torsion
+!     remain valid for asymmetric sections.
+      if(dabs(principal_angle).gt.1.d-8) then
+         do inode=1,2
+            code=release_codes(inode)
+            if (btest(code,4).neqv.btest(code,5)) then
+               write(*,*) '*ERROR in B31T/B31E: single M1/M2'
+               write(*,*) '  release on asymmetric section,'
+               write(*,*) '  element ',nelem
+               write(*,*) '  Use M1-M2 or no bending release.'
+               call exit(201)
+            endif
+         enddo
+      endif
+!
 !     tentative local axes (based on node line)
 !
       do j=1,3
