@@ -439,8 +439,29 @@
          endif
       endif
 !
-      thickness1=dims_temp(1)
-      thickness2=dims_temp(2)
+!     The native CCX local 1/2 dimensions are not always in
+!     the same order as the internal UB31 section parameters.
+      if(native_section) then
+         if(section.eq.'I   ') then
+            thickness1=max(dims_temp(2),dims_temp(4))
+            thickness2=dims_temp(1)
+         elseif(section.eq.'BOX ') then
+            thickness1=dims_temp(2)
+            thickness2=dims_temp(1)
+         elseif(section.eq.'CIRC') then
+            thickness1=2.d0*dims_temp(1)
+            thickness2=2.d0*dims_temp(2)
+         elseif(section.eq.'PIPE') then
+            thickness1=2.d0*dims_temp(1)
+            thickness2=2.d0*dims_temp(1)
+         else
+            thickness1=dims_temp(1)
+            thickness2=dims_temp(2)
+         endif
+      else
+         thickness1=dims_temp(1)
+         thickness2=dims_temp(2)
+      endif
 !
 !     --- read the second data line: orientation normal vector e2 ---
 !     If omitted, native CCX section 1-axis is (0,0,-1).
