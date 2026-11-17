@@ -1,0 +1,36 @@
+*HEADING
+20 - B31T Abaqus *RELEASE: simply supported beam, centre point load
+** SI: metres, newtons, pascals
+*NODE, NSET=NALL
+1, 0.0, 0.0, 0.0
+2, 1.0, 0.0, 0.0
+3, 2.0, 0.0, 0.0
+*ELEMENT, TYPE=B31T, ELSET=EBEAM
+1, 1, 2
+2, 2, 3
+*ELSET, ELSET=LEFT_MEMBER
+1
+*MATERIAL, NAME=STEEL
+*ELASTIC
+2.1E11, 0.3
+*BEAM SECTION, ELSET=EBEAM, MATERIAL=STEEL, SECTION=RECT
+0.1, 0.2
+0.0, 0.0, 1.0
+** Exercise both ELSET and element-number addressing.
+** Rotational DOFs at the support nodes are constrained to prevent
+** otherwise disconnected nodal rotations producing zero pivots.
+*RELEASE
+LEFT_MEMBER, S1, M1-M2
+2, S2, M1-M2
+*BOUNDARY
+1, 1, 6
+3, 2, 6
+*STEP
+*STATIC
+*CLOAD
+2, 3, -1000.
+*NODE FILE
+U, RF
+*USER BEAM OUTPUT, ELSET=EBEAM, FILE=20_release_forces.csv, SUBDIVISIONS=10, INCREMENT=LAST
+F, U
+*END STEP
