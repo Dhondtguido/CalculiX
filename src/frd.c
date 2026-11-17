@@ -1065,8 +1065,8 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
           n2=kon[indexe_b+1]-1;
           if(n1<0||n2<0||n1>=*nk||n2>=*nk)continue;
           FORTRAN(getub31for,(&beam_id,ub31buf));
-          if(inum[n1]>0)beam_inum[n1]=inum[n1];
-          if(inum[n2]>0)beam_inum[n2]=inum[n2];
+          beam_inum[n1]=1;
+          beam_inum[n2]=1;
           for(j=0;j<6;j++){
             bfor_n[6*n1+j]=ub31buf[j];
             bfor_n[6*n2+j]=ub31buf[6*10+j];
@@ -1076,12 +1076,6 @@ void frd(double *co,ITG *nk,ITG *kon,ITG *ipkon,char *lakon,ITG *ne0,
       for(i=0;i<*nk;i++){
         if(beam_inum[i]>0)beam_count++;
       }
-      fprintf(stderr,"DBG_BFOR ne0=%ld ne=%ld nk=%ld "
-                       "coords=%ld matched=%ld first=%8.8s"
-                       " ipkon0=%ld inum0=%ld inum1=%ld\\n",
-              (long)*ne0,(long)*ne,(long)*nk,(long)nkcoords,
-              (long)beam_count,lakon,(long)ipkon[0],
-              (long)inum[0],(long)inum[1]);
       iset=0;
       iselect=1;
       noutloc=beam_count;
