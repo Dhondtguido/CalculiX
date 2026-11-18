@@ -191,6 +191,13 @@
 !
 !        distribution
 !
+!        the angle is converted into radians once, since it is used
+!        for all lines of the distribution
+!
+         if(iaxis.ne.0) then
+            pi=4.d0*datan(1.d0)
+            angle=angle*pi/180.d0
+         endif
          idis=0
          do iorien=1,norien
             if(orname(iorien).eq.distname) then
@@ -222,8 +229,6 @@
 !     
 !     rotation matrix
 !     
-                  pi=4.d0*datan(1.d0)
-                  angle=angle*pi/180.d0
                   dc=dcos(angle)
                   ds=dsin(angle)
                   c(1,1)=dc+(1.d0-dc)*p(1)*p(1)
