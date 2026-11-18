@@ -1,0 +1,43 @@
+**
+**   Structure: unit cube, linear elastic.
+**   Test objective: SDV on *EL FILE in a linear static step with
+**                   *DEPVAR in the material (no user material).
+**
+*NODE
+1, 0., 0., 0.
+2, 1., 0., 0.
+3, 1., 1., 0.
+4, 0., 1., 0.
+5, 0., 0., 1.
+6, 1., 0., 1.
+7, 1., 1., 1.
+8, 0., 1., 1.
+*ELEMENT, TYPE=C3D8, ELSET=EALL
+1, 1, 2, 3, 4, 5, 6, 7, 8
+*NSET, NSET=X0
+1, 4, 5, 8
+*NSET, NSET=X1
+2, 3, 6, 7
+*NSET, NSET=Y0
+1, 2, 5, 6
+*NSET, NSET=Z0
+1, 2, 3, 4
+*MATERIAL, NAME=STEEL
+*ELASTIC
+200000., 0.3
+*DEPVAR
+2
+*SOLID SECTION, ELSET=EALL, MATERIAL=STEEL
+*BOUNDARY
+X0, 1, 1
+Y0, 2, 2
+Z0, 3, 3
+*STEP
+*STATIC
+*BOUNDARY
+X1, 1, 1, 0.001
+*EL FILE
+S, SDV
+*EL PRINT, ELSET=EALL
+SDV
+*END STEP

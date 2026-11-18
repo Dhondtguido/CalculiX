@@ -568,6 +568,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       if(strcmp1(&filab[261],"E   ")==0) NNEW(een,double,6**nk);
       if(strcmp1(&filab[2697],"ME  ")==0) NNEW(emn,double,6**nk);
       if(strcmp1(&filab[522],"ENER")==0) NNEW(enern,double,*nk);
+      if(strcmp1(&filab[609],"SDV ")==0) NNEW(xstaten,double,*nstate_**nk);
 	      
       NNEW(eei,double,6*mi[0]**ne);
       if(*nener==1){
@@ -609,6 +610,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
       if(strcmp1(&filab[261],"E   ")==0) SFREE(een);
       if(strcmp1(&filab[2697],"ME  ")==0) SFREE(emn);
       if(strcmp1(&filab[522],"ENER")==0) SFREE(enern);
+      if(strcmp1(&filab[609],"SDV ")==0) SFREE(xstaten);
 	      
       SFREE(eei);if(*nener==1){SFREE(stiini);SFREE(emeini);SFREE(enerini);}
 	      
@@ -797,6 +799,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     if(strcmp1(&filab[261],"E   ")==0) NNEW(een,double,6**nk);
     if(strcmp1(&filab[2697],"ME  ")==0) NNEW(emn,double,6**nk);
     if(strcmp1(&filab[522],"ENER")==0) NNEW(enern,double,*nk);
+    if(strcmp1(&filab[609],"SDV ")==0) NNEW(xstaten,double,*nstate_**nk);
     if(strcmp1(&filab[2175],"CONT")==0) NNEW(cdn,double,6**nk);
 
     NNEW(eei,double,6*mi[0]**ne);
@@ -890,6 +893,7 @@ void linstatic(double *co,ITG *nk,ITG **konp,ITG **ipkonp,char **lakonp,
     if(strcmp1(&filab[261],"E   ")==0) SFREE(een);
     if(strcmp1(&filab[2697],"ME  ")==0) SFREE(emn);
     if(strcmp1(&filab[522],"ENER")==0) SFREE(enern);
+    if(strcmp1(&filab[609],"SDV ")==0) SFREE(xstaten);
     if(strcmp1(&filab[2175],"CONT")==0) SFREE(cdn);
 
   }else{
