@@ -55,6 +55,17 @@
             qflux(i)=-coconloc(1)*vkl(0,i)
          enddo
 !
+      elseif(kode.eq.0) then
+!
+!         no *CONDUCTIVITY for this material
+!
+         do i=1,6
+            cond(i)=0.d0
+         enddo
+         do i=1,3
+            qflux(i)=0.d0
+         enddo
+!
       elseif((kode.eq.3).or.(kode.eq.6)) then
          if((kode.eq.3).and.(iorien.eq.0)) then
 !

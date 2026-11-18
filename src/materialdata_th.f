@@ -64,7 +64,8 @@ c     continue
 !     
         call ident2(shcon(0,1,imat),t1l,nshcon(imat),four,id)
         if(nshcon(imat).eq.0) then
-          continue
+          sph=0.d0
+c     continue
         elseif(nshcon(imat).eq.1) then
           sph=shcon(1,1,imat)
         elseif(id.eq.0) then

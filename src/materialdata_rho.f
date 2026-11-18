@@ -33,7 +33,8 @@
       else
          call ident2(rhcon(0,1,imat),t1l,nrhcon(imat),two,id)
          if(nrhcon(imat).eq.0) then
-            continue
+            rho=0.d0
+c            continue
          elseif(nrhcon(imat).eq.1) then
             rho=rhcon(1,1,imat)
          elseif(id.eq.0) then
