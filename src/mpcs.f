@@ -39,7 +39,7 @@
      &  ilmpc(*),ipkon(*),kon(*),i,node,ipos,istep,istat,n,ne_,
      &  j,k,nodeboun(*),ndirboun(*),ikboun(*),ilboun(*),ipoinpc(0:*),
      &  nboun,nboun_,key,iperturb(*),istart,inode,m,iline,ipol,inl,
-     &  ipoinp(2,*),inp(3,*)
+     &  ipoinp(2,*),inp(3,*),id
 !
       real*8 coefmpc(3,*),co(3,*),xboun(*),ctrl(*)
 !
@@ -91,50 +91,52 @@
                noset(81:81)=' '
                ipos=index(noset,' ')
                noset(ipos:ipos)='N'
-               call cident81(set,noset,nset,j)
-               if(j.gt.0) then
-                 if(noset.eq.set(j)) then
-                   m=iendset(j)-istartset(j)+1
-                   do k=1,m
-                     node=ialset(istartset(j)+k-1)
-                     inode=inode+1
-                     if(label(1:8).eq.'STRAIGHT') then
-                       call straightmpc(ipompc,nodempc,coefmpc,
-     &                      labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
-     &                      nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
-     &                      nboun,nboun_,xboun,inode,node,co,
-     &                      typeboun)
-                     elseif(label(1:5).eq.'PLANE') then
-                       call planempc(ipompc,nodempc,coefmpc,
-     &                      labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
-     &                      nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
-     &                      nboun,nboun_,xboun,inode,node,co,
-     &                      typeboun)
-                     elseif(label(1:4).eq.'BEAM') then
-                       call beammpc(ipompc,nodempc,
-     &                      labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
-     &                      nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
-     &                      nboun,nboun_,inode,node,co,
-     &                      typeboun)
-                     else
-                       call usermpc(ipompc,nodempc,coefmpc,
-     &                      labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
-     &                      nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
-     &                      nboun,nboun_,inode,node,co,label,
-     &                      typeboun,iperturb,node,idirref,xboun,
-     &                      ialeatoric)
-                     endif
-                   enddo
+               call cident81(set,noset,nset,id)
+               j=nset+1
+               if(id.gt.0) then
+                 if(noset.eq.set(id)) then
+                   j=id
                  endif
                endif
                if(j.gt.nset) then
                   noset(ipos:ipos)=' '
-                  write(*,*) '*ERROR in nosets: node set ',
-     &                 noset
-                  write(*,*) '       has not been defined yet'
-                  ier=1
+                  write(*,*) '*ERROR reading *MPC: node set ',noset
+                  write(*,*) '       has not yet been defined. '
+                  call inputerror(inpc,ipoinpc,iline,
+     &                 "*MPC%",ier)
                   return
                endif
+               m=iendset(j)-istartset(j)+1
+               do k=1,m
+                 node=ialset(istartset(j)+k-1)
+                 inode=inode+1
+                 if(label(1:8).eq.'STRAIGHT') then
+                   call straightmpc(ipompc,nodempc,coefmpc,
+     &                  labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
+     &                  nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
+     &                  nboun,nboun_,xboun,inode,node,co,
+     &                  typeboun)
+                 elseif(label(1:5).eq.'PLANE') then
+                   call planempc(ipompc,nodempc,coefmpc,
+     &                  labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
+     &                  nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
+     &                  nboun,nboun_,xboun,inode,node,co,
+     &                  typeboun)
+                 elseif(label(1:4).eq.'BEAM') then
+                   call beammpc(ipompc,nodempc,
+     &                  labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
+     &                  nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
+     &                  nboun,nboun_,inode,node,co,
+     &                  typeboun)
+                 else
+                   call usermpc(ipompc,nodempc,coefmpc,
+     &                  labmpc,nmpc,nmpc_,mpcfree,ikmpc,ilmpc,
+     &                  nk,nk_,nodeboun,ndirboun,ikboun,ilboun,
+     &                  nboun,nboun_,inode,node,co,label,
+     &                  typeboun,iperturb,node,idirref,xboun,
+     &                  ialeatoric)
+                 endif
+               enddo
             else
                inode=inode+1
                if(node.eq.0) then
