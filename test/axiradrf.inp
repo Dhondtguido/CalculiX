@@ -1,0 +1,82 @@
+**
+**   Structure: two axisymmetric rings of mixed elements, CAX3 + CAX4
+**              and CAX6 + CAX8R, triangles numbered first.
+**   Test objective: radial RF of axisymmetric elements; the inner
+**                   and outer radial displacements are those of an
+**                   internal pressure 1 and an external pressure 2,
+**                   so the reactions are those pressure loads; the
+**                   free nodes carry no RF (totals INMID and OUTMID)
+**
+*NODE, NSET=NALL
+1, 10., 0.
+2, 15., 0.
+3, 15., 5.
+4, 10., 5.
+5, 20., 0.
+6, 20., 5.
+101, 10., 10.
+102, 15., 10.
+103, 15., 15.
+104, 10., 15.
+105, 20., 10.
+106, 20., 15.
+107, 12.5, 10.
+108, 15., 12.5
+109, 12.5, 15.
+110, 10., 12.5
+111, 17.5, 10.
+112, 20., 12.5
+113, 17.5, 12.5
+114, 17.5, 15.
+*ELEMENT, TYPE=CAX3, ELSET=ELIN
+1, 2, 5, 6
+2, 2, 6, 3
+*ELEMENT, TYPE=CAX4, ELSET=ELIN
+3, 1, 2, 3, 4
+*ELEMENT, TYPE=CAX6, ELSET=EQUAD
+11, 102, 105, 106, 111, 112, 113
+12, 102, 106, 103, 113, 114, 108
+*ELEMENT, TYPE=CAX8R, ELSET=EQUAD
+13, 101, 102, 103, 104, 107, 108, 109, 110
+*ELSET, ELSET=EALL
+ELIN, EQUAD
+*NSET, NSET=INNER
+1, 4, 101, 104, 110
+*NSET, NSET=OUTER
+5, 6, 105, 106, 112
+*NSET, NSET=INMID
+1, 4, 101, 104, 110, 2, 3, 102, 103, 108, 107, 109, 113, 111, 114
+*NSET, NSET=OUTMID
+5, 6, 105, 106, 112, 2, 3, 102, 103, 108, 107, 109, 113, 111, 114
+*MATERIAL, NAME=M
+*ELASTIC
+210000., 0.3
+*SOLID SECTION, ELSET=EALL, MATERIAL=M
+*BOUNDARY
+NALL, 2, 2
+*STEP
+*STATIC
+*BOUNDARY
+1, 1, 1, -1.374040E-04
+4, 1, 1, -1.375191E-04
+101, 1, 1, -1.403125E-04
+104, 1, 1, -1.403313E-04
+110, 1, 1, -1.402900E-04
+5, 1, 1, -1.560328E-04
+6, 1, 1, -1.547357E-04
+105, 1, 1, -1.568120E-04
+106, 1, 1, -1.568838E-04
+112, 1, 1, -1.567861E-04
+*NODE PRINT, NSET=NALL
+RF
+*NODE PRINT, NSET=INNER, TOTALS=ONLY
+RF
+*NODE PRINT, NSET=OUTER, TOTALS=ONLY
+RF
+*NODE PRINT, NSET=INMID, TOTALS=ONLY
+RF
+*NODE PRINT, NSET=OUTMID, TOTALS=ONLY
+RF
+*NODE FILE
+RF
+*END STEP
