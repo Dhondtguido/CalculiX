@@ -1,0 +1,22 @@
+
+                        S T E P       2
+
+
+     B U C K L I N G   F A C T O R   O U T P U T
+
+ MODE NO       BUCKLING
+                FACTOR
+
+      1   0.5792909E+00
+      2   0.1250254E+01
+
+                        S T E P       3
+
+
+                                INCREMENT     1
+
+
+ displacements (vx,vy,vz) for set NALL and time  0.2000000E+01
+
+         1  0.000000E+00  0.000000E+00  3.081488E-33
+         2  1.686476E-16 -2.222222E-01 -1.666667E-02

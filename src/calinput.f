@@ -344,7 +344,7 @@
 !     
       elseif(textpart(1)(1:7).eq.'*BUCKLE') then
         call buckles(inpc,textpart,nmethod,mei,fei,
-     &       nforc,nload,ithermal,iprestr,nbody,t0,t1,nk,iperturb,
+     &       nforc,nload,ithermal,iprestr,nbody,t0,t1,nk,iperturb,xforc,
      &       istep,istat,n,iline,ipol,inl,ipoinp,inp,isolver,ipoinpc,
      &       ier)
 !     
@@ -769,7 +769,7 @@ c
         call greens(inpc,textpart,nmethod,
      &       mei,iperturb,istep,istat,n,iline,ipol,inl,
      &       ipoinp,inp,ithermal,isolver,xboun,nboun,ipoinpc,
-     &       ier,fei)
+     &       ier,fei,nforc)
 !     
       elseif(textpart(1)(1:4).eq.'*HCF') then
         call hcfs(inpc,textpart,istep,istat,n,iline,ipol,inl,ipoinp,
@@ -1108,7 +1108,7 @@ c
       elseif(textpart(1)(1:5).eq.'*STEP') then
         call steps(inpc,textpart,iperturb,iprestr,nbody,nforc,
      &       nload,ithermal,t0,t1,nk,irstrt,istep,istat,n,
-     &       jmax,ctrl,iline,ipol,inl,ipoinp,inp,newstep,
+     &       jmax,ctrl,xforc,iline,ipol,inl,ipoinp,inp,newstep,
      &       ipoinpc,network,iamplitudedefault,amname,nam,
      &       nam_,namta,amta,namtot,nstam,ier,namtot_,
      &       physcon)

@@ -17,7 +17,7 @@
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
       subroutine buckles(inpc,textpart,nmethod,mei,fei,
-     &  nforc,nload,ithermal,iprestr,nbody,t0,t1,nk,iperturb,
+     &  nforc,nload,ithermal,iprestr,nbody,t0,t1,nk,iperturb,xforc,
      &  istep,istat,n,iline,ipol,inl,ipoinp,inp,isolver,ipoinpc,
      &  ier)
 !
@@ -33,7 +33,7 @@
      &  nforc,nload,ithermal(*),iprestr,i,nk,iperturb(*),iline,ipol,inl,
      &  ipoinp(2,*),inp(3,*),nev,isolver,nbody,ipoinpc(0:*),ier
 !
-      real*8 fei(4),t0(*),t1(*),tol
+      real*8 fei(4),t0(*),t1(*),tol,xforc(*)
 !
       if(istep.lt.1) then
          write(*,*) '*ERROR reading *BUCKLE: *BUCKLE can only be used'
@@ -167,9 +167,14 @@
          mxiter=1000
       endif
 !
-!     removing the natural boundary conditions
+!     removing the natural boundary conditions; the point loads are
+!     set to zero instead of being removed, since the load entries of
+!     moments on beam and shell nodes are linked to their mean rotation
+!     MPC's (gen3dforc.f), which stay
 !
-      nforc=0
+      do i=1,nforc
+         xforc(i)=0.d0
+      enddo
       nload=0
       nbody=0
       iprestr=0
