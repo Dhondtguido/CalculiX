@@ -1,0 +1,29 @@
+**
+**   Structure: one B32R cantilever, SECTION=CIRC.
+**   Test objective: stable explicit time increment for a beam
+**                   with a circular cross section.
+**
+*NODE, NSET=NALL
+1, 0.0, 0.0, 0.0
+2, 20.0, 0.0, 0.0
+3, 40.0, 0.0, 0.0
+*ELEMENT, TYPE=B32R, ELSET=EALL
+1, 1, 2, 3
+*MATERIAL, NAME=STEEL
+*ELASTIC
+210000.0, 0.3
+*DENSITY
+7.85e-9
+*BEAM SECTION, ELSET=EALL, MATERIAL=STEEL, SECTION=CIRC
+20.0, 20.0
+0.0, 0.0, -1.0
+*BOUNDARY
+1, 1, 6
+*STEP, INC=100000
+*DYNAMIC, EXPLICIT
+, 2.e-3
+*CLOAD
+3, 2, 1000.0
+*NODE PRINT, NSET=NALL, FREQUENCY=200
+U
+*END STEP
