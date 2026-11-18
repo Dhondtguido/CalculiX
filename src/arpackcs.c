@@ -913,6 +913,7 @@ void arpackcs(double *co, ITG *nk, ITG **konp, ITG **ipkonp, char **lakonp,
       if(info!=0){
 	printf(" *ERROR in d[n,s]aupd: info=%" ITGFORMAT "\n",info);
 	printf("       # of converged eigenvalues=%" ITGFORMAT "\n\n",iparam[4]);
+	if(info<0) FORTRAN(stop,());
       }         
 	
       NNEW(temp_array2,double,nev);
