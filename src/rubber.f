@@ -30,6 +30,10 @@
 !
       integer ogden,hyperfoam,taylor
 !
+      integer ieq1,ieq2,ieq3
+!
+      real*8 sdev(3,3),qeq(3,3),emeq,ceq1,ceq2,coefeq
+!
       integer nelconst,kode,kk(84),i,j,k,l,m,nt,icmd,istart,iend,
      &  nc,n,ithermal(*),ii,jj,mm,neig,ncmat_
 !
@@ -122,6 +126,10 @@ c      if(icmd.eq.1) then
 !     major loop
 !
       do ii=istart,iend
+!
+!        neig is set for the Ogden and the hyperfoam form below
+!
+         neig=3
 !
 !        calculation of the Green deformation tensor for the total
 !        strain and the thermal strain
@@ -310,6 +318,54 @@ c      if(icmd.eq.1) then
                al(i)=dsqrt(al(i)+v1/3.d0)
                all(i)=(6.d0*al(i)**5-4.d0*v1*al(i)**3+2.d0*al(i)*v2)*dd
             enddo
+!
+!           for equal stretches the derivatives of the single
+!           stretches below miss part of the derivatives of a sum
+!           of functions of the stretches; this is corrected in the
+!           Ogden and the hyperfoam form (neig=1: stress and
+!           stiffness, neig=2: stiffness), using the deviator sdev
+!           of c (computed from the strain to keep its digits) and,
+!           for neig=2, the projection qeq onto the plane of the two
+!           equal stretches; ceq1 is the eigenvalue of c of the
+!           single stretch, ceq2 the one of the two equal stretches
+!
+            if(neig.ne.3) then
+               emeq=(emec(1)+emec(2)+emec(3))/3.d0
+               do i=1,3
+                  sdev(i,i)=2.d0*(emec(i)-emeq)
+               enddo
+               sdev(1,2)=c(1,2)
+               sdev(1,3)=c(1,3)
+               sdev(2,3)=c(2,3)
+               sdev(2,1)=sdev(1,2)
+               sdev(3,1)=sdev(1,3)
+               sdev(3,2)=sdev(2,3)
+            endif
+            ceq1=0.d0
+            ceq2=0.d0
+            if(neig.eq.2) then
+               ieq1=3
+               ieq2=1
+               ieq3=2
+               if(dabs(al(1)-al(3)).lt.dabs(al(ieq2)-al(ieq3))) then
+                  ieq1=2
+                  ieq2=1
+                  ieq3=3
+               endif
+               if(dabs(al(2)-al(3)).lt.dabs(al(ieq2)-al(ieq3))) then
+                  ieq1=1
+                  ieq2=2
+                  ieq3=3
+               endif
+               ceq1=al(ieq1)**2
+               ceq2=(al(ieq2)**2+al(ieq3)**2)/2.d0
+               do l=1,3
+                  do k=1,3
+                     qeq(k,l)=d(k,l)-(sdev(k,l)-(ceq2-v1/3.d0)*d(k,l))
+     &                    /(ceq1-ceq2)
+                  enddo
+               enddo
+            endif
 !
 !        first derivative of the principal stretches w.r.t. c(k,l)
 !
@@ -647,6 +703,25 @@ c      if(icmd.eq.1) then
                enddo
             enddo
 !
+!        three equal principal stretches (neig=1): each stretch was
+!        taken as sqrt(v1/3), which drops the term of second order
+!        in the deviator sdev of c from the sum of the
+!        stretches**alpha; its first derivative is added
+!
+            if(neig.eq.1) then
+               do m=1,nelconst
+                  coefa=constant(2*m)
+                  coefm=constant(2*m-1)
+                  coefeq=coefm*(coefa-2.d0)/(2.d0*coefa)*v36**coefa*
+     &                 (v1/3.d0)**(coefa/2.d0-2.d0)
+                  do l=1,3
+                     do k=1,l
+                        dudc(k,l)=dudc(k,l)+coefeq*sdev(k,l)
+                     enddo
+                  enddo
+               enddo
+            endif
+!
 !        tangent stiffness matrix
 !        second derivative of U w.r.t. c(k,l) and c(m,n)
 !
@@ -688,6 +763,47 @@ c      if(icmd.eq.1) then
      &                    *(v3b-1.d0)**(2*mm-1)*d2ibdc2(k,l,m,n,3)
                   enddo
                enddo
+!
+!              equal principal stretches: correction of the second
+!              derivative of the sum of the stretches**alpha
+!              (neig=1: three equal stretches, see the stress above;
+!              neig=2: the shear in the plane of the two equal
+!              stretches, with the second derivative and the divided
+!              difference of the first derivative of c**(alpha/2))
+!
+               if(neig.ne.3) then
+                  do mm=1,nelconst
+                     coefa=constant(2*mm)
+                     coefm=constant(2*mm-1)
+                     if(neig.eq.1) then
+                        coefeq=coefm*(coefa-2.d0)/(2.d0*coefa)*
+     &                       (v1/3.d0)**(coefa/2.d0-2.d0)
+                     else
+                        coefeq=coefm*(coefa-2.d0)/(2.d0*coefa)*
+     &                       ceq2**(coefa/2.d0-2.d0)-coefm/coefa*
+     &                       (ceq1**(coefa/2.d0-1.d0)
+     &                       -ceq2**(coefa/2.d0-1.d0))/(ceq1-ceq2)
+                     endif
+                     coefeq=coefeq*v36**coefa
+                     nt=0
+                     do jj=1,21
+                        k=kk(nt+1)
+                        l=kk(nt+2)
+                        m=kk(nt+3)
+                        n=kk(nt+4)
+                        nt=nt+4
+                        if(neig.eq.1) then
+                           d2udc2(k,l,m,n)=d2udc2(k,l,m,n)+coefeq*
+     &                          ((d(k,m)*d(l,n)+d(k,n)*d(l,m))/2.d0
+     &                          -d(k,l)*d(m,n)/3.d0)
+                        else
+                           d2udc2(k,l,m,n)=d2udc2(k,l,m,n)+coefeq*
+     &                          ((qeq(k,m)*qeq(l,n)+qeq(k,n)*qeq(l,m))
+     &                          /2.d0-qeq(k,l)*qeq(m,n)/2.d0)
+                        endif
+                     enddo
+                  enddo
+               endif
             endif
          endif
 !
@@ -773,6 +889,25 @@ c      if(icmd.eq.1) then
                enddo
             enddo
 !
+!        three equal principal stretches (neig=1): each stretch was
+!        taken as sqrt(v1/3), which drops the term of second order
+!        in the deviator sdev of c from the sum of the
+!        stretches**alpha; its first derivative is added
+!
+            if(neig.eq.1) then
+               do m=1,nelconst
+                  coefa=constant(2*m)
+                  coefm=constant(2*m-1)
+                  coefeq=coefm*(coefa-2.d0)/(2.d0*coefa)*
+     &                 (v1/3.d0)**(coefa/2.d0-2.d0)
+                  do l=1,3
+                     do k=1,l
+                        dudc(k,l)=dudc(k,l)+coefeq*sdev(k,l)
+                     enddo
+                  enddo
+               enddo
+            endif
+!
 !        tangent stiffness matrix
 !        second derivative of U w.r.t. c(k,l) and c(m,n)
 !
@@ -812,6 +947,46 @@ c      if(icmd.eq.1) then
      &                    *d2ibdc2(k,l,m,n,3))
                   enddo
                enddo
+!
+!              equal principal stretches: correction of the second
+!              derivative of the sum of the stretches**alpha
+!              (neig=1: three equal stretches, see the stress above;
+!              neig=2: the shear in the plane of the two equal
+!              stretches, with the second derivative and the divided
+!              difference of the first derivative of c**(alpha/2))
+!
+               if(neig.ne.3) then
+                  do mm=1,nelconst
+                     coefa=constant(2*mm)
+                     coefm=constant(2*mm-1)
+                     if(neig.eq.1) then
+                        coefeq=coefm*(coefa-2.d0)/(2.d0*coefa)*
+     &                       (v1/3.d0)**(coefa/2.d0-2.d0)
+                     else
+                        coefeq=coefm*(coefa-2.d0)/(2.d0*coefa)*
+     &                       ceq2**(coefa/2.d0-2.d0)-coefm/coefa*
+     &                       (ceq1**(coefa/2.d0-1.d0)
+     &                       -ceq2**(coefa/2.d0-1.d0))/(ceq1-ceq2)
+                     endif
+                     nt=0
+                     do jj=1,21
+                        k=kk(nt+1)
+                        l=kk(nt+2)
+                        m=kk(nt+3)
+                        n=kk(nt+4)
+                        nt=nt+4
+                        if(neig.eq.1) then
+                           d2udc2(k,l,m,n)=d2udc2(k,l,m,n)+coefeq*
+     &                          ((d(k,m)*d(l,n)+d(k,n)*d(l,m))/2.d0
+     &                          -d(k,l)*d(m,n)/3.d0)
+                        else
+                           d2udc2(k,l,m,n)=d2udc2(k,l,m,n)+coefeq*
+     &                          ((qeq(k,m)*qeq(l,n)+qeq(k,n)*qeq(l,m))
+     &                          /2.d0-qeq(k,l)*qeq(m,n)/2.d0)
+                        endif
+                     enddo
+                  enddo
+               endif
             endif
          endif
 !
