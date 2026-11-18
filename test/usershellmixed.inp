@@ -1,0 +1,38 @@
+**
+**   Structure: two triangles, not connected: one US3 and one S3.
+**   Test objective: user elements next to expanded shell elements
+**                   (gen3delem used to stop with "first thickness
+**                   ... is zero").
+**
+*NODE, NSET=Nall
+1, 0., 0., 0.
+2, 1., 0., 0.
+3, 0., 1., 0.
+4, 0., 0., 2.
+5, 1., 0., 2.
+6, 0., 1., 2.
+*USER ELEMENT, TYPE=US3, NODES=3, INTEGRATION POINTS=3, MAXDOF=6
+*ELEMENT, TYPE=US3, ELSET=EUS3
+1, 1, 2, 3
+*ELEMENT, TYPE=S3, ELSET=ES3
+2, 4, 5, 6
+*MATERIAL, NAME=STEEL
+*ELASTIC
+210000., 0.3
+*USER SECTION, ELSET=EUS3, MATERIAL=STEEL, CONSTANTS=1
+0.05
+*SHELL SECTION, ELSET=ES3, MATERIAL=STEEL
+0.05
+*BOUNDARY
+1, 1, 6
+2, 1, 6
+4, 1, 6
+5, 1, 6
+*STEP
+*STATIC
+*CLOAD
+3, 3, -0.001
+6, 3, -0.001
+*NODE PRINT, NSET=Nall
+U
+*END STEP

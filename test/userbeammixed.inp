@@ -1,0 +1,57 @@
+**
+**   Structure: two cantilever beams, not connected: one U1 element
+**              and ten B31 elements.
+**   Test objective: user elements next to expanded beam elements
+**                   (gen3delem used to stop with "first thickness
+**                   ... is zero").
+**
+*NODE, NSET=Nall
+1, 0., 0., 0.
+2, 1000., 0., 0.
+3, 0., 0., 100.
+4, 100., 0., 100.
+5, 200., 0., 100.
+6, 300., 0., 100.
+7, 400., 0., 100.
+8, 500., 0., 100.
+9, 600., 0., 100.
+10, 700., 0., 100.
+11, 800., 0., 100.
+12, 900., 0., 100.
+13, 1000., 0., 100.
+*USER ELEMENT, TYPE=U1, INTEGRATION POINTS=2, MAXDOF=6, NODES=2
+*ELEMENT, TYPE=U1, ELSET=EU1
+1, 1, 2
+*ELEMENT, TYPE=B31, ELSET=EB31
+2, 3, 4
+3, 4, 5
+4, 5, 6
+5, 6, 7
+6, 7, 8
+7, 8, 9
+8, 9, 10
+9, 10, 11
+10, 11, 12
+11, 12, 13
+*MATERIAL, NAME=STEEL
+*ELASTIC
+210000., 0.3
+*BEAM SECTION, ELSET=EU1, MATERIAL=STEEL, SECTION=GENERAL
+100., 833.333, 0., 833.333, 1406.
+0., 0., 1.
+*BEAM SECTION, ELSET=EB31, MATERIAL=STEEL, SECTION=RECT
+10., 10.
+0., 0., 1.
+*NSET, NSET=TIPS
+2, 13
+*BOUNDARY
+1, 1, 6
+3, 1, 6
+*STEP
+*STATIC
+*CLOAD
+2, 2, -0.001
+13, 2, -0.001
+*NODE PRINT, NSET=TIPS
+U
+*END STEP
