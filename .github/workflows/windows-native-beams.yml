@@ -38,6 +38,7 @@ jobs:
             mingw-w64-ucrt-x86_64-spooles
             mingw-w64-ucrt-x86_64-arpack
             mingw-w64-ucrt-x86_64-openblas
+            mingw-w64-ucrt-x86_64-lapack
             mingw-w64-ucrt-x86_64-python
             mingw-w64-ucrt-x86_64-gdb
 
@@ -59,7 +60,9 @@ jobs:
             -DSPOOLES_LIBRARY_DIR=/ucrt64/lib/libspooles.a \
             -DSPOOLES_INCLUDE_DIR=/ucrt64/include/spooles \
             -DARPACK_LIBRARY_DIR=/ucrt64/lib/libarpack.a \
-            -DBLA_VENDOR=OpenBLAS \
+            -DBLAS_LIBRARIES=/ucrt64/lib/libblas.a \
+            -DLAPACK_LIBRARIES=/ucrt64/lib/liblapack.a \
+            -DBLA_VENDOR=Generic \
             -DPARDISO=OFF -DPASTIX=OFF -DMKL=OFF
 
       - name: Compile CalculiX.exe
@@ -70,6 +73,10 @@ jobs:
       - name: Run beam regression tests on Windows
         run: |
           set -euo pipefail
+          export OMP_NUM_THREADS=1
+          export OPENBLAS_NUM_THREADS=1
+          export CCX_NPROC_STIFFNESS=1
+          export CCX_NPROC_EQUATION=1
           mkdir -p windows-smoke
           cp validation/1[67]_native_*.inp windows-smoke/
           cp validation/19_*.inp validation/20_*.inp validation/21_*.inp windows-smoke/
@@ -150,6 +157,7 @@ jobs:
         run: |
           set -euo pipefail
           cd windows-dist
+          OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
           PATH='/c/Windows/System32:/c/Windows' ./CalculiX.exe 16_native_b31t_cantilever
           test -s 16_native_b31t_cantilever.frd
           rm -f 16_native_b31t_cantilever.frd 16_native_b31t_cantilever.dat 16_native_b31t_cantilever.sta

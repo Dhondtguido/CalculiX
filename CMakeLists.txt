@@ -141,11 +141,18 @@ else()
 endif()
 
 # ARPACK
-find_package(arpackng CONFIG)
-if(NOT arpackng_FOUND)
-  find_package(ARPACK CONFIG)
-  if(NOT ARPACK_FOUND)
-    find_package(ARPACK MODULE REQUIRED)
+# If a caller specifies the exact static library, honour that
+# choice instead of overriding it with arpack-ng's shared-library
+# CMake package (important for portable Windows executables).
+if(ARPACK_LIBRARY_DIR)
+  find_package(ARPACK MODULE REQUIRED)
+else()
+  find_package(arpackng CONFIG)
+  if(NOT arpackng_FOUND)
+    find_package(ARPACK CONFIG)
+    if(NOT ARPACK_FOUND)
+      find_package(ARPACK MODULE REQUIRED)
+    endif()
   endif()
 endif()
 target_link_libraries(ccx PUBLIC ARPACK::ARPACK)
