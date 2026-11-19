@@ -39,6 +39,7 @@ jobs:
             mingw-w64-ucrt-x86_64-arpack
             mingw-w64-ucrt-x86_64-openblas
             mingw-w64-ucrt-x86_64-python
+            mingw-w64-ucrt-x86_64-gdb
 
       - name: Show compiler and numerical-library versions
         run: |
@@ -50,7 +51,7 @@ jobs:
       - name: Configure native Windows solver
         run: |
           cmake -S . -B build-windows -G Ninja \
-            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_BUILD_TYPE=RelWithDebInfo \
             -DCMAKE_C_COMPILER=/ucrt64/bin/gcc.exe \
             -DCMAKE_Fortran_COMPILER=/ucrt64/bin/gfortran.exe \
             -DCMAKE_PREFIX_PATH=/ucrt64 \
@@ -79,6 +80,9 @@ jobs:
             echo "Testing ${stem}"
             if ! ../build-windows/CalculiX.exe "${stem}" > "${stem}.log" 2>&1; then
               tail -n 80 "${stem}.log"
+              echo "Windows native backtrace:"
+              gdb -batch -q -ex run -ex "thread apply all bt 30" --args \
+                ../build-windows/CalculiX.exe "${stem}" || true
               exit 1
             fi
           done
