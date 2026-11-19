@@ -1,0 +1,98 @@
+name: Windows B31T and B31E executable
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/native-b31t-b31e]
+    paths:
+      - 'src/**'
+      - 'cmake/**'
+      - 'CMakeLists.txt'
+      - 'validation/**'
+      - '.github/workflows/windows-beams.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  windows-mingw64:
+    name: Windows x64 MinGW-w64
+    runs-on: windows-2022
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install compiler and numerical libraries
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-gcc-fortran
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-ninja
+            mingw-w64-x86_64-spooles
+            mingw-w64-x86_64-arpack
+            mingw-w64-x86_64-openblas
+      - name: Configure native Windows CalculiX
+        run: |
+          cmake -S . -B build-windows -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_C_COMPILER=gcc \
+            -DCMAKE_Fortran_COMPILER=gfortran \
+            -DSPOOLES=ON -DPARDISO=OFF -DPASTIX=OFF -DMKL=OFF \
+            -DSPOOLES_ROOT=/mingw64 -DARPACK_ROOT=/mingw64
+      - name: Build executable
+        run: |
+          cmake --build build-windows --parallel 3
+          test -f build-windows/CalculiX.exe
+      - name: Windows B31T/B31E solver regression
+        run: |
+          mkdir -p windows-smoke
+          cp validation/1[67]_native_*.inp windows-smoke/
+          cp validation/19_*.inp validation/20_*.inp validation/21_*.inp windows-smoke/
+          cp validation/2[2-9]_*.inp validation/3[0-7]_*.inp windows-smoke/
+          cd windows-smoke
+          for inp in *.inp; do ../build-windows/CalculiX.exe "${inp%.inp}"; done
+          python ../validation/check_ccx_beam_conventions.py
+          python ../validation/check_abaqus_section_offsets.py
+          python ../validation/check_beam_forces_releases.py
+      - name: Bundle executable and MinGW runtime DLLs
+        run: |
+          set -euo pipefail
+          mkdir -p package
+          cp build-windows/CalculiX.exe package/
+          for pass in 1 2 3 4 5 6; do
+            added=0
+            for binary in package/*.exe package/*.dll; do
+              [ -f "$binary" ] || continue
+              while IFS= read -r dll; do
+                [ -f "$dll" ] || continue
+                if [ ! -f "package/${dll##*/}" ]; then
+                  cp "$dll" package/
+                  added=1
+                fi
+              done < <(ldd "$binary" | awk '{print $3}' | grep '^/mingw64/bin/.*\.dll$' || true)
+            done
+            [ "$added" -eq 0 ] && break
+          done
+          cat > package/README.txt <<'TXT'
+          CalculiX B31T/B31E Windows x64 - experimental.
+          Run: CalculiX.exe modelname
+          The input deck must be named modelname.inp.
+          Keep included DLL files in the same folder as CalculiX.exe.
+          Original CalculiX: Guido Dhondt and Klaus Wittig.
+          Beam extension contributors: Mishal Mohanlal and P. Viguier.
+          Source: https://github.com/mishal0488/CalculiX
+          Validate results against established solutions before engineering use.
+          TXT
+          ls -lh package/
+      - name: Publish Windows ZIP artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CalculiX-B31T-B31E-Windows-x64
+          path: package/
+          if-no-files-found: error
+          retention-days: 30
