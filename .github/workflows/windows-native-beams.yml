@@ -52,7 +52,7 @@ jobs:
       - name: Configure native Windows solver
         run: |
           cmake -S . -B build-windows -G Ninja \
-            -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+            -DCMAKE_BUILD_TYPE=Debug \
             -DCMAKE_C_COMPILER=/ucrt64/bin/gcc.exe \
             -DCMAKE_Fortran_COMPILER=/ucrt64/bin/gfortran.exe \
             -DCMAKE_PREFIX_PATH=/ucrt64 \

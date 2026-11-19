@@ -209,3 +209,10 @@ if(WIN32 AND NOT MKL AND ARPACK_LIBRARY_DIR)
     BLAS::BLAS
   )
 endif()
+
+# A number of the legacy CalculiX Fortran routines have deep call
+# chains and automatic work arrays. The native MinGW executable has
+# a small default PE process stack; reserve 64 MiB for validation.
+if(MINGW)
+  target_link_options(CalculiX PRIVATE "-Wl,--stack,67108864")
+endif()
