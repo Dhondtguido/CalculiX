@@ -196,3 +196,16 @@ if(PASTIX OR PASTIX4CALCULIX)
   target_link_libraries(ccx PUBLIC PASTIX::pastix)
   target_compile_definitions(ccx PUBLIC PASTIX)
 endif()
+
+# MinGW's static archive linker resolves undefined symbols left-to-right.
+# Link ARPACK -> LAPACK -> BLAS again after ccx's public libraries, so
+# the static reference LAPACK/BLAS packages resolve all Fortran symbols.
+# The additional explicit order is restricted to the portable Windows
+# toolchain and does not alter upstream Linux linkage.
+if(WIN32 AND NOT MKL AND ARPACK_LIBRARY_DIR)
+  target_link_libraries(CalculiX PRIVATE
+    ARPACK::ARPACK
+    LAPACK::LAPACK
+    BLAS::BLAS
+  )
+endif()
