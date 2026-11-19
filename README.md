@@ -12,6 +12,15 @@ A Free Software Three-Dimensional Structural Finite Element Program
 Guido Dhondt(Finite Element Solver)  
 Klaus Wittig(Pre- and Postprocessor)
 
+#### Contributors to the proposed native B31T / B31E beam extension:
+
+- Mishal Mohanlal
+- P. Viguier
+
+These contribution credits apply to the B31T/B31E extension in
+[pull request #345](https://github.com/Dhondtguido/CalculiX/pull/345),
+not to the original CalculiX solver.
+
   
 
 * * *

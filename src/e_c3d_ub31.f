@@ -15,6 +15,10 @@
 !     along with this program; if not, write to the Free Software
 !     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 !
+!     Native B31T/B31E beam extension contributors:
+!       Mishal Mohanlal
+!       P. Viguier
+!
       subroutine e_c3d_ub31(co,kon,lakonl,p1,p2,omx,bodyfx,nbody,s,sm,
      &  ff,nelem,nmethod,elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,
      &  ielmat,ielorien,norien,orab,ntmat_,

@@ -1,5 +1,13 @@
 # Native B31T / B31E Interface
 
+## Contribution credits
+
+- Mishal Mohanlal
+- P. Viguier
+
+These acknowledgements concern the proposed native two-node beam
+extension, while the original CalculiX authorship remains unchanged.
+
 This development branch keeps the historical CalculiX `B31` element unchanged and adds two native-style direct beam names backed by the UB31 kernel:
 
 - `B31T` — 2-node 3D Timoshenko beam (shear deformation enabled using section shear factors).
