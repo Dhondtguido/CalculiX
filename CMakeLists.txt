@@ -71,8 +71,19 @@ set_source_files_properties(
 )
 
 add_library(ccx ${SOURCES})
+# The historical CalculiX C/Fortran interface uses ARCH=Linux to
+# select GNU/gfortran's trailing-underscore name mangling, including
+# on native MinGW-w64 Windows builds. Windows is not a defined ARCH
+# symbol in CalculiX.h, and setting ARCH=Windows leaves FORTRAN()
+# undefined. Keep this C ABI choice distinct from the host OS.
+if(WIN32 AND CMAKE_C_COMPILER_ID STREQUAL "GNU"
+         AND CMAKE_Fortran_COMPILER_ID STREQUAL "GNU")
+  set(CCX_FORTRAN_ABI_ARCH Linux)
+else()
+  set(CCX_FORTRAN_ABI_ARCH ${CMAKE_SYSTEM_NAME})
+endif()
 target_compile_definitions(ccx PUBLIC
-  ARCH=${CMAKE_SYSTEM_NAME}
+  ARCH=${CCX_FORTRAN_ABI_ARCH}
   MATRIXSTORAGE
 )
 target_link_libraries(ccx PUBLIC flags)
