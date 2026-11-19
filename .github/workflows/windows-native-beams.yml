@@ -1,0 +1,171 @@
+name: Windows B31T B31E executable
+
+on:
+  push:
+    branches:
+      - feature/native-b31t-b31e
+    paths:
+      - .github/workflows/windows-native-beams.yml
+      - CMakeLists.txt
+      - cmake/**
+      - src/**
+      - validation/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-ucrt64:
+    name: Windows x64 / MinGW UCRT64 / SPOOLES
+    runs-on: windows-2025
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install UCRT64 build toolchain and numerical libraries
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-gcc-fortran
+            mingw-w64-ucrt-x86_64-cmake
+            mingw-w64-ucrt-x86_64-ninja
+            mingw-w64-ucrt-x86_64-spooles
+            mingw-w64-ucrt-x86_64-arpack
+            mingw-w64-ucrt-x86_64-openblas
+            mingw-w64-ucrt-x86_64-lapack
+            mingw-w64-ucrt-x86_64-python
+            mingw-w64-ucrt-x86_64-gdb
+
+      - name: Show compiler and numerical-library versions
+        run: |
+          gcc --version | head -n 1
+          gfortran --version | head -n 1
+          cmake --version | head -n 1
+          pacman -Q | grep -E 'ucrt-x86_64-(spooles|arpack|openblas)' || true
+
+      - name: Configure native Windows solver
+        run: |
+          cmake -S . -B build-windows -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_C_COMPILER=/ucrt64/bin/gcc.exe \
+            -DCMAKE_Fortran_COMPILER=/ucrt64/bin/gfortran.exe \
+            -DCMAKE_PREFIX_PATH=/ucrt64 \
+            -DSPOOLES=ON \
+            -DSPOOLES_LIBRARY_DIR=/ucrt64/lib/libspooles.a \
+            -DSPOOLES_INCLUDE_DIR=/ucrt64/include/spooles \
+            -DARPACK_LIBRARY_DIR=/ucrt64/lib/libarpack.a \
+            -DBLAS_LIBRARIES=/ucrt64/lib/libblas.a \
+            -DLAPACK_LIBRARIES=/ucrt64/lib/liblapack.a \
+            -DBLA_VENDOR=Generic \
+            -DPARDISO=OFF -DPASTIX=OFF -DMKL=OFF
+
+      - name: Compile CalculiX.exe
+        run: |
+          cmake --build build-windows --parallel 3
+          test -s build-windows/CalculiX.exe
+
+      - name: Run beam regression tests on Windows
+        run: |
+          set -euo pipefail
+          export OMP_NUM_THREADS=1
+          export OPENBLAS_NUM_THREADS=1
+          export CCX_NPROC_STIFFNESS=1
+          export CCX_NPROC_EQUATION=1
+          mkdir -p windows-smoke
+          cp validation/1[67]_native_*.inp windows-smoke/
+          cp validation/19_*.inp validation/20_*.inp validation/21_*.inp windows-smoke/
+          cp validation/2[2-9]_*.inp validation/3[0-7]_*.inp windows-smoke/
+          cd windows-smoke
+          for inp in *.inp; do
+            stem="${inp%.inp}"
+            echo "Testing ${stem}"
+            if ! ../build-windows/CalculiX.exe "${stem}" > "${stem}.log" 2>&1; then
+              tail -n 80 "${stem}.log"
+              echo "Windows native backtrace:"
+              gdb -batch -q -ex run -ex "thread apply all bt 30" --args \
+                ../build-windows/CalculiX.exe "${stem}" || true
+              exit 1
+            fi
+          done
+          python ../validation/check_ccx_beam_conventions.py
+          python ../validation/check_abaqus_section_offsets.py
+          python ../validation/check_beam_forces_releases.py
+
+      - name: Create Windows portable solver distribution
+        run: |
+          set -euo pipefail
+          mkdir -p windows-dist
+          cp build-windows/CalculiX.exe windows-dist/CalculiX.exe
+          cp validation/16_native_b31t_cantilever.inp windows-dist/
+          cp validation/17_native_b31e_cantilever.inp windows-dist/
+          cat > windows-dist/README-WINDOWS.txt <<'TXT'
+          CalculiX B31T/B31E - Windows x64 test solver
+          ===========================================
+          Built from: https://github.com/mishal0488/CalculiX
+          Branch: feature/native-b31t-b31e
+          Uses native UCRT64 MinGW/GFortran and SPOOLES.
+
+          How to run:
+            1. Extract ALL files from this ZIP to one directory.
+            2. Put the CalculiX .inp deck in a working folder.
+            3. Run: CalculiX.exe model_name
+               (model_name is the filename without .inp)
+            4. In Mecway, point the external CalculiX solver setting at
+               this CalculiX.exe and export a B31T or B31E deck.
+
+          The DLL files must remain beside the executable.
+          B31T/B31E support is experimental. Verify against reference
+          models before using for engineering design.
+          This package contains no CGX GUI. CalculiX is GPL-licensed.
+          TXT
+          # Recursively copy only the MinGW runtime DLLs imported by
+          # the executable and its dependencies; Windows system DLLs
+          # are intentionally excluded.
+          declare -A seen=()
+          queue=(windows-dist/CalculiX.exe)
+          while (("${#queue[@]}" > 0)); do
+            current="${queue[0]}"
+            queue=("${queue[@]:1}")
+            while read -r name; do
+              [[ -z "${name}" ]] && continue
+              key="${name,,}"
+              [[ -n "${seen[$key]:-}" ]] && continue
+              seen["$key"]=1
+              found=""
+              for candidate in /ucrt64/bin/*.dll; do
+                if [[ "${candidate##*/}" == "${name}" ]]; then
+                  found="$candidate"
+                  break
+                fi
+              done
+              if [[ -n "${found}" ]]; then
+                cp "${found}" windows-dist/
+                queue+=("windows-dist/${found##*/}")
+                echo "Bundled: ${found##*/}"
+              fi
+            done < <(objdump -p "$current" | awk '/DLL Name:/ {print $3}')
+          done
+          find windows-dist -maxdepth 1 -type f -printf '%f\n' | sort
+
+      - name: Test executable with only packaged DLLs
+        run: |
+          set -euo pipefail
+          cd windows-dist
+          OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
+          PATH='/c/Windows/System32:/c/Windows' ./CalculiX.exe 16_native_b31t_cantilever
+          test -s 16_native_b31t_cantilever.frd
+          rm -f 16_native_b31t_cantilever.frd 16_native_b31t_cantilever.dat 16_native_b31t_cantilever.sta
+
+      - name: Upload Windows executable for Mecway testing
+        uses: actions/upload-artifact@v4
+        with:
+          name: CalculiX-B31T-B31E-Windows-x64
+          path: windows-dist/
+          if-no-files-found: error
+          retention-days: 30

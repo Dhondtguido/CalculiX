@@ -68,6 +68,19 @@
      &        ncmat_,nstate_,stiini,vini,ener,eei,enerini,istep,iinc,
      &        reltime,calcul_fn,calcul_qa,calcul_cauchy,nener,
      &        ikin,nal,ne0,thicke,emeini,nelem,ielprop,prop,t0g,t1g)
+      elseif(lakon(nelem)(2:4).eq.'B31') then
+!
+!     user element ub31 beam (2 nodes, 6 dof/node)
+!
+         call resultsmech_ub31(co,kon,ipkon,lakon,ne,v,
+     &        stx,elcon,nelcon,rhcon,nrhcon,alcon,nalcon,alzero,
+     &        ielmat,ielorien,norien,orab,ntmat_,t0,t1,ithermal,prestr,
+     &        iprestr,eme,iperturb,fn,iout,qa,vold,nmethod,
+     &        veold,dtime,time,ttime,plicon,nplicon,plkcon,nplkcon,
+     &        xstateini,xstiff,xstate,npmat_,matname,mi,ielas,icmd,
+     &        ncmat_,nstate_,stiini,vini,ener,eei,enerini,istep,iinc,
+     &        reltime,calcul_fn,calcul_qa,calcul_cauchy,nener,
+     &        ikin,nal,ne0,thicke,emeini,nelem,ielprop,prop,t0g,t1g)
       elseif(lakon(nelem)(2:4).eq.'S45') then
 !
 !     user element us45 flat shell element with 4 nodes (5dof)

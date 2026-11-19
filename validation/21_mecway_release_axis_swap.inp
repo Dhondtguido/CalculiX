@@ -1,0 +1,28 @@
+*HEADING
+21 - Optional Mecway M1/M2 compatibility; single-axis root hinge
+** SI units: m, N, Pa. Run with and without CCX_MECWAY_SWAP_RELEASE_AXES=1
+*NODE
+1, 0., 0., 0.
+2, 1., 0., 0.
+3, 2., 0., 0.
+*ELEMENT, TYPE=B31T, ELSET=BEAM
+1, 1, 2
+2, 2, 3
+*MATERIAL, NAME=STEEL
+*ELASTIC
+2.1E11, 0.3
+*BEAM SECTION, ELSET=BEAM, MATERIAL=STEEL, SECTION=RECT
+0.1, 0.2
+0., 1., 0.
+*RELEASE
+1, S1, M1
+*BOUNDARY
+1, 1, 6
+3, 1, 6
+*STEP
+*STATIC
+*CLOAD
+2, 3, -1000.
+*NODE FILE
+U, RF
+*END STEP

@@ -1,0 +1,38 @@
+name: Native B31T and B31E validation
+on:
+  push:
+    branches:
+      - feature/native-b31t-b31e
+  workflow_dispatch:
+jobs:
+  linux:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build gfortran gcc \
+            libspooles-dev libarpack2-dev liblapack-dev libblas-dev
+      - name: Configure upstream CalculiX
+        run: cmake -S . -B build -G Ninja -DSPOOLES=ON -DPARDISO=OFF -DPASTIX=OFF -DMKL=OFF
+      - name: Build CalculiX
+        run: cmake --build build --parallel 3
+      - name: Native two-node beam smoke and analytical tests
+        run: |
+          mkdir -p smoke
+          cp validation/1[67]_native_*.inp smoke/
+          cp validation/19_*.inp validation/20_*.inp validation/21_*.inp smoke/
+          cp validation/2[2-9]_*.inp smoke/
+          cp validation/3[0-7]_*.inp smoke/
+          cd smoke
+          for inp in *.inp; do ../build/CalculiX "${inp%.inp}"; done
+          python3 ../validation/check_ccx_beam_conventions.py
+          python3 ../validation/check_abaqus_section_offsets.py
+          python3 ../validation/check_beam_forces_releases.py
+      - name: Legacy B31 compatibility smoke (informational)
+        continue-on-error: true
+        run: |
+          cp validation/18_legacy_b31_unchanged.inp smoke/
+          cd smoke
+          ../build/CalculiX 18_legacy_b31_unchanged

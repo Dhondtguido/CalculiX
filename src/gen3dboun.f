@@ -86,11 +86,18 @@
 !     next loop is needed, since an element may have
 !     been deactivated
 !
+!       gen3dboun maps boundary conditions onto *expanded*
+!       one- and two-dimensional elements. Direct user beams
+!       (UB31/B31T/B31E) have six DOFs at the original nodes,
+!       and no expanded section nodes in knor/iponor. Skip them
+!       when selecting the incident expanded element, otherwise
+!       a rotational boundary condition may dereference invalid
+!       section connectivity on native Windows builds.
         do
           if(index.eq.0) cycle loop
           ielem=inoel2d(1,index)
           indexe=ipkon(ielem)
-          if(indexe.ge.0) exit
+          if(indexe.ge.0.and.lakon(ielem)(1:1).ne.'U') exit
           index=inoel2d(3,index)
         enddo
 !          

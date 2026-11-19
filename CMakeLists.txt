@@ -71,8 +71,19 @@ set_source_files_properties(
 )
 
 add_library(ccx ${SOURCES})
+# The historical CalculiX C/Fortran interface uses ARCH=Linux to
+# select GNU/gfortran's trailing-underscore name mangling, including
+# on native MinGW-w64 Windows builds. Windows is not a defined ARCH
+# symbol in CalculiX.h, and setting ARCH=Windows leaves FORTRAN()
+# undefined. Keep this C ABI choice distinct from the host OS.
+if(WIN32 AND CMAKE_C_COMPILER_ID STREQUAL "GNU"
+         AND CMAKE_Fortran_COMPILER_ID STREQUAL "GNU")
+  set(CCX_FORTRAN_ABI_ARCH Linux)
+else()
+  set(CCX_FORTRAN_ABI_ARCH ${CMAKE_SYSTEM_NAME})
+endif()
 target_compile_definitions(ccx PUBLIC
-  ARCH=${CMAKE_SYSTEM_NAME}
+  ARCH=${CCX_FORTRAN_ABI_ARCH}
   MATRIXSTORAGE
 )
 target_link_libraries(ccx PUBLIC flags)
@@ -130,11 +141,18 @@ else()
 endif()
 
 # ARPACK
-find_package(arpackng CONFIG)
-if(NOT arpackng_FOUND)
-  find_package(ARPACK CONFIG)
-  if(NOT ARPACK_FOUND)
-    find_package(ARPACK MODULE REQUIRED)
+# If a caller specifies the exact static library, honour that
+# choice instead of overriding it with arpack-ng's shared-library
+# CMake package (important for portable Windows executables).
+if(ARPACK_LIBRARY_DIR)
+  find_package(ARPACK MODULE REQUIRED)
+else()
+  find_package(arpackng CONFIG)
+  if(NOT arpackng_FOUND)
+    find_package(ARPACK CONFIG)
+    if(NOT ARPACK_FOUND)
+      find_package(ARPACK MODULE REQUIRED)
+    endif()
   endif()
 endif()
 target_link_libraries(ccx PUBLIC ARPACK::ARPACK)
@@ -177,4 +195,24 @@ if(PASTIX OR PASTIX4CALCULIX)
   endif()
   target_link_libraries(ccx PUBLIC PASTIX::pastix)
   target_compile_definitions(ccx PUBLIC PASTIX)
+endif()
+
+# MinGW's static archive linker resolves undefined symbols left-to-right.
+# Link ARPACK -> LAPACK -> BLAS again after ccx's public libraries, so
+# the static reference LAPACK/BLAS packages resolve all Fortran symbols.
+# The additional explicit order is restricted to the portable Windows
+# toolchain and does not alter upstream Linux linkage.
+if(WIN32 AND NOT MKL AND ARPACK_LIBRARY_DIR)
+  target_link_libraries(CalculiX PRIVATE
+    ARPACK::ARPACK
+    LAPACK::LAPACK
+    BLAS::BLAS
+  )
+endif()
+
+# A number of the legacy CalculiX Fortran routines have deep call
+# chains and automatic work arrays. The native MinGW executable has
+# a small default PE process stack; reserve 64 MiB for validation.
+if(MINGW)
+  target_link_options(CalculiX PRIVATE "-Wl,--stack,67108864")
 endif()

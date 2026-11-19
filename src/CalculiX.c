@@ -248,16 +248,16 @@ int main(int argc,char *argv[])
 
       /* fields for 1-D and 2-D elements */
 
-      if((ne1d!=0)||(ne2d!=0)){
+      if((ne1d!=0)||(ne2d!=0)||(ne_!=0)){
 	NNEW(iponor,ITG,2*nkon_);
 	for(i=0;i<2*nkon_;i++) iponor[i]=-1;
-	NNEW(xnor,double,36*ne1d+24*ne2d);
-	NNEW(knor,ITG,24*(ne1d+ne2d)*(mi[2]+1));
+	NNEW(xnor,double,36*ne1d+24*ne2d+36*ne_);
+	NNEW(knor,ITG,24*(ne1d+ne2d+ne_)*(mi[2]+1));
 	NNEW(thickn,double,2*nk_);
 	NNEW(thicke,double,mi[2]*nkon_);
 	NNEW(offset,double,2*ne_);
 	NNEW(iponoel2d,ITG,nk_);
-	NNEW(inoel2d,ITG,9*ne1d+24*ne2d);
+	NNEW(inoel2d,ITG,9*ne1d+24*ne2d+24*ne_);
 	NNEW(rig,ITG,nk_);
 	NNEW(ne2boun,ITG,2*nk_);
 	if(infree[2]==0)infree[2]=1;

@@ -127,6 +127,7 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
 	indexe=ipkon[i];
 	if(strcmp1(&lakon[8*i],"U")==0){
 	  if((strcmp1(&lakon[8*i+1],"1")==0)||
+	     (strcmp1(&lakon[8*i+1],"B31")==0)||
 	     (strcmp1(&lakon[8*i+1],"S45")==0)||
 	     (strcmp1(&lakon[8*i+1],"S3")==0)){
 	  
@@ -358,6 +359,7 @@ void mastruct(ITG *nk, ITG *kon, ITG *ipkon, char *lakon, ITG *ne,
       indexe=ipkon[i];
       if(strcmp1(&lakon[8*i],"U")==0){
 	if((strcmp1(&lakon[8*i+1],"1")==0)||
+	     (strcmp1(&lakon[8*i+1],"B31")==0)||
 	   (strcmp1(&lakon[8*i+1],"S45")==0)||
 	   (strcmp1(&lakon[8*i+1],"S3")==0)){
 	  

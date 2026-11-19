@@ -117,8 +117,13 @@
 !     
         do i=1,ne
           if(ipkon(i).lt.0) cycle
+!         Native six-DOF UB31/B31T/B31E elements are *not*
+!         expanded shells/beams. They have no thickness/nodal
+!         normal connectivity for gen3dnor or gen3dboun.
+!         Exclude U elements from the legacy expansion catalogue.
           if((lakon(i)(1:2).ne.'C3').and.(lakon(i)(1:1).ne.'D').and.
      &         (lakon(i)(1:1).ne.'G').and.(lakon(i)(1:1).ne.'E').and.
+     &         (lakon(i)(1:1).ne.'U').and.
      &         (lakon(i)(1:4).ne.'MASS')) then
 !     
 !     number of nodes belonging to the element
