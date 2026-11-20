@@ -119,6 +119,7 @@
           if(ipkon(i).lt.0) cycle
           if((lakon(i)(1:2).ne.'C3').and.(lakon(i)(1:1).ne.'D').and.
      &         (lakon(i)(1:1).ne.'G').and.(lakon(i)(1:1).ne.'E').and.
+     &         (lakon(i)(1:1).ne.'U').and.
      &         (lakon(i)(1:4).ne.'MASS')) then
 !     
 !     number of nodes belonging to the element
