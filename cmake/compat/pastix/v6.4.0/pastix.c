@@ -184,6 +184,10 @@ void pastix_init(double *ad, double *au, double *adb, double *aub,
 			ITG *neq, ITG *nzs, ITG *symmetryflag, ITG *inputformat,
 			ITG *jq, ITG *nzs3){
     
+    if (pastix_data != NULL) {
+        return;
+    }
+
     ITG nthread, nthread_v;
     char *env;
     
@@ -986,7 +990,7 @@ ITG pastix_solve_cp(double *x, ITG *neq,ITG *symmetryflag,ITG *nrhs){
 
 // Invokes pastixFinalize and spmExit which frees everything but the dense LU array and parsec pointer
 void pastix_cleanup(ITG *neq,ITG *symmetryflag){
-    if( redo && !firstIter ) {
+    if( redo && pastix_data != NULL ) {
         if(spm->values == aupastix) spm->values = NULL;
         //if(spm->values == spm->valuesGPU) spm->valuesGPU = NULL;
         if(spm->colptr == icolpastix) spm->colptr = NULL;
