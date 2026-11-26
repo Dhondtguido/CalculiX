@@ -87,7 +87,9 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
 #endif
     }else if(*isolver==8){
 #ifdef PASTIX
-      pastix_solve_cp(qb,neqtot,&symmetryflag,&nrhs);
+      /* nothing to do: the PaStiX interface releases its data itself
+	 at the next factorization; calling pastix_solve_cp here would
+	 solve with an undefined rhs */
 #endif
     }
     SFREE(jqbi);SFREE(aubi);SFREE(irowbi);
@@ -620,7 +622,9 @@ void massless(ITG *kslav,ITG *lslav,ITG *ktot,ITG *ltot,double *au,double *ad,
 #endif
       }else if(*isolver==8){
 #ifdef PASTIX
-	pastix_solve_cp(qb,neqtot,&symmetryflag,&nrhs);
+	/* nothing to do: the PaStiX interface releases its data itself
+	   at the next factorization; calling pastix_solve_cp here would
+	   overwrite the solution qb by Kbb^{-1}.qb */
 #endif
       }
     }
