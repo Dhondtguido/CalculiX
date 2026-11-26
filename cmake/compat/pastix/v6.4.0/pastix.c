@@ -884,6 +884,36 @@ double *sigma,ITG *icol, ITG *irow,
 }
 
 
+/* Largest backward error accepted for a mixed-precision solve. Over the
+   CalculiX test suite all double-precision solves stay below 1e-13 and
+   all mixed-precision solves of passing tests below 6e-13. */
+#define MIXED_MAX_BACKWARD_ERROR 1e-12
+
+/* Normwise backward error ||b-Ax||_inf / (||A||_inf*||x||_inf + ||b||_inf)
+   of the solution x of spm*x = b, maximum over all right-hand sides.
+   This measures the quality of the final solution independently of the
+   stopping criterion of the iterative refinement. */
+static double pastix_backward_error(const double *b, const double *x, ITG nrhs){
+    ITG j, n = spm->n;
+    double berr = 0., normA, normr, normx, normb, denom, e;
+    double *r = NULL;
+
+    normA = spmNorm( SpmInfNorm, spm );
+    NNEW(r, double, n);
+    for(j = 0; j < nrhs; j++){
+        memcpy(r, b + j*n, sizeof(double) * n);
+        spmMatVec( SpmNoTrans, -1., spm, x + j*n, 1., r );
+        normr = spmNormVec( SpmInfNorm, spm, r, 1 );
+        normx = spmNormVec( SpmInfNorm, spm, x + j*n, 1 );
+        normb = spmNormVec( SpmInfNorm, spm, b + j*n, 1 );
+        denom = normA * normx + normb;
+        e = ( denom > 0. ) ? normr / denom : 0.;
+        if( e > berr || e != e ) berr = e;
+    }
+    SFREE(r);
+    return berr;
+}
+
 // invokes the solve and iterative refinement routines of PaStiX
 ITG pastix_solve_generic(double *x, ITG *neq,ITG *symmetryflag,ITG *nrhs){
     ITG i;
@@ -929,7 +959,25 @@ ITG pastix_solve_generic(double *x, ITG *neq,ITG *symmetryflag,ITG *nrhs){
             return -2;
         }
     }
-	
+
+    // A mixed-precision solve is only acceptable if the iterative
+    // refinement recovered double-precision accuracy. PaStiX reports
+    // success after IPARM_ITERMAX GMRES iterations even if it did not,
+    // and such inaccurate solutions spoil the Newton convergence of
+    // nonlinear analyses. Check the backward error of the final solution
+    // and report a failure, so that pastix_main_generic falls back to
+    // double precision. Only for single solves: the multi-solve callers
+    // do not check rc and always run in double precision.
+    char usage_single = SINGLE_SOLVE   /* macro already ends with ';' */
+    if( rc == PASTIX_SUCCESS && !globDoublePrecision && piparm[IPARM_MIXED] &&
+        usage == usage_single ){
+        double berr = pastix_backward_error(b, x, *nrhs);
+        if( berr > MIXED_MAX_BACKWARD_ERROR || berr != berr ){
+            printf("mixed precision solution not accurate enough (backward error %e)\n", berr);
+            rc = -1;
+        }
+    }
+
 //    FILE *f=fopen("spm.out","a");
 //    fprintf(f,"\n\nMatrix\n");
 //    spmConvert(SpmCSR, spm);
