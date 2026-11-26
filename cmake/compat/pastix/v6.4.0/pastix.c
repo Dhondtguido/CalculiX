@@ -915,6 +915,52 @@ static double pastix_backward_error(const double *b, const double *x, ITG nrhs){
     return berr;
 }
 
+/* Stopping tolerance of the GMRES refinement after a mixed-precision
+   factorization, for spm*x = b with initial solution x. GMRES stops when
+   ||b-Ax||_2 <= eps*||b||_2, but in double precision the residual cannot
+   drop much below its rounding-error floor of about u*|| |A|*|x| + |b| ||_2.
+   For stiffness matrices that floor is often above the fixed eps = 1e-12,
+   which then cannot be reached, and GMRES ran all IPARM_ITERMAX iterations
+   although it had converged after a few. Use
+   eps = max(1e-12, MIXED_REFINE_FLOOR * u * || |A|*|x| + |b| ||_2 / ||b||_2)
+   instead: unchanged where 1e-12 is reachable, otherwise just above the
+   floor. The componentwise product |A|*|x| matters: ||A||*||x|| would
+   overestimate the floor badly in models whose unknowns differ by orders
+   of magnitude (e.g. beams), and stop too early. If the floor is
+   underestimated, GMRES simply runs to IPARM_ITERMAX as before. With
+   several right-hand sides the smallest eps is used. */
+#define MIXED_REFINE_FLOOR 4.
+
+static double pastix_mixed_refine_epsilon(const double *b, const double *x, ITG nrhs){
+    spm_int_t n = spm->n, base = spm->baseval, i, j, k;
+    const spm_int_t *colptr = spm->colptr, *rowptr = spm->rowptr;
+    const double *val = (const double *) spm->values;
+    double eps = -1., normb, nfloor, e;
+    double *s = NULL;
+    ITG l;
+
+    NNEW(s, double, n);
+    for(l = 0; l < nrhs; l++){
+        const double *bl = b + l*n, *xl = x + l*n;
+        /* s = |A|*|x| + |b|: rounding-error scale of every residual entry */
+        for(i = 0; i < n; i++) s[i] = fabs(bl[i]);
+        for(j = 0; j < n; j++){
+            for(k = colptr[j] - base; k < colptr[j+1] - base; k++){
+                s[rowptr[k] - base] += fabs(val[k] * xl[j]);
+            }
+        }
+        nfloor = spmNormVec( SpmFrobeniusNorm, spm, s, 1 );
+        normb  = spmNormVec( SpmFrobeniusNorm, spm, bl, 1 );
+        if( normb > 0. ){
+            e = MIXED_REFINE_FLOOR * 0.5 * DBL_EPSILON * nfloor / normb;
+            if( eps < 0. || e < eps ) eps = e;
+        }
+    }
+    SFREE(s);
+    if( !(eps > 1e-12) ) eps = 1e-12;   /* also catches NaN and zero rhs */
+    return eps;
+}
+
 /* GMRES iterations between two checks of the backward error */
 #define REFINE_CHUNK 5
 
@@ -1002,10 +1048,12 @@ ITG pastix_solve_generic(double *x, ITG *neq,ITG *symmetryflag,ITG *nrhs){
     rc = pastix_task_solve( pastix_data, spm->n, *nrhs, (void*)x, spm->n );
     if( rc == PASTIX_SUCCESS ){
         if( piparm[IPARM_MIXED] ){
+            pdparm[DPARM_EPSILON_REFINEMENT] = pastix_mixed_refine_epsilon(b, x, *nrhs);
             rc = pastix_task_refine( pastix_data, spm->n, *nrhs, (void*)b, spm->n, (void*)x, spm->n );
             berr = pastix_backward_error(b, x, *nrhs);
         }
         else{
+            pdparm[DPARM_EPSILON_REFINEMENT] = 1e-12;
             rc = pastix_refine_double(b, x, *nrhs, &berr);
         }
     }
