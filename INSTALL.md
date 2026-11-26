@@ -4,7 +4,7 @@ CalculiX can be build using either make or CMake.
 
 Building with make requires manual adjustment of `src/Makefile` to set the correct paths to the required dependencies.
 
-Building with CMake is currently tested on Linux only but CMake will automatically discover dependencies if they are installed to standard paths. In this case the CMake build works out of the box without any further configuration.
+Building with CMake is currently tested on Linux only (see section 2.5 for notes on macOS) but CMake will automatically discover dependencies if they are installed to standard paths. In this case the CMake build works out of the box without any further configuration.
 
 ## 1. Prerequisites
 
@@ -129,3 +129,27 @@ cmake --preset gnu-lp64 \
   -DCCX_SOURCE_EXCLUDES=myfile.f \
   -DCCX_SOURCE_ADDITIONS=/path/to/myfile_alt.f
 ```
+
+### 2.5 Building on macOS
+
+The CMake build also works on macOS with GCC from [MacPorts](https://www.macports.org) (checked on Apple Silicon with GCC 15, OpenBLAS, ARPACK and PaStiX v6.4.0). Compared to Linux, there are two differences:
+
+- On macOS, `gcc` is Apple Clang and there is no `gfortran`, so the GCC presets cannot pick up the right compilers on their own. Pass the MacPorts compilers explicitly instead.
+- SPOOLES is not available from MacPorts, so PaStiX is used as the solver.
+
+Install the dependencies via
+```
+sudo port install gcc15 cmake arpack +openblas pastix +openblas
+```
+which also pulls in OpenBLAS (including LAPACK), SCOTCH, METIS and hwloc. Then configure and build CalculiX at the project root with
+```
+cmake --preset gnu-lp64 \
+  -DCMAKE_C_COMPILER=gcc-mp-15 \
+  -DCMAKE_Fortran_COMPILER=gfortran-mp-15 \
+  -DSPOOLES=OFF \
+  -DPASTIX=ON
+cmake --build --preset gnu-lp64 -j
+```
+The executable is found at `build/gnu-lp64/CalculiX`. If CMake does not find the MacPorts libraries in `/opt/local`, add `-DCMAKE_PREFIX_PATH=/opt/local` to the configure command (see section 2.3). The linker warning `ignoring duplicate libraries: 'libccx.a'` is harmless: `ccx` is listed twice on the link line on purpose, so that libraries from `CCX_EXTRA_LIBS` can use its symbols (see section 2.4).
+
+__Note:__ The PaStiX package from MacPorts is built with 32-bit integers, so use the LP64 preset `gnu-lp64` as shown above and not `gnu-ilp64`: the integer sizes of CalculiX and PaStiX must match. CMake will warn that PaStiX with `CALCULIX_INT64=OFF` is an untested combination (see the note in section 2.2.3). With these packages it is the only consistent choice, but it is a good idea to check a few examples from `test/` against their `.dat.ref` reference files.
