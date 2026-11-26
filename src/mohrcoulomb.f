@@ -49,7 +49,8 @@
      &     s1xs2(3),s6xs1(3),dlambda,ddlambda,dlambda2(2),ddlambda2(2),
      &     h,dh,h2(2),dh2(2,2),dk,dm,det,dlambda6(2),ddlambda6(2),
      &     h6(2),dh6(2,2),dlambdar(3),ddlambdar(3),hr(3),dhr(3,3),
-     &     a(3,3),b(3,3),a1(3),da2(3),t(6,6),dum(6,6),dum1,ya(3,3,3,3)
+     &     a(3,3),b(3,3),a1(3),da2(3),t(6,6),dum(6,6),dum1,ya(3,3,3,3),
+     &     tolps
 !     
       kal=reshape((/1,1,2,2,3,3,1,2,1,3,2,3/),(/2,6/))
 !     
@@ -233,6 +234,17 @@
      &     s1xr6(2)*(sb(2)-sa)+
      &     s1xr6(3)*(sb(3)-sa)
 !     
+!     values of the boundary plane tests which are zero up to
+!     round-off are set to zero; else the selected region depends
+!     on round-off (e.g. on the use of fused multiply-add) if the
+!     trial stress lies on a boundary plane
+!     
+      tolps=1.d-10*dsqrt((sb(1)-sa)**2+(sb(2)-sa)**2+(sb(3)-sa)**2)
+      if(dabs(ps1r1).le.tolps*dsqrt(s1xr1(1)**2+s1xr1(2)**2+
+     &     s1xr1(3)**2)) ps1r1=0.d0
+      if(dabs(ps1r6).le.tolps*dsqrt(s1xr6(1)**2+s1xr6(2)**2+
+     &     s1xr6(3)**2)) ps1r6=0.d0
+!     
       if((ps1r1.ge.0.d0).and.(ps1r6.le.0.d0)) then
         iregion=1
       else
@@ -258,6 +270,8 @@
         ps1s2=s1xs2(1)*(sb(1)-sa)+
      &       s1xs2(2)*(sb(2)-sa)+
      &       s1xs2(3)*(sb(3)-sa)
+        if(dabs(ps1s2).le.tolps*dsqrt(s1xs2(1)**2+s1xs2(2)**2+
+     &       s1xs2(3)**2)) ps1s2=0.d0
         if((ps1r1.le.0.d0).and.(ps1s2.le.0.d0)) then
           iregion=2
         else
@@ -283,6 +297,8 @@
           ps6s1=s6xs1(1)*(sb(1)-sa)+
      &         s6xs1(2)*(sb(2)-sa)+
      &         s6xs1(3)*(sb(3)-sa)
+          if(dabs(ps6s1).le.tolps*dsqrt(s6xs1(1)**2+s6xs1(2)**2+
+     &         s6xs1(3)**2)) ps6s1=0.d0
           if((ps1r6.ge.0.d0).and.(ps6s1.le.0.d0)) then
             iregion=3
           else
