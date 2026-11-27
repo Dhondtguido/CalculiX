@@ -16,8 +16,7 @@
 
 cmake_minimum_required(VERSION 3.28)
 
-project(CalculiX)
-enable_language(C Fortran)
+project(CalculiX LANGUAGES C Fortran)
 
 # options
 option(CALCULIX_INT64 "build CalculiX with 64-bit integers (ILP64)" OFF)
@@ -71,8 +70,15 @@ set_source_files_properties(
 )
 
 add_library(ccx ${SOURCES})
+# Map the host platform to the CalculiX ARCH code. The sources expect one of
+# Linux/IRIX/IRIX64/HP; macOS uses a gfortran symbol-naming convention identical
+# to Linux, so it maps to "Linux" (see the Mac OS X installation guide, Feb. 2015).
+set(CCX_ARCH_CODE "${CMAKE_SYSTEM_NAME}")
+if(CCX_ARCH_CODE STREQUAL "Darwin")
+  set(CCX_ARCH_CODE "Linux")
+endif()
 target_compile_definitions(ccx PUBLIC
-  ARCH=${CMAKE_SYSTEM_NAME}
+  ARCH=${CCX_ARCH_CODE}
   MATRIXSTORAGE
 )
 target_link_libraries(ccx PUBLIC flags)
