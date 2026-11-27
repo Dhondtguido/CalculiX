@@ -1114,6 +1114,7 @@ ITG pastix_solve_generic(double *x, ITG *neq,ITG *symmetryflag,ITG *nrhs){
     // check for NaN in the solution
     if( x[0] != x[0] ){
         printf("\nSolution contains NaN!\n\n");
+        SFREE(b);
         if( noScale ){
             return -1;
         }
