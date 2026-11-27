@@ -939,7 +939,9 @@ static double pastix_berr_norms(const double *b, ITG nrhs, double *normb){
 }
 
 /* Stopping tolerance of the GMRES refinement after a mixed-precision
-   factorization, for spm*x = b with initial solution x. GMRES stops when
+   factorization, and of the unrestarted run after a stagnating
+   double-precision refinement (pastix_refine_double), for spm*x = b with
+   initial solution x. GMRES stops when
    ||b-Ax||_2 <= eps*||b||_2, but in double precision the residual cannot
    drop much below its rounding-error floor of about u*|| |A|*|x| + |b| ||_2.
    For stiffness matrices that floor is often above the fixed eps = 1e-12,
@@ -997,7 +999,9 @@ static double pastix_mixed_refine_epsilon(const double *b, const double *x, ITG 
    iterations instead (IPARM_ITERMAX stays the total budget), stop as
    soon as the backward error reaches the unit roundoff or no longer
    halves (the criterion of LAPACK's dgerfs), and return the best
-   solution. *berr returns its backward error.
+   solution. *berr returns its backward error. If it stagnates above
+   MIXED_MAX_BACKWARD_ERROR, the factorization is inaccurate and the rest
+   of the budget goes to one unrestarted GMRES run (see below).
    Not for mixed precision: there GMRES needs its full Krylov space,
    and restarting it every REFINE_CHUNK iterations makes slowly
    converging solves stall. */
@@ -1025,6 +1029,27 @@ static int pastix_refine_double(double *b, double *x, ITG nrhs,
             memcpy(xbest, x, sizeof(double) * size);
         }
         if( !(2. * e <= eprev) ) break;   /* stagnation (or NaN) */
+    }
+
+    /* Stagnation far above the rounding floor means an inaccurate
+       factorization (typically static pivots, as in mortar contact).
+       There GMRES needs a larger Krylov space than the restarts every
+       REFINE_CHUNK iterations keep: spend the rest of the budget on one
+       unrestarted run from the best solution (IPARM_GMRES_IM >= the
+       remaining iterations), with a reachable tolerance. */
+    if( rc == PASTIX_SUCCESS && done < itermax &&
+        *berr > MIXED_MAX_BACKWARD_ERROR ){
+        memcpy(x, xbest, sizeof(double) * size);
+        piparm[IPARM_ITERMAX] = itermax - done;
+        pdparm[DPARM_EPSILON_REFINEMENT] = pastix_mixed_refine_epsilon(b, x, nrhs);
+        rc = pastix_task_refine( pastix_data, n, nrhs, (void*)b, n, (void*)x, n );
+        if( rc == PASTIX_SUCCESS ){
+            e = pastix_backward_error(b, x, nrhs, normA, normb);
+            if( e < *berr ){
+                *berr = e;
+                memcpy(xbest, x, sizeof(double) * size);
+            }
+        }
     }
     piparm[IPARM_ITERMAX] = itermax;
 
