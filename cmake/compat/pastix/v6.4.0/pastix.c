@@ -893,26 +893,38 @@ double *sigma,ITG *icol, ITG *irow,
 /* Normwise backward error ||b-Ax||_inf / (||A||_inf*||x||_inf + ||b||_inf)
    of the solution x of spm*x = b, maximum over all right-hand sides.
    This measures the quality of the final solution independently of the
-   stopping criterion of the iterative refinement. */
-static double pastix_backward_error(const double *b, const double *x, ITG nrhs){
+   stopping criterion of the iterative refinement. normA = ||A||_inf and
+   normb[j] = ||b_j||_inf do not change while x is refined; the caller
+   computes them once per solve (pastix_berr_norms). */
+static double pastix_backward_error(const double *b, const double *x, ITG nrhs,
+                                    double normA, const double *normb){
     ITG j, n = spm->n;
-    double berr = 0., normA, normr, normx, normb, denom, e;
+    double berr = 0., normr, normx, denom, e;
     double *r = NULL;
 
-    normA = spmNorm( SpmInfNorm, spm );
     NNEW(r, double, n);
     for(j = 0; j < nrhs; j++){
         memcpy(r, b + j*n, sizeof(double) * n);
         spmMatVec( SpmNoTrans, -1., spm, x + j*n, 1., r );
         normr = spmNormVec( SpmInfNorm, spm, r, 1 );
         normx = spmNormVec( SpmInfNorm, spm, x + j*n, 1 );
-        normb = spmNormVec( SpmInfNorm, spm, b + j*n, 1 );
-        denom = normA * normx + normb;
+        denom = normA * normx + normb[j];
         e = ( denom > 0. ) ? normr / denom : 0.;
         if( e > berr || e != e ) berr = e;
     }
     SFREE(r);
     return berr;
+}
+
+/* ||A||_inf, returned, and ||b_j||_inf of every right-hand side j, in
+   normb[0..nrhs-1]: the parts of pastix_backward_error that stay fixed
+   during one solve */
+static double pastix_berr_norms(const double *b, ITG nrhs, double *normb){
+    ITG j, n = spm->n;
+    for(j = 0; j < nrhs; j++){
+        normb[j] = spmNormVec( SpmInfNorm, spm, b + j*n, 1 );
+    }
+    return spmNorm( SpmInfNorm, spm );
 }
 
 /* Stopping tolerance of the GMRES refinement after a mixed-precision
@@ -978,14 +990,15 @@ static double pastix_mixed_refine_epsilon(const double *b, const double *x, ITG 
    Not for mixed precision: there GMRES needs its full Krylov space,
    and restarting it every REFINE_CHUNK iterations makes slowly
    converging solves stall. */
-static int pastix_refine_double(double *b, double *x, ITG nrhs, double *berr){
+static int pastix_refine_double(double *b, double *x, ITG nrhs,
+                                double normA, const double *normb, double *berr){
     ITG n = spm->n, size = n * nrhs;
     pastix_int_t itermax = piparm[IPARM_ITERMAX], done = 0;
     double e, eprev;
     double *xbest = NULL;
     int rc = PASTIX_SUCCESS;
 
-    e = *berr = pastix_backward_error(b, x, nrhs);
+    e = *berr = pastix_backward_error(b, x, nrhs, normA, normb);
     NNEW(xbest, double, size);
     memcpy(xbest, x, sizeof(double) * size);
 
@@ -995,7 +1008,7 @@ static int pastix_refine_double(double *b, double *x, ITG nrhs, double *berr){
         if( rc != PASTIX_SUCCESS ) break;
         done += REFINE_CHUNK;
         eprev = e;
-        e = pastix_backward_error(b, x, nrhs);
+        e = pastix_backward_error(b, x, nrhs, normA, normb);
         if( e < *berr ){
             *berr = e;
             memcpy(xbest, x, sizeof(double) * size);
@@ -1047,15 +1060,19 @@ ITG pastix_solve_generic(double *x, ITG *neq,ITG *symmetryflag,ITG *nrhs){
     double berr = -1.;
     rc = pastix_task_solve( pastix_data, spm->n, *nrhs, (void*)x, spm->n );
     if( rc == PASTIX_SUCCESS ){
+        double normA, *normb = NULL;
+        NNEW(normb, double, *nrhs);
+        normA = pastix_berr_norms(b, *nrhs, normb);
         if( piparm[IPARM_MIXED] ){
             pdparm[DPARM_EPSILON_REFINEMENT] = pastix_mixed_refine_epsilon(b, x, *nrhs);
             rc = pastix_task_refine( pastix_data, spm->n, *nrhs, (void*)b, spm->n, (void*)x, spm->n );
-            berr = pastix_backward_error(b, x, *nrhs);
+            berr = pastix_backward_error(b, x, *nrhs, normA, normb);
         }
         else{
             pdparm[DPARM_EPSILON_REFINEMENT] = 1e-12;
-            rc = pastix_refine_double(b, x, *nrhs, &berr);
+            rc = pastix_refine_double(b, x, *nrhs, normA, normb, &berr);
         }
+        SFREE(normb);
     }
 
     // check for NaN in the solution
