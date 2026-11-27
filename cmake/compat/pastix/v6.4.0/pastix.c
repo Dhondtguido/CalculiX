@@ -1338,6 +1338,7 @@ void pastix_main_generic(double *ad, double *au, double *adb, double *aub,
         	forceRedo = 1;
         }
         	
+        SFREE(b_backup);
         return;
     }
     else if( rc == -2){
