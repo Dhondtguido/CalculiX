@@ -188,6 +188,17 @@ void pastix_init(double *ad, double *au, double *adb, double *aub,
     ITG nthread, nthread_v;
     char *env;
     
+    // Reuse (redo == 0): the CSC pattern is the one of the previous call,
+    // which pastix_cleanup kept together with its PaStiX instance. Keep the
+    // ordering, symbolic factorization and mapping; pastix_task_numfact
+    // (pastix_factor) rebuilds the internal matrix and the factors from the
+    // new values in aupastix. Precision or scaling changes always come with
+    // forceRedo, so the parameters of the kept instance still apply.
+    if( !redo && spm != NULL ){
+        spm->values = aupastix;
+        return;
+    }
+
      /*set MKL_NUM_THREADS to min(CCX_NPROC_EQUATION_SOLVER,OMP_NUM_THREADS)
      must be done once*/
     if (nthread_mkl == 0) {
@@ -1158,13 +1169,14 @@ ITG pastix_solve_cp(double *x, ITG *neq,ITG *symmetryflag,ITG *nrhs){
 }
 
 // Invokes pastixFinalize and spmExit which frees everything but the dense LU array and parsec pointer
-// pastix_init creates a new spm and PaStiX instance on every call, also
-// when the CSC pattern is reused (redo == 0) and after a first solve that
-// failed or returned early (firstIter still 1). Release the previous
-// instance whenever one exists: spm is NULL exactly when this mode has none
-// (per-mode pointers, swapped by pastix_set_globals, reset here).
+// pastix_init creates a new spm and PaStiX instance whenever the matrix is
+// set up anew (redo), also after a first solve that failed or returned early
+// (firstIter still 1); on reuse it keeps the existing one. So release the
+// previous instance on every redo, if one exists: spm is NULL exactly when
+// this mode has none (per-mode pointers, swapped by pastix_set_globals,
+// reset here).
 void pastix_cleanup(ITG *neq,ITG *symmetryflag){
-    if( spm != NULL ) {
+    if( redo && spm != NULL ) {
         if(spm->values == aupastix) spm->values = NULL;
         //if(spm->values == spm->valuesGPU) spm->valuesGPU = NULL;
         if(spm->colptr == icolpastix) spm->colptr = NULL;
