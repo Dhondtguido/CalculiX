@@ -74,8 +74,8 @@ char redo = 1;
 char modePrev = BASIC;
 char mode = BASIC;
 
-#define SINGLE_SOLVE 1;
-#define MULTI_SOLVE 2;
+#define SINGLE_SOLVE 1
+#define MULTI_SOLVE 2
 char usage = SINGLE_SOLVE;
 
 // PaStiX configuration
@@ -290,8 +290,7 @@ void pastix_init(double *ad, double *au, double *adb, double *aub,
     piparm[IPARM_GPU_MEMORY_BLOCK_SIZE]		= 64 * 1024;
 
 
-    char usage_call = MULTI_SOLVE
-    if( usage == usage_call ){
+    if( usage == MULTI_SOLVE ){
         pdparm[DPARM_EPSILON_REFINEMENT] 	= 1e-12;
         piparm[IPARM_ITERMAX]            	= 50;
         piparm[IPARM_GMRES_IM]            	= 50;
@@ -1131,9 +1130,8 @@ ITG pastix_solve_generic(double *x, ITG *neq,ITG *symmetryflag,ITG *nrhs){
     // and report a failure, so that pastix_main_generic falls back to
     // double precision. Only for single solves: the multi-solve callers
     // do not check rc and always run in double precision.
-    char usage_single = SINGLE_SOLVE   /* macro already ends with ';' */
     if( rc == PASTIX_SUCCESS && !globDoublePrecision && piparm[IPARM_MIXED] &&
-        usage == usage_single ){
+        usage == SINGLE_SOLVE ){
         if( berr > MIXED_MAX_BACKWARD_ERROR || berr != berr ){
             printf("mixed precision solution not accurate enough (backward error %e)\n", berr);
             rc = -1;
