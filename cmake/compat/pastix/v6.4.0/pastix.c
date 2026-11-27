@@ -27,6 +27,7 @@
 #include <sys/time.h>
 #include <stdio.h>
 #include <math.h>
+#include <float.h>
 #include <stdlib.h>
 #include <string.h>
 #include "../../../../src/CalculiX.h"
@@ -73,8 +74,8 @@ char redo = 1;
 char modePrev = BASIC;
 char mode = BASIC;
 
-#define SINGLE_SOLVE 1;
-#define MULTI_SOLVE 2;
+#define SINGLE_SOLVE 1
+#define MULTI_SOLVE 2
 char usage = SINGLE_SOLVE;
 
 // PaStiX configuration
@@ -187,6 +188,17 @@ void pastix_init(double *ad, double *au, double *adb, double *aub,
     ITG nthread, nthread_v;
     char *env;
     
+    // Reuse (redo == 0): the CSC pattern is the one of the previous call,
+    // which pastix_cleanup kept together with its PaStiX instance. Keep the
+    // ordering, symbolic factorization and mapping; pastix_task_numfact
+    // (pastix_factor) rebuilds the internal matrix and the factors from the
+    // new values in aupastix. Precision or scaling changes always come with
+    // forceRedo, so the parameters of the kept instance still apply.
+    if( !redo && spm != NULL ){
+        spm->values = aupastix;
+        return;
+    }
+
      /*set MKL_NUM_THREADS to min(CCX_NPROC_EQUATION_SOLVER,OMP_NUM_THREADS)
      must be done once*/
     if (nthread_mkl == 0) {
@@ -278,8 +290,7 @@ void pastix_init(double *ad, double *au, double *adb, double *aub,
     piparm[IPARM_GPU_MEMORY_BLOCK_SIZE]		= 64 * 1024;
 
 
-    char usage_call = MULTI_SOLVE
-    if( usage == usage_call ){
+    if( usage == MULTI_SOLVE ){
         pdparm[DPARM_EPSILON_REFINEMENT] 	= 1e-12;
         piparm[IPARM_ITERMAX]            	= 50;
         piparm[IPARM_GMRES_IM]            	= 50;
@@ -600,7 +611,7 @@ double *sigma,ITG *icol, ITG *irow,
             if((nzsTotal * 2 + *neq) > pastix_nnzBound) {
                 // perform the call with PaStiX because pinned memory allocation via CUDA is performed if gpu is activated
 		SFREE(aupastix);
-                if( !firstIter && aupastix == spm->values ) spm->values = NULL;
+                if( spm != NULL && aupastix == spm->values ) spm->values = NULL;
     
                 aupastix = malloc(1.1 * sizeof(double) * (nzsTotal * 2 + *neq));
                 pastix_nnzBound = 1.1 * (nzsTotal * 2 + *neq);
@@ -744,7 +755,7 @@ double *sigma,ITG *icol, ITG *irow,
             // allocate memory for the PaStiX arrays and free the old ones if necessary
             if((nzsTotal + *neq) > pastix_nnzBound) {
 		SFREE(aupastix);
-                if( !firstIter && aupastix == spm->values ) spm->values = NULL;
+                if( spm != NULL && aupastix == spm->values ) spm->values = NULL;
 
                 aupastix = malloc(1.1 * sizeof(double) * (nzsTotal + *neq));
                 pastix_nnzBound = 1.1 * (nzsTotal + *neq);
@@ -884,6 +895,168 @@ double *sigma,ITG *icol, ITG *irow,
 }
 
 
+/* Largest backward error accepted for a mixed-precision solve. Over the
+   CalculiX test suite all double-precision solves stay below 1e-13 and
+   all mixed-precision solves of passing tests below 6e-13. */
+#define MIXED_MAX_BACKWARD_ERROR 1e-12
+
+/* Normwise backward error ||b-Ax||_inf / (||A||_inf*||x||_inf + ||b||_inf)
+   of the solution x of spm*x = b, maximum over all right-hand sides.
+   This measures the quality of the final solution independently of the
+   stopping criterion of the iterative refinement. normA = ||A||_inf and
+   normb[j] = ||b_j||_inf do not change while x is refined; the caller
+   computes them once per solve (pastix_berr_norms). */
+static double pastix_backward_error(const double *b, const double *x, ITG nrhs,
+                                    double normA, const double *normb){
+    ITG j, n = spm->n;
+    double berr = 0., normr, normx, denom, e;
+    double *r = NULL;
+
+    NNEW(r, double, n);
+    for(j = 0; j < nrhs; j++){
+        memcpy(r, b + j*n, sizeof(double) * n);
+        spmMatVec( SpmNoTrans, -1., spm, x + j*n, 1., r );
+        normr = spmNormVec( SpmInfNorm, spm, r, 1 );
+        normx = spmNormVec( SpmInfNorm, spm, x + j*n, 1 );
+        denom = normA * normx + normb[j];
+        e = ( denom > 0. ) ? normr / denom : 0.;
+        if( e > berr || e != e ) berr = e;
+    }
+    SFREE(r);
+    return berr;
+}
+
+/* ||A||_inf, returned, and ||b_j||_inf of every right-hand side j, in
+   normb[0..nrhs-1]: the parts of pastix_backward_error that stay fixed
+   during one solve */
+static double pastix_berr_norms(const double *b, ITG nrhs, double *normb){
+    ITG j, n = spm->n;
+    for(j = 0; j < nrhs; j++){
+        normb[j] = spmNormVec( SpmInfNorm, spm, b + j*n, 1 );
+    }
+    return spmNorm( SpmInfNorm, spm );
+}
+
+/* Stopping tolerance of the GMRES refinement after a mixed-precision
+   factorization, and of the unrestarted run after a stagnating
+   double-precision refinement (pastix_refine_double), for spm*x = b with
+   initial solution x. GMRES stops when
+   ||b-Ax||_2 <= eps*||b||_2, but in double precision the residual cannot
+   drop much below its rounding-error floor of about u*|| |A|*|x| + |b| ||_2.
+   For stiffness matrices that floor is often above the fixed eps = 1e-12,
+   which then cannot be reached, and GMRES ran all IPARM_ITERMAX iterations
+   although it had converged after a few. Use
+   eps = max(1e-12, MIXED_REFINE_FLOOR * u * || |A|*|x| + |b| ||_2 / ||b||_2)
+   instead: unchanged where 1e-12 is reachable, otherwise just above the
+   floor. The componentwise product |A|*|x| matters: ||A||*||x|| would
+   overestimate the floor badly in models whose unknowns differ by orders
+   of magnitude (e.g. beams), and stop too early. If the floor is
+   underestimated, GMRES simply runs to IPARM_ITERMAX as before. With
+   several right-hand sides the smallest eps is used. */
+#define MIXED_REFINE_FLOOR 4.
+
+static double pastix_mixed_refine_epsilon(const double *b, const double *x, ITG nrhs){
+    spm_int_t n = spm->n, base = spm->baseval, i, j, k;
+    const spm_int_t *colptr = spm->colptr, *rowptr = spm->rowptr;
+    const double *val = (const double *) spm->values;
+    double eps = -1., normb, nfloor, e;
+    double *s = NULL;
+    ITG l;
+
+    NNEW(s, double, n);
+    for(l = 0; l < nrhs; l++){
+        const double *bl = b + l*n, *xl = x + l*n;
+        /* s = |A|*|x| + |b|: rounding-error scale of every residual entry */
+        for(i = 0; i < n; i++) s[i] = fabs(bl[i]);
+        for(j = 0; j < n; j++){
+            for(k = colptr[j] - base; k < colptr[j+1] - base; k++){
+                s[rowptr[k] - base] += fabs(val[k] * xl[j]);
+            }
+        }
+        nfloor = spmNormVec( SpmFrobeniusNorm, spm, s, 1 );
+        normb  = spmNormVec( SpmFrobeniusNorm, spm, bl, 1 );
+        if( normb > 0. ){
+            e = MIXED_REFINE_FLOOR * 0.5 * DBL_EPSILON * nfloor / normb;
+            if( eps < 0. || e < eps ) eps = e;
+        }
+    }
+    SFREE(s);
+    if( !(eps > 1e-12) ) eps = 1e-12;   /* also catches NaN and zero rhs */
+    return eps;
+}
+
+/* GMRES iterations between two checks of the backward error */
+#define REFINE_CHUNK 5
+
+/* Iterative refinement of the solution x of spm*x = b after a
+   double-precision factorization, with stagnation control.
+   PaStiX's GMRES only stops when ||b-Ax||_2 <= eps*||b||_2. For
+   stiffness matrices that is usually below the rounding-error floor of
+   the residual (about u*||A||*||x||), so every solve ran all
+   IPARM_ITERMAX iterations, although a direct double-precision solve
+   is normally at that floor already. Refine in chunks of REFINE_CHUNK
+   iterations instead (IPARM_ITERMAX stays the total budget), stop as
+   soon as the backward error reaches the unit roundoff or no longer
+   halves (the criterion of LAPACK's dgerfs), and return the best
+   solution. *berr returns its backward error. If it stagnates above
+   MIXED_MAX_BACKWARD_ERROR, the factorization is inaccurate and the rest
+   of the budget goes to one unrestarted GMRES run (see below).
+   Not for mixed precision: there GMRES needs its full Krylov space,
+   and restarting it every REFINE_CHUNK iterations makes slowly
+   converging solves stall. */
+static int pastix_refine_double(double *b, double *x, ITG nrhs,
+                                double normA, const double *normb, double *berr){
+    ITG n = spm->n, size = n * nrhs;
+    pastix_int_t itermax = piparm[IPARM_ITERMAX], done = 0;
+    double e, eprev;
+    double *xbest = NULL;
+    int rc = PASTIX_SUCCESS;
+
+    e = *berr = pastix_backward_error(b, x, nrhs, normA, normb);
+    NNEW(xbest, double, size);
+    memcpy(xbest, x, sizeof(double) * size);
+
+    piparm[IPARM_ITERMAX] = REFINE_CHUNK;
+    while( done < itermax && e > 0.5 * DBL_EPSILON ){
+        rc = pastix_task_refine( pastix_data, n, nrhs, (void*)b, n, (void*)x, n );
+        if( rc != PASTIX_SUCCESS ) break;
+        done += REFINE_CHUNK;
+        eprev = e;
+        e = pastix_backward_error(b, x, nrhs, normA, normb);
+        if( e < *berr ){
+            *berr = e;
+            memcpy(xbest, x, sizeof(double) * size);
+        }
+        if( !(2. * e <= eprev) ) break;   /* stagnation (or NaN) */
+    }
+
+    /* Stagnation far above the rounding floor means an inaccurate
+       factorization (typically static pivots, as in mortar contact).
+       There GMRES needs a larger Krylov space than the restarts every
+       REFINE_CHUNK iterations keep: spend the rest of the budget on one
+       unrestarted run from the best solution (IPARM_GMRES_IM >= the
+       remaining iterations), with a reachable tolerance. */
+    if( rc == PASTIX_SUCCESS && done < itermax &&
+        *berr > MIXED_MAX_BACKWARD_ERROR ){
+        memcpy(x, xbest, sizeof(double) * size);
+        piparm[IPARM_ITERMAX] = itermax - done;
+        pdparm[DPARM_EPSILON_REFINEMENT] = pastix_mixed_refine_epsilon(b, x, nrhs);
+        rc = pastix_task_refine( pastix_data, n, nrhs, (void*)b, n, (void*)x, n );
+        if( rc == PASTIX_SUCCESS ){
+            e = pastix_backward_error(b, x, nrhs, normA, normb);
+            if( e < *berr ){
+                *berr = e;
+                memcpy(xbest, x, sizeof(double) * size);
+            }
+        }
+    }
+    piparm[IPARM_ITERMAX] = itermax;
+
+    memcpy(x, xbest, sizeof(double) * size);
+    SFREE(xbest);
+    return rc;
+}
+
 // invokes the solve and iterative refinement routines of PaStiX
 ITG pastix_solve_generic(double *x, ITG *neq,ITG *symmetryflag,ITG *nrhs){
     ITG i;
@@ -916,12 +1089,31 @@ ITG pastix_solve_generic(double *x, ITG *neq,ITG *symmetryflag,ITG *nrhs){
     //spmScalMat( 1./normA, spm, nrhs, x, spm->nexp );
     memcpy(b, x, sizeof(double) * (*nrhs) * (*neq));
 
-    // solve and refine in one call, check if suitable because of GPU!
-    rc = pastix_task_solve_and_refine( pastix_data, spm->n, *nrhs, (void*)b, spm->n, (void*)x, spm->n );
+    // solve, then refine: mixed precision with one GMRES run over the
+    // full IPARM_ITERMAX budget, double precision only until the solution
+    // stops improving (see pastix_refine_double)
+    double berr = -1.;
+    rc = pastix_task_solve( pastix_data, spm->n, *nrhs, (void*)x, spm->n );
+    if( rc == PASTIX_SUCCESS ){
+        double normA, *normb = NULL;
+        NNEW(normb, double, *nrhs);
+        normA = pastix_berr_norms(b, *nrhs, normb);
+        if( piparm[IPARM_MIXED] ){
+            pdparm[DPARM_EPSILON_REFINEMENT] = pastix_mixed_refine_epsilon(b, x, *nrhs);
+            rc = pastix_task_refine( pastix_data, spm->n, *nrhs, (void*)b, spm->n, (void*)x, spm->n );
+            berr = pastix_backward_error(b, x, *nrhs, normA, normb);
+        }
+        else{
+            pdparm[DPARM_EPSILON_REFINEMENT] = 1e-12;
+            rc = pastix_refine_double(b, x, *nrhs, normA, normb, &berr);
+        }
+        SFREE(normb);
+    }
 
     // check for NaN in the solution
     if( x[0] != x[0] ){
         printf("\nSolution contains NaN!\n\n");
+        SFREE(b);
         if( noScale ){
             return -1;
         }
@@ -929,7 +1121,23 @@ ITG pastix_solve_generic(double *x, ITG *neq,ITG *symmetryflag,ITG *nrhs){
             return -2;
         }
     }
-	
+
+    // A mixed-precision solve is only acceptable if the iterative
+    // refinement recovered double-precision accuracy. PaStiX reports
+    // success after IPARM_ITERMAX GMRES iterations even if it did not,
+    // and such inaccurate solutions spoil the Newton convergence of
+    // nonlinear analyses. Check the backward error of the final solution
+    // and report a failure, so that pastix_main_generic falls back to
+    // double precision. Only for single solves: the multi-solve callers
+    // do not check rc and always run in double precision.
+    if( rc == PASTIX_SUCCESS && !globDoublePrecision && piparm[IPARM_MIXED] &&
+        usage == SINGLE_SOLVE ){
+        if( berr > MIXED_MAX_BACKWARD_ERROR || berr != berr ){
+            printf("mixed precision solution not accurate enough (backward error %e)\n", berr);
+            rc = -1;
+        }
+    }
+
 //    FILE *f=fopen("spm.out","a");
 //    fprintf(f,"\n\nMatrix\n");
 //    spmConvert(SpmCSR, spm);
@@ -985,8 +1193,14 @@ ITG pastix_solve_cp(double *x, ITG *neq,ITG *symmetryflag,ITG *nrhs){
 }
 
 // Invokes pastixFinalize and spmExit which frees everything but the dense LU array and parsec pointer
+// pastix_init creates a new spm and PaStiX instance whenever the matrix is
+// set up anew (redo), also after a first solve that failed or returned early
+// (firstIter still 1); on reuse it keeps the existing one. So release the
+// previous instance on every redo, if one exists: spm is NULL exactly when
+// this mode has none (per-mode pointers, swapped by pastix_set_globals,
+// reset here).
 void pastix_cleanup(ITG *neq,ITG *symmetryflag){
-    if( redo && !firstIter ) {
+    if( redo && spm != NULL ) {
         if(spm->values == aupastix) spm->values = NULL;
         //if(spm->values == spm->valuesGPU) spm->valuesGPU = NULL;
         if(spm->colptr == icolpastix) spm->colptr = NULL;
@@ -1039,6 +1253,20 @@ void pastix_main_generic(double *ad, double *au, double *adb, double *aub,
 
     usage = SINGLE_SOLVE;
 	
+    // Precision of this solve (as in src/pastix.c): mixed unless switched
+    // off with PASTIX_MIXED_PRECISION=0 or stickToDouble is set after the
+    // third mixed-precision failure. A fallback or a multi-solve
+    // factorization (pastix_factor_main_generic) leaves globDoublePrecision
+    // at 1, so switch back here. A kept instance (reuse) was set up for the
+    // old precision, so any change also forces a new one.
+    const char* pastix_mixed = getenv("PASTIX_MIXED_PRECISION");
+    mixed = ( pastix_mixed != NULL ) ? ( *pastix_mixed == '1' ) : 1;
+    {
+        char wantDouble = ( stickToDouble || !mixed ) ? 1 : 0;
+        if( wantDouble != globDoublePrecision ) forceRedo = 1;
+        globDoublePrecision = wantDouble;
+    }
+
     // use double precision for inputformat 3 like mortar (better perfromance and convergence)
     if( *inputformat == 3 ){
         globDoublePrecision = 1;
@@ -1160,6 +1388,7 @@ void pastix_main_generic(double *ad, double *au, double *adb, double *aub,
         	forceRedo = 1;
         }
         	
+        SFREE(b_backup);
         return;
     }
     else if( rc == -2){
