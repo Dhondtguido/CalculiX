@@ -1229,6 +1229,20 @@ void pastix_main_generic(double *ad, double *au, double *adb, double *aub,
 
     usage = SINGLE_SOLVE;
 	
+    // Precision of this solve (as in src/pastix.c): mixed unless switched
+    // off with PASTIX_MIXED_PRECISION=0 or stickToDouble is set after the
+    // third mixed-precision failure. A fallback or a multi-solve
+    // factorization (pastix_factor_main_generic) leaves globDoublePrecision
+    // at 1, so switch back here. A kept instance (reuse) was set up for the
+    // old precision, so any change also forces a new one.
+    const char* pastix_mixed = getenv("PASTIX_MIXED_PRECISION");
+    mixed = ( pastix_mixed != NULL ) ? ( *pastix_mixed == '1' ) : 1;
+    {
+        char wantDouble = ( stickToDouble || !mixed ) ? 1 : 0;
+        if( wantDouble != globDoublePrecision ) forceRedo = 1;
+        globDoublePrecision = wantDouble;
+    }
+
     // use double precision for inputformat 3 like mortar (better perfromance and convergence)
     if( *inputformat == 3 ){
         globDoublePrecision = 1;
