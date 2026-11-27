@@ -601,7 +601,7 @@ double *sigma,ITG *icol, ITG *irow,
             if((nzsTotal * 2 + *neq) > pastix_nnzBound) {
                 // perform the call with PaStiX because pinned memory allocation via CUDA is performed if gpu is activated
 		SFREE(aupastix);
-                if( !firstIter && aupastix == spm->values ) spm->values = NULL;
+                if( spm != NULL && aupastix == spm->values ) spm->values = NULL;
     
                 aupastix = malloc(1.1 * sizeof(double) * (nzsTotal * 2 + *neq));
                 pastix_nnzBound = 1.1 * (nzsTotal * 2 + *neq);
@@ -745,7 +745,7 @@ double *sigma,ITG *icol, ITG *irow,
             // allocate memory for the PaStiX arrays and free the old ones if necessary
             if((nzsTotal + *neq) > pastix_nnzBound) {
 		SFREE(aupastix);
-                if( !firstIter && aupastix == spm->values ) spm->values = NULL;
+                if( spm != NULL && aupastix == spm->values ) spm->values = NULL;
 
                 aupastix = malloc(1.1 * sizeof(double) * (nzsTotal + *neq));
                 pastix_nnzBound = 1.1 * (nzsTotal + *neq);
@@ -1158,8 +1158,13 @@ ITG pastix_solve_cp(double *x, ITG *neq,ITG *symmetryflag,ITG *nrhs){
 }
 
 // Invokes pastixFinalize and spmExit which frees everything but the dense LU array and parsec pointer
+// pastix_init creates a new spm and PaStiX instance on every call, also
+// when the CSC pattern is reused (redo == 0) and after a first solve that
+// failed or returned early (firstIter still 1). Release the previous
+// instance whenever one exists: spm is NULL exactly when this mode has none
+// (per-mode pointers, swapped by pastix_set_globals, reset here).
 void pastix_cleanup(ITG *neq,ITG *symmetryflag){
-    if( redo && !firstIter ) {
+    if( spm != NULL ) {
         if(spm->values == aupastix) spm->values = NULL;
         //if(spm->values == spm->valuesGPU) spm->valuesGPU = NULL;
         if(spm->colptr == icolpastix) spm->colptr = NULL;
