@@ -78,7 +78,7 @@
      &     xstiff(27,mi(1),*),veold(0:mi(2),*),om,valu2,value,dtime,
      &     time,thicke(mi(3),*),doubleglob(*),clearini(3,9,*),ttime,
      &     pslavsurf(3,*),pmastsurf(6,*),smscale(*),aut(*),val,
-     &     aute(96)
+     &     aute(96),xscl
 !     
       kflag=2
       i0=0
@@ -285,6 +285,11 @@ c     mortar end
      &           integerglob,doubleglob,tieset,istartset,
      &           iendset,ialset,ntie,nasym,
      &           ielprop,prop,nope)
+          endif
+!
+          if((nmethod.eq.1).and.(stiffonly(1).eq.1)) then
+            call topologyget(i,xscl)
+            s=s*xscl
           endif
 !
 !         treatment of substructure (superelement)

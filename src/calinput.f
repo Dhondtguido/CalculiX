@@ -1054,6 +1054,10 @@ c
      &       ilmpc,mpcfree,mcs,set,nset,labmpc,istep,istat,n,iline,
      &       ipol,inl,ipoinp,inp,nmethod,key,ipoinpc,ier)
 !     
+      elseif(textpart(1)(1:9).eq.'*TOPOLOGY') then
+        call topology(inpc,textpart,istep,istat,n,iline,ipol,
+     &       inl,ipoinp,inp,ipoinpc,ne,ier)
+!     
       elseif(textpart(1)(1:12).eq.'*SENSITIVITY') then
         call sensitivitys(inpc,textpart,nmethod,
      &       istep,istat,n,iline,ipol,inl,
